@@ -29,6 +29,8 @@
 ##' @section Methods:
 ##' \describe{
 ##'   \item{show}{\code{signature(object = "repository")}}
+##'   \item{is.bare}{\code{signature(object = "repository")}}
+##'   \item{is.empty}{\code{signature(object = "repository")}}
 ##' }
 ##' @keywords methods
 ##' @export
@@ -59,3 +61,67 @@ repository <- function(path) {
 
     .Call('repository', path)
 }
+
+##' Check if repository is bare
+##'
+##' @name is.bare-methods
+##' @aliases is.bare
+##' @aliases is.bare-methods
+##' @aliases is.bare,repository-method
+##' @docType methods
+##' @param object The \code{object} to check if it's a bare repository
+##' @return TRUE if bare repository, else FALSE
+##' @keywords methods
+##' @export
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository('path/to/git2r')
+##'
+##' ## Check if it's a bare repository
+##' is.bare(repo)
+##' }
+##'
+setGeneric('is.bare',
+           signature = 'object',
+           function(object) standardGeneric('is.bare'))
+
+setMethod('is.bare',
+          signature(object = 'repository'),
+          function (object)
+          {
+              .Call('is_bare', object)
+          }
+)
+
+##' Check if repository is empty
+##'
+##' @name is.empty-methods
+##' @aliases is.empty
+##' @aliases is.empty-methods
+##' @aliases is.empty,repository-method
+##' @docType methods
+##' @param object The \code{object} to check if it's a empty repository
+##' @return TRUE or FALSE
+##' @keywords methods
+##' @export
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository('path/to/git2r')
+##'
+##' ## Check if it's an empty repository
+##' is.empty(repo)
+##' }
+##'
+setGeneric('is.empty',
+           signature = 'object',
+           function(object) standardGeneric('is.empty'))
+
+setMethod('is.empty',
+          signature(object = 'repository'),
+          function (object)
+          {
+              .Call('is_empty', object)
+          }
+)

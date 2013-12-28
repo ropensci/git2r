@@ -1,3 +1,12 @@
+git2r 0.0.2
+-----------
+
+NEW FEATURES
+
+* Added is.bare method to check if a repository is bare
+
+* Added is.empty method to check if a repository is empty
+
 git2r 0.0.1
 -----------
 

@@ -1,0 +1,27 @@
+\docType{methods}
+\name{is.empty-methods}
+\alias{is.empty}
+\alias{is.empty-methods}
+\alias{is.empty,repository-method}
+\title{Check if repository is empty}
+\arguments{
+  \item{object}{The \code{object} to check if it's a empty
+  repository}
+}
+\value{
+  TRUE or FALSE
+}
+\description{
+  Check if repository is empty
+}
+\examples{
+\dontrun{
+## Open an existing repository
+repo <- repository('path/to/git2r')
+
+## Check if it's an empty repository
+is.empty(repo)
+}
+}
+\keyword{methods}
+

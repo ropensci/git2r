@@ -1,4 +1,6 @@
 exportClasses(repository)
+exportMethods(is.bare)
+exportMethods(is.empty)
 export(repository)
 import(methods)
 useDynLib(git2r)

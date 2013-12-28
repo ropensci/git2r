@@ -13,6 +13,8 @@
 
 \section{Methods}{
   \describe{ \item{show}{\code{signature(object =
+  "repository")}} \item{is.bare}{\code{signature(object =
+  "repository")}} \item{is.empty}{\code{signature(object =
   "repository")}} }
 }
 \keyword{classes}

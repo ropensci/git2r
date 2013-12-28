@@ -67,6 +67,32 @@ static git_repository* get_repository(const SEXP repo)
 }
 
 /**
+ * Check if repository is bare.
+ *
+ * @param repo S4 class to an open repository
+ * @return
+ */
+SEXP is_bare(const SEXP repo)
+{
+    if (git_repository_is_bare(get_repository(repo)))
+        return ScalarLogical(TRUE);
+    return ScalarLogical(FALSE);
+}
+
+/**
+ * Check if repository is empty.
+ *
+ * @param repo S4 class to an open repository
+ * @return
+ */
+SEXP is_empty(const SEXP repo)
+{
+    if (git_repository_is_empty(get_repository(repo)))
+        return ScalarLogical(TRUE);
+    return ScalarLogical(FALSE);
+}
+
+/**
  * Repository.
  *
  * @param path
@@ -105,6 +131,8 @@ SEXP repository(const SEXP path)
 
 static const R_CallMethodDef callMethods[] =
 {
+    {"is_bare", (DL_FUNC)&is_bare, 1},
+    {"is_empty", (DL_FUNC)&is_empty, 1},
     {"repository", (DL_FUNC)&repository, 1},
     {NULL, NULL, 0}
 };
