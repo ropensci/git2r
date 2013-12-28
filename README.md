@@ -23,3 +23,17 @@ To install the development version of `git2r`, it's easiest to use the devtools 
     # install.packages("devtools")
     library(devtools)
     install_github("git2r", "stewid")
+
+Example
+-------
+
+    library(git2r)
+
+    # Open an existing repository
+    repo <- repository('path/to/git2r')
+
+    # Check if repository is bare
+    is.bare(repo)
+
+    # Check if repository is empty
+    is.empty(repo)
