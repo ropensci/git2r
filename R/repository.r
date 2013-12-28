@@ -37,12 +37,14 @@ setClass('repository',
 
 ##' Open a repository
 ##'
+##' @param path A path to an existing local git repository
+##' @return A S4 \code{repository} object
 ##' @keywords methods
 ##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository
-##' repo <- repository('git2r')
+##' repo <- repository('path/to/git2r')
 ##' }
 ##'
 repository <- function(path) {
