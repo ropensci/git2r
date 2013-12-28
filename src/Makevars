@@ -1,0 +1,52 @@
+PKG_CFLAGS = -I. -I./libgit2 -I./libgit2/include -I./libgit2/deps/http-parser
+OBJECTS.libgit2 = libgit2/attr.o libgit2/attr_file.o libgit2/blame.o \
+                  libgit2/blame_git.o libgit2/blob.o libgit2/branch.o \
+                  libgit2/buffer.o libgit2/buf_text.o libgit2/cache.o \
+                  libgit2/checkout.o libgit2/clone.o libgit2/commit.o \
+                  libgit2/commit_list.o libgit2/compress.o libgit2/config.o \
+                  libgit2/config_cache.o libgit2/config_file.o libgit2/crlf.o \
+                  libgit2/date.o libgit2/delta-apply.o libgit2/delta.o \
+                  libgit2/diff.o libgit2/diff_driver.o libgit2/diff_file.o \
+                  libgit2/diff_patch.o libgit2/diff_print.o libgit2/diff_tform.o \
+                  libgit2/diff_xdiff.o libgit2/errors.o libgit2/fetch.o \
+                  libgit2/fetchhead.o libgit2/filebuf.o libgit2/fileops.o \
+                  libgit2/filter.o libgit2/fnmatch.o libgit2/global.o \
+                  libgit2/graph.o libgit2/hash.o libgit2/hashsig.o \
+                  libgit2/ident.o libgit2/ignore.o libgit2/index.o \
+                  libgit2/indexer.o libgit2/iterator.o libgit2/merge.o \
+                  libgit2/merge_file.o libgit2/message.o libgit2/mwindow.o \
+                  libgit2/netops.o libgit2/notes.o libgit2/object_api.o \
+                  libgit2/object.o libgit2/odb.o libgit2/odb_loose.o \
+                  libgit2/odb_pack.o libgit2/oid.o libgit2/pack.o \
+                  libgit2/pack-objects.o libgit2/path.o libgit2/pathspec.o \
+                  libgit2/pool.o libgit2/posix.o libgit2/pqueue.o libgit2/push.o \
+                  libgit2/refdb.o libgit2/refdb_fs.o libgit2/reflog.o \
+                  libgit2/refs.o libgit2/refspec.o libgit2/remote.o \
+                  libgit2/repository.o libgit2/reset.o libgit2/revert.o \
+                  libgit2/revparse.o libgit2/revwalk.o libgit2/sha1_lookup.o \
+                  libgit2/signature.o libgit2/sortedcache.o libgit2/stash.o \
+                  libgit2/status.o libgit2/strmap.o libgit2/submodule.o \
+                  libgit2/tag.o libgit2/thread-utils.o libgit2/trace.o \
+                  libgit2/transport.o libgit2/tree.o libgit2/tree-cache.o \
+                  libgit2/tsort.o libgit2/util.o libgit2/vector.o
+OBJECTS.libgit2.hash = libgit2/hash/hash_generic.o
+OBJECTS.libgit2.http_parser = libgit2/deps/http-parser/http_parser.o
+OBJECTS.libgit2.transports = libgit2/transports/cred.o libgit2/transports/cred_helpers.o \
+                             libgit2/transports/git.o  libgit2/transports/http.o \
+                             libgit2/transports/local.o libgit2/transports/smart.o\
+                             libgit2/transports/smart_pkt.o libgit2/transports/smart_protocol.o\
+                             libgit2/transports/ssh.o libgit2/transports/winhttp.o
+OBJECTS.libgit2.unix = libgit2/unix/map.o
+OBJECTS.libgit2.xdiff = libgit2/xdiff/xdiffi.o libgit2/xdiff/xemit.o \
+                        libgit2/xdiff/xhistogram.o libgit2/xdiff/xmerge.o \
+                        libgit2/xdiff/xpatience.o libgit2/xdiff/xprepare.o \
+                        libgit2/xdiff/xutils.o
+OBJECTS.zlib = zlib/adler32.o zlib/compress.o zlib/crc32.o zlib/deflate.o \
+               zlib/gzclose.o zlib/gzlib.o zlib/gzread.o zlib/gzwrite.o \
+               zlib/infback.o zlib/inffast.o zlib/inflate.o zlib/inftrees.o \
+               zlib/trees.o zlib/uncompr.o zlib/zutil.o
+OBJECTS.root = git2r.o
+
+OBJECTS = $(OBJECTS.libgit2) $(OBJECTS.libgit2.hash) $(OBJECTS.libgit2.http_parser) \
+          $(OBJECTS.libgit2.transports) $(OBJECTS.libgit2.unix) $(OBJECTS.libgit2.xdiff) \
+          $(OBJECTS.zlib) $(OBJECTS.root)
