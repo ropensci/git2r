@@ -1,0 +1,8 @@
+git2r 0.0.1
+-----------
+
+NEW FEATURES
+
+* Added S4 class repository to work with a git repository
+
+* Initial package structure
