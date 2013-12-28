@@ -1,0 +1,4 @@
+exportClasses(repository)
+export(repository)
+import(methods)
+useDynLib(git2r)
