@@ -92,6 +92,93 @@ SEXP is_empty(const SEXP repo)
     return ScalarLogical(FALSE);
 }
 
+static void init_reference(git_reference *ref, SEXP reference)
+{
+    char out[41];
+    out[40] = '\0';
+
+    SET_SLOT(reference,
+             Rf_install("name"),
+             ScalarString(mkChar(git_reference_name(ref))));
+
+    SET_SLOT(reference,
+             Rf_install("shorthand"),
+             ScalarString(mkChar(git_reference_shorthand(ref))));
+
+    switch (git_reference_type(ref)) {
+    case GIT_REF_OID:
+        SET_SLOT(reference, Rf_install("type"), ScalarInteger(GIT_REF_OID));
+        git_oid_fmt(out, git_reference_target(ref));
+        SET_SLOT(reference, Rf_install("hex"), ScalarString(mkChar(out)));
+        break;
+    case GIT_REF_SYMBOLIC:
+        SET_SLOT(reference, Rf_install("type"), ScalarInteger(GIT_REF_SYMBOLIC));
+        SET_SLOT(reference,
+                 Rf_install("target"),
+                 ScalarString(mkChar(git_reference_symbolic_target(ref))));
+        break;
+    default:
+        error("Unexpected reference type");
+    }
+}
+
+/**
+ * Get all references that can be found in a repository.
+ *
+ * @param repo S4 class to an open repository
+ * @return VECXSP with S4 objects of class reference
+ */
+SEXP references(const SEXP repo)
+{
+    int i, err;
+    git_strarray l;
+    SEXP list;
+    SEXP names;
+    SEXP reference;
+    git_reference *ref;
+    const char *refname;
+    char out[41];
+    out[40] = '\0';
+
+    err = git_reference_list(&l, get_repository(repo));
+
+    /* :TODO:FIX: Check error code */
+
+    PROTECT(list = allocVector(VECSXP, l.count));
+    if (R_NilValue == list) {
+        error("Unable to list references");
+    }
+
+    PROTECT(names = allocVector(STRSXP, l.count));
+    if (R_NilValue == names) {
+        UNPROTECT(1);
+        error("Unable to list references");
+    }
+
+    for (i = 0; i < l.count; i++) {
+        PROTECT(reference = NEW_OBJECT(MAKE_CLASS("reference")));
+        if (R_NilValue == reference) {
+            UNPROTECT(2);
+            error("Unable to list references");
+        }
+
+        refname = l.strings[i];
+        git_reference_lookup(&ref, get_repository(repo), refname);
+        init_reference(ref, reference);
+
+        SET_STRING_ELT(names, i, mkChar(refname));
+        SET_VECTOR_ELT(list, i, reference);
+        UNPROTECT(1);
+    }
+
+    git_strarray_free(&l);
+
+    setAttrib(list, R_NamesSymbol, names);
+    UNPROTECT(2);
+
+    return list;
+}
+
 /**
  * Repository.
  *
@@ -133,6 +220,7 @@ static const R_CallMethodDef callMethods[] =
 {
     {"is_bare", (DL_FUNC)&is_bare, 1},
     {"is_empty", (DL_FUNC)&is_empty, 1},
+    {"references", (DL_FUNC)&references, 1},
     {"repository", (DL_FUNC)&repository, 1},
     {NULL, NULL, 0}
 };

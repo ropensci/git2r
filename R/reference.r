@@ -53,3 +53,53 @@ setClass('reference',
                  shorthand='character'),
          prototype=list(hex=NA_character_,
                         target=NA_character_))
+
+##' Get all references that can be found in a repository.
+##'
+##' @name references-methods
+##' @aliases references
+##' @aliases references-methods
+##' @aliases references,repository-method
+##' @docType methods
+##' @param object The repository \code{object}.
+##' @return Character vector with references
+##' @keywords methods
+##' @export
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository('path/to/git2r')
+##'
+##' ## List all references in repository
+##' references(repo)
+##' }
+##'
+
+setGeneric('references',
+           signature = 'object',
+           function(object) standardGeneric('references'))
+
+setMethod('references',
+          signature(object = 'repository'),
+          function (object)
+          {
+              .Call('references', object)
+          }
+)
+
+setMethod('show',
+          signature(object = 'reference'),
+          function (object)
+          {
+              if(identical(object@type, 1L)) {
+                  cat(sprintf("[%s] %s\n",
+                              substr(object@hex, 1 , 6),
+                              object@shorthand))
+              } else if(identical(object@type, 2L)) {
+                  cat(sprintf("%s => %s\n",
+                              object@name,
+                              object@target))
+              } else {
+                  stop("Unexpected reference type")
+              }
+          }
+)
