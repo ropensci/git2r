@@ -29,3 +29,4 @@ Date: 2013-12-28
 Collate:
     'git2r.r'
     'repository.r'
+    'reference.r'

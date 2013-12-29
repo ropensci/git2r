@@ -1,3 +1,4 @@
+exportClasses(reference)
 exportClasses(repository)
 exportMethods(is.bare)
 exportMethods(is.empty)
