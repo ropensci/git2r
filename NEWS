@@ -1,3 +1,24 @@
+git2r 0.0.3
+-----------
+
+NEW FEATURES
+
+* Added method branches to list branches
+
+* Added method head to retrieve head
+
+* Added method is.head to check if a branch is head
+
+* Added method is.local to check if a branch is local
+
+* Added S4 class branch to hold information of a git branch
+
+* Added method to show a reference
+
+* Added method to list all references in a repository
+
+* Added S4 class reference to hold information of a git reference
+
 git2r 0.0.2
 -----------
 

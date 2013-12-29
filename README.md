@@ -30,7 +30,7 @@ Example
     library(git2r)
 
     # Open an existing repository
-    repo <- repository('path/to/git2r')
+    repo <- repository("path/to/git2r")
 
     # Check if repository is bare
     is.bare(repo)
@@ -40,6 +40,18 @@ Example
 
     # List all references in repository
     references(repo)
+
+    # List all branches in repository
+    references(repo)
+
+    # Get HEAD of repository
+    head(repo)
+
+    # Check if HEAD is head
+    is.head(head(repo))
+
+    # Check if HEAD is local
+    is.local(head(repo))
 
 License
 -------
