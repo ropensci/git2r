@@ -1,7 +1,7 @@
 git2r
 =====
 
-R bindings to the libgit2 library
+R bindings to libgit2. The package uses the source code and headers of libgit2 in src/libgit2 to compile and build as a R package. The libgit2 printf calls in cache.c and util.c have been modified to use the R printing routine Rprintf.
 
 Aim
 ---
@@ -37,3 +37,11 @@ Example
 
     # Check if repository is empty
     is.empty(repo)
+
+    # List all references in repository
+    references(repo)
+
+License
+-------
+
+GPL2
