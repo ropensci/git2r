@@ -65,6 +65,7 @@ setClass('reference',
 ##' @return Character vector with references
 ##' @keywords methods
 ##' @export
+##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository
 ##' repo <- repository('path/to/git2r')
