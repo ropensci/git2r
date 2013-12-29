@@ -23,6 +23,114 @@
 #include <git2.h>
 #include <git2/repository.h>
 
+static void init_reference(git_reference *ref, SEXP reference);
+static git_repository* get_repository(const SEXP repo);
+static size_t number_of_branches(git_repository *repo, int flags);
+
+SEXP branches(const SEXP repo, const SEXP flags)
+{
+    SEXP list;
+    SEXP names;
+    SEXP branch;
+    int err;
+    git_branch_iterator *iter;
+    git_branch_t type;
+    git_reference *ref;
+    size_t i = 0, n;
+    const char *refname;
+
+    /* Count number of branches before creating the list */
+    n = number_of_branches(get_repository(repo), INTEGER(flags)[0]);
+
+    PROTECT(list = allocVector(VECSXP, n));
+    if (R_NilValue == list)
+        error("Unable to list branches");
+    PROTECT(names = allocVector(STRSXP, n));
+    if (R_NilValue == names) {
+        UNPROTECT(1);
+        error("Unable to list branches");
+    }
+
+    err = git_branch_iterator_new(&iter,
+                                  get_repository(repo),
+                                  INTEGER(flags)[0]);
+    if (err) {
+        const git_error *e = giterr_last();
+        error("Error %d/%d: %s\n", error, e->klass, e->message);
+    }
+
+    for (;;) {
+        err = git_branch_next(&ref, &type, iter);
+        if (err)
+            break;
+
+        PROTECT(branch = NEW_OBJECT(MAKE_CLASS("branch")));
+        if (R_NilValue == branch) {
+            UNPROTECT(2);
+            error("Unable to list branches");
+        }
+
+        refname = git_reference_name(ref);
+        init_reference(ref, branch);
+
+        switch (type) {
+        case GIT_BRANCH_LOCAL:
+            break;
+        case GIT_BRANCH_REMOTE: {
+            char *buf;
+            size_t buf_size;
+            git_remote *r = NULL;
+
+            buf_size = git_branch_remote_name(NULL, 0, get_repository(repo), refname);
+            buf = malloc(buf_size * sizeof(char));
+            if (NULL == buf)
+                error("Unable to list branches");
+            git_branch_remote_name(buf, buf_size, get_repository(repo), refname);
+            SET_SLOT(branch, Rf_install("remote"), ScalarString(mkChar(buf)));
+
+            err = git_remote_load(&r, get_repository(repo), buf);
+            /* :TODO:FIX: Check error code */
+
+            SET_SLOT(branch, Rf_install("url"), ScalarString(mkChar(git_remote_url(r))));
+
+            free(buf);
+            git_remote_free(r);
+            break;
+        }
+        default:
+            error("Unexpected type of branch");
+        }
+
+        switch (git_branch_is_head(ref)) {
+        case 0:
+            SET_SLOT(branch, Rf_install("head"), ScalarLogical(0));
+            break;
+        case 1:
+            SET_SLOT(branch, Rf_install("head"), ScalarLogical(1));
+            break;
+        default:
+            error("Unexpected head of branch");
+        }
+
+        git_reference_free(ref);
+        SET_VECTOR_ELT(list, i, branch);
+        UNPROTECT(1);
+        i++;
+    }
+
+    if (GIT_ITEROVER != err) {
+        const git_error *e = giterr_last();
+        error("Error %d/%d: %s\n", error, e->klass, e->message);
+    }
+
+    git_branch_iterator_free(iter);
+
+    setAttrib(list, R_NamesSymbol, names);
+    UNPROTECT(2);
+
+    return list;
+}
+
 /**
  * Free repository.
  *
@@ -123,6 +231,45 @@ static void init_reference(git_reference *ref, SEXP reference)
 }
 
 /**
+ * Count number of branches.
+ *
+ * @param repo
+ * @param flags
+ * @return
+ */
+static size_t number_of_branches(git_repository *repo, int flags)
+{
+    size_t n = 0;
+    int err;
+    git_branch_iterator *iter;
+    git_branch_t type;
+    git_reference *ref;
+
+    err = git_branch_iterator_new(&iter, repo, flags);
+    if (err) {
+        const git_error *e = giterr_last();
+        error("Error %d/%d: %s\n", error, e->klass, e->message);
+    }
+
+    for (;;) {
+        err = git_branch_next(&ref, &type, iter);
+        if (err)
+            break;
+        git_reference_free(ref);
+        n++;
+    }
+
+    if (GIT_ITEROVER != err) {
+        const git_error *e = giterr_last();
+        error("Error %d/%d: %s\n", error, e->klass, e->message);
+    }
+
+    git_branch_iterator_free(iter);
+
+    return n;
+}
+
+/**
  * Get all references that can be found in a repository.
  *
  * @param repo S4 class to an open repository
@@ -218,6 +365,7 @@ SEXP repository(const SEXP path)
 
 static const R_CallMethodDef callMethods[] =
 {
+    {"branches", (DL_FUNC)&branches, 2},
     {"is_bare", (DL_FUNC)&is_bare, 1},
     {"is_empty", (DL_FUNC)&is_empty, 1},
     {"references", (DL_FUNC)&references, 1},
