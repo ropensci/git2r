@@ -31,3 +31,4 @@ Collate:
     'repository.r'
     'reference.r'
     'branch.r'
+    'tag.r'

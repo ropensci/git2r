@@ -363,6 +363,76 @@ SEXP repository(const SEXP path)
     return repo;
 }
 
+/**
+ * Get all tags that can be found in a repository.
+ *
+ * @param repo S4 class to an open repository
+ * @return VECXSP with S4 objects of class tag
+ */
+SEXP tags(const SEXP repo)
+{
+    int i, err;
+    git_strarray l;
+    SEXP list;
+    SEXP names;
+    SEXP tag;
+    git_reference *ref;
+    const char *tagname;
+    char* buf;
+    size_t tagname_len;
+
+    err = git_tag_list(&l, get_repository(repo));
+
+    /* :TODO:FIX: Check error code */
+
+    PROTECT(list = allocVector(VECSXP, l.count));
+    if (R_NilValue == list) {
+        error("Unable to list tags");
+    }
+
+    PROTECT(names = allocVector(STRSXP, l.count));
+    if (R_NilValue == names) {
+        UNPROTECT(1);
+        error("Unable to list tags");
+    }
+
+    for (i = 0; i < l.count; i++) {
+        PROTECT(tag = NEW_OBJECT(MAKE_CLASS("tag")));
+        if (R_NilValue == tag) {
+            UNPROTECT(2);
+            error("Unable to list tags");
+        }
+
+        tagname = l.strings[i];
+
+        /* Prefix tagname with "refs/tags/" to lookup reference */
+        tagname_len = strlen(tagname);
+        buf = malloc((tagname_len+11)*sizeof(char));
+        if (!buf) {
+            error("Unable to list tags");
+            UNPROTECT(3);
+            error("Unable to list tags");
+        }
+        *buf = '\0';
+        strncat(buf, "refs/tags/", 10);
+        strncat(buf, tagname, tagname_len);
+        git_reference_lookup(&ref, get_repository(repo), buf);
+        free(buf);
+        init_reference(ref, tag);
+
+        SET_STRING_ELT(names, i, mkChar(tagname));
+        SET_VECTOR_ELT(list, i, tag);
+        UNPROTECT(1);
+    }
+
+    git_strarray_free(&l);
+
+    setAttrib(list, R_NamesSymbol, names);
+    UNPROTECT(2);
+
+    return list;
+}
+
 static const R_CallMethodDef callMethods[] =
 {
     {"branches", (DL_FUNC)&branches, 2},
@@ -370,6 +440,7 @@ static const R_CallMethodDef callMethods[] =
     {"is_empty", (DL_FUNC)&is_empty, 1},
     {"references", (DL_FUNC)&references, 1},
     {"repository", (DL_FUNC)&repository, 1},
+    {"tags", (DL_FUNC)&tags, 1},
     {NULL, NULL, 0}
 };
 
