@@ -13,21 +13,28 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-##' Class \code{"tag"}
+##' Class \code{"git_tag"}
 ##'
-##' S4 class to handle a git tag, contains \code{\link{reference}}.
-##' @name tag-class
-##' @aliases show,tag-method
+##' S4 class to handle a git tag, contains \code{git_reference}.
+##' @section Slots:
+##' \describe{
+##'   \item{sig}{
+##'     An action signature
+##'   }
+##' }
+##' @name git_tag-class
+##' @aliases show,git_tag-method
 ##' @docType class
 ##' @keywords classes
 ##' @section Methods:
 ##' \describe{
-##'   \item{show}{\code{signature(object = "tag")}}
+##'   \item{show}{\code{signature(object = "git_tag")}}
 ##' }
 ##' @keywords methods
 ##' @export
-setClass('tag',
-         contains='reference')
+setClass('git_tag',
+         slots=c(sig='git_signature'),
+         contains='git_reference')
 
 ##' Tags
 ##'
@@ -53,7 +60,7 @@ setMethod('tags',
 )
 
 setMethod('show',
-          signature(object = 'tag'),
+          signature(object = 'git_tag'),
           function (object)
           {
               cat(sprintf('[%s] %s\n',
