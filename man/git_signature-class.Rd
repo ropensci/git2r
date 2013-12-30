@@ -8,7 +8,7 @@
 }
 \section{Slots}{
   \describe{ \item{name}{ The full name of the author.  }
-  \item{email}{ Email of the author.  } \item{time}{ Time
+  \item{email}{ Email of the author.  } \item{when}{ Time
   when the action happened.  } }
 }
 
