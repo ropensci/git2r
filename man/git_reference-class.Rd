@@ -1,8 +1,8 @@
 \docType{class}
-\name{reference-class}
-\alias{reference-class}
-\alias{show,reference-method}
-\title{Class \code{"reference"}}
+\name{git_reference-class}
+\alias{git_reference-class}
+\alias{show,git_reference-method}
+\title{Class \code{"git_reference"}}
 \description{
   S4 class to handle a git reference
 }
@@ -17,7 +17,7 @@
 
 \section{Methods}{
   \describe{ \item{show}{\code{signature(object =
-  "reference")}} }
+  "git_reference")}} }
 }
 \keyword{classes}
 \keyword{methods}

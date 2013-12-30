@@ -13,7 +13,7 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-##' Class \code{"reference"}
+##' Class \code{"git_reference"}
 ##'
 ##' S4 class to handle a git reference
 ##' @section Slots:
@@ -35,17 +35,17 @@
 ##'     The reference's short name
 ##'   }
 ##' }
-##' @name reference-class
-##' @aliases show,reference-method
+##' @name git_reference-class
+##' @aliases show,git_reference-method
 ##' @docType class
 ##' @keywords classes
 ##' @section Methods:
 ##' \describe{
-##'   \item{show}{\code{signature(object = "reference")}}
+##'   \item{show}{\code{signature(object = "git_reference")}}
 ##' }
 ##' @keywords methods
 ##' @export
-setClass('reference',
+setClass('git_reference',
          slots=c(name='character',
                  type='integer',
                  hex='character',
@@ -88,7 +88,7 @@ setMethod('references',
 )
 
 setMethod('show',
-          signature(object = 'reference'),
+          signature(object = 'git_reference'),
           function (object)
           {
               if(identical(object@type, 1L)) {
