@@ -1,3 +1,25 @@
+git2r 0.0.4
+-----------
+
+NEW FEATURES
+
+* Added method remote_url to get the url a remote in a repository
+
+* Added method workdir to get workdir of a repository
+
+* Added method remotes to list remotes of a repository
+
+* Added S4 class git_signature to hold information of an action
+  signature (e.g. for committers, taggers, etc)
+
+CHANGES
+
+* Renamed S4 class tag to git_tag
+
+* Renamed S4 class branch to git_branch
+
+* Renamed S4 class reference to git_reference
+
 git2r 0.0.3
 -----------
 
