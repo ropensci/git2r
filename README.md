@@ -1,7 +1,7 @@
 git2r
 =====
 
-R bindings to libgit2. The package uses the source code and headers of libgit2 in src/libgit2 to compile and build as a R package. The libgit2 printf calls in cache.c and util.c have been modified to use the R printing routine Rprintf.
+R bindings to [libgit2](https://github.com/libgit2/libgit2) library. The package uses the source code and headers of `libgit2` in src/libgit2 to compile and build as a R package. The libgit2 printf calls in cache.c and util.c have been modified to use the R printing routine Rprintf.
 
 Aim
 ---
@@ -42,7 +42,7 @@ Example
     references(repo)
 
     # List all branches in repository
-    references(repo)
+    branches(repo)
 
     # Get HEAD of repository
     head(repo)
@@ -53,7 +53,14 @@ Example
     # Check if HEAD is local
     is.local(head(repo))
 
+    # List all tags in repository
+    tags(repo)
+
+
 License
 -------
 
-GPL2
+The `git2r` package is licensed under the GPLv2. See these files for additional details:
+
+- LICENSE      - `git2r` package license (GPLv2)
+- inst/COPYING - Copyright notices for additional included software
