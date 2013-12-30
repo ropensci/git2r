@@ -24,13 +24,15 @@
 ##' }
 ##' @name repository-class
 ##' @aliases show,repository-method
+##' @aliases summary,repository-method
 ##' @docType class
 ##' @keywords classes
 ##' @section Methods:
 ##' \describe{
-##'   \item{show}{\code{signature(object = "repository")}}
 ##'   \item{is.bare}{\code{signature(object = "repository")}}
 ##'   \item{is.empty}{\code{signature(object = "repository")}}
+##'   \item{show}{\code{signature(object = "repository")}}
+##'   \item{summary}{\code{signature(object = "repository")}}
 ##' }
 ##' @keywords methods
 ##' @export
@@ -123,5 +125,110 @@ setMethod('is.empty',
           function (object)
           {
               .Call('is_empty', object)
+          }
+)
+
+##' Get the configured remotes for a repo
+##'
+##' @name remotes-methods
+##' @aliases remotes
+##' @aliases remotes-methods
+##' @aliases remotes,repository-method
+##' @docType methods
+##' @param object The repository \code{object} to check remotes
+##' @return Character vector with remotes
+##' @keywords methods
+##' @export
+setGeneric('remotes',
+           signature = 'object',
+           function(object) standardGeneric('remotes'))
+
+setMethod('remotes',
+          signature(object = 'repository'),
+          function (object)
+          {
+              .Call('remotes', object)
+          }
+)
+
+##' Get the remote url for remotes in a repo
+##'
+##' @name remote_url-methods
+##' @aliases remote_url
+##' @aliases remote_url-methods
+##' @aliases remote_url,repository-method
+##' @docType methods
+##' @param object The repository \code{object} to check remote_url
+##' @return Character vector with remote_url
+##' @keywords methods
+##' @export
+setGeneric('remote_url',
+           signature = 'object',
+           function(object, remote = remotes(object)) standardGeneric('remote_url'))
+
+setMethod('remote_url',
+          signature(object = 'repository'),
+          function (object, remote)
+          {
+              .Call('remote_url', object, remote)
+          }
+)
+
+setMethod('show',
+          signature(object = 'repository'),
+          function(object)
+          {
+              lapply(remotes(object), function(remote) {
+                  cat(sprintf('Remote:   @ %s (%s)\n', remote, remote_url(repo, remote)))
+              })
+
+              if(is.empty(object)) {
+                  cat(sprintf('Local:    %s\n', workdir(object)))
+                  cat('Head:     nothing commited (yet)\n')
+              } else {
+                  cat(sprintf('Local:    %s %s\n',
+                              head(object)@shorthand,
+                              workdir(object)))
+              }
+          }
+)
+
+setMethod('summary',
+          signature(object = 'repository'),
+          function(object, ...)
+          {
+              show(object)
+              cat('\n')
+
+              ## Branches
+              n <-  sum(!is.na(unique(sapply(branches(object), slot, 'hex'))))
+              cat(sprintf('Number of branches: %i\n', n))
+
+              ## Tags
+              n <-  sum(!is.na(unique(sapply(tags(object), slot, 'hex'))))
+              cat(sprintf('Number of tags:     %i\n', n))
+          }
+)
+
+##' Workdir of repository
+##'
+##' @name workdir-methods
+##' @aliases workdir
+##' @aliases workdir-methods
+##' @aliases workdir,repository-method
+##' @docType methods
+##' @param object The repository \code{object} to check workdir
+##' @return Character vector with workdir
+##' @keywords methods
+##' @export
+setGeneric('workdir',
+           signature = 'object',
+           function(object) standardGeneric('workdir'))
+
+setMethod('workdir',
+          signature(object = 'repository'),
+          function (object)
+          {
+              .Call('workdir', object)
           }
 )

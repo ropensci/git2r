@@ -64,7 +64,7 @@ SEXP branches(const SEXP repo, const SEXP flags)
         if (err)
             break;
 
-        PROTECT(branch = NEW_OBJECT(MAKE_CLASS("branch")));
+        PROTECT(branch = NEW_OBJECT(MAKE_CLASS("git_branch")));
         if (R_NilValue == branch) {
             UNPROTECT(2);
             error("Unable to list branches");
@@ -273,7 +273,7 @@ static size_t number_of_branches(git_repository *repo, int flags)
  * Get all references that can be found in a repository.
  *
  * @param repo S4 class to an open repository
- * @return VECXSP with S4 objects of class reference
+ * @return VECXSP with S4 objects of class git_reference
  */
 SEXP references(const SEXP repo)
 {
@@ -303,7 +303,7 @@ SEXP references(const SEXP repo)
     }
 
     for (i = 0; i < l.count; i++) {
-        PROTECT(reference = NEW_OBJECT(MAKE_CLASS("reference")));
+        PROTECT(reference = NEW_OBJECT(MAKE_CLASS("git_reference")));
         if (R_NilValue == reference) {
             UNPROTECT(2);
             error("Unable to list references");
@@ -324,6 +324,61 @@ SEXP references(const SEXP repo)
     UNPROTECT(2);
 
     return list;
+}
+
+/**
+ * Get the configured remotes for a repo
+ *
+ * @param repo
+ * @return
+ */
+SEXP remotes(const SEXP repo)
+{
+    int i, err;
+    git_strarray l;
+    SEXP r;
+
+    err = git_remote_list(&l, get_repository(repo));
+
+    /* :TODO:FIX: Check error code */
+
+    PROTECT(r = allocVector(STRSXP, l.count));
+    for (i = 0; i < l.count; i++)
+        SET_STRING_ELT(r, i, mkChar(l.strings[i]));
+    UNPROTECT(1);
+
+    git_strarray_free(&l);
+
+    return r;
+}
+
+/**
+ * Get the remote's url
+ *
+ * @param repo
+ * @return
+ */
+SEXP remote_url(const SEXP repo, const SEXP remote)
+{
+    SEXP url = R_NilValue;
+    size_t len = LENGTH(remote);
+    size_t i = 0;
+    int err;
+    git_remote *r = NULL;
+
+    PROTECT(url = allocVector(STRSXP, len));
+
+    for (; i < len; i++) {
+        err = git_remote_load(&r, get_repository(repo), CHAR(STRING_ELT(remote, i)));
+        /* :TODO:FIX: Check error code */
+
+        SET_STRING_ELT(url, i, mkChar(git_remote_url(r)));
+        git_remote_free(r);
+    }
+
+    UNPROTECT(1);
+
+    return url;
 }
 
 /**
@@ -364,6 +419,17 @@ SEXP repository(const SEXP path)
 }
 
 /**
+ * Get state of repository.
+ *
+ * @param repo
+ * @return
+ */
+SEXP state(const SEXP repo)
+{
+    return ScalarInteger(git_repository_state(get_repository(repo)));
+}
+
+/**
  * Get all tags that can be found in a repository.
  *
  * @param repo S4 class to an open repository
@@ -380,6 +446,9 @@ SEXP tags(const SEXP repo)
     const char *tagname;
     char* buf;
     size_t tagname_len;
+    git_tag *t;
+    const git_oid *oid;
+    const git_signature *signature;
 
     err = git_tag_list(&l, get_repository(repo));
 
@@ -397,7 +466,7 @@ SEXP tags(const SEXP repo)
     }
 
     for (i = 0; i < l.count; i++) {
-        PROTECT(tag = NEW_OBJECT(MAKE_CLASS("tag")));
+        PROTECT(tag = NEW_OBJECT(MAKE_CLASS("git_tag")));
         if (R_NilValue == tag) {
             UNPROTECT(2);
             error("Unable to list tags");
@@ -420,6 +489,16 @@ SEXP tags(const SEXP repo)
         free(buf);
         init_reference(ref, tag);
 
+        /* Fill in signature for tag */
+        /* oid = git_reference_target(ref); */
+        /* if (oid) { */
+        /*     err = git_tag_lookup(&t, get_repository(repo), oid); */
+        /*     signature = git_tag_tagger(t); */
+        /*     SET_SLOT(GET_SLOT(tag, Rf_install("sig")), */
+        /*              Rf_install("name"), */
+        /*              ScalarString(mkChar(signature->name))); */
+        /* } */
+
         SET_STRING_ELT(names, i, mkChar(tagname));
         SET_VECTOR_ELT(list, i, tag);
         UNPROTECT(1);
@@ -433,6 +512,17 @@ SEXP tags(const SEXP repo)
     return list;
 }
 
+/**
+ * Get workdir of repository.
+ *
+ * @param repo
+ * @return
+ */
+SEXP workdir(const SEXP repo)
+{
+    return ScalarString(mkChar(git_repository_workdir(get_repository(repo))));
+}
+
 static const R_CallMethodDef callMethods[] =
 {
     {"branches", (DL_FUNC)&branches, 2},
@@ -440,7 +530,11 @@ static const R_CallMethodDef callMethods[] =
     {"is_empty", (DL_FUNC)&is_empty, 1},
     {"references", (DL_FUNC)&references, 1},
     {"repository", (DL_FUNC)&repository, 1},
+    {"remotes", (DL_FUNC)&remotes, 1},
+    {"remote_url", (DL_FUNC)&remote_url, 2},
+    {"state", (DL_FUNC)&state, 1},
     {"tags", (DL_FUNC)&tags, 1},
+    {"workdir", (DL_FUNC)&workdir, 1},
     {NULL, NULL, 0}
 };
 
