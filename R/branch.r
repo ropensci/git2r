@@ -13,9 +13,9 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-##' Class \code{"branch"}
+##' Class \code{"git_branch"}
 ##'
-##' S4 class to handle a git branch, contains \code{\link{reference}}.
+##' S4 class to handle a git branch, contains \code{git_reference}.
 ##' @section Slots:
 ##' \describe{
 ##'   \item{remote}{
@@ -28,21 +28,23 @@
 ##'     :TODO:DOCUMENTATION:
 ##'   }
 ##' }
-##' @name branch-class
-##' @aliases show,branch-method
+##' @name git_branch-class
+##' @aliases show,git_branch-method
 ##' @docType class
 ##' @keywords classes
 ##' @section Methods:
 ##' \describe{
-##'   \item{show}{\code{signature(object = "branch")}}
+##'   \item{is.head}{\code{signature(object = "git_branch")}}
+##'   \item{is.local}{\code{signature(object = "git_branch")}}
+##'   \item{show}{\code{signature(object = "git_branch")}}
 ##' }
 ##' @keywords methods
 ##' @export
-setClass('branch',
+setClass('git_branch',
          slots=c(remote='character',
                  url='character',
                  head='logical'),
-         contains='reference',
+         contains='git_reference',
          prototype=list(remote=NA_character_,
                         url=NA_character_))
 
@@ -80,7 +82,7 @@ setMethod('branches',
 ##' @name is.head-methods
 ##' @aliases is.head
 ##' @aliases is.head-methods
-##' @aliases is.head,repository-method
+##' @aliases is.head,git_branch-method
 ##' @docType methods
 ##' @param object The branch \code{object} to check if it's head
 ##' @return TRUE if branch is head, else FALSE
@@ -91,7 +93,7 @@ setGeneric('is.head',
            function(object) standardGeneric('is.head'))
 
 setMethod('is.head',
-          signature(object = 'branch'),
+          signature(object = 'git_branch'),
           function (object)
           {
               identical(object@head, TRUE)
@@ -103,7 +105,7 @@ setMethod('is.head',
 ##' @name is.local-methods
 ##' @aliases is.local
 ##' @aliases is.local-methods
-##' @aliases is.local,repository-method
+##' @aliases is.local,git_branch-method
 ##' @docType methods
 ##' @param object The branch \code{object} to check if it's local
 ##' @return TRUE if branch is local, else FALSE
@@ -114,7 +116,7 @@ setGeneric('is.local',
            function(object) standardGeneric('is.local'))
 
 setMethod('is.local',
-          signature(object = 'branch'),
+          signature(object = 'git_branch'),
           function (object)
           {
               identical(is.na(object@remote), TRUE)
@@ -148,7 +150,7 @@ setMethod('head',
 )
 
 setMethod('show',
-          signature(object = 'branch'),
+          signature(object = 'git_branch'),
           function (object)
           {
               if(identical(object@type, 1L)) {
