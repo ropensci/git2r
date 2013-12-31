@@ -1,8 +1,8 @@
 \docType{methods}
 \name{is.bare-methods}
 \alias{is.bare}
+\alias{is.bare,git_repository-method}
 \alias{is.bare-methods}
-\alias{is.bare,repository-method}
 \title{Check if repository is bare}
 \arguments{
   \item{object}{The \code{object} to check if it's a bare

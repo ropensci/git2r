@@ -1,8 +1,8 @@
 \docType{methods}
 \name{is.empty-methods}
 \alias{is.empty}
+\alias{is.empty,git_repository-method}
 \alias{is.empty-methods}
-\alias{is.empty,repository-method}
 \title{Check if repository is empty}
 \arguments{
   \item{object}{The \code{object} to check if it's a empty

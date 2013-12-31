@@ -1,8 +1,8 @@
 \docType{methods}
 \name{tags-methods}
 \alias{tags}
+\alias{tags,git_repository-method}
 \alias{tags-methods}
-\alias{tags,repository-method}
 \title{Tags}
 \arguments{
   \item{object}{:TODO:DOCUMENTATION:}

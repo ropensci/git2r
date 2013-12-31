@@ -1,8 +1,8 @@
 \docType{methods}
 \name{workdir-methods}
 \alias{workdir}
+\alias{workdir,git_repository-method}
 \alias{workdir-methods}
-\alias{workdir,repository-method}
 \title{Workdir of repository}
 \arguments{
   \item{object}{The repository \code{object} to check

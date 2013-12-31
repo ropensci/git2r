@@ -1,8 +1,8 @@
 \docType{methods}
 \name{remotes-methods}
 \alias{remotes}
+\alias{remotes,git_repository-method}
 \alias{remotes-methods}
-\alias{remotes,repository-method}
 \title{Get the configured remotes for a repo}
 \arguments{
   \item{object}{The repository \code{object} to check

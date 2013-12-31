@@ -1,8 +1,8 @@
 \docType{methods}
 \name{branches-methods}
 \alias{branches}
+\alias{branches,git_repository-method}
 \alias{branches-methods}
-\alias{branches,repository-method}
 \title{Branches}
 \arguments{
   \item{object}{:TODO:DOCUMENTATION:}

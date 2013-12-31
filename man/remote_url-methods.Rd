@@ -1,8 +1,8 @@
 \docType{methods}
 \name{remote_url-methods}
 \alias{remote_url}
+\alias{remote_url,git_repository-method}
 \alias{remote_url-methods}
-\alias{remote_url,repository-method}
 \title{Get the remote url for remotes in a repo}
 \arguments{
   \item{object}{The repository \code{object} to check
