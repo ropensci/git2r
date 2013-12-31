@@ -59,7 +59,7 @@ setClass('git_reference',
 ##' @name references-methods
 ##' @aliases references
 ##' @aliases references-methods
-##' @aliases references,repository-method
+##' @aliases references,git_repository-method
 ##' @docType methods
 ##' @param object The repository \code{object}.
 ##' @return Character vector with references
@@ -80,7 +80,7 @@ setGeneric('references',
            function(object) standardGeneric('references'))
 
 setMethod('references',
-          signature(object = 'repository'),
+          signature(object = 'git_repository'),
           function (object)
           {
               .Call('references', object)

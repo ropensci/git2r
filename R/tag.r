@@ -41,7 +41,7 @@ setClass('git_tag',
 ##' @name tags-methods
 ##' @aliases tags
 ##' @aliases tags-methods
-##' @aliases tags,repository-method
+##' @aliases tags,git_repository-method
 ##' @docType methods
 ##' @param object :TODO:DOCUMENTATION:
 ##' @return list of tags in repository
@@ -52,7 +52,7 @@ setGeneric('tags',
            function(object) standardGeneric('tags'))
 
 setMethod('tags',
-          signature(object = 'repository'),
+          signature(object = 'git_repository'),
           function (object)
           {
               .Call('tags', object)

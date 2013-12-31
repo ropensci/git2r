@@ -53,7 +53,7 @@ setClass('git_branch',
 ##' @name branches-methods
 ##' @aliases branches
 ##' @aliases branches-methods
-##' @aliases branches,repository-method
+##' @aliases branches,git_repository-method
 ##' @docType methods
 ##' @param object :TODO:DOCUMENTATION:
 ##' @param flags :TODO:DOCUMENTATION:
@@ -65,7 +65,7 @@ setGeneric('branches',
            function(object, flags=c('ALL', 'LOCAL', 'REMOTE')) standardGeneric('branches'))
 
 setMethod('branches',
-          signature(object = 'repository'),
+          signature(object = 'git_repository'),
           function (object, flags)
           {
               flags <- switch(match.arg(flags),
@@ -128,14 +128,14 @@ setMethod('is.local',
 ##' @name head-methods
 ##' @aliases head
 ##' @aliases head-methods
-##' @aliases head,repository-method
+##' @aliases head,git_repository-method
 ##' @docType methods
 ##' @param x The repository \code{x} to check head
 ##' @return Character vector with head
 ##' @keywords methods
 ##' @export
 setMethod('head',
-          signature(x = 'repository'),
+          signature(x = 'git_repository'),
           function (x)
           {
               b <- branches(x)

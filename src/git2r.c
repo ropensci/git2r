@@ -138,6 +138,8 @@ SEXP branches(const SEXP repo, const SEXP flags)
  */
 static void repo_finalizer(SEXP repo)
 {
+    if (EXTPTRSXP != TYPEOF(repo))
+        error("'repo' not an EXTPTRSXP");
     if (NULL == R_ExternalPtrAddr(repo))
         return;
     git_repository_free((git_repository *)R_ExternalPtrAddr(repo));
@@ -160,7 +162,7 @@ static git_repository* get_repository(const SEXP repo)
         error("Invalid repository");
 
     class_name = getAttrib(repo, R_ClassSymbol);
-    if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "repository"))
+    if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_repository"))
         error("Invalid repository");
 
     slot = GET_SLOT(repo, Rf_install("repo"));
@@ -399,9 +401,9 @@ SEXP repository(const SEXP path)
     if (!isString(path))
         error("'path' must be a string.");
 
-    PROTECT(repo = NEW_OBJECT(MAKE_CLASS("repository")));
+    PROTECT(repo = NEW_OBJECT(MAKE_CLASS("git_repository")));
     if (R_NilValue == repo)
-        error("Unable to make S4 class repository");
+        error("Unable to make S4 class git_repository");
 
     err = git_repository_open(&r, CHAR(STRING_ELT(path, 0)));
     if (err) {

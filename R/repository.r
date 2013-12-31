@@ -13,7 +13,7 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-##' Class \code{"repository"}
+##' Class \code{"git_repository"}
 ##'
 ##' S4 class to handle a git repository
 ##' @section Slots:
@@ -22,27 +22,27 @@
 ##'     External pointer to a git repository
 ##'   }
 ##' }
-##' @name repository-class
-##' @aliases show,repository-method
-##' @aliases summary,repository-method
+##' @name git_repository-class
+##' @aliases show,git_repository-method
+##' @aliases summary,git_repository-method
 ##' @docType class
 ##' @keywords classes
 ##' @section Methods:
 ##' \describe{
-##'   \item{is.bare}{\code{signature(object = "repository")}}
-##'   \item{is.empty}{\code{signature(object = "repository")}}
-##'   \item{show}{\code{signature(object = "repository")}}
-##'   \item{summary}{\code{signature(object = "repository")}}
+##'   \item{is.bare}{\code{signature(object = "git_repository")}}
+##'   \item{is.empty}{\code{signature(object = "git_repository")}}
+##'   \item{show}{\code{signature(object = "git_repository")}}
+##'   \item{summary}{\code{signature(object = "git_repository")}}
 ##' }
 ##' @keywords methods
 ##' @export
-setClass('repository',
+setClass('git_repository',
          slots=c(repo='externalptr'))
 
 ##' Open a repository
 ##'
 ##' @param path A path to an existing local git repository
-##' @return A S4 \code{repository} object
+##' @return A S4 \code{git_repository} object
 ##' @keywords methods
 ##' @export
 ##' @examples
@@ -69,7 +69,7 @@ repository <- function(path) {
 ##' @name is.bare-methods
 ##' @aliases is.bare
 ##' @aliases is.bare-methods
-##' @aliases is.bare,repository-method
+##' @aliases is.bare,git_repository-method
 ##' @docType methods
 ##' @param object The \code{object} to check if it's a bare repository
 ##' @return TRUE if bare repository, else FALSE
@@ -89,7 +89,7 @@ setGeneric('is.bare',
            function(object) standardGeneric('is.bare'))
 
 setMethod('is.bare',
-          signature(object = 'repository'),
+          signature(object = 'git_repository'),
           function (object)
           {
               .Call('is_bare', object)
@@ -101,7 +101,7 @@ setMethod('is.bare',
 ##' @name is.empty-methods
 ##' @aliases is.empty
 ##' @aliases is.empty-methods
-##' @aliases is.empty,repository-method
+##' @aliases is.empty,git_repository-method
 ##' @docType methods
 ##' @param object The \code{object} to check if it's a empty repository
 ##' @return TRUE or FALSE
@@ -121,7 +121,7 @@ setGeneric('is.empty',
            function(object) standardGeneric('is.empty'))
 
 setMethod('is.empty',
-          signature(object = 'repository'),
+          signature(object = 'git_repository'),
           function (object)
           {
               .Call('is_empty', object)
@@ -133,7 +133,7 @@ setMethod('is.empty',
 ##' @name remotes-methods
 ##' @aliases remotes
 ##' @aliases remotes-methods
-##' @aliases remotes,repository-method
+##' @aliases remotes,git_repository-method
 ##' @docType methods
 ##' @param object The repository \code{object} to check remotes
 ##' @return Character vector with remotes
@@ -144,7 +144,7 @@ setGeneric('remotes',
            function(object) standardGeneric('remotes'))
 
 setMethod('remotes',
-          signature(object = 'repository'),
+          signature(object = 'git_repository'),
           function (object)
           {
               .Call('remotes', object)
@@ -156,7 +156,7 @@ setMethod('remotes',
 ##' @name remote_url-methods
 ##' @aliases remote_url
 ##' @aliases remote_url-methods
-##' @aliases remote_url,repository-method
+##' @aliases remote_url,git_repository-method
 ##' @docType methods
 ##' @param object The repository \code{object} to check remote_url
 ##' @return Character vector with remote_url
@@ -167,15 +167,23 @@ setGeneric('remote_url',
            function(object, remote = remotes(object)) standardGeneric('remote_url'))
 
 setMethod('remote_url',
-          signature(object = 'repository'),
+          signature(object = 'git_repository'),
           function (object, remote)
           {
               .Call('remote_url', object, remote)
           }
 )
 
+##' Brief summary of repository
+##'
+##' @aliases show,git_repository-metho
+##' @docType methods
+##' @param object The repository \code{object}
+##' @return :TODO:DOCUMENTATION:
+##' @keywords methods
+##' @export
 setMethod('show',
-          signature(object = 'repository'),
+          signature(object = 'git_repository'),
           function(object)
           {
               lapply(remotes(object), function(remote) {
@@ -193,8 +201,16 @@ setMethod('show',
           }
 )
 
+##' Summary of repository
+##'
+##' @aliases summary,git_repository-metho
+##' @docType methods
+##' @param object The repository \code{object}
+##' @return :TODO:DOCUMENTATION:
+##' @keywords methods
+##' @export
 setMethod('summary',
-          signature(object = 'repository'),
+          signature(object = 'git_repository'),
           function(object, ...)
           {
               show(object)
@@ -215,7 +231,7 @@ setMethod('summary',
 ##' @name workdir-methods
 ##' @aliases workdir
 ##' @aliases workdir-methods
-##' @aliases workdir,repository-method
+##' @aliases workdir,git_repository-method
 ##' @docType methods
 ##' @param object The repository \code{object} to check workdir
 ##' @return Character vector with workdir
@@ -226,7 +242,7 @@ setGeneric('workdir',
            function(object) standardGeneric('workdir'))
 
 setMethod('workdir',
-          signature(object = 'repository'),
+          signature(object = 'git_repository'),
           function (object)
           {
               .Call('workdir', object)
