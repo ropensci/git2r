@@ -32,6 +32,15 @@ Example
     # Open an existing repository
     repo <- repository("path/to/git2r")
 
+    # Brief summary of repository
+    repo
+
+    # Summary of repository
+    summary(repo)
+
+    # Workdir of repository
+    workdir(repo)
+
     # Check if repository is bare
     is.bare(repo)
 
