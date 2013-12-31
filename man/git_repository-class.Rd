@@ -9,7 +9,8 @@
 }
 \section{Slots}{
   \describe{ \item{repo}{ External pointer to a git
-  repository } }
+  repository } \item{walker}{ External pointer to a git
+  revision walker } }
 }
 
 \section{Methods}{

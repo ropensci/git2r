@@ -21,6 +21,9 @@
 ##'   \item{repo}{
 ##'     External pointer to a git repository
 ##'   }
+##'   \item{walker}{
+##'     External pointer to a git revision walker
+##'   }
 ##' }
 ##' @name git_repository-class
 ##' @aliases show,git_repository-method
@@ -37,7 +40,8 @@
 ##' @keywords methods
 ##' @export
 setClass('git_repository',
-         slots=c(repo='externalptr'))
+         slots=c(repo='externalptr',
+                 walker='externalptr'))
 
 ##' Open a repository
 ##'

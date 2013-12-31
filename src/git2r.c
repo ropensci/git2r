@@ -147,6 +147,21 @@ static void repo_finalizer(SEXP repo)
 }
 
 /**
+ * Free walker.
+ *
+ * @param walker
+ */
+static void walker_finalizer(SEXP walker)
+{
+    if (EXTPTRSXP != TYPEOF(walker))
+        error("'walker' not an EXTPTRSXP");
+    if (NULL == R_ExternalPtrAddr(walker))
+        return;
+    git_revwalk_free((git_revwalk *)R_ExternalPtrAddr(walker));
+    R_ClearExternalPtr(walker);
+}
+
+/**
  * Get repo slot from S4 class repository
  *
  * @param repo
@@ -391,9 +406,11 @@ SEXP remote_url(const SEXP repo, const SEXP remote)
  */
 SEXP repository(const SEXP path)
 {
-    SEXP repo = R_NilValue;
-    SEXP xp = R_NilValue;
-    git_repository *r = NULL;
+    SEXP sexp_repo = R_NilValue;
+    SEXP xp_repo = R_NilValue;
+    SEXP xp_walker = R_NilValue;
+    git_repository *repo = NULL;
+    git_revwalk *walker;
     int err;
 
     if (R_NilValue == path)
@@ -401,23 +418,35 @@ SEXP repository(const SEXP path)
     if (!isString(path))
         error("'path' must be a string.");
 
-    PROTECT(repo = NEW_OBJECT(MAKE_CLASS("git_repository")));
-    if (R_NilValue == repo)
+    PROTECT(sexp_repo = NEW_OBJECT(MAKE_CLASS("git_repository")));
+    if (R_NilValue == sexp_repo)
         error("Unable to make S4 class git_repository");
 
-    err = git_repository_open(&r, CHAR(STRING_ELT(path, 0)));
+    /* Initialize external pointer to repository */
+    err = git_repository_open(&repo, CHAR(STRING_ELT(path, 0)));
     if (err) {
+        UNPROTECT(1);
         const git_error *e = giterr_last();
         error("Error %d/%d: %s\n", error, e->klass, e->message);
     }
+    PROTECT(xp_repo = R_MakeExternalPtr(repo, R_NilValue, R_NilValue));
+    R_RegisterCFinalizerEx(xp_repo, repo_finalizer, TRUE);
+    SET_SLOT(sexp_repo, Rf_install("repo"), xp_repo);
 
-    PROTECT(xp = R_MakeExternalPtr(r, R_NilValue, R_NilValue));
-    R_RegisterCFinalizerEx(xp, repo_finalizer, TRUE);
-    SET_SLOT(repo, Rf_install("repo"), xp);
+    /* Initialize external pointer to revision walker */
+    err = git_revwalk_new(&walker, repo);
+    if (err) {
+        UNPROTECT(2);
+        const git_error *e = giterr_last();
+        error("Error %d/%d: %s\n", error, e->klass, e->message);
+    }
+    PROTECT(xp_walker = R_MakeExternalPtr(walker, R_NilValue, R_NilValue));
+    R_RegisterCFinalizerEx(xp_walker, walker_finalizer, TRUE);
+    SET_SLOT(sexp_repo, Rf_install("walker"), xp_walker);
 
-    UNPROTECT(2);
+    UNPROTECT(3);
 
-    return repo;
+    return sexp_repo;
 }
 
 /**
