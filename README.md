@@ -123,7 +123,7 @@ ggplot(df, aes(x=month, y=n)) +
     geom_bar(stat='identity') +
     scale_x_datetime('Month') +
     scale_y_continuous('Count') +
-    labs(title='Commits')
+    labs(title='Contributors')
 ```
 
 License
