@@ -53,6 +53,9 @@ Example
     # List all branches in repository
     branches(repo)
 
+    # List all commits in repository
+    commits(repo)
+
     # Get HEAD of repository
     head(repo)
 
@@ -67,7 +70,7 @@ Example
 
 ### Visualize the number of commits per month in a repository
 
-```R
+```
 library(git2r)
 library(ggplot2)
 library(plyr)
@@ -96,7 +99,7 @@ ggplot(df, aes(x=month, y=n)) +
 
 ### Visualize the number of contributors per month in a repository
 
-```R
+```
 library(git2r)
 library(ggplot2)
 library(plyr)
