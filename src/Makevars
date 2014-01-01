@@ -1,4 +1,4 @@
-PKG_CFLAGS = -I. -I./libgit2 -I./libgit2/include -I./libgit2/deps/http-parser
+PKG_CFLAGS = -I. -I./libgit2 -I./libgit2/include -I./http-parser
 OBJECTS.libgit2 = libgit2/attr.o libgit2/attr_file.o libgit2/blame.o \
                   libgit2/blame_git.o libgit2/blob.o libgit2/branch.o \
                   libgit2/buffer.o libgit2/buf_text.o libgit2/cache.o \
@@ -30,7 +30,7 @@ OBJECTS.libgit2 = libgit2/attr.o libgit2/attr_file.o libgit2/blame.o \
                   libgit2/transport.o libgit2/tree.o libgit2/tree-cache.o \
                   libgit2/tsort.o libgit2/util.o libgit2/vector.o
 OBJECTS.libgit2.hash = libgit2/hash/hash_generic.o
-OBJECTS.libgit2.http_parser = libgit2/deps/http-parser/http_parser.o
+OBJECTS.libgit2.http_parser = http-parser/http_parser.o
 OBJECTS.libgit2.transports = libgit2/transports/cred.o libgit2/transports/cred_helpers.o \
                              libgit2/transports/git.o  libgit2/transports/http.o \
                              libgit2/transports/local.o libgit2/transports/smart.o\
