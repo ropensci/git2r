@@ -7,7 +7,8 @@
   S4 class to handle a git commit.
 }
 \section{Slots}{
-  \describe{ \item{author}{ An author signature } }
+  \describe{ \item{author}{ An author signature }
+  \item{message}{ The message of a commit } }
 }
 
 \section{Methods}{
