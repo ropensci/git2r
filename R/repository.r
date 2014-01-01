@@ -224,7 +224,7 @@ setMethod('show',
           function(object)
           {
               lapply(remotes(object), function(remote) {
-                  cat(sprintf('Remote:   @ %s (%s)\n', remote, remote_url(repo, remote)))
+                  cat(sprintf('Remote:   @ %s (%s)\n', remote, remote_url(object, remote)))
               })
 
               if(is.empty(object)) {
@@ -262,11 +262,11 @@ setMethod('summary',
               cat(sprintf('Tags:          %i\n', n))
 
               ## Commits
-              n <- length(revisions(object))
+              n <- length(commits(object))
               cat(sprintf('Commits:       %i\n', n))
 
               ## Contributors
-              n <- length(unique(sapply(lapply(commits(repo), slot, 'author'), slot, 'name')))
+              n <- length(unique(sapply(lapply(commits(object), slot, 'author'), slot, 'name')))
               cat(sprintf('Contributors:  %i\n', n))
           }
 )
