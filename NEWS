@@ -1,3 +1,20 @@
+git2r 0.0.5
+-----------
+
+CHANGES
+
+* Renamed S4 class repository to git_repository
+
+NEW FEATURES
+
+* Added method commits to list all commits in repository
+
+* Added S4 class git_commit to hold infformation of a commit
+
+* Added S4 class git_time to hold time of an action
+
+* Added slot walker to S4 class git_repository
+
 git2r 0.0.4
 -----------
 
