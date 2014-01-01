@@ -254,12 +254,20 @@ setMethod('summary',
               cat('\n')
 
               ## Branches
-              n <-  sum(!is.na(unique(sapply(branches(object), slot, 'hex'))))
-              cat(sprintf('Number of branches: %i\n', n))
+              n <- sum(!is.na(unique(sapply(branches(object), slot, 'hex'))))
+              cat(sprintf('Branches:      %i\n', n))
 
               ## Tags
-              n <-  sum(!is.na(unique(sapply(tags(object), slot, 'hex'))))
-              cat(sprintf('Number of tags:     %i\n', n))
+              n <- sum(!is.na(unique(sapply(tags(object), slot, 'hex'))))
+              cat(sprintf('Tags:          %i\n', n))
+
+              ## Commits
+              n <- length(revisions(object))
+              cat(sprintf('Commits:       %i\n', n))
+
+              ## Contributors
+              n <- length(unique(sapply(lapply(commits(repo), slot, 'author'), slot, 'name')))
+              cat(sprintf('Contributors:  %i\n', n))
           }
 )
 

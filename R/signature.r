@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013  Stefan Widgren
+## Copyright (C) 2013-2014  Stefan Widgren
 ##
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -41,4 +41,4 @@
 setClass('git_signature',
          slots=c(name='character',
                  email='character',
-                 when='character'))
+                 when='git_time'))

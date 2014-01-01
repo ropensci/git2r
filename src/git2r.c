@@ -162,7 +162,7 @@ static void walker_finalizer(SEXP walker)
 }
 
 /**
- * Get repo slot from S4 class repository
+ * Get repo slot from S4 class git_repository
  *
  * @param repo
  * @return
@@ -189,6 +189,36 @@ static git_repository* get_repository(const SEXP repo)
         error("Invalid repository");
 
     return r;
+}
+
+/**
+ * Get walker slot from S4 class git_repository
+ *
+ * @param repo
+ * @return
+ */
+static git_revwalk* get_walker(const SEXP repo)
+{
+    SEXP class_name;
+    SEXP slot;
+    git_revwalk *walker;
+
+    if (R_NilValue == repo || S4SXP != TYPEOF(repo))
+        error("Invalid repository");
+
+    class_name = getAttrib(repo, R_ClassSymbol);
+    if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_repository"))
+        error("Invalid repository");
+
+    slot = GET_SLOT(repo, Rf_install("walker"));
+    if (R_NilValue == slot)
+        error("Invalid repository");
+
+    walker = (git_revwalk *)R_ExternalPtrAddr(slot);
+    if (NULL == walker)
+        error("Invalid repository");
+
+    return walker;
 }
 
 /**
@@ -247,6 +277,29 @@ static void init_reference(git_reference *ref, SEXP reference)
     }
 }
 
+static void init_signature(git_signature *sig, SEXP signature)
+{
+    SEXP when;
+
+    SET_SLOT(signature,
+             Rf_install("name"),
+             ScalarString(mkChar(sig->name)));
+
+    SET_SLOT(signature,
+             Rf_install("email"),
+             ScalarString(mkChar(sig->email)));
+
+    when = GET_SLOT(signature, Rf_install("when"));
+
+    SET_SLOT(when,
+             Rf_install("time"),
+             ScalarReal((double)sig->when.time));
+
+    SET_SLOT(when,
+             Rf_install("offset"),
+             ScalarReal((double)sig->when.offset));
+}
+
 /**
  * Count number of branches.
  *
@@ -282,6 +335,24 @@ static size_t number_of_branches(git_repository *repo, int flags)
     }
 
     git_branch_iterator_free(iter);
+
+    return n;
+}
+
+/**
+ * Count number of revisions.
+ *
+ * @param walker
+ * @return
+ */
+static size_t number_of_revisions(git_revwalk *walker)
+{
+    size_t n = 0;
+    git_oid oid;
+
+    while (!git_revwalk_next(&oid, walker)) {
+        n++;
+    }
 
     return n;
 }
@@ -449,6 +520,69 @@ SEXP repository(const SEXP path)
     return sexp_repo;
 }
 
+SEXP revisions(const SEXP repository)
+{
+    int i=0;
+    int err;
+    SEXP sexp_author;
+    SEXP sexp_commit;
+    git_signature *sig;
+    SEXP list;
+    size_t n;
+    git_commit *commit;
+    git_revwalk *walker;
+    git_oid oid;
+    git_repository *repo;
+    const char *message;
+    char oid_hex[GIT_OID_HEXSZ + 1];
+
+    repo = get_repository(repository);
+    walker = get_walker(repository);
+    git_revwalk_push_head(walker);
+
+    /* Count number of revisions before creating the list */
+    n = number_of_revisions(walker);
+
+    /* Create list to store result */
+    PROTECT(list = allocVector(VECSXP, n));
+    if (R_NilValue == list)
+        error("Unable to list revisions");
+
+    git_revwalk_reset(walker);
+    git_revwalk_push_head(walker);
+    while (!git_revwalk_next(&oid, walker)) {
+        git_oid_tostr(oid_hex, sizeof(oid_hex), &oid);
+
+        /* :TODO:FIX: Check err */
+        err = git_commit_lookup(&commit, repo, &oid);
+
+        PROTECT(sexp_commit = NEW_OBJECT(MAKE_CLASS("git_commit")));
+        if (R_NilValue == sexp_commit)
+            error("Unable to make S4 class git_commit");
+
+        sig = git_commit_author(commit);
+        if (sig) {
+            PROTECT(sexp_author = NEW_OBJECT(MAKE_CLASS("git_signature")));
+            if (R_NilValue == sexp_author)
+                error("Unable to make S4 class git_signature");
+            init_signature(sig, sexp_author);
+            SET_SLOT(sexp_commit, Rf_install("author"), sexp_author);
+            UNPROTECT(1);
+        }
+
+        message  = git_commit_message(commit);
+        SET_VECTOR_ELT(list, i, sexp_commit);
+        UNPROTECT(1);
+        i++;
+
+        git_commit_free(commit);
+    }
+
+    UNPROTECT(1);
+
+    return list;
+}
+
 /**
  * Get state of repository.
  *
@@ -563,6 +697,7 @@ static const R_CallMethodDef callMethods[] =
     {"repository", (DL_FUNC)&repository, 1},
     {"remotes", (DL_FUNC)&remotes, 1},
     {"remote_url", (DL_FUNC)&remote_url, 2},
+    {"revisions", (DL_FUNC)&revisions, 1},
     {"state", (DL_FUNC)&state, 1},
     {"tags", (DL_FUNC)&tags, 1},
     {"workdir", (DL_FUNC)&workdir, 1},

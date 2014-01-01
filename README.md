@@ -65,6 +65,63 @@ Example
     # List all tags in repository
     tags(repo)
 
+### Visualize the number of commits per month in a repository
+
+```R
+library(git2r)
+library(ggplot2)
+library(plyr)
+
+## Open a repository with some history
+repo <- repository('path/to/libgit2')
+
+## Harvest neccessary data from repository
+df <- do.call('rbind', lapply(commits(repo), function(x) {
+    data.frame(name=x@author@name,
+               when=as(x@author@when, 'POSIXct'))
+}))
+
+## Format data
+df$month <- as.POSIXct(cut(df$when, breaks='month'))
+df <- ddply(df, ~month, nrow)
+names(df) <- c('month', 'n')
+
+## Plot data
+ggplot(df, aes(x=month, y=n)) +
+    geom_bar(stat='identity') +
+    scale_x_datetime('Month') +
+    scale_y_continuous('Count') +
+    labs(title='Commits')
+```
+
+### Visualize the number of contributors per month in a repository
+
+```R
+library(git2r)
+library(ggplot2)
+library(plyr)
+
+## Open a repository with some history
+repo <- repository('path/to/libgit2')
+
+## Harvest neccessary data from repository
+df <- do.call('rbind', lapply(commits(repo), function(x) {
+    data.frame(name=x@author@name,
+               when=as(x@author@when, 'POSIXct'))
+}))
+
+## Format data
+df$month <- as.POSIXct(cut(df$when, breaks='month'))
+df <- ddply(df, ~month, function(x) length(unique(x$name)))
+names(df) <- c('month', 'n')
+
+## Plot data
+ggplot(df, aes(x=month, y=n)) +
+    geom_bar(stat='identity') +
+    scale_x_datetime('Month') +
+    scale_y_continuous('Count') +
+    labs(title='Commits')
+```
 
 License
 -------
