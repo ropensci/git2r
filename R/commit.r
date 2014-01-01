@@ -21,6 +21,9 @@
 ##'   \item{author}{
 ##'     An author signature
 ##'   }
+##'   \item{message}{
+##'     The message of a commit
+##'   }
 ##' }
 ##' @name git_commit-class
 ##' @aliases show,git_commit-method
@@ -33,7 +36,9 @@
 ##' @keywords methods
 ##' @export
 setClass('git_commit',
-         slots=c(author='git_signature'))
+         slots=c(author='git_signature',
+                 message='character'),
+         prototype=list(message=NA_character_))
 
 ##' Commits
 ##'

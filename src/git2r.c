@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013  Stefan Widgren
+ *  Copyright (C) 2013-2014  Stefan Widgren
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -571,6 +571,12 @@ SEXP revisions(const SEXP repository)
         }
 
         message  = git_commit_message(commit);
+        if (message) {
+            SET_SLOT(sexp_commit,
+                     Rf_install("message"),
+                     ScalarString(mkChar(message)));
+        }
+
         SET_VECTOR_ELT(list, i, sexp_commit);
         UNPROTECT(1);
         i++;
