@@ -27,48 +27,75 @@ static void init_reference(git_reference *ref, SEXP reference);
 static git_repository* get_repository(const SEXP repo);
 static size_t number_of_branches(git_repository *repo, int flags);
 
+/**
+ * Error messages
+ */
+
+const char err_alloc_VECSXP[] = "Unable to allocate VECSXP";
+const char err_alloc_STRSXP[] = "Unable to allocate STRSXP";
+const char err_alloc_S4_git_branch[] = "Unable to allocate S4 git_branch";
+const char err_alloc_char_buffer[] = "Unable to allocate character buffer";
+const char err_unexpected_type_of_branch[] = "Unexpected type of branch";
+const char err_unexpected_head_of_branch[] = "Unexpected head of branch";
+
+/**
+ * List branches in a repository
+ *
+ * @param repo S4 class to an open repository
+ * @return VECXSP with S4 objects of class git_branch
+ */
 SEXP branches(const SEXP repo, const SEXP flags)
 {
     SEXP list;
     SEXP names;
-    SEXP branch;
-    int err;
+    int err = 0;
+    const char* err_msg = NULL;
     git_branch_iterator *iter;
-    git_branch_t type;
-    git_reference *ref;
     size_t i = 0, n;
-    const char *refname;
+    size_t protected = 0;
 
     /* Count number of branches before creating the list */
     n = number_of_branches(get_repository(repo), INTEGER(flags)[0]);
 
     PROTECT(list = allocVector(VECSXP, n));
-    if (R_NilValue == list)
-        error("Unable to list branches");
+    if (R_NilValue == list) {
+        err = 1;
+        err_msg = err_alloc_VECSXP;
+        goto cleanup;
+    }
+    protected++;
+
     PROTECT(names = allocVector(STRSXP, n));
     if (R_NilValue == names) {
-        UNPROTECT(1);
-        error("Unable to list branches");
+        err = 1;
+        err_msg = err_alloc_STRSXP;
+        goto cleanup;
     }
+    protected++;
 
     err = git_branch_iterator_new(&iter,
                                   get_repository(repo),
                                   INTEGER(flags)[0]);
-    if (err) {
-        const git_error *e = giterr_last();
-        error("Error %d/%d: %s\n", error, e->klass, e->message);
-    }
+    if (err)
+        goto cleanup;
 
     for (;;) {
+        SEXP branch;
+        git_branch_t type;
+        git_reference *ref;
+        const char *refname;
+
         err = git_branch_next(&ref, &type, iter);
         if (err)
-            break;
+            goto cleanup;
 
         PROTECT(branch = NEW_OBJECT(MAKE_CLASS("git_branch")));
         if (R_NilValue == branch) {
-            UNPROTECT(2);
-            error("Unable to list branches");
+            err = 1;
+            err_msg = err_alloc_S4_git_branch;
+            goto cleanup;
         }
+        protected++;
 
         refname = git_reference_name(ref);
         init_reference(ref, branch);
@@ -79,26 +106,39 @@ SEXP branches(const SEXP repo, const SEXP flags)
         case GIT_BRANCH_REMOTE: {
             char *buf;
             size_t buf_size;
-            git_remote *r = NULL;
+            git_remote *remote = NULL;
 
             buf_size = git_branch_remote_name(NULL, 0, get_repository(repo), refname);
             buf = malloc(buf_size * sizeof(char));
-            if (NULL == buf)
-                error("Unable to list branches");
+            if (NULL == buf) {
+                err = 1;
+                err_msg = err_alloc_char_buffer;
+                goto cleanup;
+            }
             git_branch_remote_name(buf, buf_size, get_repository(repo), refname);
             SET_SLOT(branch, Rf_install("remote"), ScalarString(mkChar(buf)));
 
-            err = git_remote_load(&r, get_repository(repo), buf);
-            /* :TODO:FIX: Check error code */
+            err = git_remote_load(&remote, get_repository(repo), buf);
+            if (err < 0) {
+                err = git_remote_create_inmemory(&remote, repo, NULL, name);
+                if (err < 0) {
+                    err = 1;
+                    goto cleanup;
+                }
+            }
 
-            SET_SLOT(branch, Rf_install("url"), ScalarString(mkChar(git_remote_url(r))));
+            SET_SLOT(branch,
+                     Rf_install("url"),
+                     ScalarString(mkChar(git_remote_url(remote))));
 
             free(buf);
-            git_remote_free(r);
+            git_remote_free(remote);
             break;
         }
         default:
-            error("Unexpected type of branch");
+            err = 1;
+            err_msg = err_unexpected_type_of_branch;
+            goto cleanup;
         }
 
         switch (git_branch_is_head(ref)) {
@@ -109,24 +149,41 @@ SEXP branches(const SEXP repo, const SEXP flags)
             SET_SLOT(branch, Rf_install("head"), ScalarLogical(1));
             break;
         default:
-            error("Unexpected head of branch");
+            err = 1;
+            err_msg = err_unexpected_head_of_branch;
+            goto cleanup;
         }
 
         git_reference_free(ref);
         SET_VECTOR_ELT(list, i, branch);
-        UNPROTECT(1);
+        if (protected) {
+            UNPROTECT(1);
+            protected--;
+        }
         i++;
     }
 
     if (GIT_ITEROVER != err) {
-        const git_error *e = giterr_last();
-        error("Error %d/%d: %s\n", error, e->klass, e->message);
+        err = 1;
+        goto cleanup;
     }
 
     git_branch_iterator_free(iter);
 
     setAttrib(list, R_NamesSymbol, names);
-    UNPROTECT(2);
+
+cleanup:
+    if (protected)
+        UNPROTECT(protected);
+
+    if (err) {
+        if (err_msg) {
+            error(err_msg);
+        } else {
+            const git_error *e = giterr_last();
+            error("Error %d/%d: %s\n", error, e->klass, e->message);
+        }
+    }
 
     return list;
 }
@@ -134,7 +191,7 @@ SEXP branches(const SEXP repo, const SEXP flags)
 /**
  * Free repository.
  *
- * @param repo
+ * @param repo EXTPTRSXP to a git_repository
  */
 static void repo_finalizer(SEXP repo)
 {
@@ -149,7 +206,7 @@ static void repo_finalizer(SEXP repo)
 /**
  * Free walker.
  *
- * @param walker
+ * @param walker EXTPTRSXP to a git_revwalk
  */
 static void walker_finalizer(SEXP walker)
 {
