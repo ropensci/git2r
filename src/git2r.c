@@ -46,12 +46,11 @@ const char err_unexpected_head_of_branch[] = "Unexpected head of branch";
  */
 SEXP branches(const SEXP repo, const SEXP flags)
 {
-    SEXP list;
-    SEXP names;
+    SEXP list = R_NilValue;
     int err = 0;
     const char* err_msg = NULL;
-    git_branch_iterator *iter;
-    size_t i = 0, n;
+    git_branch_iterator *iter = NULL;
+    size_t i = 0, n = 0;
     size_t protected = 0;
 
     /* Count number of branches before creating the list */
@@ -61,14 +60,6 @@ SEXP branches(const SEXP repo, const SEXP flags)
     if (R_NilValue == list) {
         err = 1;
         err_msg = err_alloc_VECSXP;
-        goto cleanup;
-    }
-    protected++;
-
-    PROTECT(names = allocVector(STRSXP, n));
-    if (R_NilValue == names) {
-        err = 1;
-        err_msg = err_alloc_STRSXP;
         goto cleanup;
     }
     protected++;
@@ -86,8 +77,13 @@ SEXP branches(const SEXP repo, const SEXP flags)
         const char *refname;
 
         err = git_branch_next(&ref, &type, iter);
-        if (err)
+        if (GIT_ITEROVER == err) {
+            err = 0;
+            break;
+        } else if (err) {
+            err = 1;
             goto cleanup;
+        }
 
         PROTECT(branch = NEW_OBJECT(MAKE_CLASS("git_branch")));
         if (R_NilValue == branch) {
@@ -108,19 +104,30 @@ SEXP branches(const SEXP repo, const SEXP flags)
             size_t buf_size;
             git_remote *remote = NULL;
 
-            buf_size = git_branch_remote_name(NULL, 0, get_repository(repo), refname);
+            buf_size = git_branch_remote_name(NULL,
+                                              0,
+                                              get_repository(repo),
+                                              refname);
             buf = malloc(buf_size * sizeof(char));
             if (NULL == buf) {
                 err = 1;
                 err_msg = err_alloc_char_buffer;
                 goto cleanup;
             }
-            git_branch_remote_name(buf, buf_size, get_repository(repo), refname);
+
+            git_branch_remote_name(buf,
+                                   buf_size,
+                                   get_repository(repo),
+                                   refname);
+
             SET_SLOT(branch, Rf_install("remote"), ScalarString(mkChar(buf)));
 
             err = git_remote_load(&remote, get_repository(repo), buf);
             if (err < 0) {
-                err = git_remote_create_inmemory(&remote, repo, NULL, name);
+                err = git_remote_create_inmemory(&remote,
+                                                 get_repository(repo),
+                                                 NULL,
+                                                 buf);
                 if (err < 0) {
                     err = 1;
                     goto cleanup;
@@ -163,16 +170,9 @@ SEXP branches(const SEXP repo, const SEXP flags)
         i++;
     }
 
-    if (GIT_ITEROVER != err) {
-        err = 1;
-        goto cleanup;
-    }
-
+cleanup:
     git_branch_iterator_free(iter);
 
-    setAttrib(list, R_NamesSymbol, names);
-
-cleanup:
     if (protected)
         UNPROTECT(protected);
 
@@ -181,7 +181,7 @@ cleanup:
             error(err_msg);
         } else {
             const git_error *e = giterr_last();
-            error("Error %d/%d: %s\n", error, e->klass, e->message);
+            error("Error %d: %s\n", e->klass, e->message);
         }
     }
 
