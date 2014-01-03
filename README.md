@@ -20,53 +20,57 @@ I'm developing the package on Linux, so it's very possible that other platforms 
 
 To install the development version of `git2r`, it's easiest to use the devtools package:
 
-    # install.packages("devtools")
-    library(devtools)
-    install_github("git2r", "stewid")
+```
+# install.packages("devtools")
+library(devtools)
+install_github("git2r", "stewid")
+```
 
 Example
 -------
 
-    library(git2r)
+```
+library(git2r)
 
-    # Open an existing repository
-    repo <- repository("path/to/git2r")
+# Open an existing repository
+repo <- repository("path/to/git2r")
 
-    # Brief summary of repository
-    repo
+# Brief summary of repository
+repo
 
-    # Summary of repository
-    summary(repo)
+# Summary of repository
+summary(repo)
 
-    # Workdir of repository
-    workdir(repo)
+# Workdir of repository
+workdir(repo)
 
-    # Check if repository is bare
-    is.bare(repo)
+# Check if repository is bare
+is.bare(repo)
 
-    # Check if repository is empty
-    is.empty(repo)
+# Check if repository is empty
+is.empty(repo)
 
-    # List all references in repository
-    references(repo)
+# List all references in repository
+references(repo)
 
-    # List all branches in repository
-    branches(repo)
+# List all branches in repository
+branches(repo)
 
-    # List all commits in repository
-    commits(repo)
+# List all commits in repository
+commits(repo)
 
-    # Get HEAD of repository
-    head(repo)
+# Get HEAD of repository
+head(repo)
 
-    # Check if HEAD is head
-    is.head(head(repo))
+# Check if HEAD is head
+is.head(head(repo))
 
-    # Check if HEAD is local
-    is.local(head(repo))
+# Check if HEAD is local
+is.local(head(repo))
 
-    # List all tags in repository
-    tags(repo)
+# List all tags in repository
+tags(repo)
+```
 
 ### Visualize the number of commits per month in a repository
 
@@ -125,6 +129,25 @@ ggplot(df, aes(x=month, y=n)) +
     scale_y_continuous('Count') +
     labs(title='Contributors')
 ```
+
+### Generate a wordcloud from the commit messages in a repository
+
+```
+library(git2r)
+library(wordcloud)
+
+## Open the libgit2 repository
+repo <- repository('path/to/libgit2')
+
+## Harvest neccessary data from repository
+msg <- paste(sapply(commits(repo), slot, 'message'), collapse=' ')
+
+## Create the wordcloud
+wordcloud(msg, scale=c(5,0.5), max.words=100, random.order=FALSE,
+          rot.per=0.35, use.r.layout=FALSE, colors=brewer.pal(8, 'Dark2'))
+```
+
+![wordcloud](wordcloud.png)
 
 License
 -------
