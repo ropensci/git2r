@@ -34,9 +34,13 @@ static size_t number_of_branches(git_repository *repo, int flags);
 const char err_alloc_VECSXP[] = "Unable to allocate VECSXP";
 const char err_alloc_STRSXP[] = "Unable to allocate STRSXP";
 const char err_alloc_S4_git_branch[] = "Unable to allocate S4 git_branch";
+const char err_alloc_S4_git_repository[] = "Unable to allocate S4 git_repository";
 const char err_alloc_char_buffer[] = "Unable to allocate character buffer";
+const char err_alloc_external_ptr[] = "Unable to allocate external pointer";
 const char err_unexpected_type_of_branch[] = "Unexpected type of branch";
 const char err_unexpected_head_of_branch[] = "Unexpected head of branch";
+const char err_path_equals_R_NilValue[] = "'path' equals R_NilValue";
+const char err_path_not_a_string[] = "'path' must be a string";
 
 /**
  * List branches in a repository
@@ -538,41 +542,76 @@ SEXP repository(const SEXP path)
     SEXP xp_repo = R_NilValue;
     SEXP xp_walker = R_NilValue;
     git_repository *repo = NULL;
-    git_revwalk *walker;
-    int err;
+    git_revwalk *walker = NULL;
+    int err = 0;
+    int err_libgit2 = 0;
+    const char *err_msg = NULL;
+    size_t protected = 0;
 
-    if (R_NilValue == path)
-        error("'path' equals R_NilValue.");
-    if (!isString(path))
-        error("'path' must be a string.");
+    if (R_NilValue == path) {
+        err = 1;
+        err_msg = err_path_equals_R_NilValue;
+        goto cleanup;
+    }
+
+    if (!isString(path)) {
+        err = 1;
+        err_msg = err_path_not_a_string;
+        goto cleanup;
+    }
 
     PROTECT(sexp_repo = NEW_OBJECT(MAKE_CLASS("git_repository")));
-    if (R_NilValue == sexp_repo)
-        error("Unable to make S4 class git_repository");
+    if (R_NilValue == sexp_repo) {
+        err = 1;
+        err_msg = err_alloc_S4_git_repository;
+        goto cleanup;
+    }
+    protected++;
 
     /* Initialize external pointer to repository */
-    err = git_repository_open(&repo, CHAR(STRING_ELT(path, 0)));
-    if (err) {
-        UNPROTECT(1);
-        const git_error *e = giterr_last();
-        error("Error %d/%d: %s\n", error, e->klass, e->message);
+    err_libgit2 = git_repository_open(&repo, CHAR(STRING_ELT(path, 0)));
+    if (err_libgit2) {
+        err = 1;
+        goto cleanup;
     }
     PROTECT(xp_repo = R_MakeExternalPtr(repo, R_NilValue, R_NilValue));
+    if (R_NilValue == xp_repo) {
+        err = 1;
+        err_msg = err_alloc_external_ptr;
+        goto cleanup;
+    }
     R_RegisterCFinalizerEx(xp_repo, finalize_repo, TRUE);
     SET_SLOT(sexp_repo, Rf_install("repo"), xp_repo);
+    UNPROTECT(1);
 
     /* Initialize external pointer to revision walker */
-    err = git_revwalk_new(&walker, repo);
-    if (err) {
-        UNPROTECT(2);
-        const git_error *e = giterr_last();
-        error("Error %d/%d: %s\n", error, e->klass, e->message);
+    err_libgit2 = git_revwalk_new(&walker, repo);
+    if (err_libgit2) {
+        err = 1;
+        goto cleanup;
     }
     PROTECT(xp_walker = R_MakeExternalPtr(walker, R_NilValue, R_NilValue));
+    if (R_NilValue == xp_walker) {
+        err = 1;
+        err_msg = err_alloc_external_ptr;
+        goto cleanup;
+    }
     R_RegisterCFinalizerEx(xp_walker, finalize_walker, TRUE);
     SET_SLOT(sexp_repo, Rf_install("walker"), xp_walker);
+    UNPROTECT(1);
 
-    UNPROTECT(3);
+cleanup:
+    if (protected)
+        UNPROTECT(protected);
+
+    if (err) {
+        if (err_msg) {
+            error(err_msg);
+        } else {
+            const git_error *e = giterr_last();
+            error("Error %d/%d: %s\n", err_libgit2, e->klass, e->message);
+        }
+    }
 
     return sexp_repo;
 }
