@@ -21,7 +21,10 @@
 ##'   \item{author}{
 ##'     An author signature
 ##'   }
-##'   \item{summary} {
+##'   \item{committer}{
+##'     The committer signature
+##'   }
+##'   \item{summary}{
 ##'     The short "summary" of a git commit message, comprising the first
 ##'     paragraph of the message with whitespace trimmed and squashed.
 ##'   }
@@ -41,9 +44,11 @@
 ##' @export
 setClass('git_commit',
          slots=c(author='git_signature',
+                 committer='git_signature',
                  summary='character',
                  message='character'),
-         prototype=list(message=NA_character_))
+         prototype=list(summary=NA_character_,
+                        message=NA_character_))
 
 ##' Commits
 ##'

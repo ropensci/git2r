@@ -622,6 +622,7 @@ SEXP revisions(const SEXP repository)
     int err;
     SEXP sexp_author;
     SEXP sexp_commit;
+    SEXP sexp_committer;
     git_signature *sig;
     SEXP list;
     size_t n;
@@ -667,14 +668,24 @@ SEXP revisions(const SEXP repository)
             UNPROTECT(1);
         }
 
-        summary  = git_commit_summary(commit);
+        sig = git_commit_committer(commit);
+        if (sig) {
+            PROTECT(sexp_committer = NEW_OBJECT(MAKE_CLASS("git_signature")));
+            if (R_NilValue == sexp_committer)
+                error("Unable to make S4 class git_signature");
+            init_signature(sig, sexp_committer);
+            SET_SLOT(sexp_commit, Rf_install("committer"), sexp_committer);
+            UNPROTECT(1);
+        }
+
+        summary = git_commit_summary(commit);
         if (summary) {
             SET_SLOT(sexp_commit,
                      Rf_install("summary"),
                      ScalarString(mkChar(summary)));
         }
 
-        message  = git_commit_message(commit);
+        message = git_commit_message(commit);
         if (message) {
             SET_SLOT(sexp_commit,
                      Rf_install("message"),
