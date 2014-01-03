@@ -8,7 +8,10 @@
 }
 \section{Slots}{
   \describe{ \item{author}{ An author signature }
-  \item{message}{ The message of a commit } }
+  \item{summary} { The short "summary" of a git commit
+  message, comprising the first paragraph of the message
+  with whitespace trimmed and squashed.  } \item{message}{
+  The message of a commit } }
 }
 
 \section{Methods}{

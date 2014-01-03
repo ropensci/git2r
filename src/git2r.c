@@ -629,7 +629,8 @@ SEXP revisions(const SEXP repository)
     git_revwalk *walker;
     git_oid oid;
     git_repository *repo;
-    const char *message;
+    const char *message = NULL;
+    const char *summary = NULL;
     char oid_hex[GIT_OID_HEXSZ + 1];
 
     repo = get_repository(repository);
@@ -664,6 +665,13 @@ SEXP revisions(const SEXP repository)
             init_signature(sig, sexp_author);
             SET_SLOT(sexp_commit, Rf_install("author"), sexp_author);
             UNPROTECT(1);
+        }
+
+        summary  = git_commit_summary(commit);
+        if (summary) {
+            SET_SLOT(sexp_commit,
+                     Rf_install("summary"),
+                     ScalarString(mkChar(summary)));
         }
 
         message  = git_commit_message(commit);

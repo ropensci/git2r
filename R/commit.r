@@ -21,6 +21,10 @@
 ##'   \item{author}{
 ##'     An author signature
 ##'   }
+##'   \item{summary} {
+##'     The short "summary" of a git commit message, comprising the first
+##'     paragraph of the message with whitespace trimmed and squashed.
+##'   }
 ##'   \item{message}{
 ##'     The message of a commit
 ##'   }
@@ -37,6 +41,7 @@
 ##' @export
 setClass('git_commit',
          slots=c(author='git_signature',
+                 summary='character',
                  message='character'),
          prototype=list(message=NA_character_))
 
@@ -67,9 +72,10 @@ setMethod('show',
           signature(object = 'git_commit'),
           function (object)
           {
-              cat(sprintf('Author: %s <%s>\nWhen:   %s\n',
+              cat(sprintf('Author:  %s <%s>\nWhen:    %s\nSummary: %s\n',
                           object@author@name,
                           object@author@email,
-                          as(object@author@when, 'character')))
+                          as(object@author@when, 'character'),
+                          object@summary))
           }
 )
