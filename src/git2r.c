@@ -193,7 +193,7 @@ cleanup:
  *
  * @param repo EXTPTRSXP to a git_repository
  */
-static void repo_finalizer(SEXP repo)
+static void finalize_repo(SEXP repo)
 {
     if (EXTPTRSXP != TYPEOF(repo))
         error("'repo' not an EXTPTRSXP");
@@ -208,7 +208,7 @@ static void repo_finalizer(SEXP repo)
  *
  * @param walker EXTPTRSXP to a git_revwalk
  */
-static void walker_finalizer(SEXP walker)
+static void finalize_walker(SEXP walker)
 {
     if (EXTPTRSXP != TYPEOF(walker))
         error("'walker' not an EXTPTRSXP");
@@ -558,7 +558,7 @@ SEXP repository(const SEXP path)
         error("Error %d/%d: %s\n", error, e->klass, e->message);
     }
     PROTECT(xp_repo = R_MakeExternalPtr(repo, R_NilValue, R_NilValue));
-    R_RegisterCFinalizerEx(xp_repo, repo_finalizer, TRUE);
+    R_RegisterCFinalizerEx(xp_repo, finalize_repo, TRUE);
     SET_SLOT(sexp_repo, Rf_install("repo"), xp_repo);
 
     /* Initialize external pointer to revision walker */
@@ -569,7 +569,7 @@ SEXP repository(const SEXP path)
         error("Error %d/%d: %s\n", error, e->klass, e->message);
     }
     PROTECT(xp_walker = R_MakeExternalPtr(walker, R_NilValue, R_NilValue));
-    R_RegisterCFinalizerEx(xp_walker, walker_finalizer, TRUE);
+    R_RegisterCFinalizerEx(xp_walker, finalize_walker, TRUE);
     SET_SLOT(sexp_repo, Rf_install("walker"), xp_walker);
 
     UNPROTECT(3);
