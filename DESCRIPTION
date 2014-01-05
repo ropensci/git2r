@@ -12,11 +12,7 @@ Copyright: The package uses the source code of libgit2, see AUTHORS
     (License: GPLv2 with a special Linking Exception). For full terms
     see the included COPYING file. The libgit2 printf calls in cache.c
     and util.c have been changed to use the R printing routine
-    Rprintf. The package uses the source code of zlib written by
-    Jean-loup Gailly and Mark Adler (http://www.zlib.net/) (License:
-    http://zlib.net/zlib_license.html). The ZLIB_VERSION, ZLIB_VERNUM
-    and ZLIB_VER_SUBREVISION have been changed to comply with zlib
-    license requirement.
+    Rprintf.
 Depends:
     R (>= 3.0.0),
     methods
