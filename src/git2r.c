@@ -31,16 +31,9 @@ static size_t number_of_branches(git_repository *repo, int flags);
  * Error messages
  */
 
-const char err_alloc_VECSXP[] = "Unable to allocate VECSXP";
-const char err_alloc_STRSXP[] = "Unable to allocate STRSXP";
-const char err_alloc_S4_git_branch[] = "Unable to allocate S4 git_branch";
-const char err_alloc_S4_git_repository[] = "Unable to allocate S4 git_repository";
 const char err_alloc_char_buffer[] = "Unable to allocate character buffer";
-const char err_alloc_external_ptr[] = "Unable to allocate external pointer";
 const char err_unexpected_type_of_branch[] = "Unexpected type of branch";
 const char err_unexpected_head_of_branch[] = "Unexpected head of branch";
-const char err_path_equals_R_NilValue[] = "'path' equals R_NilValue";
-const char err_path_not_a_string[] = "'path' must be a string";
 
 /**
  * List branches in a repository
@@ -50,7 +43,7 @@ const char err_path_not_a_string[] = "'path' must be a string";
  */
 SEXP branches(const SEXP repo, const SEXP flags)
 {
-    SEXP list = R_NilValue;
+    SEXP list;
     int err = 0;
     const char* err_msg = NULL;
     git_branch_iterator *iter = NULL;
@@ -61,11 +54,6 @@ SEXP branches(const SEXP repo, const SEXP flags)
     n = number_of_branches(get_repository(repo), INTEGER(flags)[0]);
 
     PROTECT(list = allocVector(VECSXP, n));
-    if (R_NilValue == list) {
-        err = 1;
-        err_msg = err_alloc_VECSXP;
-        goto cleanup;
-    }
     protected++;
 
     err = git_branch_iterator_new(&iter,
@@ -90,11 +78,6 @@ SEXP branches(const SEXP repo, const SEXP flags)
         }
 
         PROTECT(branch = NEW_OBJECT(MAKE_CLASS("git_branch")));
-        if (R_NilValue == branch) {
-            err = 1;
-            err_msg = err_alloc_S4_git_branch;
-            goto cleanup;
-        }
         protected++;
 
         refname = git_reference_name(ref);
@@ -167,10 +150,8 @@ SEXP branches(const SEXP repo, const SEXP flags)
 
         git_reference_free(ref);
         SET_VECTOR_ELT(list, i, branch);
-        if (protected) {
-            UNPROTECT(1);
-            protected--;
-        }
+        UNPROTECT(1);
+        protected--;
         i++;
     }
 
@@ -411,10 +392,8 @@ static size_t number_of_revisions(git_revwalk *walker)
     size_t n = 0;
     git_oid oid;
 
-    while (!git_revwalk_next(&oid, walker)) {
+    while (!git_revwalk_next(&oid, walker))
         n++;
-    }
-
     return n;
 }
 
@@ -441,27 +420,13 @@ SEXP references(const SEXP repo)
     /* :TODO:FIX: Check error code */
 
     PROTECT(list = allocVector(VECSXP, l.count));
-    if (R_NilValue == list) {
-        error("Unable to list references");
-    }
-
     PROTECT(names = allocVector(STRSXP, l.count));
-    if (R_NilValue == names) {
-        UNPROTECT(1);
-        error("Unable to list references");
-    }
 
     for (i = 0; i < l.count; i++) {
         PROTECT(reference = NEW_OBJECT(MAKE_CLASS("git_reference")));
-        if (R_NilValue == reference) {
-            UNPROTECT(2);
-            error("Unable to list references");
-        }
-
         refname = l.strings[i];
         git_reference_lookup(&ref, get_repository(repo), refname);
         init_reference(ref, reference);
-
         SET_STRING_ELT(names, i, mkChar(refname));
         SET_VECTOR_ELT(list, i, reference);
         UNPROTECT(1);
@@ -509,7 +474,7 @@ SEXP remotes(const SEXP repo)
  */
 SEXP remote_url(const SEXP repo, const SEXP remote)
 {
-    SEXP url = R_NilValue;
+    SEXP url;
     size_t len = LENGTH(remote);
     size_t i = 0;
     int err;
@@ -538,79 +503,44 @@ SEXP remote_url(const SEXP repo, const SEXP remote)
  */
 SEXP repository(const SEXP path)
 {
-    SEXP sexp_repo = R_NilValue;
-    SEXP xp_repo = R_NilValue;
-    SEXP xp_walker = R_NilValue;
+    SEXP sexp_repo;
+    SEXP xp_repo;
+    SEXP xp_walker;
     git_repository *repo = NULL;
     git_revwalk *walker = NULL;
-    int err = 0;
-    int err_libgit2 = 0;
-    const char *err_msg = NULL;
-    size_t protected = 0;
+    int err;
 
-    if (R_NilValue == path) {
-        err = 1;
-        err_msg = err_path_equals_R_NilValue;
-        goto cleanup;
-    }
-
-    if (!isString(path)) {
-        err = 1;
-        err_msg = err_path_not_a_string;
-        goto cleanup;
-    }
+    if (R_NilValue == path)
+        error("'path' equals R_NilValue");
+    if (!isString(path))
+        error("'path' must be a string");
 
     PROTECT(sexp_repo = NEW_OBJECT(MAKE_CLASS("git_repository")));
-    if (R_NilValue == sexp_repo) {
-        err = 1;
-        err_msg = err_alloc_S4_git_repository;
-        goto cleanup;
-    }
-    protected++;
 
     /* Initialize external pointer to repository */
-    err_libgit2 = git_repository_open(&repo, CHAR(STRING_ELT(path, 0)));
-    if (err_libgit2) {
-        err = 1;
+    err = git_repository_open(&repo, CHAR(STRING_ELT(path, 0)));
+    if (err)
         goto cleanup;
-    }
     PROTECT(xp_repo = R_MakeExternalPtr(repo, R_NilValue, R_NilValue));
-    if (R_NilValue == xp_repo) {
-        err = 1;
-        err_msg = err_alloc_external_ptr;
-        goto cleanup;
-    }
     R_RegisterCFinalizerEx(xp_repo, finalize_repo, TRUE);
     SET_SLOT(sexp_repo, Rf_install("repo"), xp_repo);
     UNPROTECT(1);
 
     /* Initialize external pointer to revision walker */
-    err_libgit2 = git_revwalk_new(&walker, repo);
-    if (err_libgit2) {
-        err = 1;
+    err = git_revwalk_new(&walker, repo);
+    if (err)
         goto cleanup;
-    }
     PROTECT(xp_walker = R_MakeExternalPtr(walker, R_NilValue, R_NilValue));
-    if (R_NilValue == xp_walker) {
-        err = 1;
-        err_msg = err_alloc_external_ptr;
-        goto cleanup;
-    }
     R_RegisterCFinalizerEx(xp_walker, finalize_walker, TRUE);
     SET_SLOT(sexp_repo, Rf_install("walker"), xp_walker);
     UNPROTECT(1);
 
 cleanup:
-    if (protected)
-        UNPROTECT(protected);
+    UNPROTECT(1);
 
     if (err) {
-        if (err_msg) {
-            error(err_msg);
-        } else {
-            const git_error *e = giterr_last();
-            error("Error %d/%d: %s\n", err_libgit2, e->klass, e->message);
-        }
+        const git_error *e = giterr_last();
+        error("Error %d/%d: %s\n", err, e->klass, e->message);
     }
 
     return sexp_repo;
@@ -619,20 +549,13 @@ cleanup:
 SEXP revisions(const SEXP repository)
 {
     int i=0;
-    int err;
-    SEXP sexp_author;
-    SEXP sexp_commit;
-    SEXP sexp_committer;
-    git_signature *sig;
+    int err = 0;
     SEXP list;
-    size_t n;
-    git_commit *commit;
-    git_revwalk *walker;
+    size_t n = 0;
+    const git_commit *commit = NULL;
+    git_revwalk *walker = NULL;
     git_oid oid;
-    git_repository *repo;
-    const char *message = NULL;
-    const char *summary = NULL;
-    char oid_hex[GIT_OID_HEXSZ + 1];
+    git_repository *repo = NULL;
 
     repo = get_repository(repository);
     walker = get_walker(repository);
@@ -643,37 +566,38 @@ SEXP revisions(const SEXP repository)
 
     /* Create list to store result */
     PROTECT(list = allocVector(VECSXP, n));
-    if (R_NilValue == list)
-        error("Unable to list revisions");
 
     git_revwalk_reset(walker);
     git_revwalk_push_head(walker);
     while (!git_revwalk_next(&oid, walker)) {
+        const char *message = NULL;
+        const char *summary = NULL;
+        char oid_hex[GIT_OID_HEXSZ + 1];
+        git_signature *author = NULL;
+        git_signature *committer = NULL;
+        SEXP sexp_commit;
+        SEXP sexp_author;
+        SEXP sexp_committer;
+
         git_oid_tostr(oid_hex, sizeof(oid_hex), &oid);
 
         /* :TODO:FIX: Check err */
         err = git_commit_lookup(&commit, repo, &oid);
 
         PROTECT(sexp_commit = NEW_OBJECT(MAKE_CLASS("git_commit")));
-        if (R_NilValue == sexp_commit)
-            error("Unable to make S4 class git_commit");
 
-        sig = git_commit_author(commit);
-        if (sig) {
+        author = git_commit_author(commit);
+        if (author) {
             PROTECT(sexp_author = NEW_OBJECT(MAKE_CLASS("git_signature")));
-            if (R_NilValue == sexp_author)
-                error("Unable to make S4 class git_signature");
-            init_signature(sig, sexp_author);
+            init_signature(author, sexp_author);
             SET_SLOT(sexp_commit, Rf_install("author"), sexp_author);
             UNPROTECT(1);
         }
 
-        sig = git_commit_committer(commit);
-        if (sig) {
+        committer = git_commit_committer(commit);
+        if (committer) {
             PROTECT(sexp_committer = NEW_OBJECT(MAKE_CLASS("git_signature")));
-            if (R_NilValue == sexp_committer)
-                error("Unable to make S4 class git_signature");
-            init_signature(sig, sexp_committer);
+            init_signature(committer, sexp_committer);
             SET_SLOT(sexp_commit, Rf_install("committer"), sexp_committer);
             UNPROTECT(1);
         }
@@ -699,7 +623,13 @@ SEXP revisions(const SEXP repository)
         git_commit_free(commit);
     }
 
+cleanup:
     UNPROTECT(1);
+
+    if (err) {
+        const git_error *e = giterr_last();
+        error("Error %d/%d: %s\n", err, e->klass, e->message);
+    }
 
     return list;
 }
@@ -727,7 +657,6 @@ SEXP tags(const SEXP repo)
     git_strarray l;
     SEXP list;
     SEXP names;
-    SEXP tag;
     git_reference *ref;
     const char *tagname;
     char* buf;
@@ -741,22 +670,12 @@ SEXP tags(const SEXP repo)
     /* :TODO:FIX: Check error code */
 
     PROTECT(list = allocVector(VECSXP, l.count));
-    if (R_NilValue == list) {
-        error("Unable to list tags");
-    }
-
     PROTECT(names = allocVector(STRSXP, l.count));
-    if (R_NilValue == names) {
-        UNPROTECT(1);
-        error("Unable to list tags");
-    }
 
     for (i = 0; i < l.count; i++) {
+        SEXP tag;
+
         PROTECT(tag = NEW_OBJECT(MAKE_CLASS("git_tag")));
-        if (R_NilValue == tag) {
-            UNPROTECT(2);
-            error("Unable to list tags");
-        }
 
         tagname = l.strings[i];
 
