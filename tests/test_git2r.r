@@ -13,14 +13,14 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-context("Repository")
+library(git2r)
 
-test_that("is.bare", {
-    expect_error(is.bare(new('git_repository')),
-                 "Invalid repository")
-})
+##
+## is.bare: "Invalid repository"
+##
+tools::assertError(is.bare(new('git_repository')))
 
-test_that("is.empty", {
-    expect_error(is.empty(new('git_repository')),
-                 "Invalid repository")
-})
+##
+## is.empty: "Invalid repository"
+##
+tools::assertError(is.empty(new('git_repository')))
