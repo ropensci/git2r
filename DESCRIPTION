@@ -14,10 +14,8 @@ Copyright: The package uses the source code of libgit2, see AUTHORS
     and util.c have been changed to use the R printing routine
     Rprintf.
 Depends:
-    R (>= 3.0.0),
+    R (>= 3.0.2),
     methods
-Suggests:
-    testthat
 License: GPL-2
 LazyData: true
 NeedsCompilation: yes
