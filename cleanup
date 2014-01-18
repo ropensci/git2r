@@ -1,0 +1,4 @@
+#!/bin/sh
+
+rm -f config.*
+rm -f src/Makevars

@@ -1,6 +1,7 @@
-PKG_CFLAGS = -Ilibgit2 -Ilibgit2/include -Ihttp-parser
+PKG_CPPFLAGS = @CPPFLAGS@
+PKG_LIBS = @LIBS@
 
-PKG_LIBS = $(ZLIB_LIBS)
+PKG_CFLAGS = -Ilibgit2 -Ilibgit2/include -Ihttp-parser
 
 OBJECTS.libgit2 = libgit2/attr.o libgit2/attr_file.o libgit2/blame.o \
                   libgit2/blame_git.o libgit2/blob.o libgit2/branch.o \
