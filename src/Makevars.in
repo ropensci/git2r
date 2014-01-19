@@ -55,4 +55,4 @@ OBJECTS.root = git2r.o
 
 OBJECTS = $(OBJECTS.libgit2) $(OBJECTS.libgit2.hash) $(OBJECTS.libgit2.http_parser) \
           $(OBJECTS.libgit2.transports) $(OBJECTS.libgit2.unix) $(OBJECTS.libgit2.xdiff) \
-          $(OBJECTS.zlib) $(OBJECTS.root)
+          $(OBJECTS.root)
