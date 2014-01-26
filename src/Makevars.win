@@ -1,6 +1,6 @@
-PKG_LIBS = $(ZLIB_LIBS)
+PKG_LIBS = $(ZLIB_LIBS) -lws2_32
 
-PKG_CFLAGS = -Ilibgit2 -Ilibgit2/include -Ihttp-parser
+PKG_CFLAGS = -Ilibgit2 -Ilibgit2/include -Ihttp-parser -Iwin32 -Iregex
 
 OBJECTS.libgit2 = libgit2/attr.o libgit2/attr_file.o libgit2/blame.o \
                   libgit2/blame_git.o libgit2/blob.o libgit2/branch.o \
@@ -48,8 +48,14 @@ OBJECTS.libgit2.xdiff = libgit2/xdiff/xdiffi.o libgit2/xdiff/xemit.o \
                         libgit2/xdiff/xpatience.o libgit2/xdiff/xprepare.o \
                         libgit2/xdiff/xutils.o
 
+OBJECTS.win32 = libgit2/win32/dir.o libgit2/win32/error.o libgit2/win32/findfile.o \
+	      libgit2/win32/map.o libgit2/win32/posix_w32.o libgit2/win32/precompiled.o \
+	      libgit2/win32/pthread.o libgit2/win32/utf-conv.o
+
+OBJECTS.regex = regex/regex.o
+
 OBJECTS.root = git2r.o
 
 OBJECTS = $(OBJECTS.libgit2) $(OBJECTS.libgit2.hash) $(OBJECTS.libgit2.http_parser) \
           $(OBJECTS.libgit2.transports) $(OBJECTS.libgit2.xdiff) \
-          $(OBJECTS.root)
+          $(OBJECTS.win32) $(OBJECTS.regex) $(OBJECTS.root)
