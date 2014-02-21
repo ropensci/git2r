@@ -3,3 +3,5 @@
 *.dll
 *.Rproj
 /src/Makevars
+/config.log
+/config.status
