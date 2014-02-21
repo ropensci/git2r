@@ -49,16 +49,19 @@ SEXP branches(const SEXP repo, const SEXP flags)
     git_branch_iterator *iter = NULL;
     size_t i = 0, n = 0;
     size_t protected = 0;
+    git_repository *repository = NULL;
+
+    repository = get_repository(repo);
+    if (!repository)
+        error("Invalid repository");
 
     /* Count number of branches before creating the list */
-    n = number_of_branches(get_repository(repo), INTEGER(flags)[0]);
+    n = number_of_branches(repository, INTEGER(flags)[0]);
 
     PROTECT(list = allocVector(VECSXP, n));
     protected++;
 
-    err = git_branch_iterator_new(&iter,
-                                  get_repository(repo),
-                                  INTEGER(flags)[0]);
+    err = git_branch_iterator_new(&iter, repository,  INTEGER(flags)[0]);
     if (err)
         goto cleanup;
 
@@ -91,10 +94,7 @@ SEXP branches(const SEXP repo, const SEXP flags)
             size_t buf_size;
             git_remote *remote = NULL;
 
-            buf_size = git_branch_remote_name(NULL,
-                                              0,
-                                              get_repository(repo),
-                                              refname);
+            buf_size = git_branch_remote_name(NULL, 0, repository, refname);
             buf = malloc(buf_size * sizeof(char));
             if (NULL == buf) {
                 err = 1;
@@ -102,19 +102,12 @@ SEXP branches(const SEXP repo, const SEXP flags)
                 goto cleanup;
             }
 
-            git_branch_remote_name(buf,
-                                   buf_size,
-                                   get_repository(repo),
-                                   refname);
-
+            git_branch_remote_name(buf, buf_size, repository, refname);
             SET_SLOT(branch, Rf_install("remote"), ScalarString(mkChar(buf)));
 
-            err = git_remote_load(&remote, get_repository(repo), buf);
+            err = git_remote_load(&remote, repository, buf);
             if (err < 0) {
-                err = git_remote_create_inmemory(&remote,
-                                                 get_repository(repo),
-                                                 NULL,
-                                                 buf);
+                err = git_remote_create_inmemory(&remote, repository, NULL, buf);
                 if (err < 0) {
                     err = 1;
                     goto cleanup;
@@ -156,7 +149,11 @@ SEXP branches(const SEXP repo, const SEXP flags)
     }
 
 cleanup:
-    git_branch_iterator_free(iter);
+    if (iter)
+        git_branch_iterator_free(iter);
+
+    if (repository)
+        git_repository_free(repository);
 
     if (protected)
         UNPROTECT(protected);
@@ -174,36 +171,6 @@ cleanup:
 }
 
 /**
- * Free repository.
- *
- * @param repo EXTPTRSXP to a git_repository
- */
-static void finalize_repo(SEXP repo)
-{
-    if (EXTPTRSXP != TYPEOF(repo))
-        error("'repo' not an EXTPTRSXP");
-    if (NULL == R_ExternalPtrAddr(repo))
-        return;
-    git_repository_free((git_repository *)R_ExternalPtrAddr(repo));
-    R_ClearExternalPtr(repo);
-}
-
-/**
- * Free walker.
- *
- * @param walker EXTPTRSXP to a git_revwalk
- */
-static void finalize_walker(SEXP walker)
-{
-    if (EXTPTRSXP != TYPEOF(walker))
-        error("'walker' not an EXTPTRSXP");
-    if (NULL == R_ExternalPtrAddr(walker))
-        return;
-    git_revwalk_free((git_revwalk *)R_ExternalPtrAddr(walker));
-    R_ClearExternalPtr(walker);
-}
-
-/**
  * Get repo slot from S4 class git_repository
  *
  * @param repo
@@ -212,8 +179,9 @@ static void finalize_walker(SEXP walker)
 static git_repository* get_repository(const SEXP repo)
 {
     SEXP class_name;
-    SEXP slot;
+    SEXP path;
     git_repository *r;
+    int err;
 
     if (R_NilValue == repo || S4SXP != TYPEOF(repo))
         error("Invalid repository");
@@ -222,45 +190,26 @@ static git_repository* get_repository(const SEXP repo)
     if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_repository"))
         error("Invalid repository");
 
-    slot = GET_SLOT(repo, Rf_install("repo"));
-    if (R_NilValue == slot)
+    path = GET_SLOT(repo, Rf_install("path"));
+    if (R_NilValue == path)
         error("Invalid repository");
 
-    r = (git_repository *)R_ExternalPtrAddr(slot);
-    if (NULL == r)
+    err = git_repository_open(&r, CHAR(STRING_ELT(path, 0)));
+    if (err)
         error("Invalid repository");
 
     return r;
 }
 
 /**
- * Get walker slot from S4 class git_repository
+ * Init a repository.
  *
- * @param repo
+ * @param path
  * @return
  */
-static git_revwalk* get_walker(const SEXP repo)
+SEXP init(const SEXP path)
 {
-    SEXP class_name;
-    SEXP slot;
-    git_revwalk *walker;
-
-    if (R_NilValue == repo || S4SXP != TYPEOF(repo))
-        error("Invalid repository");
-
-    class_name = getAttrib(repo, R_ClassSymbol);
-    if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_repository"))
-        error("Invalid repository");
-
-    slot = GET_SLOT(repo, Rf_install("walker"));
-    if (R_NilValue == slot)
-        error("Invalid repository");
-
-    walker = (git_revwalk *)R_ExternalPtrAddr(slot);
-    if (NULL == walker)
-        error("Invalid repository");
-
-    return walker;
+    return ScalarLogical(FALSE);
 }
 
 /**
@@ -271,9 +220,21 @@ static git_revwalk* get_walker(const SEXP repo)
  */
 SEXP is_bare(const SEXP repo)
 {
-    if (git_repository_is_bare(get_repository(repo)))
-        return ScalarLogical(TRUE);
-    return ScalarLogical(FALSE);
+    SEXP result;
+    git_repository *repository;
+
+    repository= get_repository(repo);
+    if (!repository)
+        error("Invalid repository");
+
+    if (git_repository_is_bare(repository))
+        result = ScalarLogical(TRUE);
+    else
+        result = ScalarLogical(FALSE);
+
+    git_repository_free(repository);
+
+    return result;
 }
 
 /**
@@ -284,9 +245,49 @@ SEXP is_bare(const SEXP repo)
  */
 SEXP is_empty(const SEXP repo)
 {
-    if (git_repository_is_empty(get_repository(repo)))
-        return ScalarLogical(TRUE);
-    return ScalarLogical(FALSE);
+    SEXP result;
+    git_repository *repository;
+
+    repository= get_repository(repo);
+    if (!repository)
+        error("Invalid repository");
+
+    if (git_repository_is_empty(repository))
+        result = ScalarLogical(TRUE);
+    else
+        result = ScalarLogical(FALSE);
+
+    git_repository_free(repository);
+
+    return result;
+}
+
+/**
+ * Check if valid repository.
+ *
+ * @param path
+ * @return
+ */
+SEXP is_repository(const SEXP path)
+{
+    SEXP result;
+    git_repository *repository;
+    int err;
+
+    if (R_NilValue == path)
+        error("'path' equals R_NilValue");
+    if (!isString(path))
+        error("'path' must be a string");
+
+    err = git_repository_open(&repository, CHAR(STRING_ELT(path, 0)));
+    if (err) {
+        result = ScalarLogical(TRUE);
+    } else {
+        git_repository_free(repository);
+        result = ScalarLogical(FALSE);
+    }
+
+    return result;
 }
 
 static void init_reference(git_reference *ref, SEXP reference)
@@ -411,11 +412,16 @@ SEXP references(const SEXP repo)
     SEXP names;
     SEXP reference;
     git_reference *ref;
+    git_repository *repository;
     const char *refname;
     char out[41];
     out[40] = '\0';
 
-    err = git_reference_list(&l, get_repository(repo));
+    repository= get_repository(repo);
+    if (!repository)
+        error("Invalid repository");
+
+    err = git_reference_list(&l, repository);
 
     /* :TODO:FIX: Check error code */
 
@@ -425,7 +431,7 @@ SEXP references(const SEXP repo)
     for (i = 0; i < l.count; i++) {
         PROTECT(reference = NEW_OBJECT(MAKE_CLASS("git_reference")));
         refname = l.strings[i];
-        git_reference_lookup(&ref, get_repository(repo), refname);
+        git_reference_lookup(&ref, repository, refname);
         init_reference(ref, reference);
         SET_STRING_ELT(names, i, mkChar(refname));
         SET_VECTOR_ELT(list, i, reference);
@@ -433,6 +439,7 @@ SEXP references(const SEXP repo)
     }
 
     git_strarray_free(&l);
+    git_repository_free(repository);
 
     setAttrib(list, R_NamesSymbol, names);
     UNPROTECT(2);
@@ -451,8 +458,13 @@ SEXP remotes(const SEXP repo)
     int i, err;
     git_strarray l;
     SEXP r;
+    git_repository *repository;
 
-    err = git_remote_list(&l, get_repository(repo));
+    repository = get_repository(repo);
+    if (!repository)
+        error("Invalid repository");
+
+    err = git_remote_list(&l, repository);
 
     /* :TODO:FIX: Check error code */
 
@@ -462,6 +474,7 @@ SEXP remotes(const SEXP repo)
     UNPROTECT(1);
 
     git_strarray_free(&l);
+    git_repository_free(repository);
 
     return r;
 }
@@ -479,11 +492,16 @@ SEXP remote_url(const SEXP repo, const SEXP remote)
     size_t i = 0;
     int err;
     git_remote *r = NULL;
+    git_repository *repository;
+
+    repository = get_repository(repo);
+    if (!repository)
+        error("Invalid repository");
 
     PROTECT(url = allocVector(STRSXP, len));
 
     for (; i < len; i++) {
-        err = git_remote_load(&r, get_repository(repo), CHAR(STRING_ELT(remote, i)));
+        err = git_remote_load(&r, repository, CHAR(STRING_ELT(remote, i)));
         /* :TODO:FIX: Check error code */
 
         SET_STRING_ELT(url, i, mkChar(git_remote_url(r)));
@@ -491,62 +509,12 @@ SEXP remote_url(const SEXP repo, const SEXP remote)
     }
 
     UNPROTECT(1);
+    git_repository_free(repository);
 
     return url;
 }
 
-/**
- * Repository.
- *
- * @param path
- * @return S4 class repository
- */
-SEXP repository(const SEXP path)
-{
-    SEXP sexp_repo;
-    SEXP xp_repo;
-    SEXP xp_walker;
-    git_repository *repo = NULL;
-    git_revwalk *walker = NULL;
-    int err;
-
-    if (R_NilValue == path)
-        error("'path' equals R_NilValue");
-    if (!isString(path))
-        error("'path' must be a string");
-
-    PROTECT(sexp_repo = NEW_OBJECT(MAKE_CLASS("git_repository")));
-
-    /* Initialize external pointer to repository */
-    err = git_repository_open(&repo, CHAR(STRING_ELT(path, 0)));
-    if (err)
-        goto cleanup;
-    PROTECT(xp_repo = R_MakeExternalPtr(repo, R_NilValue, R_NilValue));
-    R_RegisterCFinalizerEx(xp_repo, finalize_repo, TRUE);
-    SET_SLOT(sexp_repo, Rf_install("repo"), xp_repo);
-    UNPROTECT(1);
-
-    /* Initialize external pointer to revision walker */
-    err = git_revwalk_new(&walker, repo);
-    if (err)
-        goto cleanup;
-    PROTECT(xp_walker = R_MakeExternalPtr(walker, R_NilValue, R_NilValue));
-    R_RegisterCFinalizerEx(xp_walker, finalize_walker, TRUE);
-    SET_SLOT(sexp_repo, Rf_install("walker"), xp_walker);
-    UNPROTECT(1);
-
-cleanup:
-    UNPROTECT(1);
-
-    if (err) {
-        const git_error *e = giterr_last();
-        error("Error %d/%d: %s\n", err, e->klass, e->message);
-    }
-
-    return sexp_repo;
-}
-
-SEXP revisions(const SEXP repository)
+SEXP revisions(const SEXP repo)
 {
     int i=0;
     int err = 0;
@@ -555,10 +523,16 @@ SEXP revisions(const SEXP repository)
     const git_commit *commit = NULL;
     git_revwalk *walker = NULL;
     git_oid oid;
-    git_repository *repo = NULL;
+    git_repository *repository;
 
-    repo = get_repository(repository);
-    walker = get_walker(repository);
+    repository = get_repository(repo);
+    if (!repository)
+        error("Invalid repository");
+
+    err = git_revwalk_new(&walker, repository);
+    if (err)
+        goto cleanup;
+
     git_revwalk_push_head(walker);
 
     /* Count number of revisions before creating the list */
@@ -582,7 +556,7 @@ SEXP revisions(const SEXP repository)
         git_oid_tostr(oid_hex, sizeof(oid_hex), &oid);
 
         /* :TODO:FIX: Check err */
-        err = git_commit_lookup(&commit, repo, &oid);
+        err = git_commit_lookup(&commit, repository, &oid);
 
         PROTECT(sexp_commit = NEW_OBJECT(MAKE_CLASS("git_commit")));
 
@@ -624,6 +598,11 @@ SEXP revisions(const SEXP repository)
     }
 
 cleanup:
+    if (walker)
+        git_revwalk_free(walker);
+
+    git_repository_free(repository);
+
     UNPROTECT(1);
 
     if (err) {
@@ -642,7 +621,18 @@ cleanup:
  */
 SEXP state(const SEXP repo)
 {
-    return ScalarInteger(git_repository_state(get_repository(repo)));
+    SEXP result;
+    git_repository *repository;
+
+    repository = get_repository(repo);
+    if (!repository)
+        error("Invalid repository");
+
+    result = ScalarInteger(git_repository_state(repository));
+
+    git_repository_free(repository);
+
+    return result;
 }
 
 /**
@@ -664,8 +654,13 @@ SEXP tags(const SEXP repo)
     git_tag *t;
     const git_oid *oid;
     const git_signature *signature;
+    git_repository *repository;
 
-    err = git_tag_list(&l, get_repository(repo));
+    repository = get_repository(repo);
+    if (!repository)
+        error("Invalid repository");
+
+    err = git_tag_list(&l, repository);
 
     /* :TODO:FIX: Check error code */
 
@@ -690,14 +685,14 @@ SEXP tags(const SEXP repo)
         *buf = '\0';
         strncat(buf, "refs/tags/", 10);
         strncat(buf, tagname, tagname_len);
-        git_reference_lookup(&ref, get_repository(repo), buf);
+        git_reference_lookup(&ref, repository, buf);
         free(buf);
         init_reference(ref, tag);
 
         /* Fill in signature for tag */
         /* oid = git_reference_target(ref); */
         /* if (oid) { */
-        /*     err = git_tag_lookup(&t, get_repository(repo), oid); */
+        /*     err = git_tag_lookup(&t, repository, oid); */
         /*     signature = git_tag_tagger(t); */
         /*     SET_SLOT(GET_SLOT(tag, Rf_install("sig")), */
         /*              Rf_install("name"), */
@@ -710,6 +705,7 @@ SEXP tags(const SEXP repo)
     }
 
     git_strarray_free(&l);
+    git_repository_free(repository);
 
     setAttrib(list, R_NamesSymbol, names);
     UNPROTECT(2);
@@ -725,16 +721,28 @@ SEXP tags(const SEXP repo)
  */
 SEXP workdir(const SEXP repo)
 {
-    return ScalarString(mkChar(git_repository_workdir(get_repository(repo))));
+    SEXP result;
+    git_repository *repository;
+
+    repository = get_repository(repo);
+    if (!repository)
+        error("Invalid repository");
+
+    result = ScalarString(mkChar(git_repository_workdir(repository)));
+
+    git_repository_free(repository);
+
+    return result;
 }
 
 static const R_CallMethodDef callMethods[] =
 {
     {"branches", (DL_FUNC)&branches, 2},
+    {"init", (DL_FUNC)&init, 1},
     {"is_bare", (DL_FUNC)&is_bare, 1},
     {"is_empty", (DL_FUNC)&is_empty, 1},
+    {"is_repository", (DL_FUNC)&is_repository, 1},
     {"references", (DL_FUNC)&references, 1},
-    {"repository", (DL_FUNC)&repository, 1},
     {"remotes", (DL_FUNC)&remotes, 1},
     {"remote_url", (DL_FUNC)&remote_url, 2},
     {"revisions", (DL_FUNC)&revisions, 1},
