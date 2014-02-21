@@ -1,3 +1,20 @@
+git2r 0.0.6
+-----------
+
+NEW FEATURES
+
+* Added method init to create a new Git repository
+
+CHANGES
+
+* Removed usage of testthat package when testing the package
+
+* Removed bundled zlib in src/zlib and instead link against zlib
+  shipped with R.
+
+* Dropped usage of external pointers, S4 git_repository now keeps
+  track of the path of the repository.
+
 git2r 0.0.5
 -----------
 
