@@ -8,9 +8,7 @@
   S4 class to handle a git repository
 }
 \section{Slots}{
-  \describe{ \item{repo}{ External pointer to a git
-  repository } \item{walker}{ External pointer to a git
-  revision walker } }
+  \describe{ \item{path}{ Path to a git repository } }
 }
 
 \section{Methods}{

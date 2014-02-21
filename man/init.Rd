@@ -1,0 +1,28 @@
+\name{init}
+\alias{init}
+\title{Init a repository}
+\usage{
+  init(path, bare = FALSE)
+}
+\arguments{
+  \item{path}{A path to where to init a git repository}
+
+  \item{bare}{If TRUE, a Git repository without a working
+  directory is created at the pointed path. If FALSE,
+  provided path will be considered as the working directory
+  into which the .git directory will be created.}
+}
+\value{
+  A S4 \code{git_repository} object
+}
+\description{
+  Init a repository
+}
+\examples{
+\dontrun{
+## Init a repository
+repo <- init('path/to/git2r')
+}
+}
+\keyword{methods}
+
