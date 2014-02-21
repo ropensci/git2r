@@ -205,11 +205,32 @@ static git_repository* get_repository(const SEXP repo)
  * Init a repository.
  *
  * @param path
- * @return
+ * @param bare
+ * @return R_NilValue
  */
-SEXP init(const SEXP path)
+SEXP init(const SEXP path, const SEXP bare)
 {
-    return ScalarLogical(FALSE);
+    int err;
+    git_repository *repository = NULL;
+
+    if (R_NilValue == path)
+        error("'path' equals R_NilValue");
+    if (!isString(path))
+        error("'path' must be a string");
+    if (R_NilValue == bare)
+        error("'bare' equals R_NilValue");
+    if (!isLogical(bare))
+        error("'bare' must be a logical");
+
+    err = git_repository_init(&repository,
+                              CHAR(STRING_ELT(path, 0)),
+                              LOGICAL(bare)[0]);
+    if (err)
+        error("Unable to init repository");
+    else
+        git_repository_free(repository);
+
+    return R_NilValue;
 }
 
 /**
@@ -738,7 +759,7 @@ SEXP workdir(const SEXP repo)
 static const R_CallMethodDef callMethods[] =
 {
     {"branches", (DL_FUNC)&branches, 2},
-    {"init", (DL_FUNC)&init, 1},
+    {"init", (DL_FUNC)&init, 2},
     {"is_bare", (DL_FUNC)&is_bare, 1},
     {"is_empty", (DL_FUNC)&is_empty, 1},
     {"is_repository", (DL_FUNC)&is_repository, 1},

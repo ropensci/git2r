@@ -110,6 +110,10 @@ repository <- function(path) {
 ##' Init a repository
 ##'
 ##' @param path A path to where to init a git repository
+##' @param bare If TRUE, a Git repository without a working directory
+##' is created at the pointed path. If FALSE, provided path will be
+##' considered as the working directory into which the .git directory
+##' will be created.
 ##' @return A S4 \code{git_repository} object
 ##' @keywords methods
 ##' @export
@@ -118,17 +122,21 @@ repository <- function(path) {
 ##' ## Init a repository
 ##' repo <- init('path/to/git2r')
 ##' }
-init <- function(path) {
+init <- function(path, bare = FALSE) {
     ## Argument checking
     stopifnot(is.character(path),
               identical(length(path), 1L),
-              nchar(path) > 0)
+              nchar(path) > 0,
+              is.logical(bare),
+              identical(length(bare), 1L))
 
     path <- normalizePath(path, winslash = "/", mustWork = TRUE)
     if(!file.info(path)$isdir)
         stop('path is not a directory')
 
-    .Call('init', path)
+    .Call('init', path, bare)
+
+    new('git_repository', path=path)
 }
 
 ##' Check if repository is bare
