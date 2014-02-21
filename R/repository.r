@@ -18,11 +18,8 @@
 ##' S4 class to handle a git repository
 ##' @section Slots:
 ##' \describe{
-##'   \item{repo}{
-##'     External pointer to a git repository
-##'   }
-##'   \item{walker}{
-##'     External pointer to a git revision walker
+##'   \item{path}{
+##'     Path to a git repository
 ##'   }
 ##' }
 ##' @name git_repository-class
@@ -40,8 +37,17 @@
 ##' @keywords methods
 ##' @export
 setClass('git_repository',
-         slots=c(repo='externalptr',
-                 walker='externalptr'))
+         slots=c(path='character'),
+         validity=function(object) {
+             retval <- NULL
+
+             if(is.null(retval)) {
+                 return(TRUE)
+             }
+
+             return(retval)
+         }
+)
 
 ##' Open a repository
 ##'
@@ -98,7 +104,31 @@ repository <- function(path) {
     if(!file.info(path)$isdir)
         stop('path is not a directory')
 
-    .Call('repository', path)
+    new('git_repository', path=path)
+}
+
+##' Init a repository
+##'
+##' @param path A path to where to init a git repository
+##' @return A S4 \code{git_repository} object
+##' @keywords methods
+##' @export
+##' @examples
+##' \dontrun{
+##' ## Init a repository
+##' repo <- init('path/to/git2r')
+##' }
+init <- function(path) {
+    ## Argument checking
+    stopifnot(is.character(path),
+              identical(length(path), 1L),
+              nchar(path) > 0)
+
+    path <- normalizePath(path, winslash = "/", mustWork = TRUE)
+    if(!file.info(path)$isdir)
+        stop('path is not a directory')
+
+    .Call('init', path)
 }
 
 ##' Check if repository is bare
