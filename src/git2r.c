@@ -36,6 +36,50 @@ const char err_unexpected_type_of_branch[] = "Unexpected type of branch";
 const char err_unexpected_head_of_branch[] = "Unexpected head of branch";
 
 /**
+ * Add files to a repository
+ *
+ * @param repo S4 class to an open repository
+ * @param path
+ * @return R_NilValue
+ */
+SEXP add(const SEXP repo, const SEXP path)
+{
+    int err;
+    git_index *index = NULL;
+    git_repository *repository = NULL;
+
+    if (R_NilValue == path)
+        error("'path' equals R_NilValue");
+    if (!isString(path))
+        error("'path' must be a string");
+
+    repository= get_repository(repo);
+    if (!repository)
+        error("Invalid repository");
+
+    err = git_repository_index(&index, repository);
+    if (err)
+        goto cleanup;
+
+    err = git_index_add_bypath(index, CHAR(STRING_ELT(path, 0)));
+    if (err)
+        goto cleanup;
+
+    err = git_index_write(index);
+    if (err)
+        goto cleanup;
+
+cleanup:
+    if (index)
+        git_index_free(index);
+
+    if (repository)
+        git_repository_free(repository);
+
+    return R_NilValue;
+}
+
+/**
  * List branches in a repository
  *
  * @param repo S4 class to an open repository
@@ -758,6 +802,7 @@ SEXP workdir(const SEXP repo)
 
 static const R_CallMethodDef callMethods[] =
 {
+    {"add", (DL_FUNC)&add, 2},
     {"branches", (DL_FUNC)&branches, 2},
     {"init", (DL_FUNC)&init, 2},
     {"is_bare", (DL_FUNC)&is_bare, 1},

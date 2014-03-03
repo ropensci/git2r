@@ -139,6 +139,46 @@ init <- function(path, bare = FALSE) {
     new('git_repository', path=path)
 }
 
+##' Add file(s) to index
+##'
+##' @name add-methods
+##' @aliases add
+##' @aliases add-methods
+##' @aliases add,git_repository-method
+##' @docType methods
+##' @param object The repository \code{object}.
+##' @param path character vector with filenames to add. The path must
+##' be relative to the repository's working filder.
+##' @return invisible(NULL)
+##' @keywords methods
+##' @export
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository('path/to/git2r')
+##'
+##' ## Add file repository
+##' add(repo, 'file-to-add')
+##' }
+##'
+setGeneric('add',
+           signature = 'object',
+           function(object, path) standardGeneric('add'))
+
+setMethod('add',
+          signature(object = 'git_repository'),
+          function (object, path)
+          {
+              ## Argument checking
+              stopifnot(is.character(path),
+                        all(nchar(path) > 0))
+
+              lapply(path, function(x) .Call('add', object, x))
+
+              invisible(NULL)
+          }
+)
+
 ##' Check if repository is bare
 ##'
 ##' @name is.bare-methods
