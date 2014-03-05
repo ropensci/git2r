@@ -25,6 +25,7 @@
 
 static void init_reference(git_reference *ref, SEXP reference);
 static git_repository* get_repository(const SEXP repo);
+static void init_signature(git_signature *sig, SEXP signature);
 static size_t number_of_branches(git_repository *repo, int flags);
 
 /**
@@ -212,6 +213,44 @@ cleanup:
     }
 
     return list;
+}
+
+/**
+ * Get the configured signature for a repository
+ *
+ * @param repo
+ * @return
+ */
+SEXP default_signature(const SEXP repo)
+{
+    int err;
+    git_repository *repository = NULL;
+    git_signature *signature = NULL;
+    SEXP sig;
+
+    repository = get_repository(repo);
+    if (!repository)
+        error("Invalid repository");
+
+    err = git_signature_default(&signature, repository);
+    if (err < 0)
+        goto cleanup;
+
+    PROTECT(sig = NEW_OBJECT(MAKE_CLASS("git_signature")));
+    init_signature(signature, sig);
+
+cleanup:
+    if (repository)
+        git_repository_free(repository);
+
+    UNPROTECT(1);
+
+    if (err < 0) {
+        const git_error *e = giterr_last();
+        error("Error %d/%d: %s\n", err, e->klass, e->message);
+    }
+
+    return sig;
 }
 
 /**
@@ -804,6 +843,7 @@ static const R_CallMethodDef callMethods[] =
 {
     {"add", (DL_FUNC)&add, 2},
     {"branches", (DL_FUNC)&branches, 2},
+    {"default_signature", (DL_FUNC)&default_signature, 1},
     {"init", (DL_FUNC)&init, 2},
     {"is_bare", (DL_FUNC)&is_bare, 1},
     {"is_empty", (DL_FUNC)&is_empty, 1},

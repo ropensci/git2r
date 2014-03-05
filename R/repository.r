@@ -289,9 +289,33 @@ setMethod('remote_url',
           }
 )
 
+##' Get the signature
+##'
+##' Get the signature according to the repository's configuration
+##' @name default_signature-methods
+##' @aliases default_signature
+##' @aliases default_signature-methods
+##' @aliases default_signature,git_repository-method
+##' @docType methods
+##' @param object The repository \code{object} to check signature
+##' @return Character vector with signature
+##' @keywords methods
+##' @export
+setGeneric('default_signature',
+           signature = 'object',
+           function(object) standardGeneric('default_signature'))
+
+setMethod('default_signature',
+          signature(object = 'git_repository'),
+          function (object)
+          {
+              .Call('default_signature', object)
+          }
+)
+
 ##' Brief summary of repository
 ##'
-##' @aliases show,git_repository-metho
+##' @aliases show,git_repository-methods
 ##' @docType methods
 ##' @param object The repository \code{object}
 ##' @return :TODO:DOCUMENTATION:
@@ -318,7 +342,7 @@ setMethod('show',
 
 ##' Summary of repository
 ##'
-##' @aliases summary,git_repository-metho
+##' @aliases summary,git_repository-methods
 ##' @docType methods
 ##' @param object The repository \code{object}
 ##' @return :TODO:DOCUMENTATION:
