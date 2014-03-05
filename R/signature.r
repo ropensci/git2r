@@ -42,3 +42,22 @@ setClass('git_signature',
          slots=c(name='character',
                  email='character',
                  when='git_time'))
+
+##' Brief summary of signature
+##'
+##' @aliases show,git_signature-methods
+##' @docType methods
+##' @param object The repository \code{object}
+##' @return :TODO:DOCUMENTATION:
+##' @keywords methods
+##' @export
+setMethod('show',
+          signature(object = 'git_signature'),
+          function(object)
+          {
+              cat(sprintf('name:  %s\nemail: %s\nwhen:  %s\n',
+                          object@name,
+                          object@email,
+                          as(object@when, 'character')))
+          }
+)
