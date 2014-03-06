@@ -33,6 +33,7 @@ static size_t number_of_branches(git_repository *repo, int flags);
  */
 
 const char err_alloc_char_buffer[] = "Unable to allocate character buffer";
+const char err_invalid_repository[] = "Invalid repository";
 const char err_unexpected_type_of_branch[] = "Unexpected type of branch";
 const char err_unexpected_head_of_branch[] = "Unexpected head of branch";
 
@@ -56,7 +57,7 @@ SEXP add(const SEXP repo, const SEXP path)
 
     repository= get_repository(repo);
     if (!repository)
-        error("Invalid repository");
+        error(err_invalid_repository);
 
     err = git_repository_index(&index, repository);
     if (err)
@@ -98,7 +99,7 @@ SEXP branches(const SEXP repo, const SEXP flags)
 
     repository = get_repository(repo);
     if (!repository)
-        error("Invalid repository");
+        error(err_invalid_repository);
 
     /* Count number of branches before creating the list */
     n = number_of_branches(repository, INTEGER(flags)[0]);
@@ -230,7 +231,7 @@ SEXP default_signature(const SEXP repo)
 
     repository = get_repository(repo);
     if (!repository)
-        error("Invalid repository");
+        error(err_invalid_repository);
 
     err = git_signature_default(&signature, repository);
     if (err < 0)
@@ -267,19 +268,19 @@ static git_repository* get_repository(const SEXP repo)
     int err;
 
     if (R_NilValue == repo || S4SXP != TYPEOF(repo))
-        error("Invalid repository");
+        error(err_invalid_repository);
 
     class_name = getAttrib(repo, R_ClassSymbol);
     if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_repository"))
-        error("Invalid repository");
+        error(err_invalid_repository);
 
     path = GET_SLOT(repo, Rf_install("path"));
     if (R_NilValue == path)
-        error("Invalid repository");
+        error(err_invalid_repository);
 
     err = git_repository_open(&r, CHAR(STRING_ELT(path, 0)));
     if (err)
-        error("Invalid repository");
+        error(err_invalid_repository);
 
     return r;
 }
@@ -329,7 +330,7 @@ SEXP is_bare(const SEXP repo)
 
     repository= get_repository(repo);
     if (!repository)
-        error("Invalid repository");
+        error(err_invalid_repository);
 
     if (git_repository_is_bare(repository))
         result = ScalarLogical(TRUE);
@@ -354,7 +355,7 @@ SEXP is_empty(const SEXP repo)
 
     repository= get_repository(repo);
     if (!repository)
-        error("Invalid repository");
+        error(err_invalid_repository);
 
     if (git_repository_is_empty(repository))
         result = ScalarLogical(TRUE);
@@ -523,7 +524,7 @@ SEXP references(const SEXP repo)
 
     repository= get_repository(repo);
     if (!repository)
-        error("Invalid repository");
+        error(err_invalid_repository);
 
     err = git_reference_list(&l, repository);
 
@@ -566,7 +567,7 @@ SEXP remotes(const SEXP repo)
 
     repository = get_repository(repo);
     if (!repository)
-        error("Invalid repository");
+        error(err_invalid_repository);
 
     err = git_remote_list(&l, repository);
 
@@ -600,7 +601,7 @@ SEXP remote_url(const SEXP repo, const SEXP remote)
 
     repository = get_repository(repo);
     if (!repository)
-        error("Invalid repository");
+        error(err_invalid_repository);
 
     PROTECT(url = allocVector(STRSXP, len));
 
@@ -631,7 +632,7 @@ SEXP revisions(const SEXP repo)
 
     repository = get_repository(repo);
     if (!repository)
-        error("Invalid repository");
+        error(err_invalid_repository);
 
     err = git_revwalk_new(&walker, repository);
     if (err)
@@ -730,7 +731,7 @@ SEXP state(const SEXP repo)
 
     repository = get_repository(repo);
     if (!repository)
-        error("Invalid repository");
+        error(err_invalid_repository);
 
     result = ScalarInteger(git_repository_state(repository));
 
@@ -762,7 +763,7 @@ SEXP tags(const SEXP repo)
 
     repository = get_repository(repo);
     if (!repository)
-        error("Invalid repository");
+        error(err_invalid_repository);
 
     err = git_tag_list(&l, repository);
 
@@ -830,7 +831,7 @@ SEXP workdir(const SEXP repo)
 
     repository = get_repository(repo);
     if (!repository)
-        error("Invalid repository");
+        error(err_invalid_repository);
 
     result = ScalarString(mkChar(git_repository_workdir(repository)));
 
