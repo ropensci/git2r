@@ -60,15 +60,15 @@ SEXP add(const SEXP repo, const SEXP path)
         error(err_invalid_repository);
 
     err = git_repository_index(&index, repository);
-    if (err)
+    if (err < 0)
         goto cleanup;
 
     err = git_index_add_bypath(index, CHAR(STRING_ELT(path, 0)));
-    if (err)
+    if (err < 0)
         goto cleanup;
 
     err = git_index_write(index);
-    if (err)
+    if (err < 0)
         goto cleanup;
 
 cleanup:
@@ -77,6 +77,11 @@ cleanup:
 
     if (repository)
         git_repository_free(repository);
+
+    if (err < 0) {
+        const git_error *e = giterr_last();
+        error("Error %d/%d: %s\n", err, e->klass, e->message);
+    }
 
     return R_NilValue;
 }
