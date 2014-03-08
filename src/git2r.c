@@ -515,42 +515,52 @@ static size_t number_of_revisions(git_revwalk *walker)
 SEXP references(const SEXP repo)
 {
     int i, err;
-    git_strarray l;
-    SEXP list;
-    SEXP names;
-    SEXP reference;
+    git_strarray ref_list;
+    SEXP list = R_NilValue;
+    SEXP names = R_NilValue;
     git_reference *ref;
     git_repository *repository;
-    const char *refname;
-    char out[41];
-    out[40] = '\0';
 
-    repository= get_repository(repo);
+    repository = get_repository(repo);
     if (!repository)
         error(err_invalid_repository);
 
-    err = git_reference_list(&l, repository);
+    err = git_reference_list(&ref_list, repository);
+    if (err < 0)
+        goto cleanup;
 
-    /* :TODO:FIX: Check error code */
+    PROTECT(list = allocVector(VECSXP, ref_list.count));
+    PROTECT(names = allocVector(STRSXP, ref_list.count));
 
-    PROTECT(list = allocVector(VECSXP, l.count));
-    PROTECT(names = allocVector(STRSXP, l.count));
+    for (i = 0; i < ref_list.count; i++) {
+        SEXP reference;
 
-    for (i = 0; i < l.count; i++) {
+        err = git_reference_lookup(&ref, repository, ref_list.strings[i]);
+        if (err < 0)
+            goto cleanup;
+
         PROTECT(reference = NEW_OBJECT(MAKE_CLASS("git_reference")));
-        refname = l.strings[i];
-        git_reference_lookup(&ref, repository, refname);
         init_reference(ref, reference);
-        SET_STRING_ELT(names, i, mkChar(refname));
+        SET_STRING_ELT(names, i, mkChar(ref_list.strings[i]));
         SET_VECTOR_ELT(list, i, reference);
         UNPROTECT(1);
     }
 
-    git_strarray_free(&l);
-    git_repository_free(repository);
+cleanup:
+    git_strarray_free(&ref_list);
 
-    setAttrib(list, R_NamesSymbol, names);
-    UNPROTECT(2);
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != list && R_NilValue != names) {
+        setAttrib(list, R_NamesSymbol, names);
+        UNPROTECT(2);
+    }
+
+    if (err < 0) {
+        const git_error *e = giterr_last();
+        error("Error %d/%d: %s\n", err, e->klass, e->message);
+    }
 
     return list;
 }
