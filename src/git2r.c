@@ -113,7 +113,7 @@ SEXP branches(const SEXP repo, const SEXP flags)
     protected++;
 
     err = git_branch_iterator_new(&iter, repository,  INTEGER(flags)[0]);
-    if (err)
+    if (err < 0)
         goto cleanup;
 
     for (;;) {
@@ -123,11 +123,11 @@ SEXP branches(const SEXP repo, const SEXP flags)
         const char *refname;
 
         err = git_branch_next(&ref, &type, iter);
-        if (GIT_ITEROVER == err) {
-            err = 0;
-            break;
-        } else if (err) {
-            err = 1;
+        if (err < 0) {
+            if (GIT_ITEROVER == err) {
+                err = 0;
+                break;
+            }
             goto cleanup;
         }
 
@@ -148,7 +148,7 @@ SEXP branches(const SEXP repo, const SEXP flags)
             buf_size = git_branch_remote_name(NULL, 0, repository, refname);
             buf = malloc(buf_size * sizeof(char));
             if (NULL == buf) {
-                err = 1;
+                err = -1;
                 err_msg = err_alloc_char_buffer;
                 goto cleanup;
             }
@@ -159,10 +159,8 @@ SEXP branches(const SEXP repo, const SEXP flags)
             err = git_remote_load(&remote, repository, buf);
             if (err < 0) {
                 err = git_remote_create_inmemory(&remote, repository, NULL, buf);
-                if (err < 0) {
-                    err = 1;
+                if (err < 0)
                     goto cleanup;
-                }
             }
 
             SET_SLOT(branch,
@@ -174,7 +172,7 @@ SEXP branches(const SEXP repo, const SEXP flags)
             break;
         }
         default:
-            err = 1;
+            err = -1;
             err_msg = err_unexpected_type_of_branch;
             goto cleanup;
         }
@@ -187,7 +185,7 @@ SEXP branches(const SEXP repo, const SEXP flags)
             SET_SLOT(branch, Rf_install("head"), ScalarLogical(1));
             break;
         default:
-            err = 1;
+            err = -1;
             err_msg = err_unexpected_head_of_branch;
             goto cleanup;
         }
@@ -209,7 +207,7 @@ cleanup:
     if (protected)
         UNPROTECT(protected);
 
-    if (err) {
+    if (err < 0) {
         if (err_msg) {
             error(err_msg);
         } else {
