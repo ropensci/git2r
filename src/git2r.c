@@ -26,7 +26,7 @@
 static void init_reference(git_reference *ref, SEXP reference);
 static git_repository* get_repository(const SEXP repo);
 static void init_signature(git_signature *sig, SEXP signature);
-static size_t number_of_branches(git_repository *repo, int flags);
+static int number_of_branches(git_repository *repo, int flags, size_t *n);
 
 /**
  * Error messages
@@ -107,7 +107,9 @@ SEXP branches(const SEXP repo, const SEXP flags)
         error(err_invalid_repository);
 
     /* Count number of branches before creating the list */
-    n = number_of_branches(repository, INTEGER(flags)[0]);
+    err = number_of_branches(repository, INTEGER(flags)[0], &n);
+    if (err < 0)
+        goto cleanup;
 
     PROTECT(list = allocVector(VECSXP, n));
     protected++;
@@ -456,36 +458,32 @@ static void init_signature(git_signature *sig, SEXP signature)
  * @param flags
  * @return
  */
-static size_t number_of_branches(git_repository *repo, int flags)
+static int number_of_branches(git_repository *repo, int flags, size_t *n)
 {
-    size_t n = 0;
     int err;
     git_branch_iterator *iter;
     git_branch_t type;
     git_reference *ref;
 
+    *n = 0;
+
     err = git_branch_iterator_new(&iter, repo, flags);
-    if (err) {
-        const git_error *e = giterr_last();
-        error("Error %d/%d: %s\n", error, e->klass, e->message);
-    }
+    if (err < 0)
+        return err;
 
     for (;;) {
         err = git_branch_next(&ref, &type, iter);
-        if (err)
+        if (err < 0)
             break;
         git_reference_free(ref);
-        n++;
-    }
-
-    if (GIT_ITEROVER != err) {
-        const git_error *e = giterr_last();
-        error("Error %d/%d: %s\n", error, e->klass, e->message);
+        (*n)++;
     }
 
     git_branch_iterator_free(iter);
 
-    return n;
+    if (GIT_ITEROVER != err)
+        return err;
+    return 0;
 }
 
 /**
