@@ -263,29 +263,27 @@ cleanup:
  * Get repo slot from S4 class git_repository
  *
  * @param repo
- * @return
+ * @return a git_repository pointer on success else NULL
  */
 static git_repository* get_repository(const SEXP repo)
 {
     SEXP class_name;
     SEXP path;
     git_repository *r;
-    int err;
 
     if (R_NilValue == repo || S4SXP != TYPEOF(repo))
-        error(err_invalid_repository);
+        return NULL;
 
     class_name = getAttrib(repo, R_ClassSymbol);
     if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_repository"))
-        error(err_invalid_repository);
+        return NULL;
 
     path = GET_SLOT(repo, Rf_install("path"));
     if (R_NilValue == path)
-        error(err_invalid_repository);
+        return NULL;
 
-    err = git_repository_open(&r, CHAR(STRING_ELT(path, 0)));
-    if (err)
-        error(err_invalid_repository);
+    if (git_repository_open(&r, CHAR(STRING_ELT(path, 0))) < 0)
+        return NULL;
 
     return r;
 }
