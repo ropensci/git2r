@@ -574,27 +574,35 @@ cleanup:
 SEXP remotes(const SEXP repo)
 {
     int i, err;
-    git_strarray l;
-    SEXP r;
+    git_strarray rem_list;
+    SEXP list;
     git_repository *repository;
 
     repository = get_repository(repo);
     if (!repository)
         error(err_invalid_repository);
 
-    err = git_remote_list(&l, repository);
+    err = git_remote_list(&rem_list, repository);
+    if (err < 0)
+        goto cleanup;
 
-    /* :TODO:FIX: Check error code */
-
-    PROTECT(r = allocVector(STRSXP, l.count));
-    for (i = 0; i < l.count; i++)
-        SET_STRING_ELT(r, i, mkChar(l.strings[i]));
+    PROTECT(list = allocVector(STRSXP, rem_list.count));
+    for (i = 0; i < rem_list.count; i++)
+        SET_STRING_ELT(list, i, mkChar(rem_list.strings[i]));
     UNPROTECT(1);
 
-    git_strarray_free(&l);
-    git_repository_free(repository);
+cleanup:
+    git_strarray_free(&rem_list);
 
-    return r;
+    if (repository)
+        git_repository_free(repository);
+
+    if (err < 0) {
+        const git_error *e = giterr_last();
+        error("Error %d/%d: %s\n", err, e->klass, e->message);
+    }
+
+    return list;
 }
 
 /**
