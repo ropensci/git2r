@@ -652,10 +652,12 @@ SEXP revisions(const SEXP repo)
         error(err_invalid_repository);
 
     err = git_revwalk_new(&walker, repository);
-    if (err)
+    if (err < 0)
         goto cleanup;
 
-    git_revwalk_push_head(walker);
+    err = git_revwalk_push_head(walker);
+    if (err < 0)
+        goto cleanup;
 
     /* Count number of revisions before creating the list */
     n = number_of_revisions(walker);
@@ -664,8 +666,11 @@ SEXP revisions(const SEXP repo)
     PROTECT(list = allocVector(VECSXP, n));
 
     git_revwalk_reset(walker);
-    git_revwalk_push_head(walker);
-    while (!git_revwalk_next(&oid, walker)) {
+    err = git_revwalk_push_head(walker);
+    if (err < 0)
+        goto cleanup;
+
+    for (;;) {
         const char *message = NULL;
         const char *summary = NULL;
         char oid_hex[GIT_OID_HEXSZ + 1];
@@ -675,10 +680,18 @@ SEXP revisions(const SEXP repo)
         SEXP sexp_author;
         SEXP sexp_committer;
 
+        err = git_revwalk_next(&oid, walker);
+        if (err < 0) {
+            if (GIT_ITEROVER == err)
+                err = 0;
+            goto cleanup;
+        }
+
         git_oid_tostr(oid_hex, sizeof(oid_hex), &oid);
 
-        /* :TODO:FIX: Check err */
         err = git_commit_lookup(&commit, repository, &oid);
+        if (err < 0)
+            goto cleanup;
 
         PROTECT(sexp_commit = NEW_OBJECT(MAKE_CLASS("git_commit")));
 
@@ -727,7 +740,7 @@ cleanup:
 
     UNPROTECT(1);
 
-    if (err) {
+    if (err < 0) {
         const git_error *e = giterr_last();
         error("Error %d/%d: %s\n", err, e->klass, e->message);
     }
