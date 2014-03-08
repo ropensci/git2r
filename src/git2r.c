@@ -388,11 +388,11 @@ SEXP is_repository(const SEXP path)
         error("'path' must be a string");
 
     err = git_repository_open(&repository, CHAR(STRING_ELT(path, 0)));
-    if (err) {
-        result = ScalarLogical(TRUE);
+    if (err < 0) {
+        result = ScalarLogical(FALSE);
     } else {
         git_repository_free(repository);
-        result = ScalarLogical(FALSE);
+        result = ScalarLogical(TRUE);
     }
 
     return result;
