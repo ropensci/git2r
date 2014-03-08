@@ -312,10 +312,10 @@ SEXP init(const SEXP path, const SEXP bare)
     err = git_repository_init(&repository,
                               CHAR(STRING_ELT(path, 0)),
                               LOGICAL(bare)[0]);
-    if (err)
+    if (err < 0)
         error("Unable to init repository");
-    else
-        git_repository_free(repository);
+
+    git_repository_free(repository);
 
     return R_NilValue;
 }
