@@ -23,8 +23,6 @@
 ##'   }
 ##' }
 ##' @name git_repository-class
-##' @aliases show,git_repository-method
-##' @aliases summary,git_repository-method
 ##' @docType class
 ##' @keywords classes
 ##' @section Methods:
@@ -326,7 +324,9 @@ setMethod('show',
           function(object)
           {
               lapply(remotes(object), function(remote) {
-                  cat(sprintf('Remote:   @ %s (%s)\n', remote, remote_url(object, remote)))
+                  cat(sprintf('Remote:   @ %s (%s)\n',
+                              remote,
+                              remote_url(object, remote)))
               })
 
               if(is.empty(object)) {
