@@ -779,15 +779,11 @@ SEXP state(const SEXP repo)
 SEXP tags(const SEXP repo)
 {
     int i, err;
-    git_strarray l;
+    const char* err_msg = NULL;
+    git_strarray tag_list;
     SEXP list;
     SEXP names;
-    git_reference *ref;
-    const char *tagname;
-    char* buf;
-    size_t tagname_len;
-    git_tag *t;
-    const git_oid *oid;
+    size_t protected = 0;
     const git_signature *signature;
     git_repository *repository;
 
@@ -795,32 +791,42 @@ SEXP tags(const SEXP repo)
     if (!repository)
         error(err_invalid_repository);
 
-    err = git_tag_list(&l, repository);
+    err = git_tag_list(&tag_list, repository);
+    if (err < 0)
+        goto cleanup;
 
-    /* :TODO:FIX: Check error code */
+    PROTECT(list = allocVector(VECSXP, tag_list.count));
+    PROTECT(names = allocVector(STRSXP, tag_list.count));
+    protected = 2;
 
-    PROTECT(list = allocVector(VECSXP, l.count));
-    PROTECT(names = allocVector(STRSXP, l.count));
-
-    for (i = 0; i < l.count; i++) {
+    for (i = 0; i < tag_list.count; i++) {
+        char* buf;
+        git_reference *ref;
         SEXP tag;
+        char *tagname;
+        size_t tagname_len;
 
         PROTECT(tag = NEW_OBJECT(MAKE_CLASS("git_tag")));
+        protected++;
 
-        tagname = l.strings[i];
+        tagname = tag_list.strings[i];
 
         /* Prefix tagname with "refs/tags/" to lookup reference */
         tagname_len = strlen(tagname);
         buf = malloc((tagname_len+11)*sizeof(char));
         if (!buf) {
-            error("Unable to list tags");
-            UNPROTECT(3);
-            error("Unable to list tags");
+            err = -1;
+            err_msg = err_alloc_char_buffer;
+            goto cleanup;
         }
         *buf = '\0';
         strncat(buf, "refs/tags/", 10);
         strncat(buf, tagname, tagname_len);
-        git_reference_lookup(&ref, repository, buf);
+        err = git_reference_lookup(&ref, repository, buf);
+        if (err < 0) {
+            free(buf);
+            goto cleanup;
+        }
         free(buf);
         init_reference(ref, tag);
 
@@ -837,13 +843,25 @@ SEXP tags(const SEXP repo)
         SET_STRING_ELT(names, i, mkChar(tagname));
         SET_VECTOR_ELT(list, i, tag);
         UNPROTECT(1);
+        protected--;
     }
 
-    git_strarray_free(&l);
+cleanup:
+    git_strarray_free(&tag_list);
     git_repository_free(repository);
 
     setAttrib(list, R_NamesSymbol, names);
-    UNPROTECT(2);
+    if (protected)
+        UNPROTECT(protected);
+
+    if (err < 0) {
+        if (err_msg) {
+            error(err_msg);
+        } else {
+            const git_error *e = giterr_last();
+            error("Error %d: %s\n", e->klass, e->message);
+        }
+    }
 
     return list;
 }
