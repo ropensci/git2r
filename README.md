@@ -149,6 +149,12 @@ wordcloud(msg, scale=c(5,0.5), max.words=100, random.order=FALSE,
 
 ![wordcloud](wordcloud.png)
 
+Included software
+-----------------
+
+- The C library [libgit2](https://github.com/libgit2/libgit2). See
+  `inst/AUTHORS` for the authors of libgit2.
+
 License
 -------
 
