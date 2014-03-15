@@ -397,6 +397,9 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
+    if (signature)
+        git_signature_free(signature);
+
     UNPROTECT(1);
 
     if (err < 0) {
