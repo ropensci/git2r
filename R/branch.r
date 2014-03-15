@@ -149,7 +149,7 @@ setMethod('head',
                   return(b)
               }
 
-              return(character(0))
+              return(NULL)
           }
 )
 
