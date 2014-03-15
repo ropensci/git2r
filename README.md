@@ -1,7 +1,7 @@
 git2r
 =====
 
-R bindings to [libgit2](https://github.com/libgit2/libgit2) library. The package uses the source code and headers of `libgit2` in src/libgit2 to compile and build as a R package. The libgit2 printf calls in cache.c and util.c have been modified to use the R printing routine Rprintf.
+R bindings to [libgit2](https://github.com/libgit2/libgit2) library. The package uses the source code of `libgit2` to interface a Git repository from R.
 
 Aim
 ---
@@ -154,6 +154,9 @@ Included software
 
 - The C library [libgit2](https://github.com/libgit2/libgit2). See
   `inst/AUTHORS` for the authors of libgit2.
+
+- The libgit2 printf calls in cache.c and util.c have been modified to
+  use the R printing routine Rprintf.
 
 License
 -------
