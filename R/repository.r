@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013  Stefan Widgren
+## Copyright (C) 2013-2014  Stefan Widgren
 ##
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -174,6 +174,52 @@ setMethod('add',
               lapply(path, function(x) .Call('add', object, x))
 
               invisible(NULL)
+          }
+)
+
+##' Commit
+##'
+##' @name commit-methods
+##' @aliases commit
+##' @aliases commit-methods
+##' @aliases commit,git_repository-method
+##' @docType methods
+##' @param object The repository \code{object}.
+##' @param reference :TODO:DOCUMENTATION:
+##' @param author :TODO:DOCUMENTATION:
+##' @param committer :TODO:DOCUMENTATION:
+##' @param message :TODO:DOCUMENTATION:
+##' @param tree :TODO:DOCUMENTATION:
+##' @param parents :TODO:DOCUMENTATION:
+##' @return invisible(NULL)
+##' @keywords methods
+##' @export
+setGeneric('commit',
+           signature = 'object',
+           function(object,
+                    message = NULL,
+                    reference = 'HEAD',
+                    author = default_signature(object),
+                    committer = default_signature(object))
+           standardGeneric('commit'))
+
+setMethod('commit',
+          signature(object = 'git_repository'),
+          function (object,
+                    message,
+                    reference,
+                    author,
+                    committer)
+          {
+              ## Argument checking
+              stopifnot(is.character(message),
+                        identical(length(message), 1L),
+                        nchar(message[1]) > 0,
+                        is(author, 'git_signature'),
+                        is(committer, 'git_signature'))
+
+              hex <- head(object)@hex
+              .Call('commit', object, message, author, committer, hex)
           }
 )
 

@@ -32,7 +32,7 @@ static int number_of_branches(git_repository *repo, int flags, size_t *n);
  * Error messages
  */
 
-const char err_alloc_char_buffer[] = "Unable to allocate character buffer";
+const char err_alloc_memory_buffer[] = "Unable to allocate memory buffer";
 const char err_invalid_repository[] = "Invalid repository";
 const char err_unexpected_type_of_branch[] = "Unexpected type of branch";
 const char err_unexpected_head_of_branch[] = "Unexpected head of branch";
@@ -151,7 +151,7 @@ SEXP branches(const SEXP repo, const SEXP flags)
             buf = malloc(buf_size * sizeof(char));
             if (NULL == buf) {
                 err = -1;
-                err_msg = err_alloc_char_buffer;
+                err_msg = err_alloc_memory_buffer;
                 goto cleanup;
             }
 
@@ -219,6 +219,154 @@ cleanup:
     }
 
     return list;
+}
+
+/**
+ * Commit
+ *
+ * @param repo S4 class to an open repository
+ * @param message
+ * @param author
+ * @param committer
+ * @param parent_list
+ * @return R_NilValue
+ */
+SEXP commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP parent_list)
+{
+    SEXP when;
+    int err;
+    const char* err_msg = NULL;
+    git_signature *sig_author = NULL;
+    git_signature *sig_committer = NULL;
+    git_index *index = NULL;
+    git_oid commit_id, tree_oid;
+    git_repository *repository = NULL;
+    git_tree *tree = NULL;
+    size_t i, parent_count;
+    git_commit **parents = NULL;
+
+    if (R_NilValue == repo
+        || R_NilValue == message
+        || !isString(message)
+        || R_NilValue == author
+        || S4SXP != TYPEOF(author)
+        || R_NilValue == committer
+        || S4SXP != TYPEOF(committer)
+        || R_NilValue == parent_list
+        || !isString(parent_list))
+        error("Invalid arguments to commit");
+
+    if (0 != strcmp(CHAR(STRING_ELT(getAttrib(author, R_ClassSymbol), 0)),
+                    "git_signature"))
+        error("author argument not a git_signature");
+
+    if (0 != strcmp(CHAR(STRING_ELT(getAttrib(committer, R_ClassSymbol), 0)),
+                    "git_signature"))
+        error("committer argument not a git_signature");
+
+    repository = get_repository(repo);
+    if (!repository)
+        error(err_invalid_repository);
+
+    when = GET_SLOT(author, Rf_install("when"));
+    err = git_signature_new(&sig_author,
+                            CHAR(STRING_ELT(GET_SLOT(author, Rf_install("name")), 0)),
+                            CHAR(STRING_ELT(GET_SLOT(author, Rf_install("email")), 0)),
+                            REAL(GET_SLOT(when, Rf_install("time")))[0],
+                            REAL(GET_SLOT(when, Rf_install("offset")))[0]);
+    if (err < 0)
+        goto cleanup;
+
+    when = GET_SLOT(committer, Rf_install("when"));
+    err = git_signature_new(&sig_committer,
+                            CHAR(STRING_ELT(GET_SLOT(committer, Rf_install("name")), 0)),
+                            CHAR(STRING_ELT(GET_SLOT(committer, Rf_install("email")), 0)),
+                            REAL(GET_SLOT(when, Rf_install("time")))[0],
+                            REAL(GET_SLOT(when, Rf_install("offset")))[0]);
+    if (err < 0)
+        goto cleanup;
+
+    err = git_repository_index(&index, repository);
+    if (err < 0)
+        goto cleanup;
+
+    err = git_index_write_tree(&tree_oid, index);
+    if (err < 0)
+        goto cleanup;
+
+    err = git_tree_lookup(&tree, repository, &tree_oid);
+    if (err < 0)
+        goto cleanup;
+
+    parent_count = LENGTH(parent_list);
+    if (parent_count) {
+        parents = calloc(parent_count, sizeof(git_commit*));
+        if (NULL == parents) {
+            err = -1;
+            err_msg = err_alloc_memory_buffer;
+            goto cleanup;
+        }
+
+        for (i = 0; i < parent_count; i++) {
+            git_oid oid;
+
+            err = git_oid_fromstr(&oid, CHAR(STRING_ELT(parent_list, 0)));
+            if (err < 0)
+                goto cleanup;
+
+            err = git_commit_lookup(&parents[i], repository, &oid);
+            if (err < 0)
+                goto cleanup;
+        }
+    }
+
+    err = git_commit_create(&commit_id,
+                            repository,
+                            "HEAD",
+                            sig_author,
+                            sig_committer,
+                            NULL,
+                            CHAR(STRING_ELT(message, 0)),
+                            tree,
+                            parent_count,
+                            (const git_commit**)parents);
+    if (err < 0)
+        goto cleanup;
+
+cleanup:
+    if (sig_author)
+        git_signature_free(sig_author);
+
+    if (sig_committer)
+        git_signature_free(sig_committer);
+
+    if (index)
+        git_index_free(index);
+
+    if (tree)
+        git_tree_free(tree);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (parents) {
+        for (i = 0; i < parent_count; i++) {
+            if (parents[i])
+                git_commit_free(parents[i]);
+        }
+        free(parents);
+    }
+
+    if (err < 0) {
+        if (err_msg) {
+            error(err_msg);
+        } else {
+            const git_error *e = giterr_last();
+            error("Error %d/%d: %s\n", err, e->klass, e->message);
+        }
+    }
+
+    return R_NilValue;
 }
 
 /**
@@ -816,7 +964,7 @@ SEXP tags(const SEXP repo)
         buf = malloc((tagname_len+11)*sizeof(char));
         if (!buf) {
             err = -1;
-            err_msg = err_alloc_char_buffer;
+            err_msg = err_alloc_memory_buffer;
             goto cleanup;
         }
         *buf = '\0';
@@ -892,6 +1040,7 @@ static const R_CallMethodDef callMethods[] =
 {
     {"add", (DL_FUNC)&add, 2},
     {"branches", (DL_FUNC)&branches, 2},
+    {"commit", (DL_FUNC)&commit, 5},
     {"default_signature", (DL_FUNC)&default_signature, 1},
     {"init", (DL_FUNC)&init, 2},
     {"is_bare", (DL_FUNC)&is_bare, 1},
