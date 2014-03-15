@@ -139,13 +139,17 @@ setMethod('head',
           function (x)
           {
               b <- branches(x)
-              b <- b[sapply(b, is.head)]
 
-              if(identical(length(b), 1L)) {
-                  return(b[[1]])
+              if(length(b)) {
+                  b <- b[sapply(b, is.head)]
+                  if(identical(length(b), 1L)) {
+                      return(b[[1]])
+                  }
+
+                  return(b)
               }
 
-              return(b)
+              return(character(0))
           }
 )
 
