@@ -1,3 +1,14 @@
+git2r 0.0.7
+-----------
+
+NEW FEATURES
+
+* Added method to create a commit
+
+CHANGES
+
+* Improved error checking
+
 git2r 0.0.6
 -----------
 
