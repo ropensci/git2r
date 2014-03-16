@@ -18,6 +18,9 @@
 ##' S4 class to handle a git commit.
 ##' @section Slots:
 ##' \describe{
+##'   \item{hex}{
+##'     40 char hexadecimal string
+##'   }
 ##'   \item{author}{
 ##'     An author signature
 ##'   }
@@ -43,7 +46,8 @@
 ##' @keywords methods
 ##' @export
 setClass('git_commit',
-         slots=c(author='git_signature',
+         slots=c(hex='character',
+                 author='git_signature',
                  committer='git_signature',
                  summary='character',
                  message='character'),
