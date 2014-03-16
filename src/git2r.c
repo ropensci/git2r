@@ -15,6 +15,14 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** @file git2r.c
+ *  @brief R bindings to the libgit2 library
+ *
+ *  These functions are called from R with .Call to interface the
+ *  libgit2 library from R.
+ *
+ */
+
 #include <Rdefines.h>
 #include <R.h>
 #include <Rinternals.h>
@@ -40,7 +48,7 @@ const char err_unexpected_head_of_branch[] = "Unexpected head of branch";
 /**
  * Add files to a repository
  *
- * @param repo S4 class to an open repository
+ * @param repo S4 class git_repository
  * @param path
  * @return R_NilValue
  */
@@ -89,7 +97,7 @@ cleanup:
 /**
  * List branches in a repository
  *
- * @param repo S4 class to an open repository
+ * @param repo S4 class git_repository
  * @return VECXSP with S4 objects of class git_branch
  */
 SEXP branches(const SEXP repo, const SEXP flags)
@@ -224,10 +232,10 @@ cleanup:
 /**
  * Commit
  *
- * @param repo S4 class to an open repository
+ * @param repo S4 class git_repository
  * @param message
- * @param author
- * @param committer
+ * @param author S4 class git_signature
+ * @param committer S4 class git_signature
  * @param parent_list
  * @return R_NilValue
  */
@@ -372,8 +380,8 @@ cleanup:
 /**
  * Get the configured signature for a repository
  *
- * @param repo
- * @return
+ * @param repo S4 class git_repository
+ * @return S4 class git_signature
  */
 SEXP default_signature(const SEXP repo)
 {
@@ -413,7 +421,7 @@ cleanup:
 /**
  * Get repo slot from S4 class git_repository
  *
- * @param repo
+ * @param repo S4 class git_repository
  * @return a git_repository pointer on success else NULL
  */
 static git_repository* get_repository(const SEXP repo)
@@ -474,7 +482,7 @@ SEXP init(const SEXP path, const SEXP bare)
 /**
  * Check if repository is bare.
  *
- * @param repo S4 class to an open repository
+ * @param repo S4 class git_repository
  * @return
  */
 SEXP is_bare(const SEXP repo)
@@ -499,7 +507,7 @@ SEXP is_bare(const SEXP repo)
 /**
  * Check if repository is empty.
  *
- * @param repo S4 class to an open repository
+ * @param repo S4 class git_repository
  * @return
  */
 SEXP is_empty(const SEXP repo)
@@ -549,6 +557,13 @@ SEXP is_repository(const SEXP path)
     return result;
 }
 
+/**
+ * Init slots in S4 class git_reference.
+ *
+ * @param ref
+ * @param reference
+ * @return void
+ */
 static void init_reference(git_reference *ref, SEXP reference)
 {
     char out[41];
@@ -579,6 +594,13 @@ static void init_reference(git_reference *ref, SEXP reference)
     }
 }
 
+/**
+ * Init slots in S4 class git_signature.
+ *
+ * @param sig
+ * @param signature
+ * @return void
+ */
 static void init_signature(git_signature *sig, SEXP signature)
 {
     SEXP when;
@@ -605,7 +627,7 @@ static void init_signature(git_signature *sig, SEXP signature)
 /**
  * Count number of branches.
  *
- * @param repo
+ * @param repo S4 class git_repository
  * @param flags
  * @return
  */
@@ -656,7 +678,7 @@ static size_t number_of_revisions(git_revwalk *walker)
 /**
  * Get all references that can be found in a repository.
  *
- * @param repo S4 class to an open repository
+ * @param repo S4 class git_repository
  * @return VECXSP with S4 objects of class git_reference
  */
 SEXP references(const SEXP repo)
@@ -715,7 +737,7 @@ cleanup:
 /**
  * Get the configured remotes for a repo
  *
- * @param repo
+ * @param repo S4 class git_repository
  * @return
  */
 SEXP remotes(const SEXP repo)
@@ -755,7 +777,7 @@ cleanup:
 /**
  * Get the remote's url
  *
- * @param repo
+ * @param repo S4 class git_repository
  * @return
  */
 SEXP remote_url(const SEXP repo, const SEXP remote)
@@ -787,6 +809,12 @@ SEXP remote_url(const SEXP repo, const SEXP remote)
     return url;
 }
 
+/**
+ * List revisions
+ *
+ * @param repo S4 class git_repository
+ * @return
+ */
 SEXP revisions(const SEXP repo)
 {
     int i=0;
@@ -902,7 +930,7 @@ cleanup:
 /**
  * Get state of repository.
  *
- * @param repo
+ * @param repo S4 class git_repository
  * @return
  */
 SEXP state(const SEXP repo)
@@ -924,7 +952,7 @@ SEXP state(const SEXP repo)
 /**
  * Get all tags that can be found in a repository.
  *
- * @param repo S4 class to an open repository
+ * @param repo S4 class git_repository
  * @return VECXSP with S4 objects of class tag
  */
 SEXP tags(const SEXP repo)
@@ -1020,7 +1048,7 @@ cleanup:
 /**
  * Get workdir of repository.
  *
- * @param repo
+ * @param repo S4 class git_repository
  * @return
  */
 SEXP workdir(const SEXP repo)
