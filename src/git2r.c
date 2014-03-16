@@ -861,7 +861,6 @@ SEXP revisions(const SEXP repo)
     for (;;) {
         const char *message = NULL;
         const char *summary = NULL;
-        char oid_hex[GIT_OID_HEXSZ + 1];
         git_signature *author = NULL;
         git_signature *committer = NULL;
         SEXP sexp_commit;
@@ -874,8 +873,6 @@ SEXP revisions(const SEXP repo)
                 err = 0;
             goto cleanup;
         }
-
-        git_oid_tostr(oid_hex, sizeof(oid_hex), &oid);
 
         err = git_commit_lookup(&commit, repository, &oid);
         if (err < 0)
