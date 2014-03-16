@@ -782,11 +782,10 @@ cleanup:
  */
 SEXP remote_url(const SEXP repo, const SEXP remote)
 {
+    int err;
     SEXP url;
     size_t len = LENGTH(remote);
     size_t i = 0;
-    int err;
-    git_remote *r = NULL;
     git_repository *repository;
 
     repository = get_repository(repo);
@@ -796,15 +795,25 @@ SEXP remote_url(const SEXP repo, const SEXP remote)
     PROTECT(url = allocVector(STRSXP, len));
 
     for (; i < len; i++) {
-        err = git_remote_load(&r, repository, CHAR(STRING_ELT(remote, i)));
-        /* :TODO:FIX: Check error code */
+        git_remote *remote;
 
-        SET_STRING_ELT(url, i, mkChar(git_remote_url(r)));
-        git_remote_free(r);
+        err = git_remote_load(&remote, repository, CHAR(STRING_ELT(remote, i)));
+        if (err < 0)
+            goto cleanup;
+
+        SET_STRING_ELT(url, i, mkChar(git_remote_url(remote)));
+        git_remote_free(remote);
     }
 
-    UNPROTECT(1);
+cleanup:
     git_repository_free(repository);
+
+    UNPROTECT(1);
+
+    if (err < 0) {
+        const git_error *e = giterr_last();
+        error("Error %d/%d: %s\n", err, e->klass, e->message);
+    }
 
     return url;
 }
