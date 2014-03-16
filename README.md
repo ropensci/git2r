@@ -20,7 +20,7 @@ I'm developing the package on Linux, so it's very possible that other platforms 
 
 To install the development version of `git2r`, it's easiest to use the devtools package:
 
-```
+```coffee
 # install.packages("devtools")
 library(devtools)
 install_github("git2r", "stewid")
@@ -29,7 +29,7 @@ install_github("git2r", "stewid")
 Example
 -------
 
-```
+```coffee
 library(git2r)
 
 # Open an existing repository
@@ -74,7 +74,7 @@ tags(repo)
 
 ### Visualize the number of commits per month in a repository
 
-```
+```coffee
 library(git2r)
 library(ggplot2)
 library(plyr)
@@ -103,7 +103,7 @@ ggplot(df, aes(x=month, y=n)) +
 
 ### Visualize the number of contributors per month in a repository
 
-```
+```coffee
 library(git2r)
 library(ggplot2)
 library(plyr)
@@ -132,7 +132,7 @@ ggplot(df, aes(x=month, y=n)) +
 
 ### Generate a wordcloud from the commit messages in a repository
 
-```
+```coffee
 library(git2r)
 library(wordcloud)
 
@@ -165,3 +165,9 @@ The `git2r` package is licensed under the GPLv2. See these files for additional 
 
 - LICENSE      - `git2r` package license (GPLv2)
 - inst/COPYING - Copyright notices for additional included software
+
+
+---
+
+[![](http://ropensci.org/public_images/github_footer.png)](http://ropensci.org)
+
