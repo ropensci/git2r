@@ -33,7 +33,7 @@
 
 static void init_reference(git_reference *ref, SEXP reference);
 static git_repository* get_repository(const SEXP repo);
-static void init_signature(git_signature *sig, SEXP signature);
+static void init_signature(const git_signature *sig, SEXP signature);
 static int number_of_branches(git_repository *repo, int flags, size_t *n);
 
 /**
@@ -480,6 +480,122 @@ SEXP init(const SEXP path, const SEXP bare)
 }
 
 /**
+ * Init slots in S4 class git_commit
+ *
+ * @param commit a commit object
+ * @param sexp_commit S4 class git_commit
+ * @return void
+ */
+static void init_commit(const git_commit *commit, SEXP sexp_commit)
+{
+    const char *message;
+    const char *summary;
+    const git_signature *author;
+    const git_signature *committer;
+
+    author = git_commit_author(commit);
+    if (author) {
+        SEXP sexp_author;
+
+        PROTECT(sexp_author = NEW_OBJECT(MAKE_CLASS("git_signature")));
+        init_signature(author, sexp_author);
+        SET_SLOT(sexp_commit, Rf_install("author"), sexp_author);
+        UNPROTECT(1);
+    }
+
+    committer = git_commit_committer(commit);
+    if (committer) {
+        SEXP sexp_committer;
+
+        PROTECT(sexp_committer = NEW_OBJECT(MAKE_CLASS("git_signature")));
+        init_signature(committer, sexp_committer);
+        SET_SLOT(sexp_commit, Rf_install("committer"), sexp_committer);
+        UNPROTECT(1);
+    }
+
+    summary = git_commit_summary(commit);
+    if (summary) {
+        SET_SLOT(sexp_commit,
+                 Rf_install("summary"),
+                 ScalarString(mkChar(summary)));
+    }
+
+    message = git_commit_message(commit);
+    if (message) {
+        SET_SLOT(sexp_commit,
+                 Rf_install("message"),
+                 ScalarString(mkChar(message)));
+    }
+}
+
+/**
+ * Init slots in S4 class git_reference.
+ *
+ * @param ref
+ * @param reference
+ * @return void
+ */
+static void init_reference(git_reference *ref, SEXP reference)
+{
+    char out[41];
+    out[40] = '\0';
+
+    SET_SLOT(reference,
+             Rf_install("name"),
+             ScalarString(mkChar(git_reference_name(ref))));
+
+    SET_SLOT(reference,
+             Rf_install("shorthand"),
+             ScalarString(mkChar(git_reference_shorthand(ref))));
+
+    switch (git_reference_type(ref)) {
+    case GIT_REF_OID:
+        SET_SLOT(reference, Rf_install("type"), ScalarInteger(GIT_REF_OID));
+        git_oid_fmt(out, git_reference_target(ref));
+        SET_SLOT(reference, Rf_install("hex"), ScalarString(mkChar(out)));
+        break;
+    case GIT_REF_SYMBOLIC:
+        SET_SLOT(reference, Rf_install("type"), ScalarInteger(GIT_REF_SYMBOLIC));
+        SET_SLOT(reference,
+                 Rf_install("target"),
+                 ScalarString(mkChar(git_reference_symbolic_target(ref))));
+        break;
+    default:
+        error("Unexpected reference type");
+    }
+}
+
+/**
+ * Init slots in S4 class git_signature.
+ *
+ * @param sig
+ * @param signature
+ * @return void
+ */
+static void init_signature(const git_signature *sig, SEXP signature)
+{
+    SEXP when;
+
+    SET_SLOT(signature,
+             Rf_install("name"),
+             ScalarString(mkChar(sig->name)));
+
+    SET_SLOT(signature,
+             Rf_install("email"),
+             ScalarString(mkChar(sig->email)));
+
+    when = GET_SLOT(signature, Rf_install("when"));
+
+    SET_SLOT(when,
+             Rf_install("time"),
+             ScalarReal((double)sig->when.time));
+
+    SET_SLOT(when,
+             Rf_install("offset"),
+             ScalarReal((double)sig->when.offset));
+}
+
+/**
  * Check if repository is bare.
  *
  * @param repo S4 class git_repository
@@ -555,73 +671,6 @@ SEXP is_repository(const SEXP path)
     }
 
     return result;
-}
-
-/**
- * Init slots in S4 class git_reference.
- *
- * @param ref
- * @param reference
- * @return void
- */
-static void init_reference(git_reference *ref, SEXP reference)
-{
-    char out[41];
-    out[40] = '\0';
-
-    SET_SLOT(reference,
-             Rf_install("name"),
-             ScalarString(mkChar(git_reference_name(ref))));
-
-    SET_SLOT(reference,
-             Rf_install("shorthand"),
-             ScalarString(mkChar(git_reference_shorthand(ref))));
-
-    switch (git_reference_type(ref)) {
-    case GIT_REF_OID:
-        SET_SLOT(reference, Rf_install("type"), ScalarInteger(GIT_REF_OID));
-        git_oid_fmt(out, git_reference_target(ref));
-        SET_SLOT(reference, Rf_install("hex"), ScalarString(mkChar(out)));
-        break;
-    case GIT_REF_SYMBOLIC:
-        SET_SLOT(reference, Rf_install("type"), ScalarInteger(GIT_REF_SYMBOLIC));
-        SET_SLOT(reference,
-                 Rf_install("target"),
-                 ScalarString(mkChar(git_reference_symbolic_target(ref))));
-        break;
-    default:
-        error("Unexpected reference type");
-    }
-}
-
-/**
- * Init slots in S4 class git_signature.
- *
- * @param sig
- * @param signature
- * @return void
- */
-static void init_signature(git_signature *sig, SEXP signature)
-{
-    SEXP when;
-
-    SET_SLOT(signature,
-             Rf_install("name"),
-             ScalarString(mkChar(sig->name)));
-
-    SET_SLOT(signature,
-             Rf_install("email"),
-             ScalarString(mkChar(sig->email)));
-
-    when = GET_SLOT(signature, Rf_install("when"));
-
-    SET_SLOT(when,
-             Rf_install("time"),
-             ScalarReal((double)sig->when.time));
-
-    SET_SLOT(when,
-             Rf_install("offset"),
-             ScalarReal((double)sig->when.offset));
 }
 
 /**
@@ -824,15 +873,13 @@ cleanup:
  * @param repo S4 class git_repository
  * @return
  */
-SEXP revisions(const SEXP repo)
+SEXP revisions(SEXP repo)
 {
     int i=0;
     int err = 0;
     SEXP list;
     size_t n = 0;
-    const git_commit *commit = NULL;
     git_revwalk *walker = NULL;
-    git_oid oid;
     git_repository *repository;
 
     repository = get_repository(repo);
@@ -859,13 +906,9 @@ SEXP revisions(const SEXP repo)
         goto cleanup;
 
     for (;;) {
-        const char *message = NULL;
-        const char *summary = NULL;
-        git_signature *author = NULL;
-        git_signature *committer = NULL;
+        git_commit *commit;
         SEXP sexp_commit;
-        SEXP sexp_author;
-        SEXP sexp_committer;
+        git_oid oid;
 
         err = git_revwalk_next(&oid, walker);
         if (err < 0) {
@@ -879,37 +922,7 @@ SEXP revisions(const SEXP repo)
             goto cleanup;
 
         PROTECT(sexp_commit = NEW_OBJECT(MAKE_CLASS("git_commit")));
-
-        author = git_commit_author(commit);
-        if (author) {
-            PROTECT(sexp_author = NEW_OBJECT(MAKE_CLASS("git_signature")));
-            init_signature(author, sexp_author);
-            SET_SLOT(sexp_commit, Rf_install("author"), sexp_author);
-            UNPROTECT(1);
-        }
-
-        committer = git_commit_committer(commit);
-        if (committer) {
-            PROTECT(sexp_committer = NEW_OBJECT(MAKE_CLASS("git_signature")));
-            init_signature(committer, sexp_committer);
-            SET_SLOT(sexp_commit, Rf_install("committer"), sexp_committer);
-            UNPROTECT(1);
-        }
-
-        summary = git_commit_summary(commit);
-        if (summary) {
-            SET_SLOT(sexp_commit,
-                     Rf_install("summary"),
-                     ScalarString(mkChar(summary)));
-        }
-
-        message = git_commit_message(commit);
-        if (message) {
-            SET_SLOT(sexp_commit,
-                     Rf_install("message"),
-                     ScalarString(mkChar(message)));
-        }
-
+        init_commit(commit, sexp_commit);
         SET_VECTOR_ELT(list, i, sexp_commit);
         UNPROTECT(1);
         i++;
