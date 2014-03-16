@@ -6,9 +6,9 @@
 #' @param repo Path to local git repository
 #' @export 
 #' @examples \dontrun{
-#' markdown_link(".")
+#' markdown_link(".") # or path to repo
 #'}
-markdown_link <- function(repo) {
+markdown_link <- function(repo = ".") {
 repo <- repository(repo)	
 commit <- git2r::head(repo)@hex
 short_hash <- substr(commit, 1, 6)
