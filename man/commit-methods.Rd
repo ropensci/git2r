@@ -20,7 +20,7 @@
   \item{parents}{:TODO:DOCUMENTATION:}
 }
 \value{
-  invisible(NULL)
+  \code{git_commit} object
 }
 \description{
   Commit

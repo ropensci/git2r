@@ -31,8 +31,9 @@
 #include <git2.h>
 #include <git2/repository.h>
 
-static void init_reference(git_reference *ref, SEXP reference);
 static git_repository* get_repository(const SEXP repo);
+static void init_commit(const git_commit *commit, SEXP sexp_commit);
+static void init_reference(git_reference *ref, SEXP reference);
 static void init_signature(const git_signature *sig, SEXP signature);
 static int number_of_branches(git_repository *repo, int flags, size_t *n);
 
@@ -241,7 +242,7 @@ cleanup:
  */
 SEXP commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP parent_list)
 {
-    SEXP when;
+    SEXP when, sexp_commit;
     int err;
     const char* err_msg = NULL;
     git_signature *sig_author = NULL;
@@ -252,6 +253,7 @@ SEXP commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP parent_li
     git_tree *tree = NULL;
     size_t i, parent_count;
     git_commit **parents = NULL;
+    git_commit *new_commit = NULL;
 
     if (R_NilValue == repo
         || R_NilValue == message
@@ -341,6 +343,13 @@ SEXP commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP parent_li
     if (err < 0)
         goto cleanup;
 
+    err = git_commit_lookup(&new_commit, repository, &commit_id);
+    if (err < 0)
+        goto cleanup;
+
+    PROTECT(sexp_commit = NEW_OBJECT(MAKE_CLASS("git_commit")));
+    init_commit(new_commit, sexp_commit);
+
 cleanup:
     if (sig_author)
         git_signature_free(sig_author);
@@ -365,6 +374,11 @@ cleanup:
         free(parents);
     }
 
+    if (new_commit)
+        git_commit_free(new_commit);
+
+    UNPROTECT(1);
+
     if (err < 0) {
         if (err_msg) {
             error(err_msg);
@@ -374,7 +388,7 @@ cleanup:
         }
     }
 
-    return R_NilValue;
+    return sexp_commit;
 }
 
 /**
@@ -492,6 +506,13 @@ static void init_commit(const git_commit *commit, SEXP sexp_commit)
     const char *summary;
     const git_signature *author;
     const git_signature *committer;
+    char hex[GIT_OID_HEXSZ + 1];
+
+    git_oid_fmt(hex, git_commit_id(commit));
+    hex[GIT_OID_HEXSZ] = '\0';
+    SET_SLOT(sexp_commit,
+             Rf_install("hex"),
+             ScalarString(mkChar(hex)));
 
     author = git_commit_author(commit);
     if (author) {

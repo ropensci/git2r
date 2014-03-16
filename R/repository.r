@@ -191,7 +191,7 @@ setMethod('add',
 ##' @param message :TODO:DOCUMENTATION:
 ##' @param tree :TODO:DOCUMENTATION:
 ##' @param parents :TODO:DOCUMENTATION:
-##' @return invisible(NULL)
+##' @return \code{git_commit} object
 ##' @keywords methods
 ##' @export
 setGeneric('commit',
