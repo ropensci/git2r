@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ropensci/git2r.png)](https://travis-ci.org/ropensci/git2r)
+
 git2r
 =====
 
