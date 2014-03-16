@@ -844,14 +844,14 @@ SEXP remote_url(const SEXP repo, const SEXP remote)
     PROTECT(url = allocVector(STRSXP, len));
 
     for (; i < len; i++) {
-        git_remote *remote;
+        git_remote *r;
 
-        err = git_remote_load(&remote, repository, CHAR(STRING_ELT(remote, i)));
+        err = git_remote_load(&r, repository, CHAR(STRING_ELT(remote, i)));
         if (err < 0)
             goto cleanup;
 
-        SET_STRING_ELT(url, i, mkChar(git_remote_url(remote)));
-        git_remote_free(remote);
+        SET_STRING_ELT(url, i, mkChar(git_remote_url(r)));
+        git_remote_free(r);
     }
 
 cleanup:
