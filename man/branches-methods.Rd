@@ -1,19 +1,21 @@
 \docType{methods}
 \name{branches-methods}
 \alias{branches}
-\alias{branches,git_repository-method}
 \alias{branches-methods}
 \title{Branches}
+\usage{
+branches(object, flags = c("ALL", "LOCAL", "REMOTE"))
+}
 \arguments{
   \item{object}{:TODO:DOCUMENTATION:}
 
   \item{flags}{:TODO:DOCUMENTATION:}
 }
 \value{
-  :TODO:DOCUMENTATION:
+:TODO:DOCUMENTATION:
 }
 \description{
-  Branches
+Branches
 }
 \keyword{methods}
 

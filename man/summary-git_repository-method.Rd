@@ -1,0 +1,22 @@
+\docType{methods}
+\name{summary,git_repository-method}
+\alias{summary,git_repository-method}
+\alias{summary,git_repository-methods}
+\title{Summary of repository}
+\usage{
+\S4method{summary}{git_repository}(object, ...)
+}
+\arguments{
+  \item{object}{The repository \code{object}}
+
+  \item{...}{additional arguments affecting the summary
+  produced.}
+}
+\value{
+:TODO:DOCUMENTATION:
+}
+\description{
+Summary of repository
+}
+\keyword{methods}
+

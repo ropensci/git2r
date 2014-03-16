@@ -1,0 +1,19 @@
+\docType{methods}
+\name{show,git_repository-method}
+\alias{show,git_repository-method}
+\alias{show,git_repository-methods}
+\title{Brief summary of repository}
+\usage{
+\S4method{show}{git_repository}(object)
+}
+\arguments{
+  \item{object}{The repository \code{object}}
+}
+\value{
+:TODO:DOCUMENTATION:
+}
+\description{
+Brief summary of repository
+}
+\keyword{methods}
+

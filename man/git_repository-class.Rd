@@ -3,7 +3,7 @@
 \alias{git_repository-class}
 \title{Class \code{"git_repository"}}
 \description{
-  S4 class to handle a git repository
+S4 class to handle a git repository
 }
 \section{Slots}{
   \describe{ \item{path}{ Path to a git repository } }

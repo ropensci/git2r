@@ -4,7 +4,7 @@
 \alias{show,git_signature-method}
 \title{Class \code{"git_signature"}}
 \description{
-  S4 class to handle a git signature
+S4 class to handle a git signature
 }
 \section{Slots}{
   \describe{ \item{name}{ The full name of the author.  }

@@ -2,7 +2,7 @@
 \alias{init}
 \title{Init a repository}
 \usage{
-  init(path, bare = FALSE)
+init(path, bare = FALSE)
 }
 \arguments{
   \item{path}{A path to where to init a git repository}
@@ -13,10 +13,10 @@
   into which the .git directory will be created.}
 }
 \value{
-  A S4 \code{git_repository} object
+A S4 \code{git_repository} object
 }
 \description{
-  Init a repository
+Init a repository
 }
 \examples{
 \dontrun{

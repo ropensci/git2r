@@ -4,7 +4,7 @@
 \alias{show,git_reference-method}
 \title{Class \code{"git_reference"}}
 \description{
-  S4 class to handle a git reference
+S4 class to handle a git reference
 }
 \section{Slots}{
   \describe{ \item{name}{ The full name of the reference.

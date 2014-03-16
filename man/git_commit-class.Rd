@@ -4,7 +4,7 @@
 \alias{show,git_commit-method}
 \title{Class \code{"git_commit"}}
 \description{
-  S4 class to handle a git commit.
+S4 class to handle a git commit.
 }
 \section{Slots}{
   \describe{ \item{hex}{ 40 char hexadecimal string }

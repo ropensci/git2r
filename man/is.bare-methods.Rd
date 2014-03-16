@@ -1,18 +1,20 @@
 \docType{methods}
 \name{is.bare-methods}
 \alias{is.bare}
-\alias{is.bare,git_repository-method}
 \alias{is.bare-methods}
 \title{Check if repository is bare}
+\usage{
+is.bare(object)
+}
 \arguments{
   \item{object}{The \code{object} to check if it's a bare
   repository}
 }
 \value{
-  TRUE if bare repository, else FALSE
+TRUE if bare repository, else FALSE
 }
 \description{
-  Check if repository is bare
+Check if repository is bare
 }
 \examples{
 \dontrun{

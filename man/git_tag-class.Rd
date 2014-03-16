@@ -4,8 +4,8 @@
 \alias{show,git_tag-method}
 \title{Class \code{"git_tag"}}
 \description{
-  S4 class to handle a git tag, contains
-  \code{git_reference}.
+S4 class to handle a git tag, contains
+\code{git_reference}.
 }
 \section{Slots}{
   \describe{ \item{sig}{ An action signature } }

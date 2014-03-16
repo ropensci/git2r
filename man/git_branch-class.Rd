@@ -4,8 +4,8 @@
 \alias{show,git_branch-method}
 \title{Class \code{"git_branch"}}
 \description{
-  S4 class to handle a git branch, contains
-  \code{git_reference}.
+S4 class to handle a git branch, contains
+\code{git_reference}.
 }
 \section{Slots}{
   \describe{ \item{remote}{ :TODO:DOCUMENTATION: }

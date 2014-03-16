@@ -1,9 +1,11 @@
 \docType{methods}
 \name{add-methods}
 \alias{add}
-\alias{add,git_repository-method}
 \alias{add-methods}
 \title{Add file(s) to index}
+\usage{
+add(object, path)
+}
 \arguments{
   \item{object}{The repository \code{object}.}
 
@@ -12,10 +14,10 @@
   filder.}
 }
 \value{
-  invisible(NULL)
+invisible(NULL)
 }
 \description{
-  Add file(s) to index
+Add file(s) to index
 }
 \examples{
 \dontrun{

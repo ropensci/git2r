@@ -1,18 +1,20 @@
 \docType{methods}
 \name{is.empty-methods}
 \alias{is.empty}
-\alias{is.empty,git_repository-method}
 \alias{is.empty-methods}
 \title{Check if repository is empty}
+\usage{
+is.empty(object)
+}
 \arguments{
   \item{object}{The \code{object} to check if it's a empty
   repository}
 }
 \value{
-  TRUE or FALSE
+TRUE or FALSE
 }
 \description{
-  Check if repository is empty
+Check if repository is empty
 }
 \examples{
 \dontrun{

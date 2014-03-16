@@ -1,9 +1,12 @@
 \docType{methods}
 \name{commit-methods}
 \alias{commit}
-\alias{commit,git_repository-method}
 \alias{commit-methods}
 \title{Commit}
+\usage{
+commit(object, message = NULL, reference = "HEAD",
+  author = default_signature(object), committer = default_signature(object))
+}
 \arguments{
   \item{object}{The repository \code{object}.}
 
@@ -20,10 +23,10 @@
   \item{parents}{:TODO:DOCUMENTATION:}
 }
 \value{
-  \code{git_commit} object
+\code{git_commit} object
 }
 \description{
-  Commit
+Commit
 }
 \keyword{methods}
 

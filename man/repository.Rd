@@ -2,16 +2,16 @@
 \alias{repository}
 \title{Open a repository}
 \usage{
-  repository(path)
+repository(path)
 }
 \arguments{
   \item{path}{A path to an existing local git repository}
 }
 \value{
-  A S4 \code{git_repository} object
+A S4 \code{git_repository} object
 }
 \description{
-  Open a repository
+Open a repository
 }
 \examples{
 \dontrun{
