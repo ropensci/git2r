@@ -138,6 +138,7 @@ ggplot(df, aes(x=month, y=n)) +
 library(dplyr)
 library(RColorBrewer)
 library(scales)
+library(reshape2)
 repo_path <- getwd()
 # Or change this to a more interesting local repo
 
