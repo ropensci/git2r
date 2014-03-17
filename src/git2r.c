@@ -907,6 +907,12 @@ SEXP revisions(SEXP repo)
     if (!repository)
         error(err_invalid_repository);
 
+    if (git_repository_is_empty(repository)) {
+        /* No commits, create empty list */
+        PROTECT(list = allocVector(VECSXP, 0));
+        goto cleanup;
+    }
+
     err = git_revwalk_new(&walker, repository);
     if (err < 0)
         goto cleanup;
