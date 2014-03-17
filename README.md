@@ -132,6 +132,41 @@ ggplot(df, aes(x=month, y=n)) +
     labs(title='Contributors')
 ```
 
+### Visualize contributions by user on a monthly timeline (another way of looking at the same data from above)
+
+```coffee
+library(dplyr)
+library(RColorBrewer)
+library(scales)
+repo_path <- "."
+# Or change this to a more interesting local repo
+
+
+repo <- repository(repo_path) 
+
+# Harvest neccessary data from repository
+df <- do.call('rbind', lapply(commits(repo), function(x) {
+    data.frame(name=x@author@name,
+               when=as(x@author@when, 'POSIXct'))
+}))
+df$month <- as.POSIXct(cut(df$when, breaks='month'))
+
+
+# Summarise the results
+df_summary <- df %.% 
+group_by(name, month) %.%
+summarise(counts = n()) %.%
+arrange(month)
+
+
+df_summary$month <- as.Date(df_summary$month)
+ggplot(df_summary, aes(month, counts, group = name, fill = name)) + 
+geom_bar(stat = "identity", position = "dodge", color = "black") +
+expand_limits(y = 0) + xlab("Month") + ylab("Commits") + 
+ggtitle(sprintf("Commits on repo %s", basename(repo_path))) +
+scale_x_date(labels = date_format("%m-%Y")) + theme_gray()
+```
+
 ### Generate a wordcloud from the commit messages in a repository
 
 ```coffee
