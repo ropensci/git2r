@@ -25,7 +25,7 @@ To install the development version of `git2r`, it's easiest to use the devtools 
 ```coffee
 # install.packages("devtools")
 library(devtools)
-install_github("git2r", "stewid")
+install_github("git2r", "ropensci")
 ```
 
 Example
@@ -172,4 +172,3 @@ The `git2r` package is licensed under the GPLv2. See these files for additional 
 ---
 
 [![](http://ropensci.org/public_images/github_footer.png)](http://ropensci.org)
-
