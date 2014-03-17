@@ -138,10 +138,10 @@ ggplot(df, aes(x=month, y=n)) +
 library(dplyr)
 library(RColorBrewer)
 library(scales)
-repo_path <- "."
+repo_path <- getwd()
 # Or change this to a more interesting local repo
 
-
+repo_path <- "~/Github/ropensci/git2r"
 repo <- repository(repo_path) 
 
 # Harvest neccessary data from repository
@@ -159,12 +159,16 @@ summarise(counts = n()) %.%
 arrange(month)
 
 
-df_summary$month <- as.Date(df_summary$month)
-ggplot(df_summary, aes(month, counts, group = name, fill = name)) + 
+
+df_melted <-  melt(dcast(df_summary, name ~ month, value.var = "counts"), id.var = "name")
+df_melted$variable <- as.Date(df_melted$variable)
+names(df_melted)[2:3] <- c("month", "counts")
+ggplot(df_melted, aes(month, counts, group = name, fill = name)) + 
 geom_bar(stat = "identity", position = "dodge", color = "black") +
 expand_limits(y = 0) + xlab("Month") + ylab("Commits") + 
 ggtitle(sprintf("Commits on repo %s", basename(repo_path))) +
 scale_x_date(labels = date_format("%m-%Y")) + theme_gray()
+ 
 ```
 
 ### Generate a wordcloud from the commit messages in a repository
