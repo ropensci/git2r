@@ -32,10 +32,6 @@
 ##' @aliases show,git_signature-method
 ##' @docType class
 ##' @keywords classes
-##' @section Methods:
-##' \describe{
-##'   \item{show}{\code{signature(object = "git_signature")}}
-##' }
 ##' @keywords methods
 ##' @export
 setClass('git_signature',
