@@ -29,8 +29,6 @@
 ##' \describe{
 ##'   \item{is.bare}{\code{signature(object = "git_repository")}}
 ##'   \item{is.empty}{\code{signature(object = "git_repository")}}
-##'   \item{show}{\code{signature(object = "git_repository")}}
-##'   \item{summary}{\code{signature(object = "git_repository")}}
 ##' }
 ##' @keywords methods
 ##' @export
@@ -362,7 +360,7 @@ setMethod('default_signature',
 ##' @aliases show,git_repository-methods
 ##' @docType methods
 ##' @param object The repository \code{object}
-##' @return :TODO:DOCUMENTATION:
+##' @return None (invisible ‘NULL’).
 ##' @keywords methods
 ##' @export
 setMethod('show',
@@ -391,7 +389,7 @@ setMethod('show',
 ##' @aliases summary,git_repository-methods
 ##' @docType methods
 ##' @param object The repository \code{object}
-##' @return :TODO:DOCUMENTATION:
+##' @return None (invisible ‘NULL’).
 ##' @keywords methods
 ##' @export
 setMethod('summary',

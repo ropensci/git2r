@@ -32,10 +32,6 @@
 ##' @aliases show,git_signature-method
 ##' @docType class
 ##' @keywords classes
-##' @section Methods:
-##' \describe{
-##'   \item{show}{\code{signature(object = "git_signature")}}
-##' }
 ##' @keywords methods
 ##' @export
 setClass('git_signature',
@@ -48,7 +44,7 @@ setClass('git_signature',
 ##' @aliases show,git_signature-methods
 ##' @docType methods
 ##' @param object The repository \code{object}
-##' @return :TODO:DOCUMENTATION:
+##' @return None (invisible ‘NULL’).
 ##' @keywords methods
 ##' @export
 setMethod('show',
