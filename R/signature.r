@@ -44,7 +44,7 @@ setClass('git_signature',
 ##' @aliases show,git_signature-methods
 ##' @docType methods
 ##' @param object The repository \code{object}
-##' @return :TODO:DOCUMENTATION:
+##' @return None (invisible ‘NULL’).
 ##' @keywords methods
 ##' @export
 setMethod('show',
