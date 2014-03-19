@@ -10,7 +10,7 @@
   \item{object}{The repository \code{object}}
 }
 \value{
-:TODO:DOCUMENTATION:
+None (invisible ‘NULL’).
 }
 \description{
 Brief summary of signature

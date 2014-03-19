@@ -11,11 +11,6 @@ S4 class to handle a git signature
   \item{email}{ Email of the author.  } \item{when}{ Time
   when the action happened.  } }
 }
-
-\section{Methods}{
-  \describe{ \item{show}{\code{signature(object =
-  "git_signature")}} }
-}
 \keyword{classes}
 \keyword{methods}
 

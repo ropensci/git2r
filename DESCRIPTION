@@ -20,13 +20,3 @@ License: GPL-2
 LazyData: true
 NeedsCompilation: yes
 Date: 2014-03-15
-Collate:
-    'git2r.r'
-    'repository.r'
-    'reference.r'
-    'branch.r'
-    'time.r'
-    'signature.r'
-    'tag.r'
-    'commit.r'
-    'markdown_link.r'
