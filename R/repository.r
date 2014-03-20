@@ -1,3 +1,4 @@
+#' @include git2r.r
 ## git2r, R bindings to the libgit2 library.
 ## Copyright (C) 2013-2014  Stefan Widgren
 ##
@@ -15,7 +16,7 @@
 
 ##' Class \code{"git_repository"}
 ##'
-##' S4 class to handle a git repository
+##' @title  S4 class to handle a git repository
 ##' @section Slots:
 ##' \describe{
 ##'   \item{path}{
@@ -308,9 +309,9 @@ setMethod('remotes',
           }
 )
 
-##' Get the remote url for remotes in a repo
+##' @title remote_url-methods
 ##'
-##' @name remote_url-methods
+##' @description Get the remote url for remotes in a repo
 ##' @aliases remote_url
 ##' @aliases remote_url-methods
 ##' @aliases remote_url,git_repository-method

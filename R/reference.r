@@ -1,3 +1,4 @@
+#' @include repository.r
 ## git2r, R bindings to the libgit2 library.
 ## Copyright (C) 2013  Stefan Widgren
 ##
@@ -15,7 +16,7 @@
 
 ##' Class \code{"git_reference"}
 ##'
-##' S4 class to handle a git reference
+##' @title S4 class to handle a git reference
 ##' @section Slots:
 ##' \describe{
 ##'   \item{name}{

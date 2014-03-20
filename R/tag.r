@@ -1,3 +1,4 @@
+#' @include signature.r
 ## git2r, R bindings to the libgit2 library.
 ## Copyright (C) 2013  Stefan Widgren
 ##
@@ -15,7 +16,7 @@
 
 ##' Class \code{"git_tag"}
 ##'
-##' S4 class to handle a git tag, contains \code{git_reference}.
+##' @title S4 class to handle a git tag, contains \code{git_reference}.
 ##' @section Slots:
 ##' \describe{
 ##'   \item{sig}{

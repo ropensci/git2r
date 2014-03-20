@@ -1,3 +1,4 @@
+#' @include tag.r
 ## git2r, R bindings to the libgit2 library.
 ## Copyright (C) 2013-2014  Stefan Widgren
 ##
@@ -15,7 +16,7 @@
 
 ##' Class \code{"git_commit"}
 ##'
-##' S4 class to handle a git commit.
+##' @title S4 class to handle a git commit.
 ##' @section Slots:
 ##' \describe{
 ##'   \item{hex}{
