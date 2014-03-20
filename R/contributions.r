@@ -7,6 +7,7 @@
 #' @param  data_only = default is \code{FALSE}. Set to \code{TRUE} if you just require the \code{data.frame} output.
 #' @importFrom scales date_format
 #' @importFrom ggplot2 ggplot
+#' @importFrom plyr ddply
 #' @export
 #' @author Karthik Ram \email{karthik.ram@@gmail.com}
 #' @examples \dontrun{

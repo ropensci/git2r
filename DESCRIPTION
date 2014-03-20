@@ -23,6 +23,7 @@ Date: 2014-03-15
 Imports:
     ggplot2,
     dplyr,
+    plyr,
     scales,
     wordcloud
 Collate:
