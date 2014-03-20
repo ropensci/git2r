@@ -61,14 +61,35 @@ setClass('git_commit',
 ##' @aliases commits
 ##' @aliases commits-methods
 ##' @aliases commits,git_repository-method
+##' @aliases commits,character-method
 ##' @docType methods
 ##' @param object :TODO:DOCUMENTATION:
 ##' @return list of commits in repository
 ##' @keywords methods
 ##' @export
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository('path/to/git2r')
+##'
+##' ## List commits in repository
+##' commits(repo)
+##'
+##' ## List commits direct from path
+##' commits('path/to/git2r')
+##' }
+##'
 setGeneric('commits',
            signature = 'object',
            function(object) standardGeneric('commits'))
+
+setMethod('commits',
+          signature(object = 'character'),
+          function (object)
+          {
+              commits(repository(object))
+          }
+)
 
 setMethod('commits',
           signature(object = 'git_repository'),
