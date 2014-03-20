@@ -66,7 +66,7 @@ summary(repo)
 #> 
 #> Branches:      8
 #> Tags:          0
-#> Commits:       144
+#> Commits:       145
 #> Contributors:  2
 ```
 
@@ -120,7 +120,7 @@ references(repo)
 #> [772fd8] master
 #> 
 #> $`refs/heads/testing_check`
-#> [b31eca] testing_check
+#> [b484a5] testing_check
 #> 
 #> $`refs/remotes/origin/example_fix`
 #> [1dda04] origin/example_fix
@@ -135,7 +135,7 @@ references(repo)
 #> [384d3a] origin/README_fix
 #> 
 #> $`refs/remotes/origin/testing_check`
-#> [b31eca] origin/testing_check
+#> [b484a5] origin/testing_check
 #> 
 #> $`refs/remotes/origin/travis_fix`
 #> [9089f6] origin/travis_fix
@@ -164,7 +164,7 @@ branches(repo)
 #> [772fd8] (Local) master
 #> 
 #> [[5]]
-#> [b31eca] (Local) (HEAD) testing_check
+#> [b484a5] (Local) (HEAD) testing_check
 #> 
 #> [[6]]
 #> [1dda04] (origin @ https://github.com/ropensci/git2r) example_fix
@@ -179,7 +179,7 @@ branches(repo)
 #> [384d3a] (origin @ https://github.com/ropensci/git2r) README_fix
 #> 
 #> [[10]]
-#> [b31eca] (origin @ https://github.com/ropensci/git2r) testing_check
+#> [b484a5] (origin @ https://github.com/ropensci/git2r) testing_check
 #> 
 #> [[11]]
 #> [9089f6] (origin @ https://github.com/ropensci/git2r) travis_fix
@@ -193,10 +193,10 @@ commits(repo)[1] # Truncated here for readability
 
 ```
 #> [[1]]
-#> Commit:  b31eca2847a0f8fb7e51445f835335b69dd2cd10
+#> Commit:  b484a5481c640811b396928c758348b0f1ce4ba5
 #> Author:  Karthik Ram <karthik.ram@gmail.com>
-#> When:    2014-03-19 17:47:59
-#> Summary: Updated README with new examples.
+#> When:    2014-03-19 17:52:06
+#> Summary: Quick update to README.
 ```
 
 ```coffee
@@ -206,7 +206,7 @@ head(repo)
 ```
 
 ```
-#> [b31eca] (Local) (HEAD) testing_check
+#> [b484a5] (Local) (HEAD) testing_check
 ```
 
 ```coffee
@@ -250,7 +250,7 @@ library(reshape2)
 contributions()
 ```
 
-<img src="figure/contributionnum.png" title="plot of chunk contributionnum" alt="plot of chunk contributionnum" width="10" />
+![plot of chunk contributionnum](figure/contributionnum.png) 
 
 
 
@@ -263,7 +263,7 @@ library(git2r)
 contribution_by_user()
 ```
 
-<img src="figure/contributions_by_user1.png" title="plot of chunk contributions_by_user" alt="plot of chunk contributions_by_user" width="10" />
+![plot of chunk contributions_by_user](figure/contributions_by_user1.png) 
 
 ```coffee
 contribution_by_user(breaks = "months", data_only = TRUE)
@@ -277,7 +277,7 @@ contribution_by_user(breaks = "months", data_only = TRUE)
 #> 4 Stefan Widgren 2014-01-01     33
 #> 5    Karthik Ram 2014-02-01     NA
 #> 6 Stefan Widgren 2014-02-01      7
-#> 7    Karthik Ram 2014-03-01     25
+#> 7    Karthik Ram 2014-03-01     26
 #> 8 Stefan Widgren 2014-03-01     44
 ```
 
@@ -285,13 +285,13 @@ contribution_by_user(breaks = "months", data_only = TRUE)
 contribution_by_user(breaks = "weeks")
 ```
 
-<img src="figure/contributions_by_user2.png" title="plot of chunk contributions_by_user" alt="plot of chunk contributions_by_user" width="10" />
+![plot of chunk contributions_by_user](figure/contributions_by_user2.png) 
 
 ```coffee
 contribution_by_user(breaks = "days")
 ```
 
-<img src="figure/contributions_by_user3.png" title="plot of chunk contributions_by_user" alt="plot of chunk contributions_by_user" width="10" />
+![plot of chunk contributions_by_user](figure/contributions_by_user3.png) 
 
 ```coffee
  
@@ -306,7 +306,7 @@ library(git2r)
 contribution_wc()
 ```
 
-<img src="figure/wordcloud.png" title="plot of chunk wordcloud" alt="plot of chunk wordcloud" width="10" />
+![plot of chunk wordcloud](figure/wordcloud.png) 
 
 
 

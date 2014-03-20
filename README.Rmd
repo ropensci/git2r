@@ -27,9 +27,7 @@ To install the development version of `git2r`, it's easiest to use the devtools 
 knitr::opts_chunk$set(
   comment = "#>",
   error = FALSE,
-  tidy = FALSE,
-  fig.width = 10,
-  out.width = 10
+  tidy = FALSE
 )
 ```
 
