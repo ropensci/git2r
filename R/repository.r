@@ -46,6 +46,70 @@ setClass('git_repository',
          }
 )
 
+##' Coerce Git repository to a \code{data.frame}
+##'
+##' The commits in the repository are coerced to a \code{data.frame}
+##' with the following columns:
+##' \describe{
+##'
+##'   \item{hex}{
+##'     the SHA-1 hash as 40 characters of hexadecimal
+##'   }
+##'
+##'   \item{summary}{
+##'     the short "summary" of the git commit message.
+##'   }
+##'
+##'   \item{message}{
+##'     the full message of a commit
+##'   }
+##'
+##'   \item{author}{
+##'     full name of the author
+##'   }
+##'
+##'   \item{email}{
+##'     email of the author
+##'   }
+##'
+##'   \item{when}{
+##'     time when the commit happened
+##'   }
+##'
+##' }
+##' @aliases coerce,git_repository,data.frame-method
+##' @docType methods
+##' @param from The repository \code{object}
+##' @return \code{data.frame}
+##' @keywords methods
+##' @export
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository('path/to/git2r')
+##'
+##' ## Coerce commits to a data.frame
+##' df <- as(repo, 'data.frame')
+##'
+##' str(df)
+##' }
+##'
+setAs(from="git_repository",
+      to="data.frame",
+      def=function(from)
+      {
+          do.call('rbind', lapply(commits(from), function(x) {
+              data.frame(hex              = x@hex,
+                         summary          = x@summary,
+                         message          = x@message,
+                         author           = x@author@name,
+                         email            = x@author@email,
+                         when             = as(x@author@when, 'POSIXct'),
+                         stringsAsFactors = FALSE)
+          }))
+      }
+)
+
 ##' Open a repository
 ##'
 ##' @param path A path to an existing local git repository
