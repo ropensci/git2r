@@ -37,7 +37,6 @@
 ##'   }
 ##' }
 ##' @name git_commit-class
-##' @aliases show,git_commit-method
 ##' @docType class
 ##' @keywords classes
 ##' @section Methods:
@@ -99,6 +98,23 @@ setMethod('commits',
           }
 )
 
+##' Brief summary of commit
+##'
+##' @aliases show,git_commit-methods
+##' @docType methods
+##' @param object The commit \code{object}
+##' @return None (invisible ‘NULL’).
+##' @keywords methods
+##' @export
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository('path/to/git2r')
+##'
+##' ## Brief summary of commit in repository
+##' commits(repo)[[1]]
+##' }
+##'
 setMethod('show',
           signature(object = 'git_commit'),
           function (object)
