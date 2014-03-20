@@ -2,7 +2,7 @@
 \name{git_time-class}
 \alias{coerce,git_time,character-method}
 \alias{git_time-class}
-\title{Class \code{"git_time"}}
+\title{S4 class to handle a git time in a signature}
 \description{
 S4 class to handle a git time in a signature
 }

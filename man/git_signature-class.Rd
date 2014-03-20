@@ -2,7 +2,7 @@
 \name{git_signature-class}
 \alias{git_signature-class}
 \alias{show,git_signature-method}
-\title{Class \code{"git_signature"}}
+\title{S4 class to handle a git signature}
 \description{
 S4 class to handle a git signature
 }

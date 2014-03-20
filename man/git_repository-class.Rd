@@ -1,7 +1,7 @@
 \docType{class}
 \name{git_repository-class}
 \alias{git_repository-class}
-\title{Class \code{"git_repository"}}
+\title{S4 class to handle a git repository}
 \description{
 S4 class to handle a git repository
 }
