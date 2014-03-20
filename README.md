@@ -27,7 +27,7 @@ To install the development version of `git2r`, it's easiest to use the devtools 
 
 
 
-```r
+```coffee
 # install.packages("devtools")
 library(devtools)
 install_github("git2r", "ropensci")
@@ -38,7 +38,7 @@ Example
 -------
 
 
-```r
+```coffee
 library(git2r)
 
 # Open an existing repository
@@ -51,10 +51,10 @@ repo
 
 ```
 #> Remote:   @ origin (https://github.com/ropensci/git2r)
-#> Local:    README_fix /Users/karthik/Documents/work/Github/ropensci/git2r/
+#> Local:    testing_check /Users/karthik/Documents/work/Github/ropensci/git2r/
 ```
 
-```r
+```coffee
 
 # Summary of repository
 summary(repo)
@@ -62,15 +62,15 @@ summary(repo)
 
 ```
 #> Remote:   @ origin (https://github.com/ropensci/git2r)
-#> Local:    README_fix /Users/karthik/Documents/work/Github/ropensci/git2r/
+#> Local:    testing_check /Users/karthik/Documents/work/Github/ropensci/git2r/
 #> 
-#> Branches:      4
+#> Branches:      9
 #> Tags:          0
-#> Commits:       127
+#> Commits:       143
 #> Contributors:  2
 ```
 
-```r
+```coffee
 
 # Workdir of repository
 workdir(repo)
@@ -80,7 +80,7 @@ workdir(repo)
 #> [1] "/Users/karthik/Documents/work/Github/ropensci/git2r/"
 ```
 
-```r
+```coffee
 
 # Check if repository is bare
 is.bare(repo)
@@ -90,7 +90,7 @@ is.bare(repo)
 #> [1] FALSE
 ```
 
-```r
+```coffee
 
 # Check if repository is empty
 is.empty(repo)
@@ -100,18 +100,27 @@ is.empty(repo)
 #> [1] FALSE
 ```
 
-```r
+```coffee
 
 # List all references in repository
 references(repo)
 ```
 
 ```
-#> $`refs/heads/master`
-#> [88223a] master
+#> $`refs/heads/contrib`
+#> [bd5d2c] contrib
 #> 
-#> $`refs/heads/README_fix`
-#> [9ef171] README_fix
+#> $`refs/heads/contrib_fns`
+#> [786472] contrib_fns
+#> 
+#> $`refs/heads/contributions`
+#> [5ce142] contributions
+#> 
+#> $`refs/heads/master`
+#> [772fd8] master
+#> 
+#> $`refs/heads/testing_check`
+#> [2782ea] testing_check
 #> 
 #> $`refs/remotes/origin/example_fix`
 #> [1dda04] origin/example_fix
@@ -120,19 +129,22 @@ references(repo)
 #> refs/remotes/origin/HEAD => refs/remotes/origin/master
 #> 
 #> $`refs/remotes/origin/master`
-#> [88223a] origin/master
+#> [772fd8] origin/master
 #> 
 #> $`refs/remotes/origin/README_fix`
-#> [9ef171] origin/README_fix
+#> [384d3a] origin/README_fix
+#> 
+#> $`refs/remotes/origin/testing_check`
+#> [cdf4bb] origin/testing_check
 #> 
 #> $`refs/remotes/origin/travis_fix`
 #> [9089f6] origin/travis_fix
 #> 
 #> $`refs/stash`
-#> [3eb2cc] stash
+#> [8350c5] stash
 ```
 
-```r
+```coffee
 
 # List all branches in repository
 branches(repo)
@@ -140,28 +152,40 @@ branches(repo)
 
 ```
 #> [[1]]
-#> [88223a] (Local) master
+#> [bd5d2c] (Local) contrib
 #> 
 #> [[2]]
-#> [9ef171] (Local) (HEAD) README_fix
+#> [786472] (Local) contrib_fns
 #> 
 #> [[3]]
-#> [1dda04] (origin @ https://github.com/ropensci/git2r) example_fix
+#> [5ce142] (Local) contributions
 #> 
 #> [[4]]
-#> (origin @ https://github.com/ropensci/git2r) refs/remotes/origin/HEAD => refs/remotes/origin/master
+#> [772fd8] (Local) master
 #> 
 #> [[5]]
-#> [88223a] (origin @ https://github.com/ropensci/git2r) master
+#> [2782ea] (Local) (HEAD) testing_check
 #> 
 #> [[6]]
-#> [9ef171] (origin @ https://github.com/ropensci/git2r) README_fix
+#> [1dda04] (origin @ https://github.com/ropensci/git2r) example_fix
 #> 
 #> [[7]]
+#> (origin @ https://github.com/ropensci/git2r) refs/remotes/origin/HEAD => refs/remotes/origin/master
+#> 
+#> [[8]]
+#> [772fd8] (origin @ https://github.com/ropensci/git2r) master
+#> 
+#> [[9]]
+#> [384d3a] (origin @ https://github.com/ropensci/git2r) README_fix
+#> 
+#> [[10]]
+#> [cdf4bb] (origin @ https://github.com/ropensci/git2r) testing_check
+#> 
+#> [[11]]
 #> [9089f6] (origin @ https://github.com/ropensci/git2r) travis_fix
 ```
 
-```r
+```coffee
 
 # List all commits in repository
 commits(repo)[1] # Truncated here for readability
@@ -169,22 +193,23 @@ commits(repo)[1] # Truncated here for readability
 
 ```
 #> [[1]]
+#> Commit:  2782ea5130db8723635406404fddfe36e5a46693
 #> Author:  Karthik Ram <karthik.ram@gmail.com>
-#> When:    2014-03-17 16:40:18
-#> Summary: Converted README.md to README.Rmd
+#> When:    2014-03-19 17:47:20
+#> Summary: Updated namespace.
 ```
 
-```r
+```coffee
 
 # Get HEAD of repository
 head(repo)
 ```
 
 ```
-#> [9ef171] (Local) (HEAD) README_fix
+#> [2782ea] (Local) (HEAD) testing_check
 ```
 
-```r
+```coffee
 
 # Check if HEAD is head
 is.head(head(repo))
@@ -194,7 +219,7 @@ is.head(head(repo))
 #> [1] TRUE
 ```
 
-```r
+```coffee
 
 # Check if HEAD is local
 is.local(head(repo))
@@ -204,7 +229,7 @@ is.local(head(repo))
 #> [1] TRUE
 ```
 
-```r
+```coffee
 
 # List all tags in repository
 tags(repo)
@@ -218,32 +243,11 @@ tags(repo)
 ### Visualize the number of commits per month in a repository
 
 
-```r
+```coffee
 library(git2r)
 library(ggplot2)
-library(plyr)
-
-## Open a repository with some history
-# repo <- repository('path/to/libgit2')
-repo <- repository(getwd())
-
-## Harvest neccessary data from repository
-df <- do.call('rbind', lapply(commits(repo), function(x) {
-    data.frame(name=x@author@name,
-               when=as(x@author@when, 'POSIXct'))
-}))
-
-## Format data
-df$month <- as.POSIXct(cut(df$when, breaks='month'))
-df <- ddply(df, ~month, nrow)
-names(df) <- c('month', 'n')
-
-## Plot data
-ggplot(df, aes(x=month, y=n)) +
-    geom_bar(stat='identity') +
-    scale_x_datetime('Month') +
-    scale_y_continuous('Count') +
-    labs(title='Commits')  + theme_gray()
+library(reshape2)
+contributions()
 ```
 
 ![plot of chunk contributionnum](figure/contributionnum.png) 
@@ -251,103 +255,45 @@ ggplot(df, aes(x=month, y=n)) +
 
 
 
-### Visualize the number of contributors per month in a repository
-
-
-```r
-
-## Open a repository with some history
-# repo <- repository('path/to/libgit2')
-repo <- repository(getwd())
-
-## Harvest neccessary data from repository
-df <- do.call('rbind', lapply(commits(repo), function(x) {
-    data.frame(name=x@author@name,
-               when=as(x@author@when, 'POSIXct'))
-}))
-
-## Format data
-df$month <- as.POSIXct(cut(df$when, breaks='month'))
-df <- ddply(df, ~month, function(x) length(unique(x$name)))
-names(df) <- c('month', 'n')
-
-## Plot data
-ggplot(df, aes(x=month, y=n)) +
-    geom_bar(stat='identity') +
-    scale_x_datetime('Month') +
-    scale_y_continuous('Count') +
-    labs(title='Contributors')  + theme_gray()
-```
-
-![plot of chunk contributions](figure/contributions.png) 
-
-
 ### Visualize contributions by user on a monthly timeline (another way of looking at the same data from above)
 
 
-```r
-library(dplyr)
+```coffee
+library(git2r)
+contribution_by_user()
+```
+
+![plot of chunk contributions_by_user](figure/contributions_by_user1.png) 
+
+```coffee
+contribution_by_user(breaks = "months", data_only = TRUE)
 ```
 
 ```
-#> 
-#> Attaching package: 'dplyr'
-#> 
-#> The following objects are masked from 'package:plyr':
-#> 
-#>     arrange, desc, failwith, id, mutate, summarise, summarize
-#> 
-#> The following objects are masked from 'package:stats':
-#> 
-#>     filter, lag
-#> 
-#> The following object is masked from 'package:coyote':
-#> 
-#>     n
-#> 
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
+#>             name      month counts
+#> 1    Karthik Ram 2013-12-01     NA
+#> 2 Stefan Widgren 2013-12-01     35
+#> 3    Karthik Ram 2014-01-01     NA
+#> 4 Stefan Widgren 2014-01-01     33
+#> 5    Karthik Ram 2014-02-01     NA
+#> 6 Stefan Widgren 2014-02-01      7
+#> 7    Karthik Ram 2014-03-01     24
+#> 8 Stefan Widgren 2014-03-01     44
 ```
 
-```r
-library(scales)
-library(reshape2)
-repo_path <- getwd()
-# Or change this to a more interesting local repo
-
-repo_path <- "~/Github/ropensci/git2r"
-repo <- repository(repo_path) 
-
-# Harvest neccessary data from repository
-df <- do.call('rbind', lapply(commits(repo), function(x) {
-    data.frame(name=x@author@name,
-               when=as(x@author@when, 'POSIXct'))
-}))
-df$month <- as.POSIXct(cut(df$when, breaks='month'))
-
-
-# Summarise the results
-df_summary <- df %.% 
-group_by(name, month) %.%
-summarise(counts = n()) %.%
-arrange(month)
-
-
-
-df_melted <-  melt(dcast(df_summary, name ~ month, value.var = "counts"), id.var = "name")
-df_melted$variable <- as.Date(df_melted$variable)
-names(df_melted)[2:3] <- c("month", "counts")
-ggplot(df_melted, aes(month, counts, group = name, fill = name)) + 
-geom_bar(stat = "identity", position = "dodge", color = "black") +
-expand_limits(y = 0) + xlab("Month") + ylab("Commits") + 
-ggtitle(sprintf("Commits on repo %s", basename(repo_path))) +
-scale_x_date(labels = date_format("%m-%Y")) + theme_gray()
+```coffee
+contribution_by_user(breaks = "weeks")
 ```
 
-![plot of chunk contributions_by_user](figure/contributions_by_user.png) 
+![plot of chunk contributions_by_user](figure/contributions_by_user2.png) 
 
-```r
+```coffee
+contribution_by_user(breaks = "days")
+```
+
+![plot of chunk contributions_by_user](figure/contributions_by_user3.png) 
+
+```coffee
  
 ```
 
@@ -355,29 +301,9 @@ scale_x_date(labels = date_format("%m-%Y")) + theme_gray()
 ### Generate a wordcloud from the commit messages in a repository
 
 
-```r
+```coffee
 library(git2r)
-library(wordcloud)
-```
-
-```
-#> Loading required package: Rcpp
-#> Loading required package: RColorBrewer
-```
-
-```r
-
-## Open the libgit2 repository
-# repo <- repository('path/to/libgit2')
-repo <- repository(getwd())
-
-
-## Harvest neccessary data from repository
-msg <- paste(sapply(commits(repo), slot, 'message'), collapse=' ')
-
-## Create the wordcloud
-wordcloud(msg, scale=c(5,0.5), max.words=100, random.order=FALSE,
-          rot.per=0.35, use.r.layout=FALSE, colors=brewer.pal(8, 'Dark2'))
+contribution_wc()
 ```
 
 ```
