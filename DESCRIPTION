@@ -26,6 +26,7 @@ Imports:
     plyr,
     reshape2,
     scales,
+    RColorBrewer,
     wordcloud
 Collate:
     'git2r.r'
