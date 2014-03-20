@@ -24,6 +24,7 @@ Imports:
     ggplot2,
     dplyr,
     plyr,
+    reshape2,
     scales,
     wordcloud
 Collate:

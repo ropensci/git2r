@@ -6,7 +6,7 @@
 #' @param  breaks Default is \code{month}. Change to week or day as necessary.
 #' @param  data_only = default is \code{FALSE}. Set to \code{TRUE} if you just require the \code{data.frame} output.
 #' @importFrom scales date_format
-#' @importFrom ggplot2 ggplot
+#' @import ggplot2 
 #' @importFrom plyr ddply
 #' @export
 #' @author Karthik Ram \email{karthik.ram@@gmail.com}
@@ -56,7 +56,8 @@ ggplot(df, aes(x = month, y = n)) +
 #' @param  data_only = default is \code{FALSE}. Set to \code{TRUE} if you just require the \code{data.frame} output.
 #' @import dplyr
 #' @importFrom scales date_format
-#' @importFrom ggplot2 ggplot
+#' @import ggplot2  
+#' @importFrom reshape2 melt
 #' @export
 #' @author Karthik Ram \email{karthik.ram@@gmail.com}
 #' @examples \dontrun{
@@ -105,6 +106,7 @@ scale_x_date(labels = date_format("%b-%Y")) + theme_gray()
 #' @param dir Path to git repo. Default is current working directory.
 #' @export
 #' @import wordcloud
+#' @importFrom RColorBrewer brewer.pal
 #' @author Karthik Ram \email{karthik.ram@@gmail.com}
 #' @examples \dontrun{
 #' contribution_wc()
