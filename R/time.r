@@ -1,3 +1,4 @@
+#' @include branch.r
 ## git2r, R bindings to the libgit2 library.
 ## Copyright (C) 2013-2014  Stefan Widgren
 ##
@@ -15,7 +16,7 @@
 
 ##' Class \code{"git_time"}
 ##'
-##' S4 class to handle a git time in a signature
+##' @title S4 class to handle a git time in a signature
 ##' @section Slots:
 ##' \describe{
 ##'   \item{time}{

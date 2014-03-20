@@ -2,7 +2,7 @@
 \alias{markdown_link}
 \title{Generate a markdown link for current commit}
 \usage{
-markdown_link(repo)
+markdown_link(repo = ".")
 }
 \arguments{
   \item{repo}{Path to local git repository}
@@ -16,7 +16,7 @@ maintain some degree of provenance.
 }
 \examples{
 \dontrun{
-markdown_link(".")
+markdown_link(".") # or path to repo
 }
 }
 

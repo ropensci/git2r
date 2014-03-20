@@ -2,7 +2,7 @@
 \name{git_commit-class}
 \alias{git_commit-class}
 \alias{show,git_commit-method}
-\title{Class \code{"git_commit"}}
+\title{S4 class to handle a git commit.}
 \description{
 S4 class to handle a git commit.
 }

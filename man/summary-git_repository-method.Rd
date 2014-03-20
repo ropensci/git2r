@@ -13,7 +13,7 @@
   produced.}
 }
 \value{
-:TODO:DOCUMENTATION:
+None (invisible ‘NULL’).
 }
 \description{
 Summary of repository

@@ -1,3 +1,5 @@
+ #' @include reference.r
+
 ## git2r, R bindings to the libgit2 library.
 ## Copyright (C) 2013  Stefan Widgren
 ##
@@ -13,33 +15,34 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-##' Class \code{"git_branch"}
-##'
-##' S4 class to handle a git branch, contains \code{git_reference}.
-##' @section Slots:
-##' \describe{
-##'   \item{remote}{
-##'     :TODO:DOCUMENTATION:
-##'   }
-##'   \item{url}{
-##'     :TODO:DOCUMENTATION:
-##'   }
-##'   \item{head}{
-##'     :TODO:DOCUMENTATION:
-##'   }
-##' }
-##' @name git_branch-class
-##' @aliases show,git_branch-method
-##' @docType class
-##' @keywords classes
-##' @section Methods:
-##' \describe{
-##'   \item{is.head}{\code{signature(object = "git_branch")}}
-##'   \item{is.local}{\code{signature(object = "git_branch")}}
-##'   \item{show}{\code{signature(object = "git_branch")}}
-##' }
-##' @keywords methods
-##' @export
+
+#' @name git_branch-class
+#' @title S4_class_to_handle_a_git_branch
+#' @name git_branch-class
+#'
+#' @section Slots:
+#' \describe{
+#'   \item{remote}{
+#'     :TODO:DOCUMENTATION:
+#'   }
+#'   \item{url}{
+#'     :TODO:DOCUMENTATION:
+#'   }
+#'   \item{head}{
+#'     :TODO:DOCUMENTATION:
+#'   }
+#' }
+#' @aliases show,git_branch-method
+#' @docType class
+#' @keywords classes
+#' @section Methods:
+#' \describe{
+#'   \item{is.head}{\code{signature(object = "git_branch")}}
+#'   \item{is.local}{\code{signature(object = "git_branch")}}
+#'   \item{show}{\code{signature(object = "git_branch")}}
+#' }
+#' @keywords methods
+#' @export
 setClass('git_branch',
          slots=c(remote='character',
                  url='character',

@@ -2,10 +2,9 @@
 \name{git_branch-class}
 \alias{git_branch-class}
 \alias{show,git_branch-method}
-\title{Class \code{"git_branch"}}
+\title{S4_class_to_handle_a_git_branch}
 \description{
-S4 class to handle a git branch, contains
-\code{git_reference}.
+S4_class_to_handle_a_git_branch
 }
 \section{Slots}{
   \describe{ \item{remote}{ :TODO:DOCUMENTATION: }

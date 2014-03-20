@@ -2,7 +2,7 @@
 \name{git_tag-class}
 \alias{git_tag-class}
 \alias{show,git_tag-method}
-\title{Class \code{"git_tag"}}
+\title{S4 class to handle a git tag, contains \code{git_reference}.}
 \description{
 S4 class to handle a git tag, contains
 \code{git_reference}.
