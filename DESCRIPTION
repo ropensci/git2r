@@ -3,7 +3,7 @@ Title: R bindings to the libgit2 library
 Description: The aim of the package is to be able to run some basic
     git commands on a repository from R. Another aim is to extract and
     visualize descriptive statistics from a git repository.
-Version: 0.0.7
+Version: 0.0.8
 Author: Stefan Widgren <stefan.widgren@gmail.com> (author of git2r
     package), See AUTHORS file for libgit2 authors.
 Maintainer: Stefan Widgren <stefan.widgren@gmail.com>
@@ -20,3 +20,19 @@ License: GPL-2
 LazyData: true
 NeedsCompilation: yes
 Date: 2014-03-15
+Imports:
+    ggplot2,
+    dplyr,
+    scales,
+    wordcloud
+Collate:
+    'git2r.r'
+    'repository.r'
+    'reference.r'
+    'branch.r'
+    'time.r'
+    'signature.r'
+    'tag.r'
+    'commit.r'
+    'contributions.r'
+    'markdown_link.r'
