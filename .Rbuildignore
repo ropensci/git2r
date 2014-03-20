@@ -1,3 +1,7 @@
 README.md
 LICENSE
 .travis.yml
+Makefile
+README.Rmd
+configure.ac
+figure
