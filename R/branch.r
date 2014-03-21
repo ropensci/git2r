@@ -1,5 +1,3 @@
- #' @include reference.r
-
 ## git2r, R bindings to the libgit2 library.
 ## Copyright (C) 2013  Stefan Widgren
 ##
@@ -15,34 +13,33 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-#' @name git_branch-class
-#' @title S4_class_to_handle_a_git_branch
-#' @name git_branch-class
-#'
-#' @section Slots:
-#' \describe{
-#'   \item{remote}{
-#'     :TODO:DOCUMENTATION:
-#'   }
-#'   \item{url}{
-#'     :TODO:DOCUMENTATION:
-#'   }
-#'   \item{head}{
-#'     :TODO:DOCUMENTATION:
-#'   }
-#' }
-#' @aliases show,git_branch-method
-#' @docType class
-#' @keywords classes
-#' @section Methods:
-#' \describe{
-#'   \item{is.head}{\code{signature(object = "git_branch")}}
-#'   \item{is.local}{\code{signature(object = "git_branch")}}
-#'   \item{show}{\code{signature(object = "git_branch")}}
-#' }
-#' @keywords methods
-#' @export
+##' Class \code{git_branch}
+##'
+##' @title S4_class_to_handle_a_git_branch
+##' @section Slots:
+##' \describe{
+##'   \item{remote}{
+##'     The name of remote that the remote tracking branch belongs to
+##'   }
+##'   \item{url}{
+##'     The remote's url
+##'   }
+##'   \item{head}{
+##'     TRUE if the current local branch is pointed at by HEAD
+##'   }
+##' }
+##' @name git_branch-class
+##' @docType class
+##' @keywords classes
+##' @section Methods:
+##' \describe{
+##'   \item{is.head}{\code{signature(object = "git_branch")}}
+##'   \item{is.local}{\code{signature(object = "git_branch")}}
+##'   \item{show}{\code{signature(object = "git_branch")}}
+##' }
+##' @keywords methods
+##' @include reference.r
+##' @export
 setClass('git_branch',
          slots=c(remote='character',
                  url='character',
@@ -53,19 +50,22 @@ setClass('git_branch',
 
 ##' Branches
 ##'
+##' List branches in repository
 ##' @name branches-methods
 ##' @aliases branches
 ##' @aliases branches-methods
 ##' @aliases branches,git_repository-method
 ##' @docType methods
-##' @param object :TODO:DOCUMENTATION:
-##' @param flags :TODO:DOCUMENTATION:
-##' @return :TODO:DOCUMENTATION:
+##' @param object The repository
+##' @param flags Filtering flags for the branch listing. Valid values
+##' are 'ALL', 'LOCAL' or 'REMOTE'
+##' @return list of branches in repository
 ##' @keywords methods
 ##' @export
 setGeneric('branches',
            signature = 'object',
-           function(object, flags=c('ALL', 'LOCAL', 'REMOTE')) standardGeneric('branches'))
+           function(object, flags=c('ALL', 'LOCAL', 'REMOTE'))
+           standardGeneric('branches'))
 
 setMethod('branches',
           signature(object = 'git_repository'),
@@ -156,6 +156,14 @@ setMethod('head',
           }
 )
 
+##' Brief summary of branch
+##'
+##' @aliases show,git_branch-methods
+##' @docType methods
+##' @param object The branch \code{object}
+##' @return None (invisible ‘NULL’).
+##' @keywords methods
+##' @export
 setMethod('show',
           signature(object = 'git_branch'),
           function (object)
