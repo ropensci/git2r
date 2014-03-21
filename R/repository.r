@@ -49,7 +49,9 @@ setClass('git_repository',
 ##' Coerce Git repository to a \code{data.frame}
 ##'
 ##' The commits in the repository are coerced to a \code{data.frame}
-##' with the following columns:
+##'
+##'
+##' The \code{data.frame} have the following columns:
 ##' \describe{
 ##'
 ##'   \item{hex}{
@@ -77,12 +79,12 @@ setClass('git_repository',
 ##'   }
 ##'
 ##' }
+##' @name coerce-git_repository-method
 ##' @aliases coerce,git_repository,data.frame-method
 ##' @docType methods
 ##' @param from The repository \code{object}
 ##' @return \code{data.frame}
 ##' @keywords methods
-##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository
@@ -93,7 +95,6 @@ setClass('git_repository',
 ##'
 ##' str(df)
 ##' }
-##'
 setAs(from="git_repository",
       to="data.frame",
       def=function(from)
