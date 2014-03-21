@@ -57,7 +57,7 @@ ggplot(df, aes(x = month, y = n)) +
 #' @import dplyr
 #' @importFrom scales date_format
 #' @import ggplot2  
-#' @importFrom reshape2 melt
+#' @importFrom reshape2 melt dcast
 #' @export
 #' @author Karthik Ram \email{karthik.ram@@gmail.com}
 #' @examples \dontrun{
