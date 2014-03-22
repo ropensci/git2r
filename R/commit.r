@@ -103,7 +103,7 @@ setMethod('commits',
 ##' @aliases show,git_commit-methods
 ##' @docType methods
 ##' @param object The commit \code{object}
-##' @return None (invisible ‘NULL’).
+##' @return None (invisible 'NULL').
 ##' @keywords methods
 ##' @export
 ##' @examples

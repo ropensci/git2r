@@ -253,8 +253,6 @@ setMethod('add',
 ##' @param author :TODO:DOCUMENTATION:
 ##' @param committer :TODO:DOCUMENTATION:
 ##' @param message :TODO:DOCUMENTATION:
-##' @param tree :TODO:DOCUMENTATION:
-##' @param parents :TODO:DOCUMENTATION:
 ##' @return \code{git_commit} object
 ##' @keywords methods
 ##' @export
@@ -284,6 +282,35 @@ setMethod('commit',
 
               hex <- head(object)@hex
               .Call('commit', object, message, author, committer, hex)
+          }
+)
+
+##' Get HEAD for a repo
+##'
+##' @rdname head-methods
+##' @aliases head
+##' @aliases head-methods
+##' @docType methods
+##' @param x The repository \code{x} to check head
+##' @return Character vector with head
+##' @keywords methods
+##' @export
+setMethod('head',
+          signature(x = 'git_repository'),
+          function (x)
+          {
+              b <- branches(x)
+
+              if(length(b)) {
+                  b <- b[sapply(b, is.head)]
+                  if(identical(length(b), 1L)) {
+                      return(b[[1]])
+                  }
+
+                  return(b)
+              }
+
+              return(NULL)
           }
 )
 
@@ -374,14 +401,15 @@ setMethod('remotes',
           }
 )
 
-##' @title remote_url-methods
+##' Get the remote url for remotes in a repo
 ##'
-##' @description Get the remote url for remotes in a repo
+##' @name remote_url-methods
 ##' @aliases remote_url
 ##' @aliases remote_url-methods
 ##' @aliases remote_url,git_repository-method
 ##' @docType methods
 ##' @param object The repository \code{object} to check remote_url
+##' @param remote :TODO:DOCUMENTATION:
 ##' @return Character vector with remote_url
 ##' @keywords methods
 ##' @export
@@ -426,7 +454,7 @@ setMethod('default_signature',
 ##' @aliases show,git_repository-methods
 ##' @docType methods
 ##' @param object The repository \code{object}
-##' @return None (invisible ‘NULL’).
+##' @return None (invisible 'NULL').
 ##' @keywords methods
 ##' @export
 setMethod('show',
@@ -455,7 +483,7 @@ setMethod('show',
 ##' @aliases summary,git_repository-methods
 ##' @docType methods
 ##' @param object The repository \code{object}
-##' @return None (invisible ‘NULL’).
+##' @return None (invisible 'NULL').
 ##' @keywords methods
 ##' @export
 setMethod('summary',

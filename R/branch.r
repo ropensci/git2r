@@ -126,42 +126,12 @@ setMethod('is.local',
           }
 )
 
-##' Get HEAD for a repo
-##'
-##' @name head-methods
-##' @aliases head
-##' @aliases head-methods
-##' @aliases head,git_repository-method
-##' @docType methods
-##' @param x The repository \code{x} to check head
-##' @return Character vector with head
-##' @keywords methods
-##' @export
-setMethod('head',
-          signature(x = 'git_repository'),
-          function (x)
-          {
-              b <- branches(x)
-
-              if(length(b)) {
-                  b <- b[sapply(b, is.head)]
-                  if(identical(length(b), 1L)) {
-                      return(b[[1]])
-                  }
-
-                  return(b)
-              }
-
-              return(NULL)
-          }
-)
-
 ##' Brief summary of branch
 ##'
 ##' @aliases show,git_branch-methods
 ##' @docType methods
 ##' @param object The branch \code{object}
-##' @return None (invisible ‘NULL’).
+##' @return None (invisible 'NULL').
 ##' @keywords methods
 ##' @export
 setMethod('show',

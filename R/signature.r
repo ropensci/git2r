@@ -30,7 +30,6 @@
 ##'   }
 ##' }
 ##' @name git_signature-class
-##' @aliases show,git_signature-method
 ##' @docType class
 ##' @keywords classes
 ##' @keywords methods
@@ -45,7 +44,7 @@ setClass('git_signature',
 ##' @aliases show,git_signature-methods
 ##' @docType methods
 ##' @param object The repository \code{object}
-##' @return None (invisible ‘NULL’).
+##' @return None (invisible 'NULL').
 ##' @keywords methods
 ##' @export
 setMethod('show',
