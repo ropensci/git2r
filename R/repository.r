@@ -213,7 +213,7 @@ init <- function(path, bare = FALSE) {
 ##' be relative to the repository's working filder.
 ##' @return invisible(NULL)
 ##' @keywords methods
-##' @export
+##' @exportMethod add
 ##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository
@@ -256,7 +256,7 @@ setMethod('add',
 ##' @param committer Signature with committer and commit time of commit.
 ##' @return \code{git_commit} object
 ##' @keywords methods
-##' @export
+##' @exportMethod commit
 setGeneric('commit',
            signature = 'object',
            function(object,
@@ -325,7 +325,7 @@ setMethod('head',
 ##' @param object The \code{object} to check if it's a bare repository
 ##' @return TRUE if bare repository, else FALSE
 ##' @keywords methods
-##' @export
+##' @exportMethod is.bare
 ##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository
@@ -357,7 +357,7 @@ setMethod('is.bare',
 ##' @param object The \code{object} to check if it's a empty repository
 ##' @return TRUE or FALSE
 ##' @keywords methods
-##' @export
+##' @exportMethod is.empty
 ##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository
@@ -389,7 +389,7 @@ setMethod('is.empty',
 ##' @param object The repository \code{object} to check remotes
 ##' @return Character vector with remotes
 ##' @keywords methods
-##' @export
+##' @exportMethod remotes
 setGeneric('remotes',
            signature = 'object',
            function(object) standardGeneric('remotes'))
@@ -413,7 +413,7 @@ setMethod('remotes',
 ##' @param remote :TODO:DOCUMENTATION:
 ##' @return Character vector with remote_url
 ##' @keywords methods
-##' @export
+##' @exportMethod remote_url
 setGeneric('remote_url',
            signature = 'object',
            function(object, remote = remotes(object)) standardGeneric('remote_url'))
@@ -437,7 +437,7 @@ setMethod('remote_url',
 ##' @param object The repository \code{object} to check signature
 ##' @return Character vector with signature
 ##' @keywords methods
-##' @export
+##' @exportMethod default_signature
 setGeneric('default_signature',
            signature = 'object',
            function(object) standardGeneric('default_signature'))
@@ -522,7 +522,7 @@ setMethod('summary',
 ##' @param object The repository \code{object} to check workdir
 ##' @return Character vector with workdir
 ##' @keywords methods
-##' @export
+##' @exportMethod workdir
 setGeneric('workdir',
            signature = 'object',
            function(object) standardGeneric('workdir'))

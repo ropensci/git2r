@@ -19,8 +19,9 @@
 ##' @name contributions-methods
 ##' @aliases contributions
 ##' @aliases contributions-methods
-##' @aliases contributions,git_repository-method
+##' @aliases contributions,missing-method
 ##' @aliases contributions,character-method
+##' @aliases contributions,git_repository-method
 ##' @docType methods
 ##' @param repo The repository.
 ##' @param breaks Default is \code{month}. Change to week or day as necessary.
@@ -28,7 +29,8 @@
 ##' @return A \code{data.frame} with contributions.
 ##' @importFrom reshape2 melt dcast
 ##' @keywords methods
-##' @export
+##' @include repository.r
+##' @exportMethod contributions
 ##' @author Karthik Ram \email{karthik.ram@@gmail.com}
 ##' @author Stefan Widgren \email{stefan.widgren@@gmail.com}
 ##' @examples \dontrun{

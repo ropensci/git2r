@@ -65,7 +65,7 @@ setClass('git_reference',
 ##' @param object The repository \code{object}.
 ##' @return Character vector with references
 ##' @keywords methods
-##' @export
+##' @exportMethod references
 ##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository
@@ -75,7 +75,6 @@ setClass('git_reference',
 ##' references(repo)
 ##' }
 ##'
-
 setGeneric('references',
            signature = 'object',
            function(object) standardGeneric('references'))

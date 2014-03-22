@@ -47,7 +47,7 @@ setClass('git_tag',
 ##' @param object The repository \code{object}.
 ##' @return list of tags in repository
 ##' @keywords methods
-##' @export
+##' @exportMethod tags
 setGeneric('tags',
            signature = 'object',
            function(object) standardGeneric('tags'))

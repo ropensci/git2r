@@ -65,7 +65,7 @@ setClass('git_commit',
 ##' @param object The repository \code{object}.
 ##' @return list of commits in repository
 ##' @keywords methods
-##' @export
+##' @exportMethod commits
 ##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository

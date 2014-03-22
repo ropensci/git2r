@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013  Stefan Widgren
+## Copyright (C) 2013-2014  Stefan Widgren
 ##
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ setClass('git_branch',
 ##' are 'ALL', 'LOCAL' or 'REMOTE'
 ##' @return list of branches in repository
 ##' @keywords methods
-##' @export
+##' @exportMethod branches
 setGeneric('branches',
            signature = 'object',
            function(object, flags=c('ALL', 'LOCAL', 'REMOTE'))
@@ -90,7 +90,7 @@ setMethod('branches',
 ##' @param object The branch \code{object} to check if it's head
 ##' @return TRUE if branch is head, else FALSE
 ##' @keywords methods
-##' @export
+##' @exportMethod is.head
 setGeneric('is.head',
            signature = 'object',
            function(object) standardGeneric('is.head'))
@@ -113,7 +113,7 @@ setMethod('is.head',
 ##' @param object The branch \code{object} to check if it's local
 ##' @return TRUE if branch is local, else FALSE
 ##' @keywords methods
-##' @export
+##' @exportMethod is.local
 setGeneric('is.local',
            signature = 'object',
            function(object) standardGeneric('is.local'))
