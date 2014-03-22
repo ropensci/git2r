@@ -18,8 +18,6 @@ The package is in a very early development phase and is considered unstable with
 Installation
 ------------
 
-I'm developing the package on Linux, so it's very possible that other platforms currently fails to install the package. But feel free to look into that.
-
 To install the development version of `git2r`, it's easiest to use the devtools package:
 
 
@@ -95,12 +93,14 @@ contributions()
 
 ### Visualize contributions by user on a monthly timeline (another way of looking at the same data from above)
 
-```{r, contributions_by_user}
+```{r, contributions_by_user, eval = FALSE}
+# This needs fixing in the new version
 library(git2r)
-contribution_by_user()
-contribution_by_user(breaks = "months", data_only = TRUE)
-contribution_by_user(breaks = "weeks")
-contribution_by_user(breaks = "days")
+library(dplyr)
+contributions(by = "user")
+contributions(breaks = "months", data_only = TRUE, by = "user")
+contributions(breaks = "weeks", by = "user")
+contributions(breaks = "days", by = "user")
 
 ```
 
