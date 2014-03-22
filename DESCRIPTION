@@ -23,7 +23,6 @@ Date: 2014-03-15
 Imports:
     ggplot2,
     dplyr,
-    plyr,
     reshape2,
     scales
 Collate:
@@ -37,3 +36,4 @@ Collate:
     'commit.r'
     'contributions.r'
     'markdown_link.r'
+    'plot.r'
