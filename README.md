@@ -27,7 +27,7 @@ To install the development version of `git2r`, it's easiest to use the devtools 
 
 
 
-```coffee
+```r
 # install.packages("devtools")
 library(devtools)
 install_github("git2r", "ropensci")
@@ -38,8 +38,15 @@ Example
 -------
 
 
-```coffee
+```r
 library(git2r)
+```
+
+```
+#> Loading required package: methods
+```
+
+```r
 
 # Open an existing repository
 # repo <- repository("path/to/git2r")
@@ -50,37 +57,37 @@ repo
 ```
 
 ```
-#> Remote:   @ origin (https://github.com/ropensci/git2r)
-#> Local:    testing_check /Users/karthik/Documents/work/Github/ropensci/git2r/
+#> Remote:   @ origin (https://github.com/ropensci/git2r.git)
+#> Local:    master /home/stefan/projects/packages/git2r/git2r/
 ```
 
-```coffee
+```r
 
 # Summary of repository
 summary(repo)
 ```
 
 ```
-#> Remote:   @ origin (https://github.com/ropensci/git2r)
-#> Local:    testing_check /Users/karthik/Documents/work/Github/ropensci/git2r/
+#> Remote:   @ origin (https://github.com/ropensci/git2r.git)
+#> Local:    master /home/stefan/projects/packages/git2r/git2r/
 #> 
-#> Branches:      8
+#> Branches:      4
 #> Tags:          0
-#> Commits:       145
-#> Contributors:  2
+#> Commits:       157
+#> Contributors:  3
 ```
 
-```coffee
+```r
 
 # Workdir of repository
 workdir(repo)
 ```
 
 ```
-#> [1] "/Users/karthik/Documents/work/Github/ropensci/git2r/"
+#> [1] "/home/stefan/projects/packages/git2r/git2r/"
 ```
 
-```coffee
+```r
 
 # Check if repository is bare
 is.bare(repo)
@@ -90,7 +97,7 @@ is.bare(repo)
 #> [1] FALSE
 ```
 
-```coffee
+```r
 
 # Check if repository is empty
 is.empty(repo)
@@ -100,51 +107,36 @@ is.empty(repo)
 #> [1] FALSE
 ```
 
-```coffee
+```r
 
 # List all references in repository
 references(repo)
 ```
 
 ```
-#> $`refs/heads/contrib`
-#> [bd5d2c] contrib
-#> 
-#> $`refs/heads/contrib_fns`
-#> [786472] contrib_fns
-#> 
-#> $`refs/heads/contributions`
-#> [5ce142] contributions
+#> $`refs/heads/data.frame`
+#> [772fd8] data.frame
 #> 
 #> $`refs/heads/master`
-#> [772fd8] master
+#> [a98a5f] master
 #> 
-#> $`refs/heads/testing_check`
-#> [b484a5] testing_check
-#> 
-#> $`refs/remotes/origin/example_fix`
-#> [1dda04] origin/example_fix
+#> $`refs/heads/tag`
+#> [620067] tag
 #> 
 #> $`refs/remotes/origin/HEAD`
 #> refs/remotes/origin/HEAD => refs/remotes/origin/master
 #> 
-#> $`refs/remotes/origin/master`
-#> [772fd8] origin/master
-#> 
 #> $`refs/remotes/origin/README_fix`
 #> [384d3a] origin/README_fix
 #> 
-#> $`refs/remotes/origin/testing_check`
-#> [b484a5] origin/testing_check
-#> 
-#> $`refs/remotes/origin/travis_fix`
-#> [9089f6] origin/travis_fix
+#> $`refs/remotes/origin/master`
+#> [a98a5f] origin/master
 #> 
 #> $`refs/stash`
-#> [8350c5] stash
+#> [4e2015] stash
 ```
 
-```coffee
+```r
 
 # List all branches in repository
 branches(repo)
@@ -152,40 +144,25 @@ branches(repo)
 
 ```
 #> [[1]]
-#> [bd5d2c] (Local) contrib
+#> [772fd8] (Local) data.frame
 #> 
 #> [[2]]
-#> [786472] (Local) contrib_fns
+#> [a98a5f] (Local) (HEAD) master
 #> 
 #> [[3]]
-#> [5ce142] (Local) contributions
+#> [620067] (Local) tag
 #> 
 #> [[4]]
-#> [772fd8] (Local) master
+#> (origin @ https://github.com/ropensci/git2r.git) refs/remotes/origin/HEAD => refs/remotes/origin/master
 #> 
 #> [[5]]
-#> [b484a5] (Local) (HEAD) testing_check
+#> [384d3a] (origin @ https://github.com/ropensci/git2r.git) README_fix
 #> 
 #> [[6]]
-#> [1dda04] (origin @ https://github.com/ropensci/git2r) example_fix
-#> 
-#> [[7]]
-#> (origin @ https://github.com/ropensci/git2r) refs/remotes/origin/HEAD => refs/remotes/origin/master
-#> 
-#> [[8]]
-#> [772fd8] (origin @ https://github.com/ropensci/git2r) master
-#> 
-#> [[9]]
-#> [384d3a] (origin @ https://github.com/ropensci/git2r) README_fix
-#> 
-#> [[10]]
-#> [b484a5] (origin @ https://github.com/ropensci/git2r) testing_check
-#> 
-#> [[11]]
-#> [9089f6] (origin @ https://github.com/ropensci/git2r) travis_fix
+#> [a98a5f] (origin @ https://github.com/ropensci/git2r.git) master
 ```
 
-```coffee
+```r
 
 # List all commits in repository
 commits(repo)[1] # Truncated here for readability
@@ -193,23 +170,23 @@ commits(repo)[1] # Truncated here for readability
 
 ```
 #> [[1]]
-#> Commit:  b484a5481c640811b396928c758348b0f1ce4ba5
-#> Author:  Karthik Ram <karthik.ram@gmail.com>
-#> When:    2014-03-19 17:52:06
-#> Summary: Quick update to README.
+#> Commit:  a98a5fbf3748598132d57372609eb52a676ba8a7
+#> Author:  Stefan Widgren <stefan.widgren@gmail.com>
+#> When:    2014-03-21 22:54:19
+#> Summary: Minor updates to S4 class git_repository documentation
 ```
 
-```coffee
+```r
 
 # Get HEAD of repository
 head(repo)
 ```
 
 ```
-#> [b484a5] (Local) (HEAD) testing_check
+#> [a98a5f] (Local) (HEAD) master
 ```
 
-```coffee
+```r
 
 # Check if HEAD is head
 is.head(head(repo))
@@ -219,7 +196,7 @@ is.head(head(repo))
 #> [1] TRUE
 ```
 
-```coffee
+```r
 
 # Check if HEAD is local
 is.local(head(repo))
@@ -229,7 +206,7 @@ is.local(head(repo))
 #> [1] TRUE
 ```
 
-```coffee
+```r
 
 # List all tags in repository
 tags(repo)
@@ -243,10 +220,8 @@ tags(repo)
 ### Visualize the number of commits per month in a repository
 
 
-```coffee
+```r
 library(git2r)
-library(ggplot2)
-library(reshape2)
 contributions()
 ```
 
@@ -258,52 +233,75 @@ contributions()
 ### Visualize contributions by user on a monthly timeline (another way of looking at the same data from above)
 
 
-```coffee
+```r
 library(git2r)
 contribution_by_user()
 ```
 
 ![plot of chunk contributions_by_user](figure/contributions_by_user1.png) 
 
-```coffee
+```r
 contribution_by_user(breaks = "months", data_only = TRUE)
 ```
 
 ```
-#>             name      month counts
-#> 1    Karthik Ram 2013-12-01     NA
-#> 2 Stefan Widgren 2013-12-01     35
-#> 3    Karthik Ram 2014-01-01     NA
-#> 4 Stefan Widgren 2014-01-01     33
-#> 5    Karthik Ram 2014-02-01     NA
-#> 6 Stefan Widgren 2014-02-01      7
-#> 7    Karthik Ram 2014-03-01     26
-#> 8 Stefan Widgren 2014-03-01     44
+#>                 name      month counts
+#> 1     Stefan Widgren 2013-12-01     35
+#> 2  Scott Chamberlain 2013-12-01     NA
+#> 3        Karthik Ram 2013-12-01     NA
+#> 4     Stefan Widgren 2014-01-01     33
+#> 5  Scott Chamberlain 2014-01-01     NA
+#> 6        Karthik Ram 2014-01-01     NA
+#> 7     Stefan Widgren 2014-02-01      7
+#> 8  Scott Chamberlain 2014-02-01     NA
+#> 9        Karthik Ram 2014-02-01     NA
+#> 10    Stefan Widgren 2014-03-01     51
+#> 11 Scott Chamberlain 2014-03-01      2
+#> 12       Karthik Ram 2014-03-01     29
 ```
 
-```coffee
+```r
 contribution_by_user(breaks = "weeks")
 ```
 
 ![plot of chunk contributions_by_user](figure/contributions_by_user2.png) 
 
-```coffee
+```r
 contribution_by_user(breaks = "days")
 ```
 
 ![plot of chunk contributions_by_user](figure/contributions_by_user3.png) 
 
-```coffee
- 
-```
-
 
 ### Generate a wordcloud from the commit messages in a repository
 
 
-```coffee
+```r
 library(git2r)
-contribution_wc()
+library(wordcloud)
+```
+
+```
+#> Loading required package: Rcpp
+#> Loading required package: RColorBrewer
+```
+
+```r
+library(RColorBrewer)
+
+# Open an existing repository
+# repo <- repository("path/to/git2r")
+repo <- repository(getwd())
+
+## Create the wordcloud
+wordcloud(paste(sapply(commits(repo), slot, 'message'), collapse=' '),
+          scale=c(5,0.5), max.words = 100, random.order = FALSE,
+          rot.per = 0.35, use.r.layout = FALSE,
+          colors = brewer.pal(8, 'Dark2'))
+```
+
+```
+#> Loading required package: tm
 ```
 
 ![plot of chunk wordcloud](figure/wordcloud.png) 

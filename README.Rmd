@@ -101,14 +101,25 @@ contribution_by_user()
 contribution_by_user(breaks = "months", data_only = TRUE)
 contribution_by_user(breaks = "weeks")
 contribution_by_user(breaks = "days")
- 
+
 ```
 
 ### Generate a wordcloud from the commit messages in a repository
 
 ```{r, wordcloud}
 library(git2r)
-contribution_wc()
+library(wordcloud)
+library(RColorBrewer)
+
+# Open an existing repository
+# repo <- repository("path/to/git2r")
+repo <- repository(getwd())
+
+## Create the wordcloud
+wordcloud(paste(sapply(commits(repo), slot, 'message'), collapse=' '),
+          scale=c(5,0.5), max.words = 100, random.order = FALSE,
+          rot.per = 0.35, use.r.layout = FALSE,
+          colors = brewer.pal(8, 'Dark2'))
 ```
 
 
