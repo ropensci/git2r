@@ -22,8 +22,6 @@ NeedsCompilation: yes
 Date: 2014-03-15
 Imports:
     ggplot2,
-    dplyr,
-    reshape2,
     scales
 Collate:
     'git2r.r'

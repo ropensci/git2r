@@ -27,7 +27,6 @@
 ##' @param breaks Default is \code{month}. Change to week or day as necessary.
 ##' @param by Contributions by 'commits' or 'user'. Default is 'commits'.
 ##' @return A \code{data.frame} with contributions.
-##' @importFrom reshape2 melt dcast
 ##' @keywords methods
 ##' @include repository.r
 ##' @exportMethod contributions
@@ -83,16 +82,11 @@ setMethod('contributions',
                   return(df)
               }
 
-              ## Summarise the results
-              df_summary <- df %.%
-                  group_by(name, when) %.%
-                  summarise(counts = n()) %.%
-                  arrange(when)
-
-              df_melted <-  melt(dcast(df_summary, name ~ when, value.var = "counts"), id.var = "name")
-              df_melted$variable <- as.Date(df_melted$variable)
-              names(df_melted)[2:3] <- c("when", "counts")
-
-              df_melted
+              df <- as.data.frame(table(paste0(df$when, df$author)),
+                                  stringsAsFactors=FALSE)
+              names(df) <- c('when', 'n')
+              df$author <- substr(df$when, 11, nchar(df$when))
+              df$when <- as.Date(substr(df$when, 1, 10))
+              df[order(df$when, df$author), c('when', 'author', 'n')]
           }
 )
