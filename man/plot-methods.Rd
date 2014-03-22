@@ -16,6 +16,9 @@ necessary.}
 
 \item{by}{Contributions by 'commits' or 'user'. Default is
 'commits'.}
+
+\item{title}{Default title for the plot is 'Commits on repo' and
+repository workdir basename. Supply a new title if you desire one.}
 }
 \value{
 A \code{ggplot} chart

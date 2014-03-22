@@ -24,6 +24,8 @@
 ##' necessary.
 ##' @param by Contributions by 'commits' or 'user'. Default is
 ##' 'commits'.
+##' @param title Default title for the plot is 'Commits on repo' and
+##' repository workdir basename. Supply a new title if you desire one.
 ##' @return A \code{ggplot} chart
 ##' @keywords methods
 ##' @import ggplot2
