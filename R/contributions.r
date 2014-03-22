@@ -16,53 +16,81 @@
 ##' Contributions
 ##'
 ##' See contributions to a Git repo
-##' @param dir Path to git repo. Default is current working directory.
+##' @name contributions-methods
+##' @aliases contributions
+##' @aliases contributions-methods
+##' @aliases contributions,git_repository-method
+##' @aliases contributions,character-method
+##' @docType methods
+##' @param repo The repository.
 ##' @param breaks Default is \code{month}. Change to week or day as necessary.
 ##' @param by Contributions by 'commits' or 'user'. Default is 'commits'.
 ##' @return A \code{data.frame} with contributions.
 ##' @importFrom plyr ddply
 ##' @importFrom reshape2 melt dcast
+##' @keywords methods
 ##' @export
 ##' @author Karthik Ram \email{karthik.ram@@gmail.com}
 ##' @author Stefan Widgren \email{stefan.widgren@@gmail.com}
 ##' @examples \dontrun{
-##' # If current working dir is a git repo
-##' # contributions()
-##' # contributions(breaks = "week")
-##' # contributions(breaks = "day")
-##' # If the path is somewhere else
-##' # contributions(dir = "/path/to/repo")
+##' ## If current working dir is a git repo
+##' contributions()
+##' contributions(breaks = "week")
+##' contributions(breaks = "day")
+##'
+##' ## If the path is somewhere else
+##' contributions("/path/to/repo")
 ##'}
-contributions <- function(dir = getwd(),
-                          breaks = c('month', 'week', 'day'),
-                          by = c('commits', 'user'))
-{
-    breaks <- match.arg(breaks)
-    by <- match.arg(by)
+setGeneric('contributions',
+           signature = 'repo',
+           function(repo,
+                    breaks = c('month', 'week', 'day'),
+                    by = c('commits', 'user'))
+           standardGeneric('contributions'))
 
-    repo <- repository(dir)
-    df <- do.call('rbind', lapply(commits(repo), function(x) {
-        data.frame(name = x@author@name,
-                   when = as(x@author@when, 'POSIXct'))
-    }))
+setMethod('contributions',
+          signature(repo = 'missing'),
+          function (repo, breaks, by)
+          {
+              ## Try current working directory
+              contributions(getwd(), breaks = breaks, by = by)
+          }
+)
 
-    if(identical(by, 'commits')) {
-        ## Format data
-        df$when <- as.POSIXct(cut(df$when, breaks = breaks))
-        df <- ddply(df, ~when, nrow)
-        names(df) <- c('when', 'n')
-        return(df)
-    }
+setMethod('contributions',
+          signature(repo = 'character'),
+          function (repo, breaks, by)
+          {
+              contributions(repository(repo), breaks = breaks, by = by)
+          }
+)
 
-    ## Summarise the results
-    df_summary <- df %.%
-        group_by(name, month) %.%
-        summarise(counts = n()) %.%
-        arrange(month)
+setMethod('contributions',
+          signature(repo = 'git_repository'),
+          function (repo, breaks, by)
+          {
+              breaks <- match.arg(breaks)
+              by <- match.arg(by)
 
-    df_melted <-  melt(dcast(df_summary, name ~ month, value.var = "counts"), id.var = "name")
-    df_melted$variable <- as.Date(df_melted$variable)
-    names(df_melted)[2:3] <- c("month", "counts")
+              df <- as(repo, 'data.frame')
+              if(identical(by, 'commits')) {
+                  ## Format data
+                  df$when <- as.POSIXct(cut(df$when, breaks = breaks))
+                  df <- ddply(df, ~when, nrow)
+                  names(df) <- c('when', 'n')
+                  return(df)
+              }
 
-    df_melted
-}
+              ## Summarise the results
+              df_summary <- df %.%
+                  group_by(name, when) %.%
+                  summarise(counts = n()) %.%
+                  arrange(when)
+
+              df_melted <-  melt(dcast(df_summary, name ~ when, value.var = "counts"), id.var = "name")
+              df_melted$variable <- as.Date(df_melted$variable)
+              names(df_melted)[2:3] <- c("when", "counts")
+
+              df_melted
+          }
+)
