@@ -6,7 +6,7 @@
 #' @param  breaks Default is \code{month}. Change to week or day as necessary.
 #' @param  data_only = default is \code{FALSE}. Set to \code{TRUE} if you just require the \code{data.frame} output.
 #' @importFrom scales date_format
-#' @import ggplot2 
+#' @import ggplot2
 #' @importFrom plyr ddply
 #' @export
 #' @author Karthik Ram \email{karthik.ram@@gmail.com}
@@ -34,18 +34,18 @@ df <- ddply(df, ~month, nrow)
 names(df) <- c('month', 'n')
 
 if(data_only) {
-  df 
+  df
 } else {
 # return the plot
 df$month <- as.Date(df$month)
 ggplot(df, aes(x = month, y = n)) +
     geom_bar(stat = 'identity', fill = "steelblue") +
     scale_x_date('Month', labels = scales::date_format("%m-%Y")) +
-    scale_y_continuous('# of commits') + 
+    scale_y_continuous('# of commits') +
     ggtitle(sprintf("Commits on repo %s", basename(repo@path))) +
     labs(title = title)  + theme_gray()
-} 
-  }  
+}
+  }
 
 
 #' contribution_by_user
@@ -56,7 +56,7 @@ ggplot(df, aes(x = month, y = n)) +
 #' @param  data_only = default is \code{FALSE}. Set to \code{TRUE} if you just require the \code{data.frame} output.
 #' @import dplyr
 #' @importFrom scales date_format
-#' @import ggplot2  
+#' @import ggplot2
 #' @importFrom reshape2 melt dcast
 #' @export
 #' @author Karthik Ram \email{karthik.ram@@gmail.com}
@@ -75,7 +75,7 @@ df$month <- as.POSIXct(cut(df$when, breaks = breaks))
 
 
 # Summarise the results
-df_summary <- df %.% 
+df_summary <- df %.%
 group_by(name, month) %.%
 summarise(counts = n()) %.%
 arrange(month)
@@ -88,38 +88,12 @@ names(df_melted)[2:3] <- c("month", "counts")
 
 if(data_only) {
   df_melted
-} else { 
-ggplot(df_melted, aes(month, counts, group = name, fill = name)) + 
+} else {
+ggplot(df_melted, aes(month, counts, group = name, fill = name)) +
 geom_bar(stat = "identity", position = "dodge", color = "black") +
-expand_limits(y = 0) + xlab("Month") + ylab("Commits") + 
+expand_limits(y = 0) + xlab("Month") + ylab("Commits") +
 ggtitle(sprintf("Commits on repo %s", basename(repo@path))) +
 scale_x_date(labels = date_format("%b-%Y")) + theme_gray()
 }
 
-} 
-
-
-
-#' Contribution word cloud
-#'
-#' Generate a word cloud from commit messages
-#' @param dir Path to git repo. Default is current working directory.
-#' @export
-#' @import wordcloud
-#' @importFrom RColorBrewer brewer.pal
-#' @author Karthik Ram \email{karthik.ram@@gmail.com}
-#' @examples \dontrun{
-#' contribution_wc()
-#'}
-contribution_wc <- function(dir = getwd()) {
-
-repo <- repository(dir)
-
-## Harvest neccessary data from repository
-msg <- paste(sapply(commits(repo), slot, 'message'), collapse=' ')
-
-## Create the wordcloud
-wordcloud(msg, scale=c(5,0.5), max.words = 100, random.order = FALSE,
-          rot.per = 0.35, use.r.layout = FALSE, colors = brewer.pal(8, 'Dark2'))
 }
-
