@@ -249,10 +249,11 @@ setMethod('add',
 ##' @aliases commit,git_repository-method
 ##' @docType methods
 ##' @param object The repository \code{object}.
-##' @param reference :TODO:DOCUMENTATION:
-##' @param author :TODO:DOCUMENTATION:
-##' @param committer :TODO:DOCUMENTATION:
-##' @param message :TODO:DOCUMENTATION:
+##' @param message The commit message.
+##' @param reference Name of the reference that will be updated to
+##' point to this commit.
+##' @param author Signature with author and author time of commit.
+##' @param committer Signature with committer and commit time of commit.
 ##' @return \code{git_commit} object
 ##' @keywords methods
 ##' @export

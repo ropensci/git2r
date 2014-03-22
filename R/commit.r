@@ -62,7 +62,7 @@ setClass('git_commit',
 ##' @aliases commits,git_repository-method
 ##' @aliases commits,character-method
 ##' @docType methods
-##' @param object :TODO:DOCUMENTATION:
+##' @param object The repository \code{object}.
 ##' @return list of commits in repository
 ##' @keywords methods
 ##' @export

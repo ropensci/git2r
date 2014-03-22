@@ -11,13 +11,14 @@ commit(object, message = NULL, reference = "HEAD",
 \arguments{
 \item{object}{The repository \code{object}.}
 
-\item{reference}{:TODO:DOCUMENTATION:}
+\item{message}{The commit message.}
 
-\item{author}{:TODO:DOCUMENTATION:}
+\item{reference}{Name of the reference that will be updated to
+point to this commit.}
 
-\item{committer}{:TODO:DOCUMENTATION:}
+\item{author}{Signature with author and author time of commit.}
 
-\item{message}{:TODO:DOCUMENTATION:}
+\item{committer}{Signature with committer and commit time of commit.}
 }
 \value{
 \code{git_commit} object

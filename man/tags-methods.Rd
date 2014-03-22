@@ -8,7 +8,7 @@
 tags(object)
 }
 \arguments{
-\item{object}{:TODO:DOCUMENTATION:}
+\item{object}{The repository \code{object}.}
 }
 \value{
 list of tags in repository

@@ -44,7 +44,7 @@ setClass('git_tag',
 ##' @aliases tags-methods
 ##' @aliases tags,git_repository-method
 ##' @docType methods
-##' @param object :TODO:DOCUMENTATION:
+##' @param object The repository \code{object}.
 ##' @return list of tags in repository
 ##' @keywords methods
 ##' @export
