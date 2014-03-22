@@ -26,7 +26,6 @@
 ##' @param breaks Default is \code{month}. Change to week or day as necessary.
 ##' @param by Contributions by 'commits' or 'user'. Default is 'commits'.
 ##' @return A \code{data.frame} with contributions.
-##' @importFrom plyr ddply
 ##' @importFrom reshape2 melt dcast
 ##' @keywords methods
 ##' @export
@@ -73,11 +72,12 @@ setMethod('contributions',
               by <- match.arg(by)
 
               df <- as(repo, 'data.frame')
+              df$when <- as.POSIXct(cut(df$when, breaks = breaks))
+
               if(identical(by, 'commits')) {
-                  ## Format data
-                  df$when <- as.POSIXct(cut(df$when, breaks = breaks))
-                  df <- ddply(df, ~when, nrow)
+                  df <- as.data.frame(table(df$when))
                   names(df) <- c('when', 'n')
+                  df$when <- as.Date(df$when)
                   return(df)
               }
 
