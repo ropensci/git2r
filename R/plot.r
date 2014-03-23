@@ -47,12 +47,21 @@ setMethod('plot',
                              'month' = 'Month',
                              'week'  = 'Week',
                              'day'   = 'Day')
+              ylab <- 'Number of commits'
+              title <- sprintf("Commits on repository: %s", basename(workdir(x)))
 
-              ggplot(df, aes(x = when, y = n)) +
-                  geom_bar(stat = 'identity', fill = "steelblue") +
-                  scale_x_date(xlab, labels = scales::date_format("%m-%Y")) +
-                  scale_y_continuous('# of commits') +
-                  ggtitle(sprintf("Commits on repo %s", basename(workdir(x)))) +
-                  theme_gray()
+              if(identical(by, 'commits')) {
+                  ggplot(df, aes(x = when, y = n)) +
+                      geom_bar(stat = 'identity', fill = "steelblue") +
+                      scale_x_date(xlab, labels = scales::date_format("%m-%Y")) +
+                      scale_y_continuous(ylab) +
+                      ggtitle(title) + theme_gray()
+              } else {
+                  ggplot(df, aes(x = when, y = n, group = author, fill = author)) +
+                      geom_bar(stat = "identity", color = "black") +
+                      scale_x_date(xlab, labels = scales::date_format("%m-%Y")) +
+                      scale_y_continuous(ylab) +
+                      ggtitle(title) + theme_gray()
+              }
           }
 )
