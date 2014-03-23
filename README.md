@@ -24,7 +24,6 @@ To install the development version of `git2r`, it's easiest to use the devtools 
 
 
 
-
 ```coffee
 # install.packages("devtools")
 library(devtools)
@@ -38,6 +37,13 @@ Example
 
 ```coffee
 library(git2r)
+```
+
+```
+#> Loading required package: methods
+```
+
+```coffee
 
 # Open an existing repository
 # repo <- repository("path/to/git2r")
@@ -48,8 +54,8 @@ repo
 ```
 
 ```
-#> Remote:   @ origin (https://github.com/ropensci/git2r)
-#> Local:    master /Users/karthik/Documents/work/Github/ropensci/git2r/
+#> Remote:   @ origin (https://github.com/ropensci/git2r.git)
+#> Local:    master /home/stefan/projects/packages/git2r/git2r/
 ```
 
 ```coffee
@@ -59,12 +65,12 @@ summary(repo)
 ```
 
 ```
-#> Remote:   @ origin (https://github.com/ropensci/git2r)
-#> Local:    master /Users/karthik/Documents/work/Github/ropensci/git2r/
+#> Remote:   @ origin (https://github.com/ropensci/git2r.git)
+#> Local:    master /home/stefan/projects/packages/git2r/git2r/
 #> 
-#> Branches:      10
+#> Branches:      4
 #> Tags:          0
-#> Commits:       170
+#> Commits:       175
 #> Contributors:  3
 ```
 
@@ -75,7 +81,7 @@ workdir(repo)
 ```
 
 ```
-#> [1] "/Users/karthik/Documents/work/Github/ropensci/git2r/"
+#> [1] "/home/stefan/projects/packages/git2r/git2r/"
 ```
 
 ```coffee
@@ -105,44 +111,26 @@ references(repo)
 ```
 
 ```
-#> $`refs/heads/contrib`
-#> [bd5d2c] contrib
-#> 
-#> $`refs/heads/contrib_fns`
-#> [786472] contrib_fns
-#> 
-#> $`refs/heads/contributions`
-#> [5ce142] contributions
-#> 
-#> $`refs/heads/foo`
-#> [a98a5f] foo
+#> $`refs/heads/data.frame`
+#> [772fd8] data.frame
 #> 
 #> $`refs/heads/master`
-#> [01bf4a] master
+#> [27943f] master
 #> 
-#> $`refs/heads/roxygen-update`
-#> [abaac5] roxygen-update
-#> 
-#> $`refs/heads/testing_check`
-#> [693eb7] testing_check
-#> 
-#> $`refs/remotes/origin/example_fix`
-#> [1dda04] origin/example_fix
+#> $`refs/heads/tag`
+#> [620067] tag
 #> 
 #> $`refs/remotes/origin/HEAD`
 #> refs/remotes/origin/HEAD => refs/remotes/origin/master
 #> 
+#> $`refs/remotes/origin/README_fix`
+#> [384d3a] origin/README_fix
+#> 
 #> $`refs/remotes/origin/master`
-#> [01bf4a] origin/master
-#> 
-#> $`refs/remotes/origin/testing_check`
-#> [a64614] origin/testing_check
-#> 
-#> $`refs/remotes/origin/travis_fix`
-#> [9089f6] origin/travis_fix
+#> [27943f] origin/master
 #> 
 #> $`refs/stash`
-#> [8350c5] stash
+#> [4e2015] stash
 ```
 
 ```coffee
@@ -153,40 +141,22 @@ branches(repo)
 
 ```
 #> [[1]]
-#> [bd5d2c] (Local) contrib
+#> [772fd8] (Local) data.frame
 #> 
 #> [[2]]
-#> [786472] (Local) contrib_fns
+#> [27943f] (Local) (HEAD) master
 #> 
 #> [[3]]
-#> [5ce142] (Local) contributions
+#> [620067] (Local) tag
 #> 
 #> [[4]]
-#> [a98a5f] (Local) foo
+#> (origin @ https://github.com/ropensci/git2r.git) refs/remotes/origin/HEAD => refs/remotes/origin/master
 #> 
 #> [[5]]
-#> [01bf4a] (Local) (HEAD) master
+#> [384d3a] (origin @ https://github.com/ropensci/git2r.git) README_fix
 #> 
 #> [[6]]
-#> [abaac5] (Local) roxygen-update
-#> 
-#> [[7]]
-#> [693eb7] (Local) testing_check
-#> 
-#> [[8]]
-#> [1dda04] (origin @ https://github.com/ropensci/git2r) example_fix
-#> 
-#> [[9]]
-#> (origin @ https://github.com/ropensci/git2r) refs/remotes/origin/HEAD => refs/remotes/origin/master
-#> 
-#> [[10]]
-#> [01bf4a] (origin @ https://github.com/ropensci/git2r) master
-#> 
-#> [[11]]
-#> [a64614] (origin @ https://github.com/ropensci/git2r) testing_check
-#> 
-#> [[12]]
-#> [9089f6] (origin @ https://github.com/ropensci/git2r) travis_fix
+#> [27943f] (origin @ https://github.com/ropensci/git2r.git) master
 ```
 
 ```coffee
@@ -197,10 +167,10 @@ commits(repo)[1] # Truncated here for readability
 
 ```
 #> [[1]]
-#> Commit:  01bf4ae4436a9bb80bd2cf55782c46fe86943519
+#> Commit:  27943f7f9eebe955730594da3da78b6d52457799
 #> Author:  Stefan Widgren <stefan.widgren@gmail.com>
-#> When:    2014-03-22 17:27:08
-#> Summary: Fixed roxygen exportMethod tag in documentation
+#> When:    2014-03-23 10:07:09
+#> Summary: Fixed plot by user
 ```
 
 ```coffee
@@ -210,7 +180,7 @@ head(repo)
 ```
 
 ```
-#> [01bf4a] (Local) (HEAD) master
+#> [27943f] (Local) (HEAD) master
 ```
 
 ```coffee
@@ -249,33 +219,71 @@ tags(repo)
 
 ```coffee
 library(git2r)
-contributions()
+
+# Open an existing repository
+# repo <- repository("path/to/git2r")
+repo <- repository(getwd())
+
+contributions(repo)
 ```
 
 ```
-#>         when  n
-#> 1 2013-12-01 35
-#> 2 2014-01-01 33
-#> 3 2014-02-01  7
-#> 4 2014-03-01 95
+#>         when   n
+#> 1 2013-12-01  35
+#> 2 2014-01-01  33
+#> 3 2014-02-01   7
+#> 4 2014-03-01 100
 ```
 
+```coffee
 
+plot(repo)
+```
+
+![plot of chunk contributionnum](figure/contributionnum.png) 
 
 
 ### Visualize contributions by user on a monthly timeline (another way of looking at the same data from above)
 
 
 ```coffee
-# This needs fixing in the new version
 library(git2r)
-library(dplyr)
-contributions(by = "user")
-contributions(breaks = "months", data_only = TRUE, by = "user")
-contributions(breaks = "weeks", by = "user")
-contributions(breaks = "days", by = "user")
+
+# Open an existing repository
+# repo <- repository("path/to/git2r")
+repo <- repository(getwd())
+
+contributions(repo, by='user')
+```
 
 ```
+#>         when            author  n
+#> 1 2013-12-01    Stefan Widgren 35
+#> 2 2014-01-01    Stefan Widgren 33
+#> 3 2014-02-01    Stefan Widgren  7
+#> 4 2014-03-01       Karthik Ram 31
+#> 5 2014-03-01 Scott Chamberlain  2
+#> 6 2014-03-01    Stefan Widgren 67
+```
+
+```coffee
+
+plot(repo, by = "user")
+```
+
+![plot of chunk contributions_by_user](figure/contributions_by_user1.png) 
+
+```coffee
+plot(repo, breaks="week", by = "user")
+```
+
+![plot of chunk contributions_by_user](figure/contributions_by_user2.png) 
+
+```coffee
+plot(repo, breaks="day", by = "user")
+```
+
+![plot of chunk contributions_by_user](figure/contributions_by_user3.png) 
 
 
 ### Generate a wordcloud from the commit messages in a repository
@@ -292,7 +300,6 @@ library(wordcloud)
 ```
 
 ```coffee
-library(RColorBrewer)
 
 # Open an existing repository
 # repo <- repository("path/to/git2r")
@@ -310,7 +317,6 @@ wordcloud(paste(sapply(commits(repo), slot, 'message'), collapse=' '),
 ```
 
 ![plot of chunk wordcloud](figure/wordcloud.png) 
-
 
 
 Included software

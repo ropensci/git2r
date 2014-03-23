@@ -20,7 +20,6 @@ Installation
 
 To install the development version of `git2r`, it's easiest to use the devtools package:
 
-
 ```{r, setup, echo = FALSE, message = FALSE}
 knitr::opts_chunk$set(
   comment = "#>",
@@ -86,22 +85,30 @@ tags(repo)
 
 ```{r, contributionnum}
 library(git2r)
-contributions()
+
+# Open an existing repository
+# repo <- repository("path/to/git2r")
+repo <- repository(getwd())
+
+contributions(repo)
+
+plot(repo)
 ```
-
-
 
 ### Visualize contributions by user on a monthly timeline (another way of looking at the same data from above)
 
-```{r, contributions_by_user, eval = FALSE}
-# This needs fixing in the new version
+```{r, contributions_by_user}
 library(git2r)
-library(dplyr)
-contributions(by = "user")
-contributions(breaks = "months", data_only = TRUE, by = "user")
-contributions(breaks = "weeks", by = "user")
-contributions(breaks = "days", by = "user")
 
+# Open an existing repository
+# repo <- repository("path/to/git2r")
+repo <- repository(getwd())
+
+contributions(repo, by='user')
+
+plot(repo, by = "user")
+plot(repo, breaks="week", by = "user")
+plot(repo, breaks="day", by = "user")
 ```
 
 ### Generate a wordcloud from the commit messages in a repository
@@ -109,7 +116,6 @@ contributions(breaks = "days", by = "user")
 ```{r, wordcloud}
 library(git2r)
 library(wordcloud)
-library(RColorBrewer)
 
 # Open an existing repository
 # repo <- repository("path/to/git2r")
@@ -121,7 +127,6 @@ wordcloud(paste(sapply(commits(repo), slot, 'message'), collapse=' '),
           rot.per = 0.35, use.r.layout = FALSE,
           colors = brewer.pal(8, 'Dark2'))
 ```
-
 
 Included software
 -----------------
