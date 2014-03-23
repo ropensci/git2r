@@ -1,4 +1,3 @@
-#' @include time.r
 ## git2r, R bindings to the libgit2 library.
 ## Copyright (C) 2013-2014  Stefan Widgren
 ##
@@ -33,11 +32,27 @@
 ##' @docType class
 ##' @keywords classes
 ##' @keywords methods
+##' @include time.r
 ##' @export
 setClass('git_signature',
          slots=c(name='character',
                  email='character',
-                 when='git_time'))
+                 when='git_time'),
+         validity=function(object)
+         {
+             errors <- validObject(object@when)
+
+             if(identical(errors, TRUE))
+               errors <- character()
+
+             if(!identical(length(object@name), 1L))
+                 errors <- c(errors, 'name must have length equal to one')
+             if(!identical(length(object@email), 1L))
+                 errors <- c(errors, 'email must have length equal to one')
+
+             if(length(errors) == 0) TRUE else errors
+         }
+)
 
 ##' Brief summary of signature
 ##'
