@@ -71,6 +71,14 @@ setAs(from='git_time',
       }
 )
 
+##' Brief summary of branch
+##'
+##' @aliases show,git_time-methods
+##' @docType methods
+##' @param object The time \code{object}
+##' @return None (invisible 'NULL').
+##' @keywords methods
+##' @export
 setMethod('show',
           signature(object = 'git_time'),
           function(object)

@@ -56,16 +56,11 @@ setClass('git_commit',
 
 ##' Commits
 ##'
-##' @name commits-methods
-##' @aliases commits
-##' @aliases commits-methods
-##' @aliases commits,git_repository-method
-##' @aliases commits,character-method
+##' @rdname commits-methods
 ##' @docType methods
 ##' @param object The repository \code{object}.
 ##' @return list of commits in repository
 ##' @keywords methods
-##' @exportMethod commits
 ##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository
@@ -82,6 +77,8 @@ setGeneric('commits',
            signature = 'object',
            function(object) standardGeneric('commits'))
 
+##' @rdname commits-methods
+##' @export
 setMethod('commits',
           signature(object = 'character'),
           function (object)
@@ -90,6 +87,8 @@ setMethod('commits',
           }
 )
 
+##' @rdname commits-methods
+##' @export
 setMethod('commits',
           signature(object = 'git_repository'),
           function (object)

@@ -39,19 +39,17 @@ setClass('git_tag',
 
 ##' Tags
 ##'
-##' @name tags-methods
-##' @aliases tags
-##' @aliases tags-methods
-##' @aliases tags,git_repository-method
+##' @rdname tags-methods
 ##' @docType methods
 ##' @param object The repository \code{object}.
 ##' @return list of tags in repository
 ##' @keywords methods
-##' @exportMethod tags
 setGeneric('tags',
            signature = 'object',
            function(object) standardGeneric('tags'))
 
+##' @rdname tags-methods
+##' @export
 setMethod('tags',
           signature(object = 'git_repository'),
           function (object)

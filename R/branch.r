@@ -51,22 +51,20 @@ setClass('git_branch',
 ##' Branches
 ##'
 ##' List branches in repository
-##' @name branches-methods
-##' @aliases branches
-##' @aliases branches-methods
-##' @aliases branches,git_repository-method
+##' @rdname branches-methods
 ##' @docType methods
 ##' @param object The repository
 ##' @param flags Filtering flags for the branch listing. Valid values
 ##' are 'ALL', 'LOCAL' or 'REMOTE'
 ##' @return list of branches in repository
 ##' @keywords methods
-##' @exportMethod branches
 setGeneric('branches',
            signature = 'object',
            function(object, flags=c('ALL', 'LOCAL', 'REMOTE'))
            standardGeneric('branches'))
 
+##' @rdname branches-methods
+##' @export
 setMethod('branches',
           signature(object = 'git_repository'),
           function (object, flags)
@@ -82,19 +80,17 @@ setMethod('branches',
 
 ##' Check if branch is head
 ##'
-##' @name is.head-methods
-##' @aliases is.head
-##' @aliases is.head-methods
-##' @aliases is.head,git_branch-method
+##' @rdname is.head-methods
 ##' @docType methods
 ##' @param object The branch \code{object} to check if it's head
 ##' @return TRUE if branch is head, else FALSE
 ##' @keywords methods
-##' @exportMethod is.head
 setGeneric('is.head',
            signature = 'object',
            function(object) standardGeneric('is.head'))
 
+##' @rdname is.head-methods
+##' @export
 setMethod('is.head',
           signature(object = 'git_branch'),
           function (object)
@@ -105,19 +101,17 @@ setMethod('is.head',
 
 ##' Check if branch is local
 ##'
-##' @name is.local-methods
-##' @aliases is.local
-##' @aliases is.local-methods
-##' @aliases is.local,git_branch-method
+##' @rdname is.local-methods
 ##' @docType methods
 ##' @param object The branch \code{object} to check if it's local
 ##' @return TRUE if branch is local, else FALSE
 ##' @keywords methods
-##' @exportMethod is.local
 setGeneric('is.local',
            signature = 'object',
            function(object) standardGeneric('is.local'))
 
+##' @rdname is.local-methods
+##' @export
 setMethod('is.local',
           signature(object = 'git_branch'),
           function (object)

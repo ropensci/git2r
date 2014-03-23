@@ -16,12 +16,7 @@
 ##' Contributions
 ##'
 ##' See contributions to a Git repo
-##' @name contributions-methods
-##' @aliases contributions
-##' @aliases contributions-methods
-##' @aliases contributions,missing-method
-##' @aliases contributions,character-method
-##' @aliases contributions,git_repository-method
+##' @rdname contributions-methods
 ##' @docType methods
 ##' @param repo The repository.
 ##' @param breaks Default is \code{month}. Change to week or day as necessary.
@@ -29,7 +24,6 @@
 ##' @return A \code{data.frame} with contributions.
 ##' @keywords methods
 ##' @include repository.r
-##' @exportMethod contributions
 ##' @author Karthik Ram \email{karthik.ram@@gmail.com}
 ##' @author Stefan Widgren \email{stefan.widgren@@gmail.com}
 ##' @examples \dontrun{
@@ -48,6 +42,8 @@ setGeneric('contributions',
                     by = c('commits', 'user'))
            standardGeneric('contributions'))
 
+##' @rdname contributions-methods
+##' @export
 setMethod('contributions',
           signature(repo = 'missing'),
           function (repo, breaks, by)
@@ -57,6 +53,8 @@ setMethod('contributions',
           }
 )
 
+##' @rdname contributions-methods
+##' @export
 setMethod('contributions',
           signature(repo = 'character'),
           function (repo, breaks, by)
@@ -65,6 +63,8 @@ setMethod('contributions',
           }
 )
 
+##' @rdname contributions-methods
+##' @export
 setMethod('contributions',
           signature(repo = 'git_repository'),
           function (repo, breaks, by)

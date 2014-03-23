@@ -57,15 +57,11 @@ setClass('git_reference',
 
 ##' Get all references that can be found in a repository.
 ##'
-##' @name references-methods
-##' @aliases references
-##' @aliases references-methods
-##' @aliases references,git_repository-method
+##' @rdname references-methods
 ##' @docType methods
 ##' @param object The repository \code{object}.
 ##' @return Character vector with references
 ##' @keywords methods
-##' @exportMethod references
 ##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository
@@ -79,6 +75,8 @@ setGeneric('references',
            signature = 'object',
            function(object) standardGeneric('references'))
 
+##' @rdname references-methods
+##' @export
 setMethod('references',
           signature(object = 'git_repository'),
           function (object)

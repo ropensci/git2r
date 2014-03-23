@@ -23,7 +23,7 @@
 ##'     Path to a git repository
 ##'   }
 ##' }
-##' @name git_repository-class
+##' @rdname git_repository-class
 ##' @docType class
 ##' @keywords classes
 ##' @section Methods:
@@ -203,17 +203,13 @@ init <- function(path, bare = FALSE) {
 
 ##' Add file(s) to index
 ##'
-##' @name add-methods
-##' @aliases add
-##' @aliases add-methods
-##' @aliases add,git_repository-method
+##' @rdname add-methods
 ##' @docType methods
 ##' @param object The repository \code{object}.
 ##' @param path character vector with filenames to add. The path must
 ##' be relative to the repository's working filder.
 ##' @return invisible(NULL)
 ##' @keywords methods
-##' @exportMethod add
 ##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository
@@ -227,6 +223,8 @@ setGeneric('add',
            signature = 'object',
            function(object, path) standardGeneric('add'))
 
+##' @rdname add-methods
+##' @export
 setMethod('add',
           signature(object = 'git_repository'),
           function (object, path)
@@ -243,10 +241,7 @@ setMethod('add',
 
 ##' Commit
 ##'
-##' @name commit-methods
-##' @aliases commit
-##' @aliases commit-methods
-##' @aliases commit,git_repository-method
+##' @rdname commit-methods
 ##' @docType methods
 ##' @param object The repository \code{object}.
 ##' @param message The commit message.
@@ -256,7 +251,6 @@ setMethod('add',
 ##' @param committer Signature with committer and commit time of commit.
 ##' @return \code{git_commit} object
 ##' @keywords methods
-##' @exportMethod commit
 setGeneric('commit',
            signature = 'object',
            function(object,
@@ -266,6 +260,8 @@ setGeneric('commit',
                     committer = default_signature(object))
            standardGeneric('commit'))
 
+##' @rdname commit-methods
+##' @export
 setMethod('commit',
           signature(object = 'git_repository'),
           function (object,
@@ -289,8 +285,6 @@ setMethod('commit',
 ##' Get HEAD for a repo
 ##'
 ##' @rdname head-methods
-##' @aliases head
-##' @aliases head-methods
 ##' @docType methods
 ##' @param x The repository \code{x} to check head
 ##' @return Character vector with head
@@ -317,15 +311,11 @@ setMethod('head',
 
 ##' Check if repository is bare
 ##'
-##' @name is.bare-methods
-##' @aliases is.bare
-##' @aliases is.bare-methods
-##' @aliases is.bare,git_repository-method
+##' @rdname is.bare-methods
 ##' @docType methods
 ##' @param object The \code{object} to check if it's a bare repository
 ##' @return TRUE if bare repository, else FALSE
 ##' @keywords methods
-##' @exportMethod is.bare
 ##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository
@@ -339,6 +329,8 @@ setGeneric('is.bare',
            signature = 'object',
            function(object) standardGeneric('is.bare'))
 
+##' @rdname is.bare-methods
+##' @export
 setMethod('is.bare',
           signature(object = 'git_repository'),
           function (object)
@@ -349,15 +341,11 @@ setMethod('is.bare',
 
 ##' Check if repository is empty
 ##'
-##' @name is.empty-methods
-##' @aliases is.empty
-##' @aliases is.empty-methods
-##' @aliases is.empty,git_repository-method
+##' @rdname is.empty-methods
 ##' @docType methods
 ##' @param object The \code{object} to check if it's a empty repository
 ##' @return TRUE or FALSE
 ##' @keywords methods
-##' @exportMethod is.empty
 ##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository
@@ -371,6 +359,8 @@ setGeneric('is.empty',
            signature = 'object',
            function(object) standardGeneric('is.empty'))
 
+##' @rdname is.empty-methods
+##' @export
 setMethod('is.empty',
           signature(object = 'git_repository'),
           function (object)
@@ -381,19 +371,17 @@ setMethod('is.empty',
 
 ##' Get the configured remotes for a repo
 ##'
-##' @name remotes-methods
-##' @aliases remotes
-##' @aliases remotes-methods
-##' @aliases remotes,git_repository-method
+##' @rdname remotes-methods
 ##' @docType methods
 ##' @param object The repository \code{object} to check remotes
 ##' @return Character vector with remotes
 ##' @keywords methods
-##' @exportMethod remotes
 setGeneric('remotes',
            signature = 'object',
            function(object) standardGeneric('remotes'))
 
+##' @rdname remotes-methods
+##' @export
 setMethod('remotes',
           signature(object = 'git_repository'),
           function (object)
@@ -404,20 +392,18 @@ setMethod('remotes',
 
 ##' Get the remote url for remotes in a repo
 ##'
-##' @name remote_url-methods
-##' @aliases remote_url
-##' @aliases remote_url-methods
-##' @aliases remote_url,git_repository-method
+##' @rdname remote_url-methods
 ##' @docType methods
 ##' @param object The repository \code{object} to check remote_url
 ##' @param remote :TODO:DOCUMENTATION:
 ##' @return Character vector with remote_url
 ##' @keywords methods
-##' @exportMethod remote_url
 setGeneric('remote_url',
            signature = 'object',
            function(object, remote = remotes(object)) standardGeneric('remote_url'))
 
+##' @rdname remote_url-methods
+##' @export
 setMethod('remote_url',
           signature(object = 'git_repository'),
           function (object, remote)
@@ -429,19 +415,17 @@ setMethod('remote_url',
 ##' Get the signature
 ##'
 ##' Get the signature according to the repository's configuration
-##' @name default_signature-methods
-##' @aliases default_signature
-##' @aliases default_signature-methods
-##' @aliases default_signature,git_repository-method
+##' @rdname default_signature-methods
 ##' @docType methods
 ##' @param object The repository \code{object} to check signature
 ##' @return Character vector with signature
 ##' @keywords methods
-##' @exportMethod default_signature
 setGeneric('default_signature',
            signature = 'object',
            function(object) standardGeneric('default_signature'))
 
+##' @rdname default_signature-methods
+##' @export
 setMethod('default_signature',
           signature(object = 'git_repository'),
           function (object)
@@ -514,19 +498,17 @@ setMethod('summary',
 
 ##' Workdir of repository
 ##'
-##' @name workdir-methods
-##' @aliases workdir
-##' @aliases workdir-methods
-##' @aliases workdir,git_repository-method
+##' @rdname workdir-methods
 ##' @docType methods
 ##' @param object The repository \code{object} to check workdir
 ##' @return Character vector with workdir
 ##' @keywords methods
-##' @exportMethod workdir
 setGeneric('workdir',
            signature = 'object',
            function(object) standardGeneric('workdir'))
 
+##' @rdname workdir-methods
+##' @export
 setMethod('workdir',
           signature(object = 'git_repository'),
           function (object)
