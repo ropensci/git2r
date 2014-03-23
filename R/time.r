@@ -1,4 +1,3 @@
-#' @include branch.r
 ## git2r, R bindings to the libgit2 library.
 ## Copyright (C) 2013-2014  Stefan Widgren
 ##
@@ -40,7 +39,19 @@
 ##' @export
 setClass('git_time',
          slots=c(time='numeric',
-                 offset='numeric'))
+                 offset='numeric'),
+         validity=function(object)
+         {
+             errors <- character()
+
+             if(!identical(length(object@time), 1L))
+                 errors <- c(errors, 'time must have length equal to one')
+             if(!identical(length(object@offset), 1L))
+                 errors <- c(errors, 'offset must have length equal to one')
+
+             if (length(errors) == 0) TRUE else errors
+         }
+)
 
 setAs(from='git_time',
       to='character',
