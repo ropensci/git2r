@@ -5,7 +5,7 @@
 \alias{git_time-class}
 \title{S4 class to handle a git time in a signature}
 \description{
-S4 class to handle a git time in a signature
+Class \code{"git_time"}
 }
 \section{Slots}{
 

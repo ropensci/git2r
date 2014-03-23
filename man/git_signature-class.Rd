@@ -4,7 +4,7 @@
 \alias{git_signature-class}
 \title{S4 class to handle a git signature}
 \description{
-S4 class to handle a git signature
+Class \code{"git_signature"}
 }
 \section{Slots}{
 
