@@ -29,6 +29,7 @@
 ##' @return A \code{ggplot} chart
 ##' @keywords methods
 ##' @import ggplot2
+##' @importFrom scales date_format
 ##' @include repository.r
 ##' @export
 setMethod('plot',
