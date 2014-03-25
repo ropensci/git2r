@@ -1,7 +1,8 @@
-README.md
-LICENSE
-.travis.yml
-Makefile
-README.Rmd
-configure.ac
-figure
+^README\.md$
+^LICENSE$
+^\.travis\.yml$
+^travis-tool\.sh$
+^Makefile$
+^README\.Rmd$
+^configure\.ac$
+^figure$
