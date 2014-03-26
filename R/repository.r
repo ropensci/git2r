@@ -36,13 +36,12 @@
 setClass('git_repository',
          slots=c(path='character'),
          validity=function(object) {
-             retval <- NULL
+             errors <- character()
 
-             if(is.null(retval)) {
-                 return(TRUE)
-             }
+             if(!identical(.Call('is_repository', object@path), TRUE))
+                 errors <- c(errors, 'Invalid repository')
 
-             return(retval)
+             if (length(errors) == 0) TRUE else errors
          }
 )
 
