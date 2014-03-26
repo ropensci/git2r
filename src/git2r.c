@@ -43,6 +43,7 @@ static int number_of_branches(git_repository *repo, int flags, size_t *n);
 
 const char err_alloc_memory_buffer[] = "Unable to allocate memory buffer";
 const char err_invalid_repository[] = "Invalid repository";
+const char err_nothing_added_to_commit[] = "Nothing added to commit";
 const char err_unexpected_type_of_branch[] = "Unexpected type of branch";
 const char err_unexpected_head_of_branch[] = "Unexpected head of branch";
 
@@ -299,6 +300,12 @@ SEXP commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP parent_li
     err = git_repository_index(&index, repository);
     if (err < 0)
         goto cleanup;
+
+    if (!git_index_entrycount(index)) {
+        err = -1;
+        err_msg = err_nothing_added_to_commit;
+        goto cleanup;
+    }
 
     err = git_index_write_tree(&tree_oid, index);
     if (err < 0)
