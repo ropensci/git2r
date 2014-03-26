@@ -277,8 +277,12 @@ setMethod('commit',
                         is(author, 'git_signature'),
                         is(committer, 'git_signature'))
 
-              hex <- head(object)@hex
-              .Call('commit', object, message, author, committer, hex)
+              parents <- character(0)
+              if(!is.empty(object)) {
+                  parents <- c(parents, head(object)@hex)
+              }
+
+              .Call('commit', object, message, author, committer, parents)
           }
 )
 
