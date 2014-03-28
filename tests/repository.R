@@ -16,7 +16,31 @@
 library(git2r)
 
 ##
+## Create a directory in tempdir
+##
+path <- file.path(tempdir(), 'case-01')
+dir.create(path)
+
+##
 ## Check that open an invalid repository fails
 ##
+tools::assertError(repository(path))
 
-tools::assertError(repository('.'))
+##
+## Initialize a repository
+##
+repo <- init(path)
+
+##
+## Check that the state of the repository
+##
+stopifnot(identical(is.bare(repo), FALSE))
+stopifnot(identical(is.empty(repo), TRUE))
+stopifnot(identical(branches(repo), list()))
+stopifnot(identical(commits(repo), list()))
+stopifnot(identical(head(repo), NULL))
+
+##
+## Cleanup
+##
+unlink(path, recursive=TRUE)
