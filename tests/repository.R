@@ -18,7 +18,7 @@ library(git2r)
 ##
 ## Create a directory in tempdir
 ##
-path <- file.path(tempdir(), 'case-01')
+path <- tempfile(pattern='git2r-')
 dir.create(path)
 
 ##
