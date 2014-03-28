@@ -1,6 +1,5 @@
-#' @include signature.r
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013  Stefan Widgren
+## Copyright (C) 2013-2014  Stefan Widgren
 ##
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -16,26 +15,52 @@
 
 ##' Class \code{"git_tag"}
 ##'
-##' @title S4 class to handle a git tag, contains \code{git_reference}.
+##' @title S4 class to handle a git tag
 ##' @section Slots:
 ##' \describe{
-##'   \item{sig}{
-##'     An action signature
+##'   \item{name}{
+##'     The name of the tag
+##'   }
+##'   \item{message}{
+##'     The message of the tag
+##'   }
+##'   \item{tagger}{
+##'     The tagger (author) of the tag
+##'   }
+##'   \item{target}{
+##'     The target of the tag
 ##'   }
 ##' }
 ##' @name git_tag-class
 ##' @aliases show,git_tag-method
 ##' @docType class
 ##' @keywords classes
-##' @section Methods:
-##' \describe{
-##'   \item{show}{\code{signature(object = "git_tag")}}
-##' }
 ##' @keywords methods
+##' @include signature.r
+##' @include repository.r
 ##' @export
 setClass('git_tag',
-         slots=c(sig='git_signature'),
-         contains='git_reference')
+         slots=c(message = 'character',
+                 name    = 'character',
+                 tagger  = 'git_signature',
+                 target  = 'character'),
+         validity=function(object)
+         {
+             errors <- validObject(object@tagger)
+
+             if(identical(errors, TRUE))
+               errors <- character()
+
+             if(!identical(length(object@name), 1L))
+                 errors <- c(errors, 'name must have length equal to one')
+             if(!identical(length(object@message), 1L))
+                 errors <- c(errors, 'message must have length equal to one')
+             if(!identical(length(object@target), 1L))
+                 errors <- c(errors, 'target must have length equal to one')
+
+             if(length(errors) == 0) TRUE else errors
+         }
+)
 
 ##' Tags
 ##'
@@ -44,6 +69,7 @@ setClass('git_tag',
 ##' @param object The repository \code{object}.
 ##' @return list of tags in repository
 ##' @keywords methods
+##' @export
 setGeneric('tags',
            signature = 'object',
            function(object) standardGeneric('tags'))
@@ -63,7 +89,7 @@ setMethod('show',
           function (object)
           {
               cat(sprintf('[%s] %s\n',
-                          substr(object@hex, 1 , 6),
-                          object@shorthand))
+                          substr(object@target, 1 , 6),
+                          object@name))
           }
 )
