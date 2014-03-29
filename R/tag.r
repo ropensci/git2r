@@ -32,7 +32,6 @@
 ##'   }
 ##' }
 ##' @name git_tag-class
-##' @aliases show,git_tag-method
 ##' @docType class
 ##' @keywords classes
 ##' @keywords methods
@@ -84,6 +83,14 @@ setMethod('tags',
           }
 )
 
+##' Brief summary of a tag
+##'
+##' @aliases show,git_tag-methods
+##' @docType methods
+##' @param object The tag \code{object}
+##' @return None (invisible 'NULL').
+##' @keywords methods
+##' @export
 setMethod('show',
           signature(object = 'git_tag'),
           function (object)
@@ -91,5 +98,39 @@ setMethod('show',
               cat(sprintf('[%s] %s\n',
                           substr(object@target, 1 , 6),
                           object@name))
+          }
+)
+
+##' Summary of a tag
+##'
+##' @aliases summary,git_tag-methods
+##' @docType methods
+##' @param object The tag \code{object}
+##' @return None (invisible 'NULL').
+##' @keywords methods
+##' @export
+##' @example
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository('path/to/git2r')
+##'
+##' ## Apply summary to each tag in the repository
+##' invisible(lapply(tags(repo), summary))
+##' }
+setMethod('summary',
+          signature(object = 'git_tag'),
+          function(object, ...)
+          {
+              cat(sprintf(paste0('name:    %s\n',
+                                 'target:  %s\n',
+                                 'tagger:  %s <%s>\n',
+                                 'when:    %s\n',
+                                 'message: %s\n'),
+                          object@name,
+                          object@target,
+                          object@tagger@name,
+                          object@tagger@email,
+                          as(object@tagger@when, 'character'),
+                          object@message))
           }
 )
