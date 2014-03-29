@@ -109,7 +109,7 @@ setMethod('show',
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
 ##' @export
-##' @example
+##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository
 ##' repo <- repository('path/to/git2r')
