@@ -232,6 +232,28 @@ cleanup:
 }
 
 /**
+ * Checkout
+ *
+ * @param repo S4 class git_repository
+ * @param treeish
+ * @return R_NilValue
+ */
+SEXP checkout(SEXP repo, SEXP treeish)
+{
+    git_repository *repository = NULL;
+
+    repository = get_repository(repo);
+    if (!repository)
+        error(err_invalid_repository);
+
+cleanup:
+    if (repository)
+        git_repository_free(repository);
+
+    return R_NilValue;
+}
+
+/**
  * Commit
  *
  * @param repo S4 class git_repository
@@ -1145,6 +1167,7 @@ static const R_CallMethodDef callMethods[] =
 {
     {"add", (DL_FUNC)&add, 2},
     {"branches", (DL_FUNC)&branches, 2},
+    {"checkout", (DL_FUNC)&checkout, 2},
     {"commit", (DL_FUNC)&commit, 5},
     {"default_signature", (DL_FUNC)&default_signature, 1},
     {"init", (DL_FUNC)&init, 2},
