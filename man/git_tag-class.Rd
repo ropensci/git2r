@@ -2,24 +2,25 @@
 \docType{class}
 \name{git_tag-class}
 \alias{git_tag-class}
-\alias{show,git_tag-method}
-\title{S4 class to handle a git tag, contains \code{git_reference}.}
+\title{S4 class to handle a git tag}
 \description{
-S4 class to handle a git tag, contains \code{git_reference}.
+Class \code{"git_tag"}
 }
 \section{Slots}{
 
 \describe{
-  \item{sig}{
-    An action signature
+  \item{name}{
+    The name of the tag
   }
-}
-}
-
-\section{Methods}{
-
-\describe{
-  \item{show}{\code{signature(object = "git_tag")}}
+  \item{message}{
+    The message of the tag
+  }
+  \item{tagger}{
+    The tagger (author) of the tag
+  }
+  \item{target}{
+    The target of the tag
+  }
 }
 }
 \keyword{classes}
