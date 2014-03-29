@@ -35,6 +35,8 @@ Collate:
     'signature.r'
     'tag.r'
     'commit.r'
+    'checkout.r'
     'contributions.r'
     'markdown_link.r'
     'plot.r'
+    'tree.r'
