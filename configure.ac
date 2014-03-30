@@ -1,5 +1,5 @@
 # git2r, R bindings to the libgit2 library.
-# Copyright (C) 2013  Stefan Widgren
+# Copyright (C) 2013-2014  Stefan Widgren
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,9 +26,9 @@ AC_ARG_WITH([zlib-include],
                    [the location of zlib header files]),
     [zlib_include_path=$withval])
 if test [ -n "$zlib_include_path" ] ; then
-  RMATIO_CPPFLAGS="-I. -I${zlib_include_path}"
+  GIT2R_CPPFLAGS="-I. -I${zlib_include_path}"
 else
-  RMATIO_CPPFLAGS="-I."
+  GIT2R_CPPFLAGS="-I."
 fi
 
 AC_ARG_WITH([zlib-lib],
@@ -49,20 +49,20 @@ CC=`"${R_HOME}/bin/R" CMD config CC`
 CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
 CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
 
-CPPFLAGS="${CPPFLAGS} ${RMATIO_CPPFLAGS}"
+CPPFLAGS="${CPPFLAGS} ${GIT2R_CPPFLAGS}"
 
 # Check for zlib
 AC_CHECK_LIB(z, inflate,
 [
-        RMATIO_HAVE_ZLIB=TRUE
+        GIT2R_HAVE_ZLIB=TRUE
         AC_DEFINE_UNQUOTED([HAVE_ZLIB],[1],[Have zlib])
         AC_DEFINE_UNQUOTED([ZLIB_LIBS],[-lz],[])
         LIBS="${LIBS} -lz"
 ],
 [
-        RMATIO_HAVE_ZLIB=FALSE
+        GIT2R_HAVE_ZLIB=FALSE
 ])
-AC_SUBST(RMATIO_HAVE_ZLIB)
+AC_SUBST(GIT2R_HAVE_ZLIB)
 
 # Checks for header files.
 AC_FUNC_ALLOCA

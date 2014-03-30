@@ -630,7 +630,7 @@ ALLOCA
 EGREP
 GREP
 CPP
-RMATIO_HAVE_ZLIB
+GIT2R_HAVE_ZLIB
 OBJEXT
 EXEEXT
 ac_ct_CC
@@ -3144,9 +3144,9 @@ if test "${with_zlib_include+set}" = set; then :
 fi
 
 if test  -n "$zlib_include_path"  ; then
-  RMATIO_CPPFLAGS="-I. -I${zlib_include_path}"
+  GIT2R_CPPFLAGS="-I. -I${zlib_include_path}"
 else
-  RMATIO_CPPFLAGS="-I."
+  GIT2R_CPPFLAGS="-I."
 fi
 
 
@@ -3169,7 +3169,7 @@ CC=`"${R_HOME}/bin/R" CMD config CC`
 CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
 CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
 
-CPPFLAGS="${CPPFLAGS} ${RMATIO_CPPFLAGS}"
+CPPFLAGS="${CPPFLAGS} ${GIT2R_CPPFLAGS}"
 
 # Check for zlib
 
@@ -3211,7 +3211,7 @@ fi
 $as_echo "$ac_cv_lib_z_inflate" >&6; }
 if test "x$ac_cv_lib_z_inflate" = xyes; then :
 
-        RMATIO_HAVE_ZLIB=TRUE
+        GIT2R_HAVE_ZLIB=TRUE
 
 cat >>confdefs.h <<_ACEOF
 #define HAVE_ZLIB 1
@@ -3225,7 +3225,7 @@ _ACEOF
 
 else
 
-        RMATIO_HAVE_ZLIB=FALSE
+        GIT2R_HAVE_ZLIB=FALSE
 
 fi
 
