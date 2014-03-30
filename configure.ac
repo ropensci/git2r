@@ -64,6 +64,11 @@ AC_CHECK_LIB(z, inflate,
 ])
 AC_SUBST(GIT2R_HAVE_ZLIB)
 
+AC_CHECK_LIB([ssl], [SSL_library_init], [],
+             [AC_MSG_FAILURE([OpenSSL libraries required])])
+AC_CHECK_LIB([crypto], [EVP_EncryptInit], [],
+             [AC_MSG_FAILURE([OpenSSL libraries required])])
+
 # Checks for header files.
 AC_FUNC_ALLOCA
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h langinfo.h libintl.h limits.h locale.h malloc.h netdb.h netinet/in.h stddef.h stdint.h stdlib.h string.h sys/param.h sys/socket.h sys/time.h unistd.h wchar.h wctype.h])
