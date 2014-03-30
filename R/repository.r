@@ -200,6 +200,32 @@ init <- function(path, bare = FALSE) {
     new('git_repository', path=path)
 }
 
+##' Clone a remote repository
+##'
+##' @param url the remote repository to clone
+##' @param local_path local directory to clone to
+##' @return A S4 \code{git_repository} object
+##' @keywords methods
+##' @export
+##' @examples
+##' \dontrun{
+##' ## Clone a remote repository
+##' repo <- clone('https://github.com/ropensci/git2r', 'path/to/git2r')
+##' }
+clone <- function(url, local_path) {
+    ## Argument checking
+    stopifnot(is.character(url),
+              is.character(local_path),
+              identical(length(url), 1L),
+              identical(length(local_path), 1L),
+              nchar(url) > 0,
+              nchar(local_path) > 0)
+
+    .Call('clone', url, local_path)
+
+    repository(local_path)
+}
+
 ##' Add file(s) to index
 ##'
 ##' @rdname add-methods

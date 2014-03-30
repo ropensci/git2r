@@ -254,6 +254,43 @@ cleanup:
 }
 
 /**
+ * Clone a remote repository
+ *
+ * @param url the remote repository to clone
+ * @param local_path local directory to clone to
+ * @return R_NilValue
+ */
+SEXP clone(SEXP url, SEXP local_path)
+{
+    int err;
+    git_repository *repository = NULL;
+
+    /* Check arguments to clone */
+    if (R_NilValue == url
+        || R_NilValue == local_path
+        || !isString(url)
+        || !isString(local_path)
+        || 1 != length(url)
+        || 1 != length(local_path))
+        error("Invalid arguments to clone");
+
+    err = git_clone(&repository,
+                    CHAR(STRING_ELT(url, 0)),
+                    CHAR(STRING_ELT(local_path, 0)),
+                    NULL);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (err < 0) {
+        const git_error *e = giterr_last();
+        error("Error %d: %s\n", e->klass, e->message);
+    }
+
+    return R_NilValue;
+}
+
+/**
  * Commit
  *
  * @param repo S4 class git_repository
@@ -1168,6 +1205,7 @@ static const R_CallMethodDef callMethods[] =
     {"add", (DL_FUNC)&add, 2},
     {"branches", (DL_FUNC)&branches, 2},
     {"checkout", (DL_FUNC)&checkout, 2},
+    {"clone", (DL_FUNC)&clone, 2},
     {"commit", (DL_FUNC)&commit, 5},
     {"default_signature", (DL_FUNC)&default_signature, 1},
     {"init", (DL_FUNC)&init, 2},
