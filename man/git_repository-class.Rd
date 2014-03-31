@@ -4,7 +4,7 @@
 \alias{git_repository-class}
 \title{S4 class to handle a git repository}
 \description{
-S4 class to handle a git repository
+Class \code{"git_repository"}
 }
 \section{Slots}{
 
