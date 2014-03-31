@@ -3,12 +3,14 @@
 \alias{clone}
 \title{Clone a remote repository}
 \usage{
-clone(url, local_path)
+clone(url, local_path, progress = TRUE)
 }
 \arguments{
 \item{url}{the remote repository to clone}
 
 \item{local_path}{local directory to clone to}
+
+\item{progress}{show progress}
 }
 \value{
 A S4 \code{git_repository} object

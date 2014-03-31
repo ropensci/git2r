@@ -27,7 +27,6 @@ Imports:
     ggplot2,
     scales
 Collate:
-    'git2r.r'
     'repository.r'
     'reference.r'
     'branch.r'
@@ -37,6 +36,7 @@ Collate:
     'commit.r'
     'checkout.r'
     'contributions.r'
+    'git2r.r'
     'markdown_link.r'
     'plot.r'
     'tree.r'
