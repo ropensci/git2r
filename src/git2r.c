@@ -242,6 +242,26 @@ SEXP checkout(SEXP repo, SEXP treeish)
 {
     git_repository *repository = NULL;
 
+    /* Check arguments to checkout */
+    if (R_NilValue == repo || R_NilValue == treeish)
+        error("Invalid arguments to checkout");
+
+    if(S4SXP == TYPEOF(treeish)) {
+        if (0 == strcmp(CHAR(STRING_ELT(getAttrib(treeish,R_ClassSymbol), 0)),
+                        "git_commit"))
+            goto ok;
+        if(0 == strcmp(CHAR(STRING_ELT(getAttrib(treeish, R_ClassSymbol), 0)),
+                       "git_tag"))
+            goto ok;
+        if(0 == strcmp(CHAR(STRING_ELT(getAttrib(treeish, R_ClassSymbol), 0)),
+                       "git_tree"))
+            goto ok;
+        error("Invalid arguments to checkout");
+    } else if (!isString(treeish) || 1 != length(treeish)) {
+        error("Invalid arguments to checkout");
+    }
+
+ok:
     repository = get_repository(repo);
     if (!repository)
         error(err_invalid_repository);
