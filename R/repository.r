@@ -1,4 +1,3 @@
-#' @include git2r.r
 ## git2r, R bindings to the libgit2 library.
 ## Copyright (C) 2013-2014  Stefan Widgren
 ##
@@ -204,6 +203,7 @@ init <- function(path, bare = FALSE) {
 ##'
 ##' @param url the remote repository to clone
 ##' @param local_path local directory to clone to
+##' @param progress show progress
 ##' @return A S4 \code{git_repository} object
 ##' @keywords methods
 ##' @export
@@ -212,16 +212,18 @@ init <- function(path, bare = FALSE) {
 ##' ## Clone a remote repository
 ##' repo <- clone('https://github.com/ropensci/git2r', 'path/to/git2r')
 ##' }
-clone <- function(url, local_path) {
+clone <- function(url, local_path, progress = TRUE) {
     ## Argument checking
     stopifnot(is.character(url),
               is.character(local_path),
+              is.logical(progress),
               identical(length(url), 1L),
               identical(length(local_path), 1L),
+              identical(length(progress), 1L),
               nchar(url) > 0,
               nchar(local_path) > 0)
 
-    .Call('clone', url, local_path)
+    .Call('clone', url, local_path, progress)
 
     repository(local_path)
 }
