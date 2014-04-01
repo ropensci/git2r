@@ -82,11 +82,16 @@ setMethod('contributions',
                   return(df)
               }
 
-              df <- as.data.frame(table(paste0(df$when, df$author)),
-                                  stringsAsFactors=FALSE)
-              names(df) <- c('when', 'n')
-              df$author <- substr(df$when, 11, nchar(df$when))
-              df$when <- as.Date(substr(df$when, 1, 10))
-              df[order(df$when, df$author), c('when', 'author', 'n')]
+              ## Create an index and tabulate
+              df$index <- paste0(df$when, df$author, df$email)
+              count <- as.data.frame(table(df$index),
+                                     stringsAsFactors=FALSE)
+              names(count) <- c('index', 'n')
+
+              ## Match counts and clean result
+              df$n <- count$n[match(df$index, count$index)]
+              df <- unique(df[, c('when', 'author', 'n')])
+              df$when <- as.Date(substr(as.character(df$when), 1, 10))
+              df[order(df$when, df$author),]
           }
 )
