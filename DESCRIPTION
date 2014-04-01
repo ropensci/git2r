@@ -39,4 +39,5 @@ Collate:
     'git2r.r'
     'markdown_link.r'
     'plot.r'
+    'push.r'
     'tree.r'
