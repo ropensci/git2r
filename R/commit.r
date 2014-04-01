@@ -1,4 +1,3 @@
-#' @include tag.r
 ## git2r, R bindings to the libgit2 library.
 ## Copyright (C) 2013-2014  Stefan Widgren
 ##
@@ -44,6 +43,7 @@
 ##'   \item{show}{\code{signature(object = "git_commit")}}
 ##' }
 ##' @keywords methods
+##' @include signature.r
 ##' @export
 setClass('git_commit',
          slots=c(hex='character',
@@ -88,6 +88,7 @@ setMethod('commits',
 )
 
 ##' @rdname commits-methods
+##' @include repository.r
 ##' @export
 setMethod('commits',
           signature(object = 'git_repository'),
@@ -104,6 +105,7 @@ setMethod('commits',
 ##' @param object The commit \code{object}
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
+##' @include commit.r
 ##' @export
 ##' @examples
 ##' \dontrun{

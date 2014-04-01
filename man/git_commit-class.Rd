@@ -4,7 +4,7 @@
 \alias{git_commit-class}
 \title{S4 class to handle a git commit.}
 \description{
-S4 class to handle a git commit.
+Class \code{"git_commit"}
 }
 \section{Slots}{
 
