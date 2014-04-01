@@ -21,7 +21,7 @@
 ##' @docType methods
 ##' @param repo The repository.
 ##' @param treeish a commit, tag or tree which content will be used to
-##' update the working directory (or NULL to use HEAD).
+##' update the working directory or the default to use 'HEAD'.
 ##' @return invisible NULL
 ##' @keywords methods
 ##' @include repository.r
@@ -30,7 +30,7 @@
 setGeneric('checkout',
            signature = 'repo',
            function(repo,
-                    treeish = NULL)
+                    treeish = 'HEAD')
            standardGeneric('checkout')
 )
 
@@ -40,12 +40,14 @@ setMethod('checkout',
           signature(repo = 'git_repository'),
           function (repo, treeish)
           {
-              if(!is.null(treeish)) {
+              if(isS4(treeish)) {
                   if(!any(is(treeish, 'git_commit'),
                           is(treeish, 'git_tag'),
                           is(treeish, 'git_tree'))) {
-                      stop('treeish must be a commit, tag or tree')
+                      stop('treeish must be a commit, tag, tree or HEAD')
                   }
+              } else if(!identical(treeish, 'HEAD')) {
+                  stop('treeish must be a commit, tag, tree or HEAD')
               }
 
               invisible(.Call('checkout', repo, treeish))

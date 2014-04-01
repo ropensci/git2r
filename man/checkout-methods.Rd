@@ -5,15 +5,15 @@
 \alias{checkout,git_repository-method}
 \title{Checkout}
 \usage{
-checkout(repo, treeish = NULL)
+checkout(repo, treeish = "HEAD")
 
-\S4method{checkout}{git_repository}(repo, treeish = NULL)
+\S4method{checkout}{git_repository}(repo, treeish = "HEAD")
 }
 \arguments{
 \item{repo}{The repository.}
 
 \item{treeish}{a commit, tag or tree which content will be used to
-update the working directory (or NULL to use HEAD).}
+update the working directory or the default to use 'HEAD'.}
 }
 \value{
 invisible NULL
