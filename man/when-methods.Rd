@@ -31,6 +31,10 @@ and \code{git_time}.
 }
 \examples{
 \dontrun{
+## Open an existing repository
+repo <- repository('path/to/git2r')
+
+when(commits(repo)[[1]])
 }
 }
 \keyword{methods}
