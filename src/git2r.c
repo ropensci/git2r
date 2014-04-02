@@ -43,6 +43,7 @@ static int number_of_branches(git_repository *repo, int flags, size_t *n);
 
 const char err_alloc_memory_buffer[] = "Unable to allocate memory buffer";
 const char err_invalid_repository[] = "Invalid repository";
+const char err_invalid_checkout_args[] = "Invalid arguments to checkout";
 const char err_nothing_added_to_commit[] = "Nothing added to commit";
 const char err_unexpected_type_of_branch[] = "Unexpected type of branch";
 const char err_unexpected_head_of_branch[] = "Unexpected head of branch";
@@ -240,35 +241,71 @@ cleanup:
  */
 SEXP checkout(SEXP repo, SEXP treeish)
 {
+    enum CHECKOUT_ACTION {
+        CHECKOUT_COMMIT,
+        CHECKOUT_TAG,
+        CHECKOUT_TREE,
+        CHECKOUT_HEAD
+    } checkout_action;
+
+    int err;
     git_repository *repository = NULL;
+    git_checkout_opts checkout_opts = GIT_CHECKOUT_OPTS_INIT;
+    checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE;
 
     /* Check arguments to checkout */
     if (R_NilValue == repo || R_NilValue == treeish)
-        error("Invalid arguments to checkout");
+        error(err_invalid_checkout_args);
 
+    /* Determine checkout strategy */
     if(S4SXP == TYPEOF(treeish)) {
-        if (0 == strcmp(CHAR(STRING_ELT(getAttrib(treeish,R_ClassSymbol), 0)),
-                        "git_commit"))
-            goto ok;
-        if(0 == strcmp(CHAR(STRING_ELT(getAttrib(treeish, R_ClassSymbol), 0)),
-                       "git_tag"))
-            goto ok;
-        if(0 == strcmp(CHAR(STRING_ELT(getAttrib(treeish, R_ClassSymbol), 0)),
-                       "git_tree"))
-            goto ok;
-        error("Invalid arguments to checkout");
-    } else if (!isString(treeish) || 1 != length(treeish)) {
-        error("Invalid arguments to checkout");
+        const char *class_name = CHAR(STRING_ELT(getAttrib(treeish, R_ClassSymbol), 0));
+
+        if (0 == strcmp(class_name, "git_commit"))
+            checkout_action = CHECKOUT_COMMIT;
+        else if(0 == strcmp(class_name, "git_tag"))
+            checkout_action = CHECKOUT_TAG;
+        else if(0 == strcmp(class_name, "git_tree"))
+            checkout_action = CHECKOUT_TREE;
+        else
+            error(err_invalid_checkout_args);
+    } else if (isString(treeish)
+               && 1 == length(treeish)
+               && 0 == strcmp(CHAR(STRING_ELT(treeish, 0)), "HEAD")) {
+        checkout_action = CHECKOUT_HEAD;
+    } else {
+        error(err_invalid_checkout_args);
     }
 
-ok:
     repository = get_repository(repo);
     if (!repository)
         error(err_invalid_repository);
 
+    switch (checkout_action) {
+    case CHECKOUT_COMMIT:
+        /* :TODO:FIX: */
+        break;
+    case CHECKOUT_TAG:
+        /* :TODO:FIX: */
+        break;
+    case CHECKOUT_TREE:
+        /* :TODO:FIX: */
+        break;
+    case CHECKOUT_HEAD:
+        /* :TODO:FIX: */
+        break;
+    default:
+        break;
+    }
+
 cleanup:
     if (repository)
         git_repository_free(repository);
+
+    if (err < 0) {
+        const git_error *e = giterr_last();
+        error("Error %d: %s\n", e->klass, e->message);
+    }
 
     return R_NilValue;
 }
