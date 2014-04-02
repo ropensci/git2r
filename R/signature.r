@@ -66,7 +66,9 @@ setMethod('show',
           signature(object = 'git_signature'),
           function(object)
           {
-              cat(sprintf('name:  %s\nemail: %s\nwhen:  %s\n',
+              cat(sprintf(paste0('name:  %s\n',
+                                 'email: %s\n',
+                                 'when:  %s\n'),
                           object@name,
                           object@email,
                           as(object@when, 'character')))
