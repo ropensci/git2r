@@ -40,3 +40,4 @@ Collate:
     'markdown_link.r'
     'plot.r'
     'tree.r'
+    'when.r'
