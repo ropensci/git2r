@@ -120,7 +120,10 @@ setMethod('show',
           signature(object = 'git_commit'),
           function (object)
           {
-              cat(sprintf('Commit:  %s\nAuthor:  %s <%s>\nWhen:    %s\nSummary: %s\n',
+              cat(sprintf(paste0('Commit:  %s\n',
+                                 'Author:  %s <%s>\n',
+                                 'When:    %s\n',
+                                 'Summary: %s\n'),
                           object@hex,
                           object@author@name,
                           object@author@email,
