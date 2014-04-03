@@ -40,11 +40,11 @@
 ##' @keywords methods
 ##' @include reference.r
 ##' @export
-setClass('git_branch',
-         slots=c(remote='character',
-                 url='character',
-                 head='logical'),
-         contains='git_reference',
+setClass("git_branch",
+         slots=c(remote="character",
+                 url="character",
+                 head="logical"),
+         contains="git_reference",
          prototype=list(remote=NA_character_,
                         url=NA_character_))
 
@@ -58,15 +58,15 @@ setClass('git_branch',
 ##' are 'ALL', 'LOCAL' or 'REMOTE'
 ##' @return list of branches in repository
 ##' @keywords methods
-setGeneric('branches',
-           signature = 'object',
-           function(object, flags=c('ALL', 'LOCAL', 'REMOTE'))
-           standardGeneric('branches'))
+setGeneric("branches",
+           signature = "object",
+           function(object, flags=c("ALL", "LOCAL", "REMOTE"))
+           standardGeneric("branches"))
 
 ##' @rdname branches-methods
 ##' @export
-setMethod('branches',
-          signature(object = 'git_repository'),
+setMethod("branches",
+          signature(object = "git_repository"),
           function (object, flags)
           {
               flags <- switch(match.arg(flags),
@@ -74,7 +74,7 @@ setMethod('branches',
                               REMOTE = 2L,
                               ALL    = 3L)
 
-              .Call('branches', object, flags)
+              .Call("branches", object, flags)
           }
 )
 
@@ -85,14 +85,14 @@ setMethod('branches',
 ##' @param object The branch \code{object} to check if it's head
 ##' @return TRUE if branch is head, else FALSE
 ##' @keywords methods
-setGeneric('is.head',
-           signature = 'object',
-           function(object) standardGeneric('is.head'))
+setGeneric("is.head",
+           signature = "object",
+           function(object) standardGeneric("is.head"))
 
 ##' @rdname is.head-methods
 ##' @export
-setMethod('is.head',
-          signature(object = 'git_branch'),
+setMethod("is.head",
+          signature(object = "git_branch"),
           function (object)
           {
               identical(object@head, TRUE)
@@ -106,14 +106,14 @@ setMethod('is.head',
 ##' @param object The branch \code{object} to check if it's local
 ##' @return TRUE if branch is local, else FALSE
 ##' @keywords methods
-setGeneric('is.local',
-           signature = 'object',
-           function(object) standardGeneric('is.local'))
+setGeneric("is.local",
+           signature = "object",
+           function(object) standardGeneric("is.local"))
 
 ##' @rdname is.local-methods
 ##' @export
-setMethod('is.local',
-          signature(object = 'git_branch'),
+setMethod("is.local",
+          signature(object = "git_branch"),
           function (object)
           {
               identical(is.na(object@remote), TRUE)
@@ -128,8 +128,8 @@ setMethod('is.local',
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
 ##' @export
-setMethod('show',
-          signature(object = 'git_branch'),
+setMethod("show",
+          signature(object = "git_branch"),
           function (object)
           {
               if(identical(object@type, 1L)) {
@@ -137,13 +137,13 @@ setMethod('show',
               }
 
               if(is.local(object)) {
-                  cat('(Local) ')
+                  cat("(Local) ")
               } else {
-                  cat(sprintf('(%s @ %s) ', object@remote, object@url))
+                  cat(sprintf("(%s @ %s) ", object@remote, object@url))
               }
 
               if(identical(object@head, TRUE)) {
-                  cat('(HEAD) ')
+                  cat("(HEAD) ")
               }
 
               if(identical(object@type, 1L)) {

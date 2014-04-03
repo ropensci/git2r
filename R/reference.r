@@ -1,4 +1,3 @@
-#' @include repository.r
 ## git2r, R bindings to the libgit2 library.
 ## Copyright (C) 2013  Stefan Widgren
 ##
@@ -36,8 +35,7 @@
 ##'     The reference's short name
 ##'   }
 ##' }
-##' @name git_reference-class
-##' @aliases show,git_reference-method
+##' @rdname git_reference-class
 ##' @docType class
 ##' @keywords classes
 ##' @section Methods:
@@ -46,12 +44,12 @@
 ##' }
 ##' @keywords methods
 ##' @export
-setClass('git_reference',
-         slots=c(name='character',
-                 type='integer',
-                 hex='character',
-                 target='character',
-                 shorthand='character'),
+setClass("git_reference",
+         slots=c(name="character",
+                 type="integer",
+                 hex="character",
+                 target="character",
+                 shorthand="character"),
          prototype=list(hex=NA_character_,
                         target=NA_character_))
 
@@ -71,22 +69,32 @@ setClass('git_reference',
 ##' references(repo)
 ##' }
 ##'
-setGeneric('references',
-           signature = 'object',
-           function(object) standardGeneric('references'))
+setGeneric("references",
+           signature = "object",
+           function(object) standardGeneric("references"))
 
 ##' @rdname references-methods
+##' @include repository.r
 ##' @export
-setMethod('references',
-          signature(object = 'git_repository'),
+setMethod("references",
+          signature(object = "git_repository"),
           function (object)
           {
-              .Call('references', object)
+              .Call("references", object)
           }
 )
 
-setMethod('show',
-          signature(object = 'git_reference'),
+##' Brief summary of reference
+##'
+##' @aliases show,git_reference-methods
+##' @docType methods
+##' @param object The reference \code{object}
+##' @return None (invisible 'NULL').
+##' @keywords methods
+##' @include commit.r
+##' @export
+setMethod("show",
+          signature(object = "git_reference"),
           function (object)
           {
               if(identical(object@type, 1L)) {

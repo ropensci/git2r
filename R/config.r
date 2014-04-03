@@ -26,21 +26,21 @@
 ##' @include repository.r
 ##' @examples \dontrun{
 ##' ## Open an existing repository
-##' repo <- repository('path/to/git2r')
+##' repo <- repository("path/to/git2r")
 ##'
-##' config(repo, user.name='Stefan Widgren', user.email='stefan.widgren@@gmail.com')
+##' config(repo, user.name="Stefan Widgren", user.email="stefan.widgren@@gmail.com")
 ##'}
-setGeneric('config',
-           signature = 'repo',
+setGeneric("config",
+           signature = "repo",
            function(repo,
                     user.name,
                     user.email)
-           standardGeneric('config'))
+           standardGeneric("config"))
 
 ##' @rdname config-methods
 ##' @export
-setMethod('config',
-          signature(repo = 'git_repository'),
+setMethod("config",
+          signature(repo = "git_repository"),
           function(repo,
                    user.name,
                    user.email)
@@ -50,11 +50,11 @@ setMethod('config',
               check_is_character <- sapply(variables, is.character)
               check_is_character <- check_is_character[!check_is_character]
               if(length(check_is_character)) {
-                  stop(sprintf('\n%s', paste(names(check_is_character),
-                                             'must be character',
-                                             collapse='\n')))
+                  stop(sprintf("\n%s", paste(names(check_is_character),
+                                             "must be character",
+                                             collapse="\n")))
               }
 
-              .Call('config', repo, variables)
+              .Call("config", repo, variables)
           }
 )
