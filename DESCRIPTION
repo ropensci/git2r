@@ -35,6 +35,7 @@ Collate:
     'tag.r'
     'commit.r'
     'checkout.r'
+    'config.r'
     'contributions.r'
     'git2r.r'
     'markdown_link.r'
