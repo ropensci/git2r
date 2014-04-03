@@ -2,10 +2,9 @@
 \docType{class}
 \name{git_reference-class}
 \alias{git_reference-class}
-\alias{show,git_reference-method}
 \title{S4 class to handle a git reference}
 \description{
-S4 class to handle a git reference
+Class \code{"git_reference"}
 }
 \section{Slots}{
 

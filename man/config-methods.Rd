@@ -25,9 +25,9 @@ Config file management.
 \examples{
 \dontrun{
 ## Open an existing repository
-repo <- repository('path/to/git2r')
+repo <- repository("path/to/git2r")
 
-config(repo, user.name='Stefan Widgren', user.email='stefan.widgren@gmail.com')
+config(repo, user.name="Stefan Widgren", user.email="stefan.widgren@gmail.com")
 }
 }
 \keyword{methods}
