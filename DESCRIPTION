@@ -28,12 +28,12 @@ Imports:
     scales
 Collate:
     'repository.r'
-    'reference.r'
-    'branch.r'
     'time.r'
     'signature.r'
-    'tag.r'
     'commit.r'
+    'reference.r'
+    'branch.r'
+    'tag.r'
     'checkout.r'
     'config.r'
     'contributions.r'
