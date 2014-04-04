@@ -19,7 +19,7 @@ Brief summary of commit
 \examples{
 \dontrun{
 ## Open an existing repository
-repo <- repository('path/to/git2r')
+repo <- repository("path/to/git2r")
 
 ## Brief summary of commit in repository
 commits(repo)[[1]]

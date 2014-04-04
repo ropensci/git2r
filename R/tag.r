@@ -38,11 +38,11 @@
 ##' @include signature.r
 ##' @include repository.r
 ##' @export
-setClass('git_tag',
-         slots=c(message = 'character',
-                 name    = 'character',
-                 tagger  = 'git_signature',
-                 target  = 'character'),
+setClass("git_tag",
+         slots=c(message = "character",
+                 name    = "character",
+                 tagger  = "git_signature",
+                 target  = "character"),
          validity=function(object)
          {
              errors <- validObject(object@tagger)
@@ -51,11 +51,11 @@ setClass('git_tag',
                errors <- character()
 
              if(!identical(length(object@name), 1L))
-                 errors <- c(errors, 'name must have length equal to one')
+                 errors <- c(errors, "name must have length equal to one")
              if(!identical(length(object@message), 1L))
-                 errors <- c(errors, 'message must have length equal to one')
+                 errors <- c(errors, "message must have length equal to one")
              if(!identical(length(object@target), 1L))
-                 errors <- c(errors, 'target must have length equal to one')
+                 errors <- c(errors, "target must have length equal to one")
 
              if(length(errors) == 0) TRUE else errors
          }
@@ -69,17 +69,17 @@ setClass('git_tag',
 ##' @return list of tags in repository
 ##' @keywords methods
 ##' @export
-setGeneric('tags',
-           signature = 'object',
-           function(object) standardGeneric('tags'))
+setGeneric("tags",
+           signature = "object",
+           function(object) standardGeneric("tags"))
 
 ##' @rdname tags-methods
 ##' @export
-setMethod('tags',
-          signature(object = 'git_repository'),
+setMethod("tags",
+          signature(object = "git_repository"),
           function (object)
           {
-              .Call('tags', object)
+              .Call("tags", object)
           }
 )
 
@@ -91,11 +91,11 @@ setMethod('tags',
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
 ##' @export
-setMethod('show',
-          signature(object = 'git_tag'),
+setMethod("show",
+          signature(object = "git_tag"),
           function (object)
           {
-              cat(sprintf('[%s] %s\n',
+              cat(sprintf("[%s] %s\n",
                           substr(object@target, 1 , 6),
                           object@name))
           }
@@ -112,25 +112,25 @@ setMethod('show',
 ##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository
-##' repo <- repository('path/to/git2r')
+##' repo <- repository("path/to/git2r")
 ##'
 ##' ## Apply summary to each tag in the repository
 ##' invisible(lapply(tags(repo), summary))
 ##' }
-setMethod('summary',
-          signature(object = 'git_tag'),
+setMethod("summary",
+          signature(object = "git_tag"),
           function(object, ...)
           {
-              cat(sprintf(paste0('name:    %s\n',
-                                 'target:  %s\n',
-                                 'tagger:  %s <%s>\n',
-                                 'when:    %s\n',
-                                 'message: %s\n'),
+              cat(sprintf(paste0("name:    %s\n",
+                                 "target:  %s\n",
+                                 "tagger:  %s <%s>\n",
+                                 "when:    %s\n",
+                                 "message: %s\n"),
                           object@name,
                           object@target,
                           object@tagger@name,
                           object@tagger@email,
-                          as(object@tagger@when, 'character'),
+                          as(object@tagger@when, "character"),
                           object@message))
           }
 )

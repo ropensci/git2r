@@ -21,7 +21,7 @@ Check if repository is bare
 \examples{
 \dontrun{
 ## Open an existing repository
-repo <- repository('path/to/git2r')
+repo <- repository("path/to/git2r")
 
 ## Check if it's a bare repository
 is.bare(repo)

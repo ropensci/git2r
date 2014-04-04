@@ -24,13 +24,13 @@ Commits
 \examples{
 \dontrun{
 ## Open an existing repository
-repo <- repository('path/to/git2r')
+repo <- repository("path/to/git2r")
 
 ## List commits in repository
 commits(repo)
 
 ## List commits direct from path
-commits('path/to/git2r')
+commits("path/to/git2r")
 }
 }
 \keyword{methods}

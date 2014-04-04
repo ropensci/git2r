@@ -32,12 +32,12 @@
 ##' @importFrom scales date_format
 ##' @include repository.r
 ##' @export
-setMethod('plot',
-          signature(x = 'git_repository'),
+setMethod("plot",
+          signature(x = "git_repository"),
           function (x,
-                    breaks = c('month', 'week', 'day'),
-                    by = c('commits', 'user'),
-                    title = 'Commits')
+                    breaks = c("month", "week", "day"),
+                    by = c("commits", "user"),
+                    title = "Commits")
           {
               breaks = match.arg(breaks)
               by = match.arg(by)
@@ -45,15 +45,15 @@ setMethod('plot',
               df <- contributions(x, breaks = breaks, by = by)
 
               xlab <- switch(breaks,
-                             'month' = 'Month',
-                             'week'  = 'Week',
-                             'day'   = 'Day')
-              ylab <- 'Number of commits'
+                             "month" = "Month",
+                             "week"  = "Week",
+                             "day"   = "Day")
+              ylab <- "Number of commits"
               title <- sprintf("Commits on repository: %s", basename(workdir(x)))
 
-              if(identical(by, 'commits')) {
+              if(identical(by, "commits")) {
                   ggplot(df, aes(x = when, y = n)) +
-                      geom_bar(stat = 'identity', fill = "steelblue") +
+                      geom_bar(stat = "identity", fill = "steelblue") +
                       scale_x_date(xlab, labels = scales::date_format("%m-%Y")) +
                       scale_y_continuous(ylab) +
                       ggtitle(title) + theme_gray()

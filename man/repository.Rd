@@ -17,7 +17,7 @@ Open a repository
 \examples{
 \dontrun{
 ## Open an existing repository
-repo <- repository('path/to/git2r')
+repo <- repository("path/to/git2r")
 
 ## Brief summary of repository
 repo

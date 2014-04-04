@@ -27,27 +27,27 @@
 ##' @include repository.r
 ##' @include commit.r
 ##' @include tag.r
-setGeneric('checkout',
-           signature = 'repo',
+setGeneric("checkout",
+           signature = "repo",
            function(repo,
                     treeish = NULL)
-           standardGeneric('checkout')
+           standardGeneric("checkout")
 )
 
 ##' @rdname checkout-methods
 ##' @export
-setMethod('checkout',
-          signature(repo = 'git_repository'),
+setMethod("checkout",
+          signature(repo = "git_repository"),
           function (repo, treeish)
           {
               if(!is.null(treeish)) {
-                  if(!any(is(treeish, 'git_commit'),
-                          is(treeish, 'git_tag'),
-                          is(treeish, 'git_tree'))) {
-                      stop('treeish must be a commit, tag or tree')
+                  if(!any(is(treeish, "git_commit"),
+                          is(treeish, "git_tag"),
+                          is(treeish, "git_tree"))) {
+                      stop("treeish must be a commit, tag or tree")
                   }
               }
 
-              invisible(.Call('checkout', repo, treeish))
+              invisible(.Call("checkout", repo, treeish))
           }
 )

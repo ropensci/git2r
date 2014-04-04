@@ -19,29 +19,29 @@ library(git2r)
 ## Check validity of S4 class git_time
 ##
 
-tools::assertError(validObject(new('git_time')))
+tools::assertError(validObject(new("git_time")))
 
-tools::assertError(validObject(new('git_time',
+tools::assertError(validObject(new("git_time",
                                    time = numeric(0),
                                    offset = 1)))
 
-tools::assertError(validObject(new('git_time',
+tools::assertError(validObject(new("git_time",
                                    time = c(1, 2),
                                    offset = 1)))
 
-tools::assertError(validObject(new('git_time',
+tools::assertError(validObject(new("git_time",
                                    time = 1,
                                    offset = numeric(0))))
 
-tools::assertError(validObject(new('git_time',
+tools::assertError(validObject(new("git_time",
                                    time=1,
                                    offset=c(1, 2))))
 
 ##
 ## Test to coerce
 ##
-git_t <- new('git_time', time=1395567947, offset=60)
-stopifnot(identical(as(git_t, 'character'), '2014-03-23 10:45:47'))
-stopifnot(identical(as(git_t, 'POSIXct'), as.POSIXct(1395571547,
-                                                     origin='1970-01-01',
-                                                     tz='GMT')))
+git_t <- new("git_time", time=1395567947, offset=60)
+stopifnot(identical(as(git_t, "character"), "2014-03-23 10:45:47"))
+stopifnot(identical(as(git_t, "POSIXct"), as.POSIXct(1395571547,
+                                                     origin="1970-01-01",
+                                                     tz="GMT")))

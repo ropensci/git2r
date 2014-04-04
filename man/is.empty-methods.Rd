@@ -21,7 +21,7 @@ Check if repository is empty
 \examples{
 \dontrun{
 ## Open an existing repository
-repo <- repository('path/to/git2r')
+repo <- repository("path/to/git2r")
 
 ## Check if it's an empty repository
 is.empty(repo)

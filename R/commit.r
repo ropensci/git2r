@@ -45,12 +45,12 @@
 ##' @keywords methods
 ##' @include signature.r
 ##' @export
-setClass('git_commit',
-         slots=c(hex='character',
-                 author='git_signature',
-                 committer='git_signature',
-                 summary='character',
-                 message='character'),
+setClass("git_commit",
+         slots=c(hex="character",
+                 author="git_signature",
+                 committer="git_signature",
+                 summary="character",
+                 message="character"),
          prototype=list(summary=NA_character_,
                         message=NA_character_))
 
@@ -64,23 +64,23 @@ setClass('git_commit',
 ##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository
-##' repo <- repository('path/to/git2r')
+##' repo <- repository("path/to/git2r")
 ##'
 ##' ## List commits in repository
 ##' commits(repo)
 ##'
 ##' ## List commits direct from path
-##' commits('path/to/git2r')
+##' commits("path/to/git2r")
 ##' }
 ##'
-setGeneric('commits',
-           signature = 'object',
-           function(object) standardGeneric('commits'))
+setGeneric("commits",
+           signature = "object",
+           function(object) standardGeneric("commits"))
 
 ##' @rdname commits-methods
 ##' @export
-setMethod('commits',
-          signature(object = 'character'),
+setMethod("commits",
+          signature(object = "character"),
           function (object)
           {
               commits(repository(object))
@@ -90,11 +90,11 @@ setMethod('commits',
 ##' @rdname commits-methods
 ##' @include repository.r
 ##' @export
-setMethod('commits',
-          signature(object = 'git_repository'),
+setMethod("commits",
+          signature(object = "git_repository"),
           function (object)
           {
-              .Call('revisions', object)
+              .Call("revisions", object)
           }
 )
 
@@ -110,24 +110,24 @@ setMethod('commits',
 ##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository
-##' repo <- repository('path/to/git2r')
+##' repo <- repository("path/to/git2r")
 ##'
 ##' ## Brief summary of commit in repository
 ##' commits(repo)[[1]]
 ##' }
 ##'
-setMethod('show',
-          signature(object = 'git_commit'),
+setMethod("show",
+          signature(object = "git_commit"),
           function (object)
           {
-              cat(sprintf(paste0('Commit:  %s\n',
-                                 'Author:  %s <%s>\n',
-                                 'When:    %s\n',
-                                 'Summary: %s\n'),
+              cat(sprintf(paste0("Commit:  %s\n",
+                                 "Author:  %s <%s>\n",
+                                 "When:    %s\n",
+                                 "Summary: %s\n"),
                           object@hex,
                           object@author@name,
                           object@author@email,
-                          as(object@author@when, 'character'),
+                          as(object@author@when, "character"),
                           object@summary))
           }
 )

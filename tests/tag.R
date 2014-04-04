@@ -19,44 +19,44 @@ library(git2r)
 ## Check validity of S4 class git_tag
 ## Each slot must have length equal to one
 ##
-when <- new('git_time', time = 1395567947, offset = 60)
-tagger <- new('git_signature',
-              name = 'Stefan Widgren',
-              email = 'stefan.widgren@gmail.com',
+when <- new("git_time", time = 1395567947, offset = 60)
+tagger <- new("git_signature",
+              name = "Stefan Widgren",
+              email = "stefan.widgren@gmail.com",
               when = when)
 
-tools::assertError(validObject(new('git_tag',
+tools::assertError(validObject(new("git_tag",
                                    message = character(0),
-                                   name = 'name1',
+                                   name = "name1",
                                    tagger = tagger,
-                                   target = 'target1')))
+                                   target = "target1")))
 
-tools::assertError(validObject(new('git_tag',
-                                   message = c('message1', 'message2'),
-                                   name = 'name1',
+tools::assertError(validObject(new("git_tag",
+                                   message = c("message1", "message2"),
+                                   name = "name1",
                                    tagger = tagger,
-                                   target = 'target1')))
+                                   target = "target1")))
 
-tools::assertError(validObject(new('git_tag',
-                                   message = 'message1',
+tools::assertError(validObject(new("git_tag",
+                                   message = "message1",
                                    name = character(0),
                                    tagger = tagger,
-                                   target = 'target1')))
+                                   target = "target1")))
 
-tools::assertError(validObject(new('git_tag',
-                                   message = 'message1',
-                                   name = c('name1', 'name2'),
+tools::assertError(validObject(new("git_tag",
+                                   message = "message1",
+                                   name = c("name1", "name2"),
                                    tagger = tagger,
-                                   target = 'target1')))
+                                   target = "target1")))
 
-tools::assertError(validObject(new('git_tag',
-                                   message = 'message1',
-                                   name = 'name1',
+tools::assertError(validObject(new("git_tag",
+                                   message = "message1",
+                                   name = "name1",
                                    tagger = tagger,
                                    target = character(0))))
 
-tools::assertError(validObject(new('git_tag',
-                                   message = 'message1',
-                                   name = 'name1',
+tools::assertError(validObject(new("git_tag",
+                                   message = "message1",
+                                   name = "name1",
                                    tagger = tagger,
-                                   target = c('target1', 'target2'))))
+                                   target = c("target1", "target2"))))

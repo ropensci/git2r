@@ -37,37 +37,37 @@
 ##' }
 ##' @keywords methods
 ##' @export
-setClass('git_time',
-         slots=c(time='numeric',
-                 offset='numeric'),
+setClass("git_time",
+         slots=c(time="numeric",
+                 offset="numeric"),
          validity=function(object)
          {
              errors <- character()
 
              if(!identical(length(object@time), 1L))
-                 errors <- c(errors, 'time must have length equal to one')
+                 errors <- c(errors, "time must have length equal to one")
              if(!identical(length(object@offset), 1L))
-                 errors <- c(errors, 'offset must have length equal to one')
+                 errors <- c(errors, "offset must have length equal to one")
 
              if (length(errors) == 0) TRUE else errors
          }
 )
 
-setAs(from='git_time',
-      to='character',
+setAs(from="git_time",
+      to="character",
       def=function(from)
       {
-          as.character(as(from, 'POSIXct'))
+          as.character(as(from, "POSIXct"))
       }
 )
 
-setAs(from='git_time',
-      to='POSIXct',
+setAs(from="git_time",
+      to="POSIXct",
       def=function(from)
       {
           as.POSIXct(from@time + from@offset*60,
-                     origin='1970-01-01',
-                     tz='GMT')
+                     origin="1970-01-01",
+                     tz="GMT")
       }
 )
 
@@ -79,10 +79,10 @@ setAs(from='git_time',
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
 ##' @export
-setMethod('show',
-          signature(object = 'git_time'),
+setMethod("show",
+          signature(object = "git_time"),
           function(object)
           {
-              cat(sprintf('%s\n', as(object, 'character')))
+              cat(sprintf("%s\n", as(object, "character")))
           }
 )

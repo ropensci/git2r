@@ -35,17 +35,17 @@
 ##' ## If the path is somewhere else
 ##' contributions("/path/to/repo")
 ##'}
-setGeneric('contributions',
-           signature = 'repo',
+setGeneric("contributions",
+           signature = "repo",
            function(repo,
-                    breaks = c('month', 'week', 'day'),
-                    by = c('commits', 'user'))
-           standardGeneric('contributions'))
+                    breaks = c("month", "week", "day"),
+                    by = c("commits", "user"))
+           standardGeneric("contributions"))
 
 ##' @rdname contributions-methods
 ##' @export
-setMethod('contributions',
-          signature(repo = 'missing'),
+setMethod("contributions",
+          signature(repo = "missing"),
           function (repo, breaks, by)
           {
               ## Try current working directory
@@ -55,8 +55,8 @@ setMethod('contributions',
 
 ##' @rdname contributions-methods
 ##' @export
-setMethod('contributions',
-          signature(repo = 'character'),
+setMethod("contributions",
+          signature(repo = "character"),
           function (repo, breaks, by)
           {
               contributions(repository(repo), breaks = breaks, by = by)
@@ -65,19 +65,19 @@ setMethod('contributions',
 
 ##' @rdname contributions-methods
 ##' @export
-setMethod('contributions',
-          signature(repo = 'git_repository'),
+setMethod("contributions",
+          signature(repo = "git_repository"),
           function (repo, breaks, by)
           {
               breaks <- match.arg(breaks)
               by <- match.arg(by)
 
-              df <- as(repo, 'data.frame')
+              df <- as(repo, "data.frame")
               df$when <- as.POSIXct(cut(df$when, breaks = breaks))
 
-              if(identical(by, 'commits')) {
+              if(identical(by, "commits")) {
                   df <- as.data.frame(table(df$when))
-                  names(df) <- c('when', 'n')
+                  names(df) <- c("when", "n")
                   df$when <- as.Date(df$when)
                   return(df)
               }
@@ -86,11 +86,11 @@ setMethod('contributions',
               df$index <- paste0(df$when, df$author, df$email)
               count <- as.data.frame(table(df$index),
                                      stringsAsFactors=FALSE)
-              names(count) <- c('index', 'n')
+              names(count) <- c("index", "n")
 
               ## Match counts and clean result
               df$n <- count$n[match(df$index, count$index)]
-              df <- unique(df[, c('when', 'author', 'n')])
+              df <- unique(df[, c("when", "author", "n")])
               df$when <- as.Date(substr(as.character(df$when), 1, 10))
               df[order(df$when, df$author),]
           }

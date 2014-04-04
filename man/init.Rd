@@ -22,7 +22,7 @@ Init a repository
 \examples{
 \dontrun{
 ## Init a repository
-repo <- init('path/to/git2r')
+repo <- init("path/to/git2r")
 }
 }
 \keyword{methods}

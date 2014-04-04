@@ -46,10 +46,10 @@ The \code{data.frame} have the following columns:
 \examples{
 \dontrun{
 ## Open an existing repository
-repo <- repository('path/to/git2r')
+repo <- repository("path/to/git2r")
 
 ## Coerce commits to a data.frame
-df <- as(repo, 'data.frame')
+df <- as(repo, "data.frame")
 
 str(df)
 }

@@ -32,13 +32,13 @@
 ##' }
 ##' @keywords methods
 ##' @export
-setClass('git_repository',
-         slots=c(path='character'),
+setClass("git_repository",
+         slots=c(path="character"),
          validity=function(object) {
              errors <- character()
 
-             if(!identical(.Call('is_repository', object@path), TRUE))
-                 errors <- c(errors, 'Invalid repository')
+             if(!identical(.Call("is_repository", object@path), TRUE))
+                 errors <- c(errors, "Invalid repository")
 
              if (length(errors) == 0) TRUE else errors
          }
@@ -86,10 +86,10 @@ setClass('git_repository',
 ##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository
-##' repo <- repository('path/to/git2r')
+##' repo <- repository("path/to/git2r")
 ##'
 ##' ## Coerce commits to a data.frame
-##' df <- as(repo, 'data.frame')
+##' df <- as(repo, "data.frame")
 ##'
 ##' str(df)
 ##' }
@@ -97,13 +97,13 @@ setAs(from="git_repository",
       to="data.frame",
       def=function(from)
       {
-          do.call('rbind', lapply(commits(from), function(x) {
+          do.call("rbind", lapply(commits(from), function(x) {
               data.frame(hex              = x@hex,
                          summary          = x@summary,
                          message          = x@message,
                          author           = x@author@name,
                          email            = x@author@email,
-                         when             = as(x@author@when, 'POSIXct'),
+                         when             = as(x@author@when, "POSIXct"),
                          stringsAsFactors = FALSE)
           }))
       }
@@ -118,7 +118,7 @@ setAs(from="git_repository",
 ##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository
-##' repo <- repository('path/to/git2r')
+##' repo <- repository("path/to/git2r")
 ##'
 ##' ## Brief summary of repository
 ##' repo
@@ -162,9 +162,9 @@ repository <- function(path) {
 
     path <- normalizePath(path, winslash = "/", mustWork = TRUE)
     if(!file.info(path)$isdir)
-        stop('path is not a directory')
+        stop("path is not a directory")
 
-    new('git_repository', path=path)
+    new("git_repository", path=path)
 }
 
 ##' Init a repository
@@ -180,7 +180,7 @@ repository <- function(path) {
 ##' @examples
 ##' \dontrun{
 ##' ## Init a repository
-##' repo <- init('path/to/git2r')
+##' repo <- init("path/to/git2r")
 ##' }
 init <- function(path, bare = FALSE) {
     ## Argument checking
@@ -192,11 +192,11 @@ init <- function(path, bare = FALSE) {
 
     path <- normalizePath(path, winslash = "/", mustWork = TRUE)
     if(!file.info(path)$isdir)
-        stop('path is not a directory')
+        stop("path is not a directory")
 
-    .Call('init', path, bare)
+    .Call("init", path, bare)
 
-    new('git_repository', path=path)
+    new("git_repository", path=path)
 }
 
 ##' Clone a remote repository
@@ -210,7 +210,7 @@ init <- function(path, bare = FALSE) {
 ##' @examples
 ##' \dontrun{
 ##' ## Clone a remote repository
-##' repo <- clone('https://github.com/ropensci/git2r', 'path/to/git2r')
+##' repo <- clone("https://github.com/ropensci/git2r", "path/to/git2r")
 ##' }
 clone <- function(url, local_path, progress = TRUE) {
     ## Argument checking
@@ -223,7 +223,7 @@ clone <- function(url, local_path, progress = TRUE) {
               nchar(url) > 0,
               nchar(local_path) > 0)
 
-    .Call('clone', url, local_path, progress)
+    .Call("clone", url, local_path, progress)
 
     repository(local_path)
 }
@@ -240,27 +240,27 @@ clone <- function(url, local_path, progress = TRUE) {
 ##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository
-##' repo <- repository('path/to/git2r')
+##' repo <- repository("path/to/git2r")
 ##'
 ##' ## Add file repository
-##' add(repo, 'file-to-add')
+##' add(repo, "file-to-add")
 ##' }
 ##'
-setGeneric('add',
-           signature = 'object',
-           function(object, path) standardGeneric('add'))
+setGeneric("add",
+           signature = "object",
+           function(object, path) standardGeneric("add"))
 
 ##' @rdname add-methods
 ##' @export
-setMethod('add',
-          signature(object = 'git_repository'),
+setMethod("add",
+          signature(object = "git_repository"),
           function (object, path)
           {
               ## Argument checking
               stopifnot(is.character(path),
                         all(nchar(path) > 0))
 
-              lapply(path, function(x) .Call('add', object, x))
+              lapply(path, function(x) .Call("add", object, x))
 
               invisible(NULL)
           }
@@ -278,19 +278,19 @@ setMethod('add',
 ##' @param committer Signature with committer and commit time of commit.
 ##' @return \code{git_commit} object
 ##' @keywords methods
-setGeneric('commit',
-           signature = 'object',
+setGeneric("commit",
+           signature = "object",
            function(object,
                     message = NULL,
-                    reference = 'HEAD',
+                    reference = "HEAD",
                     author = default_signature(object),
                     committer = default_signature(object))
-           standardGeneric('commit'))
+           standardGeneric("commit"))
 
 ##' @rdname commit-methods
 ##' @export
-setMethod('commit',
-          signature(object = 'git_repository'),
+setMethod("commit",
+          signature(object = "git_repository"),
           function (object,
                     message,
                     reference,
@@ -301,15 +301,15 @@ setMethod('commit',
               stopifnot(is.character(message),
                         identical(length(message), 1L),
                         nchar(message[1]) > 0,
-                        is(author, 'git_signature'),
-                        is(committer, 'git_signature'))
+                        is(author, "git_signature"),
+                        is(committer, "git_signature"))
 
               parents <- character(0)
               if(!is.empty(object)) {
                   parents <- c(parents, head(object)@hex)
               }
 
-              .Call('commit', object, message, author, committer, parents)
+              .Call("commit", object, message, author, committer, parents)
           }
 )
 
@@ -321,8 +321,8 @@ setMethod('commit',
 ##' @return Character vector with head
 ##' @keywords methods
 ##' @export
-setMethod('head',
-          signature(x = 'git_repository'),
+setMethod("head",
+          signature(x = "git_repository"),
           function (x)
           {
               b <- branches(x)
@@ -350,23 +350,23 @@ setMethod('head',
 ##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository
-##' repo <- repository('path/to/git2r')
+##' repo <- repository("path/to/git2r")
 ##'
 ##' ## Check if it's a bare repository
 ##' is.bare(repo)
 ##' }
 ##'
-setGeneric('is.bare',
-           signature = 'object',
-           function(object) standardGeneric('is.bare'))
+setGeneric("is.bare",
+           signature = "object",
+           function(object) standardGeneric("is.bare"))
 
 ##' @rdname is.bare-methods
 ##' @export
-setMethod('is.bare',
-          signature(object = 'git_repository'),
+setMethod("is.bare",
+          signature(object = "git_repository"),
           function (object)
           {
-              .Call('is_bare', object)
+              .Call("is_bare", object)
           }
 )
 
@@ -380,23 +380,23 @@ setMethod('is.bare',
 ##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository
-##' repo <- repository('path/to/git2r')
+##' repo <- repository("path/to/git2r")
 ##'
 ##' ## Check if it's an empty repository
 ##' is.empty(repo)
 ##' }
 ##'
-setGeneric('is.empty',
-           signature = 'object',
-           function(object) standardGeneric('is.empty'))
+setGeneric("is.empty",
+           signature = "object",
+           function(object) standardGeneric("is.empty"))
 
 ##' @rdname is.empty-methods
 ##' @export
-setMethod('is.empty',
-          signature(object = 'git_repository'),
+setMethod("is.empty",
+          signature(object = "git_repository"),
           function (object)
           {
-              .Call('is_empty', object)
+              .Call("is_empty", object)
           }
 )
 
@@ -407,17 +407,17 @@ setMethod('is.empty',
 ##' @param object The repository \code{object} to check remotes
 ##' @return Character vector with remotes
 ##' @keywords methods
-setGeneric('remotes',
-           signature = 'object',
-           function(object) standardGeneric('remotes'))
+setGeneric("remotes",
+           signature = "object",
+           function(object) standardGeneric("remotes"))
 
 ##' @rdname remotes-methods
 ##' @export
-setMethod('remotes',
-          signature(object = 'git_repository'),
+setMethod("remotes",
+          signature(object = "git_repository"),
           function (object)
           {
-              .Call('remotes', object)
+              .Call("remotes", object)
           }
 )
 
@@ -429,17 +429,17 @@ setMethod('remotes',
 ##' @param remote :TODO:DOCUMENTATION:
 ##' @return Character vector with remote_url
 ##' @keywords methods
-setGeneric('remote_url',
-           signature = 'object',
-           function(object, remote = remotes(object)) standardGeneric('remote_url'))
+setGeneric("remote_url",
+           signature = "object",
+           function(object, remote = remotes(object)) standardGeneric("remote_url"))
 
 ##' @rdname remote_url-methods
 ##' @export
-setMethod('remote_url',
-          signature(object = 'git_repository'),
+setMethod("remote_url",
+          signature(object = "git_repository"),
           function (object, remote)
           {
-              .Call('remote_url', object, remote)
+              .Call("remote_url", object, remote)
           }
 )
 
@@ -451,17 +451,17 @@ setMethod('remote_url',
 ##' @param object The repository \code{object} to check signature
 ##' @return Character vector with signature
 ##' @keywords methods
-setGeneric('default_signature',
-           signature = 'object',
-           function(object) standardGeneric('default_signature'))
+setGeneric("default_signature",
+           signature = "object",
+           function(object) standardGeneric("default_signature"))
 
 ##' @rdname default_signature-methods
 ##' @export
-setMethod('default_signature',
-          signature(object = 'git_repository'),
+setMethod("default_signature",
+          signature(object = "git_repository"),
           function (object)
           {
-              .Call('default_signature', object)
+              .Call("default_signature", object)
           }
 )
 
@@ -473,21 +473,21 @@ setMethod('default_signature',
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
 ##' @export
-setMethod('show',
-          signature(object = 'git_repository'),
+setMethod("show",
+          signature(object = "git_repository"),
           function(object)
           {
               lapply(remotes(object), function(remote) {
-                  cat(sprintf('Remote:   @ %s (%s)\n',
+                  cat(sprintf("Remote:   @ %s (%s)\n",
                               remote,
                               remote_url(object, remote)))
               })
 
               if(is.empty(object)) {
-                  cat(sprintf('Local:    %s\n', workdir(object)))
-                  cat('Head:     nothing commited (yet)\n')
+                  cat(sprintf("Local:    %s\n", workdir(object)))
+                  cat("Head:     nothing commited (yet)\n")
               } else {
-                  cat(sprintf('Local:    %s %s\n',
+                  cat(sprintf("Local:    %s %s\n",
                               head(object)@shorthand,
                               workdir(object)))
               }
@@ -502,28 +502,28 @@ setMethod('show',
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
 ##' @export
-setMethod('summary',
-          signature(object = 'git_repository'),
+setMethod("summary",
+          signature(object = "git_repository"),
           function(object, ...)
           {
               show(object)
-              cat('\n')
+              cat("\n")
 
               ## Branches
-              n <- sum(!is.na(unique(sapply(branches(object), slot, 'hex'))))
-              cat(sprintf('Branches:      %i\n', n))
+              n <- sum(!is.na(unique(sapply(branches(object), slot, "hex"))))
+              cat(sprintf("Branches:      %i\n", n))
 
               ## Tags
-              n <- sum(!is.na(unique(sapply(tags(object), slot, 'hex'))))
-              cat(sprintf('Tags:          %i\n', n))
+              n <- sum(!is.na(unique(sapply(tags(object), slot, "hex"))))
+              cat(sprintf("Tags:          %i\n", n))
 
               ## Commits
               n <- length(commits(object))
-              cat(sprintf('Commits:       %i\n', n))
+              cat(sprintf("Commits:       %i\n", n))
 
               ## Contributors
-              n <- length(unique(sapply(lapply(commits(object), slot, 'author'), slot, 'name')))
-              cat(sprintf('Contributors:  %i\n', n))
+              n <- length(unique(sapply(lapply(commits(object), slot, "author"), slot, "name")))
+              cat(sprintf("Contributors:  %i\n", n))
           }
 )
 
@@ -534,16 +534,16 @@ setMethod('summary',
 ##' @param object The repository \code{object} to check workdir
 ##' @return Character vector with workdir
 ##' @keywords methods
-setGeneric('workdir',
-           signature = 'object',
-           function(object) standardGeneric('workdir'))
+setGeneric("workdir",
+           signature = "object",
+           function(object) standardGeneric("workdir"))
 
 ##' @rdname workdir-methods
 ##' @export
-setMethod('workdir',
-          signature(object = 'git_repository'),
+setMethod("workdir",
+          signature(object = "git_repository"),
           function (object)
           {
-              .Call('workdir', object)
+              .Call("workdir", object)
           }
 )

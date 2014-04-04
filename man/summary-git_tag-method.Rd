@@ -21,7 +21,7 @@ Summary of a tag
 \examples{
 \dontrun{
 ## Open an existing repository
-repo <- repository('path/to/git2r')
+repo <- repository("path/to/git2r")
 
 ## Apply summary to each tag in the repository
 invisible(lapply(tags(repo), summary))

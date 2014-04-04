@@ -27,14 +27,14 @@
 ##' @keywords classes
 ##' @keywords methods
 ##' @export
-setClass('git_tree',
-         slots=c(hex = 'character'),
+setClass("git_tree",
+         slots=c(hex = "character"),
          validity=function(object)
          {
              errors <- character(0)
 
              if(!identical(length(object@hex), 1L))
-                 errors <- c(errors, 'hex must have length equal to one')
+                 errors <- c(errors, "hex must have length equal to one")
 
              if(length(errors) == 0) TRUE else errors
          }

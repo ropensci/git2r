@@ -21,7 +21,7 @@ Clone a remote repository
 \examples{
 \dontrun{
 ## Clone a remote repository
-repo <- clone('https://github.com/ropensci/git2r', 'path/to/git2r')
+repo <- clone("https://github.com/ropensci/git2r", "path/to/git2r")
 }
 }
 \keyword{methods}

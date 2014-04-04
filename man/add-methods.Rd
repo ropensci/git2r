@@ -24,10 +24,10 @@ Add file(s) to index
 \examples{
 \dontrun{
 ## Open an existing repository
-repo <- repository('path/to/git2r')
+repo <- repository("path/to/git2r")
 
 ## Add file repository
-add(repo, 'file-to-add')
+add(repo, "file-to-add")
 }
 }
 \keyword{methods}

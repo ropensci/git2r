@@ -29,9 +29,9 @@ library(git2r)
 ##
 ## Create 3 directories in tempdir
 ##
-path_bare <- tempfile(pattern='git2r-')
-path_repo1 <- tempfile(pattern='git2r-')
-path_repo2 <- tempfile(pattern='git2r-')
+path_bare <- tempfile(pattern="git2r-")
+path_repo1 <- tempfile(pattern="git2r-")
+path_repo2 <- tempfile(pattern="git2r-")
 
 dir.create(path_bare)
 dir.create(path_repo1)
@@ -54,9 +54,9 @@ stopifnot(identical(is.bare(repo2), FALSE))
 ##
 ## Add changes to repo1
 ##
-## writeLines('Hello world', con = file.path(path_repo1, 'test.txt'))
-## add(repo1, 'test.txt')
-## commit(repo1, 'Commit message')
+## writeLines("Hello world", con = file.path(path_repo1, "test.txt"))
+## add(repo1, "test.txt")
+## commit(repo1, "Commit message")
 ## push(repo1)
 
 ##

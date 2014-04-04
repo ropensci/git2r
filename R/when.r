@@ -29,51 +29,51 @@
 ##' @include time.r
 ##' @examples \dontrun{
 ##' ## Open an existing repository
-##' repo <- repository('path/to/git2r')
+##' repo <- repository("path/to/git2r")
 ##'
 ##' when(commits(repo)[[1]])
 ##'}
-setGeneric('when',
-           signature = 'object',
+setGeneric("when",
+           signature = "object",
            function(object)
-           standardGeneric('when'))
+           standardGeneric("when"))
 
 ##' @rdname when-methods
 ##' @export
-setMethod('when',
-          signature(object = 'git_commit'),
+setMethod("when",
+          signature(object = "git_commit"),
           function (object)
           {
-              as(object@author@when, 'character')
+              as(object@author@when, "character")
           }
 )
 
 ##' @rdname when-methods
 ##' @export
-setMethod('when',
-          signature(object = 'git_signature'),
+setMethod("when",
+          signature(object = "git_signature"),
           function (object)
           {
-              as(object@when, 'character')
+              as(object@when, "character")
           }
 )
 
 ##' @rdname when-methods
 ##' @export
-setMethod('when',
-          signature(object = 'git_tag'),
+setMethod("when",
+          signature(object = "git_tag"),
           function (object)
           {
-              as(object@tagger@when, 'character')
+              as(object@tagger@when, "character")
           }
 )
 
 ##' @rdname when-methods
 ##' @export
-setMethod('when',
-          signature(object = 'git_time'),
+setMethod("when",
+          signature(object = "git_time"),
           function (object)
           {
-              as(object, 'character')
+              as(object, "character")
           }
 )

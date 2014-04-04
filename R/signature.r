@@ -34,10 +34,10 @@
 ##' @keywords methods
 ##' @include time.r
 ##' @export
-setClass('git_signature',
-         slots=c(name='character',
-                 email='character',
-                 when='git_time'),
+setClass("git_signature",
+         slots=c(name="character",
+                 email="character",
+                 when="git_time"),
          validity=function(object)
          {
              errors <- validObject(object@when)
@@ -46,9 +46,9 @@ setClass('git_signature',
                errors <- character()
 
              if(!identical(length(object@name), 1L))
-                 errors <- c(errors, 'name must have length equal to one')
+                 errors <- c(errors, "name must have length equal to one")
              if(!identical(length(object@email), 1L))
-                 errors <- c(errors, 'email must have length equal to one')
+                 errors <- c(errors, "email must have length equal to one")
 
              if(length(errors) == 0) TRUE else errors
          }
@@ -62,15 +62,15 @@ setClass('git_signature',
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
 ##' @export
-setMethod('show',
-          signature(object = 'git_signature'),
+setMethod("show",
+          signature(object = "git_signature"),
           function(object)
           {
-              cat(sprintf(paste0('name:  %s\n',
-                                 'email: %s\n',
-                                 'when:  %s\n'),
+              cat(sprintf(paste0("name:  %s\n",
+                                 "email: %s\n",
+                                 "when:  %s\n"),
                           object@name,
                           object@email,
-                          as(object@when, 'character')))
+                          as(object@when, "character")))
           }
 )

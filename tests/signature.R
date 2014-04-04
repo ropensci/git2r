@@ -19,27 +19,27 @@ library(git2r)
 ## Check validity of S4 class git_signature
 ## Each slot must have length equal to one
 ##
-when <- new('git_time', time = 1395567947, offset = 60)
+when <- new("git_time", time = 1395567947, offset = 60)
 
-tools::assertError(validObject(new('git_signature',
+tools::assertError(validObject(new("git_signature",
                                    when = when)))
 
-tools::assertError(validObject(new('git_signature',
+tools::assertError(validObject(new("git_signature",
                                    name = character(0),
-                                   email = 'email',
+                                   email = "email",
                                    when = when)))
 
-tools::assertError(validObject(new('git_signature',
-                                   name = c('name1', 'name2'),
-                                   email = 'email',
+tools::assertError(validObject(new("git_signature",
+                                   name = c("name1", "name2"),
+                                   email = "email",
                                    when = when)))
 
-tools::assertError(validObject(new('git_signature',
-                                   name = 'name',
+tools::assertError(validObject(new("git_signature",
+                                   name = "name",
                                    email = character(0),
                                    when = when)))
 
-tools::assertError(validObject(new('git_signature',
-                                   name = 'name',
-                                   email = c('email1', 'email2'),
+tools::assertError(validObject(new("git_signature",
+                                   name = "name",
+                                   email = c("email1", "email2"),
                                    when = when)))
