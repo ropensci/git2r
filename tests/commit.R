@@ -28,9 +28,23 @@ repo <- init(path)
 config(repo, user.name="Stefan Widgren", user.email="stefan.widgren@gmail.com")
 
 ##
-## Create a file, add and commit
+## Commit without adding changes should produce an error
+##
+tools::assertError(commit(repo, "Test to commit"))
+
+##
+## Create a file
 ##
 writeLines("Hello world!", file.path(path, "test.r"))
+
+##
+## Commit without adding changes should produce an error
+##
+tools::assertError(commit(repo, "Test to commit"))
+
+##
+## add and commit
+##
 add(repo, 'test.r')
 new_commit <- commit(repo, "Commit message")
 
