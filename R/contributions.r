@@ -20,7 +20,7 @@
 ##' @docType methods
 ##' @param repo The repository.
 ##' @param breaks Default is \code{month}. Change to week or day as necessary.
-##' @param by Contributions by 'commits' or 'user'. Default is 'commits'.
+##' @param by Contributions by "commits" or "author". Default is "commits".
 ##' @return A \code{data.frame} with contributions.
 ##' @keywords methods
 ##' @include repository.r
@@ -39,7 +39,7 @@ setGeneric("contributions",
            signature = "repo",
            function(repo,
                     breaks = c("month", "week", "day"),
-                    by = c("commits", "user"))
+                    by = c("commits", "author"))
            standardGeneric("contributions"))
 
 ##' @rdname contributions-methods

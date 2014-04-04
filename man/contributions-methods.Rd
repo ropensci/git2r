@@ -8,23 +8,23 @@
 \title{Contributions}
 \usage{
 contributions(repo, breaks = c("month", "week", "day"), by = c("commits",
-  "user"))
+  "author"))
 
 \S4method{contributions}{missing}(repo, breaks = c("month", "week", "day"),
-  by = c("commits", "user"))
+  by = c("commits", "author"))
 
 \S4method{contributions}{character}(repo, breaks = c("month", "week", "day"),
-  by = c("commits", "user"))
+  by = c("commits", "author"))
 
 \S4method{contributions}{git_repository}(repo, breaks = c("month", "week",
-  "day"), by = c("commits", "user"))
+  "day"), by = c("commits", "author"))
 }
 \arguments{
 \item{repo}{The repository.}
 
 \item{breaks}{Default is \code{month}. Change to week or day as necessary.}
 
-\item{by}{Contributions by 'commits' or 'user'. Default is 'commits'.}
+\item{by}{Contributions by "commits" or "author". Default is "commits".}
 }
 \value{
 A \code{data.frame} with contributions.

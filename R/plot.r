@@ -22,9 +22,9 @@
 ##' @param x The repository to plot
 ##' @param breaks Default is \code{month}. Change to week or day as
 ##' necessary.
-##' @param by Contributions by 'commits' or 'user'. Default is
-##' 'commits'.
-##' @param title Default title for the plot is 'Commits on repo' and
+##' @param by Contributions by "commits" or "author". Default is
+##' "commits".
+##' @param title Default title for the plot is "Commits on repo:" and
 ##' repository workdir basename. Supply a new title if you desire one.
 ##' @return A \code{ggplot} chart
 ##' @keywords methods
@@ -36,7 +36,7 @@ setMethod("plot",
           signature(x = "git_repository"),
           function (x,
                     breaks = c("month", "week", "day"),
-                    by = c("commits", "user"),
+                    by = c("commits", "author"),
                     title = "Commits")
           {
               breaks = match.arg(breaks)

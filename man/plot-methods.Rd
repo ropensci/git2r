@@ -6,7 +6,7 @@
 \title{Plot contributions over time}
 \usage{
 \S4method{plot}{git_repository}(x, breaks = c("month", "week", "day"),
-  by = c("commits", "user"), title = "Commits")
+  by = c("commits", "author"), title = "Commits")
 }
 \arguments{
 \item{x}{The repository to plot}
@@ -14,10 +14,10 @@
 \item{breaks}{Default is \code{month}. Change to week or day as
 necessary.}
 
-\item{by}{Contributions by 'commits' or 'user'. Default is
-'commits'.}
+\item{by}{Contributions by "commits" or "author". Default is
+"commits".}
 
-\item{title}{Default title for the plot is 'Commits on repo' and
+\item{title}{Default title for the plot is "Commits on repo:" and
 repository workdir basename. Supply a new title if you desire one.}
 }
 \value{
