@@ -360,6 +360,7 @@ SEXP commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP parent_li
 {
     SEXP when, sexp_commit;
     int err;
+    int changes_in_index = 0;
     const char* err_msg = NULL;
     git_signature *sig_author = NULL;
     git_signature *sig_committer = NULL;
@@ -367,9 +368,12 @@ SEXP commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP parent_li
     git_oid commit_id, tree_oid;
     git_repository *repository = NULL;
     git_tree *tree = NULL;
-    size_t i, parent_count;
+    size_t i, count;
     git_commit **parents = NULL;
     git_commit *new_commit = NULL;
+    git_status_list *status = NULL;
+    git_status_options opts = GIT_STATUS_OPTIONS_INIT;
+    opts.show  = GIT_STATUS_SHOW_INDEX_ONLY;
 
     if (R_NilValue == repo
         || R_NilValue == message
@@ -412,6 +416,38 @@ SEXP commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP parent_li
     if (err < 0)
         goto cleanup;
 
+    err = git_status_list_new(&status, repository, &opts);
+    if (err < 0)
+        goto cleanup;
+
+    count = git_status_list_entrycount(status);
+    for (i = 0; i < count; ++i) {
+        const git_status_entry *s = git_status_byindex(status, i);
+
+        if (s->status == GIT_STATUS_CURRENT)
+            continue;
+
+        if (s->status & GIT_STATUS_INDEX_NEW)
+            changes_in_index = 1;
+        else if (s->status & GIT_STATUS_INDEX_MODIFIED)
+            changes_in_index = 1;
+        else if (s->status & GIT_STATUS_INDEX_DELETED)
+            changes_in_index = 1;
+        else if (s->status & GIT_STATUS_INDEX_RENAMED)
+            changes_in_index = 1;
+        else if (s->status & GIT_STATUS_INDEX_TYPECHANGE)
+            changes_in_index = 1;
+
+        if (changes_in_index)
+            break;
+    }
+
+    if (!changes_in_index) {
+        err = -1;
+        err_msg = err_nothing_added_to_commit;
+        goto cleanup;
+    }
+
     err = git_repository_index(&index, repository);
     if (err < 0)
         goto cleanup;
@@ -430,16 +466,16 @@ SEXP commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP parent_li
     if (err < 0)
         goto cleanup;
 
-    parent_count = LENGTH(parent_list);
-    if (parent_count) {
-        parents = calloc(parent_count, sizeof(git_commit*));
+    count = LENGTH(parent_list);
+    if (count) {
+        parents = calloc(count, sizeof(git_commit*));
         if (NULL == parents) {
             err = -1;
             err_msg = err_alloc_memory_buffer;
             goto cleanup;
         }
 
-        for (i = 0; i < parent_count; i++) {
+        for (i = 0; i < count; i++) {
             git_oid oid;
 
             err = git_oid_fromstr(&oid, CHAR(STRING_ELT(parent_list, 0)));
@@ -460,7 +496,7 @@ SEXP commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP parent_li
                             NULL,
                             CHAR(STRING_ELT(message, 0)),
                             tree,
-                            parent_count,
+                            count,
                             (const git_commit**)parents);
     if (err < 0)
         goto cleanup;
@@ -482,6 +518,9 @@ cleanup:
     if (index)
         git_index_free(index);
 
+    if (status)
+        git_status_list_free(status);
+
     if (tree)
         git_tree_free(tree);
 
@@ -489,7 +528,7 @@ cleanup:
         git_repository_free(repository);
 
     if (parents) {
-        for (i = 0; i < parent_count; i++) {
+        for (i = 0; i < count; i++) {
             if (parents[i])
                 git_commit_free(parents[i]);
         }
@@ -1182,28 +1221,6 @@ cleanup:
 }
 
 /**
- * Get state of repository.
- *
- * @param repo S4 class git_repository
- * @return
- */
-SEXP state(const SEXP repo)
-{
-    SEXP result;
-    git_repository *repository;
-
-    repository = get_repository(repo);
-    if (!repository)
-        error(err_invalid_repository);
-
-    result = ScalarInteger(git_repository_state(repository));
-
-    git_repository_free(repository);
-
-    return result;
-}
-
-/**
  * Get all tags that can be found in a repository.
  *
  * @param repo S4 class git_repository
@@ -1320,7 +1337,6 @@ static const R_CallMethodDef callMethods[] =
     {"remotes", (DL_FUNC)&remotes, 1},
     {"remote_url", (DL_FUNC)&remote_url, 2},
     {"revisions", (DL_FUNC)&revisions, 1},
-    {"state", (DL_FUNC)&state, 1},
     {"tags", (DL_FUNC)&tags, 1},
     {"workdir", (DL_FUNC)&workdir, 1},
     {NULL, NULL, 0}
