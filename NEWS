@@ -1,3 +1,14 @@
+git2r 0.0.8
+-----------
+
+NEW FEATURES
+
+* Added method to clone repository
+
+* Added method config to set user.name and user.email in a repository
+
+* Added method status to display state of a repository
+
 git2r 0.0.7
 -----------
 
