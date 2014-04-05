@@ -40,5 +40,6 @@ Collate:
     'git2r.r'
     'markdown_link.r'
     'plot.r'
+    'status.r'
     'tree.r'
     'when.r'
