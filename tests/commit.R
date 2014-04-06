@@ -25,7 +25,7 @@ dir.create(path)
 ## Initialize a repository
 ##
 repo <- init(path)
-config(repo, user.name="Stefan Widgren", user.email="stefan.widgren@gmail.com")
+config(repo, user.name="Repo", user.email="repo@example.org")
 
 ##
 ## Commit without adding changes should produce an error
@@ -51,11 +51,11 @@ new_commit <- commit(repo, "Commit message")
 ##
 ## Check commit
 ##
-stopifnot(identical(new_commit@author@name, "Stefan Widgren"))
-stopifnot(identical(new_commit@author@email, "stefan.widgren@gmail.com"))
+stopifnot(identical(new_commit@author@name, "Repo"))
+stopifnot(identical(new_commit@author@email, "repo@example.org"))
 stopifnot(identical(length(commits(repo)), 1L))
-stopifnot(identical(commits(repo)[[1]]@author@name, "Stefan Widgren"))
-stopifnot(identical(commits(repo)[[1]]@author@email, "stefan.widgren@gmail.com"))
+stopifnot(identical(commits(repo)[[1]]@author@name, "Repo"))
+stopifnot(identical(commits(repo)[[1]]@author@email, "repo@example.org"))
 
 ##
 ## Commit without adding changes should produce an error

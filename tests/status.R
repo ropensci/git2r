@@ -123,6 +123,25 @@ str(status_obs_5)
 stopifnot(identical(status_obs_5, status_exp_5))
 
 ##
+## Add .gitignore file with file test-4.txt
+##
+writeLines("test-4.txt", file.path(path, ".gitignore"))
+
+##
+## Status case 6: 1 staged file, 1 unstaged file, 2 untracked files and 1 ignored file
+##
+status_exp_6 <- structure(list(staged = structure(list(modified = "test-1.txt"), .Names = "modified"),
+                               unstaged = structure(list(modified = "test-2.txt"), .Names = "modified"),
+                               untracked = structure(list(untracked = ".gitignore", untracked = "test-3.txt"),
+                                   .Names = c("untracked", "untracked")),
+                               ignored = structure(list(ignored = "test-4.txt"), .Names = "ignored")),
+                          .Names = c("staged", "unstaged", "untracked", "ignored"))
+status_obs_6 <- status(repo, ignore=TRUE)
+str(status_exp_6)
+str(status_obs_6)
+stopifnot(identical(status_obs_6, status_exp_6))
+
+##
 ## Cleanup
 ##
 unlink(path, recursive=TRUE)

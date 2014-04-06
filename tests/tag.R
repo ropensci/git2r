@@ -21,8 +21,8 @@ library(git2r)
 ##
 when <- new("git_time", time = 1395567947, offset = 60)
 tagger <- new("git_signature",
-              name = "Stefan Widgren",
-              email = "stefan.widgren@gmail.com",
+              name = "Repo",
+              email = "repo@example.org",
               when = when)
 
 tools::assertError(validObject(new("git_tag",
