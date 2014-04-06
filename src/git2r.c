@@ -555,6 +555,28 @@ cleanup:
 }
 
 /**
+ * Fetch
+ *
+ * @param repo
+ * @return R_NilValue
+ */
+SEXP fetch(const SEXP repo)
+{
+    int err;
+    git_repository *repository = NULL;
+
+    repository = get_repository(repo);
+    if (!repository)
+        error(err_invalid_repository);
+
+cleanup:
+    if (repository)
+        git_repository_free(repository);
+
+    return R_NilValue;
+}
+
+/**
  * Get repo slot from S4 class git_repository
  *
  * @param repo S4 class git_repository
@@ -1264,6 +1286,7 @@ static const R_CallMethodDef callMethods[] =
     {"clone", (DL_FUNC)&clone, 2},
     {"commit", (DL_FUNC)&commit, 5},
     {"default_signature", (DL_FUNC)&default_signature, 1},
+    {"fetch", (DL_FUNC)&fetch, 1},
     {"init", (DL_FUNC)&init, 2},
     {"is_bare", (DL_FUNC)&is_bare, 1},
     {"is_empty", (DL_FUNC)&is_empty, 1},

@@ -14,24 +14,24 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-##' Pull
+##' Fetch
 ##'
-##' @rdname pull-methods
+##' @rdname fetch-methods
 ##' @docType methods
 ##' @param repo the repository
 ##' @return invisible(NULL)
 ##' @keywords methods
 ##' @include repository.r
-setGeneric("pull",
+setGeneric("fetch",
            signature = "repo",
-           function(repo) standardGeneric("pull"))
+           function(repo) standardGeneric("fetch"))
 
-##' @rdname pull-methods
+##' @rdname fetch-methods
 ##' @export
-setMethod("pull",
+setMethod("fetch",
           signature(repo = "git_repository"),
           function (repo)
           {
-              invisible(NULL)
+              invisible(.Call("fetch", repo))
           }
 )
