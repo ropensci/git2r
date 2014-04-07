@@ -510,21 +510,35 @@ setMethod("summary",
               show(object)
               cat("\n")
 
-              ## Branches
-              n <- sum(!is.na(unique(sapply(branches(object), slot, "hex"))))
-              cat(sprintf("Branches:      %i\n", n))
+              n_branches <- sum(!is.na(unique(sapply(branches(object), slot, "hex"))))
+              n_tags <- sum(!is.na(unique(sapply(tags(object), slot, "hex"))))
 
-              ## Tags
-              n <- sum(!is.na(unique(sapply(tags(object), slot, "hex"))))
-              cat(sprintf("Tags:          %i\n", n))
+              work <- commits(object)
+              n_commits <- length(work)
+              n_authors <- length(unique(sapply(lapply(work, slot, "author"), slot, "name")))
 
-              ## Commits
-              n <- length(commits(object))
-              cat(sprintf("Commits:       %i\n", n))
+              s <- .Call("status", object, TRUE, TRUE, TRUE, TRUE)
+              n_ignored <- length(s$ignored)
+              n_untracked <- length(s$untracked)
+              n_unstaged <- length(s$unstaged)
+              n_staged <- length(s$staged)
 
-              ## Contributors
-              n <- length(unique(sapply(lapply(commits(object), slot, "author"), slot, "name")))
-              cat(sprintf("Contributors:  %i\n", n))
+              ## Determine max characters needed to display numbers
+              n <- max(sapply(c(n_branches, n_tags, n_commits, n_authors,
+                                n_ignored, n_untracked, n_unstaged, n_staged),
+                              nchar))
+
+              fmt <- paste0("Branches:        %", n, "i\n",
+                            "Tags:            %", n, "i\n",
+                            "Commits:         %", n, "i\n",
+                            "Contributors:    %", n, "i\n",
+                            "Ignored files:   %", n, "i\n",
+                            "Untracked files: %", n, "i\n",
+                            "Unstaged files:  %", n, "i\n",
+                            "Staged files:    %", n, "i\n")
+              cat(sprintf(fmt, n_branches, n_tags, n_commits, n_authors,
+                          n_ignored, n_untracked, n_unstaged, n_staged))
+              ## fmt
           }
 )
 
