@@ -538,7 +538,6 @@ setMethod("summary",
                             "Staged files:    %", n, "i\n")
               cat(sprintf(fmt, n_branches, n_tags, n_commits, n_authors,
                           n_ignored, n_untracked, n_unstaged, n_staged))
-              ## fmt
           }
 )
 
