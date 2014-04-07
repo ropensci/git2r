@@ -560,16 +560,36 @@ cleanup:
  * @param repo
  * @return R_NilValue
  */
-SEXP fetch(const SEXP repo)
+SEXP fetch(const SEXP repo, const SEXP name)
 {
     int err;
+    git_remote *remote = NULL;
     git_repository *repository = NULL;
+
+    if (R_NilValue == name
+        || !isString(name)
+        || 1 != length(name))
+        error("Invalid arguments to fetch");
 
     repository = get_repository(repo);
     if (!repository)
         error(err_invalid_repository);
 
+    err = git_remote_load(&remote, repository, CHAR(STRING_ELT(name, 0)));
+    if (err < 0)
+        goto cleanup;
+
+    err = git_remote_fetch(remote);
+    if (err < 0)
+        goto cleanup;
+
 cleanup:
+    if (remote)
+        git_remote_disconnect(remote);
+
+    if (remote)
+        git_remote_free(remote);
+
     if (repository)
         git_repository_free(repository);
 
@@ -1286,7 +1306,7 @@ static const R_CallMethodDef callMethods[] =
     {"clone", (DL_FUNC)&clone, 2},
     {"commit", (DL_FUNC)&commit, 5},
     {"default_signature", (DL_FUNC)&default_signature, 1},
-    {"fetch", (DL_FUNC)&fetch, 1},
+    {"fetch", (DL_FUNC)&fetch, 2},
     {"init", (DL_FUNC)&init, 2},
     {"is_bare", (DL_FUNC)&is_bare, 1},
     {"is_empty", (DL_FUNC)&is_empty, 1},
