@@ -19,19 +19,20 @@
 ##' @rdname fetch-methods
 ##' @docType methods
 ##' @param repo the repository
+##' @param name the remote's name
 ##' @return invisible(NULL)
 ##' @keywords methods
 ##' @include repository.r
 setGeneric("fetch",
            signature = "repo",
-           function(repo) standardGeneric("fetch"))
+           function(repo, name) standardGeneric("fetch"))
 
 ##' @rdname fetch-methods
 ##' @export
 setMethod("fetch",
           signature(repo = "git_repository"),
-          function (repo)
+          function (repo, name)
           {
-              invisible(.Call("fetch", repo))
+              invisible(.Call("fetch", repo, name))
           }
 )

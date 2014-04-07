@@ -36,6 +36,7 @@ Collate:
     'commit.r'
     'checkout.r'
     'contributions.r'
+    'fetch.r'
     'git2r.r'
     'markdown_link.r'
     'plot.r'
