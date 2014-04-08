@@ -5,12 +5,14 @@
 \alias{push,git_repository-method}
 \title{Push}
 \usage{
-push(repo, refspec)
+push(repo, name, refspec)
 
-\S4method{push}{git_repository}(repo, refspec)
+\S4method{push}{git_repository}(repo, name, refspec)
 }
 \arguments{
 \item{repo}{the repository}
+
+\item{name}{the remote's name}
 
 \item{refspec}{the refspec to be pushed}
 }

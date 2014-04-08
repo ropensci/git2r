@@ -19,20 +19,22 @@
 ##' @rdname push-methods
 ##' @docType methods
 ##' @param repo the repository
+##' @param name the remote's name
 ##' @param refspec the refspec to be pushed
 ##' @return invisible(NULL)
 ##' @keywords methods
 ##' @include repository.r
-setGeneric('push',
-           signature = 'repo',
-           function(repo, refspec) standardGeneric('push'))
+setGeneric("push",
+           signature = "repo",
+           function(repo, name, refspec)
+           standardGeneric("push"))
 
 ##' @rdname push-methods
 ##' @export
-setMethod('push',
-          signature(repo = 'git_repository'),
-          function (repo, refspec)
+setMethod("push",
+          signature(repo = "git_repository"),
+          function (repo, name, refspec)
           {
-              invisible(NULL)
+              invisible(.Call("push", repo, name, refspec))
           }
 )

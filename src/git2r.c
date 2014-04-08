@@ -1358,6 +1358,109 @@ static size_t number_of_revisions(git_revwalk *walker)
 }
 
 /**
+ * The invoked callback on each status entry
+ *
+ * @param ref
+ * @param msg
+ * @param data
+ * @return 0
+ */
+static int push_status_foreach_callback(const char *ref,
+                                        const char *msg,
+                                        void *data)
+{
+    const char **msg_dst = (const char **)data;
+    if (msg != NULL && *msg_dst == NULL)
+        *msg_dst = msg;
+    return 0;
+}
+
+/**
+ * Push
+ *
+ * @param repo
+ * @param name
+ * @param refspec
+ * @return R_NilValue
+ */
+SEXP push(const SEXP repo, const SEXP name, const SEXP refspec)
+{
+    int err;
+    const char *msg = NULL;
+    git_push *push = NULL;
+    git_remote *remote = NULL;
+    git_repository *repository = NULL;
+
+    if (R_NilValue == name
+        || R_NilValue == refspec
+        || !isString(name)
+        || !isString(refspec)
+        || 1 != length(name)
+        || 1 != length(refspec))
+        error("Invalid arguments to push");
+
+    repository = get_repository(repo);
+    if (!repository)
+        error(err_invalid_repository);
+
+    err = git_remote_load(&remote, repository, CHAR(STRING_ELT(name, 0)));
+    if (err < 0)
+        goto cleanup;
+
+    err = git_push_new(&push, remote);
+    if (err < 0)
+        goto cleanup;
+
+    err = git_push_add_refspec(push, CHAR(STRING_ELT(refspec, 0)));
+    if (err < 0)
+        goto cleanup;
+
+    err = git_push_finish(push);
+    if (err < 0)
+        goto cleanup;
+
+    err = git_push_unpack_ok(push);
+    if (err < 0)
+        goto cleanup;
+
+    err = git_push_status_foreach(push, push_status_foreach_callback, &msg);
+    if (err < 0)
+        goto cleanup;
+    if (msg != NULL) {
+        err = -1;
+        goto cleanup;
+    }
+
+    err = git_push_update_tips(push);
+    if (err < 0)
+        goto cleanup;
+
+cleanup:
+    if (push)
+        git_push_free(push);
+
+    if (remote)
+        git_remote_disconnect(remote);
+
+    if (remote)
+        git_remote_free(remote);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (err < 0) {
+        if (NULL != msg) {
+            error("Error: %s\n", msg);
+        } else {
+            const git_error *e = giterr_last();
+            error("Error %d/%d: %s\n", err, e->klass, e->message);
+        }
+    }
+
+    return R_NilValue;
+}
+
+/**
  * Get all references that can be found in a repository.
  *
  * @param repo S4 class git_repository
@@ -1799,6 +1902,7 @@ static const R_CallMethodDef callMethods[] =
     {"is_bare", (DL_FUNC)&is_bare, 1},
     {"is_empty", (DL_FUNC)&is_empty, 1},
     {"is_repository", (DL_FUNC)&is_repository, 1},
+    {"push", (DL_FUNC)&push, 3},
     {"references", (DL_FUNC)&references, 1},
     {"remotes", (DL_FUNC)&remotes, 1},
     {"remote_url", (DL_FUNC)&remote_url, 2},
