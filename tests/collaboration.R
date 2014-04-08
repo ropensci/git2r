@@ -18,7 +18,6 @@ library(git2r)
 
 ##
 ## :TODO:FIX: functionality to:
-##  1) push
 ##  2) pull
 ##
 
@@ -54,8 +53,8 @@ stopifnot(identical(is.bare(repo2), FALSE))
 ##
 ## Config repositories
 ##
-config(repo1, user.name="Repo One", user.email="repo.one@git2r.org")
-config(repo2, user.name="Repo Two", user.email="repo.two@git2r.org")
+config(repo1, user.name="Repo One", user.email="repo.one@example.org")
+config(repo2, user.name="Repo Two", user.email="repo.two@example.org")
 
 ##
 ## Add changes to repo1
@@ -68,15 +67,15 @@ new_commit <- commit(repo1, "Commit message")
 ## Check commit
 ##
 stopifnot(identical(new_commit@author@name, "Repo One"))
-stopifnot(identical(new_commit@author@email, "repo.one@git2r.org"))
+stopifnot(identical(new_commit@author@email, "repo.one@example.org"))
 stopifnot(identical(length(commits(repo1)), 1L))
 stopifnot(identical(commits(repo1)[[1]]@author@name, "Repo One"))
-stopifnot(identical(commits(repo1)[[1]]@author@email, "repo.one@git2r.org"))
+stopifnot(identical(commits(repo1)[[1]]@author@email, "repo.one@example.org"))
 
 ##
 ## Collaborate
 ##
-## push(repo1)
+push(repo1, "origin", "refs/heads/master")
 
 ##
 ## Pull changes to repo2
