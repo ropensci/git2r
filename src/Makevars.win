@@ -54,7 +54,7 @@ OBJECTS.win32 = libgit2/win32/dir.o libgit2/win32/error.o libgit2/win32/findfile
 
 OBJECTS.regex = regex/regex.o
 
-OBJECTS.root = git2r_commit.o git2r_error.o git2r.o git2r_signature.o
+OBJECTS.root = git2r_clone.o git2r_commit.o git2r_error.o git2r.o git2r_signature.o
 
 OBJECTS = $(OBJECTS.libgit2) $(OBJECTS.libgit2.hash) $(OBJECTS.libgit2.http_parser) \
           $(OBJECTS.libgit2.transports) $(OBJECTS.libgit2.xdiff) \
