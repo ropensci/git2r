@@ -32,6 +32,8 @@
 #include <git2.h>
 #include <git2/repository.h>
 
+#include "error.h"
+
 static size_t count_staged_changes(git_status_list *status_list);
 static size_t count_unstaged_changes(git_status_list *status_list);
 static git_repository* get_repository(const SEXP repo);
@@ -39,17 +41,6 @@ static void init_commit(const git_commit *commit, SEXP sexp_commit);
 static void init_reference(git_reference *ref, SEXP reference);
 static void init_signature(const git_signature *sig, SEXP signature);
 static int number_of_branches(git_repository *repo, int flags, size_t *n);
-
-/**
- * Error messages
- */
-
-const char err_alloc_memory_buffer[] = "Unable to allocate memory buffer";
-const char err_invalid_repository[] = "Invalid repository";
-const char err_invalid_checkout_args[] = "Invalid arguments to checkout";
-const char err_nothing_added_to_commit[] = "Nothing added to commit";
-const char err_unexpected_type_of_branch[] = "Unexpected type of branch";
-const char err_unexpected_head_of_branch[] = "Unexpected head of branch";
 
 /**
  * Add files to a repository
@@ -71,7 +62,7 @@ SEXP add(const SEXP repo, const SEXP path)
 
     repository= get_repository(repo);
     if (!repository)
-        error(err_invalid_repository);
+        error(git2r_err_invalid_repository);
 
     err = git_repository_index(&index, repository);
     if (err < 0)
@@ -118,7 +109,7 @@ SEXP branches(const SEXP repo, const SEXP flags)
 
     repository = get_repository(repo);
     if (!repository)
-        error(err_invalid_repository);
+        error(git2r_err_invalid_repository);
 
     /* Count number of branches before creating the list */
     err = number_of_branches(repository, INTEGER(flags)[0], &n);
@@ -165,7 +156,7 @@ SEXP branches(const SEXP repo, const SEXP flags)
             buf = malloc(buf_size * sizeof(char));
             if (NULL == buf) {
                 err = -1;
-                err_msg = err_alloc_memory_buffer;
+                err_msg = git2r_err_alloc_memory_buffer;
                 goto cleanup;
             }
 
@@ -189,7 +180,7 @@ SEXP branches(const SEXP repo, const SEXP flags)
         }
         default:
             err = -1;
-            err_msg = err_unexpected_type_of_branch;
+            err_msg = git2r_err_unexpected_type_of_branch;
             goto cleanup;
         }
 
@@ -202,7 +193,7 @@ SEXP branches(const SEXP repo, const SEXP flags)
             break;
         default:
             err = -1;
-            err_msg = err_unexpected_head_of_branch;
+            err_msg = git2r_err_unexpected_head_of_branch;
             goto cleanup;
         }
 
@@ -258,7 +249,7 @@ SEXP checkout(SEXP repo, SEXP treeish)
 
     /* Check arguments to checkout */
     if (R_NilValue == repo || R_NilValue == treeish)
-        error(err_invalid_checkout_args);
+        error(git2r_err_invalid_checkout_args);
 
     /* Determine checkout strategy */
     if(S4SXP == TYPEOF(treeish)) {
@@ -271,18 +262,18 @@ SEXP checkout(SEXP repo, SEXP treeish)
         else if(0 == strcmp(class_name, "git_tree"))
             checkout_action = CHECKOUT_TREE;
         else
-            error(err_invalid_checkout_args);
+            error(git2r_err_invalid_checkout_args);
     } else if (isString(treeish)
                && 1 == length(treeish)
                && 0 == strcmp(CHAR(STRING_ELT(treeish, 0)), "HEAD")) {
         checkout_action = CHECKOUT_HEAD;
     } else {
-        error(err_invalid_checkout_args);
+        error(git2r_err_invalid_checkout_args);
     }
 
     repository = get_repository(repo);
     if (!repository)
-        error(err_invalid_repository);
+        error(git2r_err_invalid_repository);
 
     switch (checkout_action) {
     case CHECKOUT_COMMIT:
@@ -456,7 +447,7 @@ SEXP commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP parent_li
 
     repository = get_repository(repo);
     if (!repository)
-        error(err_invalid_repository);
+        error(git2r_err_invalid_repository);
 
     when = GET_SLOT(author, Rf_install("when"));
     err = git_signature_new(&sig_author,
@@ -504,7 +495,7 @@ SEXP commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP parent_li
 
     if (!changes_in_index) {
         err = -1;
-        err_msg = err_nothing_added_to_commit;
+        err_msg = git2r_err_nothing_added_to_commit;
         goto cleanup;
     }
 
@@ -514,7 +505,7 @@ SEXP commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP parent_li
 
     if (!git_index_entrycount(index)) {
         err = -1;
-        err_msg = err_nothing_added_to_commit;
+        err_msg = git2r_err_nothing_added_to_commit;
         goto cleanup;
     }
 
@@ -531,7 +522,7 @@ SEXP commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP parent_li
         parents = calloc(count, sizeof(git_commit*));
         if (NULL == parents) {
             err = -1;
-            err_msg = err_alloc_memory_buffer;
+            err_msg = git2r_err_alloc_memory_buffer;
             goto cleanup;
         }
 
@@ -633,7 +624,7 @@ SEXP config(SEXP repo, SEXP variables)
 
     repository = get_repository(repo);
     if (!repository)
-        error(err_invalid_repository);
+        error(git2r_err_invalid_repository);
 
     err = git_repository_config(&cfg, repository);
     if (err < 0)
@@ -782,7 +773,7 @@ SEXP default_signature(const SEXP repo)
 
     repository = get_repository(repo);
     if (!repository)
-        error(err_invalid_repository);
+        error(git2r_err_invalid_repository);
 
     err = git_signature_default(&signature, repository);
     if (err < 0)
@@ -827,7 +818,7 @@ SEXP fetch(const SEXP repo, const SEXP name)
 
     repository = get_repository(repo);
     if (!repository)
-        error(err_invalid_repository);
+        error(git2r_err_invalid_repository);
 
     err = git_remote_load(&remote, repository, CHAR(STRING_ELT(name, 0)));
     if (err < 0)
@@ -1086,7 +1077,7 @@ SEXP is_bare(const SEXP repo)
 
     repository= get_repository(repo);
     if (!repository)
-        error(err_invalid_repository);
+        error(git2r_err_invalid_repository);
 
     if (git_repository_is_bare(repository))
         result = ScalarLogical(TRUE);
@@ -1111,7 +1102,7 @@ SEXP is_empty(const SEXP repo)
 
     repository= get_repository(repo);
     if (!repository)
-        error(err_invalid_repository);
+        error(git2r_err_invalid_repository);
 
     if (git_repository_is_empty(repository))
         result = ScalarLogical(TRUE);
@@ -1458,7 +1449,7 @@ SEXP push(const SEXP repo, const SEXP name, const SEXP refspec)
 
     repository = get_repository(repo);
     if (!repository)
-        error(err_invalid_repository);
+        error(git2r_err_invalid_repository);
 
     err = git_remote_load(&remote, repository, CHAR(STRING_ELT(name, 0)));
     if (err < 0)
@@ -1534,7 +1525,7 @@ SEXP references(const SEXP repo)
 
     repository = get_repository(repo);
     if (!repository)
-        error(err_invalid_repository);
+        error(git2r_err_invalid_repository);
 
     err = git_reference_list(&ref_list, repository);
     if (err < 0)
@@ -1591,7 +1582,7 @@ SEXP remotes(const SEXP repo)
 
     repository = get_repository(repo);
     if (!repository)
-        error(err_invalid_repository);
+        error(git2r_err_invalid_repository);
 
     err = git_remote_list(&rem_list, repository);
     if (err < 0)
@@ -1632,7 +1623,7 @@ SEXP remote_url(const SEXP repo, const SEXP remote)
 
     repository = get_repository(repo);
     if (!repository)
-        error(err_invalid_repository);
+        error(git2r_err_invalid_repository);
 
     PROTECT(url = allocVector(STRSXP, len));
 
@@ -1677,7 +1668,7 @@ SEXP revisions(SEXP repo)
 
     repository = get_repository(repo);
     if (!repository)
-        error(err_invalid_repository);
+        error(git2r_err_invalid_repository);
 
     if (git_repository_is_empty(repository)) {
         /* No commits, create empty list */
@@ -1781,7 +1772,7 @@ SEXP status(const SEXP repo,
 
     repository = get_repository(repo);
     if (!repository)
-        error(err_invalid_repository);
+        error(git2r_err_invalid_repository);
 
     opts.show  = GIT_STATUS_SHOW_INDEX_AND_WORKDIR;
     opts.flags = GIT_STATUS_OPT_RENAMES_HEAD_TO_INDEX |
@@ -1864,7 +1855,7 @@ SEXP tags(const SEXP repo)
 
     repository = get_repository(repo);
     if (!repository)
-        error(err_invalid_repository);
+        error(git2r_err_invalid_repository);
 
     err = git_tag_list(&tag_names, repository);
     if (err < 0)
@@ -1936,7 +1927,7 @@ SEXP workdir(const SEXP repo)
 
     repository = get_repository(repo);
     if (!repository)
-        error(err_invalid_repository);
+        error(git2r_err_invalid_repository);
 
     result = ScalarString(mkChar(git_repository_workdir(repository)));
 
