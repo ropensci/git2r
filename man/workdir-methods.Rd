@@ -13,7 +13,8 @@ workdir(object)
 \item{object}{The repository \code{object} to check workdir}
 }
 \value{
-Character vector with workdir
+Character vector with workdir. If the repository is bare,
+\code{NULL} will be returned.
 }
 \description{
 Workdir of repository
