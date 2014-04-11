@@ -546,7 +546,8 @@ setMethod("summary",
 ##' @rdname workdir-methods
 ##' @docType methods
 ##' @param object The repository \code{object} to check workdir
-##' @return Character vector with workdir
+##' @return Character vector with workdir. If the repository is bare,
+##' \code{NULL} will be returned.
 ##' @keywords methods
 setGeneric("workdir",
            signature = "object",

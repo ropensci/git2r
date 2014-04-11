@@ -892,18 +892,19 @@ cleanup:
  * Get workdir of repository.
  *
  * @param repo S4 class git_repository
- * @return
+ * @return R_NilValue if bare repository, else character vector with path.
  */
 SEXP workdir(const SEXP repo)
 {
-    SEXP result;
+    SEXP result = R_NilValue;
     git_repository *repository;
 
     repository = get_repository(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
 
-    result = ScalarString(mkChar(git_repository_workdir(repository)));
+    if (!git_repository_is_bare(repository))
+        result = ScalarString(mkChar(git_repository_workdir(repository)));
 
     git_repository_free(repository);
 
