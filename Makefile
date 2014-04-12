@@ -11,4 +11,28 @@ doc:
 	rm -f man/*.Rd
 	Rscript -e "library(methods); library(utils); library(devtools); document(); check_doc()"
 
-.PHONY: all readme doc
+# Sync git2r with changes in the libgit2 C-library
+# First clone or pull libgit2 to parent directory
+# from https://github.com/libgit/libgit.git
+sync_libgit2:
+	-cp -f ../libgit2/deps/http-parser/* src/http-parser
+	-cp -f ../libgit2/deps/regex/* src/regex
+	-cp -f ../libgit2/include/*.h src/libgit2/include
+	-cp -f ../libgit2/include/git2/*.h src/libgit2/include/git2
+	-cp -f ../libgit2/include/git2/sys/*.h src/libgit2/include/git2/sys
+	-cp -f ../libgit2/src/*.c src/libgit2
+	-cp -f ../libgit2/src/*.h src/libgit2
+	-cp -f ../libgit2/src/hash/*.c src/libgit2/hash
+	-cp -f ../libgit2/src/hash/*.h src/libgit2/hash
+	-cp -f ../libgit2/src/transports/*.c src/libgit2/transports
+	-cp -f ../libgit2/src/transports/*.h src/libgit2/transports
+	-cp -f ../libgit2/src/unix/*.c src/libgit2/unix
+	-cp -f ../libgit2/src/unix/*.h src/libgit2/unix
+	-cp -f ../libgit2/src/win32/*.c src/libgit2/win32
+	-cp -f ../libgit2/src/win32/*.h src/libgit2/win32
+	-cp -f ../libgit2/src/xdiff/*.c src/libgit2/xdiff
+	-cp -f ../libgit2/src/xdiff/*.h src/libgit2/xdiff
+	-cp -f ../libgit2/AUTHORS inst/AUTHORS
+	-cp -f ../libgit2/COPYING inst/COPYING
+
+.PHONY: all readme doc sync_libgit2
