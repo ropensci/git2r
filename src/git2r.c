@@ -150,33 +150,28 @@ SEXP branches(const SEXP repo, const SEXP flags)
         case GIT_BRANCH_LOCAL:
             break;
         case GIT_BRANCH_REMOTE: {
-            char *buf;
-            size_t buf_size;
+            git_buf buf = {0};
             git_remote *remote = NULL;
 
-            buf_size = git_branch_remote_name(NULL, 0, repository, refname);
-            buf = malloc(buf_size * sizeof(char));
-            if (NULL == buf) {
-                err = -1;
-                err_msg = git2r_err_alloc_memory_buffer;
+            err = git_branch_remote_name(&buf, repository, refname);
+            if (err < 0)
                 goto cleanup;
-            }
+            SET_SLOT(branch, Rf_install("remote"), ScalarString(mkChar(buf.ptr)));
 
-            git_branch_remote_name(buf, buf_size, repository, refname);
-            SET_SLOT(branch, Rf_install("remote"), ScalarString(mkChar(buf)));
-
-            err = git_remote_load(&remote, repository, buf);
+            err = git_remote_load(&remote, repository, buf.ptr);
             if (err < 0) {
-                err = git_remote_create_inmemory(&remote, repository, NULL, buf);
-                if (err < 0)
+                err = git_remote_create_anonymous(&remote, repository, buf.ptr, NULL);
+                if (err < 0) {
+                    git_buf_free(&buf);
                     goto cleanup;
+                }
             }
 
             SET_SLOT(branch,
                      Rf_install("url"),
                      ScalarString(mkChar(git_remote_url(remote))));
 
-            free(buf);
+            git_buf_free(&buf);
             git_remote_free(remote);
             break;
         }
@@ -300,7 +295,7 @@ SEXP fetch(const SEXP repo, const SEXP name)
     if (err < 0)
         goto cleanup;
 
-    err = git_remote_fetch(remote);
+    err = git_remote_fetch(remote, NULL, NULL);
     if (err < 0)
         goto cleanup;
 

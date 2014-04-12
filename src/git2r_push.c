@@ -18,6 +18,7 @@
 
 #include "git2r_error.h"
 #include "git2r_push.h"
+#include "git2r_repository.h"
 
 /**
  * The invoked callback on each status entry
@@ -93,7 +94,7 @@ SEXP push(const SEXP repo, const SEXP name, const SEXP refspec)
         goto cleanup;
     }
 
-    err = git_push_update_tips(push);
+    err = git_push_update_tips(push, NULL, NULL);
     if (err < 0)
         goto cleanup;
 
