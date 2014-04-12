@@ -41,6 +41,7 @@ Collate:
     'git2r.r'
     'markdown_link.r'
     'plot.r'
+    'punch_card.r'
     'pull.r'
     'push.r'
     'status.r'
