@@ -61,3 +61,58 @@ tools::assertError(validObject(new("git_tag",
                                    name = "name1",
                                    tagger = tagger,
                                    target = c("target1", "target2"))))
+
+##
+## Create tag in repository...
+##
+
+##
+## Create a directory in tempdir
+##
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+
+##
+## Initialize a repository
+##
+repo <- init(path)
+config(repo, user.name="Repo", user.email="repo@example.org")
+
+##
+## Create a file
+##
+writeLines("Hello world!", file.path(path, "test.txt"))
+
+##
+## add and commit
+##
+add(repo, 'test.txt')
+commit(repo, "Commit message")
+
+##
+## Check tags, no tag added
+##
+stopifnot(identical(tags(repo), list()))
+
+##
+## Create tag
+##
+new_tag <- tag(repo, "Tagname", "Tag message")
+
+##
+## Check tag
+##
+stopifnot(identical(new_tag@name, "Tagname"))
+stopifnot(identical(new_tag@message, "Tag message"))
+stopifnot(identical(new_tag@tagger@name, "Repo"))
+stopifnot(identical(new_tag@tagger@email, "repo@example.org"))
+stopifnot(identical(length(tags(repo)), 1L))
+stopifnot(identical(tags(repo)[[1]]@name, "Tagname"))
+stopifnot(identical(tags(repo)[[1]]@message, "Tag message"))
+stopifnot(identical(tags(repo)[[1]]@tagger@name, "Repo"))
+stopifnot(identical(tags(repo)[[1]]@tagger@email, "repo@example.org"))
+
+##
+## Cleanup
+##
+unlink(path, recursive=TRUE)

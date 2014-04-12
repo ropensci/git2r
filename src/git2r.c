@@ -815,6 +815,7 @@ static const R_CallMethodDef callMethods[] =
     {"remote_url", (DL_FUNC)&remote_url, 2},
     {"revisions", (DL_FUNC)&revisions, 1},
     {"status", (DL_FUNC)&status, 5},
+    {"tag", (DL_FUNC)&tag, 4},
     {"tags", (DL_FUNC)&tags, 1},
     {"workdir", (DL_FUNC)&workdir, 1},
     {NULL, NULL, 0}

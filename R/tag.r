@@ -62,6 +62,46 @@ setClass("git_tag",
          }
 )
 
+##' Tag
+##'
+##' @rdname tag-methods
+##' @docType methods
+##' @param object The repository \code{object}.
+##' @param name Name for the tag.
+##' @param message The tag message.
+##' @param tagger The tagger (author) of the tag
+##' @return invisible(\code{git_tag}) object
+##' @keywords methods
+setGeneric("tag",
+           signature = "object",
+           function(object,
+                    name,
+                    message,
+                    tagger = default_signature(object))
+           standardGeneric("tag"))
+
+##' @rdname tag-methods
+##' @export
+setMethod("tag",
+          signature(object = "git_repository"),
+          function (object,
+                    name,
+                    message,
+                    tagger)
+          {
+              ## Argument checking
+              stopifnot(is.character(name),
+                        identical(length(name), 1L),
+                        nchar(name[1]) > 0,
+                        is.character(message),
+                        identical(length(message), 1L),
+                        nchar(message[1]) > 0,
+                        is(tagger, "git_signature"))
+
+              invisible(.Call("tag", object, name, message, tagger))
+          }
+)
+
 ##' Tags
 ##'
 ##' @rdname tags-methods

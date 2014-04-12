@@ -22,6 +22,7 @@
 #include <R.h>
 #include <Rinternals.h>
 
+SEXP tag(const SEXP repo, const SEXP name, const SEXP message, const SEXP tagger);
 SEXP tags(const SEXP repo);
 
 #endif

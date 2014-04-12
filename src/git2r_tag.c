@@ -19,6 +19,8 @@
 #include <Rdefines.h>
 #include "git2.h"
 #include "git2r_error.h"
+#include "git2r_repository.h"
+#include "git2r_signature.h"
 #include "git2r_tag.h"
 
 /**
@@ -58,6 +60,101 @@ static void init_tag(git_tag *source, SEXP dest)
     SET_SLOT(dest,
              Rf_install("target"),
              ScalarString(mkChar(target)));
+}
+
+/**
+ * Create tag targeting HEAD commit in repository.
+ *
+ * @param repo S4 class git_repository
+ * @param name Name for the tag.
+ * @param message The tag message.
+ * @param tagger The tagger (author) of the tag
+ * @return S4 object of class git_tag
+ */
+SEXP tag(const SEXP repo, const SEXP name, const SEXP message, const SEXP tagger)
+{
+    SEXP when;
+    SEXP sexp_tag;
+    int err;
+    size_t protected = 0;
+    git_oid oid;
+    git_repository *repository = NULL;
+    git_signature *sig_tagger = NULL;
+    git_tag *new_tag = NULL;
+    git_object *target = NULL;
+
+    if (R_NilValue == repo
+        || R_NilValue == name
+        || !isString(name)
+        || 1 != length(name)
+        || R_NilValue == message
+        || !isString(message)
+        || 1 != length(message)
+        || R_NilValue == tagger
+        || S4SXP != TYPEOF(tagger))
+        error("Invalid arguments to tag");
+
+    if (0 != strcmp(CHAR(STRING_ELT(getAttrib(tagger, R_ClassSymbol), 0)),
+                    "git_signature"))
+        error("tagger argument not a git_signature");
+
+    when = GET_SLOT(tagger, Rf_install("when"));
+    err = git_signature_new(&sig_tagger,
+                            CHAR(STRING_ELT(GET_SLOT(tagger, Rf_install("name")), 0)),
+                            CHAR(STRING_ELT(GET_SLOT(tagger, Rf_install("email")), 0)),
+                            REAL(GET_SLOT(when, Rf_install("time")))[0],
+                            REAL(GET_SLOT(when, Rf_install("offset")))[0]);
+    if (err < 0)
+        goto cleanup;
+
+    repository = get_repository(repo);
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    err = git_revparse_single(&target, repository, "HEAD^{commit}");
+    if (err < 0)
+        goto cleanup;
+
+    err = git_tag_create(&oid,
+                         repository,
+                         CHAR(STRING_ELT(name, 0)),
+                         target,
+                         sig_tagger,
+                         CHAR(STRING_ELT(message, 0)),
+                         0);
+    if (err < 0)
+        goto cleanup;
+
+    err = git_tag_lookup(&new_tag, repository, &oid);
+    if (err < 0)
+        goto cleanup;
+
+    PROTECT(sexp_tag = NEW_OBJECT(MAKE_CLASS("git_tag")));
+    protected++;
+    init_tag(new_tag, sexp_tag);
+
+cleanup:
+    if (new_tag)
+        git_tag_free(new_tag);
+
+    if (sig_tagger)
+        git_signature_free(sig_tagger);
+
+    if (target)
+        git_object_free(target);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (protected)
+        unprotect(protected);
+
+    if (err < 0) {
+        const git_error *e = giterr_last();
+        error("Error: %s\n", e->message);
+    }
+
+    return sexp_tag;
 }
 
 /**
