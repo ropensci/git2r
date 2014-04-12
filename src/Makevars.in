@@ -21,18 +21,18 @@ OBJECTS.libgit2 = libgit2/attr.o libgit2/attr_file.o libgit2/blame.o \
                   libgit2/merge_file.o libgit2/message.o libgit2/mwindow.o \
                   libgit2/netops.o libgit2/notes.o libgit2/object_api.o \
                   libgit2/object.o libgit2/odb.o libgit2/odb_loose.o \
-                  libgit2/odb_pack.o libgit2/oid.o libgit2/pack.o \
+                  libgit2/odb_mempack.o libgit2/odb_pack.o libgit2/oid.o libgit2/pack.o \
                   libgit2/pack-objects.o libgit2/path.o libgit2/pathspec.o \
                   libgit2/pool.o libgit2/posix.o libgit2/pqueue.o libgit2/push.o \
                   libgit2/refdb.o libgit2/refdb_fs.o libgit2/reflog.o \
                   libgit2/refs.o libgit2/refspec.o libgit2/remote.o \
                   libgit2/repository.o libgit2/reset.o libgit2/revert.o \
-                  libgit2/revparse.o libgit2/revwalk.o libgit2/sha1_lookup.o \
+                  libgit2/revparse.o libgit2/revwalk.o libgit2/settings.o libgit2/sha1_lookup.o \
                   libgit2/signature.o libgit2/sortedcache.o libgit2/stash.o \
                   libgit2/status.o libgit2/strmap.o libgit2/submodule.o \
-                  libgit2/tag.o libgit2/thread-utils.o libgit2/trace.o \
+                  libgit2/sysdir.o libgit2/tag.o libgit2/thread-utils.o libgit2/trace.o \
                   libgit2/transport.o libgit2/tree.o libgit2/tree-cache.o \
-                  libgit2/tsort.o libgit2/util.o libgit2/vector.o
+                  libgit2/tsort.o libgit2/util.o libgit2/vector.o libgit2/zstream.o
 
 OBJECTS.libgit2.hash = libgit2/hash/hash_generic.o
 
