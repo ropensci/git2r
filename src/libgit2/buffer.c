@@ -7,7 +7,6 @@
 #include "buffer.h"
 #include "posix.h"
 #include "git2/buffer.h"
-#include <stdarg.h>
 #include <ctype.h>
 
 /* Used as default value for git_buf->ptr so that people can always
@@ -66,8 +65,10 @@ int git_buf_try_grow(
 	new_ptr = git__realloc(new_ptr, new_size);
 
 	if (!new_ptr) {
-		if (mark_oom)
+		if (mark_oom) {
+			if (buf->ptr) git__free(buf->ptr);
 			buf->ptr = git_buf__oom;
+		}
 		return -1;
 	}
 
@@ -98,6 +99,14 @@ void git_buf_free(git_buf *buf)
 		git__free(buf->ptr);
 
 	git_buf_init(buf, 0);
+}
+
+void git_buf_sanitize(git_buf *buf)
+{
+	if (buf->ptr == NULL) {
+		assert (buf->size == 0 && buf->asize == 0);
+		buf->ptr = git_buf__initbuf;
+	}
 }
 
 void git_buf_clear(git_buf *buf)
@@ -424,7 +433,7 @@ int git_buf_join(
 	ssize_t offset_a = -1;
 
 	/* not safe to have str_b point internally to the buffer */
-	assert(str_b < buf->ptr || str_b > buf->ptr + buf->size);
+	assert(str_b < buf->ptr || str_b >= buf->ptr + buf->size);
 
 	/* figure out if we need to insert a separator */
 	if (separator && strlen_a) {
@@ -439,19 +448,73 @@ int git_buf_join(
 
 	if (git_buf_grow(buf, strlen_a + strlen_b + need_sep + 1) < 0)
 		return -1;
+	assert(buf->ptr);
 
 	/* fix up internal pointers */
 	if (offset_a >= 0)
 		str_a = buf->ptr + offset_a;
 
 	/* do the actual copying */
-	if (offset_a != 0)
+	if (offset_a != 0 && str_a)
 		memmove(buf->ptr, str_a, strlen_a);
 	if (need_sep)
 		buf->ptr[strlen_a] = separator;
 	memcpy(buf->ptr + strlen_a + need_sep, str_b, strlen_b);
 
 	buf->size = strlen_a + strlen_b + need_sep;
+	buf->ptr[buf->size] = '\0';
+
+	return 0;
+}
+
+int git_buf_join3(
+	git_buf *buf,
+	char separator,
+	const char *str_a,
+	const char *str_b,
+	const char *str_c)
+{
+	size_t len_a = strlen(str_a), len_b = strlen(str_b), len_c = strlen(str_c);
+	int sep_a = 0, sep_b = 0;
+	char *tgt;
+
+	/* for this function, disallow pointers into the existing buffer */
+	assert(str_a < buf->ptr || str_a >= buf->ptr + buf->size);
+	assert(str_b < buf->ptr || str_b >= buf->ptr + buf->size);
+	assert(str_c < buf->ptr || str_c >= buf->ptr + buf->size);
+
+	if (separator) {
+		if (len_a > 0) {
+			while (*str_b == separator) { str_b++; len_b--; }
+			sep_a = (str_a[len_a - 1] != separator);
+		}
+		if (len_a > 0 || len_b > 0)
+			while (*str_c == separator) { str_c++; len_c--; }
+		if (len_b > 0)
+			sep_b = (str_b[len_b - 1] != separator);
+	}
+
+	if (git_buf_grow(buf, len_a + sep_a + len_b + sep_b + len_c + 1) < 0)
+		return -1;
+
+	tgt = buf->ptr;
+
+	if (len_a) {
+		memcpy(tgt, str_a, len_a);
+		tgt += len_a;
+	}
+	if (sep_a)
+		*tgt++ = separator;
+	if (len_b) {
+		memcpy(tgt, str_b, len_b);
+		tgt += len_b;
+	}
+	if (sep_b)
+		*tgt++ = separator;
+	if (len_c)
+		memcpy(tgt, str_c, len_c);
+
+	buf->size = len_a + sep_a + len_b + sep_b + len_c;
 	buf->ptr[buf->size] = '\0';
 
 	return 0;

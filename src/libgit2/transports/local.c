@@ -156,6 +156,24 @@ on_error:
 	return -1;
 }
 
+static int path_from_url_or_path(git_buf *local_path_out, const char *url_or_path)
+{
+	int error;
+
+	/* If url_or_path begins with file:// treat it as a URL */
+	if (!git__prefixcmp(url_or_path, "file://")) {
+		if ((error = git_path_fromurl(local_path_out, url_or_path)) < 0) {
+			return error;
+		}
+	} else { /* We assume url_or_path is already a path */
+		if ((error = git_buf_sets(local_path_out, url_or_path)) < 0) {
+			return error;
+		}
+	}
+
+	return 0;
+}
+
 /*
  * Try to open the url as a git directory. The direction doesn't
  * matter in this case because we're calulating the heads ourselves.
@@ -176,22 +194,20 @@ static int local_connect(
 	GIT_UNUSED(cred_acquire_cb);
 	GIT_UNUSED(cred_acquire_payload);
 
+	if (t->connected)
+		return 0;
+
 	t->url = git__strdup(url);
 	GITERR_CHECK_ALLOC(t->url);
 	t->direction = direction;
 	t->flags = flags;
 
-	/* The repo layer doesn't want the prefix */
-	if (!git__prefixcmp(t->url, "file://")) {
-		if (git_path_fromurl(&buf, t->url) < 0) {
-			git_buf_free(&buf);
-			return -1;
-		}
-		path = git_buf_cstr(&buf);
-
-	} else { /* We assume transport->url is already a path */
-		path = t->url;
+	/* 'url' may be a url or path; convert to a path */
+	if ((error = path_from_url_or_path(&buf, url)) < 0) {
+		git_buf_free(&buf);
+		return error;
 	}
+	path = git_buf_cstr(&buf);
 
 	error = git_repository_open(&repo, path);
 
@@ -315,7 +331,7 @@ static int local_push_update_remote_ref(
 	if (lref) {
 		/* Create or update a ref */
 		if ((error = git_reference_create(NULL, remote_repo, rref, loid,
-				!git_oid_iszero(roid))) < 0)
+				!git_oid_iszero(roid), NULL, NULL)) < 0)
 			return error;
 	} else {
 		/* Delete a ref */
@@ -344,11 +360,24 @@ static int local_push(
 	git_repository *remote_repo = NULL;
 	push_spec *spec;
 	char *url = NULL;
+	const char *path;
+	git_buf buf = GIT_BUF_INIT;
 	int error;
 	unsigned int i;
 	size_t j;
 
-	if ((error = git_repository_open(&remote_repo, push->remote->url)) < 0)
+	/* 'push->remote->url' may be a url or path; convert to a path */
+	if ((error = path_from_url_or_path(&buf, push->remote->url)) < 0) {
+		git_buf_free(&buf);
+		return error;
+	}
+	path = git_buf_cstr(&buf);
+
+	error = git_repository_open(&remote_repo, path);
+
+	git_buf_free(&buf);
+
+	if (error < 0)
 		return error;
 
 	/* We don't currently support pushing locally to non-bare repos. Proper

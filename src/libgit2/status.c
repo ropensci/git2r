@@ -38,7 +38,7 @@ static unsigned int index_delta2status(const git_diff_delta *head2idx)
 	case GIT_DELTA_RENAMED:
 		st = GIT_STATUS_INDEX_RENAMED;
 
-		if (!git_oid_equal(&head2idx->old_file.oid, &head2idx->new_file.oid))
+		if (!git_oid_equal(&head2idx->old_file.id, &head2idx->new_file.id))
 			st |= GIT_STATUS_INDEX_MODIFIED;
 		break;
 	case GIT_DELTA_TYPECHANGE:
@@ -74,25 +74,25 @@ static unsigned int workdir_delta2status(
 	case GIT_DELTA_RENAMED:
 		st = GIT_STATUS_WT_RENAMED;
 
-		if (!git_oid_equal(&idx2wd->old_file.oid, &idx2wd->new_file.oid)) {
+		if (!git_oid_equal(&idx2wd->old_file.id, &idx2wd->new_file.id)) {
 			/* if OIDs don't match, we might need to calculate them now to
 			 * discern between RENAMED vs RENAMED+MODIFED
 			 */
-			if (git_oid_iszero(&idx2wd->old_file.oid) &&
+			if (git_oid_iszero(&idx2wd->old_file.id) &&
 				diff->old_src == GIT_ITERATOR_TYPE_WORKDIR &&
 				!git_diff__oid_for_file(
 					diff->repo, idx2wd->old_file.path, idx2wd->old_file.mode,
-					idx2wd->old_file.size, &idx2wd->old_file.oid))
-			idx2wd->old_file.flags |= GIT_DIFF_FLAG_VALID_OID;
+					idx2wd->old_file.size, &idx2wd->old_file.id))
+			idx2wd->old_file.flags |= GIT_DIFF_FLAG_VALID_ID;
 
-			if (git_oid_iszero(&idx2wd->new_file.oid) &&
+			if (git_oid_iszero(&idx2wd->new_file.id) &&
 				diff->new_src == GIT_ITERATOR_TYPE_WORKDIR &&
 				!git_diff__oid_for_file(
 					diff->repo, idx2wd->new_file.path, idx2wd->new_file.mode,
-					idx2wd->new_file.size, &idx2wd->new_file.oid))
-				idx2wd->new_file.flags |= GIT_DIFF_FLAG_VALID_OID;
+					idx2wd->new_file.size, &idx2wd->new_file.id))
+				idx2wd->new_file.flags |= GIT_DIFF_FLAG_VALID_ID;
 
-			if (!git_oid_equal(&idx2wd->old_file.oid, &idx2wd->new_file.oid))
+			if (!git_oid_equal(&idx2wd->old_file.id, &idx2wd->new_file.id))
 				st |= GIT_STATUS_WT_MODIFIED;
 		}
 		break;
@@ -495,3 +495,14 @@ int git_status_should_ignore(
 	return git_ignore_path_is_ignored(ignored, repo, path);
 }
 
+int git_status_init_options(git_status_options* opts, int version)
+{
+	if (version != GIT_STATUS_OPTIONS_VERSION) {
+		giterr_set(GITERR_INVALID, "Invalid version %d for git_status_options", version);
+		return -1;
+	} else {
+		git_status_options o = GIT_STATUS_OPTIONS_INIT;
+		memcpy(opts, &o, sizeof(o));
+		return 0;
+	}
+}

@@ -12,7 +12,6 @@
 #else
 #include <dirent.h>
 #endif
-#include <stdarg.h>
 #include <stdio.h>
 #include <ctype.h>
 
@@ -783,6 +782,8 @@ int git_path_iconv(git_path_iconv_t *ic, char **in, size_t *inlen)
 		!git_path_has_non_ascii(*in, *inlen))
 		return 0;
 
+	git_buf_clear(&ic->buf);
+
 	while (1) {
 		if (git_buf_grow(&ic->buf, wantlen + 1) < 0)
 			return -1;
@@ -854,6 +855,9 @@ int git_path_direach(
 
 	if ((dir = opendir(path->ptr)) == NULL) {
 		giterr_set(GITERR_OS, "Failed to open directory '%s'", path->ptr);
+		if (errno == ENOENT)
+			return GIT_ENOTFOUND;
+
 		return -1;
 	}
 
@@ -1049,15 +1053,8 @@ int git_path_dirload_with_stat(
 		}
 
 		if (S_ISDIR(ps->st.st_mode)) {
-			if ((error = git_buf_joinpath(&full, full.ptr, ".git")) < 0)
-				break;
-
-			if (p_access(full.ptr, F_OK) == 0) {
-				ps->st.st_mode = GIT_FILEMODE_COMMIT;
-			} else {
-				ps->path[ps->path_len++] = '/';
-				ps->path[ps->path_len] = '\0';
-			}
+			ps->path[ps->path_len++] = '/';
+			ps->path[ps->path_len] = '\0';
 		}
 	}
 

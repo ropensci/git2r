@@ -185,7 +185,8 @@ GIT_EXTERN(int) git_cred_default_new(git_cred **out);
  *                          remote url, or NULL if not included.
  * - allowed_types: A bitmask stating which cred types are OK to return.
  * - payload: The payload provided when specifying this callback.
- * - returns 0 for success or non-zero to indicate an error
+ * - returns 0 for success, < 0 to indicate an error, > 0 to indicate
+ *       no credential was acquired
  */
 typedef int (*git_cred_acquire_cb)(
 	git_cred **cred,
@@ -278,6 +279,19 @@ struct git_transport {
 
 #define GIT_TRANSPORT_VERSION 1
 #define GIT_TRANSPORT_INIT {GIT_TRANSPORT_VERSION}
+
+/**
+ * Initializes a `git_transport` with default values. Equivalent to
+ * creating an instance with GIT_TRANSPORT_INIT.
+ *
+ * @param opts the `git_transport` instance to initialize.
+ * @param version the version of the struct; you should pass
+ *        `GIT_TRANSPORT_VERSION` here.
+ * @return Zero on success; -1 on failure.
+ */
+GIT_EXTERN(int) git_transport_init(
+	git_transport* opts,
+	int version);
 
 /**
  * Function to use to create a transport from a URL. The transport database

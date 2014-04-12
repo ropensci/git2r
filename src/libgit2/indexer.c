@@ -5,8 +5,6 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
-#include <zlib.h>
-
 #include "git2/indexer.h"
 #include "git2/object.h"
 
@@ -18,7 +16,7 @@
 #include "filebuf.h"
 #include "oid.h"
 #include "oidmap.h"
-#include "compress.h"
+#include "zstream.h"
 
 #define UINT31_MAX (0x7FFFFFFF)
 
@@ -355,7 +353,7 @@ static int hash_and_save(git_indexer *idx, git_rawobj *obj, git_off_t entry_star
 	git_oid oid;
 	size_t entry_size;
 	struct entry *entry;
-	struct git_pack_entry *pentry;
+	struct git_pack_entry *pentry = NULL;
 
 	entry = git__calloc(1, sizeof(*entry));
 	GITERR_CHECK_ALLOC(entry);
@@ -379,6 +377,7 @@ static int hash_and_save(git_indexer *idx, git_rawobj *obj, git_off_t entry_star
 	return save_entry(idx, entry, pentry, entry_start);
 
 on_error:
+	git__free(pentry);
 	git__free(entry);
 	git__free(obj->data);
 	return -1;
@@ -634,7 +633,7 @@ static int inject_object(git_indexer *idx, git_oid *id)
 {
 	git_odb_object *obj;
 	struct entry *entry;
-	struct git_pack_entry *pentry;
+	struct git_pack_entry *pentry = NULL;
 	git_oid foo = {{0}};
 	unsigned char hdr[64];
 	git_buf buf = GIT_BUF_INIT;
@@ -642,9 +641,6 @@ static int inject_object(git_indexer *idx, git_oid *id)
 	const void *data;
 	size_t len, hdr_len;
 	int error;
-
-	entry = git__calloc(1, sizeof(*entry));
-	GITERR_CHECK_ALLOC(entry);
 
 	entry_start = seek_back_trailer(idx);
 
@@ -654,15 +650,18 @@ static int inject_object(git_indexer *idx, git_oid *id)
 	data = git_odb_object_data(obj);
 	len = git_odb_object_size(obj);
 
+	entry = git__calloc(1, sizeof(*entry));
+	GITERR_CHECK_ALLOC(entry);
+
 	entry->crc = crc32(0L, Z_NULL, 0);
 
 	/* Write out the object header */
 	hdr_len = git_packfile__object_header(hdr, len, git_odb_object_type(obj));
 	git_filebuf_write(&idx->pack_file, hdr, hdr_len);
 	idx->pack->mwf.size += hdr_len;
-	entry->crc = crc32(entry->crc, hdr, hdr_len);
+	entry->crc = crc32(entry->crc, hdr, (uInt)hdr_len);
 
-	if ((error = git__compress(&buf, data, len)) < 0)
+	if ((error = git_zstream_deflatebuf(&buf, data, len)) < 0)
 		goto cleanup;
 
 	/* And then the compressed object */
@@ -684,10 +683,14 @@ static int inject_object(git_indexer *idx, git_oid *id)
 	git_oid_cpy(&entry->oid, id);
 	idx->off = entry_start + hdr_len + len;
 
-	if ((error = save_entry(idx, entry, pentry, entry_start)) < 0)
-		git__free(pentry);
+	error = save_entry(idx, entry, pentry, entry_start);
 
 cleanup:
+	if (error) {
+		git__free(entry);
+		git__free(pentry);
+	}
+
 	git_odb_object_free(obj);
 	return error;
 }

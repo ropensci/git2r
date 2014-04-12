@@ -45,22 +45,38 @@ GIT_BEGIN_DECL
  *   default is "origin".
  * - `checkout_branch` gives the name of the branch to checkout.  NULL
  *   means use the remote's HEAD.
+ * - `signature` is the identity used when updating the reflog. NULL means to
+ *   use the default signature using the config.
  */
 
 typedef struct git_clone_options {
 	unsigned int version;
 
-	git_checkout_opts checkout_opts;
+	git_checkout_options checkout_opts;
 	git_remote_callbacks remote_callbacks;
 
 	int bare;
 	int ignore_cert_errors;
 	const char *remote_name;
 	const char* checkout_branch;
+	git_signature *signature;
 } git_clone_options;
 
 #define GIT_CLONE_OPTIONS_VERSION 1
-#define GIT_CLONE_OPTIONS_INIT {GIT_CLONE_OPTIONS_VERSION, {GIT_CHECKOUT_OPTS_VERSION, GIT_CHECKOUT_SAFE_CREATE}, GIT_REMOTE_CALLBACKS_INIT}
+#define GIT_CLONE_OPTIONS_INIT {GIT_CLONE_OPTIONS_VERSION, {GIT_CHECKOUT_OPTIONS_VERSION, GIT_CHECKOUT_SAFE_CREATE}, GIT_REMOTE_CALLBACKS_INIT}
+
+/**
+* Initializes a `git_clone_options` with default values. Equivalent to
+* creating an instance with GIT_CLONE_OPTIONS_INIT.
+*
+* @param opts the `git_clone_options` instance to initialize.
+* @param version the version of the struct; you should pass
+* `GIT_CLONE_OPTIONS_VERSION` here.
+* @return Zero on success; -1 on failure.
+*/
+GIT_EXTERN(int) git_clone_init_options(
+	git_clone_options* opts,
+	int version);
 
 /**
  * Clone a remote repository.
@@ -96,6 +112,7 @@ GIT_EXTERN(int) git_clone(
  * @param co_opts options to use during checkout
  * @param branch the branch to checkout after the clone, pass NULL for the
  *        remote's default branch
+ * @param signature The identity used when updating the reflog.
  * @return 0 on success, any non-zero return value from a callback
  *         function, or a negative value to indicate an error (use
  *         `giterr_last` for a detailed error message)
@@ -103,8 +120,9 @@ GIT_EXTERN(int) git_clone(
 GIT_EXTERN(int) git_clone_into(
 	git_repository *repo,
 	git_remote *remote,
-	const git_checkout_opts *co_opts,
-	const char *branch);
+	const git_checkout_options *co_opts,
+	const char *branch,
+	const git_signature *signature);
 
 /** @} */
 GIT_END_DECL

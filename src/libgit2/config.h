@@ -24,11 +24,6 @@ struct git_config {
 	git_vector files;
 };
 
-extern int git_config_find_global_r(git_buf *global_config_path);
-extern int git_config_find_xdg_r(git_buf *system_config_path);
-extern int git_config_find_system_r(git_buf *system_config_path);
-
-
 extern int git_config__global_location(git_buf *buf);
 
 extern int git_config_rename_section(
@@ -57,6 +52,14 @@ extern int git_config__lookup_entry(
 	const git_config *cfg,
 	const char *key,
 	bool no_errors);
+
+/* internal only: update and/or delete entry string with constraints */
+extern int git_config__update_entry(
+	git_config *cfg,
+	const char *key,
+	const char *value,
+	bool overwrite_existing,
+	bool only_if_existing);
 
 /*
  * Lookup functions that cannot fail.  These functions look up a config

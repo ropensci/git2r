@@ -89,8 +89,10 @@ int git_pathspec__vinit(
 		if (ret == GIT_ENOTFOUND) {
 			git__free(match);
 			continue;
-		} else if (ret < 0)
+		} else if (ret < 0) {
+			git__free(match);
 			return ret;
+		}
 
 		if (git_vector_insert(vspec, match) < 0)
 			return -1;
@@ -443,7 +445,7 @@ static int pathspec_match_from_iterator(
 		/* check if path is ignored and untracked */
 		if (index != NULL &&
 			git_iterator_current_is_ignored(iter) &&
-			git_index__find(NULL, index, entry->path, GIT_INDEX_STAGE_ANY) < 0)
+			git_index__find(NULL, index, entry->path, 0, GIT_INDEX_STAGE_ANY) < 0)
 			continue;
 
 		/* mark the matched pattern as used */

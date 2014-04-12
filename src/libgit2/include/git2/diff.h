@@ -203,7 +203,7 @@ typedef struct git_diff git_diff;
 typedef enum {
 	GIT_DIFF_FLAG_BINARY     = (1u << 0), /** file(s) treated as binary data */
 	GIT_DIFF_FLAG_NOT_BINARY = (1u << 1), /** file(s) treated as text data */
-	GIT_DIFF_FLAG_VALID_OID  = (1u << 2), /** `oid` value is known correct */
+	GIT_DIFF_FLAG_VALID_ID  = (1u << 2), /** `id` value is known correct */
 } git_diff_flag_t;
 
 /**
@@ -250,7 +250,7 @@ typedef enum {
  * be restricted to one of the `git_filemode_t` values.
  */
 typedef struct {
-	git_oid     oid;
+	git_oid     id;
 	const char *path;
 	git_off_t   size;
 	uint32_t    flags;
@@ -361,7 +361,7 @@ typedef struct {
 
 	uint16_t    context_lines;    /**< defaults to 3 */
 	uint16_t    interhunk_lines;  /**< defaults to 0 */
-	uint16_t    oid_abbrev;       /**< default 'core.abbrev' or 7 if unset */
+	uint16_t    id_abbrev;       /**< default 'core.abbrev' or 7 if unset */
 	git_off_t   max_size;         /**< defaults to 512MB */
 	const char *old_prefix;       /**< defaults to "a" */
 	const char *new_prefix;       /**< defaults to "b" */
@@ -375,6 +375,19 @@ typedef struct {
  */
 #define GIT_DIFF_OPTIONS_INIT \
 	{GIT_DIFF_OPTIONS_VERSION, 0, GIT_SUBMODULE_IGNORE_DEFAULT, {NULL,0}, NULL, NULL, 3}
+
+/**
+* Initializes a `git_diff_options` with default values. Equivalent to
+* creating an instance with GIT_DIFF_OPTIONS_INIT.
+*
+* @param opts the `git_diff_options` instance to initialize.
+* @param version the version of the struct; you should pass
+* `GIT_DIFF_OPTIONS_VERSION` here.
+* @return Zero on success; -1 on failure.
+*/
+GIT_EXTERN(int) git_diff_init_options(
+	git_diff_options* opts,
+	int version);
 
 /**
  * When iterating over a diff, callback that will be made per file.
@@ -603,6 +616,19 @@ typedef struct {
 
 #define GIT_DIFF_FIND_OPTIONS_VERSION 1
 #define GIT_DIFF_FIND_OPTIONS_INIT {GIT_DIFF_FIND_OPTIONS_VERSION}
+
+/**
+* Initializes a `git_diff_find_options` with default values. Equivalent to
+* creating an instance with GIT_DIFF_FIND_OPTIONS_INIT.
+*
+* @param opts the `git_diff_find_options` instance to initialize.
+* @param version the version of the struct; you should pass
+* `GIT_DIFF_FIND_OPTIONS_VERSION` here.
+* @return Zero on success; -1 on failure.
+*/
+GIT_EXTERN(int) git_diff_find_init_options(
+	git_diff_find_options* opts,
+	int version);
 
 /** @name Diff Generator Functions
  *
@@ -1007,6 +1033,39 @@ GIT_EXTERN(int) git_diff_blob_to_buffer(
 	const char *buffer,
 	size_t buffer_len,
 	const char *buffer_as_path,
+	const git_diff_options *options,
+	git_diff_file_cb file_cb,
+	git_diff_hunk_cb hunk_cb,
+	git_diff_line_cb line_cb,
+	void *payload);
+
+/**
+ * Directly run a diff between two buffers.
+ *
+ * Even more than with `git_diff_blobs`, comparing two buffer lacks
+ * context, so the `git_diff_file` parameters to the callbacks will be
+ * faked a la the rules for `git_diff_blobs()`.
+ *
+ * @param old_buffer Raw data for old side of diff, or NULL for empty
+ * @param old_len Length of the raw data for old side of the diff
+ * @param old_as_path Treat old buffer as if it had this filename; can be NULL
+ * @param new_buffer Raw data for new side of diff, or NULL for empty
+ * @param new_len Length of raw data for new side of diff
+ * @param new_as_path Treat buffer as if it had this filename; can be NULL
+ * @param options Options for diff, or NULL for default options
+ * @param file_cb Callback for "file"; made once if there is a diff; can be NULL
+ * @param hunk_cb Callback for each hunk in diff; can be NULL
+ * @param line_cb Callback for each line in diff; can be NULL
+ * @param payload Payload passed to each callback function
+ * @return 0 on success, non-zero callback return value, or error code
+ */
+GIT_EXTERN(int) git_diff_buffers(
+	const void *old_buffer,
+	size_t old_len,
+	const char *old_as_path,
+	const void *new_buffer,
+	size_t new_len,
+	const char *new_as_path,
 	const git_diff_options *options,
 	git_diff_file_cb file_cb,
 	git_diff_hunk_cb hunk_cb,

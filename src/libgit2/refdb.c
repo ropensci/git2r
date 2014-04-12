@@ -167,14 +167,14 @@ void git_refdb_iterator_free(git_reference_iterator *iter)
 	iter->free(iter);
 }
 
-int git_refdb_write(git_refdb *db, git_reference *ref, int force, const git_signature *who, const char *message)
+int git_refdb_write(git_refdb *db, git_reference *ref, int force, const git_signature *who, const char *message, const git_oid *old_id, const char *old_target)
 {
 	assert(db && db->backend);
 
 	GIT_REFCOUNT_INC(db);
 	ref->db = db;
 
-	return db->backend->write(db->backend, ref, force, who, message);
+	return db->backend->write(db->backend, ref, force, who, message, old_id, old_target);
 }
 
 int git_refdb_rename(
@@ -201,10 +201,10 @@ int git_refdb_rename(
 	return 0;
 }
 
-int git_refdb_delete(struct git_refdb *db, const char *ref_name)
+int git_refdb_delete(struct git_refdb *db, const char *ref_name, const git_oid *old_id, const char *old_target)
 {
 	assert(db && db->backend);
-	return db->backend->del(db->backend, ref_name);
+	return db->backend->del(db->backend, ref_name, old_id, old_target);
 }
 
 int git_refdb_reflog_read(git_reflog **out, git_refdb *db,  const char *name)
@@ -234,4 +234,16 @@ int git_refdb_ensure_log(git_refdb *db, const char *refname)
 	assert(db && refname);
 
 	return db->backend->ensure_log(db->backend, refname);
+}
+
+int git_refdb_init_backend(git_refdb_backend* backend, int version)
+{
+	if (version != GIT_REFDB_BACKEND_VERSION) {
+		giterr_set(GITERR_INVALID, "Invalid version %d for git_refdb_backend", version);
+		return -1;
+	} else {
+		git_refdb_backend b = GIT_REFDB_BACKEND_INIT;
+		memcpy(backend, &b, sizeof(b));
+		return 0;
+	}
 }

@@ -21,6 +21,7 @@
 #include <git2/tag.h>
 #include <git2/object.h>
 #include <git2/refdb.h>
+#include <git2/branch.h>
 #include <git2/sys/refdb_backend.h>
 #include <git2/sys/refs.h>
 #include <git2/sys/reflog.h>
@@ -272,9 +273,17 @@ static int _dirent_loose_load(void *payload, git_buf *full_path)
 	if (git__suffixcmp(full_path->ptr, ".lock") == 0)
 		return 0;
 
-	if (git_path_isdir(full_path->ptr))
-		return git_path_direach(
+	if (git_path_isdir(full_path->ptr)) {
+		int error = git_path_direach(
 			full_path, backend->direach_flags, _dirent_loose_load, backend);
+		/* Race with the filesystem, ignore it */
+		if (error == GIT_ENOTFOUND) {
+			giterr_clear();
+			return 0;
+		}
+
+		return error;
+	}
 
 	file_path = full_path->ptr + strlen(backend->path);
 
@@ -688,30 +697,32 @@ static int reference_path_available(
 	return 0;
 }
 
-static int loose_lock(git_filebuf *file, refdb_fs_backend *backend, const git_reference *ref)
+static int loose_lock(git_filebuf *file, refdb_fs_backend *backend, const char *name)
 {
+        int error;
 	git_buf ref_path = GIT_BUF_INIT;
+
+	assert(file && backend && name);
 
 	/* Remove a possibly existing empty directory hierarchy
 	 * which name would collide with the reference name
 	 */
-	if (git_futils_rmdir_r(ref->name, backend->path, GIT_RMDIR_SKIP_NONEMPTY) < 0)
+	if (git_futils_rmdir_r(name, backend->path, GIT_RMDIR_SKIP_NONEMPTY) < 0)
 		return -1;
 
-	if (git_buf_joinpath(&ref_path, backend->path, ref->name) < 0)
+	if (git_buf_joinpath(&ref_path, backend->path, name) < 0)
 		return -1;
 
-	if (git_filebuf_open(file, ref_path.ptr, GIT_FILEBUF_FORCE, GIT_REFS_FILE_MODE) < 0) {
-		git_buf_free(&ref_path);
-		return -1;
-	}
+	error = git_filebuf_open(file, ref_path.ptr, GIT_FILEBUF_FORCE, GIT_REFS_FILE_MODE);
 
 	git_buf_free(&ref_path);
-	return 0;
+        return error;
 }
 
 static int loose_commit(git_filebuf *file, const git_reference *ref)
 {
+	assert(file && ref);
+
 	if (ref->type == GIT_REF_OID) {
 		char oid[GIT_OID_HEXSZ + 1];
 		git_oid_nfmt(oid, sizeof(oid), &ref->target.oid);
@@ -910,34 +921,159 @@ fail:
 	return -1;
 }
 
-static int reflog_append(refdb_fs_backend *backend, const git_reference *ref, const git_signature *author, const char *message);
+static int reflog_append(refdb_fs_backend *backend, const git_reference *ref, const git_oid *old, const git_oid *new, const git_signature *author, const char *message);
 static int has_reflog(git_repository *repo, const char *name);
 
 /* We only write if it's under heads/, remotes/ or notes/ or if it already has a log */
-static bool should_write_reflog(git_repository *repo, const char *name)
+static int should_write_reflog(int *write, git_repository *repo, const char *name)
 {
-	if (has_reflog(repo, name))
-		return 1;
+	git_config *config;
+	int error, logall, is_bare;
 
-	if (!git__prefixcmp(name, GIT_REFS_HEADS_DIR) ||
-	    !git__strcmp(name, GIT_HEAD_FILE) ||
-	    !git__prefixcmp(name, GIT_REFS_REMOTES_DIR) ||
-	    !git__prefixcmp(name, GIT_REFS_NOTES_DIR))
-		return 1;
+	/* Defaults to the oppsite of being bare */
+	is_bare = git_repository_is_bare(repo);
+	logall = !is_bare;
+
+	if ((error = git_repository_config__weakptr(&config, repo)) < 0)
+		return error;
+
+	error = git_config_get_bool(&logall, config, "core.logallrefupdates");
+	if (error < 0 && error != GIT_ENOTFOUND)
+		return error;
+
+	if (!logall) {
+		*write = 0;
+	} else if (has_reflog(repo, name)) {
+		*write = 1;
+	} else if (!git__prefixcmp(name, GIT_REFS_HEADS_DIR) ||
+		   !git__strcmp(name, GIT_HEAD_FILE) ||
+		   !git__prefixcmp(name, GIT_REFS_REMOTES_DIR) ||
+		   !git__prefixcmp(name, GIT_REFS_NOTES_DIR)) {
+		*write = 1;
+	} else {
+		*write = 0;
+	}
 
 	return 0;
 }
+
+static int cmp_old_ref(int *cmp, git_refdb_backend *backend, const char *name,
+	const git_oid *old_id, const char *old_target)
+{
+	int error = 0;
+	git_reference *old_ref = NULL;
+
+	*cmp = 0;
+	/* It "matches" if there is no old value to compare against */
+	if (!old_id && !old_target)
+		return 0;
+
+	if ((error = refdb_fs_backend__lookup(&old_ref, backend, name)) < 0)
+		goto out;
+
+	/* If the types don't match, there's no way the values do */
+	if (old_id && old_ref->type != GIT_REF_OID) {
+		*cmp = -1;
+		goto out;
+	}
+	if (old_target && old_ref->type != GIT_REF_SYMBOLIC) {
+		*cmp = 1;
+		goto out;
+	}
+
+	if (old_id && old_ref->type == GIT_REF_OID)
+		*cmp = git_oid_cmp(old_id, &old_ref->target.oid);
+
+	if (old_target && old_ref->type == GIT_REF_SYMBOLIC)
+		*cmp = git__strcmp(old_target, old_ref->target.symbolic);
+
+out:
+	git_reference_free(old_ref);
+
+	return error;
+}
+
+/*
+ * The git.git comment regarding this, for your viewing pleasure:
+ *
+ * Special hack: If a branch is updated directly and HEAD
+ * points to it (may happen on the remote side of a push
+ * for example) then logically the HEAD reflog should be
+ * updated too.
+ * A generic solution implies reverse symref information,
+ * but finding all symrefs pointing to the given branch
+ * would be rather costly for this rare event (the direct
+ * update of a branch) to be worth it.  So let's cheat and
+ * check with HEAD only which should cover 99% of all usage
+ * scenarios (even 100% of the default ones).
+ */
+static int maybe_append_head(refdb_fs_backend *backend, const git_reference *ref, const git_signature *who, const char *message)
+{
+	int error;
+	git_oid old_id = {{0}};
+	git_reference *tmp = NULL, *head = NULL, *peeled = NULL;
+	const char *name;
+
+	if (ref->type == GIT_REF_SYMBOLIC)
+		return 0;
+
+	/* if we can't resolve, we use {0}*40 as old id */
+	git_reference_name_to_id(&old_id, backend->repo, ref->name);
+
+	if ((error = git_reference_lookup(&head, backend->repo, GIT_HEAD_FILE)) < 0)
+		return error;
+
+	if (git_reference_type(head) == GIT_REF_OID)
+		goto cleanup;
+
+	if ((error = git_reference_lookup(&tmp, backend->repo, GIT_HEAD_FILE)) < 0)
+		goto cleanup;
+
+	/* Go down the symref chain until we find the branch */
+	while (git_reference_type(tmp) == GIT_REF_SYMBOLIC) {
+		error = git_reference_lookup(&peeled, backend->repo, git_reference_symbolic_target(tmp));
+		if (error < 0)
+			break;
+
+		git_reference_free(tmp);
+		tmp = peeled;
+	}
+
+	if (error == GIT_ENOTFOUND) {
+		error = 0;
+		name = git_reference_symbolic_target(tmp);
+	} else if (error < 0) {
+		goto cleanup;
+	} else {
+		name = git_reference_name(tmp);
+	}
+
+	if (strcmp(name, ref->name))
+		goto cleanup;
+
+	error = reflog_append(backend, head, &old_id, git_reference_target(ref), who, message);
+
+cleanup:
+	git_reference_free(tmp);
+	git_reference_free(head);
+	return error;
+}
+
 
 static int refdb_fs_backend__write(
 	git_refdb_backend *_backend,
 	const git_reference *ref,
 	int force,
 	const git_signature *who,
-	const char *message)
+	const char *message,
+	const git_oid *old_id,
+	const char *old_target)
 {
 	refdb_fs_backend *backend = (refdb_fs_backend *)_backend;
 	git_filebuf file = GIT_FILEBUF_INIT;
-	int error;
+	int error = 0, cmp = 0, should_write;
+	const char *new_target = NULL;
+	const git_oid *new_id = NULL;
 
 	assert(backend);
 
@@ -945,30 +1081,77 @@ static int refdb_fs_backend__write(
 	if (error < 0)
 		return error;
 
-	/* We need to perform the reflog append under the ref's lock */
-	if ((error = loose_lock(&file, backend, ref)) < 0)
+	/* We need to perform the reflog append and old value check under the ref's lock */
+	if ((error = loose_lock(&file, backend, ref->name)) < 0)
 		return error;
 
-	if (should_write_reflog(backend->repo, ref->name) &&
-	    (error = reflog_append(backend, ref, who, message)) < 0) {
-		git_filebuf_cleanup(&file);
-		return error;
+	if ((error = cmp_old_ref(&cmp, _backend, ref->name, old_id, old_target)) < 0)
+		goto on_error;
+
+	if (cmp) {
+		giterr_set(GITERR_REFERENCE, "old reference value does not match");
+		error = GIT_EMODIFIED;
+		goto on_error;
+	}
+
+	if (ref->type == GIT_REF_SYMBOLIC)
+		new_target = ref->target.symbolic;
+	else
+		new_id = &ref->target.oid;
+
+	error = cmp_old_ref(&cmp, _backend, ref->name, new_id, new_target);
+	if (error < 0 && error != GIT_ENOTFOUND)
+		goto on_error;
+
+	/* Don't update if we have the same value */
+	if (!error && !cmp) {
+		error = 0;
+		goto on_error; /* not really error */
+	}
+
+	if ((error = should_write_reflog(&should_write, backend->repo, ref->name)) < 0)
+		goto on_error;
+
+	if (should_write) {
+		if ((error = reflog_append(backend, ref, NULL, NULL, who, message)) < 0)
+			goto on_error;
+		if ((error = maybe_append_head(backend, ref, who, message)) < 0)
+			goto on_error;
 	}
 
 	return loose_commit(&file, ref);
+
+on_error:
+        git_filebuf_cleanup(&file);
+        return error;
 }
 
 static int refdb_fs_backend__delete(
 	git_refdb_backend *_backend,
-	const char *ref_name)
+	const char *ref_name,
+	const git_oid *old_id, const char *old_target)
 {
 	refdb_fs_backend *backend = (refdb_fs_backend *)_backend;
 	git_buf loose_path = GIT_BUF_INIT;
 	size_t pack_pos;
-	int error = 0;
+	git_filebuf file = GIT_FILEBUF_INIT;
+	int error = 0, cmp = 0;
 	bool loose_deleted = 0;
 
 	assert(backend && ref_name);
+
+	if ((error = loose_lock(&file, backend, ref_name)) < 0)
+		return error;
+
+	error = cmp_old_ref(&cmp, _backend, ref_name, old_id, old_target);
+	if (error < 0)
+		goto cleanup;
+
+	if (cmp) {
+		giterr_set(GITERR_REFERENCE, "old reference value does not match");
+		error = GIT_EMODIFIED;
+		goto cleanup;
+	}
 
 	/* If a loose reference exists, remove it from the filesystem */
 	if (git_buf_joinpath(&loose_path, backend->path, ref_name) < 0)
@@ -982,14 +1165,14 @@ static int refdb_fs_backend__delete(
 	git_buf_free(&loose_path);
 
 	if (error != 0)
-		return error;
+		goto cleanup;
 
-	if (packed_reload(backend) < 0)
-		return -1;
+	if ((error = packed_reload(backend)) < 0)
+		goto cleanup;
 
 	/* If a packed reference exists, remove it from the packfile and repack */
-	if (git_sortedcache_wlock(backend->refcache) < 0)
-		return -1;
+	if ((error = git_sortedcache_wlock(backend->refcache)) < 0)
+		goto cleanup;
 
 	if (!(error = git_sortedcache_lookup_index(
 			&pack_pos, backend->refcache, ref_name)))
@@ -997,10 +1180,17 @@ static int refdb_fs_backend__delete(
 
 	git_sortedcache_wunlock(backend->refcache);
 
-	if (error == GIT_ENOTFOUND)
-		return loose_deleted ? 0 : ref_error_notfound(ref_name);
+	if (error == GIT_ENOTFOUND) {
+		error = loose_deleted ? 0 : ref_error_notfound(ref_name);
+		goto cleanup;
+	}
 
-	return packed_write(backend);
+	error = packed_write(backend);
+
+cleanup:
+	git_filebuf_cleanup(&file);
+
+	return error;
 }
 
 static int refdb_reflog_fs__rename(git_refdb_backend *_backend, const char *old_name, const char *new_name);
@@ -1026,7 +1216,7 @@ static int refdb_fs_backend__rename(
 		(error = refdb_fs_backend__lookup(&old, _backend, old_name)) < 0)
 		return error;
 
-	if ((error = refdb_fs_backend__delete(_backend, old_name)) < 0) {
+	if ((error = refdb_fs_backend__delete(_backend, old_name, NULL, NULL)) < 0) {
 		git_reference_free(old);
 		return error;
 	}
@@ -1037,7 +1227,7 @@ static int refdb_fs_backend__rename(
 		return -1;
 	}
 
-	if ((error = loose_lock(&file, backend, new)) < 0) {
+	if ((error = loose_lock(&file, backend, new->name)) < 0) {
 		git_reference_free(new);
 		return error;
 	}
@@ -1045,7 +1235,7 @@ static int refdb_fs_backend__rename(
 	/* Try to rename the refog; it's ok if the old doesn't exist */
 	error = refdb_reflog_fs__rename(_backend, old_name, new_name);
 	if (((error == 0) || (error == GIT_ENOTFOUND)) &&
-	    ((error = reflog_append(backend, new, who, message)) < 0)) {
+	    ((error = reflog_append(backend, new, NULL, NULL, who, message)) < 0)) {
 		git_reference_free(new);
 		git_filebuf_cleanup(&file);
 		return error;
@@ -1242,7 +1432,7 @@ static int create_new_reflog_file(const char *filepath)
 
 GIT_INLINE(int) retrieve_reflog_path(git_buf *path, git_repository *repo, const char *name)
 {
-	return git_buf_join_n(path, '/', 3, repo->path_repository, GIT_REFLOG_DIR, name);
+	return git_buf_join3(path, '/', repo->path_repository, GIT_REFLOG_DIR, name);
 }
 
 static int refdb_reflog_fs__ensure_log(git_refdb_backend *_backend, const char *name)
@@ -1260,7 +1450,10 @@ static int refdb_reflog_fs__ensure_log(git_refdb_backend *_backend, const char *
 	if ((error = retrieve_reflog_path(&path, repo, name)) < 0)
 		return error;
 
-	return create_new_reflog_file(git_buf_cstr(&path));
+	error = create_new_reflog_file(git_buf_cstr(&path));
+	git_buf_free(&path);
+
+	return error;
 }
 
 static int has_reflog(git_repository *repo, const char *name)
@@ -1431,26 +1624,47 @@ success:
 }
 
 /* Append to the reflog, must be called under reference lock */
-static int reflog_append(refdb_fs_backend *backend, const git_reference *ref, const git_signature *who, const char *message)
+static int reflog_append(refdb_fs_backend *backend, const git_reference *ref, const git_oid *old, const git_oid *new, const git_signature *who, const char *message)
 {
-	int error;
-	git_oid old_id, new_id;
+	int error, is_symbolic;
+	git_oid old_id = {{0}}, new_id = {{0}};
 	git_buf buf = GIT_BUF_INIT, path = GIT_BUF_INIT;
 	git_repository *repo = backend->repo;
 
-	/* Creation of symbolic references doesn't get a reflog entry */
-	if (ref->type == GIT_REF_SYMBOLIC)
+	is_symbolic = ref->type == GIT_REF_SYMBOLIC;
+
+	/* "normal" symbolic updates do not write */
+	if (is_symbolic &&
+	    strcmp(ref->name, GIT_HEAD_FILE) &&
+	    !(old && new))
 		return 0;
 
-	error = git_reference_name_to_id(&old_id, repo, ref->name);
-	if (error == GIT_ENOTFOUND) {
-		memset(&old_id, 0, sizeof(git_oid));
-		error = 0;
-	}
-	if (error < 0)
-		return error;
+	/* From here on is_symoblic also means that it's HEAD */
 
-	git_oid_cpy(&new_id, git_reference_target(ref));
+	if (old) {
+		git_oid_cpy(&old_id, old);
+	} else {
+		error = git_reference_name_to_id(&old_id, repo, ref->name);
+		if (error < 0 && error != GIT_ENOTFOUND)
+			return error;
+	}
+
+	if (new) {
+		git_oid_cpy(&new_id, new);
+	} else {
+		if (!is_symbolic) {
+			git_oid_cpy(&new_id, git_reference_target(ref));
+		} else {
+			error = git_reference_name_to_id(&new_id, repo, git_reference_symbolic_target(ref));
+			if (error < 0 && error != GIT_ENOTFOUND)
+				return error;
+			/* detaching HEAD does not create an entry */
+			if (error == GIT_ENOTFOUND)
+				return 0;
+
+			giterr_clear();
+		}
+	}
 
 	if ((error = serialize_reflog_entry(&buf, &old_id, &new_id, who, message)) < 0)
 		goto cleanup;

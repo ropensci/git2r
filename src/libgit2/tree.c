@@ -204,22 +204,22 @@ void git_tree_entry_free(git_tree_entry *entry)
 	git__free(entry);
 }
 
-git_tree_entry *git_tree_entry_dup(const git_tree_entry *entry)
+int git_tree_entry_dup(git_tree_entry **dest, const git_tree_entry *source)
 {
 	size_t total_size;
 	git_tree_entry *copy;
 
-	assert(entry);
+	assert(source);
 
-	total_size = sizeof(git_tree_entry) + entry->filename_len + 1;
+	total_size = sizeof(git_tree_entry) + source->filename_len + 1;
 
 	copy = git__malloc(total_size);
-	if (!copy)
-		return NULL;
+	GITERR_CHECK_ALLOC(copy);
 
-	memcpy(copy, entry, total_size);
+	memcpy(copy, source, total_size);
 
-	return copy;
+	*dest = copy;
+	return 0;
 }
 
 void git_tree__free(void *_tree)
@@ -283,7 +283,8 @@ static const git_tree_entry *entry_fromname(
 {
 	size_t idx;
 
-	assert(tree->entries.sorted); /* be safe when we cast away constness */
+	/* be safe when we cast away constness - i.e. don't trigger a sort */
+	assert(git_vector_is_sorted(&tree->entries));
 
 	if (tree_key_search(&idx, (git_vector *)&tree->entries, name, name_len) < 0)
 		return NULL;
@@ -305,8 +306,8 @@ const git_tree_entry *git_tree_entry_byindex(
 	return git_vector_get(&tree->entries, idx);
 }
 
-const git_tree_entry *git_tree_entry_byoid(
-	const git_tree *tree, const git_oid *oid)
+const git_tree_entry *git_tree_entry_byid(
+	const git_tree *tree, const git_oid *id)
 {
 	size_t i;
 	const git_tree_entry *e;
@@ -314,7 +315,7 @@ const git_tree_entry *git_tree_entry_byoid(
 	assert(tree);
 
 	git_vector_foreach(&tree->entries, i, e) {
-		if (memcmp(&e->oid.id, &oid->id, sizeof(oid->id)) == 0)
+		if (memcmp(&e->oid.id, &id->id, sizeof(id->id)) == 0)
 			return e;
 	}
 
@@ -333,7 +334,8 @@ int git_tree__prefix_position(const git_tree *tree, const char *path)
 	ksearch.filename = path;
 	ksearch.filename_len = strlen(path);
 
-	assert(tree->entries.sorted); /* be safe when we cast away constness */
+	/* be safe when we cast away constness - i.e. don't trigger a sort */
+	assert(git_vector_is_sorted(&tree->entries));
 
 	/* Find tree entry with appropriate prefix */
 	git_vector_bsearch2(
@@ -551,7 +553,7 @@ static int write_tree(
 			if (error < 0)
 				goto on_error;
 		} else {
-			error = append_entry(bld, filename, &entry->oid, entry->mode);
+			error = append_entry(bld, filename, &entry->id, entry->mode);
 			if (error < 0)
 				goto on_error;
 		}
@@ -853,8 +855,7 @@ int git_tree_entry_bypath(
 	case '\0':
 		/* If there are no more components in the path, return
 		 * this entry */
-		*entry_out = git_tree_entry_dup(entry);
-		return 0;
+		return git_tree_entry_dup(entry_out, entry);
 	}
 
 	if (git_tree_lookup(&subtree, root->object.repo, &entry->oid) < 0)

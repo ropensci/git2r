@@ -101,7 +101,7 @@ static int has_cr_in_index(const git_filter_source *src)
 	if (!S_ISREG(entry->mode)) /* don't crlf filter non-blobs */
 		return true;
 
-	if (git_blob_lookup(&blob, repo, &entry->oid) < 0)
+	if (git_blob_lookup(&blob, repo, &entry->id) < 0)
 		return false;
 
 	blobcontent = git_blob_rawcontent(blob);
@@ -218,24 +218,11 @@ static int crlf_apply_to_workdir(
 	if (!workdir_ending)
 		return -1;
 
-	if (!strcmp("\n", workdir_ending)) {
-		if (ca->crlf_action == GIT_CRLF_GUESS && ca->auto_crlf)
-			return GIT_PASSTHROUGH;
+	/* only LF->CRLF conversion is supported, do nothing on LF platforms */
+	if (strcmp(workdir_ending, "\r\n") != 0)
+		return GIT_PASSTHROUGH;
 
-		if (git_buf_find(from, '\r') < 0)
-			return GIT_PASSTHROUGH;
-
-		if (git_buf_text_crlf_to_lf(to, from) < 0)
-			return -1;
-	} else {
-		/* only other supported option is lf->crlf conversion */
-		assert(!strcmp("\r\n", workdir_ending));
-
-		if (git_buf_text_lf_to_crlf(to, from) < 0)
-			return -1;
-	}
-
-	return 0;
+	return git_buf_text_lf_to_crlf(to, from);
 }
 
 static int crlf_check(
@@ -269,13 +256,19 @@ static int crlf_check(
 	if (ca.crlf_action == GIT_CRLF_BINARY)
 		return GIT_PASSTHROUGH;
 
-	if (ca.crlf_action == GIT_CRLF_GUESS) {
+	if (ca.crlf_action == GIT_CRLF_GUESS ||
+		(ca.crlf_action == GIT_CRLF_AUTO &&
+		git_filter_source_mode(src) == GIT_FILTER_SMUDGE)) {
 		error = git_repository__cvar(
 			&ca.auto_crlf, git_filter_source_repo(src), GIT_CVAR_AUTO_CRLF);
 		if (error < 0)
 			return error;
 
 		if (ca.auto_crlf == GIT_AUTO_CRLF_FALSE)
+			return GIT_PASSTHROUGH;
+
+		if (ca.auto_crlf == GIT_AUTO_CRLF_INPUT &&
+			git_filter_source_mode(src) == GIT_FILTER_SMUDGE)
 			return GIT_PASSTHROUGH;
 	}
 

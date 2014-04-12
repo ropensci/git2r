@@ -56,7 +56,7 @@ typedef struct git_index_entry {
 	unsigned int gid;
 	git_off_t file_size;
 
-	git_oid oid;
+	git_oid id;
 
 	unsigned short flags;
 	unsigned short flags_extended;
@@ -120,10 +120,10 @@ typedef struct git_index_entry {
 
 /** Capabilities of system that affect index actions. */
 typedef enum {
-	GIT_INDEXCAP_IGNORE_CASE = 1u,
-	GIT_INDEXCAP_NO_FILEMODE = 2u,
-	GIT_INDEXCAP_NO_SYMLINKS = 4u,
-	GIT_INDEXCAP_FROM_OWNER  = ~0u
+	GIT_INDEXCAP_IGNORE_CASE = 1,
+	GIT_INDEXCAP_NO_FILEMODE = 2,
+	GIT_INDEXCAP_NO_SYMLINKS = 4,
+	GIT_INDEXCAP_FROM_OWNER  = -1,
 } git_indexcap_t;
 
 /** Callback for APIs that add/remove/update files matching pathspec */
@@ -158,8 +158,8 @@ typedef enum {
  * to back it.
  *
  * Since there is no ODB or working directory behind this index,
- * any Index methods which rely on these (e.g. index_add) will
- * fail with the GIT_EBAREINDEX error code.
+ * any Index methods which rely on these (e.g. index_add_bypath)
+ * will fail with the GIT_ERROR error code.
  *
  * If you need to access the index of an actual repository,
  * use the `git_repository_index` wrapper.
@@ -206,7 +206,7 @@ GIT_EXTERN(git_repository *) git_index_owner(const git_index *index);
  * @param index An existing index object
  * @return A combination of GIT_INDEXCAP values
  */
-GIT_EXTERN(unsigned int) git_index_caps(const git_index *index);
+GIT_EXTERN(int) git_index_caps(const git_index *index);
 
 /**
  * Set index capabilities flags.
@@ -219,7 +219,7 @@ GIT_EXTERN(unsigned int) git_index_caps(const git_index *index);
  * @param caps A combination of GIT_INDEXCAP values
  * @return 0 on success, -1 on failure
  */
-GIT_EXTERN(int) git_index_set_caps(git_index *index, unsigned int caps);
+GIT_EXTERN(int) git_index_set_caps(git_index *index, int caps);
 
 /**
  * Update the contents of an existing index object in memory by reading
@@ -255,7 +255,7 @@ GIT_EXTERN(int) git_index_write(git_index *index);
  * @param index an existing index object
  * @return path to index file or NULL for in-memory index
  */
-GIT_EXTERN(const char *) git_index_path(git_index *index);
+GIT_EXTERN(const char *) git_index_path(const git_index *index);
 
 /**
  * Read a tree into the index file with stats

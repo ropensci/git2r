@@ -194,7 +194,10 @@ int git_push_add_refspec(git_push *push, const char *refspec)
 	return 0;
 }
 
-int git_push_update_tips(git_push *push)
+int git_push_update_tips(
+		git_push *push,
+		const git_signature *signature,
+		const char *reflog_message)
 {
 	git_buf remote_ref_name = GIT_BUF_INIT;
 	size_t i, j;
@@ -214,7 +217,7 @@ int git_push_update_tips(git_push *push)
 		if (!fetch_spec)
 			continue;
 
-		if ((error = git_refspec_transform_r(&remote_ref_name, fetch_spec, status->ref)) < 0)
+		if ((error = git_refspec_transform(&remote_ref_name, fetch_spec, status->ref)) < 0)
 			goto on_error;
 
 		/* Find matching  push ref spec */
@@ -241,7 +244,9 @@ int git_push_update_tips(git_push *push)
 				giterr_clear();
 			else
 				goto on_error;
-		} else if ((error = git_reference_create(NULL, push->remote->repo, git_buf_cstr(&remote_ref_name), &push_spec->loid, 1)) < 0)
+		} else if ((error = git_reference_create(NULL, push->remote->repo,
+						git_buf_cstr(&remote_ref_name), &push_spec->loid, 1, signature,
+						reflog_message ? reflog_message : "update by push")) < 0)
 			goto on_error;
 	}
 
@@ -646,7 +651,7 @@ int git_push_finish(git_push *push)
 	return 0;
 }
 
-int git_push_unpack_ok(git_push *push)
+int git_push_unpack_ok(const git_push *push)
 {
 	return push->unpack_ok;
 }
@@ -699,4 +704,16 @@ void git_push_free(git_push *push)
 	git_vector_free(&push->status);
 
 	git__free(push);
+}
+
+int git_push_init_options(git_push_options* opts, int version)
+{
+	if (version != GIT_PUSH_OPTIONS_VERSION) {
+		giterr_set(GITERR_INVALID, "Invalid version %d for git_push_options", version);
+		return -1;
+	} else {
+		git_push_options o = GIT_PUSH_OPTIONS_INIT;
+		memcpy(opts, &o, sizeof(o));
+		return 0;
+	}
 }

@@ -56,8 +56,17 @@ extern int git_index_entry__cmp(const void *a, const void *b);
 extern int git_index_entry__cmp_icase(const void *a, const void *b);
 
 extern int git_index__find(
-	size_t *at_pos, git_index *index, const char *path, int stage);
+	size_t *at_pos, git_index *index, const char *path, size_t path_len, int stage);
 
 extern void git_index__set_ignore_case(git_index *index, bool ignore_case);
+
+extern unsigned int git_index__create_mode(unsigned int mode);
+
+GIT_INLINE(const git_futils_filestamp *) git_index__filestamp(git_index *index)
+{
+   return &index->stamp;
+}
+
+extern int git_index__changed_relative_to(git_index *index, const git_futils_filestamp *fs);
 
 #endif

@@ -1,6 +1,6 @@
 #include "common.h"
 #include "repository.h"
-#include "fileops.h"
+#include "sysdir.h"
 #include "config.h"
 #include "attr.h"
 #include "ignore.h"
@@ -48,6 +48,8 @@ int git_attr_get(
 	git_attr_file *file;
 	git_attr_name attr;
 	git_attr_rule *rule;
+
+	assert(value && repo && name);
 
 	*value = NULL;
 
@@ -102,6 +104,11 @@ int git_attr_get_many(
 	git_attr_rule *rule;
 	attr_get_many_info *info = NULL;
 	size_t num_found = 0;
+
+	if (!num_attr)
+		return 0;
+
+	assert(values && repo && names);
 
 	if (git_attr_path__init(&path, pathname, git_repository_workdir(repo)) < 0)
 		return -1;
@@ -168,6 +175,8 @@ int git_attr_foreach(
 	git_attr_rule *rule;
 	git_attr_assignment *assign;
 	git_strmap *seen = NULL;
+
+	assert(repo && callback);
 
 	if (git_attr_path__init(&path, pathname, git_repository_workdir(repo)) < 0)
 		return -1;
@@ -314,10 +323,10 @@ static int load_attr_blob_from_index(
 
 	entry = git_index_get_byindex(index, pos);
 
-	if (old_oid && git_oid__cmp(old_oid, &entry->oid) == 0)
+	if (old_oid && git_oid__cmp(old_oid, &entry->id) == 0)
 		return GIT_ENOTFOUND;
 
-	if ((error = git_blob_lookup(blob, repo, &entry->oid)) < 0)
+	if ((error = git_blob_lookup(blob, repo, &entry->id)) < 0)
 		return error;
 
 	*content = git_blob_rawcontent(*blob);
@@ -580,7 +589,7 @@ static int collect_attr_files(
 	}
 
 	if ((flags & GIT_ATTR_CHECK_NO_SYSTEM) == 0) {
-		error = git_futils_find_system_file(&dir, GIT_ATTR_FILE_SYSTEM);
+		error = git_sysdir_find_system_file(&dir, GIT_ATTR_FILE_SYSTEM);
 		if (!error)
 			error = push_attr_file(repo, files, NULL, dir.ptr);
 		else if (error == GIT_ENOTFOUND) {
@@ -614,13 +623,13 @@ static int attr_cache__lookup_path(
 
 		/* expand leading ~/ as needed */
 		if (cfgval && cfgval[0] == '~' && cfgval[1] == '/' &&
-			!git_futils_find_global_file(&buf, &cfgval[2]))
+			!git_sysdir_find_global_file(&buf, &cfgval[2]))
 			*out = git_buf_detach(&buf);
 		else if (cfgval)
 			*out = git__strdup(cfgval);
 
 	}
-	else if (!git_futils_find_xdg_file(&buf, fallback))
+	else if (!git_sysdir_find_xdg_file(&buf, fallback))
 		*out = git_buf_detach(&buf);
 
 	git_buf_free(&buf);

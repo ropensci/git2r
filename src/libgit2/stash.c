@@ -417,7 +417,7 @@ static int update_reflog(
 	if ((error = git_reference_ensure_log(repo, GIT_REFS_STASH_FILE)) < 0)
 		return error;
 
-	error = git_reference_create_with_log(&stash, repo, GIT_REFS_STASH_FILE, w_commit_oid, 1, stasher, message);
+	error = git_reference_create(&stash, repo, GIT_REFS_STASH_FILE, w_commit_oid, 1, stasher, message);
 
 	git_reference_free(stash);
 
@@ -465,14 +465,18 @@ static int ensure_there_are_changes_to_stash(
 static int reset_index_and_workdir(
 	git_repository *repo,
 	git_commit *commit,
-	bool remove_untracked)
+	bool remove_untracked,
+	bool remove_ignored)
 {
-	git_checkout_opts opts = GIT_CHECKOUT_OPTS_INIT;
+	git_checkout_options opts = GIT_CHECKOUT_OPTIONS_INIT;
 
 	opts.checkout_strategy = GIT_CHECKOUT_FORCE;
 
 	if (remove_untracked)
 		opts.checkout_strategy |= GIT_CHECKOUT_REMOVE_UNTRACKED;
+
+	if (remove_ignored)
+		opts.checkout_strategy |= GIT_CHECKOUT_REMOVE_IGNORED;
 
 	return git_checkout_tree(repo, (git_object *)commit, &opts);
 }
@@ -532,7 +536,8 @@ int git_stash_save(
 	if ((error = reset_index_and_workdir(
 		repo,
 		((flags & GIT_STASH_KEEP_INDEX) != 0) ? i_commit : b_commit,
-		(flags & GIT_STASH_INCLUDE_UNTRACKED) != 0)) < 0)
+		(flags & GIT_STASH_INCLUDE_UNTRACKED) != 0,
+		(flags & GIT_STASH_INCLUDE_IGNORED) != 0)) < 0)
 		goto cleanup;
 
 cleanup:
@@ -628,7 +633,7 @@ int git_stash_drop(
 		entry = git_reflog_entry_byindex(reflog, 0);
 
 		git_reference_free(stash);
-		if ((error = git_reference_create(&stash, repo, GIT_REFS_STASH_FILE, &entry->oid_cur, 1) < 0))
+		if ((error = git_reference_create(&stash, repo, GIT_REFS_STASH_FILE, &entry->oid_cur, 1, NULL, NULL) < 0))
 			goto cleanup;
 
 		/* We need to undo the writing that we just did */

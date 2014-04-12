@@ -27,7 +27,7 @@ GIT_BEGIN_DECL
  * The returned reference must be freed by the user.
  *
  * The name will be checked for validity.
- * See `git_reference_create_symbolic()` for rules about valid names.
+ * See `git_reference_symbolic_create()` for rules about valid names.
  *
  * @param out pointer to the looked-up reference
  * @param repo the repository to look up the reference
@@ -68,6 +68,48 @@ GIT_EXTERN(int) git_reference_name_to_id(
 GIT_EXTERN(int) git_reference_dwim(git_reference **out, git_repository *repo, const char *shorthand);
 
 /**
+ * Conditionally create a new symbolic reference.
+ *
+ * A symbolic reference is a reference name that refers to another
+ * reference name.  If the other name moves, the symbolic name will move,
+ * too.  As a simple example, the "HEAD" reference might refer to
+ * "refs/heads/master" while on the "master" branch of a repository.
+ *
+ * The symbolic reference will be created in the repository and written to
+ * the disk.  The generated reference object must be freed by the user.
+ *
+ * Valid reference names must follow one of two patterns:
+ *
+ * 1. Top-level names must contain only capital letters and underscores,
+ *    and must begin and end with a letter. (e.g. "HEAD", "ORIG_HEAD").
+ * 2. Names prefixed with "refs/" can be almost anything.  You must avoid
+ *    the characters '~', '^', ':', '\\', '?', '[', and '*', and the
+ *    sequences ".." and "@{" which have special meaning to revparse.
+ *
+ * This function will return an error if a reference already exists with the
+ * given name unless `force` is true, in which case it will be overwritten.
+ *
+ * The signature and message for the reflog will be ignored if the
+ * reference does not belong in the standard set (HEAD, branches and
+ * remote-tracking branches) and it does not have a reflog.
+ *
+ * It will return GIT_EMODIFIED if the reference's value at the time
+ * of updating does not match the one passed through `current_value`
+ * (i.e. if the ref has changed since the user read it).
+ *
+ * @param out Pointer to the newly created reference
+ * @param repo Repository where that reference will live
+ * @param name The name of the reference
+ * @param target The target of the reference
+ * @param force Overwrite existing references
+ * @param current_value The expected value of the reference when updating
+ * @param signature The identity that will used to populate the reflog entry
+ * @param log_message The one line long message to be appended to the reflog
+ * @return 0 on success, GIT_EEXISTS, GIT_EINVALIDSPEC, GIT_EMODIFIED or an error code
+ */
+GIT_EXTERN(int) git_reference_symbolic_create_matching(git_reference **out, git_repository *repo, const char *name, const char *target, int force, const char *current_value, const git_signature *signature, const char *log_message);
+
+/**
  * Create a new symbolic reference.
  *
  * A symbolic reference is a reference name that refers to another
@@ -89,37 +131,9 @@ GIT_EXTERN(int) git_reference_dwim(git_reference **out, git_repository *repo, co
  * This function will return an error if a reference already exists with the
  * given name unless `force` is true, in which case it will be overwritten.
  *
- * @param out Pointer to the newly created reference
- * @param repo Repository where that reference will live
- * @param name The name of the reference
- * @param target The target of the reference
- * @param force Overwrite existing references
- * @return 0 on success, GIT_EEXISTS, GIT_EINVALIDSPEC or an error code
- */
-GIT_EXTERN(int) git_reference_symbolic_create(git_reference **out, git_repository *repo, const char *name, const char *target, int force);
-
-/**
- * Create a new symbolic reference and update the reflog with a given
- * message.
- *
- * A symbolic reference is a reference name that refers to another
- * reference name.  If the other name moves, the symbolic name will move,
- * too.  As a simple example, the "HEAD" reference might refer to
- * "refs/heads/master" while on the "master" branch of a repository.
- *
- * The symbolic reference will be created in the repository and written to
- * the disk.  The generated reference object must be freed by the user.
- *
- * Valid reference names must follow one of two patterns:
- *
- * 1. Top-level names must contain only capital letters and underscores,
- *    and must begin and end with a letter. (e.g. "HEAD", "ORIG_HEAD").
- * 2. Names prefixed with "refs/" can be almost anything.  You must avoid
- *    the characters '~', '^', ':', '\\', '?', '[', and '*', and the
- *    sequences ".." and "@{" which have special meaning to revparse.
- *
- * This function will return an error if a reference already exists with the
- * given name unless `force` is true, in which case it will be overwritten.
+ * The signature and message for the reflog will be ignored if the
+ * reference does not belong in the standard set (HEAD, branches and
+ * remote-tracking branches) and it does not have a reflog.
  *
  * @param out Pointer to the newly created reference
  * @param repo Repository where that reference will live
@@ -127,18 +141,10 @@ GIT_EXTERN(int) git_reference_symbolic_create(git_reference **out, git_repositor
  * @param target The target of the reference
  * @param force Overwrite existing references
  * @param signature The identity that will used to populate the reflog entry
- * @param log_message The one line long message that has to be appended
- * to the reflog
- * @return 0 on success, EEXISTS, EINVALIDSPEC or an error code
+ * @param log_message The one line long message to be appended to the reflog
+ * @return 0 on success, GIT_EEXISTS, GIT_EINVALIDSPEC or an error code
  */
-GIT_EXTERN(int) git_reference_symbolic_create_with_log(
-	git_reference **out,
-	git_repository *repo,
-	const char *name,
-	const char *target,
-	int force,
-	const git_signature *signature,
-	const char *log_message);
+GIT_EXTERN(int) git_reference_symbolic_create(git_reference **out, git_repository *repo, const char *name, const char *target, int force, const git_signature *signature, const char *log_message);
 
 /**
  * Create a new direct reference.
@@ -163,18 +169,24 @@ GIT_EXTERN(int) git_reference_symbolic_create_with_log(
  * This function will return an error if a reference already exists with the
  * given name unless `force` is true, in which case it will be overwritten.
  *
+ * The signature and message for the reflog will be ignored if the
+ * reference does not belong in the standard set (HEAD, branches and
+ * remote-tracking branches) and and it does not have a reflog.
+ *
  * @param out Pointer to the newly created reference
  * @param repo Repository where that reference will live
  * @param name The name of the reference
  * @param id The object id pointed to by the reference.
  * @param force Overwrite existing references
+ * @param force Overwrite existing references
+ * @param signature The identity that will used to populate the reflog entry
+ * @param log_message The one line long message to be appended to the reflog
  * @return 0 on success, GIT_EEXISTS, GIT_EINVALIDSPEC or an error code
  */
-GIT_EXTERN(int) git_reference_create(git_reference **out, git_repository *repo, const char *name, const git_oid *id, int force);
+GIT_EXTERN(int) git_reference_create(git_reference **out, git_repository *repo, const char *name, const git_oid *id, int force, const git_signature *signature, const char *log_message);
 
 /**
- * Create a new direct reference and update the reflog with a given
- * message.
+ * Conditionally create new direct reference
  *
  * A direct reference (also called an object id reference) refers directly
  * to a specific object id (a.k.a. OID or SHA) in the repository.  The id
@@ -196,24 +208,27 @@ GIT_EXTERN(int) git_reference_create(git_reference **out, git_repository *repo, 
  * This function will return an error if a reference already exists with the
  * given name unless `force` is true, in which case it will be overwritten.
  *
+ * The signature and message for the reflog will be ignored if the
+ * reference does not belong in the standard set (HEAD, branches and
+ * remote-tracking branches) and and it does not have a reflog.
+ *
+ * It will return GIT_EMODIFIED if the reference's value at the time
+ * of updating does not match the one passed through `current_id`
+ * (i.e. if the ref has changed since the user read it).
+ *
  * @param out Pointer to the newly created reference
  * @param repo Repository where that reference will live
  * @param name The name of the reference
  * @param id The object id pointed to by the reference.
  * @param force Overwrite existing references
+ * @param force Overwrite existing references
+ * @param current_id The expected value of the reference at the time of update
  * @param signature The identity that will used to populate the reflog entry
- * @param log_message The one line long message that has to be appended
- * to the reflog
- * @return 0 on success, EEXISTS, EINVALIDSPEC or an error code
+ * @param log_message The one line long message to be appended to the reflog
+ * @return 0 on success, GIT_EMODIFIED if the value of the reference
+ * has changed, GIT_EEXISTS, GIT_EINVALIDSPEC or an error code
  */
-GIT_EXTERN(int) git_reference_create_with_log(
-	git_reference **out,
-	git_repository *repo,
-	const char *name,
-	const git_oid *id,
-	int force,
-	const git_signature *signature,
-	const char *log_message);
+GIT_EXTERN(int) git_reference_create_matching(git_reference **out, git_repository *repo, const char *name, const git_oid *id, int force, const git_oid *current_id, const git_signature *signature, const char *log_message);
 
 /**
  * Get the OID pointed to by a direct reference.
@@ -264,7 +279,7 @@ GIT_EXTERN(git_ref_t) git_reference_type(const git_reference *ref);
 /**
  * Get the full name of a reference.
  *
- * See `git_reference_create_symbolic()` for rules about valid names.
+ * See `git_reference_symbolic_create()` for rules about valid names.
  *
  * @param ref The reference
  * @return the full name for the ref
@@ -305,37 +320,20 @@ GIT_EXTERN(git_repository *) git_reference_owner(const git_reference *ref);
  * The new reference will be written to disk, overwriting the given reference.
  *
  * The target name will be checked for validity.
- * See `git_reference_create_symbolic()` for rules about valid names.
+ * See `git_reference_symbolic_create()` for rules about valid names.
  *
- * @param out Pointer to the newly created reference
- * @param ref The reference
- * @param target The new target for the reference
- * @return 0 on success, GIT_EINVALIDSPEC or an error code
- */
-GIT_EXTERN(int) git_reference_symbolic_set_target(
-	git_reference **out,
-	git_reference *ref,
-	const char *target);
-
-/**
- * Create a new reference with the same name as the given reference but a
- * different symbolic target  and update the reflog with a given message.
- *
- * The reference must be a symbolic reference, otherwise this will fail.
- *
- * The new reference will be written to disk, overwriting the given reference.
- *
- * The target name will be checked for validity.
- * See `git_reference_create_symbolic()` for rules about valid names.
+ * The signature and message for the reflog will be ignored if the
+ * reference does not belong in the standard set (HEAD, branches and
+ * remote-tracking branches) and and it does not have a reflog.
  *
  * @param out Pointer to the newly created reference
  * @param ref The reference
  * @param target The new target for the reference
  * @param signature The identity that will used to populate the reflog entry
- * @param log_message The one line long message that has to be appended
- * @return 0 on success, EINVALIDSPEC or an error code
+ * @param log_message The one line long message to be appended to the reflog
+ * @return 0 on success, GIT_EINVALIDSPEC or an error code
  */
-GIT_EXTERN(int) git_reference_symbolic_set_target_with_log(
+GIT_EXTERN(int) git_reference_symbolic_set_target(
 	git_reference **out,
 	git_reference *ref,
 	const char *target,
@@ -343,7 +341,7 @@ GIT_EXTERN(int) git_reference_symbolic_set_target_with_log(
 	const char *log_message);
 
 /**
- * Create a new reference with the same name as the given reference but a
+ * Conditionally create a new reference with the same name as the given reference but a
  * different OID target. The reference must be a direct reference, otherwise
  * this will fail.
  *
@@ -352,30 +350,12 @@ GIT_EXTERN(int) git_reference_symbolic_set_target_with_log(
  * @param out Pointer to the newly created reference
  * @param ref The reference
  * @param id The new target OID for the reference
- * @return 0 or an error code
+ * @param signature The identity that will used to populate the reflog entry
+ * @param log_message The one line long message to be appended to the reflog
+ * @return 0 on success, GIT_EMODIFIED if the value of the reference
+ * has changed since it was read, or an error code
  */
 GIT_EXTERN(int) git_reference_set_target(
-	git_reference **out,
-	git_reference *ref,
-	const git_oid *id);
-
-/**
- * Create a new reference with the same name as the given reference but a
- * different OID target and update the reflog with a given message.
- *
- * The reference must be a direct reference, otherwise this will fail.
- *
- * The new reference will be written to disk, overwriting the given reference.
- *
- * @param out Pointer to the newly created reference
- * @param ref The reference
- * @param id The new target OID for the reference
- * @param signature The identity that will used to populate the reflog entry
- * @param log_message The one line long message that has to be appended
- * to the reflog
- * @return 0 or an error code
- */
-GIT_EXTERN(int) git_reference_set_target_with_log(
 	git_reference **out,
 	git_reference *ref,
 	const git_oid *id,
@@ -388,7 +368,7 @@ GIT_EXTERN(int) git_reference_set_target_with_log(
  * This method works for both direct and symbolic references.
  *
  * The new name will be checked for validity.
- * See `git_reference_create_symbolic()` for rules about valid names.
+ * See `git_reference_symbolic_create()` for rules about valid names.
  *
  * If the `force` flag is not enabled, and there's already
  * a reference with the given name, the renaming will fail.
@@ -401,6 +381,8 @@ GIT_EXTERN(int) git_reference_set_target_with_log(
  * @param ref The reference to rename
  * @param new_name The new name for the reference
  * @param force Overwrite an existing reference
+ * @param signature The identity that will used to populate the reflog entry
+ * @param log_message The one line long message to be appended to the reflog
  * @return 0 on success, GIT_EINVALIDSPEC, GIT_EEXISTS or an error code
  *
  */
@@ -408,7 +390,9 @@ GIT_EXTERN(int) git_reference_rename(
 	git_reference **new_ref,
 	git_reference *ref,
 	const char *new_name,
-	int force);
+	int force,
+	const git_signature *signature,
+	const char *log_message);
 
 /**
  * Delete an existing reference.
@@ -417,10 +401,24 @@ GIT_EXTERN(int) git_reference_rename(
  * will be immediately removed on disk but the memory will not be freed.
  * Callers must call `git_reference_free`.
  *
+ * This function will return an error if the reference has changed
+ * from the time it was looked up.
+ *
+ * @param ref The reference to remove
+ * @return 0, GIT_EMODIFIED or an error code
+ */
+GIT_EXTERN(int) git_reference_delete(git_reference *ref);
+
+/**
+ * Delete an existing reference by name
+ *
+ * This method removes the named reference from the repository without
+ * looking at its old value.
+ *
  * @param ref The reference to remove
  * @return 0 or an error code
  */
-GIT_EXTERN(int) git_reference_delete(git_reference *ref);
+GIT_EXTERN(int) git_reference_remove(git_repository *repo, const char *name);
 
 /**
  * Fill a list with all the references that can be found in a repository.
@@ -489,7 +487,9 @@ GIT_EXTERN(void) git_reference_free(git_reference *ref);
  * @param ref2 The second git_reference
  * @return 0 if the same, else a stable but meaningless ordering.
  */
-GIT_EXTERN(int) git_reference_cmp(git_reference *ref1, git_reference *ref2);
+GIT_EXTERN(int) git_reference_cmp(
+	const git_reference *ref1,
+	const git_reference *ref2);
 
 /**
  * Create an iterator for the repo's references
@@ -588,7 +588,7 @@ GIT_EXTERN(int) git_reference_ensure_log(git_repository *repo, const char *refna
  * @return 1 when the reference lives in the refs/heads
  * namespace; 0 otherwise.
  */
-GIT_EXTERN(int) git_reference_is_branch(git_reference *ref);
+GIT_EXTERN(int) git_reference_is_branch(const git_reference *ref);
 
 /**
  * Check if a reference is a remote tracking branch
@@ -598,7 +598,7 @@ GIT_EXTERN(int) git_reference_is_branch(git_reference *ref);
  * @return 1 when the reference lives in the refs/remotes
  * namespace; 0 otherwise.
  */
-GIT_EXTERN(int) git_reference_is_remote(git_reference *ref);
+GIT_EXTERN(int) git_reference_is_remote(const git_reference *ref);
 
 /**
  * Check if a reference is a tag
@@ -608,7 +608,17 @@ GIT_EXTERN(int) git_reference_is_remote(git_reference *ref);
  * @return 1 when the reference lives in the refs/tags
  * namespace; 0 otherwise.
  */
-GIT_EXTERN(int) git_reference_is_tag(git_reference *ref);
+GIT_EXTERN(int) git_reference_is_tag(const git_reference *ref);
+
+/**
+ * Check if a reference is a note
+ *
+ * @param ref A git reference
+ *
+ * @return 1 when the reference lives in the refs/notes
+ * namespace; 0 otherwise.
+ */
+GIT_EXTERN(int) git_reference_is_note(const git_reference *ref);
 
 typedef enum {
 	GIT_REF_FORMAT_NORMAL = 0u,
@@ -648,7 +658,7 @@ typedef enum {
  * Once normalized, if the reference name is valid, it will be returned in
  * the user allocated buffer.
  *
- * See `git_reference_create_symbolic()` for rules about valid names.
+ * See `git_reference_symbolic_create()` for rules about valid names.
  *
  * @param buffer_out User allocated buffer to store normalized name
  * @param buffer_size Size of buffer_out
@@ -712,7 +722,7 @@ GIT_EXTERN(int) git_reference_is_valid_name(const char *refname);
  * @param ref a reference
  * @return the human-readable version of the name
  */
-GIT_EXTERN(const char *) git_reference_shorthand(git_reference *ref);
+GIT_EXTERN(const char *) git_reference_shorthand(const git_reference *ref);
 
 
 /** @} */

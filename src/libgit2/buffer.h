@@ -7,8 +7,6 @@
 #ifndef INCLUDE_buffer_h__
 #define INCLUDE_buffer_h__
 
-#include <stdarg.h>
-
 #include "common.h"
 #include "git2/strarray.h"
 #include "git2/buffer.h"
@@ -51,6 +49,15 @@ extern void git_buf_init(git_buf *buf, size_t initial_size);
 extern int git_buf_try_grow(
 	git_buf *buf, size_t target_size, bool mark_oom, bool preserve_external);
 
+/**
+ * Sanitizes git_buf structures provided from user input.  Users of the
+ * library, when providing git_buf's, may wish to provide a NULL ptr for
+ * ease of handling.  The buffer routines, however, expect a non-NULL ptr
+ * always.  This helper method simply handles NULL input, converting to a
+ * git_buf__initbuf.
+ */
+extern void git_buf_sanitize(git_buf *buf);
+
 extern void git_buf_swap(git_buf *buf_a, git_buf *buf_b);
 extern char *git_buf_detach(git_buf *buf);
 extern void git_buf_attach(git_buf *buf, char *ptr, size_t asize);
@@ -91,8 +98,12 @@ void git_buf_truncate(git_buf *buf, size_t len);
 void git_buf_shorten(git_buf *buf, size_t amount);
 void git_buf_rtruncate_at_char(git_buf *path, char separator);
 
+/** General join with separator */
 int git_buf_join_n(git_buf *buf, char separator, int nbuf, ...);
+/** Fast join of two strings - first may legally point into `buf` data */
 int git_buf_join(git_buf *buf, char separator, const char *str_a, const char *str_b);
+/** Fast join of three strings - cannot reference `buf` data */
+int git_buf_join3(git_buf *buf, char separator, const char *str_a, const char *str_b, const char *str_c);
 
 /**
  * Join two strings as paths, inserting a slash between as needed.

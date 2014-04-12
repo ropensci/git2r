@@ -10,6 +10,7 @@
 #include "common.h"
 #include "types.h"
 #include "oid.h"
+#include "buffer.h"
 
 /**
  * @file git2/object.h
@@ -104,6 +105,15 @@ GIT_EXTERN(int) git_object_lookup_bypath(
 GIT_EXTERN(const git_oid *) git_object_id(const git_object *obj);
 
 /**
+ * Get a short abbreviated OID string for the object
+ *
+ * @param out Buffer to write string into
+ * @param obj The object to get an ID for
+ * @return 0 on success, <0 for error
+ */
+GIT_EXTERN(int) git_object_short_id(git_buf *out, const git_object *obj);
+
+/**
  * Get the object type of an object
  *
  * @param obj the repository object
@@ -143,7 +153,7 @@ GIT_EXTERN(git_repository *) git_object_owner(const git_object *obj);
 GIT_EXTERN(void) git_object_free(git_object *object);
 
 /**
- * Convert an object type to it's string representation.
+ * Convert an object type to its string representation.
  *
  * The result is a pointer to a string in static memory and
  * should not be free()'ed.

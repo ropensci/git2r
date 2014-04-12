@@ -29,6 +29,15 @@
 #define O_CLOEXEC 0
 #endif
 
+/* Determine whether an errno value indicates that a read or write failed
+ * because the descriptor is blocked.
+ */
+#if defined(EWOULDBLOCK)
+#define GIT_ISBLOCKED(e) ((e) == EAGAIN || (e) == EWOULDBLOCK)
+#else
+#define GIT_ISBLOCKED(e) ((e) == EAGAIN)
+#endif
+
 typedef int git_file;
 
 /**
@@ -89,14 +98,7 @@ extern struct tm * p_gmtime_r (const time_t *timer, struct tm *result);
 #	include "unix/posix.h"
 #endif
 
-#if defined(__MINGW32__) || defined(__sun)
-GIT_INLINE(size_t) p_strnlen(const char *s, size_t maxlen) {
-	const char *end = memchr(s, 0, maxlen);
-	return end ? (size_t)(end - s) : maxlen;
-}
-#else
-# define p_strnlen strnlen
-#endif
+#include "strnlen.h"
 
 #ifdef NO_READDIR_R
 #	include <dirent.h>

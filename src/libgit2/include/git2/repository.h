@@ -10,6 +10,7 @@
 #include "common.h"
 #include "types.h"
 #include "oid.h"
+#include "buffer.h"
 
 /**
  * @file git2/repository.h
@@ -58,10 +59,8 @@ GIT_EXTERN(int) git_repository_wrap_odb(git_repository **out, git_odb *odb);
  * The method will automatically detect if the repository is bare
  * (if there is a repository).
  *
- * @param path_out The user allocated buffer which will
- * contain the found path.
- *
- * @param path_size repository_path size
+ * @param out A pointer to a user-allocated git_buf which will contain
+ * the found path.
  *
  * @param start_path The base path where the lookup starts.
  *
@@ -77,8 +76,7 @@ GIT_EXTERN(int) git_repository_wrap_odb(git_repository **out, git_odb *odb);
  * @return 0 or an error code
  */
 GIT_EXTERN(int) git_repository_discover(
-		char *path_out,
-		size_t path_size,
+		git_buf *out,
 		const char *start_path,
 		int across_fs,
 		const char *ceiling_dirs);
@@ -268,6 +266,19 @@ typedef struct {
 
 #define GIT_REPOSITORY_INIT_OPTIONS_VERSION 1
 #define GIT_REPOSITORY_INIT_OPTIONS_INIT {GIT_REPOSITORY_INIT_OPTIONS_VERSION}
+
+/**
+ * Initializes a `git_repository_init_options` with default values. Equivalent
+ * to creating an instance with GIT_REPOSITORY_INIT_OPTIONS_INIT.
+ *
+ * @param opts the `git_repository_init_options` instance to initialize.
+ * @param version the version of the struct; you should pass
+ *        `GIT_REPOSITORY_INIT_OPTIONS_VERSION` here.
+ * @return Zero on success; -1 on failure.
+ */
+GIT_EXTERN(int) git_repository_init_init_options(
+	git_repository_init_options* opts,
+	int version);
 
 /**
  * Create a new Git repository in the given folder with extended controls.
@@ -464,21 +475,11 @@ GIT_EXTERN(int) git_repository_index(git_index **out, git_repository *repo);
  * Use this function to get the contents of this file. Don't forget to
  * remove the file after you create the commit.
  *
- * If the repository message exists and there are no errors reading it, this
- * returns the bytes needed to store the message in memory (i.e. message
- * file size plus one terminating NUL byte).  That value is returned even if
- * `out` is NULL or `len` is shorter than the necessary size.
- *
- * The `out` buffer will *always* be NUL terminated, even if truncation
- * occurs.
- *
- * @param out Buffer to write data into or NULL to just read required size
- * @param len Length of `out` buffer in bytes
+ * @param out git_buf to write data into
  * @param repo Repository to read prepared message from
- * @return GIT_ENOTFOUND if no message exists, other value < 0 for other
- *         errors, or total bytes in message (may be > `len`) on success
+ * @return 0, GIT_ENOTFOUND if no message exists or an error code
  */
-GIT_EXTERN(int) git_repository_message(char *out, size_t len, git_repository *repo);
+GIT_EXTERN(int) git_repository_message(git_buf *out, git_repository *repo);
 
 /**
  * Remove git's prepared message.
@@ -579,11 +580,15 @@ GIT_EXTERN(int) git_repository_hashfile(
  *
  * @param repo Repository pointer
  * @param refname Canonical name of the reference the HEAD should point at
+ * @param signature The identity that will used to populate the reflog entry
+ * @param log_message The one line long message to be appended to the reflog
  * @return 0 on success, or an error code
  */
 GIT_EXTERN(int) git_repository_set_head(
 	git_repository* repo,
-	const char* refname);
+	const char* refname,
+	const git_signature *signature,
+	const char *log_message);
 
 /**
  * Make the repository HEAD directly point to the Commit.
@@ -599,11 +604,15 @@ GIT_EXTERN(int) git_repository_set_head(
  *
  * @param repo Repository pointer
  * @param commitish Object id of the Commit the HEAD should point to
+ * @param signature The identity that will used to populate the reflog entry
+ * @param log_message The one line long message to be appended to the reflog
  * @return 0 on success, or an error code
  */
 GIT_EXTERN(int) git_repository_set_head_detached(
 	git_repository* repo,
-	const git_oid* commitish);
+	const git_oid* commitish,
+	const git_signature *signature,
+	const char *log_message);
 
 /**
  * Detach the HEAD.
@@ -619,11 +628,15 @@ GIT_EXTERN(int) git_repository_set_head_detached(
  * Otherwise, the HEAD will be detached and point to the peeled Commit.
  *
  * @param repo Repository pointer
+ * @param signature The identity that will used to populate the reflog entry
+ * @param log_message The one line long message to be appended to the reflog
  * @return 0 on success, GIT_EUNBORNBRANCH when HEAD points to a non existing
  * branch or an error code
  */
 GIT_EXTERN(int) git_repository_detach_head(
-	git_repository* repo);
+	git_repository* repo,
+	const git_signature *signature,
+	const char *reflog_message);
 
 typedef enum {
 	GIT_REPOSITORY_STATE_NONE,
