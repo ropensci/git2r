@@ -29,16 +29,11 @@
  */
 SEXP checkout(SEXP repo, SEXP treeish)
 {
-    enum CHECKOUT_ACTION {
-        CHECKOUT_COMMIT,
-        CHECKOUT_TAG,
-        CHECKOUT_TREE,
-        CHECKOUT_HEAD
-    } checkout_action;
-
     int err;
+    git_oid oid;
+    git_object *object = NULL;
     git_repository *repository = NULL;
-    git_checkout_opts checkout_opts = GIT_CHECKOUT_OPTS_INIT;
+    git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
     checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE;
 
     /* Check arguments to checkout */
@@ -49,44 +44,48 @@ SEXP checkout(SEXP repo, SEXP treeish)
     if(S4SXP == TYPEOF(treeish)) {
         const char *class_name = CHAR(STRING_ELT(getAttrib(treeish, R_ClassSymbol), 0));
 
-        if (0 == strcmp(class_name, "git_commit"))
-            checkout_action = CHECKOUT_COMMIT;
-        else if(0 == strcmp(class_name, "git_tag"))
-            checkout_action = CHECKOUT_TAG;
-        else if(0 == strcmp(class_name, "git_tree"))
-            checkout_action = CHECKOUT_TREE;
-        else
+        if (0 == strcmp(class_name, "git_commit")) {
+            err = git_oid_fromstr(
+                &oid,
+                CHAR(STRING_ELT(GET_SLOT(treeish, Rf_install("hex")), 0)));
+        } else if(0 == strcmp(class_name, "git_tag")) {
+            err = git_oid_fromstr(
+                &oid,
+                CHAR(STRING_ELT(GET_SLOT(treeish, Rf_install("target")), 0)));
+        } else if(0 == strcmp(class_name, "git_tree")) {
+            err = git_oid_fromstr(
+                &oid,
+                CHAR(STRING_ELT(GET_SLOT(treeish, Rf_install("hex")), 0)));
+        } else {
             error(git2r_err_invalid_checkout_args);
+        }
     } else if (isString(treeish)
                && 1 == length(treeish)
                && 0 == strcmp(CHAR(STRING_ELT(treeish, 0)), "HEAD")) {
-        checkout_action = CHECKOUT_HEAD;
+        error("Error: Not implemented in gitr2r (yet)");
     } else {
         error(git2r_err_invalid_checkout_args);
     }
+
+    if (err < 0)
+        goto cleanup;
 
     repository = get_repository(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
 
-    switch (checkout_action) {
-    case CHECKOUT_COMMIT:
-        /* :TODO:FIX: */
-        break;
-    case CHECKOUT_TAG:
-        /* :TODO:FIX: */
-        break;
-    case CHECKOUT_TREE:
-        /* :TODO:FIX: */
-        break;
-    case CHECKOUT_HEAD:
-        /* :TODO:FIX: */
-        break;
-    default:
-        break;
-    }
+    err = git_object_lookup(&object, repository, &oid, GIT_OBJ_ANY);
+    if (err < 0)
+        goto cleanup;
+
+    err = git_checkout_tree(repository, object, &checkout_opts);
+    if (err < 0)
+        goto cleanup;
 
 cleanup:
+    if (object)
+        git_object_free(object);
+
     if (repository)
         git_repository_free(repository);
 
