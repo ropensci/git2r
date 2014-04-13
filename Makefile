@@ -9,7 +9,7 @@ readme: $(patsubst %.Rmd, %.md, $(wildcard *.Rmd))
 
 doc:
 	rm -f man/*.Rd
-	Rscript -e "library(methods); library(utils); library(devtools); document(); check_doc()"
+	cd .. && Rscript -e "library(methods); library(utils); library(roxygen2); roxygenize('git2r')"
 
 # Sync git2r with changes in the libgit2 C-library
 # First clone or pull libgit2 to parent directory
