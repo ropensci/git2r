@@ -12,9 +12,9 @@ config(repo, user.name, user.email)
 \arguments{
 \item{repo}{the \code{repo} to configure}
 
-\item{user.name}{the user name.}
+\item{user.name}{the user name. Use NULL to delete the entry}
 
-\item{user.email}{the e-mail address}
+\item{user.email}{the e-mail address. Use NULL to delete the entry}
 }
 \value{
 An invisible \code{list} with the configuration

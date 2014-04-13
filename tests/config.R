@@ -39,6 +39,17 @@ stopifnot("Repo" %in% sapply(cfg[names(cfg) == "user.name"], "["))
 stopifnot("repo@example.org" %in% sapply(cfg[names(cfg) == "user.email"], "["))
 
 ##
+## Delete entries
+##
+cfg <- config(repo, user.name=NULL, user.email=NULL)
+
+##
+## Check configuration
+##
+stopifnot(!("Repo" %in% sapply(cfg[names(cfg) == "user.name"], "[")))
+stopifnot(!("repo@example.org" %in% sapply(cfg[names(cfg) == "user.email"], "[")))
+
+##
 ## Cleanup
 ##
 unlink(path, recursive=TRUE)

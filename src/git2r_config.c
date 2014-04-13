@@ -90,9 +90,15 @@ SEXP config(SEXP repo, SEXP variables)
         names = getAttrib(variables, R_NamesSymbol);
         for (i = 0; i < length(variables); i++) {
             const char *key = CHAR(STRING_ELT(names, i));
-            const char *value = CHAR(STRING_ELT(VECTOR_ELT(variables, i), 0));
+            const char *value = NULL;
 
-            err = git_config_set_string(cfg, key, value);
+            if (!isNull(VECTOR_ELT(variables, i)))
+                value = CHAR(STRING_ELT(VECTOR_ELT(variables, i), 0));
+
+            if (value)
+                err = git_config_set_string(cfg, key, value);
+            else
+                err = git_config_delete_entry(cfg, key);
             if (err < 0)
                 goto cleanup;
         }

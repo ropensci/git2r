@@ -20,8 +20,8 @@
 ##' @rdname config-methods
 ##' @docType methods
 ##' @param repo the \code{repo} to configure
-##' @param user.name the user name.
-##' @param user.email the e-mail address
+##' @param user.name the user name. Use NULL to delete the entry
+##' @param user.email the e-mail address. Use NULL to delete the entry
 ##' @return An invisible \code{list} with the configuration
 ##' @keywords methods
 ##' @include repository.r
@@ -54,7 +54,10 @@ setMethod("config",
               variables <- variables[-(1:2)]
 
               if(length(variables)) {
-                  check_is_character <- sapply(variables, is.character)
+                  ## Check that the variable is either a character vector or NULL
+                  check_is_character <- sapply(variables, function(v) {
+                      any(is.character(v), is.null(v))
+                  })
                   check_is_character <- check_is_character[!check_is_character]
                   if(length(check_is_character)) {
                       stop(sprintf("\n%s", paste(names(check_is_character),
