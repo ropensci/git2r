@@ -12,12 +12,12 @@ config(repo, user.name, user.email)
 \arguments{
 \item{repo}{the \code{repo} to configure}
 
-\item{user.name}{the user name}
+\item{user.name}{the user name.}
 
 \item{user.email}{the e-mail address}
 }
 \value{
-A \code{list} with the configuration
+An invisible \code{list} with the configuration
 }
 \description{
 Config file management.
@@ -27,7 +27,11 @@ Config file management.
 ## Open an existing repository
 repo <- repository("path/to/git2r")
 
-config(repo, user.name="Stefan Widgren", user.email="stefan.widgren@gmail.com")
+## Set user name and email. The configuration is returned
+cfg <-config(repo, user.name="Repo", user.email="repo@example.org")
+
+## View configuration
+cfg
 }
 }
 \keyword{methods}

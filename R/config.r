@@ -20,16 +20,20 @@
 ##' @rdname config-methods
 ##' @docType methods
 ##' @param repo the \code{repo} to configure
-##' @param user.name the user name
+##' @param user.name the user name.
 ##' @param user.email the e-mail address
-##' @return A \code{list} with the configuration
+##' @return An invisible \code{list} with the configuration
 ##' @keywords methods
 ##' @include repository.r
 ##' @examples \dontrun{
 ##' ## Open an existing repository
 ##' repo <- repository("path/to/git2r")
 ##'
-##' config(repo, user.name="Stefan Widgren", user.email="stefan.widgren@@gmail.com")
+##' ## Set user name and email. The configuration is returned
+##' cfg <-config(repo, user.name="Repo", user.email="repo@@example.org")
+##'
+##' ## View configuration
+##' cfg
 ##'}
 setGeneric("config",
            signature = "repo",
@@ -46,16 +50,19 @@ setMethod("config",
                    user.name,
                    user.email)
           {
-              variables <- as.list(match.call(expand.dots = TRUE)[c(-1, -2)])
+              variables <- as.list(match.call(expand.dots = TRUE))
+              variables <- variables[-(1:2)]
 
-              check_is_character <- sapply(variables, is.character)
-              check_is_character <- check_is_character[!check_is_character]
-              if(length(check_is_character)) {
-                  stop(sprintf("\n%s", paste(names(check_is_character),
-                                             "must be character",
-                                             collapse="\n")))
+              if(length(variables)) {
+                  check_is_character <- sapply(variables, is.character)
+                  check_is_character <- check_is_character[!check_is_character]
+                  if(length(check_is_character)) {
+                      stop(sprintf("\n%s", paste(names(check_is_character),
+                                                 "must be character",
+                                                 collapse="\n")))
+                  }
               }
 
-              .Call("config", repo, variables)
+              invisible(.Call("config", repo, variables))
           }
 )
