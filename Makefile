@@ -35,4 +35,18 @@ sync_libgit2:
 	-cp -f ../libgit2/AUTHORS inst/AUTHORS
 	-cp -f ../libgit2/COPYING inst/COPYING
 
-.PHONY: all readme doc sync_libgit2
+clean:
+	-rm -f config.log
+	-rm -f config.status
+	-rm -f src/Makevars
+	-rm -f src/*.o
+	-rm -f src/*.so
+	-rm -f src/libgit2/*.o
+	-rm -f src/libgit2/hash/*.o
+	-rm -f src/libgit2/transports/*.o
+	-rm -f src/libgit2/unix/*.o
+	-rm -f src/libgit2/win32/*.o
+	-rm -f src/libgit2/xdiff/*.o
+	-rm -f src/http-parser/*.o
+
+.PHONY: all readme doc sync_libgit2 clean
