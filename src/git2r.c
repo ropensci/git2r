@@ -33,6 +33,7 @@
 
 #include "git2r_checkout.h"
 #include "git2r_clone.h"
+#include "git2r_config.h"
 #include "git2r_commit.h"
 #include "git2r_error.h"
 #include "git2r_repository.h"
@@ -221,53 +222,6 @@ cleanup:
     }
 
     return list;
-}
-
-/**
- * Config
- *
- * @param repo S4 class git_repository
- * @param variables
- * @return R_NilValue
- */
-SEXP config(SEXP repo, SEXP variables)
-{
-    SEXP names;
-    int err, i;
-    git_config *cfg = NULL;
-    git_repository *repository = NULL;
-
-    if (R_NilValue == variables)
-        error("'variables' equals R_NilValue.");
-    if (!isNewList(variables))
-        error("'variables' must be a list.");
-
-    repository = get_repository(repo);
-    if (!repository)
-        error(git2r_err_invalid_repository);
-
-    err = git_repository_config(&cfg, repository);
-    if (err < 0)
-        goto cleanup;
-
-    names = getAttrib(variables, R_NamesSymbol);
-    for (i = 0; i < length(variables); i++) {
-        const char *key = CHAR(STRING_ELT(names, i));
-        const char *value = CHAR(STRING_ELT(VECTOR_ELT(variables, i), 0));
-
-        err = git_config_set_string(cfg, key, value);
-        if (err < 0)
-            goto cleanup;
-    }
-
-cleanup:
-    if (config)
-        git_config_free(cfg);
-
-    if (repository)
-        git_repository_free(repository);
-
-    return R_NilValue;
 }
 
 /**
