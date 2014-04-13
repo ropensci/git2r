@@ -55,7 +55,7 @@ setMethod("punch_card",
 
               title <- sprintf("Punch card on repository: %s", basename(workdir(object)))
 
-              ggplot(df, aes(x = Hour, y = Weekday, size = Commits)) +
+              ggplot(df, aes_string(x = "Hour", y = "Weekday", size = "Commits")) +
                   geom_point() +
                   scale_x_continuous(breaks = 0:23, limits = c(0, 23)) +
                   scale_y_discrete(labels = levels(df$Weekday)) +
