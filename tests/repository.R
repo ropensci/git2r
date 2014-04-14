@@ -30,7 +30,7 @@ tools::assertError(is.bare(new("git_repository")))
 ##
 ## is.empty: "Invalid repository"
 ##
-## tools::assertError(is.empty(new("git_repository")))
+tools::assertError(is.empty(new("git_repository")))
 
 ##
 ## Check that open an invalid repository fails
