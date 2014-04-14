@@ -289,6 +289,9 @@ git_repository* get_repository(const SEXP repo)
     if (R_NilValue == path)
         return NULL;
 
+    if (!isString(path) || 1 != length(path))
+        return NULL;
+
     if (git_repository_open(&r, CHAR(STRING_ELT(path, 0))) < 0)
         return NULL;
 
