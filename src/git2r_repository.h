@@ -26,5 +26,10 @@
 #include "git2.h"
 
 git_repository* get_repository(const SEXP repo);
+SEXP init(const SEXP path, const SEXP bare);
+SEXP is_bare(const SEXP repo);
+SEXP is_empty(const SEXP repo);
+SEXP is_repository(const SEXP path);
+SEXP workdir(const SEXP repo);
 
 #endif
