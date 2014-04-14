@@ -276,7 +276,7 @@ git_repository* get_repository(const SEXP repo)
 {
     SEXP class_name;
     SEXP path;
-    git_repository *r;
+    git_repository *repository;
 
     if (R_NilValue == repo || S4SXP != TYPEOF(repo))
         return NULL;
@@ -286,16 +286,14 @@ git_repository* get_repository(const SEXP repo)
         return NULL;
 
     path = GET_SLOT(repo, Rf_install("path"));
-    if (R_NilValue == path)
+    if (R_NilValue == path
+        || !isString(path)
+        || 1 != length(path)
+        || NA_STRING == STRING_ELT(path, 0)
+        || git_repository_open(&repository, CHAR(STRING_ELT(path, 0))) < 0)
         return NULL;
 
-    if (!isString(path) || 1 != length(path))
-        return NULL;
-
-    if (git_repository_open(&r, CHAR(STRING_ELT(path, 0))) < 0)
-        return NULL;
-
-    return r;
+    return repository;
 }
 
 /**
@@ -425,24 +423,20 @@ SEXP is_empty(const SEXP repo)
  */
 SEXP is_repository(const SEXP path)
 {
-    SEXP result;
-    git_repository *repository;
-    int err;
+    git_repository *repository = NULL;
 
-    if (R_NilValue == path)
-        error("'path' equals R_NilValue");
-    if (!isString(path))
-        error("'path' must be a string");
+    if (R_NilValue == path
+        || !isString(path)
+        || 1 != length(path)
+        || NA_STRING == STRING_ELT(path, 0))
+        error("Invalid arguments to is_repository");
 
-    err = git_repository_open(&repository, CHAR(STRING_ELT(path, 0)));
-    if (err < 0) {
-        result = ScalarLogical(FALSE);
-    } else {
-        git_repository_free(repository);
-        result = ScalarLogical(TRUE);
-    }
+    if (git_repository_open(&repository, CHAR(STRING_ELT(path, 0))) < 0)
+        return ScalarLogical(FALSE);
 
-    return result;
+    git_repository_free(repository);
+
+    return ScalarLogical(TRUE);
 }
 
 /**
