@@ -32,8 +32,8 @@ sync_libgit2:
 	-cp -f ../libgit2/src/win32/*.h src/libgit2/win32
 	-cp -f ../libgit2/src/xdiff/*.c src/libgit2/xdiff
 	-cp -f ../libgit2/src/xdiff/*.h src/libgit2/xdiff
-	-cp -f ../libgit2/AUTHORS inst/AUTHORS
-	-cp -f ../libgit2/COPYING inst/COPYING
+	-cp -f ../libgit2/AUTHORS inst/AUTHORS_libgit2
+	-cp -f ../libgit2/COPYING inst/NOTICE
 
 clean:
 	-rm -f config.log

@@ -68,10 +68,14 @@ summary(repo)
 #> Remote:   @ origin (https://github.com/ropensci/git2r.git)
 #> Local:    master /home/stefan/projects/packages/git2r/git2r/
 #> 
-#> Branches:      4
-#> Tags:          0
-#> Commits:       175
-#> Contributors:  3
+#> Branches:          1
+#> Tags:              0
+#> Commits:         279
+#> Contributors:      3
+#> Ignored files:     0
+#> Untracked files:   1
+#> Unstaged files:   10
+#> Staged files:      2
 ```
 
 ```coffee
@@ -111,26 +115,17 @@ references(repo)
 ```
 
 ```
-#> $`refs/heads/data.frame`
-#> [772fd8] data.frame
-#> 
 #> $`refs/heads/master`
-#> [27943f] master
-#> 
-#> $`refs/heads/tag`
-#> [620067] tag
+#> [eb3405] master
 #> 
 #> $`refs/remotes/origin/HEAD`
 #> refs/remotes/origin/HEAD => refs/remotes/origin/master
 #> 
-#> $`refs/remotes/origin/README_fix`
-#> [384d3a] origin/README_fix
-#> 
 #> $`refs/remotes/origin/master`
-#> [27943f] origin/master
+#> [eb3405] origin/master
 #> 
 #> $`refs/stash`
-#> [4e2015] stash
+#> [a621fb] stash
 ```
 
 ```coffee
@@ -141,22 +136,13 @@ branches(repo)
 
 ```
 #> [[1]]
-#> [772fd8] (Local) data.frame
+#> [eb3405] (Local) (HEAD) master
 #> 
 #> [[2]]
-#> [27943f] (Local) (HEAD) master
-#> 
-#> [[3]]
-#> [620067] (Local) tag
-#> 
-#> [[4]]
 #> (origin @ https://github.com/ropensci/git2r.git) refs/remotes/origin/HEAD => refs/remotes/origin/master
 #> 
-#> [[5]]
-#> [384d3a] (origin @ https://github.com/ropensci/git2r.git) README_fix
-#> 
-#> [[6]]
-#> [27943f] (origin @ https://github.com/ropensci/git2r.git) master
+#> [[3]]
+#> [eb3405] (origin @ https://github.com/ropensci/git2r.git) master
 ```
 
 ```coffee
@@ -167,10 +153,10 @@ commits(repo)[1] # Truncated here for readability
 
 ```
 #> [[1]]
-#> Commit:  27943f7f9eebe955730594da3da78b6d52457799
+#> Commit:  eb3405ad9d9e60edb3d22196a6afd91044b41105
 #> Author:  Stefan Widgren <stefan.widgren@gmail.com>
-#> When:    2014-03-23 10:07:09
-#> Summary: Fixed plot by user
+#> When:    2014-04-14 22:58:32
+#> Summary: Moved git2r repository C code to separate file
 ```
 
 ```coffee
@@ -180,7 +166,7 @@ head(repo)
 ```
 
 ```
-#> [27943f] (Local) (HEAD) master
+#> [eb3405] (Local) (HEAD) master
 ```
 
 ```coffee
@@ -210,7 +196,7 @@ tags(repo)
 ```
 
 ```
-#> named list()
+#> list()
 ```
 
 
@@ -232,7 +218,8 @@ contributions(repo)
 #> 1 2013-12-01  35
 #> 2 2014-01-01  33
 #> 3 2014-02-01   7
-#> 4 2014-03-01 100
+#> 4 2014-03-01 137
+#> 5 2014-04-01  67
 ```
 
 ```coffee
@@ -243,7 +230,7 @@ plot(repo)
 ![plot of chunk contributionnum](figure/contributionnum.png) 
 
 
-### Visualize contributions by user on a monthly timeline (another way of looking at the same data from above)
+### Visualize contributions by author on a monthly timeline (another way of looking at the same data from above)
 
 
 ```coffee
@@ -253,34 +240,36 @@ library(git2r)
 # repo <- repository("path/to/git2r")
 repo <- repository(getwd())
 
-contributions(repo, by='user')
+contributions(repo, by="author")
 ```
 
 ```
-#>         when            author  n
-#> 1 2013-12-01    Stefan Widgren 35
-#> 2 2014-01-01    Stefan Widgren 33
-#> 3 2014-02-01    Stefan Widgren  7
-#> 4 2014-03-01       Karthik Ram 31
-#> 5 2014-03-01 Scott Chamberlain  2
-#> 6 2014-03-01    Stefan Widgren 67
+#>           when            author   n
+#> 194 2013-12-01    Stefan Widgren  35
+#> 162 2014-01-01    Stefan Widgren   1
+#> 163 2014-01-01    Stefan Widgren  32
+#> 155 2014-02-01    Stefan Widgren   7
+#> 56  2014-03-01       Karthik Ram  32
+#> 91  2014-03-01 Scott Chamberlain   2
+#> 36  2014-03-01    Stefan Widgren 103
+#> 1   2014-04-01    Stefan Widgren  67
 ```
 
 ```coffee
 
-plot(repo, by = "user")
+plot(repo, by = "author")
 ```
 
 ![plot of chunk contributions_by_user](figure/contributions_by_user1.png) 
 
 ```coffee
-plot(repo, breaks="week", by = "user")
+plot(repo, breaks="week", by = "author")
 ```
 
 ![plot of chunk contributions_by_user](figure/contributions_by_user2.png) 
 
 ```coffee
-plot(repo, breaks="day", by = "user")
+plot(repo, breaks="day", by = "author")
 ```
 
 ![plot of chunk contributions_by_user](figure/contributions_by_user3.png) 
@@ -323,7 +312,7 @@ Included software
 -----------------
 
 - The C library [libgit2](https://github.com/libgit2/libgit2). See
-  `inst/AUTHORS` for the authors of libgit2.
+  `inst/AUTHORS_libgit2` for the authors of libgit2.
 
 - The libgit2 printf calls in cache.c and util.c have been modified to
   use the R printing routine Rprintf.
@@ -333,8 +322,8 @@ License
 
 The `git2r` package is licensed under the GPLv2. See these files for additional details:
 
-- LICENSE      - `git2r` package license (GPLv2)
-- inst/COPYING - Copyright notices for additional included software
+- LICENSE     - `git2r` package license (GPLv2)
+- inst/NOTICE - Copyright notices for additional included software
 
 
 ---

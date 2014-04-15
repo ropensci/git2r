@@ -95,7 +95,7 @@ contributions(repo)
 plot(repo)
 ```
 
-### Visualize contributions by user on a monthly timeline (another way of looking at the same data from above)
+### Visualize contributions by author on a monthly timeline (another way of looking at the same data from above)
 
 ```{r, contributions_by_user}
 library(git2r)
@@ -104,11 +104,11 @@ library(git2r)
 # repo <- repository("path/to/git2r")
 repo <- repository(getwd())
 
-contributions(repo, by='user')
+contributions(repo, by="author")
 
-plot(repo, by = "user")
-plot(repo, breaks="week", by = "user")
-plot(repo, breaks="day", by = "user")
+plot(repo, by = "author")
+plot(repo, breaks="week", by = "author")
+plot(repo, breaks="day", by = "author")
 ```
 
 ### Generate a wordcloud from the commit messages in a repository
@@ -132,7 +132,7 @@ Included software
 -----------------
 
 - The C library [libgit2](https://github.com/libgit2/libgit2). See
-  `inst/AUTHORS` for the authors of libgit2.
+  `inst/AUTHORS_libgit2` for the authors of libgit2.
 
 - The libgit2 printf calls in cache.c and util.c have been modified to
   use the R printing routine Rprintf.
@@ -142,8 +142,8 @@ License
 
 The `git2r` package is licensed under the GPLv2. See these files for additional details:
 
-- LICENSE      - `git2r` package license (GPLv2)
-- inst/COPYING - Copyright notices for additional included software
+- LICENSE     - `git2r` package license (GPLv2)
+- inst/NOTICE - Copyright notices for additional included software
 
 
 ---
