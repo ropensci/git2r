@@ -84,7 +84,10 @@ SEXP clone(SEXP url, SEXP local_path, SEXP progress)
         || !isLogical(progress)
         || 1 != length(url)
         || 1 != length(local_path)
-        || 1 != length(progress))
+        || 1 != length(progress)
+        || NA_STRING == STRING_ELT(url, 0)
+        || NA_STRING == STRING_ELT(local_path, 0)
+        || NA_LOGICAL == LOGICAL(progress)[0])
         error("Invalid arguments to clone");
 
     checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE_CREATE;

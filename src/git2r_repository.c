@@ -61,14 +61,15 @@ SEXP init(const SEXP path, const SEXP bare)
     int err;
     git_repository *repository = NULL;
 
-    if (R_NilValue == path)
-        error("'path' equals R_NilValue");
-    if (!isString(path))
-        error("'path' must be a string");
-    if (R_NilValue == bare)
-        error("'bare' equals R_NilValue");
-    if (!isLogical(bare))
-        error("'bare' must be a logical");
+    if (R_NilValue == path
+        || !isString(path)
+        || 1 != length(path)
+        || NA_STRING == STRING_ELT(path, 0)
+        || R_NilValue == bare
+        || !isLogical(bare)
+        || 1 != length(bare)
+        || NA_LOGICAL == LOGICAL(bare)[0])
+        error("Invalid arguments to init");
 
     err = git_repository_init(&repository,
                               CHAR(STRING_ELT(path, 0)),

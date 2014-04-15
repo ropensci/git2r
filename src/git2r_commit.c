@@ -50,9 +50,10 @@ SEXP commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP parent_li
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
     opts.show  = GIT_STATUS_SHOW_INDEX_ONLY;
 
-    if (R_NilValue == repo
-        || R_NilValue == message
+    if (R_NilValue == message
         || !isString(message)
+        || 1 != length(message)
+        || NA_STRING == STRING_ELT(message, 0)
         || R_NilValue == author
         || S4SXP != TYPEOF(author)
         || R_NilValue == committer

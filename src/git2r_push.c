@@ -55,11 +55,13 @@ SEXP push(const SEXP repo, const SEXP name, const SEXP refspec)
     git_repository *repository = NULL;
 
     if (R_NilValue == name
-        || R_NilValue == refspec
         || !isString(name)
-        || !isString(refspec)
         || 1 != length(name)
-        || 1 != length(refspec))
+        || NA_STRING == STRING_ELT(name, 0)
+        || R_NilValue == refspec
+        || !isString(refspec)
+        || 1 != length(refspec)
+        || NA_STRING == STRING_ELT(refspec, 0))
         error("Invalid arguments to push");
 
     repository = get_repository(repo);

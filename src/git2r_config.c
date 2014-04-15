@@ -72,10 +72,8 @@ SEXP config(SEXP repo, SEXP variables)
     git_config_iterator *iterator = NULL;
     git_repository *repository = NULL;
 
-    if (R_NilValue == variables)
-        error("'variables' equals R_NilValue.");
-    if (!isNewList(variables))
-        error("'variables' must be a list.");
+    if (R_NilValue == variables || !isNewList(variables))
+        error("Invalid arguments to config");
 
     repository = get_repository(repo);
     if (!repository)

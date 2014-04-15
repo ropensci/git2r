@@ -371,7 +371,11 @@ SEXP status(const SEXP repo,
         || 1 != length(staged)
         || 1 != length(unstaged)
         || 1 != length(untracked)
-        || 1 != length(ignored))
+        || 1 != length(ignored)
+        || NA_LOGICAL == LOGICAL(staged)[0]
+        || NA_LOGICAL == LOGICAL(unstaged)[0]
+        || NA_LOGICAL == LOGICAL(untracked)[0]
+        || NA_LOGICAL == LOGICAL(ignored)[0])
         error("Invalid arguments to status");
 
     repository = get_repository(repo);

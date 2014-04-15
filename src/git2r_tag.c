@@ -83,13 +83,14 @@ SEXP tag(const SEXP repo, const SEXP name, const SEXP message, const SEXP tagger
     git_tag *new_tag = NULL;
     git_object *target = NULL;
 
-    if (R_NilValue == repo
-        || R_NilValue == name
+    if (R_NilValue == name
         || !isString(name)
         || 1 != length(name)
+        || NA_STRING == STRING_ELT(name, 0)
         || R_NilValue == message
         || !isString(message)
         || 1 != length(message)
+        || NA_STRING == STRING_ELT(message, 0)
         || R_NilValue == tagger
         || S4SXP != TYPEOF(tagger))
         error("Invalid arguments to tag");
