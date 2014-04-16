@@ -58,10 +58,8 @@ SEXP add(const SEXP repo, const SEXP path)
     git_index *index = NULL;
     git_repository *repository = NULL;
 
-    if (R_NilValue == path)
-        error("'path' equals R_NilValue");
-    if (!isString(path))
-        error("'path' must be a string");
+    if (check_string_arg(path))
+        error("Invalid arguments to add");
 
     repository= get_repository(repo);
     if (!repository)
@@ -228,6 +226,7 @@ cleanup:
  * Fetch
  *
  * @param repo
+ * @param name
  * @return R_NilValue
  */
 SEXP fetch(const SEXP repo, const SEXP name)
@@ -236,9 +235,7 @@ SEXP fetch(const SEXP repo, const SEXP name)
     git_remote *remote = NULL;
     git_repository *repository = NULL;
 
-    if (R_NilValue == name
-        || !isString(name)
-        || 1 != length(name))
+    if (check_string_arg(name))
         error("Invalid arguments to fetch");
 
     repository = get_repository(repo);

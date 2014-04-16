@@ -50,25 +50,12 @@ SEXP commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP parent_li
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
     opts.show  = GIT_STATUS_SHOW_INDEX_ONLY;
 
-    if (R_NilValue == message
-        || !isString(message)
-        || 1 != length(message)
-        || NA_STRING == STRING_ELT(message, 0)
-        || R_NilValue == author
-        || S4SXP != TYPEOF(author)
-        || R_NilValue == committer
-        || S4SXP != TYPEOF(committer)
+    if (check_string_arg(message)
+        || check_signature_arg(author)
+        || check_signature_arg(committer)
         || R_NilValue == parent_list
         || !isString(parent_list))
         error("Invalid arguments to commit");
-
-    if (0 != strcmp(CHAR(STRING_ELT(getAttrib(author, R_ClassSymbol), 0)),
-                    "git_signature"))
-        error("author argument not a git_signature");
-
-    if (0 != strcmp(CHAR(STRING_ELT(getAttrib(committer, R_ClassSymbol), 0)),
-                    "git_signature"))
-        error("committer argument not a git_signature");
 
     repository = get_repository(repo);
     if (!repository)

@@ -19,6 +19,9 @@
 #ifndef INCLUDE_git2r_error_h
 #define INCLUDE_git2r_error_h
 
+#include <R.h>
+#include <Rinternals.h>
+
 /**
  * Error messages
  */
@@ -29,5 +32,9 @@ extern const char git2r_err_invalid_checkout_args[];
 extern const char git2r_err_nothing_added_to_commit[];
 extern const char git2r_err_unexpected_type_of_branch[];
 extern const char git2r_err_unexpected_head_of_branch[];
+
+int check_logical_arg(const SEXP arg);
+int check_signature_arg(const SEXP arg);
+int check_string_arg(const SEXP arg);
 
 #endif

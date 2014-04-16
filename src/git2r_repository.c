@@ -39,11 +39,10 @@ git_repository* get_repository(const SEXP repo)
         return NULL;
 
     path = GET_SLOT(repo, Rf_install("path"));
-    if (R_NilValue == path
-        || !isString(path)
-        || 1 != length(path)
-        || NA_STRING == STRING_ELT(path, 0)
-        || git_repository_open(&repository, CHAR(STRING_ELT(path, 0))) < 0)
+    if (check_string_arg(path))
+        return NULL;
+
+    if (git_repository_open(&repository, CHAR(STRING_ELT(path, 0))) < 0)
         return NULL;
 
     return repository;
@@ -61,14 +60,7 @@ SEXP init(const SEXP path, const SEXP bare)
     int err;
     git_repository *repository = NULL;
 
-    if (R_NilValue == path
-        || !isString(path)
-        || 1 != length(path)
-        || NA_STRING == STRING_ELT(path, 0)
-        || R_NilValue == bare
-        || !isLogical(bare)
-        || 1 != length(bare)
-        || NA_LOGICAL == LOGICAL(bare)[0])
+    if (check_string_arg(path) || check_logical_arg(bare))
         error("Invalid arguments to init");
 
     err = git_repository_init(&repository,
@@ -142,10 +134,7 @@ SEXP is_repository(const SEXP path)
 {
     git_repository *repository = NULL;
 
-    if (R_NilValue == path
-        || !isString(path)
-        || 1 != length(path)
-        || NA_STRING == STRING_ELT(path, 0))
+    if (check_string_arg(path))
         error("Invalid arguments to is_repository");
 
     if (git_repository_open(&repository, CHAR(STRING_ELT(path, 0))) < 0)

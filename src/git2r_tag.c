@@ -83,21 +83,10 @@ SEXP tag(const SEXP repo, const SEXP name, const SEXP message, const SEXP tagger
     git_tag *new_tag = NULL;
     git_object *target = NULL;
 
-    if (R_NilValue == name
-        || !isString(name)
-        || 1 != length(name)
-        || NA_STRING == STRING_ELT(name, 0)
-        || R_NilValue == message
-        || !isString(message)
-        || 1 != length(message)
-        || NA_STRING == STRING_ELT(message, 0)
-        || R_NilValue == tagger
-        || S4SXP != TYPEOF(tagger))
+    if (check_string_arg(name)
+        || check_string_arg(message)
+        || check_signature_arg(tagger))
         error("Invalid arguments to tag");
-
-    if (0 != strcmp(CHAR(STRING_ELT(getAttrib(tagger, R_ClassSymbol), 0)),
-                    "git_signature"))
-        error("tagger argument not a git_signature");
 
     when = GET_SLOT(tagger, Rf_install("when"));
     err = git_signature_new(&sig_tagger,

@@ -17,6 +17,7 @@
  */
 
 #include "git2r_clone.h"
+#include "git2r_error.h"
 
 typedef struct {
     int received_progress;
@@ -75,19 +76,9 @@ SEXP clone(SEXP url, SEXP local_path, SEXP progress)
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
     progress_data pd = {0};
 
-    /* Check arguments to clone */
-    if (R_NilValue == url
-        || R_NilValue == local_path
-        || R_NilValue == progress
-        || !isString(url)
-        || !isString(local_path)
-        || !isLogical(progress)
-        || 1 != length(url)
-        || 1 != length(local_path)
-        || 1 != length(progress)
-        || NA_STRING == STRING_ELT(url, 0)
-        || NA_STRING == STRING_ELT(local_path, 0)
-        || NA_LOGICAL == LOGICAL(progress)[0])
+    if (check_string_arg(url)
+        || check_string_arg(local_path)
+        || check_logical_arg(progress))
         error("Invalid arguments to clone");
 
     checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE_CREATE;

@@ -177,8 +177,8 @@ static void list_ignored_files(SEXP list,
  * @return void
  */
 static void list_staged_changes(SEXP list,
-                              size_t list_index,
-                              git_status_list *status_list)
+                                size_t list_index,
+                                git_status_list *status_list)
 {
     size_t i = 0, j = 0, count;
     SEXP sub_list, sub_list_names, item;
@@ -244,8 +244,8 @@ static void list_staged_changes(SEXP list,
  * @return void
  */
 static void list_unstaged_changes(SEXP list,
-                                size_t list_index,
-                                git_status_list *status_list)
+                                  size_t list_index,
+                                  git_status_list *status_list)
 {
     size_t i = 0, j = 0, count;
     SEXP sub_list, sub_list_names, item;
@@ -359,23 +359,10 @@ SEXP status(const SEXP repo,
     git_status_list *status_list = NULL;
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
 
-    /* Check arguments to status */
-    if (R_NilValue == staged
-        || R_NilValue == unstaged
-        || R_NilValue == untracked
-        || R_NilValue == ignored
-        || !isLogical(staged)
-        || !isLogical(unstaged)
-        || !isLogical(untracked)
-        || !isLogical(ignored)
-        || 1 != length(staged)
-        || 1 != length(unstaged)
-        || 1 != length(untracked)
-        || 1 != length(ignored)
-        || NA_LOGICAL == LOGICAL(staged)[0]
-        || NA_LOGICAL == LOGICAL(unstaged)[0]
-        || NA_LOGICAL == LOGICAL(untracked)[0]
-        || NA_LOGICAL == LOGICAL(ignored)[0])
+    if (check_logical_arg(staged)
+        || check_logical_arg(unstaged)
+        || check_logical_arg(untracked)
+        || check_logical_arg(ignored))
         error("Invalid arguments to status");
 
     repository = get_repository(repo);
