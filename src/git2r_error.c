@@ -27,6 +27,7 @@ const char git2r_err_alloc_memory_buffer[] = "Unable to allocate memory buffer";
 const char git2r_err_invalid_repository[] = "Invalid repository";
 const char git2r_err_invalid_checkout_args[] = "Invalid arguments to checkout";
 const char git2r_err_nothing_added_to_commit[] = "Nothing added to commit";
+const char git2r_err_unexpected_config_level[] = "Unexpected config level";
 const char git2r_err_unexpected_type_of_branch[] = "Unexpected type of branch";
 const char git2r_err_unexpected_head_of_branch[] = "Unexpected head of branch";
 

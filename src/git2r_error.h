@@ -30,8 +30,9 @@ extern const char git2r_err_alloc_memory_buffer[];
 extern const char git2r_err_invalid_repository[];
 extern const char git2r_err_invalid_checkout_args[];
 extern const char git2r_err_nothing_added_to_commit[];
-extern const char git2r_err_unexpected_type_of_branch[];
+extern const char git2r_err_unexpected_config_level[];
 extern const char git2r_err_unexpected_head_of_branch[];
+extern const char git2r_err_unexpected_type_of_branch[];
 
 int check_logical_arg(const SEXP arg);
 int check_signature_arg(const SEXP arg);

@@ -16,7 +16,8 @@
 
 ##' Config
 ##'
-##' Config file management.
+##' Config file management. To display the configuration variables,
+##' call method \code{config} with only the \code{repo} argument.
 ##' @rdname config-methods
 ##' @docType methods
 ##' @param repo the \code{repo} to configure
@@ -32,8 +33,11 @@
 ##' ## Set user name and email. The configuration is returned
 ##' cfg <-config(repo, user.name="Repo", user.email="repo@@example.org")
 ##'
-##' ## View configuration
+##' ## View configuration list
 ##' cfg
+##'
+##' ## Display configuration
+##' config(repo)
 ##'}
 setGeneric("config",
            signature = "repo",
@@ -66,6 +70,19 @@ setMethod("config",
                   }
               }
 
-              invisible(.Call("config", repo, variables))
+              cfg <- .Call("config", repo, variables)
+
+              if(!length(variables)) {
+                  lapply(names(cfg), function(level) {
+                      cat(sprintf("%s:\n", level))
+                      lapply(names(cfg[[level]]), function(entry) {
+                          cat(sprintf("\t%s=%s\n",
+                                      entry,
+                                      cfg[[level]][[entry]][1]))
+                      })
+                  })
+              }
+
+              invisible(cfg)
           }
 )
