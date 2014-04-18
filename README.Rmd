@@ -3,7 +3,7 @@
 git2r
 =====
 
-R bindings to [libgit2](https://github.com/libgit2/libgit2) library. The package uses the source code of `libgit2` to interface a Git repository from R.
+Programmatic access to Git repositories from R. The package uses the source code of [libgit2](https://github.com/libgit2/libgit2) to interface a Git repository from R.
 
 Aim
 ---
