@@ -14,6 +14,12 @@
 # include <Shlwapi.h>
 #endif
 
+/*
+ * Stefan Widgren <stefan.widgren@gmail.com>
+ * 2014-04-19: Added missing include R.h for Rprintf
+ */
+#include <R.h>
+
 void git_strarray_free(git_strarray *array)
 {
 	size_t i;

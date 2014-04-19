@@ -15,6 +15,12 @@
 #include "object.h"
 #include "git2/oid.h"
 
+/*
+ * Stefan Widgren <stefan.widgren@gmail.com>
+ * 2014-04-19: Added missing include R.h for Rprintf
+ */
+#include <R.h>
+
 GIT__USE_OIDMAP
 
 bool git_cache__enabled = true;
