@@ -35,8 +35,10 @@ cfg <- config(repo, user.name="Repo", user.email="repo@example.org")
 ##
 ## Check configuration
 ##
-stopifnot("Repo" %in% sapply(cfg[names(cfg) == "user.name"], "["))
-stopifnot("repo@example.org" %in% sapply(cfg[names(cfg) == "user.email"], "["))
+stopifnot("local" %in% names(cfg))
+stopifnot("user.name" %in% names(cfg$local))
+stopifnot(identical(cfg$local$user.name, "Repo"))
+stopifnot(identical(cfg$local$user.email, "repo@example.org"))
 
 ##
 ## Delete entries
@@ -46,8 +48,8 @@ cfg <- config(repo, user.name=NULL, user.email=NULL)
 ##
 ## Check configuration
 ##
-stopifnot(!("Repo" %in% sapply(cfg[names(cfg) == "user.name"], "[")))
-stopifnot(!("repo@example.org" %in% sapply(cfg[names(cfg) == "user.email"], "[")))
+stopifnot(is.null(cfg$local$user.name))
+stopifnot(is.null(cfg$local$user.email))
 
 ##
 ## Cleanup

@@ -68,9 +68,11 @@ setMethod("config",
                                                  "must be character",
                                                  collapse="\n")))
                   }
+
+                  .Call("set_config", repo, variables)
               }
 
-              cfg <- .Call("config", repo, variables)
+              cfg <- .Call("get_config", repo)
 
               if(!length(variables)) {
                   lapply(names(cfg), function(level) {

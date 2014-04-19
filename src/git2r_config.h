@@ -22,6 +22,7 @@
 #include <R.h>
 #include <Rinternals.h>
 
-SEXP config(SEXP repo, SEXP variables);
+SEXP get_config(SEXP repo);
+SEXP set_config(SEXP repo, SEXP variables);
 
 #endif

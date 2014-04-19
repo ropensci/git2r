@@ -30,9 +30,10 @@
  * @param n_level array to store the number of variables
  * @param 0 on succes, or error code
  */
-static int count_config_variables(const git_config *cfg,
-                                  size_t *n_level,
-                                  char **err_msg)
+static int count_config_variables(
+    const git_config *cfg,
+    size_t *n_level,
+    char **err_msg)
 {
     int err;
     git_config_iterator *iterator = NULL;
@@ -81,41 +82,6 @@ cleanup:
 
     if (GIT_ITEROVER != err)
         return err;
-
-    return 0;
-}
-
-/**
- * Set or delete config entries
- *
- * @param variables list of variables. If variable is NULL, it's deleted.
- * @param cfg where to set/delete variables
- * @param 0 on succes, or error code
- */
-static int set_config_variables(SEXP variables, git_config *cfg)
-{
-    size_t n = length(variables);
-
-    if (n) {
-        size_t i;
-        SEXP names = getAttrib(variables, R_NamesSymbol);
-
-        for (i = 0; i < n; i++) {
-            int err;
-            const char *key = CHAR(STRING_ELT(names, i));
-            const char *value = NULL;
-
-            if (!isNull(VECTOR_ELT(variables, i)))
-                value = CHAR(STRING_ELT(VECTOR_ELT(variables, i), 0));
-
-            if (value)
-                err = git_config_set_string(cfg, key, value);
-            else
-                err = git_config_delete_entry(cfg, key);
-            if (err < 0)
-                return err;
-        }
-    }
 
     return 0;
 }
@@ -266,13 +232,12 @@ cleanup:
 }
 
 /**
- * Config
+ * Get config variables
  *
  * @param repo S4 class git_repository
- * @param variables
- * @return R_NilValue
+ * @return VECSXP list with variables by level
  */
-SEXP config(SEXP repo, SEXP variables)
+SEXP get_config(SEXP repo)
 {
     int err;
     SEXP list = R_NilValue;
@@ -281,18 +246,11 @@ SEXP config(SEXP repo, SEXP variables)
     git_config *cfg = NULL;
     git_repository *repository = NULL;
 
-    if (R_NilValue == variables || !isNewList(variables))
-        error("Invalid arguments to config");
-
     repository = get_repository(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
 
     err = git_repository_config(&cfg, repository);
-    if (err < 0)
-        goto cleanup;
-
-    err = set_config_variables(variables, cfg);
     if (err < 0)
         goto cleanup;
 
@@ -313,7 +271,7 @@ SEXP config(SEXP repo, SEXP variables)
         goto cleanup;
 
 cleanup:
-    if (config)
+    if (cfg)
         git_config_free(cfg);
 
     if (repository)
@@ -330,4 +288,69 @@ cleanup:
     }
 
     return list;
+}
+
+/**
+ * Set or delete config entries
+ *
+ * @param repo S4 class git_repository
+ * @param variables list of variables. If variable is NULL, it's deleted.
+ * @return R_NilValue
+ */
+SEXP set_config(SEXP repo, SEXP variables)
+{
+    int err;
+    SEXP names;
+    char *err_msg = NULL;
+    size_t i, n;
+    git_config *cfg = NULL;
+    git_repository *repository = NULL;
+
+    if (R_NilValue == variables || !isNewList(variables))
+        error("Invalid arguments to config");
+
+    n = length(variables);
+    if (n) {
+        repository = get_repository(repo);
+        if (!repository)
+            error(git2r_err_invalid_repository);
+
+        err = git_repository_config(&cfg, repository);
+        if (err < 0)
+            goto cleanup;
+
+        names = getAttrib(variables, R_NamesSymbol);
+        for (i = 0; i < n; i++) {
+            int err;
+            const char *key = CHAR(STRING_ELT(names, i));
+            const char *value = NULL;
+
+            if (!isNull(VECTOR_ELT(variables, i)))
+                value = CHAR(STRING_ELT(VECTOR_ELT(variables, i), 0));
+
+            if (value)
+                err = git_config_set_string(cfg, key, value);
+            else
+                err = git_config_delete_entry(cfg, key);
+            if (err < 0)
+                goto cleanup;
+        }
+
+    }
+
+cleanup:
+    if (cfg)
+        git_config_free(cfg);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (err < 0) {
+        if (err_msg)
+            error("Error: %s\n", err_msg);
+        else
+            error("Error: %s\n", giterr_last()->message);
+    }
+
+    return R_NilValue;
 }
