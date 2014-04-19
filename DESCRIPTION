@@ -26,6 +26,9 @@ Date: 2014-03-15
 Imports:
     ggplot2,
     scales
+Suggests:
+    knitr
+VignetteBuilder: knitr
 Collate:
     'repository.r'
     'time.r'
