@@ -74,6 +74,9 @@ setMethod("config",
 
               cfg <- .Call("get_config", repo)
 
+              ## Sort the variables within levels by name
+              cfg <- lapply(cfg, function(x) x[order(names(x))])
+
               if(!length(variables)) {
                   lapply(names(cfg), function(level) {
                       cat(sprintf("%s:\n", level))
