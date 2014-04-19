@@ -20,7 +20,8 @@ config(repo, user.name, user.email)
 An invisible \code{list} with the configuration
 }
 \description{
-Config file management.
+Config file management. To display the configuration variables,
+call method \code{config} with only the \code{repo} argument.
 }
 \examples{
 \dontrun{
@@ -30,8 +31,11 @@ repo <- repository("path/to/git2r")
 ## Set user name and email. The configuration is returned
 cfg <-config(repo, user.name="Repo", user.email="repo@example.org")
 
-## View configuration
+## View configuration list
 cfg
+
+## Display configuration
+config(repo)
 }
 }
 \keyword{methods}
