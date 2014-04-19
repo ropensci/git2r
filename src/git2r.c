@@ -31,6 +31,7 @@
 
 #include "git2.h"
 
+#include "git2r_blob.h"
 #include "git2r_checkout.h"
 #include "git2r_clone.h"
 #include "git2r_config.h"
@@ -593,6 +594,7 @@ static const R_CallMethodDef callMethods[] =
     {"is_bare", (DL_FUNC)&is_bare, 1},
     {"is_empty", (DL_FUNC)&is_empty, 1},
     {"is_repository", (DL_FUNC)&is_repository, 1},
+    {"lookup", (DL_FUNC)&lookup, 2},
     {"push", (DL_FUNC)&push, 3},
     {"references", (DL_FUNC)&references, 1},
     {"remotes", (DL_FUNC)&remotes, 1},
