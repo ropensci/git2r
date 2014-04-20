@@ -19,7 +19,6 @@
 #ifndef INCLUDE_git2r_repository_h
 #define INCLUDE_git2r_repository_h
 
-#include <Rdefines.h>
 #include <R.h>
 #include <Rinternals.h>
 
@@ -30,6 +29,7 @@ SEXP init(const SEXP path, const SEXP bare);
 SEXP is_bare(const SEXP repo);
 SEXP is_empty(const SEXP repo);
 SEXP is_repository(const SEXP path);
+SEXP lookup(const SEXP repo, const SEXP hex);
 SEXP workdir(const SEXP repo);
 
 #endif

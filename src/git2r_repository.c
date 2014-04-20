@@ -16,8 +16,13 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <Rdefines.h>
+
+#include "git2r_blob.h"
 #include "git2r_error.h"
 #include "git2r_repository.h"
+#include "git2r_tag.h"
+#include "git2r_tree.h"
 
 /**
  * Get repo slot from S4 class git_repository
@@ -143,6 +148,71 @@ SEXP is_repository(const SEXP path)
     git_repository_free(repository);
 
     return ScalarLogical(TRUE);
+}
+
+/**
+ * Lookup an object in a repository
+ *
+ * @param repo S4 class git_repository
+ * @param hex 40 char hexadecimal string
+ * @return S4 object with lookup
+ */
+SEXP lookup(const SEXP repo, const SEXP hex)
+{
+    int err;
+    SEXP result = R_NilValue;
+    git_object *object = NULL;
+    git_oid oid;
+    git_repository *repository = NULL;
+
+    if (check_string_arg(hex))
+        error("Invalid arguments to lookup");
+
+    repository = get_repository(repo);
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    git_oid_fromstr(&oid, CHAR(STRING_ELT(hex, 0)));
+
+    err = git_object_lookup(&object, repository, &oid, GIT_OBJ_ANY);
+    if (err < 0)
+        goto cleanup;
+
+    switch (git_object_type(object)) {
+    case GIT_OBJ_COMMIT:
+        PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_commit")));
+        init_commit((git_commit*)object, result);
+        break;
+    case GIT_OBJ_TREE:
+        PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_tree")));
+        init_tree((git_tree*)object, result);
+        break;
+    case GIT_OBJ_BLOB:
+        PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_blob")));
+        init_blob((git_blob*)object, result);
+        break;
+    case GIT_OBJ_TAG:
+        PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_tag")));
+        init_tag((git_tag*)object, result);
+        break;
+    default:
+        error("Unimplemented");
+    }
+
+cleanup:
+    if (object)
+        git_object_free(object);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return result;
 }
 
 /**

@@ -21,7 +21,8 @@
 
 #include <R.h>
 #include <Rinternals.h>
+#include "git2.h"
 
-SEXP lookup(SEXP repo, SEXP id);
+void init_blob(const git_blob *source, SEXP dest);
 
 #endif
