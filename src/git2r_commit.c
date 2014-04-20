@@ -218,11 +218,11 @@ cleanup:
 /**
  * Init slots in S4 class git_commit
  *
- * @param commit a commit object
- * @param sexp_commit S4 class git_commit
+ * @param source a commit object
+ * @param dest S4 class git_commit to initialize
  * @return void
  */
-void init_commit(const git_commit *commit, SEXP sexp_commit)
+void init_commit(const git_commit *source, SEXP dest)
 {
     const char *message;
     const char *summary;
@@ -230,42 +230,42 @@ void init_commit(const git_commit *commit, SEXP sexp_commit)
     const git_signature *committer;
     char hex[GIT_OID_HEXSZ + 1];
 
-    git_oid_fmt(hex, git_commit_id(commit));
+    git_oid_fmt(hex, git_commit_id(source));
     hex[GIT_OID_HEXSZ] = '\0';
-    SET_SLOT(sexp_commit,
+    SET_SLOT(dest,
              Rf_install("hex"),
              ScalarString(mkChar(hex)));
 
-    author = git_commit_author(commit);
+    author = git_commit_author(source);
     if (author) {
         SEXP sexp_author;
 
         PROTECT(sexp_author = NEW_OBJECT(MAKE_CLASS("git_signature")));
         init_signature(author, sexp_author);
-        SET_SLOT(sexp_commit, Rf_install("author"), sexp_author);
+        SET_SLOT(dest, Rf_install("author"), sexp_author);
         UNPROTECT(1);
     }
 
-    committer = git_commit_committer(commit);
+    committer = git_commit_committer(source);
     if (committer) {
         SEXP sexp_committer;
 
         PROTECT(sexp_committer = NEW_OBJECT(MAKE_CLASS("git_signature")));
         init_signature(committer, sexp_committer);
-        SET_SLOT(sexp_commit, Rf_install("committer"), sexp_committer);
+        SET_SLOT(dest, Rf_install("committer"), sexp_committer);
         UNPROTECT(1);
     }
 
-    summary = git_commit_summary(commit);
+    summary = git_commit_summary(source);
     if (summary) {
-        SET_SLOT(sexp_commit,
+        SET_SLOT(dest,
                  Rf_install("summary"),
                  ScalarString(mkChar(summary)));
     }
 
-    message = git_commit_message(commit);
+    message = git_commit_message(source);
     if (message) {
-        SET_SLOT(sexp_commit,
+        SET_SLOT(dest,
                  Rf_install("message"),
                  ScalarString(mkChar(message)));
     }
