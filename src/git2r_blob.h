@@ -23,6 +23,6 @@
 #include <Rinternals.h>
 #include "git2.h"
 
-void init_blob(const git_blob *source, SEXP dest);
+void init_blob(const git_blob *source, SEXP repo, SEXP dest);
 
 #endif

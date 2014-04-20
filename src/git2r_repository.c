@@ -189,7 +189,7 @@ SEXP lookup(const SEXP repo, const SEXP hex)
         break;
     case GIT_OBJ_BLOB:
         PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_blob")));
-        init_blob((git_blob*)object, result);
+        init_blob((git_blob*)object, repo, result);
         break;
     case GIT_OBJ_TAG:
         PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_tag")));

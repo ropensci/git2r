@@ -23,10 +23,11 @@
  * Init slots in S4 class git_blob
  *
  * @param source a blob
+ * @param repo S4 class git_repository that contains the blob
  * @param dest S4 class git_blob to initialize
  * @return void
  */
-void init_blob(const git_blob *source, SEXP dest)
+void init_blob(const git_blob *source, SEXP repo, SEXP dest)
 {
     const git_oid *oid;
     char hex[GIT_OID_HEXSZ + 1];
@@ -36,4 +37,8 @@ void init_blob(const git_blob *source, SEXP dest)
     SET_SLOT(dest,
              Rf_install("hex"),
              ScalarString(mkChar(hex)));
+
+    SET_SLOT(dest,
+             Rf_install("path"),
+             duplicate(GET_SLOT(repo, Rf_install("path"))));
 }
