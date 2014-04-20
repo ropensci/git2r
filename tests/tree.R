@@ -29,40 +29,20 @@ repo <- init(path)
 config(repo, user.name="Repo", user.email="repo@example.org")
 
 ##
-## Commit without adding changes should produce an error
-##
-tools::assertError(commit(repo, "Test to commit"))
-
-##
 ## Create a file
 ##
 writeLines("Hello world!", file.path(path, "test.txt"))
 
 ##
-## Commit without adding changes should produce an error
-##
-tools::assertError(commit(repo, "Test to commit"))
-
-##
 ## add and commit
 ##
-add(repo, "test.txt")
-new_commit <- commit(repo, "Commit message")
+add(repo, 'test.txt')
+commit(repo, "Commit message")
 
 ##
-## Check commit
+## Check tree
 ##
-stopifnot(identical(new_commit@author@name, "Repo"))
-stopifnot(identical(new_commit@author@email, "repo@example.org"))
-stopifnot(identical(lookup(repo, new_commit@hex), new_commit))
-stopifnot(identical(length(commits(repo)), 1L))
-stopifnot(identical(commits(repo)[[1]]@author@name, "Repo"))
-stopifnot(identical(commits(repo)[[1]]@author@email, "repo@example.org"))
-
-##
-## Commit without adding changes should produce an error
-##
-tools::assertError(commit(repo, "Test to commit"))
+stopifnot(is(lookup(repo, "a0b0b9e615e9e433eb5f11859e9feac4564c58c5"), "git_tree"))
 
 ##
 ## Cleanup
