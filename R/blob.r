@@ -40,28 +40,3 @@ setClass("git_blob",
              if (length(errors) == 0) TRUE else errors
          }
 )
-
-##' Lookup
-##'
-##' Lookup a blob object from a repository.
-##' @rdname lookup-methods
-##' @docType methods
-##' @param object The repository \code{object}.
-##' @param id the identity of the blob to lookup
-##' @return a \code{git_blob} object
-##' @include repository.r
-##' @keywords methods
-setGeneric("lookup",
-           signature = "object",
-           function(object, id)
-           standardGeneric("lookup"))
-
-##' @rdname lookup-methods
-##' @export
-setMethod("lookup",
-          signature(object = "git_repository"),
-          function (object, id)
-          {
-              .Call("lookup", object, id)
-          }
-)

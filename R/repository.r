@@ -401,6 +401,32 @@ setMethod("is.empty",
           }
 )
 
+##' Lookup
+##'
+##' Lookup one object in a repository.
+##' @rdname lookup-methods
+##' @docType methods
+##' @param object The repository \code{object}.
+##' @param hex the identity of the object to lookup
+##' @return a \code{git_blob} or \code{git_commit} or \code{git_tag}
+##' or \code{git_tree} object
+##' @include repository.r
+##' @keywords methods
+setGeneric("lookup",
+           signature = "object",
+           function(object, hex)
+           standardGeneric("lookup"))
+
+##' @rdname lookup-methods
+##' @export
+setMethod("lookup",
+          signature(object = "git_repository"),
+          function (object, hex)
+          {
+              .Call("lookup", object, hex)
+          }
+)
+
 ##' Get the configured remotes for a repo
 ##'
 ##' @rdname remotes-methods
