@@ -410,7 +410,6 @@ setMethod("is.empty",
 ##' @param hex the identity of the object to lookup
 ##' @return a \code{git_blob} or \code{git_commit} or \code{git_tag}
 ##' or \code{git_tree} object
-##' @include repository.r
 ##' @keywords methods
 setGeneric("lookup",
            signature = "object",

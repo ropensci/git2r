@@ -12,6 +12,9 @@ Class \code{"git_blob"}
   \item{hex}{
     40 char hexadecimal string
   }
+  \item{path}{
+    Path to the git repository that contains the blob
+  }
 }
 }
 \keyword{classes}

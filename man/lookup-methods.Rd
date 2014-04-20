@@ -5,20 +5,21 @@
 \alias{lookup,git_repository-method}
 \title{Lookup}
 \usage{
-lookup(object, id)
+lookup(object, hex)
 
-\S4method{lookup}{git_repository}(object, id)
+\S4method{lookup}{git_repository}(object, hex)
 }
 \arguments{
 \item{object}{The repository \code{object}.}
 
-\item{id}{the identity of the blob to lookup}
+\item{hex}{the identity of the object to lookup}
 }
 \value{
-a \code{git_blob} object
+a \code{git_blob} or \code{git_commit} or \code{git_tag}
+or \code{git_tree} object
 }
 \description{
-Lookup a blob object from a repository.
+Lookup one object in a repository.
 }
 \keyword{methods}
 
