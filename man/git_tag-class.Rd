@@ -9,11 +9,14 @@ Class \code{"git_tag"}
 \section{Slots}{
 
 \describe{
-  \item{name}{
-    The name of the tag
+  \item{hex}{
+    40 char hexadecimal string
   }
   \item{message}{
     The message of the tag
+  }
+  \item{name}{
+    The name of the tag
   }
   \item{tagger}{
     The tagger (author) of the tag

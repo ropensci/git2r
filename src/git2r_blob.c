@@ -28,6 +28,7 @@
  */
 void init_blob(const git_blob *source, SEXP dest)
 {
+    const git_oid *oid;
     char hex[GIT_OID_HEXSZ + 1];
 
     oid = git_blob_id(source);
