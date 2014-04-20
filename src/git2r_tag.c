@@ -17,7 +17,6 @@
  */
 
 #include <Rdefines.h>
-#include "git2.h"
 #include "git2r_error.h"
 #include "git2r_repository.h"
 #include "git2r_signature.h"
@@ -30,12 +29,19 @@
  * @param dest S4 class git_tag to initialize
  * @return void
  */
-static void init_tag(git_tag *source, SEXP dest)
+void init_tag(git_tag *source, SEXP dest)
 {
     int err;
     const git_signature *tagger;
     const git_oid *oid;
+    char hex[GIT_OID_HEXSZ + 1];
     char target[GIT_OID_HEXSZ + 1];
+
+    oid = git_tag_id(source);
+    git_oid_tostr(hex, sizeof(hex), oid);
+    SET_SLOT(dest,
+             Rf_install("hex"),
+             ScalarString(mkChar(hex)));
 
     SET_SLOT(dest,
              Rf_install("message"),

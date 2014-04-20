@@ -19,11 +19,14 @@
 ##' @title S4 class to handle a git tag
 ##' @section Slots:
 ##' \describe{
-##'   \item{name}{
-##'     The name of the tag
+##'   \item{hex}{
+##'     40 char hexadecimal string
 ##'   }
 ##'   \item{message}{
 ##'     The message of the tag
+##'   }
+##'   \item{name}{
+##'     The name of the tag
 ##'   }
 ##'   \item{tagger}{
 ##'     The tagger (author) of the tag
@@ -40,7 +43,8 @@
 ##' @include repository.r
 ##' @export
 setClass("git_tag",
-         slots=c(message = "character",
+         slots=c(hex     = "character",
+                 message = "character",
                  name    = "character",
                  tagger  = "git_signature",
                  target  = "character"),
@@ -51,10 +55,12 @@ setClass("git_tag",
              if(identical(errors, TRUE))
                errors <- character()
 
-             if(!identical(length(object@name), 1L))
-                 errors <- c(errors, "name must have length equal to one")
+             if(!identical(length(object@hex), 1L))
+                 errors <- c(errors, "hex must have length equal to one")
              if(!identical(length(object@message), 1L))
                  errors <- c(errors, "message must have length equal to one")
+             if(!identical(length(object@name), 1L))
+                 errors <- c(errors, "name must have length equal to one")
              if(!identical(length(object@target), 1L))
                  errors <- c(errors, "target must have length equal to one")
 

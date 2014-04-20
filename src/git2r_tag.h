@@ -22,6 +22,9 @@
 #include <R.h>
 #include <Rinternals.h>
 
+#include "git2.h"
+
+void init_tag(git_tag *source, SEXP dest);
 SEXP tag(const SEXP repo, const SEXP name, const SEXP message, const SEXP tagger);
 SEXP tags(const SEXP repo);
 
