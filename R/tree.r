@@ -40,3 +40,26 @@ setClass("git_tree",
              if(length(errors) == 0) TRUE else errors
          }
 )
+
+##' Tree
+##'
+##' Get the tree pointed to by a commit.
+##' @rdname tree-methods
+##' @docType methods
+##' @param object the \code{commit} object
+##' @return A S4 class git_tree object
+##' @keywords methods
+##' @include commit.r
+setGeneric("tree",
+           signature = "object",
+           function(object) standardGeneric("tree"))
+
+##' @rdname tree-methods
+##' @export
+setMethod("tree",
+          signature(object = "git_commit"),
+          function (object)
+          {
+              .Call("commit_tree", object)
+          }
+)

@@ -46,7 +46,8 @@ git_repository* get_repository(const SEXP repo)
 
     class = CHAR(STRING_ELT(class_name, 0));
     if ((0 == strcmp(class, "git_repository"))
-        && (0 == strcmp(class, "git_blob")))
+        && (0 == strcmp(class, "git_blob"))
+        && (0 == strcmp(class, "git_commit")))
         return NULL;
 
     path = GET_SLOT(repo, Rf_install("path"));

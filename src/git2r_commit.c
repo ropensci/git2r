@@ -22,6 +22,7 @@
 #include "git2r_error.h"
 #include "git2r_repository.h"
 #include "git2r_signature.h"
+#include "git2r_tree.h"
 
 /**
  * Commit
@@ -215,6 +216,58 @@ cleanup:
     }
 
     return sexp_commit;
+}
+
+/**
+ * Get the tree pointed to by a commit
+ *
+ * @param commit S4 class git_commit
+ * @return S4 class git_tree
+ */
+SEXP commit_tree(SEXP commit)
+{
+    int err;
+    SEXP result = R_NilValue;
+    SEXP hex;
+    git_commit *commit_obj = NULL;
+    git_oid oid;
+    git_repository *repository = NULL;
+    git_tree *tree = NULL;
+
+    repository = get_repository(commit);
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    hex = GET_SLOT(commit, Rf_install("hex"));
+    git_oid_fromstr(&oid, CHAR(STRING_ELT(hex, 0)));
+    err = git_commit_lookup(&commit_obj, repository, &oid);
+    if (err < 0)
+        goto cleanup;
+
+    err = git_commit_tree(&tree, commit_obj);
+    if (err < 0)
+        goto cleanup;
+
+    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_tree")));
+    init_tree((git_tree*)commit_obj, result);
+
+cleanup:
+    if (commit_obj)
+        git_commit_free(commit_obj);
+
+    if (tree)
+        git_tree_free(tree);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return result;
 }
 
 /**
