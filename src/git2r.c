@@ -556,7 +556,7 @@ SEXP revisions(SEXP repo)
             goto cleanup;
 
         PROTECT(sexp_commit = NEW_OBJECT(MAKE_CLASS("git_commit")));
-        init_commit(commit, sexp_commit);
+        init_commit(commit, repo, sexp_commit);
         SET_VECTOR_ELT(list, i, sexp_commit);
         UNPROTECT(1);
         i++;

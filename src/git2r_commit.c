@@ -16,6 +16,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <Rdefines.h>
+
 #include "git2r_commit.h"
 #include "git2r_error.h"
 #include "git2r_repository.h"
@@ -169,7 +171,7 @@ SEXP commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP parent_li
         goto cleanup;
 
     PROTECT(sexp_commit = NEW_OBJECT(MAKE_CLASS("git_commit")));
-    init_commit(new_commit, sexp_commit);
+    init_commit(new_commit, repo, sexp_commit);
 
 cleanup:
     if (sig_author)
@@ -219,10 +221,11 @@ cleanup:
  * Init slots in S4 class git_commit
  *
  * @param source a commit object
+ * @param repo S4 class git_repository that contains the blob
  * @param dest S4 class git_commit to initialize
  * @return void
  */
-void init_commit(const git_commit *source, SEXP dest)
+void init_commit(const git_commit *source, SEXP repo, SEXP dest)
 {
     const char *message;
     const char *summary;
@@ -269,4 +272,8 @@ void init_commit(const git_commit *source, SEXP dest)
                  Rf_install("message"),
                  ScalarString(mkChar(message)));
     }
+
+    SET_SLOT(dest,
+             Rf_install("path"),
+             duplicate(GET_SLOT(repo, Rf_install("path"))));
 }

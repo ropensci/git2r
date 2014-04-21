@@ -187,7 +187,7 @@ SEXP lookup(const SEXP repo, const SEXP hex)
     switch (git_object_type(object)) {
     case GIT_OBJ_COMMIT:
         PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_commit")));
-        init_commit((git_commit*)object, result);
+        init_commit((git_commit*)object, repo, result);
         break;
     case GIT_OBJ_TREE:
         PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_tree")));

@@ -19,13 +19,12 @@
 #ifndef INCLUDE_git2r_commit_h
 #define INCLUDE_git2r_commit_h
 
-#include <Rdefines.h>
 #include <R.h>
 #include <Rinternals.h>
 
 #include "git2.h"
 
 SEXP commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP parent_list);
-void init_commit(const git_commit *source, SEXP dest);
+void init_commit(const git_commit *source, SEXP repo, SEXP dest);
 
 #endif
