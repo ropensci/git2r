@@ -40,3 +40,25 @@ setClass("git_blob",
              if (length(errors) == 0) TRUE else errors
          }
 )
+
+##' Is blob binary
+##'
+##' @rdname is.binary-methods
+##' @docType methods
+##' @param object The blob \code{object}.
+##' @return TRUE if binary data, FALSE if not.
+##' @keywords methods
+setGeneric("is.binary",
+           signature = "object",
+           function(object)
+           standardGeneric("is.binary"))
+
+##' @rdname is.binary-methods
+##' @export
+setMethod("is.binary",
+          signature(object = "git_blob"),
+          function (object)
+          {
+              .Call("is_binary", object)
+          }
+)

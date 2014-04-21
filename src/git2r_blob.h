@@ -24,5 +24,6 @@
 #include "git2.h"
 
 void init_blob(const git_blob *source, SEXP repo, SEXP dest);
+SEXP is_binary(const SEXP blob);
 
 #endif

@@ -592,6 +592,7 @@ static const R_CallMethodDef callMethods[] =
     {"get_config", (DL_FUNC)&get_config, 1},
     {"init", (DL_FUNC)&init, 2},
     {"is_bare", (DL_FUNC)&is_bare, 1},
+    {"is_binary", (DL_FUNC)&is_binary, 1},
     {"is_empty", (DL_FUNC)&is_empty, 1},
     {"is_repository", (DL_FUNC)&is_repository, 1},
     {"lookup", (DL_FUNC)&lookup, 2},
