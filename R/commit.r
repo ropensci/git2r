@@ -35,6 +35,9 @@
 ##'   \item{message}{
 ##'     The message of a commit
 ##'   }
+##'   \item{path}{
+##'     Path to the git repository that contains the commit
+##'   }
 ##' }
 ##' @name git_commit-class
 ##' @docType class
@@ -47,11 +50,12 @@
 ##' @include signature.r
 ##' @export
 setClass("git_commit",
-         slots=c(hex="character",
-                 author="git_signature",
-                 committer="git_signature",
-                 summary="character",
-                 message="character"),
+         slots=c(hex       = "character",
+                 author    = "git_signature",
+                 committer = "git_signature",
+                 summary   = "character",
+                 message   = "character",
+                 path      = "character"),
          prototype=list(summary=NA_character_,
                         message=NA_character_))
 
