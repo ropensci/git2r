@@ -249,7 +249,7 @@ SEXP commit_tree(SEXP commit)
         goto cleanup;
 
     PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_tree")));
-    init_tree((git_tree*)commit_obj, result);
+    init_tree((git_tree*)tree, result);
 
 cleanup:
     if (commit_obj)
