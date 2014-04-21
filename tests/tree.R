@@ -43,6 +43,9 @@ commit(repo, "Commit message")
 ## Check tree
 ##
 stopifnot(is(lookup(repo, "a0b0b9e615e9e433eb5f11859e9feac4564c58c5"), "git_tree"))
+stopifnot(is(tree(commits(repo)[[1]]), "git_tree"))
+stopifnot(identical(lookup(repo, "a0b0b9e615e9e433eb5f11859e9feac4564c58c5"),
+                    tree(commits(repo)[[1]])))
 
 ##
 ## Cleanup
