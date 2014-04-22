@@ -32,12 +32,35 @@ const char git2r_err_unexpected_type_of_branch[] = "Unexpected type of branch";
 const char git2r_err_unexpected_head_of_branch[] = "Unexpected head of branch";
 
 /**
+ * Check commit argument
+ *
+ * @param arg the arg to check
+ * @return 0 if OK, else 1
+ */
+int check_commit_arg(SEXP arg)
+{
+    SEXP class_name;
+
+    if (R_NilValue == arg || S4SXP != TYPEOF(arg))
+        return 1;
+
+    class_name = getAttrib(arg, R_ClassSymbol);
+    if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_commit"))
+        return 1;
+
+    if (check_string_arg(GET_SLOT(arg, Rf_install("hex"))))
+        return 1;
+
+    return 0;
+}
+
+/**
  * Check logical argument
  *
  * @param arg the arg to check
  * @return 0 if OK, else 1
  */
-int check_logical_arg(const SEXP arg)
+int check_logical_arg(SEXP arg)
 {
     if (R_NilValue == arg
         || !isLogical(arg)
@@ -53,7 +76,7 @@ int check_logical_arg(const SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else 1
  */
-int check_real_arg(const SEXP arg)
+int check_real_arg(SEXP arg)
 {
     if (R_NilValue == arg
         || !isReal(arg)
@@ -69,7 +92,7 @@ int check_real_arg(const SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else 1
  */
-int check_signature_arg(const SEXP arg)
+int check_signature_arg(SEXP arg)
 {
     SEXP class_name;
     SEXP when;
@@ -99,12 +122,58 @@ int check_signature_arg(const SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else 1
  */
-int check_string_arg(const SEXP arg)
+int check_string_arg(SEXP arg)
 {
     if (R_NilValue == arg
         || !isString(arg)
         || 1 != length(arg)
         || NA_STRING == STRING_ELT(arg, 0))
         return 1;
+    return 0;
+}
+
+/**
+ * Check tag argument
+ *
+ * @param arg the arg to check
+ * @return 0 if OK, else 1
+ */
+int check_tag_arg(SEXP arg)
+{
+    SEXP class_name;
+
+    if (R_NilValue == arg || S4SXP != TYPEOF(arg))
+        return 1;
+
+    class_name = getAttrib(arg, R_ClassSymbol);
+    if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_tag"))
+        return 1;
+
+    if (check_string_arg(GET_SLOT(arg, Rf_install("target"))))
+        return 1;
+
+    return 0;
+}
+
+/**
+ * Check tree argument
+ *
+ * @param arg the arg to check
+ * @return 0 if OK, else 1
+ */
+int check_tree_arg(SEXP arg)
+{
+    SEXP class_name;
+
+    if (R_NilValue == arg || S4SXP != TYPEOF(arg))
+        return 1;
+
+    class_name = getAttrib(arg, R_ClassSymbol);
+    if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_tree"))
+        return 1;
+
+    if (check_string_arg(GET_SLOT(arg, Rf_install("hex"))))
+        return 1;
+
     return 0;
 }
