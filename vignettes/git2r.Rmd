@@ -34,7 +34,6 @@ library(devtools)
 install_github("git2r", "ropensci")
 ```
 
-The first step
 ## Repository
 
 The central object in the `git2r` package is the S4 class `git_repository`. The following three methods can instantiate a repository; `init`, `repository` and `clone`.
@@ -150,7 +149,7 @@ writeLines("Hello world!", file.path(path, "test.txt"))
 
 ## Add file and commit
 add(repo, "test.txt")
-new_commit <- commit(repo, "Commit message")
+commit(repo, "Commit message")
 ```
 
 ## Descriptive statistics from repository data
