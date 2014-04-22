@@ -81,7 +81,7 @@ setMethod("config",
                   lapply(names(cfg), function(level) {
                       cat(sprintf("%s:\n", level))
                       lapply(names(cfg[[level]]), function(entry) {
-                          cat(sprintf("\t%s=%s\n",
+                          cat(sprintf("        %s=%s\n",
                                       entry,
                                       cfg[[level]][[entry]][1]))
                       })
