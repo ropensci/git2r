@@ -1,27 +1,22 @@
 [![Build Status](https://travis-ci.org/ropensci/git2r.png)](https://travis-ci.org/ropensci/git2r)
 
-git2r
-=====
+# Introduction
 
-R bindings to [libgit2](https://github.com/libgit2/libgit2) library. The package uses the source code of `libgit2` to interface a Git repository from R.
+The `git2r` package gives you programmatic access to Git repositories
+from R. Internally the package uses the libgit2 library which is a
+pure C implementation of the Git core methods. For more information
+about libgit2, check out libgit2's website
+[(http://libgit2.github.com)](http://libgit2.github.com).
 
-Aim
----
+## Development
 
-The aim of the package is to be able to run some basic git commands on a repository from R. Another aim is to extract and visualize descriptive statistics from a git repository.
+The `git2r` package is in an early and active development phase and is
+considered unstable.
 
-Development
------------
+## Installation
 
-The package is in a very early development phase and is considered unstable with only a few features implemented.
-
-Installation
-------------
-
-To install the development version of `git2r`, it's easiest to use the devtools package:
-
-
-
+To install the development version of `git2r`, it's easiest to use the
+devtools package:
 
 
 ```coffee
@@ -30,9 +25,17 @@ library(devtools)
 install_github("git2r", "ropensci")
 ```
 
+## Usage
 
-Example
--------
+### Repository
+
+The central object in the `git2r` package is the S4 class
+`git_repository`. The following three methods can instantiate a
+repository; `init`, `repository` and `clone`.
+
+#### Create a new repository
+
+Create a new repository in a temporary directory using `init`
 
 
 ```coffee
@@ -45,52 +48,25 @@ library(git2r)
 
 ```coffee
 
-# Open an existing repository
-# repo <- repository("path/to/git2r")
-repo <- repository(getwd())
+## Create a temporary directory to hold the repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
 
-# Brief summary of repository
+## Initialize the repository
+repo <- init(path)
+
+## Display a brief summary of the new repository
 repo
 ```
 
 ```
-#> Remote:   @ origin (https://github.com/ropensci/git2r.git)
-#> Local:    master /home/stefan/projects/packages/git2r/git2r/
+#> Local:    /tmp/Rtmp7CXPlx/git2r-1ae2305c0e8d/
+#> Head:     nothing commited (yet)
 ```
 
 ```coffee
 
-# Summary of repository
-summary(repo)
-```
-
-```
-#> Remote:   @ origin (https://github.com/ropensci/git2r.git)
-#> Local:    master /home/stefan/projects/packages/git2r/git2r/
-#> 
-#> Branches:          1
-#> Tags:              0
-#> Commits:         279
-#> Contributors:      3
-#> Ignored files:     0
-#> Untracked files:   1
-#> Unstaged files:   10
-#> Staged files:      2
-```
-
-```coffee
-
-# Workdir of repository
-workdir(repo)
-```
-
-```
-#> [1] "/home/stefan/projects/packages/git2r/git2r/"
-```
-
-```coffee
-
-# Check if repository is bare
+## Check if repository is bare
 is.bare(repo)
 ```
 
@@ -100,78 +76,146 @@ is.bare(repo)
 
 ```coffee
 
-# Check if repository is empty
+## Check if repository is empty
 is.empty(repo)
 ```
 
 ```
-#> [1] FALSE
+#> [1] TRUE
+```
+
+#### Create a new bare repository
+
+```coffee
+## Create a temporary directory to hold the repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+
+## Initialize the repository
+repo <- init(path, bare=TRUE)
+
+## Check if repository is bare
+is.bare(repo)
+```
+
+```
+#> [1] TRUE
+```
+
+#### Clone a repository
+
+```coffee
+## Create a temporary directory to hold the repository
+path <- file.path(tempfile(pattern="git2r-"), "git2r")
+dir.create(path, recursive=TRUE)
+
+## Clone the git2r repository
+repo <- clone("https://github.com/ropensci/git2r", path)
+```
+
+```
+#> cloning into '/tmp/Rtmp7CXPlx/git2r-1ae27d811539/git2r'...
+#> Receiving objects:   1% (24/2329),   12 kb
+#> Receiving objects:  11% (257/2329),   60 kb
+#> Receiving objects:  21% (490/2329),  100 kb
+#> Receiving objects:  31% (722/2329),  125 kb
+#> Receiving objects:  41% (955/2329),  237 kb
+#> Receiving objects:  51% (1188/2329),  574 kb
+#> Receiving objects:  61% (1421/2329), 1014 kb
+#> Receiving objects:  71% (1654/2329), 1350 kb
+#> Receiving objects:  81% (1887/2329), 1733 kb
+#> Receiving objects:  91% (2120/2329), 2614 kb
+#> Receiving objects: 100% (2329/2329), 2641 kb, done.
 ```
 
 ```coffee
 
-# List all references in repository
+## Summary of repository
+summary(repo)
+```
+
+```
+#> Remote:   @ origin (https://github.com/ropensci/git2r)
+#> Local:    master /tmp/Rtmp7CXPlx/git2r-1ae27d811539/git2r/
+#>
+#> Branches:          1
+#> Tags:              0
+#> Commits:         320
+#> Contributors:      3
+#> Ignored files:     0
+#> Untracked files:   0
+#> Unstaged files:    0
+#> Staged files:      0
+```
+
+```coffee
+
+## List all references in repository
 references(repo)
 ```
 
 ```
 #> $`refs/heads/master`
-#> [eb3405] master
-#> 
-#> $`refs/remotes/origin/HEAD`
-#> refs/remotes/origin/HEAD => refs/remotes/origin/master
-#> 
+#> [6fb440] master
+#>
 #> $`refs/remotes/origin/master`
-#> [eb3405] origin/master
-#> 
-#> $`refs/stash`
-#> [a621fb] stash
+#> [6fb440] origin/master
 ```
 
 ```coffee
 
-# List all branches in repository
+## List all branches in repository
 branches(repo)
 ```
 
 ```
 #> [[1]]
-#> [eb3405] (Local) (HEAD) master
-#> 
+#> [6fb440] (Local) (HEAD) master
+#>
 #> [[2]]
-#> (origin @ https://github.com/ropensci/git2r.git) refs/remotes/origin/HEAD => refs/remotes/origin/master
-#> 
-#> [[3]]
-#> [eb3405] (origin @ https://github.com/ropensci/git2r.git) master
+#> [6fb440] (origin @ https://github.com/ropensci/git2r) master
+```
+
+#### Open an existing repository
+
+```coffee
+## Open an existing repository
+repo <- repository(path)
+
+## Workdir of repository
+workdir(repo)
+```
+
+```
+#> [1] "/tmp/Rtmp7CXPlx/git2r-1ae27d811539/git2r/"
 ```
 
 ```coffee
 
-# List all commits in repository
-commits(repo)[1] # Truncated here for readability
+## List all commits in repository
+commits(repo)[[1]] # Truncated here for readability
 ```
 
 ```
-#> [[1]]
-#> Commit:  eb3405ad9d9e60edb3d22196a6afd91044b41105
+#> Commit:  6fb440133765e80649de8d714eaea17b114bd0a7
 #> Author:  Stefan Widgren <stefan.widgren@gmail.com>
-#> When:    2014-04-14 22:58:32
-#> Summary: Moved git2r repository C code to separate file
+#> When:    2014-04-22 21:43:19
+#> Summary: Fixed clone progress to end line with newline
 ```
 
 ```coffee
 
-# Get HEAD of repository
+## Get HEAD of repository
 head(repo)
 ```
 
 ```
-#> [eb3405] (Local) (HEAD) master
+#> [6fb440] (Local) (HEAD) master
 ```
 
 ```coffee
 
-# Check if HEAD is head
+## Check if HEAD is head
 is.head(head(repo))
 ```
 
@@ -181,7 +225,7 @@ is.head(head(repo))
 
 ```coffee
 
-# Check if HEAD is local
+## Check if HEAD is local
 is.local(head(repo))
 ```
 
@@ -191,7 +235,7 @@ is.local(head(repo))
 
 ```coffee
 
-# List all tags in repository
+## List all tags in repository
 tags(repo)
 ```
 
@@ -199,117 +243,60 @@ tags(repo)
 #> list()
 ```
 
-
-### Visualize the number of commits per month in a repository
-
+### Configuration
 
 ```coffee
-library(git2r)
+config(repo, user.name="Git2r Readme", user.email="git2r.readme@example.org")
 
-# Open an existing repository
-# repo <- repository("path/to/git2r")
-repo <- repository(getwd())
-
-contributions(repo)
+## Display configuration
+config(repo)
 ```
 
 ```
-#>         when   n
-#> 1 2013-12-01  35
-#> 2 2014-01-01  33
-#> 3 2014-02-01   7
-#> 4 2014-03-01 137
-#> 5 2014-04-01  67
+#> global:
+#>         core.autocrlf=input
+#> local:
+#>         branch.master.merge=refs/heads/master
+#>         branch.master.remote=origin
+#>         core.bare=false
+#>         core.filemode=true
+#>         core.logallrefupdates=true
+#>         core.repositoryformatversion=0
+#>         remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
+#>         remote.origin.url=https://github.com/ropensci/git2r
+#>         user.email=git2r.readme@example.org
+#>         user.name=Git2r Readme
 ```
+
+### Commit
 
 ```coffee
+## Create a new file
+writeLines("Hello world!", file.path(path, "test.txt"))
 
-plot(repo)
-```
-
-![plot of chunk contributionnum](figure/contributionnum.png) 
-
-
-### Visualize contributions by author on a monthly timeline (another way of looking at the same data from above)
-
-
-```coffee
-library(git2r)
-
-# Open an existing repository
-# repo <- repository("path/to/git2r")
-repo <- repository(getwd())
-
-contributions(repo, by="author")
+## Add file and commit
+add(repo, "test.txt")
+commit(repo, "Commit message")
 ```
 
 ```
-#>           when            author   n
-#> 194 2013-12-01    Stefan Widgren  35
-#> 162 2014-01-01    Stefan Widgren   1
-#> 163 2014-01-01    Stefan Widgren  32
-#> 155 2014-02-01    Stefan Widgren   7
-#> 56  2014-03-01       Karthik Ram  32
-#> 91  2014-03-01 Scott Chamberlain   2
-#> 36  2014-03-01    Stefan Widgren 103
-#> 1   2014-04-01    Stefan Widgren  67
+#> Commit:  0a6af48cedf43208bde34230662280514e0956eb
+#> Author:  Git2r Readme <git2r.readme@example.org>
+#> When:    2014-04-22 21:44:57
+#> Summary: Commit message
 ```
 
-```coffee
+### Descriptive statistics from repository data
 
-plot(repo, by = "author")
-```
-
-![plot of chunk contributions_by_user](figure/contributions_by_user1.png) 
+Contributions by author on a weekly timeline
 
 ```coffee
 plot(repo, breaks="week", by = "author")
 ```
 
-![plot of chunk contributions_by_user](figure/contributions_by_user2.png) 
+![plot of chunk contributions](figure/contributions.png)
 
-```coffee
-plot(repo, breaks="day", by = "author")
-```
-
-![plot of chunk contributions_by_user](figure/contributions_by_user3.png) 
-
-
-### Generate a wordcloud from the commit messages in a repository
-
-
-```coffee
-library(git2r)
-library(wordcloud)
-```
-
-```
-#> Loading required package: Rcpp
-#> Loading required package: RColorBrewer
-```
-
-```coffee
-
-# Open an existing repository
-# repo <- repository("path/to/git2r")
-repo <- repository(getwd())
-
-## Create the wordcloud
-wordcloud(paste(sapply(commits(repo), slot, 'message'), collapse=' '),
-          scale=c(5,0.5), max.words = 100, random.order = FALSE,
-          rot.per = 0.35, use.r.layout = FALSE,
-          colors = brewer.pal(8, 'Dark2'))
-```
-
-```
-#> Loading required package: tm
-```
-
-![plot of chunk wordcloud](figure/wordcloud.png) 
-
-
-Included software
------------------
+# Included software
 
 - The C library [libgit2](https://github.com/libgit2/libgit2). See
   `inst/AUTHORS_libgit2` for the authors of libgit2.
@@ -317,14 +304,12 @@ Included software
 - The libgit2 printf calls in cache.c and util.c have been modified to
   use the R printing routine Rprintf.
 
-License
--------
+# License
 
 The `git2r` package is licensed under the GPLv2. See these files for additional details:
 
 - LICENSE     - `git2r` package license (GPLv2)
 - inst/NOTICE - Copyright notices for additional included software
-
 
 ---
 

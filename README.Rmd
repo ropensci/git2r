@@ -1,32 +1,31 @@
 [![Build Status](https://travis-ci.org/ropensci/git2r.png)](https://travis-ci.org/ropensci/git2r)
 
-git2r
-=====
-
-Programmatic access to Git repositories from R. The package uses the source code of [libgit2](https://github.com/libgit2/libgit2) to interface a Git repository from R.
-
-Aim
----
-
-The aim of the package is to be able to run some basic git commands on a repository from R. Another aim is to extract and visualize descriptive statistics from a git repository.
-
-Development
------------
-
-The package is in a very early development phase and is considered unstable with only a few features implemented.
-
-Installation
-------------
-
-To install the development version of `git2r`, it's easiest to use the devtools package:
-
 ```{r, setup, echo = FALSE, message = FALSE}
 knitr::opts_chunk$set(
   comment = "#>",
   error = FALSE,
-  tidy = FALSE
-)
+  tidy = FALSE,
+  fig.width = 8,
+  fig.height = 8)
 ```
+
+# Introduction
+
+The `git2r` package gives you programmatic access to Git repositories
+from R. Internally the package uses the libgit2 library which is a
+pure C implementation of the Git core methods. For more information
+about libgit2, check out libgit2's website
+[(http://libgit2.github.com)](http://libgit2.github.com).
+
+## Development
+
+The `git2r` package is in an early and active development phase and is
+considered unstable.
+
+## Installation
+
+To install the development version of `git2r`, it's easiest to use the
+devtools package:
 
 ```{r, install, eval = FALSE}
 # install.packages("devtools")
@@ -34,102 +33,139 @@ library(devtools)
 install_github("git2r", "ropensci")
 ```
 
-Example
--------
+## Usage
+
+### Repository
+
+The central object in the `git2r` package is the S4 class
+`git_repository`. The following three methods can instantiate a
+repository; `init`, `repository` and `clone`.
+
+#### Create a new repository
+
+Create a new repository in a temporary directory using `init`
 
 ```{r}
 library(git2r)
 
-# Open an existing repository
-# repo <- repository("path/to/git2r")
-repo <- repository(getwd())
+## Create a temporary directory to hold the repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
 
-# Brief summary of repository
+## Initialize the repository
+repo <- init(path)
+
+## Display a brief summary of the new repository
 repo
 
-# Summary of repository
-summary(repo)
-
-# Workdir of repository
-workdir(repo)
-
-# Check if repository is bare
+## Check if repository is bare
 is.bare(repo)
 
-# Check if repository is empty
+## Check if repository is empty
 is.empty(repo)
+```
 
-# List all references in repository
+
+```{r, echo=FALSE, message=FALSE}
+## Remove the temporary directory with the git repository to prepare
+## for the next example
+unlink(path, recursive=TRUE)
+```
+
+#### Create a new bare repository
+
+```{r}
+## Create a temporary directory to hold the repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+
+## Initialize the repository
+repo <- init(path, bare=TRUE)
+
+## Check if repository is bare
+is.bare(repo)
+```
+
+```{r, echo=FALSE, message=FALSE}
+## Remove the temporary directory with the git repository to prepare
+## for the next example
+unlink(path, recursive=TRUE)
+```
+
+#### Clone a repository
+
+```{r}
+## Create a temporary directory to hold the repository
+path <- file.path(tempfile(pattern="git2r-"), "git2r")
+dir.create(path, recursive=TRUE)
+
+## Clone the git2r repository
+repo <- clone("https://github.com/ropensci/git2r", path)
+
+## Summary of repository
+summary(repo)
+
+## List all references in repository
 references(repo)
 
-# List all branches in repository
+## List all branches in repository
 branches(repo)
+```
 
-# List all commits in repository
-commits(repo)[1] # Truncated here for readability
+#### Open an existing repository
 
-# Get HEAD of repository
+```{r}
+## Open an existing repository
+repo <- repository(path)
+
+## Workdir of repository
+workdir(repo)
+
+## List all commits in repository
+commits(repo)[[1]] # Truncated here for readability
+
+## Get HEAD of repository
 head(repo)
 
-# Check if HEAD is head
+## Check if HEAD is head
 is.head(head(repo))
 
-# Check if HEAD is local
+## Check if HEAD is local
 is.local(head(repo))
 
-# List all tags in repository
+## List all tags in repository
 tags(repo)
 ```
 
-### Visualize the number of commits per month in a repository
+### Configuration
 
-```{r, contributionnum}
-library(git2r)
+```{r}
+config(repo, user.name="Git2r Readme", user.email="git2r.readme@example.org")
 
-# Open an existing repository
-# repo <- repository("path/to/git2r")
-repo <- repository(getwd())
-
-contributions(repo)
-
-plot(repo)
+## Display configuration
+config(repo)
 ```
 
-### Visualize contributions by author on a monthly timeline (another way of looking at the same data from above)
+### Commit
 
-```{r, contributions_by_user}
-library(git2r)
+```{r}
+## Create a new file
+writeLines("Hello world!", file.path(path, "test.txt"))
 
-# Open an existing repository
-# repo <- repository("path/to/git2r")
-repo <- repository(getwd())
+## Add file and commit
+add(repo, "test.txt")
+commit(repo, "Commit message")
+```
 
-contributions(repo, by="author")
+### Descriptive statistics from repository data
 
-plot(repo, by = "author")
+Contributions by author on a weekly timeline
+
+```{r contributions}
 plot(repo, breaks="week", by = "author")
-plot(repo, breaks="day", by = "author")
 ```
 
-### Generate a wordcloud from the commit messages in a repository
-
-```{r, wordcloud}
-library(git2r)
-library(wordcloud)
-
-# Open an existing repository
-# repo <- repository("path/to/git2r")
-repo <- repository(getwd())
-
-## Create the wordcloud
-wordcloud(paste(sapply(commits(repo), slot, 'message'), collapse=' '),
-          scale=c(5,0.5), max.words = 100, random.order = FALSE,
-          rot.per = 0.35, use.r.layout = FALSE,
-          colors = brewer.pal(8, 'Dark2'))
-```
-
-Included software
------------------
+# Included software
 
 - The C library [libgit2](https://github.com/libgit2/libgit2). See
   `inst/AUTHORS_libgit2` for the authors of libgit2.
@@ -137,14 +173,12 @@ Included software
 - The libgit2 printf calls in cache.c and util.c have been modified to
   use the R printing routine Rprintf.
 
-License
--------
+# License
 
 The `git2r` package is licensed under the GPLv2. See these files for additional details:
 
 - LICENSE     - `git2r` package license (GPLv2)
 - inst/NOTICE - Copyright notices for additional included software
-
 
 ---
 
