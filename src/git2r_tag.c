@@ -77,7 +77,7 @@ void init_tag(git_tag *source, SEXP dest)
  * @param tagger The tagger (author) of the tag
  * @return S4 object of class git_tag
  */
-SEXP tag(const SEXP repo, const SEXP name, const SEXP message, const SEXP tagger)
+SEXP tag(SEXP repo, SEXP name, SEXP message, SEXP tagger)
 {
     SEXP when;
     SEXP sexp_tag;
@@ -159,7 +159,7 @@ cleanup:
  * @param repo S4 class git_repository
  * @return VECXSP with S4 objects of class git_tag
  */
-SEXP tags(const SEXP repo)
+SEXP tags(SEXP repo)
 {
     int err;
     SEXP list;

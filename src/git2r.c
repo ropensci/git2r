@@ -53,7 +53,7 @@ static int number_of_branches(git_repository *repo, int flags, size_t *n);
  * @param path
  * @return R_NilValue
  */
-SEXP add(const SEXP repo, const SEXP path)
+SEXP add(SEXP repo, SEXP path)
 {
     int err;
     git_index *index = NULL;
@@ -99,7 +99,7 @@ cleanup:
  * @param repo S4 class git_repository
  * @return VECXSP with S4 objects of class git_branch
  */
-SEXP branches(const SEXP repo, const SEXP flags)
+SEXP branches(SEXP repo, SEXP flags)
 {
     SEXP list;
     int err = 0;
@@ -230,7 +230,7 @@ cleanup:
  * @param name
  * @return R_NilValue
  */
-SEXP fetch(const SEXP repo, const SEXP name)
+SEXP fetch(SEXP repo, SEXP name)
 {
     int err;
     git_remote *remote = NULL;
@@ -358,7 +358,7 @@ static size_t number_of_revisions(git_revwalk *walker)
  * @param repo S4 class git_repository
  * @return VECXSP with S4 objects of class git_reference
  */
-SEXP references(const SEXP repo)
+SEXP references(SEXP repo)
 {
     int i, err;
     git_strarray ref_list;
@@ -417,7 +417,7 @@ cleanup:
  * @param repo S4 class git_repository
  * @return
  */
-SEXP remotes(const SEXP repo)
+SEXP remotes(SEXP repo)
 {
     int i, err;
     git_strarray rem_list;
@@ -457,7 +457,7 @@ cleanup:
  * @param repo S4 class git_repository
  * @return
  */
-SEXP remote_url(const SEXP repo, const SEXP remote)
+SEXP remote_url(SEXP repo, SEXP remote)
 {
     int err;
     SEXP url;
@@ -584,7 +584,9 @@ static const R_CallMethodDef callMethods[] =
 {
     {"add", (DL_FUNC)&add, 2},
     {"branches", (DL_FUNC)&branches, 2},
-    {"checkout", (DL_FUNC)&checkout, 2},
+    {"checkout_commit", (DL_FUNC)&checkout_commit, 1},
+    {"checkout_tag", (DL_FUNC)&checkout_tag, 1},
+    {"checkout_tree", (DL_FUNC)&checkout_tree, 1},
     {"clone", (DL_FUNC)&clone, 2},
     {"commit", (DL_FUNC)&commit, 5},
     {"default_signature", (DL_FUNC)&default_signature, 1},

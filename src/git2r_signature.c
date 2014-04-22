@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <Rdefines.h>
 #include "git2r_error.h"
 #include "git2r_repository.h"
 #include "git2r_signature.h"
@@ -26,7 +27,7 @@
  * @param repo S4 class git_repository
  * @return S4 class git_signature
  */
-SEXP default_signature(const SEXP repo)
+SEXP default_signature(SEXP repo)
 {
     int err;
     git_repository *repository = NULL;

@@ -19,16 +19,9 @@
 #ifndef INCLUDE_git2r_status_h
 #define INCLUDE_git2r_status_h
 
-#include <Rdefines.h>
 #include <R.h>
 #include <Rinternals.h>
 
-#include "git2.h"
-
-SEXP status(const SEXP repo,
-            const SEXP staged,
-            const SEXP unstaged,
-            const SEXP untracked,
-            const SEXP ignored);
+SEXP status(SEXP repo, SEXP staged, SEXP unstaged, SEXP untracked, SEXP ignored);
 
 #endif

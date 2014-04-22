@@ -346,11 +346,7 @@ static void list_untracked_files(SEXP list,
  * @param repo S4 class git_repository
  * @return VECXSP with status
  */
-SEXP status(const SEXP repo,
-            const SEXP staged,
-            const SEXP unstaged,
-            const SEXP untracked,
-            const SEXP ignored)
+SEXP status(SEXP repo, SEXP staged, SEXP unstaged, SEXP untracked, SEXP ignored)
 {
     int err;
     size_t i=0, count;

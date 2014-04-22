@@ -19,13 +19,11 @@
 #ifndef INCLUDE_git2r_signature_h
 #define INCLUDE_git2r_signature_h
 
-#include <Rdefines.h>
 #include <R.h>
 #include <Rinternals.h>
-
 #include "git2.h"
 
-SEXP default_signature(const SEXP repo);
+SEXP default_signature(SEXP repo);
 void init_signature(const git_signature *sig, SEXP signature);
 
 #endif

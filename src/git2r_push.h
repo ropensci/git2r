@@ -25,6 +25,6 @@
 
 #include "git2.h"
 
-SEXP push(const SEXP repo, const SEXP name, const SEXP refspec);
+SEXP push(SEXP repo, SEXP name, SEXP refspec);
 
 #endif

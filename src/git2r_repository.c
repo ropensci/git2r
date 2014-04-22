@@ -19,6 +19,7 @@
 #include <Rdefines.h>
 
 #include "git2r_blob.h"
+#include "git2r_commit.h"
 #include "git2r_error.h"
 #include "git2r_repository.h"
 #include "git2r_tag.h"
@@ -30,7 +31,7 @@
  * @param repo S4 class git_repository
  * @return a git_repository pointer on success else NULL
  */
-git_repository* get_repository(const SEXP repo)
+git_repository* get_repository(SEXP repo)
 {
     SEXP class_name;
     SEXP path;
@@ -67,7 +68,7 @@ git_repository* get_repository(const SEXP repo)
  * @param bare
  * @return R_NilValue
  */
-SEXP init(const SEXP path, const SEXP bare)
+SEXP init(SEXP path, SEXP bare)
 {
     int err;
     git_repository *repository = NULL;
@@ -92,7 +93,7 @@ SEXP init(const SEXP path, const SEXP bare)
  * @param repo S4 class git_repository
  * @return
  */
-SEXP is_bare(const SEXP repo)
+SEXP is_bare(SEXP repo)
 {
     SEXP result;
     git_repository *repository;
@@ -117,7 +118,7 @@ SEXP is_bare(const SEXP repo)
  * @param repo S4 class git_repository
  * @return
  */
-SEXP is_empty(const SEXP repo)
+SEXP is_empty(SEXP repo)
 {
     SEXP result;
     git_repository *repository;
@@ -142,7 +143,7 @@ SEXP is_empty(const SEXP repo)
  * @param path
  * @return
  */
-SEXP is_repository(const SEXP path)
+SEXP is_repository(SEXP path)
 {
     git_repository *repository = NULL;
 
@@ -164,7 +165,7 @@ SEXP is_repository(const SEXP path)
  * @param hex 40 char hexadecimal string
  * @return S4 object with lookup
  */
-SEXP lookup(const SEXP repo, const SEXP hex)
+SEXP lookup(SEXP repo, SEXP hex)
 {
     int err;
     SEXP result = R_NilValue;
@@ -228,7 +229,7 @@ cleanup:
  * @param repo S4 class git_repository
  * @return R_NilValue if bare repository, else character vector with path.
  */
-SEXP workdir(const SEXP repo)
+SEXP workdir(SEXP repo)
 {
     SEXP result = R_NilValue;
     git_repository *repository;

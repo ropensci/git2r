@@ -46,7 +46,7 @@ static int push_status_foreach_callback(const char *ref,
  * @param refspec
  * @return R_NilValue
  */
-SEXP push(const SEXP repo, const SEXP name, const SEXP refspec)
+SEXP push(SEXP repo, SEXP name, SEXP refspec)
 {
     int err;
     const char *msg = NULL;

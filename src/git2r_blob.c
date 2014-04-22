@@ -51,7 +51,7 @@ void init_blob(const git_blob *source, SEXP repo, SEXP dest)
  * @param blob S4 class git_blob
  * @return TRUE if binary data, FALSE if not
  */
-SEXP is_binary(const SEXP blob)
+SEXP is_binary(SEXP blob)
 {
     int err;
     SEXP result = R_NilValue;
