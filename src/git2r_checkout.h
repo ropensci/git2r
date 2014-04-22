@@ -19,12 +19,11 @@
 #ifndef INCLUDE_git2r_checkout_h
 #define INCLUDE_git2r_checkout_h
 
-#include <Rdefines.h>
 #include <R.h>
 #include <Rinternals.h>
 
-#include "git2.h"
-
-SEXP checkout(SEXP repo, SEXP treeish);
+SEXP checkout_commit(SEXP commit);
+SEXP checkout_tag(SEXP tag);
+SEXP checkout_tree(SEXP tree);
 
 #endif

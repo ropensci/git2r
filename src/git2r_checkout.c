@@ -16,6 +16,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <Rdefines.h>
+#include "git2.h"
 #include "git2r_checkout.h"
 #include "git2r_error.h"
 #include "git2r_repository.h"
@@ -23,76 +25,129 @@
 /**
  * Checkout
  *
- * @param repo S4 class git_repository
- * @param treeish
- * @return R_NilValue
+ * @param repository
+ * @param oid
+ * @return
  */
-SEXP checkout(SEXP repo, SEXP treeish)
+static int checkout(git_repository *repository, git_oid *oid)
 {
-    int err;
-    git_oid oid;
-    git_object *object = NULL;
-    git_repository *repository = NULL;
+    int err = 0;
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
     checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE;
 
-    /* Check arguments to checkout */
-    if (R_NilValue == repo || R_NilValue == treeish)
-        error(git2r_err_invalid_checkout_args);
+    return err;
+}
 
-    /* Determine checkout strategy */
-    if(S4SXP == TYPEOF(treeish)) {
-        const char *class_name = CHAR(STRING_ELT(getAttrib(treeish, R_ClassSymbol), 0));
+/**
+ * Checkout commit
+ *
+ * @param commit S4 class git_commit
+ * @return R_NilValue
+ */
+SEXP checkout_commit(SEXP commit)
+{
+    int err;
+    SEXP slot;
+    const char *class_name;
+    git_oid oid;
+    git_repository *repository = NULL;
 
-        if (0 == strcmp(class_name, "git_commit")) {
-            err = git_oid_fromstr(
-                &oid,
-                CHAR(STRING_ELT(GET_SLOT(treeish, Rf_install("hex")), 0)));
-        } else if(0 == strcmp(class_name, "git_tag")) {
-            err = git_oid_fromstr(
-                &oid,
-                CHAR(STRING_ELT(GET_SLOT(treeish, Rf_install("target")), 0)));
-        } else if(0 == strcmp(class_name, "git_tree")) {
-            err = git_oid_fromstr(
-                &oid,
-                CHAR(STRING_ELT(GET_SLOT(treeish, Rf_install("hex")), 0)));
-        } else {
-            error(git2r_err_invalid_checkout_args);
-        }
-    } else if (isString(treeish)
-               && 1 == length(treeish)
-               && 0 == strcmp(CHAR(STRING_ELT(treeish, 0)), "HEAD")) {
-        error("Error: Not implemented in gitr2r (yet)");
-    } else {
-        error(git2r_err_invalid_checkout_args);
-    }
+    if (check_tag_arg(commit))
+        error("Invalid arguments to checkout_commit");
 
-    if (err < 0)
-        goto cleanup;
-
-    repository = get_repository(repo);
+    repository = get_repository(GET_SLOT(commit, Rf_install("repo")));
     if (!repository)
         error(git2r_err_invalid_repository);
 
-    err = git_object_lookup(&object, repository, &oid, GIT_OBJ_ANY);
+    slot = GET_SLOT(commit, Rf_install("hex"));
+    err = git_oid_fromstr(&oid, CHAR(STRING_ELT(slot, 0)));
     if (err < 0)
         goto cleanup;
 
-    err = git_checkout_tree(repository, object, &checkout_opts);
-    if (err < 0)
-        goto cleanup;
+    err = checkout(repository, &oid);
 
 cleanup:
-    if (object)
-        git_object_free(object);
-
     if (repository)
         git_repository_free(repository);
 
-    if (err < 0) {
-        const git_error *e = giterr_last();
-        error("Error %d: %s\n", e->klass, e->message);
-    }
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return R_NilValue;
+}
+
+/**
+ * Checkout tag
+ *
+ * @param tag S4 class git_tag
+ * @return R_NilValue
+ */
+SEXP checkout_tag(SEXP tag)
+{
+    int err;
+    SEXP slot;
+    const char *class_name;
+    git_oid oid;
+    git_repository *repository = NULL;
+
+    if (check_tag_arg(tag))
+        error("Invalid arguments to checkout_tag");
+
+    repository = get_repository(GET_SLOT(tag, Rf_install("repo")));
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    slot = GET_SLOT(tag, Rf_install("target"));
+    err = git_oid_fromstr(&oid, CHAR(STRING_ELT(slot, 0)));
+    if (err < 0)
+        goto cleanup;
+
+    err = checkout(repository, &oid);
+
+cleanup:
+    if (repository)
+        git_repository_free(repository);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return R_NilValue;
+}
+
+/**
+ * Checkout tree
+ *
+ * @param tree S4 class git_tree
+ * @return R_NilValue
+ */
+SEXP checkout_tree(SEXP tree)
+{
+    int err;
+    SEXP slot;
+    const char *class_name;
+    git_oid oid;
+    git_repository *repository = NULL;
+
+    if (check_tag_arg(tree))
+        error("Invalid arguments to checkout_tree");
+
+    repository = get_repository(GET_SLOT(tree, Rf_install("repo")));
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    slot = GET_SLOT(tree, Rf_install("hex"));
+    err = git_oid_fromstr(&oid, CHAR(STRING_ELT(slot, 0)));
+    if (err < 0)
+        goto cleanup;
+
+    err = checkout(repository, &oid);
+
+cleanup:
+    if (repository)
+        git_repository_free(repository);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
 
     return R_NilValue;
 }
