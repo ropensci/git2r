@@ -42,7 +42,7 @@ static int clone_progress(const git_transfer_progress *progress, void *payload)
             progress->total_objects;
 
         if (received_percent > pd->received_progress) {
-            Rprintf("Receiving objects: % 3i%% (%i/%i), %4d kb\r",
+            Rprintf("Receiving objects: % 3i%% (%i/%i), %4d kb\n",
                     received_percent,
                     progress->received_objects,
                     progress->total_objects,
