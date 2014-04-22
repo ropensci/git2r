@@ -34,7 +34,7 @@ library(devtools)
 install_github("git2r", "ropensci")
 ```
 
-The first step 
+The first step
 ## Repository
 
 The central object in the `git2r` package is the S4 class `git_repository`. The following three methods can instantiate a repository; `init`, `repository` and `clone`.
@@ -92,8 +92,8 @@ unlink(path, recursive=TRUE)
 
 ```{r}
 ## Create a temporary directory to hold the repository
-path <- tempfile(pattern="git2r-")
-dir.create(path)
+path <- file.path(tempfile(pattern="git2r-"), "git2r")
+dir.create(path, recursive=TRUE)
 
 ## Clone the git2r repository
 repo <- clone("https://github.com/ropensci/git2r", path)
