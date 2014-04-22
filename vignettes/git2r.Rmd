@@ -3,6 +3,15 @@
 %\VignetteIndexEntry{Introduction to git2r}
 -->
 
+```{r, setup, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(
+  comment = "#>",
+  error = FALSE,
+  tidy = FALSE,
+  fig.width = 8,
+  fig.height = 8)
+```
+
 # Introduction to git2r
 
 The package gives you programmatic access to Git repositories from
@@ -14,8 +23,157 @@ implementation of the Git core methods. It's designed to be fast and
 portable. For more information about libgit2, check out libgit2's
 website [(http://libgit2.github.com)](http://libgit2.github.com).
 
-## Quickstart
+## Installation
 
+To install the development version of `git2r`, it's easiest to use the
+devtools package:
+
+```{r, install, eval = FALSE}
+# install.packages("devtools")
+library(devtools)
+install_github("git2r", "ropensci")
+```
+
+The first step 
 ## Repository
 
+The central object in the `git2r` package is the S4 class `git_repository`. The following three methods can instantiate a repository; `init`, `repository` and `clone`.
+
+### Create a new repository
+
+Create a new repository in a temporary directory using ```init```
+
+```{r}
+library(git2r)
+
+## Create a temporary directory to hold the repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+
+## Initialize the repository
+repo <- init(path)
+
+## Display a brief summary of the new repository
+repo
+
+## Check if repository is bare
+is.bare(repo)
+
+## Check if repository is empty
+is.empty(repo)
+```
+
+
+```{r, echo=FALSE, message=FALSE}
+## Remove the temporary directory with the git repository to prepare for the next example
+unlink(path, recursive=TRUE)
+```
+
+### Create a new bare repository
+
+```{r}
+## Create a temporary directory to hold the repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+
+## Initialize the repository
+repo <- init(path, bare=TRUE)
+
+## Check if repository is bare
+is.bare(repo)
+```
+
+```{r, echo=FALSE, message=FALSE}
+## Remove the temporary directory with the git repository to prepare for the next example
+unlink(path, recursive=TRUE)
+```
+
+### Clone a repository
+
+```{r}
+## Create a temporary directory to hold the repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+
+## Clone the git2r repository
+repo <- clone("https://github.com/ropensci/git2r", path)
+
+## Summary of repository
+summary(repo)
+
+## List all references in repository
+references(repo)
+
+## List all branches in repository
+branches(repo)
+```
+
+### Open an existing repository
+
+```{r}
+## Open an existing repository
+repo <- repository(path)
+
+## Workdir of repository
+workdir(repo)
+
+## List all commits in repository
+commits(repo)[[1]] # Truncated here for readability
+
+## Get HEAD of repository
+head(repo)
+
+## Check if HEAD is head
+is.head(head(repo))
+
+## Check if HEAD is local
+is.local(head(repo))
+
+## List all tags in repository
+tags(repo)
+```
+
 ## Configuration
+
+```{r}
+config(repo, user.name="Git2r Vignette", user.email="git2r.vignette@example.org")
+
+## Display configuration
+config(repo)
+```
+
+## Commit
+
+```{r}
+## Create a new file
+writeLines("Hello world!", file.path(path, "test.txt"))
+
+## Add file and commit
+add(repo, "test.txt")
+new_commit <- commit(repo, "Commit message")
+```
+
+## Descriptive statistics from repository data
+
+### Contributions by author on a weekly timeline
+
+```{r contributions}
+plot(repo, breaks="week", by = "author")
+```
+
+### Generate a wordcloud from the commit messages in the repository
+
+```{r wordcloud}
+library(wordcloud)
+
+## Paste messages
+messages <- paste(sapply(commits(repo), slot, "message"), collapse=" ")
+
+## Create the wordcloud
+wordcloud(messages, scale=c(5,0.5), max.words = 100, random.order = FALSE,
+          rot.per = 0.35, use.r.layout = FALSE, colors = brewer.pal(8, "Dark2"))
+```
+
+---
+
+[![](http://ropensci.org/public_images/github_footer.png)](http://ropensci.org)
