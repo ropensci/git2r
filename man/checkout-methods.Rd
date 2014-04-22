@@ -2,25 +2,29 @@
 \docType{methods}
 \name{checkout}
 \alias{checkout}
-\alias{checkout,git_repository-method}
+\alias{checkout,git_commit-method}
+\alias{checkout,git_tag-method}
+\alias{checkout,git_tree-method}
 \title{Checkout}
 \usage{
-checkout(repo, treeish = "HEAD")
+checkout(object)
 
-\S4method{checkout}{git_repository}(repo, treeish = "HEAD")
+\S4method{checkout}{git_commit}(object)
+
+\S4method{checkout}{git_tag}(object)
+
+\S4method{checkout}{git_tree}(object)
 }
 \arguments{
-\item{repo}{The repository.}
-
-\item{treeish}{a commit, tag or tree which content will be used to
-update the working directory or the default to use 'HEAD'.}
+\item{object}{a commit, tag or tree which content will be used to
+update the working directory.}
 }
 \value{
 invisible NULL
 }
 \description{
-Update files in the and working tree to match the content of the
-tree pointed at by the treeish.
+Update files in the index and working tree to match the content of
+the tree pointed at by the treeish object (commit, tag or tree).
 }
 \keyword{methods}
 

@@ -16,41 +16,49 @@
 
 ##' Checkout
 ##'
-##' Update files in the and working tree to match the content of the
-##' tree pointed at by the treeish.
+##' Update files in the index and working tree to match the content of
+##' the tree pointed at by the treeish object (commit, tag or tree).
 ##' @rdname checkout-methods
 ##' @docType methods
-##' @param repo The repository.
-##' @param treeish a commit, tag or tree which content will be used to
-##' update the working directory or the default to use 'HEAD'.
+##' @param object a commit, tag or tree which content will be used to
+##' update the working directory.
 ##' @return invisible NULL
 ##' @keywords methods
-##' @include repository.r
 ##' @include commit.r
 ##' @include tag.r
+##' @include tree.r
 setGeneric("checkout",
-           signature = "repo",
-           function(repo,
-                    treeish = "HEAD")
+           signature = "object",
+           function(object)
            standardGeneric("checkout")
 )
 
 ##' @rdname checkout-methods
 ##' @export
 setMethod("checkout",
-          signature(repo = "git_repository"),
-          function (repo, treeish)
+          signature(object = "git_commit"),
+          function (object)
           {
-              if(isS4(treeish)) {
-                  if(!any(is(treeish, "git_commit"),
-                          is(treeish, "git_tag"),
-                          is(treeish, "git_tree"))) {
-                      stop("treeish must be a commit, tag, tree or HEAD")
-                  }
-              } else if(!identical(treeish, "HEAD")) {
-                  stop("treeish must be a commit, tag, tree or HEAD")
-              }
+              invisible(.Call("checkout_commit", object))
+          }
+)
 
-              invisible(.Call("checkout", repo, treeish))
+##' @rdname checkout-methods
+##' @export
+setMethod("checkout",
+          signature(object = "git_tag"),
+          function (object)
+          {
+              invisible(.Call("checkout_tag", object))
+          }
+)
+
+##' @rdname checkout-methods
+##' @export
+setMethod("checkout",
+          signature(object = "git_tree"),
+          function (object)
+          {
+              invisible(.Call("checkout_tree", object))
           }
 )

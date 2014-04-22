@@ -37,6 +37,7 @@ Collate:
     'commit.r'
     'reference.r'
     'branch.r'
+    'tree.r'
     'tag.r'
     'checkout.r'
     'config.r'
@@ -49,5 +50,4 @@ Collate:
     'punch_card.r'
     'push.r'
     'status.r'
-    'tree.r'
     'when.r'
