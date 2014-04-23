@@ -175,11 +175,6 @@ setMethod("summary",
           signature(object = "git_tree"),
           function(object, ...)
           {
-              cat(" mode    type  id                                        name\n")
-              cat(sprintf(" %06o  %s  %s  %s",
-                          object@filemode,
-                          object@type,
-                          object@id,
-                          object@name), sep = "\n")
-              }
+              show(as(object, "data.frame"))
+          }
 )
