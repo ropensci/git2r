@@ -186,7 +186,7 @@ SEXP lookup(SEXP repo, SEXP hex)
         break;
     case GIT_OBJ_TREE:
         PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_tree")));
-        init_tree((git_tree*)object, result);
+        init_tree((git_tree*)object, repo, result);
         break;
     case GIT_OBJ_BLOB:
         PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_blob")));
