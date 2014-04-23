@@ -84,3 +84,28 @@ setMethod("tree",
               .Call("commit_tree", object)
           }
 )
+
+##' Brief summary of tree
+##'
+##' @aliases show,git_tree-methods
+##' @docType methods
+##' @param object The tree \code{object}
+##' @return None (invisible 'NULL').
+##' @keywords methods
+##' @export
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository("path/to/git2r")
+##'
+##' ## Brief summary of one tree in repository
+##' tree(commits(repo)[[1]])
+##' }
+##'
+setMethod("show",
+          signature(object = "git_tree"),
+          function (object)
+          {
+              cat(sprintf("Tree:  %s\n", object@hex))
+          }
+)
