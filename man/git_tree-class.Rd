@@ -12,6 +12,21 @@ Class \code{"git_tree"}
   \item{hex}{
     40 char hexadecimal string
   }
+  \item{filemode}{
+    :TODO:DOCUMENTATION:
+  }
+  \item{type}{
+    :TODO:DOCUMENTATION:
+  }
+  \item{id}{
+    :TODO:DOCUMENTATION:
+  }
+  \item{name}{
+    :TODO:DOCUMENTATION:
+  }
+  \item{repo}{
+    The S4 class git_repository that contains the commit
+  }
 }
 }
 \keyword{classes}

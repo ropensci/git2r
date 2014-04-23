@@ -24,6 +24,6 @@
 
 #include "git2.h"
 
-void init_tree(const git_tree *source, SEXP dest);
+void init_tree(const git_tree *source, SEXP repo, SEXP dest);
 
 #endif

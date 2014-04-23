@@ -22,14 +22,35 @@
 ##'   \item{hex}{
 ##'     40 char hexadecimal string
 ##'   }
+##'   \item{filemode}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##'   \item{type}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##'   \item{id}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##'   \item{name}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##'   \item{repo}{
+##'     The S4 class git_repository that contains the commit
+##'   }
 ##' }
 ##' @name git_tree-class
 ##' @docType class
 ##' @keywords classes
 ##' @keywords methods
+##' @include repository.r
 ##' @export
 setClass("git_tree",
-         slots=c(hex = "character"),
+         slots=c(hex      = "character",
+                 filemode = "integer",
+                 type     = "character",
+                 id       = "character",
+                 name     = "character",
+                 repo     = "git_repository"),
          validity=function(object)
          {
              errors <- character(0)

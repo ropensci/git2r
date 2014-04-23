@@ -228,13 +228,15 @@ SEXP commit_tree(SEXP commit)
 {
     int err;
     SEXP result = R_NilValue;
+    SEXP repo;
     SEXP hex;
     git_commit *commit_obj = NULL;
     git_oid oid;
     git_repository *repository = NULL;
     git_tree *tree = NULL;
 
-    repository = get_repository(GET_SLOT(commit, Rf_install("repo")));
+    repo = GET_SLOT(commit, Rf_install("repo"));
+    repository = get_repository(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
 
@@ -249,7 +251,7 @@ SEXP commit_tree(SEXP commit)
         goto cleanup;
 
     PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_tree")));
-    init_tree((git_tree*)tree, result);
+    init_tree((git_tree*)tree, repo, result);
 
 cleanup:
     if (commit_obj)
