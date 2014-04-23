@@ -11,7 +11,8 @@ about libgit2, check out libgit2's website
 ## Development
 
 The `git2r` package is in an early and active development phase and is
-considered unstable.
+considered unstable. Suggestions, bugs, forks and pull requests are
+appreciated. Get in touch.
 
 ## Installation
 
