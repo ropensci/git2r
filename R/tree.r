@@ -62,6 +62,59 @@ setClass("git_tree",
          }
 )
 
+##' Coerce entries in a git_tree to a \code{data.frame}
+##'
+##' The entries in a tree are coerced to a \code{data.frame}
+##'
+##'
+##' The \code{data.frame} have the following columns:
+##' \describe{
+##'
+##'   \item{filemode}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##'
+##'   \item{type}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##'
+##'   \item{id}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##'
+##'   \item{name}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##'
+##' }
+##' @name coerce-git_tree-method
+##' @aliases coerce,git_tree,data.frame-method
+##' @docType methods
+##' @param from The tree \code{object}
+##' @return \code{data.frame}
+##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository("path/to/git2r")
+##'
+##' ## Coerce tree to a data.frame
+##' df <- as(tree(commits(repo)[[1]]), "data.frame")
+##'
+##' str(df)
+##' }
+setAs(from="git_tree",
+      to="data.frame",
+      def=function(from)
+      {
+          data.frame(mode = sprintf("%06o", from@filemode),
+                     type = from@type,
+                     id   = from@id,
+                     name = from@name,
+                     stringsAsFactors = FALSE)
+      }
+)
+
 ##' Tree
 ##'
 ##' Get the tree pointed to by a commit.
