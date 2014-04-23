@@ -35,20 +35,13 @@ git_repository* get_repository(SEXP repo)
 {
     SEXP class_name;
     SEXP path;
-    char *class;
     git_repository *repository;
 
     if (R_NilValue == repo || S4SXP != TYPEOF(repo))
         return NULL;
 
     class_name = getAttrib(repo, R_ClassSymbol);
-    if (check_string_arg(class_name))
-        return NULL;
-
-    class = CHAR(STRING_ELT(class_name, 0));
-    if ((0 == strcmp(class, "git_repository"))
-        && (0 == strcmp(class, "git_blob"))
-        && (0 == strcmp(class, "git_commit")))
+    if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_repository"))
         return NULL;
 
     path = GET_SLOT(repo, Rf_install("path"));

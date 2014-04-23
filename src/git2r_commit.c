@@ -234,7 +234,7 @@ SEXP commit_tree(SEXP commit)
     git_repository *repository = NULL;
     git_tree *tree = NULL;
 
-    repository = get_repository(commit);
+    repository = get_repository(GET_SLOT(commit, Rf_install("repo")));
     if (!repository)
         error(git2r_err_invalid_repository);
 
@@ -326,7 +326,5 @@ void init_commit(const git_commit *source, SEXP repo, SEXP dest)
                  ScalarString(mkChar(message)));
     }
 
-    SET_SLOT(dest,
-             Rf_install("path"),
-             duplicate(GET_SLOT(repo, Rf_install("path"))));
+    SET_SLOT(dest, Rf_install("repo"), duplicate(repo));
 }

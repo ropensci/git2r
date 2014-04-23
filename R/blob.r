@@ -22,18 +22,19 @@
 ##'   \item{hex}{
 ##'     40 char hexadecimal string
 ##'   }
-##'   \item{path}{
-##'     Path to the git repository that contains the blob
+##'   \item{repo}{
+##'     The S4 class git_repository that contains the blob
 ##'   }
 ##' }
 ##' @rdname git_blob-class
 ##' @docType class
 ##' @keywords classes
 ##' @keywords methods
+##' @include repository.r
 ##' @export
 setClass("git_blob",
          slots=c(hex  = "character",
-                 path = "character"),
+                 repo = "git_repository"),
          validity=function(object) {
              errors <- character()
 

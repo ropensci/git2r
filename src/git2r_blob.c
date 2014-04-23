@@ -40,9 +40,7 @@ void init_blob(const git_blob *source, SEXP repo, SEXP dest)
              Rf_install("hex"),
              ScalarString(mkChar(hex)));
 
-    SET_SLOT(dest,
-             Rf_install("path"),
-             duplicate(GET_SLOT(repo, Rf_install("path"))));
+    SET_SLOT(dest, Rf_install("repo"), duplicate(repo));
 }
 
 /**
@@ -60,7 +58,7 @@ SEXP is_binary(SEXP blob)
     git_oid oid;
     git_repository *repository = NULL;
 
-    repository= get_repository(blob);
+    repository= get_repository(GET_SLOT(blob, Rf_install("repo")));
     if (!repository)
         error(git2r_err_invalid_repository);
 

@@ -12,8 +12,8 @@ Class \code{"git_blob"}
   \item{hex}{
     40 char hexadecimal string
   }
-  \item{path}{
-    Path to the git repository that contains the blob
+  \item{repo}{
+    The S4 class git_repository that contains the blob
   }
 }
 }

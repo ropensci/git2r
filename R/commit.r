@@ -35,8 +35,8 @@
 ##'   \item{message}{
 ##'     The message of a commit
 ##'   }
-##'   \item{path}{
-##'     Path to the git repository that contains the commit
+##'   \item{repo}{
+##'     The S4 class git_repository that contains the commit
 ##'   }
 ##' }
 ##' @name git_commit-class
@@ -47,6 +47,7 @@
 ##'   \item{show}{\code{signature(object = "git_commit")}}
 ##' }
 ##' @keywords methods
+##' @include repository.r
 ##' @include signature.r
 ##' @export
 setClass("git_commit",
@@ -55,7 +56,7 @@ setClass("git_commit",
                  committer = "git_signature",
                  summary   = "character",
                  message   = "character",
-                 path      = "character"),
+                 repo      = "git_repository"),
          prototype=list(summary=NA_character_,
                         message=NA_character_))
 

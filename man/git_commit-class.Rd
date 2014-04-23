@@ -25,8 +25,8 @@ Class \code{"git_commit"}
   \item{message}{
     The message of a commit
   }
-  \item{path}{
-    Path to the git repository that contains the commit
+  \item{repo}{
+    The S4 class git_repository that contains the commit
   }
 }
 }
