@@ -24,6 +24,9 @@ Class \code{"git_tag"}
   \item{target}{
     The target of the tag
   }
+  \item{repo}{
+    The S4 class git_repository that contains the tag
+  }
 }
 }
 \keyword{classes}

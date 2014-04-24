@@ -194,7 +194,7 @@ SEXP lookup(SEXP repo, SEXP hex)
         break;
     case GIT_OBJ_TAG:
         PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_tag")));
-        init_tag((git_tag*)object, result);
+        init_tag((git_tag*)object, repo, result);
         break;
     default:
         error("Unimplemented");

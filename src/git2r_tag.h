@@ -24,7 +24,7 @@
 
 #include "git2.h"
 
-void init_tag(git_tag *source, SEXP dest);
+void init_tag(git_tag *source, SEXP repo, SEXP dest);
 SEXP tag(SEXP repo, SEXP name, SEXP message, SEXP tagger);
 SEXP tags(SEXP repo);
 

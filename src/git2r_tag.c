@@ -26,10 +26,11 @@
  * Init slots in S4 class git_tag
  *
  * @param source a tag
+ * @param repo S4 class git_repository that contains the tag
  * @param dest S4 class git_tag to initialize
  * @return void
  */
-void init_tag(git_tag *source, SEXP dest)
+void init_tag(git_tag *source, SEXP repo, SEXP dest)
 {
     int err;
     const git_signature *tagger;
@@ -66,6 +67,8 @@ void init_tag(git_tag *source, SEXP dest)
     SET_SLOT(dest,
              Rf_install("target"),
              ScalarString(mkChar(target)));
+
+    SET_SLOT(dest, Rf_install("repo"), duplicate(repo));
 }
 
 /**
@@ -127,7 +130,7 @@ SEXP tag(SEXP repo, SEXP name, SEXP message, SEXP tagger)
 
     PROTECT(sexp_tag = NEW_OBJECT(MAKE_CLASS("git_tag")));
     protected++;
-    init_tag(new_tag, sexp_tag);
+    init_tag(new_tag, repo, sexp_tag);
 
 cleanup:
     if (new_tag)
@@ -196,7 +199,7 @@ SEXP tags(SEXP repo)
 
         PROTECT(sexp_tag = NEW_OBJECT(MAKE_CLASS("git_tag")));
         protected++;
-        init_tag(tag, sexp_tag);
+        init_tag(tag, repo, sexp_tag);
 
         SET_VECTOR_ELT(list, i, sexp_tag);
         UNPROTECT(1);

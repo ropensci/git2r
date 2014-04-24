@@ -34,6 +34,9 @@
 ##'   \item{target}{
 ##'     The target of the tag
 ##'   }
+##'   \item{repo}{
+##'     The S4 class git_repository that contains the tag
+##'   }
 ##' }
 ##' @name git_tag-class
 ##' @docType class
@@ -47,7 +50,8 @@ setClass("git_tag",
                  message = "character",
                  name    = "character",
                  tagger  = "git_signature",
-                 target  = "character"),
+                 target  = "character",
+                 repo    = "git_repository"),
          validity=function(object)
          {
              errors <- validObject(object@tagger)
