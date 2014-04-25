@@ -52,7 +52,7 @@ SEXP checkout_commit(SEXP commit)
     git_oid oid;
     git_repository *repository = NULL;
 
-    if (check_tag_arg(commit))
+    if (check_commit_arg(commit))
         error("Invalid arguments to checkout_commit");
 
     repository = get_repository(GET_SLOT(commit, Rf_install("repo")));
@@ -128,7 +128,7 @@ SEXP checkout_tree(SEXP tree)
     git_oid oid;
     git_repository *repository = NULL;
 
-    if (check_tag_arg(tree))
+    if (check_tree_arg(tree))
         error("Invalid arguments to checkout_tree");
 
     repository = get_repository(GET_SLOT(tree, Rf_install("repo")));
