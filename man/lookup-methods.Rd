@@ -12,7 +12,8 @@ lookup(object, hex)
 \arguments{
 \item{object}{The repository \code{object}.}
 
-\item{hex}{the identity of the object to lookup}
+\item{hex}{the identity of the object to lookup. Must be 4 to 40
+characters long.}
 }
 \value{
 a \code{git_blob} or \code{git_commit} or \code{git_tag}
@@ -20,6 +21,15 @@ or \code{git_tree} object
 }
 \description{
 Lookup one object in a repository.
+}
+\examples{
+\dontrun{
+## Open an existing repository
+repo <- repository("path/to/git2r")
+
+## Lookup commit in repository
+lookup(repo, "6fd0b22")
+}
 }
 \keyword{methods}
 
