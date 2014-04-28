@@ -161,6 +161,7 @@ SEXP is_repository(SEXP path)
 SEXP lookup(SEXP repo, SEXP hex)
 {
     int err;
+    size_t len;
     SEXP result = R_NilValue;
     git_object *object = NULL;
     git_oid oid;
@@ -173,11 +174,18 @@ SEXP lookup(SEXP repo, SEXP hex)
     if (!repository)
         error(git2r_err_invalid_repository);
 
-    git_oid_fromstr(&oid, CHAR(STRING_ELT(hex, 0)));
-
-    err = git_object_lookup(&object, repository, &oid, GIT_OBJ_ANY);
-    if (err < 0)
-        goto cleanup;
+    len = LENGTH(STRING_ELT(hex, 0));
+    if (GIT_OID_HEXSZ == len) {
+        git_oid_fromstr(&oid, CHAR(STRING_ELT(hex, 0)));
+        err = git_object_lookup(&object, repository, &oid, GIT_OBJ_ANY);
+        if (err < 0)
+            goto cleanup;
+    } else {
+        git_oid_fromstrn(&oid, CHAR(STRING_ELT(hex, 0)), len);
+        err = git_object_lookup_prefix(&object, repository, &oid, len, GIT_OBJ_ANY);
+        if (err < 0)
+            goto cleanup;
+    }
 
     switch (git_object_type(object)) {
     case GIT_OBJ_COMMIT:

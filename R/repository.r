@@ -407,10 +407,20 @@ setMethod("is.empty",
 ##' @rdname lookup-methods
 ##' @docType methods
 ##' @param object The repository \code{object}.
-##' @param hex the identity of the object to lookup
+##' @param hex the identity of the object to lookup. Must be 4 to 40
+##' characters long.
 ##' @return a \code{git_blob} or \code{git_commit} or \code{git_tag}
 ##' or \code{git_tree} object
 ##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository("path/to/git2r")
+##'
+##' ## Lookup commit in repository
+##' lookup(repo, "6fd0b22")
+##' }
+##'
 setGeneric("lookup",
            signature = "object",
            function(object, hex)

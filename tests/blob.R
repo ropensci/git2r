@@ -45,6 +45,7 @@ new_commit <- commit(repo, "Commit message")
 blob <- lookup(repo, "cd0875583aabe89ee197ea133980a9085d08e497")
 stopifnot(is(blob, "git_blob"))
 stopifnot(identical(is.binary(blob), FALSE))
+stopifnot(identical(blob, lookup(repo, "cd0875")))
 
 ##
 ## Cleanup
