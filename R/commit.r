@@ -137,3 +137,38 @@ setMethod("show",
                           object@summary))
           }
 )
+
+##' Summary of commit
+##'
+##' @aliases summary,git_commit-methods
+##' @docType methods
+##' @param object The commit \code{object}
+##' @return None (invisible 'NULL').
+##' @keywords methods
+##' @export
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository("path/to/git2r")
+##'
+##' ## Summary of commit in repository
+##' summary(commits(repo)[[1]])
+##' }
+##'
+setMethod("summary",
+          signature(object = "git_commit"),
+          function(object, ...)
+          {
+              cat(sprintf(paste0("Commit:  %s\n",
+                                 "Author:  %s <%s>\n",
+                                 "When:    %s\n\n"),
+                          object@hex,
+                          object@author@name,
+                          object@author@email,
+                          as(object@author@when, "character")))
+
+              msg <- paste0("    ", readLines(textConnection(object@message)))
+              cat(" ")
+              cat(sprintf("%s\n", msg))
+          }
+)
