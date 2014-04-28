@@ -17,6 +17,7 @@
  */
 
 #include <Rdefines.h>
+#include "git2.h"
 #include "git2r_error.h"
 
 /**
@@ -49,6 +50,26 @@ int check_commit_arg(SEXP arg)
         return 1;
 
     if (check_string_arg(GET_SLOT(arg, Rf_install("hex"))))
+        return 1;
+
+    return 0;
+}
+
+/**
+ * Check hex argument
+ *
+ * @param arg the arg to check
+ * @return 0 if OK, else 1
+ */
+int check_hex_arg(SEXP arg)
+{
+    size_t len;
+
+    if (check_string_arg(arg))
+        return 1;
+
+    len = LENGTH(STRING_ELT(arg, 0));
+    if (len < GIT_OID_MINPREFIXLEN || len > GIT_OID_HEXSZ)
         return 1;
 
     return 0;

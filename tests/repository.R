@@ -52,6 +52,13 @@ stopifnot(identical(commits(repo), list()))
 stopifnot(identical(head(repo), NULL))
 
 ##
+## Check that lookup with a hex of less than 4 characters or more than
+## 40 characters fail.
+##
+tools::assertError(lookup(repo, paste0(rep("a", 3), collapse="")))
+tools::assertError(lookup(repo, paste0(rep("a", 41), collapse="")))
+
+##
 ## Cleanup
 ##
 unlink(path, recursive=TRUE)

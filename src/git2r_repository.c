@@ -155,7 +155,7 @@ SEXP is_repository(SEXP path)
  * Lookup an object in a repository
  *
  * @param repo S4 class git_repository
- * @param hex 40 char hexadecimal string
+ * @param hex 4 to 40 char hexadecimal string
  * @return S4 object with lookup
  */
 SEXP lookup(SEXP repo, SEXP hex)
@@ -166,7 +166,7 @@ SEXP lookup(SEXP repo, SEXP hex)
     git_oid oid;
     git_repository *repository = NULL;
 
-    if (check_string_arg(hex))
+    if (check_hex_arg(hex))
         error("Invalid arguments to lookup");
 
     repository = get_repository(repo);
