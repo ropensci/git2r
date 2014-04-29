@@ -8,10 +8,9 @@ pure C implementation of the Git core methods. For more information
 about libgit2, check out libgit2's website
 [(http://libgit2.github.com)](http://libgit2.github.com).
 
-## Development
-
-The `git2r` package is in an early and active development phase and is
-considered unstable. Suggestions, bugs, forks and pull requests are
+**Note:** The `git2r` package is in an early and active development
+phase. Functions and documentation may be incomplete and subject to
+change. Suggestions, bugs, forks and pull requests are
 appreciated. Get in touch.
 
 ## Installation
