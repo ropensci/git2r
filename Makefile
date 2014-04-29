@@ -16,18 +16,15 @@ doc:
 # 1) clone or pull libgit2 to parent directory from
 # https://github.com/libgit/libgit.git
 #
-# 2) run target. It first removes files and then copy files from
-# libgit2 directory
+# 2) run target sync_libgit2. It first removes files and then copy files
+# from libgit2 directory. Finally, it runs an R script to build
+# Makevars.in and Makevars.win based on source files
 #
-# 3) Add new files to Makevars.in and Makevars.win (:TODO:FIX: Create
-# R script to build Makevars.in and Makevars.win based on source
-# files)
-#
-# 4) Check cache.c and util.c. They have been modified to use R
+# 3) Check cache.c and util.c. They have been modified to use R
 # printing routine Rprintf. If there are no other changes in these two
 # files they must be reverted to previous state to pass R CMD check
 #
-# 5) Build and check updated package
+# 4) Build and check updated package
 #    - R CMD build git2r
 #    - R CMD check git2r_version.tar.gz
 sync_libgit2:
@@ -69,6 +66,7 @@ sync_libgit2:
 	-cp -f ../libgit2/src/xdiff/*.h src/libgit2/xdiff
 	-cp -f ../libgit2/AUTHORS inst/AUTHORS_libgit2
 	-cp -f ../libgit2/COPYING inst/NOTICE
+	Rscript tools/build_Makevars.r
 
 clean:
 	-rm -f config.log
