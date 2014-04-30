@@ -97,10 +97,8 @@ SEXP clone(SEXP url, SEXP local_path, SEXP progress)
     if (repository)
         git_repository_free(repository);
 
-    if (err < 0) {
-        const git_error *e = giterr_last();
-        error("Error %d: %s\n", e->klass, e->message);
-    }
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
 
     return R_NilValue;
 }

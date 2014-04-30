@@ -85,10 +85,8 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (err < 0) {
-        const git_error *e = giterr_last();
-        error("Error %d/%d: %s\n", err, e->klass, e->message);
-    }
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
 
     return R_NilValue;
 }
@@ -212,12 +210,10 @@ cleanup:
         UNPROTECT(protected);
 
     if (err < 0) {
-        if (err_msg) {
+        if (err_msg)
             error(err_msg);
-        } else {
-            const git_error *e = giterr_last();
-            error("Error %d: %s\n", e->klass, e->message);
-        }
+        else
+            error("Error: %s\n", giterr_last()->message);
     }
 
     return list;
@@ -403,10 +399,8 @@ cleanup:
         UNPROTECT(2);
     }
 
-    if (err < 0) {
-        const git_error *e = giterr_last();
-        error("Error %d/%d: %s\n", err, e->klass, e->message);
-    }
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
 
     return list;
 }
@@ -443,10 +437,8 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (err < 0) {
-        const git_error *e = giterr_last();
-        error("Error %d/%d: %s\n", err, e->klass, e->message);
-    }
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
 
     return list;
 }
@@ -487,10 +479,8 @@ cleanup:
 
     UNPROTECT(1);
 
-    if (err < 0) {
-        const git_error *e = giterr_last();
-        error("Error %d/%d: %s\n", err, e->klass, e->message);
-    }
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
 
     return url;
 }
@@ -572,10 +562,8 @@ cleanup:
 
     UNPROTECT(1);
 
-    if (err < 0) {
-        const git_error *e = giterr_last();
-        error("Error %d/%d: %s\n", err, e->klass, e->message);
-    }
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
 
     return list;
 }

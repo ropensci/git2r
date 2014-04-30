@@ -207,12 +207,10 @@ cleanup:
     UNPROTECT(1);
 
     if (err < 0) {
-        if (err_msg) {
+        if (err_msg)
             error(err_msg);
-        } else {
-            const git_error *e = giterr_last();
-            error("Error %d/%d: %s\n", err, e->klass, e->message);
-        }
+        else
+            error("Error: %s\n", giterr_last()->message);
     }
 
     return sexp_commit;

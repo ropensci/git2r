@@ -419,10 +419,8 @@ cleanup:
 
     UNPROTECT(2);
 
-    if (err < 0) {
-        const git_error *e = giterr_last();
-        error("Error %d/%d: %s\n", err, e->klass, e->message);
-    }
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
 
     return list;
 }
