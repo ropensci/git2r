@@ -278,7 +278,7 @@ cleanup:
  * @param dest S4 class git_commit to initialize
  * @return void
  */
-void init_commit(const git_commit *source, SEXP repo, SEXP dest)
+void init_commit(git_commit *source, SEXP repo, SEXP dest)
 {
     const char *message;
     const char *summary;
