@@ -83,9 +83,8 @@ void init_tag(git_tag *source, SEXP repo, SEXP dest)
 SEXP tag(SEXP repo, SEXP name, SEXP message, SEXP tagger)
 {
     SEXP when;
-    SEXP sexp_tag;
+    SEXP sexp_tag = R_NilValue;
     int err;
-    size_t protected = 0;
     git_oid oid;
     git_repository *repository = NULL;
     git_signature *sig_tagger = NULL;
@@ -129,7 +128,6 @@ SEXP tag(SEXP repo, SEXP name, SEXP message, SEXP tagger)
         goto cleanup;
 
     PROTECT(sexp_tag = NEW_OBJECT(MAKE_CLASS("git_tag")));
-    protected++;
     init_tag(new_tag, repo, sexp_tag);
 
 cleanup:
@@ -145,13 +143,11 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (protected)
-        unprotect(protected);
+    if (R_NilValue != sexp_tag)
+        UNPROTECT(1);
 
-    if (err < 0) {
-        const git_error *e = giterr_last();
-        error("Error: %s\n", e->message);
-    }
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
 
     return sexp_tag;
 }
@@ -165,8 +161,7 @@ cleanup:
 SEXP tags(SEXP repo)
 {
     int err;
-    SEXP list;
-    size_t protected = 0;
+    SEXP list = R_NilValue;
     git_repository *repository;
     git_reference* reference = NULL;
     git_tag *tag = NULL;
@@ -182,7 +177,6 @@ SEXP tags(SEXP repo)
         goto cleanup;
 
     PROTECT(list = allocVector(VECSXP, tag_names.count));
-    protected++;
 
     for(i = 0; i < tag_names.count; i++) {
         SEXP sexp_tag;
@@ -198,12 +192,9 @@ SEXP tags(SEXP repo)
             goto cleanup;
 
         PROTECT(sexp_tag = NEW_OBJECT(MAKE_CLASS("git_tag")));
-        protected++;
         init_tag(tag, repo, sexp_tag);
-
         SET_VECTOR_ELT(list, i, sexp_tag);
         UNPROTECT(1);
-        protected--;
 
         git_tag_free(tag);
         tag = NULL;
@@ -223,13 +214,11 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (protected)
-        UNPROTECT(protected);
+    if (R_NilValue != list)
+        UNPROTECT(1);
 
-    if (err < 0) {
-        const git_error *e = giterr_last();
-        error("Error %d: %s\n", e->klass, e->message);
-    }
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
 
     return list;
 }
