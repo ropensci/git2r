@@ -49,5 +49,6 @@ Collate:
     'pull.r'
     'punch_card.r'
     'push.r'
+    'stash.r'
     'status.r'
     'when.r'
