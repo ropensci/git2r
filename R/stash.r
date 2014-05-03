@@ -105,3 +105,35 @@ setMethod("show",
               cat(sprintf("%s\n", object@message))
           }
 )
+
+##' Summary of a stash
+##'
+##' @aliases summary,git_stash-methods
+##' @docType methods
+##' @param object The stash \code{object}
+##' @return None (invisible 'NULL').
+##' @keywords methods
+##' @export
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository("path/to/git2r")
+##'
+##' ## Apply summary to each stash in the repository
+##' invisible(lapply(stashes(repo), summary))
+##' }
+setMethod("summary",
+          signature(object = "git_stash"),
+          function(object, ...)
+          {
+              cat(sprintf(paste0("message: %s\n",
+                                 "stasher: %s <%s>\n",
+                                 "when:    %s\n",
+                                 "hex:     %s\n\n"),
+                          object@message,
+                          object@stasher@name,
+                          object@stasher@email,
+                          as(object@stasher@when, "character"),
+                          object@hex))
+          }
+)
