@@ -3,20 +3,23 @@
 \name{tree}
 \alias{tree}
 \alias{tree,git_commit-method}
+\alias{tree,git_stash-method}
 \title{Tree}
 \usage{
 tree(object)
 
 \S4method{tree}{git_commit}(object)
+
+\S4method{tree}{git_stash}(object)
 }
 \arguments{
-\item{object}{the \code{commit} object}
+\item{object}{the \code{commit} or \code{stash} object}
 }
 \value{
 A S4 class git_tree object
 }
 \description{
-Get the tree pointed to by a commit.
+Get the tree pointed to by a commit or stash.
 }
 \keyword{methods}
 

@@ -117,10 +117,10 @@ setAs(from="git_tree",
 
 ##' Tree
 ##'
-##' Get the tree pointed to by a commit.
+##' Get the tree pointed to by a commit or stash.
 ##' @rdname tree-methods
 ##' @docType methods
-##' @param object the \code{commit} object
+##' @param object the \code{commit} or \code{stash} object
 ##' @return A S4 class git_tree object
 ##' @keywords methods
 ##' @include commit.r
@@ -132,6 +132,16 @@ setGeneric("tree",
 ##' @export
 setMethod("tree",
           signature(object = "git_commit"),
+          function (object)
+          {
+              .Call("commit_tree", object)
+          }
+)
+
+##' @rdname tree-methods
+##' @export
+setMethod("tree",
+          signature(object = "git_stash"),
           function (object)
           {
               .Call("commit_tree", object)

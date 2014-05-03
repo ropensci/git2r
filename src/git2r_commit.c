@@ -219,7 +219,7 @@ cleanup:
 /**
  * Get the tree pointed to by a commit
  *
- * @param commit S4 class git_commit
+ * @param commit S4 class git_commit or git_stash
  * @return S4 class git_tree
  */
 SEXP commit_tree(SEXP commit)
