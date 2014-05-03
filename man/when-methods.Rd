@@ -4,6 +4,7 @@
 \alias{when}
 \alias{when,git_commit-method}
 \alias{when,git_signature-method}
+\alias{when,git_stash-method}
 \alias{when,git_tag-method}
 \alias{when,git_time-method}
 \title{When}
@@ -13,6 +14,8 @@ when(object)
 \S4method{when}{git_commit}(object)
 
 \S4method{when}{git_signature}(object)
+
+\S4method{when}{git_stash}(object)
 
 \S4method{when}{git_tag}(object)
 

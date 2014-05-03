@@ -26,6 +26,7 @@
 ##' @keywords methods
 ##' @include commit.r
 ##' @include signature.r
+##' @include stash.r
 ##' @include tag.r
 ##' @include time.r
 ##' @examples \dontrun{
@@ -56,6 +57,16 @@ setMethod("when",
           function (object)
           {
               as(object@when, "character")
+          }
+)
+
+##' @rdname when-methods
+##' @export
+setMethod("when",
+          signature(object = "git_stash"),
+          function (object)
+          {
+              as(object@stasher@when, "character")
           }
 )
 
