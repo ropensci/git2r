@@ -59,3 +59,33 @@ setClass("git_stash",
              if(length(errors) == 0) TRUE else errors
          }
 )
+
+##' Stashes
+##'
+##' @rdname stashes-methods
+##' @docType methods
+##' @param object The repository \code{object}.
+##' @return list of stashes in repository
+##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository("path/to/git2r")
+##'
+##' ## List stashes in repository
+##' stashes(repo)
+##' }
+setGeneric("stashes",
+           signature = "object",
+           function(object) standardGeneric("stashes"))
+
+##' @rdname stashes-methods
+##' @include repository.r
+##' @export
+setMethod("stashes",
+          signature(object = "git_repository"),
+          function (object)
+          {
+              .Call("stashes", object)
+          }
+)
