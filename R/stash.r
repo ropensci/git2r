@@ -89,3 +89,19 @@ setMethod("stashes",
               .Call("stashes", object)
           }
 )
+
+##' Brief summary of a stash
+##'
+##' @aliases show,git_stash-methods
+##' @docType methods
+##' @param object The stash \code{object}
+##' @return None (invisible 'NULL').
+##' @keywords methods
+##' @export
+setMethod("show",
+          signature(object = "git_stash"),
+          function (object)
+          {
+              cat(sprintf("%s\n", object@message))
+          }
+)
