@@ -22,8 +22,8 @@
 #include <R.h>
 #include <Rinternals.h>
 
-SEXP checkout_commit(SEXP commit);
-SEXP checkout_tag(SEXP tag);
-SEXP checkout_tree(SEXP tree);
+SEXP checkout_commit(SEXP commit, SEXP force);
+SEXP checkout_tag(SEXP tag, SEXP force);
+SEXP checkout_tree(SEXP tree, SEXP force);
 
 #endif

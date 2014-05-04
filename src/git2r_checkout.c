@@ -23,50 +23,54 @@
 #include "git2r_repository.h"
 
 /**
- * Checkout
- *
- * @param repository
- * @param oid
- * @return
- */
-static int checkout(git_repository *repository, git_oid *oid)
-{
-    int err = 0;
-    git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
-    checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE;
-
-    return err;
-}
-
-/**
  * Checkout commit
  *
  * @param commit S4 class git_commit
+ * @param force
  * @return R_NilValue
  */
-SEXP checkout_commit(SEXP commit)
+SEXP checkout_commit(SEXP commit, SEXP force)
 {
     int err;
-    SEXP slot;
-    const char *class_name;
+    SEXP hex;
     git_oid oid;
+    git_commit *treeish = NULL;
     git_repository *repository = NULL;
+    git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
 
-    if (check_commit_arg(commit))
+    if (check_commit_arg(commit) || check_logical_arg(force))
         error("Invalid arguments to checkout_commit");
 
     repository = get_repository(GET_SLOT(commit, Rf_install("repo")));
     if (!repository)
         error(git2r_err_invalid_repository);
 
-    slot = GET_SLOT(commit, Rf_install("hex"));
-    err = git_oid_fromstr(&oid, CHAR(STRING_ELT(slot, 0)));
+    hex = GET_SLOT(commit, Rf_install("hex"));
+    err = git_oid_fromstr(&oid, CHAR(STRING_ELT(hex, 0)));
     if (err < 0)
         goto cleanup;
 
-    err = checkout(repository, &oid);
+    err = git_commit_lookup(&treeish, repository, &oid);
+    if (err < 0)
+        goto cleanup;
+
+    err = git_repository_set_head_detached(repository, git_commit_id(treeish),
+                                           NULL, NULL);
+    if (err < 0)
+        goto cleanup;
+
+    if (LOGICAL(force)[0])
+        checkout_opts.checkout_strategy = GIT_CHECKOUT_FORCE;
+    else
+        checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE_CREATE;
+    err = git_checkout_head(repository, &checkout_opts);
+    if (err < 0)
+        goto cleanup;
 
 cleanup:
+    if (treeish)
+        git_commit_free(treeish);
+
     if (repository)
         git_repository_free(repository);
 
@@ -82,11 +86,10 @@ cleanup:
  * @param tag S4 class git_tag
  * @return R_NilValue
  */
-SEXP checkout_tag(SEXP tag)
+SEXP checkout_tag(SEXP tag, SEXP force)
 {
     int err;
     SEXP slot;
-    const char *class_name;
     git_oid oid;
     git_repository *repository = NULL;
 
@@ -101,8 +104,6 @@ SEXP checkout_tag(SEXP tag)
     err = git_oid_fromstr(&oid, CHAR(STRING_ELT(slot, 0)));
     if (err < 0)
         goto cleanup;
-
-    err = checkout(repository, &oid);
 
 cleanup:
     if (repository)
@@ -120,11 +121,10 @@ cleanup:
  * @param tree S4 class git_tree
  * @return R_NilValue
  */
-SEXP checkout_tree(SEXP tree)
+SEXP checkout_tree(SEXP tree, SEXP force)
 {
     int err;
     SEXP slot;
-    const char *class_name;
     git_oid oid;
     git_repository *repository = NULL;
 
@@ -139,8 +139,6 @@ SEXP checkout_tree(SEXP tree)
     err = git_oid_fromstr(&oid, CHAR(STRING_ELT(slot, 0)));
     if (err < 0)
         goto cleanup;
-
-    err = checkout(repository, &oid);
 
 cleanup:
     if (repository)

@@ -18,10 +18,14 @@
 ##'
 ##' Update files in the index and working tree to match the content of
 ##' the tree pointed at by the treeish object (commit, tag or tree).
+##' Checkout using the default GIT_CHECKOUT_SAFE_CREATE strategy
+##' (force = FALSE) or GIT_CHECKOUT_FORCE (force = TRUE).
 ##' @rdname checkout-methods
 ##' @docType methods
 ##' @param object a commit, tag or tree which content will be used to
 ##' update the working directory.
+##' @param force If TRUE, then make working directory match
+##' target. This will throw away local changes. Default is FALSE.
 ##' @return invisible NULL
 ##' @keywords methods
 ##' @include commit.r
@@ -29,7 +33,7 @@
 ##' @include tree.r
 setGeneric("checkout",
            signature = "object",
-           function(object)
+           function(object, force = FALSE)
            standardGeneric("checkout")
 )
 
@@ -37,9 +41,9 @@ setGeneric("checkout",
 ##' @export
 setMethod("checkout",
           signature(object = "git_commit"),
-          function (object)
+          function (object, force)
           {
-              invisible(.Call("checkout_commit", object))
+              invisible(.Call("checkout_commit", object, force))
           }
 )
 
@@ -47,9 +51,9 @@ setMethod("checkout",
 ##' @export
 setMethod("checkout",
           signature(object = "git_tag"),
-          function (object)
+          function (object, force)
           {
-              invisible(.Call("checkout_tag", object))
+              invisible(.Call("checkout_tag", object, force))
           }
 )
 
@@ -57,8 +61,8 @@ setMethod("checkout",
 ##' @export
 setMethod("checkout",
           signature(object = "git_tree"),
-          function (object)
+          function (object, force)
           {
-              invisible(.Call("checkout_tree", object))
+              invisible(.Call("checkout_tree", object, force))
           }
 )

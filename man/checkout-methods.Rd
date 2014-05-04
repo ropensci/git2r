@@ -7,17 +7,20 @@
 \alias{checkout,git_tree-method}
 \title{Checkout}
 \usage{
-checkout(object)
+checkout(object, force = FALSE)
 
-\S4method{checkout}{git_commit}(object)
+\S4method{checkout}{git_commit}(object, force = FALSE)
 
-\S4method{checkout}{git_tag}(object)
+\S4method{checkout}{git_tag}(object, force = FALSE)
 
-\S4method{checkout}{git_tree}(object)
+\S4method{checkout}{git_tree}(object, force = FALSE)
 }
 \arguments{
 \item{object}{a commit, tag or tree which content will be used to
 update the working directory.}
+
+\item{force}{If TRUE, then make working directory match
+target. This will throw away local changes. Default is FALSE.}
 }
 \value{
 invisible NULL
@@ -25,6 +28,8 @@ invisible NULL
 \description{
 Update files in the index and working tree to match the content of
 the tree pointed at by the treeish object (commit, tag or tree).
+Checkout using the default GIT_CHECKOUT_SAFE_CREATE strategy
+(force = FALSE) or GIT_CHECKOUT_FORCE (force = TRUE).
 }
 \keyword{methods}
 
