@@ -22,6 +22,8 @@
 #include <R.h>
 #include <Rinternals.h>
 
+SEXP stash(SEXP repo, SEXP message, SEXP index, SEXP untracked, SEXP ignored,
+           SEXP stasher);
 SEXP stashes(SEXP repo);
 
 #endif

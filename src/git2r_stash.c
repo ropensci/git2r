@@ -18,8 +18,10 @@
 
 #include <Rdefines.h>
 
+#include "git2r_commit.h"
 #include "git2r_error.h"
 #include "git2r_repository.h"
+#include "git2r_signature.h"
 #include "git2r_stash.h"
 #include "git2.h"
 
@@ -69,7 +71,7 @@ static int stashes_cb(
         SET_SLOT(stash,
                  Rf_install("message"),
                  ScalarString(mkChar(message)));
-        
+
         PROTECT(stasher = NEW_OBJECT(MAKE_CLASS("git_signature")));
         init_signature(git_commit_committer(commit), stasher);
         SET_SLOT(stash, Rf_install("stasher"), stasher);
@@ -128,4 +130,99 @@ cleanup:
         error("Error: %s\n", giterr_last()->message);
 
     return list;
+}
+
+/**
+ * Stash
+ *
+ * @param repo The repository
+ * @param message Optional description
+ * @param index All changes already added to the index are left
+ * intact in the working directory. Default is FALSE
+ * @param untracked All untracked files are also stashed and then
+ * cleaned up from the working directory. Default is FALSE
+ * @param ignored All ignored files are also stashed and then cleaned
+ * up from the working directory. Default is FALSE
+ * @param stasher Signature with stasher and time of stash
+ * @return S4 class git_stash
+ */
+SEXP stash(
+    SEXP repo,
+    SEXP message,
+    SEXP index,
+    SEXP untracked,
+    SEXP ignored,
+    SEXP stasher)
+{
+    int err;
+    SEXP when;
+    SEXP sexp_commit = R_NilValue;
+    git_oid oid;
+    git_stash_flags flags = GIT_STASH_DEFAULT;
+    git_commit *commit = NULL;
+    git_repository *repository = NULL;
+    git_signature *sig_stasher = NULL;
+
+    if (check_logical_arg(index)
+        || check_logical_arg(untracked)
+        || check_logical_arg(ignored)
+        || check_signature_arg(stasher))
+        error("Invalid arguments to stash");
+
+    repository = get_repository(repo);
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    if (LOGICAL(index)[0])
+        flags |= GIT_STASH_KEEP_INDEX;
+    if (LOGICAL(untracked)[0])
+        flags |= GIT_STASH_INCLUDE_UNTRACKED;
+    if (LOGICAL(ignored)[0])
+        flags |= GIT_STASH_INCLUDE_IGNORED;
+
+    when = GET_SLOT(stasher, Rf_install("when"));
+    err = git_signature_new(&sig_stasher,
+                            CHAR(STRING_ELT(GET_SLOT(stasher, Rf_install("name")), 0)),
+                            CHAR(STRING_ELT(GET_SLOT(stasher, Rf_install("email")), 0)),
+                            REAL(GET_SLOT(when, Rf_install("time")))[0],
+                            REAL(GET_SLOT(when, Rf_install("offset")))[0]);
+    if (err < 0)
+        goto cleanup;
+
+    err = git_stash_save(&oid,
+                         repository,
+                         sig_stasher,
+                         CHAR(STRING_ELT(message, 0)),
+                         flags);
+    if (GIT_ENOTFOUND == err) {
+        err = 0;
+        goto cleanup;
+    } else if (err < 0) {
+        goto cleanup;
+    }
+
+    err = git_commit_lookup(&commit, repository, &oid);
+    if (err < 0)
+        goto cleanup;
+
+    PROTECT(sexp_commit = NEW_OBJECT(MAKE_CLASS("git_commit")));
+    init_commit(commit, repo, sexp_commit);
+
+cleanup:
+    if (commit)
+        git_commit_free(commit);
+
+    if (sig_stasher)
+        git_signature_free(sig_stasher);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != sexp_commit)
+        UNPROTECT(1);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return sexp_commit;
 }
