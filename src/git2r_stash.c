@@ -33,6 +33,33 @@ typedef struct {
 } stashes_cb_data;
 
 /**
+ * Init slots in S4 class git_stash
+ *
+ * @param source
+ * @param repository
+ * @param repo S4 class git_repository that contains the stash
+ * @param dest S4 class git_stash to initialize
+ * @return int 0 on success, or an error code.
+ */
+int init_stash(
+    const git_oid *source,
+    git_repository *repository,
+    SEXP repo,
+    SEXP dest)
+{
+    int err;
+    git_commit *commit = NULL;
+
+    err = git_commit_lookup(&commit, repository, source);
+    if (err < 0)
+        return err;
+    init_commit(commit, repo, dest);
+    git_commit_free(commit);
+
+    return 0;
+}
+
+/**
  * Callback when iterating over stashes
  *
  * @param index
@@ -47,39 +74,22 @@ static int stashes_cb(
     const git_oid *stash_id,
     void *payload)
 {
-    int err = 0;
-    char hex[GIT_OID_HEXSZ + 1];
-    SEXP stash;
-    SEXP stasher;
-    git_commit *commit = NULL;
     stashes_cb_data *cb_data = (stashes_cb_data*)payload;
 
     /* Check if we have a list to populate */
     if (R_NilValue != cb_data->list) {
-        err = git_commit_lookup(&commit, cb_data->repository, stash_id);
-        if (err < 0)
-            return err;
+        int err;
+        SEXP stash;
 
         PROTECT(stash = NEW_OBJECT(MAKE_CLASS("git_stash")));
-
-        git_oid_fmt(hex, stash_id);
-        hex[GIT_OID_HEXSZ] = '\0';
-        SET_SLOT(stash,
-                 Rf_install("hex"),
-                 ScalarString(mkChar(hex)));
-
-        SET_SLOT(stash,
-                 Rf_install("message"),
-                 ScalarString(mkChar(message)));
-
-        PROTECT(stasher = NEW_OBJECT(MAKE_CLASS("git_signature")));
-        init_signature(git_commit_committer(commit), stasher);
-        SET_SLOT(stash, Rf_install("stasher"), stasher);
-        UNPROTECT(1);
-        git_commit_free(commit);
-
-        SET_SLOT(stash, Rf_install("repo"), duplicate(cb_data->repo));
-
+        err = init_stash(stash_id,
+                         cb_data->repository,
+                         cb_data->repo,
+                         stash);
+        if (err < 0) {
+            UNPROTECT(1);
+            return err;
+        }
         SET_VECTOR_ELT(cb_data->list, cb_data->n, stash);
         UNPROTECT(1);
     }
@@ -138,11 +148,11 @@ cleanup:
  * @param repo The repository
  * @param message Optional description
  * @param index All changes already added to the index are left
- * intact in the working directory. Default is FALSE
+ *        intact in the working directory. Default is FALSE
  * @param untracked All untracked files are also stashed and then
- * cleaned up from the working directory. Default is FALSE
+ *        cleaned up from the working directory. Default is FALSE
  * @param ignored All ignored files are also stashed and then cleaned
- * up from the working directory. Default is FALSE
+ *        up from the working directory. Default is FALSE
  * @param stasher Signature with stasher and time of stash
  * @return S4 class git_stash
  */
@@ -156,7 +166,7 @@ SEXP stash(
 {
     int err;
     SEXP when;
-    SEXP sexp_commit = R_NilValue;
+    SEXP sexp_stash = R_NilValue;
     git_oid oid;
     git_stash_flags flags = GIT_STASH_DEFAULT;
     git_commit *commit = NULL;
@@ -201,12 +211,8 @@ SEXP stash(
         goto cleanup;
     }
 
-    err = git_commit_lookup(&commit, repository, &oid);
-    if (err < 0)
-        goto cleanup;
-
-    PROTECT(sexp_commit = NEW_OBJECT(MAKE_CLASS("git_commit")));
-    init_commit(commit, repo, sexp_commit);
+    PROTECT(sexp_stash = NEW_OBJECT(MAKE_CLASS("git_stash")));
+    err = init_stash(&oid, repository, repo, sexp_stash);
 
 cleanup:
     if (commit)
@@ -218,11 +224,11 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != sexp_commit)
+    if (R_NilValue != sexp_stash)
         UNPROTECT(1);
 
     if (err < 0)
         error("Error: %s\n", giterr_last()->message);
 
-    return sexp_commit;
+    return sexp_stash;
 }
