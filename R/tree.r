@@ -139,6 +139,7 @@ setMethod("tree",
 )
 
 ##' @rdname tree-methods
+##' @include stash.r
 ##' @export
 setMethod("tree",
           signature(object = "git_stash"),
