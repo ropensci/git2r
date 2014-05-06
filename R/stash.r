@@ -38,7 +38,7 @@ setClass("git_stash", contains = "git_commit")
 ##' @param ignored All ignored files are also stashed and then cleaned
 ##' up from the working directory. Default is FALSE
 ##' @param stasher Signature with stasher and time of stash
-##' @return invisible S4 class git_commit
+##' @return invisible S4 class git_stash if anything to stash else NULL
 ##' @keywords methods
 ##' @examples
 ##' \dontrun{

@@ -6,23 +6,6 @@
 \description{
 Class \code{"git_stash"}
 }
-\section{Slots}{
-
-\describe{
-  \item{hex}{
-    40 char hexadecimal string
-  }
-  \item{message}{
-    Optional description of the stash
-  }
-  \item{stasher}{
-    The identity of the person performing the stash
-  }
-  \item{repo}{
-    The S4 class git_repository that contains the stash
-  }
-}
-}
 \keyword{classes}
 \keyword{methods}
 

@@ -29,7 +29,7 @@ up from the working directory. Default is FALSE}
 \item{stasher}{Signature with stasher and time of stash}
 }
 \value{
-invisible S4 class git_commit
+invisible S4 class git_stash if anything to stash else NULL
 }
 \description{
 Stash
