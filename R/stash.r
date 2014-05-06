@@ -17,48 +17,13 @@
 ##' Class \code{"git_stash"}
 ##'
 ##' @title S4 class to handle a git stash
-##' @section Slots:
-##' \describe{
-##'   \item{hex}{
-##'     40 char hexadecimal string
-##'   }
-##'   \item{message}{
-##'     Optional description of the stash
-##'   }
-##'   \item{stasher}{
-##'     The identity of the person performing the stash
-##'   }
-##'   \item{repo}{
-##'     The S4 class git_repository that contains the stash
-##'   }
-##' }
 ##' @name git_stash-class
 ##' @docType class
 ##' @keywords classes
 ##' @keywords methods
-##' @include signature.r
-##' @include repository.r
+##' @include commit.r
 ##' @export
-setClass("git_stash",
-         slots=c(hex     = "character",
-                 message = "character",
-                 stasher = "git_signature",
-                 repo    = "git_repository"),
-         validity=function(object)
-         {
-             errors <- validObject(object@stasher)
-
-             if(identical(errors, TRUE))
-               errors <- character()
-
-             if(!identical(length(object@hex), 1L))
-                 errors <- c(errors, "hex must have length equal to one")
-             if(!identical(length(object@message), 1L))
-                 errors <- c(errors, "message must have length equal to one")
-
-             if(length(errors) == 0) TRUE else errors
-         }
-)
+setClass("git_stash", contains = "git_commit")
 
 ##' Stash
 ##'
@@ -185,10 +150,10 @@ setMethod("summary",
                                  "stasher: %s <%s>\n",
                                  "when:    %s\n",
                                  "hex:     %s\n\n"),
-                          object@message,
-                          object@stasher@name,
-                          object@stasher@email,
-                          as(object@stasher@when, "character"),
+                          object@summary,
+                          object@author@name,
+                          object@author@email,
+                          as(object@author@when, "character"),
                           object@hex))
           }
 )
