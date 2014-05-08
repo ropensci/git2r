@@ -31,25 +31,56 @@ config(repo, user.name="Repo", user.email="repo@example.org")
 ##
 ## Create a file
 ##
-writeLines("Hello world!", file.path(path, "test.txt"))
+writeLines("Hello world!", file.path(path, "test-1.txt"))
 
 ##
 ## add and commit
 ##
-add(repo, 'test.txt')
+add(repo, 'test-1.txt')
 commit(repo, "Commit message")
 
 ##
 ## Make one more commit
 ##
-writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test.txt"))
-add(repo, 'test.txt')
+writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test-1.txt"))
+add(repo, 'test-1.txt')
 commit(repo, "Next commit message")
 
 ##
 ## Check that there are no stashes
 ##
 stopifnot(identical(stashes(repo), list()))
+
+##
+## Create one more file
+##
+writeLines("Hello world!", file.path(path, "test-2.txt"))
+
+##
+## Check that there are no stashes
+##
+stopifnot(identical(stashes(repo), list()))
+
+##
+## Stash
+##
+stash(repo)
+stopifnot(identical(stashes(repo), list()))
+stash(repo, untracked=TRUE)
+stopifnot(identical(length(stashes(repo)), 1L))
+
+##
+## Drop stash
+##
+drop_stash(repo, 0)
+stopifnot(identical(stashes(repo), list()))
+
+##
+## Check drop_stash argument
+##
+tools::assertError(drop_stash(repo))
+tools::assertError(drop_stash(repo, -1))
+tools::assertError(drop_stash(repo, 0.5))
 
 ##
 ## Cleanup
