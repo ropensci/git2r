@@ -76,6 +76,22 @@ int check_hex_arg(SEXP arg)
 }
 
 /**
+ * Check integer argument
+ *
+ * @param arg the arg to check
+ * @return 0 if OK, else 1
+ */
+int check_integer_arg(SEXP arg)
+{
+    if (R_NilValue == arg
+        || !isInteger(arg)
+        || 1 != length(arg)
+        || NA_INTEGER == INTEGER(arg)[0])
+        return 1;
+    return 0;
+}
+
+/**
  * Check logical argument
  *
  * @param arg the arg to check
