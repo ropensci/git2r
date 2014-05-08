@@ -579,6 +579,7 @@ static const R_CallMethodDef callMethods[] =
     {"clone", (DL_FUNC)&clone, 2},
     {"commit", (DL_FUNC)&commit, 5},
     {"default_signature", (DL_FUNC)&default_signature, 1},
+    {"drop_stash", (DL_FUNC)&drop_stash, 2},
     {"fetch", (DL_FUNC)&fetch, 2},
     {"get_config", (DL_FUNC)&get_config, 1},
     {"init", (DL_FUNC)&init, 2},

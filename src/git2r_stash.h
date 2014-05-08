@@ -22,6 +22,7 @@
 #include <R.h>
 #include <Rinternals.h>
 
+SEXP drop_stash(SEXP repo, SEXP index);
 SEXP stash(SEXP repo, SEXP message, SEXP index, SEXP untracked, SEXP ignored,
            SEXP stasher);
 SEXP stashes(SEXP repo);

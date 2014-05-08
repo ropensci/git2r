@@ -33,6 +33,32 @@ typedef struct {
 } stashes_cb_data;
 
 /**
+ * Remove a stash from the stash list
+ *
+ * @param repo S4 class git_repository that contains the stash
+ * @param index The index to the stash. 0 is the most recent stash.
+ * @return R_NilValue
+ */
+SEXP drop_stash(SEXP repo, SEXP index)
+{
+    int err;
+    git_repository *repository = NULL;
+
+    if (check_integer_arg(index))
+        error("Invalid arguments to drop_stash");
+    if (0 > INTEGER(index)[0])
+        error("'index' out of range");
+    repository = get_repository(repo);
+    if (!repository)
+        error(git2r_err_invalid_repository);
+    err = git_stash_drop(repository, INTEGER(index)[0]);
+    git_repository_free(repository);
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+    return R_NilValue;
+}
+
+/**
  * Init slots in S4 class git_stash
  *
  * @param source

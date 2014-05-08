@@ -25,6 +25,69 @@
 ##' @export
 setClass("git_stash", contains = "git_commit")
 
+##' Drop stash
+##'
+##' @rdname drop_stash-methods
+##' @docType methods
+##' @param object The stash \code{object} to drop or a zero-based
+##' integer to the stash to drop. The last stash has index 0.
+##' @return invisible NULL
+##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository("path/to/git2r")
+##'
+##' ## Assuming there are stashes in the repository.
+##' ## Drop a stash in repository.
+##' drop_stash(stashes(repo)[[1]])
+##'
+##' ## Assuming there are stashes in the repository.
+##' ## Drop last stash in repository.
+##' drop_stash(repo, 0)
+##' }
+setGeneric("drop_stash",
+           signature = "object",
+           function(object, ...)
+           standardGeneric("drop_stash"))
+
+##' @rdname drop_stash-methods
+##' @include repository.r
+##' @export
+setMethod("drop_stash",
+          signature(object = "git_repository"),
+          function (object, index)
+          {
+              if(missing(index))
+                  stop("Missing parameter 'index'")
+              if(!is.integer(index)) {
+                  if(!is.numeric(index))
+                      stop("'index' must be an integer")
+                  if(!identical(length(index), 1L))
+                      stop("'index' must have length one")
+                  if(abs(index - round(index)) >= .Machine$double.eps^0.5)
+                      stop("'index' must be an integer")
+                  index <- as.integer(index)
+              }
+
+              invisible(.Call("drop_stash", object, index))
+          }
+)
+
+##' @rdname drop_stash-methods
+##' @export
+setMethod("drop_stash",
+          signature(object = "git_stash"),
+          function (object)
+          {
+              ## Determine the index of the stash in the stash list
+              i <- match(object@hex, sapply(stashes(object@repo), slot, "hex"))
+
+              ## The stash list is zero-based
+              drop_stash(object@repo, i-1);
+          }
+)
+
 ##' Stash
 ##'
 ##' @rdname stash-methods
