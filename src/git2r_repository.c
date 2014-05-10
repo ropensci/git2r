@@ -84,7 +84,7 @@ SEXP init(SEXP path, SEXP bare)
  * Check if repository is bare.
  *
  * @param repo S4 class git_repository
- * @return
+ * @return TRUE if bare else FALSE
  */
 SEXP is_bare(SEXP repo)
 {
@@ -136,21 +136,19 @@ SEXP is_detached(SEXP repo)
  */
 SEXP is_empty(SEXP repo)
 {
-    SEXP result;
+    int result;
     git_repository *repository;
 
     repository= get_repository(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
-
-    if (git_repository_is_empty(repository))
-        result = ScalarLogical(TRUE);
-    else
-        result = ScalarLogical(FALSE);
-
+    result = git_repository_is_empty(repository);
     git_repository_free(repository);
-
-    return result;
+    if (result < 0)
+        error("Error: %s\n", giterr_last()->message);
+    if (1 == result)
+        return ScalarLogical(TRUE);
+    return ScalarLogical(FALSE);
 }
 
 /**
