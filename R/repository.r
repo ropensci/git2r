@@ -553,6 +553,8 @@ setMethod("show",
               if(is.empty(object)) {
                   cat(sprintf("Local:    %s\n", workdir(object)))
                   cat("Head:     nothing commited (yet)\n")
+              } else if(is.detached(object)) {
+                  cat(sprintf("Local:    (detached) %s\n", workdir(object)))
               } else {
                   cat(sprintf("Local:    %s %s\n",
                               head(object)@shorthand,
