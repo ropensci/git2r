@@ -271,6 +271,62 @@ cleanup:
 }
 
 /**
+ * Get oid from hex SEXP
+ *
+ * @param hex
+ * @param oid
+ * @return void
+ */
+void oid_from_hex_sexp(SEXP hex, git_oid *oid)
+{
+    int err;
+    size_t len;
+
+    len = LENGTH(STRING_ELT(hex, 0));
+    if (GIT_OID_HEXSZ == len)
+        git_oid_fromstr(oid, CHAR(STRING_ELT(hex, 0)));
+    else
+        git_oid_fromstrn(oid, CHAR(STRING_ELT(hex, 0)), len);
+}
+
+/**
+ * Descendant of
+ *
+ * @param commit
+ * @param ancestor
+ * @return TRUE or FALSE
+ */
+
+SEXP descendant_of(SEXP commit, SEXP ancestor)
+{
+    int result;
+    SEXP slot;
+    git_oid commit_oid;
+    git_oid ancestor_oid;
+    git_repository *repository = NULL;
+
+    slot = GET_SLOT(commit, Rf_install("repo"));
+    repository = get_repository(slot);
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    slot = GET_SLOT(commit, Rf_install("hex"));
+    oid_from_hex_sexp(slot, &commit_oid);
+
+    slot = GET_SLOT(ancestor, Rf_install("hex"));
+    oid_from_hex_sexp(slot, &ancestor_oid);
+
+    result = git_graph_descendant_of(repository, &commit_oid, &ancestor_oid);
+    git_repository_free(repository);
+
+    if (result < 0)
+        error("Error: %s\n", giterr_last()->message);
+    if (0 == result)
+        return ScalarLogical(0);
+    return ScalarLogical(1);
+}
+
+/**
  * Init slots in S4 class git_commit
  *
  * @param source a commit object

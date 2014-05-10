@@ -47,14 +47,14 @@ tools::assertError(commit(repo, "Test to commit"))
 ## add and commit
 ##
 add(repo, "test.txt")
-new_commit <- commit(repo, "Commit message")
+commit_1 <- commit(repo, "Commit message")
 
 ##
 ## Check commit
 ##
-stopifnot(identical(new_commit@author@name, "Repo"))
-stopifnot(identical(new_commit@author@email, "repo@example.org"))
-stopifnot(identical(lookup(repo, new_commit@hex), new_commit))
+stopifnot(identical(commit_1@author@name, "Repo"))
+stopifnot(identical(commit_1@author@email, "repo@example.org"))
+stopifnot(identical(lookup(repo, commit_1@hex), commit_1))
 stopifnot(identical(length(commits(repo)), 1L))
 stopifnot(identical(commits(repo)[[1]]@author@name, "Repo"))
 stopifnot(identical(commits(repo)[[1]]@author@email, "repo@example.org"))
@@ -63,6 +63,19 @@ stopifnot(identical(commits(repo)[[1]]@author@email, "repo@example.org"))
 ## Commit without adding changes should produce an error
 ##
 tools::assertError(commit(repo, "Test to commit"))
+
+##
+## Add another commit
+##
+writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test.txt"))
+add(repo, "test.txt")
+commit_2 <- commit(repo, "Commit message 2")
+
+##
+## Check relationship
+##
+stopifnot(identical(descendant_of(commit_2, commit_1), TRUE))
+stopifnot(identical(descendant_of(commit_1, commit_2), FALSE))
 
 ##
 ## Cleanup

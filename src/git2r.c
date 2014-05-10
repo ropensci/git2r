@@ -578,6 +578,7 @@ static const R_CallMethodDef callMethods[] =
     {"checkout_tree", (DL_FUNC)&checkout_tree, 1},
     {"clone", (DL_FUNC)&clone, 2},
     {"commit", (DL_FUNC)&commit, 5},
+    {"descendant_of", (DL_FUNC)&descendant_of, 2},
     {"default_signature", (DL_FUNC)&default_signature, 1},
     {"drop_stash", (DL_FUNC)&drop_stash, 2},
     {"fetch", (DL_FUNC)&fetch, 2},

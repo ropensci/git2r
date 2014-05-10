@@ -26,6 +26,7 @@
 
 SEXP commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP parent_list);
 SEXP commit_tree(SEXP commit);
+SEXP descendant_of(SEXP commit, SEXP ancestor);
 void init_commit(git_commit *source, SEXP repo, SEXP dest);
 
 #endif

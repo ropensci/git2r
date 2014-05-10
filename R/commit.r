@@ -104,6 +104,41 @@ setMethod("commits",
           }
 )
 
+##' Descendant
+##'
+##' Determine if a commit is the descendant of another commit
+##' @rdname descendant_of-methods
+##' @docType methods
+##' @param commit a S4 class git_commit \code{object}.
+##' @param ancestor a S4 class git_commit \code{object} to check if
+##' ancestor to \code{commit}.
+##' @return TRUE if commit is descendant of \code{ancestor}, else
+##' FALSE
+##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository("path/to/git2r")
+##'
+##' descendant_of(commits(repo)[[1]], commits(repo)[[2]])
+##' }
+##'
+setGeneric("descendant_of",
+           signature = c("commit", "ancestor"),
+           function(commit, ancestor)
+           standardGeneric("descendant_of"))
+
+##' @rdname descendant_of-methods
+##' @export
+setMethod("descendant_of",
+          signature(commit = "git_commit", ancestor = "git_commit"),
+          function (commit, ancestor)
+          {
+              stopifnot(identical(commit@repo, ancestor@repo))
+              .Call("descendant_of", commit, ancestor)
+          }
+)
+
 ##' Brief summary of commit
 ##'
 ##' @aliases show,git_commit-methods
