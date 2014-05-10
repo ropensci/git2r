@@ -371,6 +371,37 @@ setMethod("is.bare",
           }
 )
 
+##' Check if HEAD of repository is detached
+##'
+##' @rdname is.detached-methods
+##' @docType methods
+##' @param object The repository \code{object}
+##' @return TRUE if repository HEAD is detached, else FALSE
+##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository("path/to/git2r")
+##'
+##' ## Check if repository HEAD is detached
+##' is.detached(repo)
+##' }
+##'
+setGeneric("is.detached",
+           signature = "object",
+           function(object)
+           standardGeneric("is.detached"))
+
+##' @rdname is.detached-methods
+##' @export
+setMethod("is.detached",
+          signature(object = "git_repository"),
+          function (object)
+          {
+              .Call("is_detached", object)
+          }
+)
+
 ##' Check if repository is empty
 ##'
 ##' @rdname is.empty-methods

@@ -27,6 +27,7 @@
 git_repository* get_repository(SEXP repo);
 SEXP init(SEXP path, SEXP bare);
 SEXP is_bare(SEXP repo);
+SEXP is_detached(SEXP repo);
 SEXP is_empty(SEXP repo);
 SEXP is_repository(SEXP path);
 SEXP lookup(SEXP repo, SEXP hex);

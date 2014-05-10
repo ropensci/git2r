@@ -106,6 +106,29 @@ SEXP is_bare(SEXP repo)
 }
 
 /**
+ * Check if head of repository is detached
+ *
+ * @param repo S4 class git_repository
+ * @return TRUE if detached else FALSE
+ */
+SEXP is_detached(SEXP repo)
+{
+    int result;
+    git_repository *repository;
+
+    repository= get_repository(repo);
+    if (!repository)
+        error(git2r_err_invalid_repository);
+    result = git_repository_head_detached(repository);
+    git_repository_free(repository);
+    if (result < 0)
+        error("Error: %s\n", giterr_last()->message);
+    if (1 == result)
+        return ScalarLogical(TRUE);
+    return ScalarLogical(FALSE);
+}
+
+/**
  * Check if repository is empty.
  *
  * @param repo S4 class git_repository

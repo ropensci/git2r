@@ -499,7 +499,7 @@ SEXP revisions(SEXP repo)
     SEXP list;
     size_t n = 0;
     git_revwalk *walker = NULL;
-    git_repository *repository;
+    git_repository *repository = NULL;
 
     repository = get_repository(repo);
     if (!repository)
@@ -559,7 +559,8 @@ cleanup:
     if (walker)
         git_revwalk_free(walker);
 
-    git_repository_free(repository);
+    if (repository)
+        git_repository_free(repository);
 
     UNPROTECT(1);
 
@@ -586,6 +587,7 @@ static const R_CallMethodDef callMethods[] =
     {"init", (DL_FUNC)&init, 2},
     {"is_bare", (DL_FUNC)&is_bare, 1},
     {"is_binary", (DL_FUNC)&is_binary, 1},
+    {"is_detached", (DL_FUNC)&is_detached, 1},
     {"is_empty", (DL_FUNC)&is_empty, 1},
     {"is_repository", (DL_FUNC)&is_repository, 1},
     {"lookup", (DL_FUNC)&lookup, 2},
