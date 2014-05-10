@@ -47,9 +47,19 @@ add(repo, 'test.txt')
 commit.2 <- commit(repo, "Next commit message")
 
 ##
+## Check if HEAD is detached
+##
+stopifnot(identical(is.detached(repo), FALSE))
+
+##
 ## Checkout first commit
 ##
 checkout(commit.1)
+
+##
+## Check if HEAD is detached
+##
+stopifnot(identical(is.detached(repo), TRUE))
 
 ##
 ## Cleanup
