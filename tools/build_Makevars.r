@@ -4,7 +4,7 @@ o_files <- function(path, exclude = NULL) {
                      list.files(path, pattern = "[.]c$", full.names = TRUE)))
 
     if(!is.null(exclude))
-        files <- files[files != exclude]
+        files <- files[!(files %in% exclude)]
     files
 }
 
@@ -62,7 +62,7 @@ build_Makevars.win <- function() {
                   libgit2.xdiff      = o_files("src/libgit2/xdiff"),
                   libgit2.win32      = o_files("src/libgit2/win32"),
                   http_parser        = o_files("src/http-parser"),
-                  regex              = o_files("src/regex"),
+                  regex              = o_files("src/regex", c("regex/regcomp.o", "regex/regexec.o", "regex/regex_internal.o")),
                   root               = o_files("src"))
 
     cat("PKG_LIBS = $(ZLIB_LIBS) -lws2_32\n", file = Makevars)
