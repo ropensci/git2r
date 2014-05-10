@@ -57,11 +57,11 @@ typedef struct {
  */
 GIT_EXTERN(int) git_merge_file_init_input(
 	git_merge_file_input *opts,
-	int version);
+	unsigned int version);
 
 /**
  * Flags for `git_merge_tree` options.  A combination of these flags can be
- * passed in via the `flags` value in the `git_merge_tree_opts`.
+ * passed in via the `flags` value in the `git_merge_options`.
  */
 typedef enum {
 	/**
@@ -73,7 +73,7 @@ typedef enum {
 } git_merge_tree_flag_t;
 
 /**
- * Merge file favor options for `git_merge_trees_opts` instruct the file-level
+ * Merge file favor options for `git_merge_options` instruct the file-level
  * merging functionality how to deal with conflicting regions of the files.
  */
 typedef enum {
@@ -164,7 +164,7 @@ typedef struct {
  */
 GIT_EXTERN(int) git_merge_file_init_options(
 	git_merge_file_options *opts,
-	int version);
+	unsigned int version);
 
 typedef struct {
 	/**
@@ -232,7 +232,7 @@ typedef struct {
  */
 GIT_EXTERN(int) git_merge_init_options(
 	git_merge_options *opts,
-	int version);
+	unsigned int version);
 
 /**
  * The results of `git_merge_analysis` indicate the merge opportunities.

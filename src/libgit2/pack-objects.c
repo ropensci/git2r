@@ -406,6 +406,7 @@ static int write_one(
 			po->delta = NULL;
 	}
 
+	*status = WRITE_ONE_WRITTEN;
 	po->written = 1;
 	po->recursing = 0;
 
@@ -1288,7 +1289,7 @@ int git_packbuilder_write(
 	git_packbuilder *pb,
 	const char *path,
 	unsigned int mode,
-	git_transfer_progress_callback progress_cb,
+	git_transfer_progress_cb progress_cb,
 	void *progress_cb_payload)
 {
 	git_indexer *indexer;

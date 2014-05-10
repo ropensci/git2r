@@ -73,7 +73,7 @@ static int ensure_remote_name_is_valid(const char *name)
 	if (!git_remote_is_valid_name(name)) {
 		giterr_set(
 			GITERR_CONFIG,
-			"'%s' is not a valid remote name.", name);
+			"'%s' is not a valid remote name.", name ? name : "(null)");
 		error = GIT_EINVALIDSPEC;
 	}
 
@@ -663,7 +663,7 @@ int git_remote_connect(git_remote *remote, git_direction direction)
 		return error;
 
 	if (t->set_callbacks &&
-		(error = t->set_callbacks(t, remote->callbacks.progress, NULL, remote->callbacks.payload)) < 0)
+		(error = t->set_callbacks(t, remote->callbacks.sideband_progress, NULL, remote->callbacks.payload)) < 0)
 		goto on_error;
 
 	if (!remote->check_cert)
@@ -1246,11 +1246,18 @@ int git_remote_set_callbacks(git_remote *remote, const git_remote_callbacks *cal
 
 	if (remote->transport && remote->transport->set_callbacks)
 		return remote->transport->set_callbacks(remote->transport,
-			remote->callbacks.progress,
+			remote->callbacks.sideband_progress,
 			NULL,
 			remote->callbacks.payload);
 
 	return 0;
+}
+
+const git_remote_callbacks *git_remote_get_callbacks(git_remote *remote)
+{
+	assert(remote);
+
+	return &remote->callbacks;
 }
 
 int git_remote_set_transport(git_remote *remote, git_transport *transport)
@@ -1729,14 +1736,9 @@ const git_refspec *git_remote_get_refspec(const git_remote *remote, size_t n)
 	return git_vector_get(&remote->refspecs, n);
 }
 
-int git_remote_init_callbacks(git_remote_callbacks* opts, int version)
+int git_remote_init_callbacks(git_remote_callbacks *opts, unsigned int version)
 {
-	if (version != GIT_REMOTE_CALLBACKS_VERSION) {
-		giterr_set(GITERR_INVALID, "Invalid version %d for git_remote_callbacks", version);
-		return -1;
-	} else {
-		git_remote_callbacks o = GIT_REMOTE_CALLBACKS_INIT;
-		memcpy(opts, &o, sizeof(o));
-		return 0;
-	}
+	GIT_INIT_STRUCTURE_FROM_TEMPLATE(
+		opts, version, git_remote_callbacks, GIT_REMOTE_CALLBACKS_INIT);
+	return 0;
 }

@@ -27,6 +27,10 @@
 #include "merge.h"
 #include "diff_driver.h"
 
+#ifdef GIT_WIN32
+# include "win32/w32_util.h"
+#endif
+
 #define GIT_FILE_CONTENT_PREFIX "gitdir:"
 
 #define GIT_BRANCH_MASTER "master"
@@ -1149,7 +1153,7 @@ static int repo_write_template(
 
 #ifdef GIT_WIN32
 	if (!error && hidden) {
-		if (p_hide_directory__w32(path.ptr) < 0)
+		if (git_win32__sethidden(path.ptr) < 0)
 			error = -1;
 	}
 #else
@@ -1234,8 +1238,8 @@ static int repo_init_structure(
 	/* Hide the ".git" directory */
 #ifdef GIT_WIN32
 	if ((opts->flags & GIT_REPOSITORY_INIT__HAS_DOTGIT) != 0) {
-		if (p_hide_directory__w32(repo_dir) < 0) {
-			giterr_set(GITERR_REPOSITORY,
+		if (git_win32__sethidden(repo_dir) < 0) {
+			giterr_set(GITERR_OS,
 				"Failed to mark Git repository folder as hidden");
 			return -1;
 		}
@@ -1785,7 +1789,8 @@ int git_repository_hashfile(
 	/* passing empty string for "as_path" indicated --no-filters */
 	if (strlen(as_path) > 0) {
 		error = git_filter_list_load(
-			&fl, repo, NULL, as_path, GIT_FILTER_TO_ODB);
+			&fl, repo, NULL, as_path,
+			GIT_FILTER_TO_ODB, GIT_FILTER_OPT_DEFAULT);
 		if (error < 0)
 			return error;
 	} else {
@@ -2022,14 +2027,11 @@ int git_repository_is_shallow(git_repository *repo)
 	return st.st_size == 0 ? 0 : 1;
 }
 
-int git_repository_init_init_options(git_repository_init_options* opts, int version)
+int git_repository_init_init_options(
+	git_repository_init_options *opts, unsigned int version)
 {
-	if (version != GIT_REPOSITORY_INIT_OPTIONS_VERSION) {
-		giterr_set(GITERR_INVALID, "Invalid version %d for git_repository_init_options", version);
-		return -1;
-	} else {
-		git_repository_init_options o = GIT_REPOSITORY_INIT_OPTIONS_INIT;
-		memcpy(opts, &o, sizeof(o));
-		return 0;
-	}
+	GIT_INIT_STRUCTURE_FROM_TEMPLATE(
+		opts, version, git_repository_init_options,
+		GIT_REPOSITORY_INIT_OPTIONS_INIT);
+	return 0;
 }

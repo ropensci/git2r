@@ -38,6 +38,7 @@ typedef enum {
 	GIT_CVAR_TRUSTCTIME,    /* core.trustctime */
 	GIT_CVAR_ABBREV,        /* core.abbrev */
 	GIT_CVAR_PRECOMPOSE,    /* core.precomposeunicode */
+	GIT_CVAR_SAFE_CRLF,		/* core.safecrlf */
 	GIT_CVAR_CACHE_MAX
 } git_cvar_cached;
 
@@ -89,7 +90,8 @@ typedef enum {
 	GIT_ABBREV_DEFAULT = 7,
 	/* core.precomposeunicode */
 	GIT_PRECOMPOSE_DEFAULT = GIT_CVAR_FALSE,
-
+	/* core.safecrlf */
+	GIT_SAFE_CRLF_DEFAULT = GIT_CVAR_FALSE,
 } git_cvar_value;
 
 /* internal repository init flags */
@@ -108,7 +110,7 @@ struct git_repository {
 	git_submodule_cache *_submodules;
 
 	git_cache objects;
-	git_attr_cache attrcache;
+	git_attr_cache *attrcache;
 	git_diff_driver_registry *diff_drivers;
 
 	char *path_repository;
@@ -123,7 +125,7 @@ struct git_repository {
 
 GIT_INLINE(git_attr_cache *) git_repository_attr_cache(git_repository *repo)
 {
-	return &repo->attrcache;
+	return repo->attrcache;
 }
 
 int git_repository_head_tree(git_tree **tree, git_repository *repo);

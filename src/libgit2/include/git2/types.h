@@ -193,6 +193,7 @@ typedef enum {
 typedef enum {
 	GIT_BRANCH_LOCAL = 1,
 	GIT_BRANCH_REMOTE = 2,
+	GIT_BRANCH_ALL = GIT_BRANCH_LOCAL|GIT_BRANCH_REMOTE,
 } git_branch_t;
 
 /** Valid modes for index and tree entries. */
@@ -240,7 +241,7 @@ typedef struct git_transfer_progress {
  * @param stats Structure containing information about the state of the transfer
  * @param payload Payload provided by caller
  */
-typedef int (*git_transfer_progress_callback)(const git_transfer_progress *stats, void *payload);
+typedef int (*git_transfer_progress_cb)(const git_transfer_progress *stats, void *payload);
 
 /**
  * Opaque structure representing a submodule.

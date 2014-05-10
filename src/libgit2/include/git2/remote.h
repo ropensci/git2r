@@ -457,7 +457,7 @@ struct git_remote_callbacks {
 	 * progress side-band will be passed to this function (this is
 	 * the 'counting objects' output.
 	 */
-	int (*progress)(const char *str, int len, void *data);
+	git_transport_message_cb sideband_progress;
 
 	/**
 	 * Completion is called when different parts of the download
@@ -468,15 +468,18 @@ struct git_remote_callbacks {
 	/**
 	 * This will be called if the remote host requires
 	 * authentication in order to connect to it.
+	 *
+	 * Returning GIT_PASSTHROUGH will make libgit2 behave as
+	 * though this field isn't set.
 	 */
-	int (*credentials)(git_cred **cred, const char *url, const char *username_from_url, unsigned int allowed_types,	void *data);
+	git_cred_acquire_cb credentials;
 
 	/**
 	 * During the download of new data, this will be regularly
 	 * called with the current count of progress done by the
 	 * indexer.
 	 */
-	int (*transfer_progress)(const git_transfer_progress *stats, void *data);
+	git_transfer_progress_cb transfer_progress;
 
 	/**
 	 * Each time a reference is updated locally, this function
@@ -498,14 +501,13 @@ struct git_remote_callbacks {
  * Initializes a `git_remote_callbacks` with default values. Equivalent to
  * creating an instance with GIT_REMOTE_CALLBACKS_INIT.
  *
- * @param opts the `git_remote_callbacks` instance to initialize.
- * @param version the version of the struct; you should pass
- *        `GIT_REMOTE_CALLBACKS_VERSION` here.
+ * @param opts the `git_remote_callbacks` struct to initialize
+ * @param version Version of struct; pass `GIT_REMOTE_CALLBACKS_VERSION`
  * @return Zero on success; -1 on failure.
  */
 GIT_EXTERN(int) git_remote_init_callbacks(
-	git_remote_callbacks* opts,
-	int version);
+	git_remote_callbacks *opts,
+	unsigned int version);
 
 /**
  * Set the callbacks for a remote
@@ -518,6 +520,17 @@ GIT_EXTERN(int) git_remote_init_callbacks(
  * @return 0 or an error code
  */
 GIT_EXTERN(int) git_remote_set_callbacks(git_remote *remote, const git_remote_callbacks *callbacks);
+
+/**
+ * Retrieve the current callback structure
+ *
+ * This provides read access to the callbacks structure as the remote
+ * sees it.
+ *
+ * @param remote the remote to query
+ * @return a pointer to the callbacks structure
+ */
+GIT_EXTERN(const git_remote_callbacks *) git_remote_get_callbacks(git_remote *remote);
 
 /**
  * Get the statistics structure that is filled in by the fetch operation.

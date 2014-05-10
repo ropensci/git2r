@@ -20,6 +20,17 @@
 # define max(a,b) ((a) > (b) ? (a) : (b))
 #endif
 
+#define GIT_DATE_RFC2822_SZ  32
+
+/**
+ * Return the length of a constant string.
+ * We are aware that `strlen` performs the same task and is usually
+ * optimized away by the compiler, whilst being safer because it returns
+ * valid values when passed a pointer instead of a constant string; however
+ * this macro will transparently work with wide-char and single-char strings.
+ */
+#define CONST_STRLEN(x) ((sizeof(x)/sizeof(x[0])) - 1)
+
 /*
  * Custom memory allocation wrappers
  * that set error code and error message
@@ -194,6 +205,7 @@ extern int git__bsearch_r(
 	size_t *position);
 
 extern int git__strcmp_cb(const void *a, const void *b);
+extern int git__strcasecmp_cb(const void *a, const void *b);
 
 extern int git__strcmp(const char *a, const char *b);
 extern int git__strcasecmp(const char *a, const char *b);
@@ -327,6 +339,16 @@ extern int git__parse_bool(int *out, const char *value);
  * - "2003-7-17 08:23"
  */
 extern int git__date_parse(git_time_t *out, const char *date);
+
+/*
+ * Format a git_time as a RFC2822 string
+ *
+ * @param out buffer to store formatted date; a '\\0' terminator will automatically be added.
+ * @param len size of the buffer; should be atleast `GIT_DATE_RFC2822_SZ` in size;
+ * @param date the date to be formatted
+ * @return 0 if successful; -1 on error
+ */
+extern int git__date_rfc2822_fmt(char *out, size_t len, const git_time *date);
 
 /*
  * Unescapes a string in-place.

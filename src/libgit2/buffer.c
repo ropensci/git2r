@@ -148,6 +148,15 @@ int git_buf_putc(git_buf *buf, char c)
 	return 0;
 }
 
+int git_buf_putcn(git_buf *buf, char c, size_t len)
+{
+	ENSURE_SIZE(buf, buf->size + len + 1);
+	memset(buf->ptr + buf->size, c, len);
+	buf->size += len;
+	buf->ptr[buf->size] = '\0';
+	return 0;
+}
+
 int git_buf_put(git_buf *buf, const char *data, size_t len)
 {
 	ENSURE_SIZE(buf, buf->size + len + 1);
@@ -198,6 +207,42 @@ int git_buf_put_base64(git_buf *buf, const char *data, size_t len)
 	}
 
 	buf->size = ((char *)write) - buf->ptr;
+	buf->ptr[buf->size] = '\0';
+
+	return 0;
+}
+
+static const char b85str[] =
+	"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!#$%&()*+-;<=>?@^_`{|}~";
+
+int git_buf_put_base85(git_buf *buf, const char *data, size_t len)
+{
+	ENSURE_SIZE(buf, buf->size + (5 * ((len / 4) + !!(len % 4))) + 1);
+
+	while (len) {
+		uint32_t acc = 0;
+		char b85[5];
+		int i;
+
+		for (i = 24; i >= 0; i -= 8) {
+			uint8_t ch = *data++;
+			acc |= ch << i;
+
+			if (--len == 0)
+				break;
+		}
+
+		for (i = 4; i >= 0; i--) {
+			int val = acc % 85;
+			acc /= 85;
+
+			b85[i] = b85str[val];
+		}
+
+		for (i = 0; i < 5; i++)
+			buf->ptr[buf->size++] = b85[i];
+	}
+
 	buf->ptr[buf->size] = '\0';
 
 	return 0;

@@ -1051,7 +1051,7 @@ int git_odb_open_rstream(git_odb_stream **stream, git_odb *db, const git_oid *oi
 	return error;
 }
 
-int git_odb_write_pack(struct git_odb_writepack **out, git_odb *db, git_transfer_progress_callback progress_cb, void *progress_payload)
+int git_odb_write_pack(struct git_odb_writepack **out, git_odb *db, git_transfer_progress_cb progress_cb, void *progress_payload)
 {
 	size_t i, writes = 0;
 	int error = GIT_ERROR;
@@ -1123,14 +1123,9 @@ int git_odb__error_ambiguous(const char *message)
 	return GIT_EAMBIGUOUS;
 }
 
-int git_odb_init_backend(git_odb_backend* backend, int version)
+int git_odb_init_backend(git_odb_backend *backend, unsigned int version)
 {
-	if (version != GIT_ODB_BACKEND_VERSION) {
-		giterr_set(GITERR_INVALID, "Invalid version %d for git_odb_backend", version);
-		return -1;
-	} else {
-		git_odb_backend b = GIT_ODB_BACKEND_INIT;
-		memcpy(backend, &b, sizeof(b));
-		return 0;
-	}
+	GIT_INIT_STRUCTURE_FROM_TEMPLATE(
+		backend, version, git_odb_backend, GIT_ODB_BACKEND_INIT);
+	return 0;
 }

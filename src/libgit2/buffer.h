@@ -88,6 +88,7 @@ GIT_INLINE(bool) git_buf_oom(const git_buf *buf)
  */
 int git_buf_sets(git_buf *buf, const char *string);
 int git_buf_putc(git_buf *buf, char c);
+int git_buf_putcn(git_buf *buf, char c, size_t len);
 int git_buf_put(git_buf *buf, const char *data, size_t len);
 int git_buf_puts(git_buf *buf, const char *string);
 int git_buf_printf(git_buf *buf, const char *format, ...) GIT_FORMAT_PRINTF(2, 3);
@@ -156,6 +157,9 @@ int git_buf_cmp(const git_buf *a, const git_buf *b);
 
 /* Write data as base64 encoded in buffer */
 int git_buf_put_base64(git_buf *buf, const char *data, size_t len);
+
+/* Write data as "base85" encoded in buffer */
+int git_buf_put_base85(git_buf *buf, const char *data, size_t len);
 
 /*
  * Insert, remove or replace a portion of the buffer.
