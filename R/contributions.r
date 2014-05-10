@@ -93,6 +93,8 @@ setMethod("contributions",
               df$n <- count$n[match(df$index, count$index)]
               df <- unique(df[, c("when", "author", "n")])
               df$when <- as.Date(substr(as.character(df$when), 1, 10))
-              df[order(df$when, df$author),]
+              df <- df[order(df$when, df$author),]
+              row.names(df) <- NULL
+              return(df)
           }
 )
