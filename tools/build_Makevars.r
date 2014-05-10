@@ -57,10 +57,10 @@ build_Makevars.win <- function() {
     on.exit(close(Makevars))
 
     files <- list(libgit2            = o_files("src/libgit2"),
-                  libgit2.hash       = o_files("src/libgit2/hash"),
+                  libgit2.hash       = o_files("src/libgit2/hash", "libgit2/hash/hash_win32.o"),
                   libgit2.transports = o_files("src/libgit2/transports"),
                   libgit2.xdiff      = o_files("src/libgit2/xdiff"),
-                  libgit2.win32      = o_files("src/libgit2/xdiff"),
+                  libgit2.win32      = o_files("src/libgit2/win32"),
                   http_parser        = o_files("src/http-parser"),
                   regex              = o_files("src/regex"),
                   root               = o_files("src"))
