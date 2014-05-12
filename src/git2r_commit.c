@@ -217,6 +217,24 @@ cleanup:
 }
 
 /**
+ * Get commit object from S4 class git_commit
+ *
+ * @param out
+ * @param repository
+ * @param commit
+ * @return
+ */
+static int get_commit(git_commit **out, git_repository *repository, SEXP commit)
+{
+    SEXP hex;
+    git_oid oid;
+
+    hex = GET_SLOT(commit, Rf_install("hex"));
+    git_oid_fromstr(&oid, CHAR(STRING_ELT(hex, 0)));
+    return git_commit_lookup(out, repository, &oid);
+}
+
+/**
  * Get the tree pointed to by a commit
  *
  * @param commit S4 class git_commit or git_stash
@@ -227,9 +245,7 @@ SEXP commit_tree(SEXP commit)
     int err;
     SEXP result = R_NilValue;
     SEXP repo;
-    SEXP hex;
     git_commit *commit_obj = NULL;
-    git_oid oid;
     git_repository *repository = NULL;
     git_tree *tree = NULL;
 
@@ -238,9 +254,7 @@ SEXP commit_tree(SEXP commit)
     if (!repository)
         error(git2r_err_invalid_repository);
 
-    hex = GET_SLOT(commit, Rf_install("hex"));
-    git_oid_fromstr(&oid, CHAR(STRING_ELT(hex, 0)));
-    err = git_commit_lookup(&commit_obj, repository, &oid);
+    err = get_commit(&commit_obj, repository, commit);
     if (err < 0)
         goto cleanup;
 
@@ -383,4 +397,58 @@ void init_commit(git_commit *source, SEXP repo, SEXP dest)
     }
 
     SET_SLOT(dest, Rf_install("repo"), duplicate(repo));
+}
+
+/**
+ * Parents of a commit
+ *
+ * @param commit
+ * @return list of S4 class git_commit objects
+ */
+SEXP parents(SEXP commit)
+{
+    int err;
+    size_t i, n;
+    SEXP repo;
+    SEXP list = R_NilValue;
+    git_commit *commit_obj = NULL;
+    git_repository *repository = NULL;
+
+    repo = GET_SLOT(commit, Rf_install("repo"));
+    repository = get_repository(repo);
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    err = get_commit(&commit_obj, repository, commit);
+    if (err < 0)
+        goto cleanup;
+
+    n = git_commit_parentcount(commit_obj);
+    PROTECT(list = allocVector(VECSXP, n));
+
+    for (i = 0; i < n; i++) {
+        git_commit *parent = NULL;
+        SEXP tmp;
+
+        err = git_commit_parent(&parent, commit_obj, i);
+        if (err < 0)
+            goto cleanup;
+
+        PROTECT(tmp = NEW_OBJECT(MAKE_CLASS("git_commit")));
+        init_commit(parent, repo, tmp);
+        SET_VECTOR_ELT(list, i, tmp);
+        UNPROTECT(1);
+    }
+
+cleanup:
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != list)
+        UNPROTECT(1);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return list;
 }

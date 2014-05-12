@@ -591,6 +591,7 @@ static const R_CallMethodDef callMethods[] =
     {"is_empty", (DL_FUNC)&is_empty, 1},
     {"is_repository", (DL_FUNC)&is_repository, 1},
     {"lookup", (DL_FUNC)&lookup, 2},
+    {"parents", (DL_FUNC)&parents, 1},
     {"push", (DL_FUNC)&push, 3},
     {"references", (DL_FUNC)&references, 1},
     {"remotes", (DL_FUNC)&remotes, 1},

@@ -139,6 +139,37 @@ setMethod("descendant_of",
           }
 )
 
+##' Parents
+##'
+##' Get parents of a commit.
+##' @rdname parents-methods
+##' @docType methods
+##' @param object a S4 class git_commit \code{object}.
+##' @return list of S4 git_commit objects
+##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository("path/to/git2r")
+##'
+##' parents(commits(repo)[[1]])
+##' }
+##'
+setGeneric("parents",
+           signature = "object",
+           function(object)
+           standardGeneric("parents"))
+
+##' @rdname parents-methods
+##' @export
+setMethod("parents",
+          signature(object = "git_commit"),
+          function(object)
+          {
+              .Call("parents", object)
+          }
+)
+
 ##' Brief summary of commit
 ##'
 ##' @aliases show,git_commit-methods
