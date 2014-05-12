@@ -63,3 +63,19 @@ setMethod("is.binary",
               .Call("is_binary", object)
           }
 )
+
+##' Brief summary of blob
+##'
+##' @aliases show,git_blob-methods
+##' @docType methods
+##' @param object The blob \code{object}
+##' @return None (invisible 'NULL').
+##' @keywords methods
+##' @export
+setMethod("show",
+          signature(object = "git_blob"),
+          function (object)
+          {
+              cat(sprintf("blob:  %s\n", object@hex))
+          }
+)
