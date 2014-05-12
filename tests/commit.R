@@ -58,7 +58,7 @@ stopifnot(identical(lookup(repo, commit_1@hex), commit_1))
 stopifnot(identical(length(commits(repo)), 1L))
 stopifnot(identical(commits(repo)[[1]]@author@name, "Repo"))
 stopifnot(identical(commits(repo)[[1]]@author@email, "repo@example.org"))
-stopifnot(is.null(parents(commit_1)))
+stopifnot(identical(parents(commit_1), list()))
 
 ##
 ## Commit without adding changes should produce an error
@@ -77,7 +77,8 @@ commit_2 <- commit(repo, "Commit message 2")
 ##
 stopifnot(identical(descendant_of(commit_2, commit_1), TRUE))
 stopifnot(identical(descendant_of(commit_1, commit_2), FALSE))
-stopifnot(identical(parents(commit_2), commit_1))
+stopifnot(identical(length(parents(commit_2)), 1L))
+stopifnot(identical(parents(commit_2)[[1]], commit_1))
 
 ##
 ## Cleanup
