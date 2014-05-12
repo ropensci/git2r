@@ -189,3 +189,21 @@ setMethod("summary",
               show(as(object, "data.frame"))
           }
 )
+
+##' Extract object from tree
+##'
+##' Lookup a tree entry by its position in the tree
+##' @rdname tree-index-methods
+##' @docType methods
+##' @param x The tree \code{object}
+##' @param i The index of the tree object to extract
+##' @return Git object
+##' @keywords methods
+##' @export
+setMethod("[",
+          signature(x = "git_tree", i = "ANY", j = "missing"),
+          function(x, i)
+          {
+              lookup(x@repo, x@id[i])
+          }
+)
