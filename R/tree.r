@@ -207,3 +207,19 @@ setMethod("[",
               lookup(x@repo, x@id[i])
           }
 )
+
+##' Number of entries in tree
+##'
+##' @docType methods
+##' @param x The tree \code{object}
+##' @return a non-negative integer or double (which will be rounded
+##' down)
+##' @keywords methods
+##' @export
+setMethod("length",
+          signature(x = "git_tree"),
+          function(x)
+          {
+              length(x@id)
+          }
+)
