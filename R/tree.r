@@ -170,7 +170,7 @@ setMethod("show",
           signature(object = "git_tree"),
           function (object)
           {
-              cat(sprintf("Tree:  %s\n", object@hex))
+              cat(sprintf("tree:  %s\n", object@hex))
           }
 )
 
