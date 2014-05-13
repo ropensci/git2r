@@ -94,3 +94,20 @@ setMethod("show",
               cat(sprintf("blob:  %s\n", object@hex))
           }
 )
+
+##' Summary of blob
+##'
+##' @docType methods
+##' @param object The blob \code{object}
+##' @return None (invisible 'NULL').
+##' @keywords methods
+##' @export
+setMethod("summary",
+          signature(object = "git_blob"),
+          function(object, ...)
+          {
+              cat(sprintf("blob:  %s\nsize:  %i bytes\n",
+                          object@hex,
+                          length(object)))
+          }
+)
