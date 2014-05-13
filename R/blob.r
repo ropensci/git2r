@@ -64,6 +64,21 @@ setMethod("is.binary",
           }
 )
 
+##' Size in bytes of the contents of a blob
+##'
+##' @docType methods
+##' @param x The blob \code{object}
+##' @return a non-negative integer
+##' @keywords methods
+##' @export
+setMethod("length",
+          signature(x = "git_blob"),
+          function(x)
+          {
+              .Call("rawsize", x)
+          }
+)
+
 ##' Brief summary of blob
 ##'
 ##' @aliases show,git_blob-methods

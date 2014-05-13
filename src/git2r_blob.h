@@ -25,5 +25,6 @@
 
 void init_blob(const git_blob *source, SEXP repo, SEXP dest);
 SEXP is_binary(SEXP blob);
+SEXP rawsize(SEXP blob);
 
 #endif

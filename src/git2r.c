@@ -593,6 +593,7 @@ static const R_CallMethodDef callMethods[] =
     {"lookup", (DL_FUNC)&lookup, 2},
     {"parents", (DL_FUNC)&parents, 1},
     {"push", (DL_FUNC)&push, 3},
+    {"rawsize", (DL_FUNC)&rawsize, 1},
     {"references", (DL_FUNC)&references, 1},
     {"remotes", (DL_FUNC)&remotes, 1},
     {"remote_url", (DL_FUNC)&remote_url, 2},

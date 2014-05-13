@@ -90,3 +90,44 @@ cleanup:
 
     return result;
 }
+
+/**
+ * Size in bytes of contents of a blob
+ *
+ * @param blob S4 class git_blob
+ * @return size
+ */
+SEXP rawsize(SEXP blob)
+{
+    int err;
+    SEXP hex;
+    git_off_t size;
+    git_blob *blob_obj = NULL;
+    git_oid oid;
+    git_repository *repository = NULL;
+
+    repository= get_repository(GET_SLOT(blob, Rf_install("repo")));
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    hex = GET_SLOT(blob, Rf_install("hex"));
+    git_oid_fromstr(&oid, CHAR(STRING_ELT(hex, 0)));
+
+    err = git_blob_lookup(&blob_obj, repository, &oid);
+    if (err < 0)
+        goto cleanup;
+
+    size = git_blob_rawsize(blob_obj);
+
+cleanup:
+    if (blob_obj)
+        git_blob_free(blob_obj);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return ScalarInteger(size);
+}
