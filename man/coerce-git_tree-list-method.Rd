@@ -21,9 +21,9 @@ repo <- repository("path/to/git2r")
 invisible(lapply(as(tree(commits(repo)[[1]]), "list"),
   function(obj) {
     if(is.blob(obj))
-      show(obj)
+      summary(obj)
     NULL
-  })
+  }))
 }
 }
 \keyword{methods}
