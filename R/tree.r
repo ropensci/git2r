@@ -131,9 +131,9 @@ setAs(from="git_tree",
 ##' invisible(lapply(as(tree(commits(repo)[[1]]), "list"),
 ##'   function(obj) {
 ##'     if(is.blob(obj))
-##'       show(obj)
+##'       summary(obj)
 ##'     NULL
-##'   })
+##'   }))
 ##' }
 setAs(from="git_tree",
       to="list",
