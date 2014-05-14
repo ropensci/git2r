@@ -3,6 +3,7 @@
 export()
 export(clone)
 export(init)
+export(is.blob)
 export(markdown_link)
 export(repository)
 exportClasses(git_blob)

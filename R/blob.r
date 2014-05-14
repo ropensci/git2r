@@ -64,6 +64,16 @@ setMethod("is.binary",
           }
 )
 
+##' Check if object is S4 class git_blob
+##'
+##' @param object Check if object is S4 class git_blob
+##' @return TRUE if object is S4 class git_blob, else FALSE
+##' @keywords methods
+##' @export
+is.blob <- function(object) {
+    is(object = object, class2 = "git_blob")
+}
+
 ##' Size in bytes of the contents of a blob
 ##'
 ##' @docType methods
