@@ -87,7 +87,7 @@ setClass("git_tree",
 ##'   }
 ##'
 ##' }
-##' @name coerce-git_tree-method
+##' @name coerce-git_tree-data.frame-method
 ##' @aliases coerce,git_tree,data.frame-method
 ##' @docType methods
 ##' @param from The tree \code{object}
@@ -112,6 +112,34 @@ setAs(from="git_tree",
                      id   = from@id,
                      name = from@name,
                      stringsAsFactors = FALSE)
+      }
+)
+
+##' Coerce entries in a git_tree to a list of entry objects
+##'
+##' @name coerce-git_tree-list-method
+##' @docType methods
+##' @param from The tree \code{object}
+##' @return list of entry objects
+##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository("path/to/git2r")
+##'
+##' ## Inspect size of each blob in tree
+##' invisible(lapply(as(tree(commits(repo)[[1]]), "list"),
+##'   function(obj) {
+##'     if(is.blob(obj))
+##'       show(obj)
+##'     NULL
+##'   })
+##' }
+setAs(from="git_tree",
+      to="list",
+      def=function(from)
+      {
+          lapply(from@id, function(hex) lookup(from@repo, hex))
       }
 )
 
