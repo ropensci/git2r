@@ -23,8 +23,8 @@
 #include <Rinternals.h>
 #include "git2.h"
 
-void init_blob(const git_blob *source, SEXP repo, SEXP dest);
-SEXP is_binary(SEXP blob);
-SEXP rawsize(SEXP blob);
+void git2r_init_blob(const git_blob *source, SEXP repo, SEXP dest);
+SEXP git2r_is_binary(SEXP blob);
+SEXP git2r_rawsize(SEXP blob);
 
 #endif

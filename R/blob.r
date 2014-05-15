@@ -60,7 +60,7 @@ setMethod("is.binary",
           signature(object = "git_blob"),
           function (object)
           {
-              .Call("is_binary", object)
+              .Call("git2r_is_binary", object)
           }
 )
 
@@ -85,7 +85,7 @@ setMethod("length",
           signature(x = "git_blob"),
           function(x)
           {
-              .Call("rawsize", x)
+              .Call("git2r_rawsize", x)
           }
 )
 
