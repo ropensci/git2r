@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include "git2.h"
 #include "git2r_clone.h"
 #include "git2r_error.h"
 
@@ -31,7 +32,7 @@ typedef struct {
  * @param payload
  * @return 0
  */
-static int clone_progress(const git_transfer_progress *progress, void *payload)
+static int git2r_clone_progress(const git_transfer_progress *progress, void *payload)
 {
     int kbytes = progress->received_bytes / 1024;
     progress_data *pd = (progress_data*)payload;
@@ -68,7 +69,7 @@ static int clone_progress(const git_transfer_progress *progress, void *payload)
  * @param progress show progress
  * @return R_NilValue
  */
-SEXP clone(SEXP url, SEXP local_path, SEXP progress)
+SEXP git2r_clone(SEXP url, SEXP local_path, SEXP progress)
 {
     int err;
     git_repository *repository = NULL;
@@ -84,7 +85,7 @@ SEXP clone(SEXP url, SEXP local_path, SEXP progress)
     checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE_CREATE;
     clone_opts.checkout_opts = checkout_opts;
     if (LOGICAL(progress)[0]) {
-        clone_opts.remote_callbacks.transfer_progress = &clone_progress;
+        clone_opts.remote_callbacks.transfer_progress = &git2r_clone_progress;
         clone_opts.remote_callbacks.payload = &pd;
         Rprintf("cloning into '%s'...\n", CHAR(STRING_ELT(local_path, 0)));
     }

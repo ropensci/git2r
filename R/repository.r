@@ -224,7 +224,7 @@ clone <- function(url, local_path, progress = TRUE) {
               nchar(url) > 0,
               nchar(local_path) > 0)
 
-    .Call("clone", url, local_path, progress)
+    .Call("git2r_clone", url, local_path, progress)
 
     repository(local_path)
 }

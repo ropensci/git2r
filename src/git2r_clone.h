@@ -19,12 +19,9 @@
 #ifndef INCLUDE_git2r_clone_h
 #define INCLUDE_git2r_clone_h
 
-#include <Rdefines.h>
 #include <R.h>
 #include <Rinternals.h>
 
-#include "git2.h"
-
-SEXP clone(SEXP url, SEXP local_path, SEXP progress);
+SEXP git2r_clone(SEXP url, SEXP local_path, SEXP progress);
 
 #endif
