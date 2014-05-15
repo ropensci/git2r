@@ -43,7 +43,7 @@ setMethod("checkout",
           signature(object = "git_commit"),
           function (object, force)
           {
-              invisible(.Call("checkout_commit", object, force))
+              invisible(.Call("git2r_checkout_commit", object, force))
           }
 )
 
@@ -53,7 +53,7 @@ setMethod("checkout",
           signature(object = "git_tag"),
           function (object, force)
           {
-              invisible(.Call("checkout_tag", object, force))
+              invisible(.Call("git2r_checkout_tag", object, force))
           }
 )
 
@@ -63,6 +63,6 @@ setMethod("checkout",
           signature(object = "git_tree"),
           function (object, force)
           {
-              invisible(.Call("checkout_tree", object, force))
+              invisible(.Call("git2r_checkout_tree", object, force))
           }
 )

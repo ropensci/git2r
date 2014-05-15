@@ -29,7 +29,7 @@
  * @param force
  * @return R_NilValue
  */
-SEXP checkout_commit(SEXP commit, SEXP force)
+SEXP git2r_checkout_commit(SEXP commit, SEXP force)
 {
     int err;
     SEXP hex;
@@ -86,7 +86,7 @@ cleanup:
  * @param tag S4 class git_tag
  * @return R_NilValue
  */
-SEXP checkout_tag(SEXP tag, SEXP force)
+SEXP git2r_checkout_tag(SEXP tag, SEXP force)
 {
     int err;
     SEXP slot;
@@ -121,7 +121,7 @@ cleanup:
  * @param tree S4 class git_tree
  * @return R_NilValue
  */
-SEXP checkout_tree(SEXP tree, SEXP force)
+SEXP git2r_checkout_tree(SEXP tree, SEXP force)
 {
     int err;
     SEXP slot;

@@ -574,9 +574,9 @@ static const R_CallMethodDef callMethods[] =
 {
     {"add", (DL_FUNC)&add, 2},
     {"branches", (DL_FUNC)&branches, 2},
-    {"checkout_commit", (DL_FUNC)&checkout_commit, 1},
-    {"checkout_tag", (DL_FUNC)&checkout_tag, 1},
-    {"checkout_tree", (DL_FUNC)&checkout_tree, 1},
+    {"git2r_checkout_commit", (DL_FUNC)&git2r_checkout_commit, 1},
+    {"git2r_checkout_tag", (DL_FUNC)&git2r_checkout_tag, 1},
+    {"git2r_checkout_tree", (DL_FUNC)&git2r_checkout_tree, 1},
     {"clone", (DL_FUNC)&clone, 2},
     {"commit", (DL_FUNC)&commit, 5},
     {"descendant_of", (DL_FUNC)&descendant_of, 2},
