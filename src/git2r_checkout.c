@@ -91,7 +91,9 @@ SEXP git2r_checkout_tag(SEXP tag, SEXP force)
     int err;
     SEXP slot;
     git_oid oid;
+    git_commit *treeish = NULL;
     git_repository *repository = NULL;
+    git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
 
     if (check_tag_arg(tag))
         error("Invalid arguments to checkout_tag");
@@ -105,7 +107,27 @@ SEXP git2r_checkout_tag(SEXP tag, SEXP force)
     if (err < 0)
         goto cleanup;
 
+    err = git_commit_lookup(&treeish, repository, &oid);
+    if (err < 0)
+        goto cleanup;
+
+    err = git_repository_set_head_detached(repository, git_commit_id(treeish),
+                                           NULL, NULL);
+    if (err < 0)
+        goto cleanup;
+
+    if (LOGICAL(force)[0])
+        checkout_opts.checkout_strategy = GIT_CHECKOUT_FORCE;
+    else
+        checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE_CREATE;
+    err = git_checkout_head(repository, &checkout_opts);
+    if (err < 0)
+        goto cleanup;
+
 cleanup:
+    if (treeish)
+        git_commit_free(treeish);
+
     if (repository)
         git_repository_free(repository);
 
