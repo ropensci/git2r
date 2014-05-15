@@ -29,22 +29,27 @@ repo <- init(path)
 config(repo, user.name="Repo", user.email="repo@example.org")
 
 ##
-## Create a file
+## Create first commit
 ##
 writeLines("Hello world!", file.path(path, "test.txt"))
-
-##
-## add and commit
-##
 add(repo, 'test.txt')
-commit.1 <- commit(repo, "Commit message")
+commit.1 <- commit(repo, "First commit message")
 
 ##
-## Make one more commit
+## Create second commit
 ##
 writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test.txt"))
 add(repo, 'test.txt')
-commit.2 <- commit(repo, "Next commit message")
+commit.2 <- commit(repo, "Second commit message")
+tag(repo, "commit.2", "Tag message")
+
+##
+## Create third commit
+##
+writeLines(c("Hello world!", "HELLO WORLD!", "HeLlO wOrLd!"),
+           file.path(path, "test.txt"))
+add(repo, 'test.txt')
+commit.3 <- commit(repo, "Third commit message")
 
 ##
 ## Check if HEAD is detached
@@ -54,12 +59,17 @@ stopifnot(identical(is.detached(repo), FALSE))
 ##
 ## Checkout first commit
 ##
-checkout(commit.1)
+checkout(commit.1, TRUE)
+stopifnot(identical(is.detached(repo), TRUE))
+stopifnot(identical(readLines(file.path(path, "test.txt")), "Hello world!"))
 
 ##
-## Check if HEAD is detached
+## Checkout tag
 ##
+checkout(tags(repo)[[1]], TRUE)
 stopifnot(identical(is.detached(repo), TRUE))
+stopifnot(identical(readLines(file.path(path, "test.txt")),
+                    c("Hello world!", "HELLO WORLD!")))
 
 ##
 ## Cleanup
