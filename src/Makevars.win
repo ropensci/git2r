@@ -1,29 +1,29 @@
 PKG_LIBS = $(ZLIB_LIBS) -lws2_32
 PKG_CFLAGS = -I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser -Iwin32 -Iregex -DWIN32 -D_WIN32_WINNT=0x0501 -D__USE_MINGW_ANSI_STDIO=1
 
-OBJECTS.libgit2 = libgit2/attr.o libgit2/attrcache.o libgit2/attr_file.o \
-    libgit2/blame.o libgit2/blame_git.o libgit2/blob.o \
-    libgit2/branch.o libgit2/buffer.o libgit2/buf_text.o \
+OBJECTS.libgit2 = libgit2/attr_file.o libgit2/attr.o libgit2/attrcache.o \
+    libgit2/blame_git.o libgit2/blame.o libgit2/blob.o \
+    libgit2/branch.o libgit2/buf_text.o libgit2/buffer.o \
     libgit2/cache.o libgit2/checkout.o libgit2/cherrypick.o \
-    libgit2/clone.o libgit2/commit.o libgit2/commit_list.o \
-    libgit2/config.o libgit2/config_cache.o libgit2/config_file.o \
+    libgit2/clone.o libgit2/commit_list.o libgit2/commit.o \
+    libgit2/config_cache.o libgit2/config_file.o libgit2/config.o \
     libgit2/crlf.o libgit2/date.o libgit2/delta-apply.o \
-    libgit2/delta.o libgit2/diff.o libgit2/diff_driver.o \
-    libgit2/diff_file.o libgit2/diff_patch.o libgit2/diff_print.o \
-    libgit2/diff_stats.o libgit2/diff_tform.o libgit2/diff_xdiff.o \
+    libgit2/delta.o libgit2/diff_driver.o libgit2/diff_file.o \
+    libgit2/diff_patch.o libgit2/diff_print.o libgit2/diff_stats.o \
+    libgit2/diff_tform.o libgit2/diff_xdiff.o libgit2/diff.o \
     libgit2/errors.o libgit2/fetch.o libgit2/fetchhead.o \
     libgit2/filebuf.o libgit2/fileops.o libgit2/filter.o \
     libgit2/fnmatch.o libgit2/global.o libgit2/graph.o \
     libgit2/hash.o libgit2/hashsig.o libgit2/ident.o \
     libgit2/ignore.o libgit2/index.o libgit2/indexer.o \
-    libgit2/iterator.o libgit2/merge.o libgit2/merge_file.o \
+    libgit2/iterator.o libgit2/merge_file.o libgit2/merge.o \
     libgit2/message.o libgit2/mwindow.o libgit2/netops.o \
     libgit2/notes.o libgit2/object_api.o libgit2/object.o \
-    libgit2/odb.o libgit2/odb_loose.o libgit2/odb_mempack.o \
-    libgit2/odb_pack.o libgit2/oid.o libgit2/pack.o \
-    libgit2/pack-objects.o libgit2/path.o libgit2/pathspec.o \
+    libgit2/odb_loose.o libgit2/odb_mempack.o libgit2/odb_pack.o \
+    libgit2/odb.o libgit2/oid.o libgit2/pack-objects.o \
+    libgit2/pack.o libgit2/path.o libgit2/pathspec.o \
     libgit2/pool.o libgit2/posix.o libgit2/pqueue.o \
-    libgit2/push.o libgit2/refdb.o libgit2/refdb_fs.o \
+    libgit2/push.o libgit2/refdb_fs.o libgit2/refdb.o \
     libgit2/reflog.o libgit2/refs.o libgit2/refspec.o \
     libgit2/remote.o libgit2/repository.o libgit2/reset.o \
     libgit2/revert.o libgit2/revparse.o libgit2/revwalk.o \
@@ -31,15 +31,15 @@ OBJECTS.libgit2 = libgit2/attr.o libgit2/attrcache.o libgit2/attr_file.o \
     libgit2/sortedcache.o libgit2/stash.o libgit2/status.o \
     libgit2/strmap.o libgit2/submodule.o libgit2/sysdir.o \
     libgit2/tag.o libgit2/thread-utils.o libgit2/trace.o \
-    libgit2/transport.o libgit2/tree.o libgit2/tree-cache.o \
+    libgit2/transport.o libgit2/tree-cache.o libgit2/tree.o \
     libgit2/tsort.o libgit2/util.o libgit2/vector.o \
     libgit2/zstream.o
 
 OBJECTS.libgit2.hash = libgit2/hash/hash_generic.o
 
-OBJECTS.libgit2.transports = libgit2/transports/cred.o libgit2/transports/cred_helpers.o libgit2/transports/git.o \
-    libgit2/transports/http.o libgit2/transports/local.o libgit2/transports/smart.o \
-    libgit2/transports/smart_pkt.o libgit2/transports/smart_protocol.o libgit2/transports/ssh.o \
+OBJECTS.libgit2.transports = libgit2/transports/cred_helpers.o libgit2/transports/cred.o libgit2/transports/git.o \
+    libgit2/transports/http.o libgit2/transports/local.o libgit2/transports/smart_pkt.o \
+    libgit2/transports/smart_protocol.o libgit2/transports/smart.o libgit2/transports/ssh.o \
     libgit2/transports/winhttp.o
 
 OBJECTS.libgit2.xdiff = libgit2/xdiff/xdiffi.o libgit2/xdiff/xemit.o libgit2/xdiff/xhistogram.o \
@@ -54,14 +54,15 @@ OBJECTS.http_parser = http-parser/http_parser.o
 
 OBJECTS.regex = regex/regex.o
 
-OBJECTS.root = git2r_blob.o git2r_branch.o git2r.o \
-    git2r_checkout.o git2r_clone.o git2r_commit.o \
-    git2r_config.o git2r_error.o git2r_graph.o \
+OBJECTS.root = git2r_blob.o git2r_branch.o git2r_checkout.o \
+    git2r_clone.o git2r_commit.o git2r_config.o \
+    git2r_diff.o git2r_error.o git2r_graph.o \
     git2r_index.o git2r_libgit2.o git2r_object.o \
     git2r_odb.o git2r_oid.o git2r_push.o \
     git2r_reference.o git2r_remote.o git2r_repository.o \
     git2r_revwalk.o git2r_signature.o git2r_stash.o \
-    git2r_status.o git2r_tag.o git2r_tree.o
+    git2r_status.o git2r_tag.o git2r_tree.o \
+    git2r.o
 
 OBJECTS = $(OBJECTS.libgit2) $(OBJECTS.libgit2.hash) $(OBJECTS.libgit2.transports) \
     $(OBJECTS.libgit2.xdiff) $(OBJECTS.libgit2.win32) $(OBJECTS.http_parser) \
