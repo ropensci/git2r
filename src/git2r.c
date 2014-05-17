@@ -599,13 +599,13 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_stash_list", (DL_FUNC)&git2r_stash_list, 1},
     {"git2r_stash_save", (DL_FUNC)&git2r_stash_save, 6},
     {"git2r_status_list", (DL_FUNC)&git2r_status_list, 5},
+    {"git2r_tag_create", (DL_FUNC)&git2r_tag_create, 4},
+    {"git2r_tag_list", (DL_FUNC)&git2r_tag_list, 1},
     {"references", (DL_FUNC)&references, 1},
     {"remotes", (DL_FUNC)&remotes, 1},
     {"remote_url", (DL_FUNC)&remote_url, 2},
     {"revisions", (DL_FUNC)&revisions, 1},
     {"git2r_set_config", (DL_FUNC)&git2r_set_config, 2},
-    {"tag", (DL_FUNC)&tag, 4},
-    {"tags", (DL_FUNC)&tags, 1},
     {NULL, NULL, 0}
 };
 

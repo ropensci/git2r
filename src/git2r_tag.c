@@ -30,7 +30,7 @@
  * @param dest S4 class git_tag to initialize
  * @return void
  */
-void init_tag(git_tag *source, SEXP repo, SEXP dest)
+void git2r_tag_init(git_tag *source, SEXP repo, SEXP dest)
 {
     int err;
     const git_signature *tagger;
@@ -80,7 +80,7 @@ void init_tag(git_tag *source, SEXP repo, SEXP dest)
  * @param tagger The tagger (author) of the tag
  * @return S4 object of class git_tag
  */
-SEXP tag(SEXP repo, SEXP name, SEXP message, SEXP tagger)
+SEXP git2r_tag_create(SEXP repo, SEXP name, SEXP message, SEXP tagger)
 {
     SEXP when;
     SEXP sexp_tag = R_NilValue;
@@ -96,6 +96,10 @@ SEXP tag(SEXP repo, SEXP name, SEXP message, SEXP tagger)
         || git2r_check_signature_arg(tagger))
         error("Invalid arguments to tag");
 
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
     when = GET_SLOT(tagger, Rf_install("when"));
     err = git_signature_new(&sig_tagger,
                             CHAR(STRING_ELT(GET_SLOT(tagger, Rf_install("name")), 0)),
@@ -104,10 +108,6 @@ SEXP tag(SEXP repo, SEXP name, SEXP message, SEXP tagger)
                             REAL(GET_SLOT(when, Rf_install("offset")))[0]);
     if (err < 0)
         goto cleanup;
-
-    repository = git2r_repository_open(repo);
-    if (!repository)
-        error(git2r_err_invalid_repository);
 
     err = git_revparse_single(&target, repository, "HEAD^{commit}");
     if (err < 0)
@@ -128,7 +128,7 @@ SEXP tag(SEXP repo, SEXP name, SEXP message, SEXP tagger)
         goto cleanup;
 
     PROTECT(sexp_tag = NEW_OBJECT(MAKE_CLASS("git_tag")));
-    init_tag(new_tag, repo, sexp_tag);
+    git2r_tag_init(new_tag, repo, sexp_tag);
 
 cleanup:
     if (new_tag)
@@ -158,7 +158,7 @@ cleanup:
  * @param repo S4 class git_repository
  * @return VECXSP with S4 objects of class git_tag
  */
-SEXP tags(SEXP repo)
+SEXP git2r_tag_list(SEXP repo)
 {
     int err;
     SEXP list = R_NilValue;
@@ -192,7 +192,7 @@ SEXP tags(SEXP repo)
             goto cleanup;
 
         PROTECT(sexp_tag = NEW_OBJECT(MAKE_CLASS("git_tag")));
-        init_tag(tag, repo, sexp_tag);
+        git2r_tag_init(tag, repo, sexp_tag);
         SET_VECTOR_ELT(list, i, sexp_tag);
         UNPROTECT(1);
 
