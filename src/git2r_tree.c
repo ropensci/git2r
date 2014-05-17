@@ -27,7 +27,7 @@
  * @param dest S4 class git_tree to initialize
  * @return void
  */
-void init_tree(const git_tree *source, SEXP repo, SEXP dest)
+void git2r_tree_init(const git_tree *source, SEXP repo, SEXP dest)
 {
     SEXP filemode, id, type, name;
     size_t i, n;
