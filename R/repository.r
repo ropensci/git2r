@@ -38,7 +38,7 @@ setClass("git_repository",
          validity=function(object) {
              errors <- character()
 
-             if(!identical(.Call("is_repository", object@path), TRUE))
+             if(!identical(.Call("git2r_repository_can_open", object@path), TRUE))
                  errors <- c(errors, "Invalid repository")
 
              if (length(errors) == 0) TRUE else errors
@@ -195,7 +195,7 @@ init <- function(path, bare = FALSE) {
     if(!file.info(path)$isdir)
         stop("path is not a directory")
 
-    .Call("init", path, bare)
+    .Call("git2r_repository_init", path, bare)
 
     new("git_repository", path=path)
 }
@@ -367,7 +367,7 @@ setMethod("is.bare",
           signature(object = "git_repository"),
           function (object)
           {
-              .Call("is_bare", object)
+              .Call("git2r_repository_is_bare", object)
           }
 )
 
@@ -398,7 +398,7 @@ setMethod("is.detached",
           signature(object = "git_repository"),
           function (object)
           {
-              .Call("is_detached", object)
+              .Call("git2r_repository_head_detached", object)
           }
 )
 
@@ -428,7 +428,7 @@ setMethod("is.empty",
           signature(object = "git_repository"),
           function (object)
           {
-              .Call("is_empty", object)
+              .Call("git2r_repository_is_empty", object)
           }
 )
 
@@ -463,7 +463,7 @@ setMethod("lookup",
           signature(object = "git_repository"),
           function (object, hex)
           {
-              .Call("lookup", object, hex)
+              .Call("git2r_object_lookup", object, hex)
           }
 )
 
@@ -627,6 +627,6 @@ setMethod("workdir",
           signature(object = "git_repository"),
           function (object)
           {
-              .Call("workdir", object)
+              .Call("git2r_repository_workdir", object)
           }
 )

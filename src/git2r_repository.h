@@ -24,13 +24,13 @@
 
 #include "git2.h"
 
-git_repository* get_repository(SEXP repo);
-SEXP init(SEXP path, SEXP bare);
-SEXP is_bare(SEXP repo);
-SEXP is_detached(SEXP repo);
-SEXP is_empty(SEXP repo);
-SEXP is_repository(SEXP path);
-SEXP lookup(SEXP repo, SEXP hex);
-SEXP workdir(SEXP repo);
+git_repository* git2r_repository_open(SEXP repo);
+SEXP git2r_repository_init(SEXP path, SEXP bare);
+SEXP git2r_repository_is_bare(SEXP repo);
+SEXP git2r_repository_head_detached(SEXP repo);
+SEXP git2r_repository_is_empty(SEXP repo);
+SEXP git2r_repository_can_open(SEXP path);
+SEXP git2r_object_lookup(SEXP repo, SEXP hex);
+SEXP git2r_repository_workdir(SEXP repo);
 
 #endif

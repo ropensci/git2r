@@ -63,7 +63,7 @@ SEXP add(SEXP repo, SEXP path)
     if (git2r_check_string_arg(path))
         error("Invalid arguments to add");
 
-    repository= get_repository(repo);
+    repository= git2r_repository_open(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
 
@@ -108,7 +108,7 @@ SEXP branches(SEXP repo, SEXP flags)
     size_t protected = 0;
     git_repository *repository = NULL;
 
-    repository = get_repository(repo);
+    repository = git2r_repository_open(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
 
@@ -236,7 +236,7 @@ SEXP fetch(SEXP repo, SEXP name)
     if (git2r_check_string_arg(name))
         error("Invalid arguments to fetch");
 
-    repository = get_repository(repo);
+    repository = git2r_repository_open(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
 
@@ -364,7 +364,7 @@ SEXP references(SEXP repo)
     git_reference *ref;
     git_repository *repository;
 
-    repository = get_repository(repo);
+    repository = git2r_repository_open(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
 
@@ -419,7 +419,7 @@ SEXP remotes(SEXP repo)
     SEXP list;
     git_repository *repository;
 
-    repository = get_repository(repo);
+    repository = git2r_repository_open(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
 
@@ -458,7 +458,7 @@ SEXP remote_url(SEXP repo, SEXP remote)
     size_t i = 0;
     git_repository *repository;
 
-    repository = get_repository(repo);
+    repository = git2r_repository_open(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
 
@@ -501,7 +501,7 @@ SEXP revisions(SEXP repo)
     git_revwalk *walker = NULL;
     git_repository *repository = NULL;
 
-    repository = get_repository(repo);
+    repository = git2r_repository_open(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
 
@@ -585,16 +585,17 @@ static const R_CallMethodDef callMethods[] =
     {"drop_stash", (DL_FUNC)&drop_stash, 2},
     {"fetch", (DL_FUNC)&fetch, 2},
     {"git2r_get_config", (DL_FUNC)&git2r_get_config, 1},
-    {"init", (DL_FUNC)&init, 2},
-    {"is_bare", (DL_FUNC)&is_bare, 1},
     {"git2r_is_binary", (DL_FUNC)&git2r_is_binary, 1},
-    {"is_detached", (DL_FUNC)&is_detached, 1},
-    {"is_empty", (DL_FUNC)&is_empty, 1},
-    {"is_repository", (DL_FUNC)&is_repository, 1},
-    {"lookup", (DL_FUNC)&lookup, 2},
+    {"git2r_object_lookup", (DL_FUNC)&git2r_object_lookup, 2},
     {"git2r_parents", (DL_FUNC)&git2r_parents, 1},
     {"git2r_push", (DL_FUNC)&git2r_push, 3},
     {"git2r_rawsize", (DL_FUNC)&git2r_rawsize, 1},
+    {"git2r_repository_can_open", (DL_FUNC)&git2r_repository_can_open, 1},
+    {"git2r_repository_head_detached", (DL_FUNC)&git2r_repository_head_detached, 1},
+    {"git2r_repository_init", (DL_FUNC)&git2r_repository_init, 2},
+    {"git2r_repository_is_bare", (DL_FUNC)&git2r_repository_is_bare, 1},
+    {"git2r_repository_is_empty", (DL_FUNC)&git2r_repository_is_empty, 1},
+    {"git2r_repository_workdir", (DL_FUNC)&git2r_repository_workdir, 1},
     {"references", (DL_FUNC)&references, 1},
     {"remotes", (DL_FUNC)&remotes, 1},
     {"remote_url", (DL_FUNC)&remote_url, 2},
@@ -605,7 +606,6 @@ static const R_CallMethodDef callMethods[] =
     {"status", (DL_FUNC)&status, 5},
     {"tag", (DL_FUNC)&tag, 4},
     {"tags", (DL_FUNC)&tags, 1},
-    {"workdir", (DL_FUNC)&workdir, 1},
     {NULL, NULL, 0}
 };
 

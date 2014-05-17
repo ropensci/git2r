@@ -58,7 +58,7 @@ SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec)
     if (git2r_check_string_arg(name) || git2r_check_string_arg(refspec))
         error("Invalid arguments to push");
 
-    repository = get_repository(repo);
+    repository = git2r_repository_open(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
 

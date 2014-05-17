@@ -246,7 +246,7 @@ SEXP git2r_get_config(SEXP repo)
     git_config *cfg = NULL;
     git_repository *repository = NULL;
 
-    repository = get_repository(repo);
+    repository = git2r_repository_open(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
 
@@ -311,7 +311,7 @@ SEXP git2r_set_config(SEXP repo, SEXP variables)
 
     n = length(variables);
     if (n) {
-        repository = get_repository(repo);
+        repository = git2r_repository_open(repo);
         if (!repository)
             error(git2r_err_invalid_repository);
 

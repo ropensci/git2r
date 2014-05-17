@@ -58,7 +58,7 @@ SEXP git2r_is_binary(SEXP blob)
     git_oid oid;
     git_repository *repository = NULL;
 
-    repository= get_repository(GET_SLOT(blob, Rf_install("repo")));
+    repository= git2r_repository_open(GET_SLOT(blob, Rf_install("repo")));
     if (!repository)
         error(git2r_err_invalid_repository);
 
@@ -106,7 +106,7 @@ SEXP git2r_rawsize(SEXP blob)
     git_oid oid;
     git_repository *repository = NULL;
 
-    repository= get_repository(GET_SLOT(blob, Rf_install("repo")));
+    repository= git2r_repository_open(GET_SLOT(blob, Rf_install("repo")));
     if (!repository)
         error(git2r_err_invalid_repository);
 

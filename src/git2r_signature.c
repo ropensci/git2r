@@ -34,7 +34,7 @@ SEXP default_signature(SEXP repo)
     git_signature *signature = NULL;
     SEXP sig;
 
-    repository = get_repository(repo);
+    repository = git2r_repository_open(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
 

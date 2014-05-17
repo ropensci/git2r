@@ -60,7 +60,7 @@ SEXP git2r_commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP par
         || !isString(parent_list))
         error("Invalid arguments to commit");
 
-    repository = get_repository(repo);
+    repository = git2r_repository_open(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
 
@@ -250,7 +250,7 @@ SEXP git2r_commit_tree(SEXP commit)
     git_tree *tree = NULL;
 
     repo = GET_SLOT(commit, Rf_install("repo"));
-    repository = get_repository(repo);
+    repository = git2r_repository_open(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
 
@@ -320,7 +320,7 @@ SEXP git2r_descendant_of(SEXP commit, SEXP ancestor)
     git_repository *repository = NULL;
 
     slot = GET_SLOT(commit, Rf_install("repo"));
-    repository = get_repository(slot);
+    repository = git2r_repository_open(slot);
     if (!repository)
         error(git2r_err_invalid_repository);
 
@@ -415,7 +415,7 @@ SEXP git2r_parents(SEXP commit)
     git_repository *repository = NULL;
 
     repo = GET_SLOT(commit, Rf_install("repo"));
-    repository = get_repository(repo);
+    repository = git2r_repository_open(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
 

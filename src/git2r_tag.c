@@ -105,7 +105,7 @@ SEXP tag(SEXP repo, SEXP name, SEXP message, SEXP tagger)
     if (err < 0)
         goto cleanup;
 
-    repository = get_repository(repo);
+    repository = git2r_repository_open(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
 
@@ -168,7 +168,7 @@ SEXP tags(SEXP repo)
     git_strarray tag_names = {0};
     size_t i;
 
-    repository = get_repository(repo);
+    repository = git2r_repository_open(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
 

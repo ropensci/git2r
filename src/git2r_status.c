@@ -361,7 +361,7 @@ SEXP status(SEXP repo, SEXP staged, SEXP unstaged, SEXP untracked, SEXP ignored)
         || git2r_check_logical_arg(ignored))
         error("Invalid arguments to status");
 
-    repository = get_repository(repo);
+    repository = git2r_repository_open(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
 

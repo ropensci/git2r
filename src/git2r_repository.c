@@ -31,7 +31,7 @@
  * @param repo S4 class git_repository
  * @return a git_repository pointer on success else NULL
  */
-git_repository* get_repository(SEXP repo)
+git_repository* git2r_repository_open(SEXP repo)
 {
     SEXP class_name;
     SEXP path;
@@ -61,7 +61,7 @@ git_repository* get_repository(SEXP repo)
  * @param bare
  * @return R_NilValue
  */
-SEXP init(SEXP path, SEXP bare)
+SEXP git2r_repository_init(SEXP path, SEXP bare)
 {
     int err;
     git_repository *repository = NULL;
@@ -86,12 +86,12 @@ SEXP init(SEXP path, SEXP bare)
  * @param repo S4 class git_repository
  * @return TRUE if bare else FALSE
  */
-SEXP is_bare(SEXP repo)
+SEXP git2r_repository_is_bare(SEXP repo)
 {
     SEXP result;
     git_repository *repository;
 
-    repository= get_repository(repo);
+    repository= git2r_repository_open(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
 
@@ -111,12 +111,12 @@ SEXP is_bare(SEXP repo)
  * @param repo S4 class git_repository
  * @return TRUE if detached else FALSE
  */
-SEXP is_detached(SEXP repo)
+SEXP git2r_repository_head_detached(SEXP repo)
 {
     int result;
     git_repository *repository;
 
-    repository= get_repository(repo);
+    repository= git2r_repository_open(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
     result = git_repository_head_detached(repository);
@@ -134,12 +134,12 @@ SEXP is_detached(SEXP repo)
  * @param repo S4 class git_repository
  * @return
  */
-SEXP is_empty(SEXP repo)
+SEXP git2r_repository_is_empty(SEXP repo)
 {
     int result;
     git_repository *repository;
 
-    repository= get_repository(repo);
+    repository= git2r_repository_open(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
     result = git_repository_is_empty(repository);
@@ -157,7 +157,7 @@ SEXP is_empty(SEXP repo)
  * @param path
  * @return
  */
-SEXP is_repository(SEXP path)
+SEXP git2r_repository_can_open(SEXP path)
 {
     git_repository *repository = NULL;
 
@@ -179,7 +179,7 @@ SEXP is_repository(SEXP path)
  * @param hex 4 to 40 char hexadecimal string
  * @return S4 object with lookup
  */
-SEXP lookup(SEXP repo, SEXP hex)
+SEXP git2r_object_lookup(SEXP repo, SEXP hex)
 {
     int err;
     size_t len;
@@ -191,7 +191,7 @@ SEXP lookup(SEXP repo, SEXP hex)
     if (git2r_check_hex_arg(hex))
         error("Invalid arguments to lookup");
 
-    repository = get_repository(repo);
+    repository = git2r_repository_open(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
 
@@ -249,14 +249,15 @@ cleanup:
  * Get workdir of repository.
  *
  * @param repo S4 class git_repository
- * @return R_NilValue if bare repository, else character vector with path.
+ * @return R_NilValue if bare repository, else character vector
+ * of length one with path.
  */
-SEXP workdir(SEXP repo)
+SEXP git2r_repository_workdir(SEXP repo)
 {
     SEXP result = R_NilValue;
     git_repository *repository;
 
-    repository = get_repository(repo);
+    repository = git2r_repository_open(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
 
