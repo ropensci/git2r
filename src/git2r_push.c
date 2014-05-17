@@ -28,9 +28,10 @@
  * @param data
  * @return 0
  */
-static int push_status_foreach_callback(const char *ref,
-                                        const char *msg,
-                                        void *data)
+static int git2r_push_status_foreach_cb(
+    const char *ref,
+    const char *msg,
+    void *data)
 {
     const char **msg_dst = (const char **)data;
     if (msg != NULL && *msg_dst == NULL)
@@ -46,7 +47,7 @@ static int push_status_foreach_callback(const char *ref,
  * @param refspec
  * @return R_NilValue
  */
-SEXP push(SEXP repo, SEXP name, SEXP refspec)
+SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec)
 {
     int err;
     const char *msg = NULL;
@@ -81,7 +82,7 @@ SEXP push(SEXP repo, SEXP name, SEXP refspec)
     if (err < 0)
         goto cleanup;
 
-    err = git_push_status_foreach(push, push_status_foreach_callback, &msg);
+    err = git_push_status_foreach(push, git2r_push_status_foreach_cb, &msg);
     if (err < 0)
         goto cleanup;
     if (msg != NULL) {

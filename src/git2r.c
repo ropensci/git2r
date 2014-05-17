@@ -593,7 +593,7 @@ static const R_CallMethodDef callMethods[] =
     {"is_repository", (DL_FUNC)&is_repository, 1},
     {"lookup", (DL_FUNC)&lookup, 2},
     {"git2r_parents", (DL_FUNC)&git2r_parents, 1},
-    {"push", (DL_FUNC)&push, 3},
+    {"git2r_push", (DL_FUNC)&git2r_push, 3},
     {"git2r_rawsize", (DL_FUNC)&git2r_rawsize, 1},
     {"references", (DL_FUNC)&references, 1},
     {"remotes", (DL_FUNC)&remotes, 1},

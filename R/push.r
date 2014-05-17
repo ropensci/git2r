@@ -35,6 +35,6 @@ setMethod("push",
           signature(repo = "git_repository"),
           function (repo, name, refspec)
           {
-              invisible(.Call("push", repo, name, refspec))
+              invisible(.Call("git2r_push", repo, name, refspec))
           }
 )
