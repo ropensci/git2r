@@ -579,6 +579,7 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_checkout_tree", (DL_FUNC)&git2r_checkout_tree, 1},
     {"git2r_clone", (DL_FUNC)&git2r_clone, 2},
     {"git2r_commit", (DL_FUNC)&git2r_commit, 5},
+    {"git2r_commit_tree", (DL_FUNC)&git2r_commit_tree, 1},
     {"git2r_descendant_of", (DL_FUNC)&git2r_descendant_of, 2},
     {"default_signature", (DL_FUNC)&default_signature, 1},
     {"drop_stash", (DL_FUNC)&drop_stash, 2},
