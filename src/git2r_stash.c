@@ -79,7 +79,7 @@ int init_stash(
     err = git_commit_lookup(&commit, repository, source);
     if (err < 0)
         return err;
-    init_commit(commit, repo, dest);
+    git2r_init_commit(commit, repo, dest);
     git_commit_free(commit);
 
     return 0;

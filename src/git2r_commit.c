@@ -34,7 +34,7 @@
  * @param parent_list
  * @return S4 class git_commit
  */
-SEXP commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP parent_list)
+SEXP git2r_commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP parent_list)
 {
     SEXP when, sexp_commit;
     int err;
@@ -172,7 +172,7 @@ SEXP commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP parent_li
         goto cleanup;
 
     PROTECT(sexp_commit = NEW_OBJECT(MAKE_CLASS("git_commit")));
-    init_commit(new_commit, repo, sexp_commit);
+    git2r_init_commit(new_commit, repo, sexp_commit);
 
 cleanup:
     if (sig_author)
@@ -224,7 +224,7 @@ cleanup:
  * @param commit
  * @return
  */
-static int get_commit(git_commit **out, git_repository *repository, SEXP commit)
+static int git2r_get_commit(git_commit **out, git_repository *repository, SEXP commit)
 {
     SEXP hex;
     git_oid oid;
@@ -240,7 +240,7 @@ static int get_commit(git_commit **out, git_repository *repository, SEXP commit)
  * @param commit S4 class git_commit or git_stash
  * @return S4 class git_tree
  */
-SEXP commit_tree(SEXP commit)
+SEXP git2r_commit_tree(SEXP commit)
 {
     int err;
     SEXP result = R_NilValue;
@@ -254,7 +254,7 @@ SEXP commit_tree(SEXP commit)
     if (!repository)
         error(git2r_err_invalid_repository);
 
-    err = get_commit(&commit_obj, repository, commit);
+    err = git2r_get_commit(&commit_obj, repository, commit);
     if (err < 0)
         goto cleanup;
 
@@ -291,7 +291,7 @@ cleanup:
  * @param oid
  * @return void
  */
-void oid_from_hex_sexp(SEXP hex, git_oid *oid)
+void git2r_oid_from_hex_sexp(SEXP hex, git_oid *oid)
 {
     int err;
     size_t len;
@@ -311,7 +311,7 @@ void oid_from_hex_sexp(SEXP hex, git_oid *oid)
  * @return TRUE or FALSE
  */
 
-SEXP descendant_of(SEXP commit, SEXP ancestor)
+SEXP git2r_descendant_of(SEXP commit, SEXP ancestor)
 {
     int result;
     SEXP slot;
@@ -325,10 +325,10 @@ SEXP descendant_of(SEXP commit, SEXP ancestor)
         error(git2r_err_invalid_repository);
 
     slot = GET_SLOT(commit, Rf_install("hex"));
-    oid_from_hex_sexp(slot, &commit_oid);
+    git2r_oid_from_hex_sexp(slot, &commit_oid);
 
     slot = GET_SLOT(ancestor, Rf_install("hex"));
-    oid_from_hex_sexp(slot, &ancestor_oid);
+    git2r_oid_from_hex_sexp(slot, &ancestor_oid);
 
     result = git_graph_descendant_of(repository, &commit_oid, &ancestor_oid);
     git_repository_free(repository);
@@ -348,7 +348,7 @@ SEXP descendant_of(SEXP commit, SEXP ancestor)
  * @param dest S4 class git_commit to initialize
  * @return void
  */
-void init_commit(git_commit *source, SEXP repo, SEXP dest)
+void git2r_init_commit(git_commit *source, SEXP repo, SEXP dest)
 {
     const char *message;
     const char *summary;
@@ -405,7 +405,7 @@ void init_commit(git_commit *source, SEXP repo, SEXP dest)
  * @param commit
  * @return list of S4 class git_commit objects
  */
-SEXP parents(SEXP commit)
+SEXP git2r_parents(SEXP commit)
 {
     int err;
     size_t i, n;
@@ -419,7 +419,7 @@ SEXP parents(SEXP commit)
     if (!repository)
         error(git2r_err_invalid_repository);
 
-    err = get_commit(&commit_obj, repository, commit);
+    err = git2r_get_commit(&commit_obj, repository, commit);
     if (err < 0)
         goto cleanup;
 
@@ -435,7 +435,7 @@ SEXP parents(SEXP commit)
             goto cleanup;
 
         PROTECT(tmp = NEW_OBJECT(MAKE_CLASS("git_commit")));
-        init_commit(parent, repo, tmp);
+        git2r_init_commit(parent, repo, tmp);
         SET_VECTOR_ELT(list, i, tmp);
         UNPROTECT(1);
     }

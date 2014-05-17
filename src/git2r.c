@@ -547,7 +547,7 @@ SEXP revisions(SEXP repo)
             goto cleanup;
 
         PROTECT(sexp_commit = NEW_OBJECT(MAKE_CLASS("git_commit")));
-        init_commit(commit, repo, sexp_commit);
+        git2r_init_commit(commit, repo, sexp_commit);
         SET_VECTOR_ELT(list, i, sexp_commit);
         UNPROTECT(1);
         i++;
@@ -578,8 +578,8 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_checkout_tag", (DL_FUNC)&git2r_checkout_tag, 1},
     {"git2r_checkout_tree", (DL_FUNC)&git2r_checkout_tree, 1},
     {"git2r_clone", (DL_FUNC)&git2r_clone, 2},
-    {"commit", (DL_FUNC)&commit, 5},
-    {"descendant_of", (DL_FUNC)&descendant_of, 2},
+    {"git2r_commit", (DL_FUNC)&git2r_commit, 5},
+    {"git2r_descendant_of", (DL_FUNC)&git2r_descendant_of, 2},
     {"default_signature", (DL_FUNC)&default_signature, 1},
     {"drop_stash", (DL_FUNC)&drop_stash, 2},
     {"fetch", (DL_FUNC)&fetch, 2},
@@ -591,7 +591,7 @@ static const R_CallMethodDef callMethods[] =
     {"is_empty", (DL_FUNC)&is_empty, 1},
     {"is_repository", (DL_FUNC)&is_repository, 1},
     {"lookup", (DL_FUNC)&lookup, 2},
-    {"parents", (DL_FUNC)&parents, 1},
+    {"git2r_parents", (DL_FUNC)&git2r_parents, 1},
     {"push", (DL_FUNC)&push, 3},
     {"git2r_rawsize", (DL_FUNC)&git2r_rawsize, 1},
     {"references", (DL_FUNC)&references, 1},
