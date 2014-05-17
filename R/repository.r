@@ -516,6 +516,77 @@ setMethod("remote_url",
           }
 )
 
+##' Add a remote to a repo
+##'
+##' @rdname remote_add-methods
+##' @docType methods
+##' @param object The repository \code{object} to add the remote to
+##' @return NULL, invisibly
+##' @keywords methods
+setGeneric("remote_add",
+           signature = "object",
+           function(object, ...) standardGeneric("remote_add"))
+
+##' @rdname remote_add-methods
+##' @param name Short name of the remote repository
+##' @param url URL of the remote repository
+##' @export
+setMethod("remote_add",
+          signature(object = "git_repository"),
+          function(object, name, url)
+          {
+              ret <- .Call("remote_add", object, name, url)
+              invisible(ret)
+          }
+)
+
+##' Rename a remote
+##'
+##' @rdname remote_rename-methods
+##' @docType methods
+##' @param object The repository in which the remote should be renamed.
+##' @return NULL, invisibly
+##' @keywords methods
+setGeneric("remote_rename",
+           signature = "object",
+           function(object, ...) standardGeneric("remote_rename"))
+
+##' @rdname remote_rename-methods
+##' @param oldname Old name of the remote
+##' @param newname New name of the remote
+##' @export
+setMethod("remote_rename",
+          signature(object = "git_repository"),
+          function(object, oldname, newname)
+          {
+              ret <- .Call("remote_rename", object, oldname, newname)
+              invisible(ret)
+          }
+)
+
+##' Remove a remote
+##'
+##' @rdname remote_remove-methods
+##' @docType methods
+##' @param object The repository to work on
+##' @return NULL, invisibly
+##' @keywords methods
+setGeneric("remote_remove",
+           signature = "object",
+           function(object, ...) standardGeneric("remote_remove"))
+
+##' @rdname remote_remove-methods
+##' @param name The name of the remote to remove
+##' @export
+setMethod("remote_remove",
+          signature(object = "git_repository"),
+          function(object, name)
+          {
+              ret <- .Call("remote_remove", object, name)
+              invisible(ret)
+          }
+)
+
 ##' Get the signature
 ##'
 ##' Get the signature according to the repository's configuration
