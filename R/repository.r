@@ -310,7 +310,7 @@ setMethod("commit",
                   parents <- c(parents, head(object)@hex)
               }
 
-              .Call("commit", object, message, author, committer, parents)
+              .Call("git2r_commit", object, message, author, committer, parents)
           }
 )
 

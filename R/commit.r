@@ -135,7 +135,7 @@ setMethod("descendant_of",
           function (commit, ancestor)
           {
               stopifnot(identical(commit@repo, ancestor@repo))
-              .Call("descendant_of", commit, ancestor)
+              .Call("git2r_descendant_of", commit, ancestor)
           }
 )
 
@@ -166,7 +166,7 @@ setMethod("parents",
           signature(object = "git_commit"),
           function(object)
           {
-              .Call("parents", object)
+              .Call("git2r_parents", object)
           }
 )
 
