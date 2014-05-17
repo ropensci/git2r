@@ -178,12 +178,12 @@ static int git2r_list_config_variables(
     if (err < 0)
         goto cleanup;
 
-    i = init_list_config_level(list, 0, n_level, i_list, i, "system");
-    i = init_list_config_level(list, 1, n_level, i_list, i, "xdg");
-    i = init_list_config_level(list, 2, n_level, i_list, i, "global");
-    i = init_list_config_level(list, 3, n_level, i_list, i, "local");
-    i = init_list_config_level(list, 4, n_level, i_list, i, "app");
-    i = init_list_config_level(list, 5, n_level, i_list, i, "highest");
+    i = git2r_init_list_config_level(list, 0, n_level, i_list, i, "system");
+    i = git2r_init_list_config_level(list, 1, n_level, i_list, i, "xdg");
+    i = git2r_init_list_config_level(list, 2, n_level, i_list, i, "global");
+    i = git2r_init_list_config_level(list, 3, n_level, i_list, i, "local");
+    i = git2r_init_list_config_level(list, 4, n_level, i_list, i, "app");
+    i = git2r_init_list_config_level(list, 5, n_level, i_list, i, "highest");
 
     for (;;) {
         git_config_entry *entry;
@@ -198,22 +198,22 @@ static int git2r_list_config_variables(
 
         switch (entry->level) {
         case GIT_CONFIG_LEVEL_SYSTEM:
-            add_list_entry(list, 0, i_level, i_list, entry);
+            git2r_add_list_entry(list, 0, i_level, i_list, entry);
             break;
         case GIT_CONFIG_LEVEL_XDG:
-            add_list_entry(list, 1, i_level, i_list, entry);
+            git2r_add_list_entry(list, 1, i_level, i_list, entry);
             break;
         case GIT_CONFIG_LEVEL_GLOBAL:
-            add_list_entry(list, 2, i_level, i_list, entry);
+            git2r_add_list_entry(list, 2, i_level, i_list, entry);
             break;
         case GIT_CONFIG_LEVEL_LOCAL:
-            add_list_entry(list, 3, i_level, i_list, entry);
+            git2r_add_list_entry(list, 3, i_level, i_list, entry);
             break;
         case GIT_CONFIG_LEVEL_APP:
-            add_list_entry(list, 4, i_level, i_list, entry);
+            git2r_add_list_entry(list, 4, i_level, i_list, entry);
             break;
         case GIT_CONFIG_HIGHEST_LEVEL:
-            add_list_entry(list, 5, i_level, i_list, entry);
+            git2r_add_list_entry(list, 5, i_level, i_list, entry);
             break;
         default:
             *err_msg = git2r_err_unexpected_config_level;
@@ -254,7 +254,7 @@ SEXP git2r_get_config(SEXP repo)
     if (err < 0)
         goto cleanup;
 
-    err = count_config_variables(cfg, n_level, &err_msg);
+    err = git2r_count_config_variables(cfg, n_level, &err_msg);
     if (err < 0)
         goto cleanup;
 
@@ -267,7 +267,7 @@ SEXP git2r_get_config(SEXP repo)
     PROTECT(list = allocVector(VECSXP, n));
     setAttrib(list, R_NamesSymbol, allocVector(STRSXP, n));
 
-    if (list_config_variables(cfg, list, n_level, &err_msg))
+    if (git2r_list_config_variables(cfg, list, n_level, &err_msg))
         goto cleanup;
 
 cleanup:
