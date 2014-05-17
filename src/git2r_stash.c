@@ -30,7 +30,7 @@ typedef struct {
     SEXP list;
     SEXP repo;
     git_repository *repository;
-} stashes_cb_data;
+} git2r_stash_list_cb_data;
 
 /**
  * Remove a stash from the stash list
@@ -39,7 +39,7 @@ typedef struct {
  * @param index The index to the stash. 0 is the most recent stash.
  * @return R_NilValue
  */
-SEXP drop_stash(SEXP repo, SEXP index)
+SEXP git2r_stash_drop(SEXP repo, SEXP index)
 {
     int err;
     git_repository *repository = NULL;
@@ -67,7 +67,7 @@ SEXP drop_stash(SEXP repo, SEXP index)
  * @param dest S4 class git_stash to initialize
  * @return int 0 on success, or an error code.
  */
-int init_stash(
+int git2r_stash_init(
     const git_oid *source,
     git_repository *repository,
     SEXP repo,
@@ -94,13 +94,13 @@ int init_stash(
  * @param payload
  * @return int
  */
-static int stashes_cb(
+static int git2r_stash_list_cb(
     size_t index,
     const char* message,
     const git_oid *stash_id,
     void *payload)
 {
-    stashes_cb_data *cb_data = (stashes_cb_data*)payload;
+    git2r_stash_list_cb_data *cb_data = (git2r_stash_list_cb_data*)payload;
 
     /* Check if we have a list to populate */
     if (R_NilValue != cb_data->list) {
@@ -108,10 +108,10 @@ static int stashes_cb(
         SEXP stash;
 
         PROTECT(stash = NEW_OBJECT(MAKE_CLASS("git_stash")));
-        err = init_stash(stash_id,
-                         cb_data->repository,
-                         cb_data->repo,
-                         stash);
+        err = git2r_stash_init(stash_id,
+                               cb_data->repository,
+                               cb_data->repo,
+                               stash);
         if (err < 0) {
             UNPROTECT(1);
             return err;
@@ -131,12 +131,12 @@ static int stashes_cb(
  * @param repo S4 class git_repository
  * @return VECXSP with S4 objects of class git_stash
  */
-SEXP stashes(SEXP repo)
+SEXP git2r_stash_list(SEXP repo)
 {
     SEXP list = R_NilValue;
     int err = 0;
     const char* err_msg = NULL;
-    stashes_cb_data cb_data = {0, R_NilValue, R_NilValue, NULL};
+    git2r_stash_list_cb_data cb_data = {0, R_NilValue, R_NilValue, NULL};
     git_repository *repository = NULL;
 
     repository = git2r_repository_open(repo);
@@ -144,7 +144,7 @@ SEXP stashes(SEXP repo)
         error(git2r_err_invalid_repository);
 
     /* Count number of stashes before creating the list */
-    git_stash_foreach(repository, &stashes_cb, &cb_data);
+    git_stash_foreach(repository, &git2r_stash_list_cb, &cb_data);
     if (err < 0)
         goto cleanup;
 
@@ -153,7 +153,7 @@ SEXP stashes(SEXP repo)
     cb_data.list = list;
     cb_data.repo = repo;
     cb_data.repository = repository;
-    err = git_stash_foreach(repository, &stashes_cb, &cb_data);
+    err = git_stash_foreach(repository, &git2r_stash_list_cb, &cb_data);
 
 cleanup:
     if (repository)
@@ -182,7 +182,7 @@ cleanup:
  * @param stasher Signature with stasher and time of stash
  * @return S4 class git_stash
  */
-SEXP stash(
+SEXP git2r_stash_save(
     SEXP repo,
     SEXP message,
     SEXP index,
@@ -238,7 +238,7 @@ SEXP stash(
     }
 
     PROTECT(sexp_stash = NEW_OBJECT(MAKE_CLASS("git_stash")));
-    err = init_stash(&oid, repository, repo, sexp_stash);
+    err = git2r_stash_init(&oid, repository, repo, sexp_stash);
 
 cleanup:
     if (commit)
