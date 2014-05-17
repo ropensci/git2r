@@ -68,6 +68,9 @@ sync_libgit2:
 	-cp -f ../libgit2/COPYING inst/NOTICE
 	Rscript tools/build_Makevars.r
 
+Makevars:
+	Rscript tools/build_Makevars.r
+
 clean:
 	-rm -f config.log
 	-rm -f config.status
@@ -82,4 +85,4 @@ clean:
 	-rm -f src/libgit2/xdiff/*.o
 	-rm -f src/http-parser/*.o
 
-.PHONY: all readme doc sync_libgit2 clean
+.PHONY: all readme doc sync_libgit2 Makevars clean
