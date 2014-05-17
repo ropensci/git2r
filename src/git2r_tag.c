@@ -57,7 +57,7 @@ void init_tag(git_tag *source, SEXP repo, SEXP dest)
         SEXP sexp_tagger;
 
         PROTECT(sexp_tagger = NEW_OBJECT(MAKE_CLASS("git_signature")));
-        init_signature(tagger, sexp_tagger);
+        git2r_signature_init(tagger, sexp_tagger);
         SET_SLOT(dest, Rf_install("tagger"), sexp_tagger);
         UNPROTECT(1);
     }

@@ -23,7 +23,7 @@
 #include <Rinternals.h>
 #include "git2.h"
 
-SEXP default_signature(SEXP repo);
-void init_signature(const git_signature *sig, SEXP signature);
+SEXP git2r_signature_default(SEXP repo);
+void git2r_signature_init(const git_signature *sig, SEXP signature);
 
 #endif

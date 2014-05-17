@@ -27,7 +27,7 @@
  * @param repo S4 class git_repository
  * @return S4 class git_signature
  */
-SEXP default_signature(SEXP repo)
+SEXP git2r_signature_default(SEXP repo)
 {
     int err;
     git_repository *repository = NULL;
@@ -43,7 +43,7 @@ SEXP default_signature(SEXP repo)
         goto cleanup;
 
     PROTECT(sig = NEW_OBJECT(MAKE_CLASS("git_signature")));
-    init_signature(signature, sig);
+    git2r_signature_init(signature, sig);
 
 cleanup:
     if (repository)
@@ -67,7 +67,7 @@ cleanup:
  * @param signature
  * @return void
  */
-void init_signature(const git_signature *sig, SEXP signature)
+void git2r_signature_init(const git_signature *sig, SEXP signature)
 {
     SEXP when;
 

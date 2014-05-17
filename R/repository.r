@@ -528,7 +528,7 @@ setMethod("default_signature",
           signature(object = "git_repository"),
           function (object)
           {
-              .Call("default_signature", object)
+              .Call("git2r_signature_default", object)
           }
 )
 

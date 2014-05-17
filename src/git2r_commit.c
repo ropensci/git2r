@@ -367,7 +367,7 @@ void git2r_init_commit(git_commit *source, SEXP repo, SEXP dest)
         SEXP sexp_author;
 
         PROTECT(sexp_author = NEW_OBJECT(MAKE_CLASS("git_signature")));
-        init_signature(author, sexp_author);
+        git2r_signature_init(author, sexp_author);
         SET_SLOT(dest, Rf_install("author"), sexp_author);
         UNPROTECT(1);
     }
@@ -377,7 +377,7 @@ void git2r_init_commit(git_commit *source, SEXP repo, SEXP dest)
         SEXP sexp_committer;
 
         PROTECT(sexp_committer = NEW_OBJECT(MAKE_CLASS("git_signature")));
-        init_signature(committer, sexp_committer);
+        git2r_signature_init(committer, sexp_committer);
         SET_SLOT(dest, Rf_install("committer"), sexp_committer);
         UNPROTECT(1);
     }
