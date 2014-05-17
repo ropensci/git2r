@@ -585,7 +585,7 @@ setMethod("summary",
               n_commits <- length(work)
               n_authors <- length(unique(sapply(lapply(work, slot, "author"), slot, "name")))
 
-              s <- .Call("status", object, TRUE, TRUE, TRUE, TRUE)
+              s <- .Call("git2r_status_list", object, TRUE, TRUE, TRUE, TRUE)
               n_ignored <- length(s$ignored)
               n_untracked <- length(s$untracked)
               n_unstaged <- length(s$unstaged)

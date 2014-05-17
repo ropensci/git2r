@@ -64,7 +64,12 @@ setMethod("status",
           signature(repo = "git_repository"),
           function (repo, staged, unstaged, untracked, ignored)
           {
-              s <- .Call("status", repo, staged, unstaged, untracked, ignored)
+              s <- .Call("git2r_status_list",
+                         repo,
+                         staged,
+                         unstaged,
+                         untracked,
+                         ignored)
 
               if(length(s$ignored)) {
                   display_status("Ignored files", s$ignored)

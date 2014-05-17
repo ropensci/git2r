@@ -26,7 +26,7 @@
  * @param status
  * @return The number of files
  */
-static size_t count_ignored_files(git_status_list *status_list)
+static size_t git2r_status_count_ignored(git_status_list *status_list)
 {
     size_t i = 0;
     size_t ignored = 0;
@@ -48,7 +48,7 @@ static size_t count_ignored_files(git_status_list *status_list)
  * @param status
  * @return The number of changes
  */
-static size_t count_staged_changes(git_status_list *status_list)
+static size_t git2r_status_count_staged(git_status_list *status_list)
 {
     size_t i = 0;
     size_t changes = 0;
@@ -81,7 +81,7 @@ static size_t count_staged_changes(git_status_list *status_list)
  * @param status
  * @return The number of changes
  */
-static size_t count_unstaged_changes(git_status_list *status_list)
+static size_t git2r_status_count_unstaged(git_status_list *status_list)
 {
     size_t i = 0;
     size_t changes = 0;
@@ -112,7 +112,7 @@ static size_t count_unstaged_changes(git_status_list *status_list)
  * @param status
  * @return The number of files
  */
-static size_t count_untracked_files(git_status_list *status_list)
+static size_t git2r_status_count_untracked(git_status_list *status_list)
 {
     size_t i = 0;
     size_t untracked = 0;
@@ -136,15 +136,16 @@ static size_t count_untracked_files(git_status_list *status_list)
  * @param status_list
  * @return void
  */
-static void list_ignored_files(SEXP list,
-                               size_t list_index,
-                               git_status_list *status_list)
+static void git2r_status_list_ignored(
+    SEXP list,
+    size_t list_index,
+    git_status_list *status_list)
 {
     size_t i = 0, j = 0, count;
     SEXP sub_list, sub_list_names, item;
 
     /* Create list with the correct number of entries */
-    count = count_ignored_files(status_list);
+    count = git2r_status_count_ignored(status_list);
     PROTECT(sub_list = allocVector(VECSXP, count));
     PROTECT(sub_list_names = allocVector(STRSXP, count));
 
@@ -176,15 +177,16 @@ static void list_ignored_files(SEXP list,
  * @param status_list
  * @return void
  */
-static void list_staged_changes(SEXP list,
-                                size_t list_index,
-                                git_status_list *status_list)
+static void git2r_status_list_staged(
+    SEXP list,
+    size_t list_index,
+    git_status_list *status_list)
 {
     size_t i = 0, j = 0, count;
     SEXP sub_list, sub_list_names, item;
 
     /* Create list with the correct number of entries */
-    count = count_staged_changes(status_list);
+    count = git2r_status_count_staged(status_list);
     PROTECT(sub_list = allocVector(VECSXP, count));
     PROTECT(sub_list_names = allocVector(STRSXP, count));
 
@@ -243,15 +245,16 @@ static void list_staged_changes(SEXP list,
  * @param status_list
  * @return void
  */
-static void list_unstaged_changes(SEXP list,
-                                  size_t list_index,
-                                  git_status_list *status_list)
+static void git2r_status_list_unstaged(
+    SEXP list,
+    size_t list_index,
+    git_status_list *status_list)
 {
     size_t i = 0, j = 0, count;
     SEXP sub_list, sub_list_names, item;
 
     /* Create list with the correct number of entries */
-    count = count_unstaged_changes(status_list);
+    count = git2r_status_count_unstaged(status_list);
     PROTECT(sub_list = allocVector(VECSXP, count));
     PROTECT(sub_list_names = allocVector(STRSXP, count));
 
@@ -308,15 +311,16 @@ static void list_unstaged_changes(SEXP list,
  * @param status_list
  * @return void
  */
-static void list_untracked_files(SEXP list,
-                                 size_t list_index,
-                                 git_status_list *status_list)
+static void git2r_status_list_untracked(
+    SEXP list,
+    size_t list_index,
+    git_status_list *status_list)
 {
     size_t i = 0, j = 0, count;
     SEXP sub_list, sub_list_names, item;
 
     /* Create list with the correct number of entries */
-    count = count_untracked_files(status_list);
+    count = git2r_status_count_untracked(status_list);
     PROTECT(sub_list = allocVector(VECSXP, count));
     PROTECT(sub_list_names = allocVector(STRSXP, count));
 
@@ -346,7 +350,12 @@ static void list_untracked_files(SEXP list,
  * @param repo S4 class git_repository
  * @return VECXSP with status
  */
-SEXP status(SEXP repo, SEXP staged, SEXP unstaged, SEXP untracked, SEXP ignored)
+SEXP git2r_status_list(
+    SEXP repo,
+    SEXP staged,
+    SEXP unstaged,
+    SEXP untracked,
+    SEXP ignored)
 {
     int err;
     size_t i=0, count;
@@ -387,25 +396,25 @@ SEXP status(SEXP repo, SEXP staged, SEXP unstaged, SEXP untracked, SEXP ignored)
 
     if (LOGICAL(staged)[0]) {
         SET_STRING_ELT(list_names, i, mkChar("staged"));
-        list_staged_changes(list, i, status_list);
+        git2r_status_list_staged(list, i, status_list);
         i++;
     }
 
     if (LOGICAL(unstaged)[0]) {
         SET_STRING_ELT(list_names, i, mkChar("unstaged"));
-        list_unstaged_changes(list, i, status_list);
+        git2r_status_list_unstaged(list, i, status_list);
         i++;
     }
 
     if (LOGICAL(untracked)[0]) {
         SET_STRING_ELT(list_names, i, mkChar("untracked"));
-        list_untracked_files(list, i, status_list);
+        git2r_status_list_untracked(list, i, status_list);
         i++;
     }
 
     if (LOGICAL(ignored)[0]) {
         SET_STRING_ELT(list_names, i, mkChar("ignored"));
-        list_ignored_files(list, i, status_list);
+        git2r_status_list_ignored(list, i, status_list);
     }
 
     setAttrib(list, R_NamesSymbol, list_names);

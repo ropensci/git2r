@@ -22,6 +22,11 @@
 #include <R.h>
 #include <Rinternals.h>
 
-SEXP status(SEXP repo, SEXP staged, SEXP unstaged, SEXP untracked, SEXP ignored);
+SEXP git2r_status_list(
+    SEXP repo,
+    SEXP staged,
+    SEXP unstaged,
+    SEXP untracked,
+    SEXP ignored);
 
 #endif
