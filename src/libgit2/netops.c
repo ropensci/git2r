@@ -206,8 +206,10 @@ static int gitno_ssl_teardown(gitno_ssl *ssl)
 	return ret;
 }
 
+#endif
+
 /* Match host names according to RFC 2818 rules */
-static int match_host(const char *pattern, const char *host)
+int gitno__match_host(const char *pattern, const char *host)
 {
 	for (;;) {
 		char c = tolower(*pattern++);
@@ -230,9 +232,9 @@ static int match_host(const char *pattern, const char *host)
 			while(*host) {
 				char h = tolower(*host);
 				if (c == h)
-					return match_host(pattern, host++);
+					return gitno__match_host(pattern, host++);
 				if (h == '.')
-					return match_host(pattern, host);
+					return gitno__match_host(pattern, host);
 				host++;
 			}
 			return -1;
@@ -250,11 +252,13 @@ static int check_host_name(const char *name, const char *host)
 	if (!strcasecmp(name, host))
 		return 0;
 
-	if (match_host(name, host) < 0)
+	if (gitno__match_host(name, host) < 0)
 		return -1;
 
 	return 0;
 }
+
+#ifdef GIT_SSL
 
 static int verify_server_cert(gitno_ssl *ssl, const char *host)
 {
@@ -287,6 +291,10 @@ static int verify_server_cert(gitno_ssl *ssl, const char *host)
 
 
 	cert = SSL_get_peer_certificate(ssl->ssl);
+	if (!cert) {
+		giterr_set(GITERR_SSL, "the server did not provide a certificate");
+		return -1;
+	}
 
 	/* Check the alternative names */
 	alts = X509_get_ext_d2i(cert, NID_subject_alt_name, NULL, NULL);
@@ -321,7 +329,7 @@ static int verify_server_cert(gitno_ssl *ssl, const char *host)
 	GENERAL_NAMES_free(alts);
 
 	if (matched == 0)
-		goto cert_fail;
+		goto cert_fail_name;
 
 	if (matched == 1)
 		return 0;
@@ -358,11 +366,11 @@ static int verify_server_cert(gitno_ssl *ssl, const char *host)
 		int size = ASN1_STRING_to_UTF8(&peer_cn, str);
 		GITERR_CHECK_ALLOC(peer_cn);
 		if (memchr(peer_cn, '\0', size))
-			goto cert_fail;
+			goto cert_fail_name;
 	}
 
 	if (check_host_name((char *)peer_cn, host) < 0)
-		goto cert_fail;
+		goto cert_fail_name;
 
 	OPENSSL_free(peer_cn);
 
@@ -372,9 +380,9 @@ on_error:
 	OPENSSL_free(peer_cn);
 	return ssl_set_error(ssl, 0);
 
-cert_fail:
+cert_fail_name:
 	OPENSSL_free(peer_cn);
-	giterr_set(GITERR_SSL, "Certificate host name check failed");
+	giterr_set(GITERR_SSL, "hostname does not match certificate");
 	return -1;
 }
 

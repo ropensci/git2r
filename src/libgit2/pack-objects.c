@@ -90,8 +90,8 @@ static int packbuilder_config(git_packbuilder *pb)
 	int ret;
 	int64_t val;
 
-	if (git_repository_config__weakptr(&config, pb->repo) < 0)
-		return -1;
+	if ((ret = git_repository_config_snapshot(&config, pb->repo)) < 0)
+		return ret;
 
 #define config_get(KEY,DST,DFLT) do { \
 	ret = git_config_get_int64(&val, config, KEY); \
@@ -108,6 +108,8 @@ static int packbuilder_config(git_packbuilder *pb)
 	config_get("pack.windowMemory", pb->window_memory_limit, 0);
 
 #undef config_get
+
+	git_config_free(config);
 
 	return 0;
 }
@@ -1276,6 +1278,7 @@ int git_packbuilder_foreach(git_packbuilder *pb, int (*cb)(void *buf, size_t siz
 int git_packbuilder_write_buf(git_buf *buf, git_packbuilder *pb)
 {
 	PREPARE_PACK;
+	git_buf_sanitize(buf);
 	return write_pack(pb, &write_pack_buf, buf);
 }
 

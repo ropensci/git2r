@@ -137,6 +137,38 @@ int git_config_open_ondisk(git_config **out, const char *path)
 	return error;
 }
 
+int git_config_snapshot(git_config **out, git_config *in)
+{
+	int error;
+	size_t i;
+	file_internal *internal;
+	git_config *config;
+
+	*out = NULL;
+
+	if (git_config_new(&config) < 0)
+		return -1;
+
+	git_vector_foreach(&in->files, i, internal) {
+		git_config_backend *b;
+
+		if ((error = internal->file->snapshot(&b, internal->file)) < 0)
+			break;
+
+		if ((error = git_config_add_backend(config, b, internal->level, 0)) < 0) {
+			b->free(b);
+			break;
+		}
+	}
+
+	if (error < 0)
+		git_config_free(config);
+	else
+		*out = config;
+
+	return error;
+}
+
 static int find_internal_file_by_level(
 	file_internal **internal_out,
 	const git_config *cfg,
@@ -967,16 +999,19 @@ void git_config_iterator_free(git_config_iterator *iter)
 
 int git_config_find_global(git_buf *path)
 {
+	git_buf_sanitize(path);
 	return git_sysdir_find_global_file(path, GIT_CONFIG_FILENAME_GLOBAL);
 }
 
 int git_config_find_xdg(git_buf *path)
 {
+	git_buf_sanitize(path);
 	return git_sysdir_find_xdg_file(path, GIT_CONFIG_FILENAME_XDG);
 }
 
 int git_config_find_system(git_buf *path)
 {
+	git_buf_sanitize(path);
 	return git_sysdir_find_system_file(path, GIT_CONFIG_FILENAME_SYSTEM);
 }
 
