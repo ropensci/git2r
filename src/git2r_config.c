@@ -30,7 +30,7 @@
  * @param n_level array to store the number of variables
  * @param 0 on succes, or error code
  */
-static int count_config_variables(
+static int git2r_count_config_variables(
     const git_config *cfg,
     size_t *n_level,
     char **err_msg)
@@ -95,7 +95,7 @@ cleanup:
  * @param name name of the level to initialize
  * @return index of the config level list in the owning list
  */
-static size_t init_list_config_level(
+static size_t git2r_init_list_config_level(
     SEXP list,
     size_t level,
     size_t *n_level,
@@ -129,7 +129,7 @@ static size_t init_list_config_level(
  * @param entry the config entry to add
  * @return void
  */
-static void add_list_entry(
+static void git2r_add_list_entry(
     SEXP list,
     size_t level,
     size_t *i_level,
@@ -162,7 +162,7 @@ static void add_list_entry(
  * @param err_msg
  * @return
  */
-static int list_config_variables(
+static int git2r_list_config_variables(
     git_config *cfg,
     SEXP list,
     size_t *n_level,
@@ -237,7 +237,7 @@ cleanup:
  * @param repo S4 class git_repository
  * @return VECSXP list with variables by level
  */
-SEXP get_config(SEXP repo)
+SEXP git2r_get_config(SEXP repo)
 {
     int err;
     SEXP list = R_NilValue;
@@ -297,7 +297,7 @@ cleanup:
  * @param variables list of variables. If variable is NULL, it's deleted.
  * @return R_NilValue
  */
-SEXP set_config(SEXP repo, SEXP variables)
+SEXP git2r_set_config(SEXP repo, SEXP variables)
 {
     int err;
     SEXP names;

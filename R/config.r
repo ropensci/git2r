@@ -69,10 +69,10 @@ setMethod("config",
                                                  collapse="\n")))
                   }
 
-                  .Call("set_config", repo, variables)
+                  .Call("git2r_set_config", repo, variables)
               }
 
-              cfg <- .Call("get_config", repo)
+              cfg <- .Call("git2r_get_config", repo)
 
               ## Sort the variables within levels by name
               cfg <- lapply(cfg, function(x) x[order(names(x))])
