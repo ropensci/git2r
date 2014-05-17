@@ -91,9 +91,9 @@ SEXP tag(SEXP repo, SEXP name, SEXP message, SEXP tagger)
     git_tag *new_tag = NULL;
     git_object *target = NULL;
 
-    if (check_string_arg(name)
-        || check_string_arg(message)
-        || check_signature_arg(tagger))
+    if (git2r_check_string_arg(name)
+        || git2r_check_string_arg(message)
+        || git2r_check_signature_arg(tagger))
         error("Invalid arguments to tag");
 
     when = GET_SLOT(tagger, Rf_install("when"));

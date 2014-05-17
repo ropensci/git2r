@@ -45,7 +45,7 @@ git_repository* get_repository(SEXP repo)
         return NULL;
 
     path = GET_SLOT(repo, Rf_install("path"));
-    if (check_string_arg(path))
+    if (git2r_check_string_arg(path))
         return NULL;
 
     if (git_repository_open(&repository, CHAR(STRING_ELT(path, 0))) < 0)
@@ -66,7 +66,7 @@ SEXP init(SEXP path, SEXP bare)
     int err;
     git_repository *repository = NULL;
 
-    if (check_string_arg(path) || check_logical_arg(bare))
+    if (git2r_check_string_arg(path) || git2r_check_logical_arg(bare))
         error("Invalid arguments to init");
 
     err = git_repository_init(&repository,
@@ -161,7 +161,7 @@ SEXP is_repository(SEXP path)
 {
     git_repository *repository = NULL;
 
-    if (check_string_arg(path))
+    if (git2r_check_string_arg(path))
         error("Invalid arguments to is_repository");
 
     if (git_repository_open(&repository, CHAR(STRING_ELT(path, 0))) < 0)
@@ -188,7 +188,7 @@ SEXP lookup(SEXP repo, SEXP hex)
     git_oid oid;
     git_repository *repository = NULL;
 
-    if (check_hex_arg(hex))
+    if (git2r_check_hex_arg(hex))
         error("Invalid arguments to lookup");
 
     repository = get_repository(repo);

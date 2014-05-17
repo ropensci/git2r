@@ -53,9 +53,9 @@ SEXP git2r_commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP par
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
     opts.show  = GIT_STATUS_SHOW_INDEX_ONLY;
 
-    if (check_string_arg(message)
-        || check_signature_arg(author)
-        || check_signature_arg(committer)
+    if (git2r_check_string_arg(message)
+        || git2r_check_signature_arg(author)
+        || git2r_check_signature_arg(committer)
         || R_NilValue == parent_list
         || !isString(parent_list))
         error("Invalid arguments to commit");

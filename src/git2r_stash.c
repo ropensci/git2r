@@ -44,7 +44,7 @@ SEXP drop_stash(SEXP repo, SEXP index)
     int err;
     git_repository *repository = NULL;
 
-    if (check_integer_arg(index))
+    if (git2r_check_integer_arg(index))
         error("Invalid arguments to drop_stash");
     if (0 > INTEGER(index)[0])
         error("'index' out of range");
@@ -199,10 +199,10 @@ SEXP stash(
     git_repository *repository = NULL;
     git_signature *sig_stasher = NULL;
 
-    if (check_logical_arg(index)
-        || check_logical_arg(untracked)
-        || check_logical_arg(ignored)
-        || check_signature_arg(stasher))
+    if (git2r_check_logical_arg(index)
+        || git2r_check_logical_arg(untracked)
+        || git2r_check_logical_arg(ignored)
+        || git2r_check_signature_arg(stasher))
         error("Invalid arguments to stash");
 
     repository = get_repository(repo);

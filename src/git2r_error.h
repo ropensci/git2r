@@ -34,13 +34,13 @@ extern const char git2r_err_unexpected_config_level[];
 extern const char git2r_err_unexpected_head_of_branch[];
 extern const char git2r_err_unexpected_type_of_branch[];
 
-int check_commit_arg(SEXP arg);
-int check_hex_arg(SEXP arg);
-int check_integer_arg(SEXP arg);
-int check_logical_arg(SEXP arg);
-int check_signature_arg(SEXP arg);
-int check_string_arg(SEXP arg);
-int check_tag_arg(SEXP arg);
-int check_tree_arg(SEXP arg);
+int git2r_check_commit_arg(SEXP arg);
+int git2r_check_hex_arg(SEXP arg);
+int git2r_check_integer_arg(SEXP arg);
+int git2r_check_logical_arg(SEXP arg);
+int git2r_check_signature_arg(SEXP arg);
+int git2r_check_string_arg(SEXP arg);
+int git2r_check_tag_arg(SEXP arg);
+int git2r_check_tree_arg(SEXP arg);
 
 #endif

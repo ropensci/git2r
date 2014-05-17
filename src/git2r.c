@@ -60,7 +60,7 @@ SEXP add(SEXP repo, SEXP path)
     git_index *index = NULL;
     git_repository *repository = NULL;
 
-    if (check_string_arg(path))
+    if (git2r_check_string_arg(path))
         error("Invalid arguments to add");
 
     repository= get_repository(repo);
@@ -233,7 +233,7 @@ SEXP fetch(SEXP repo, SEXP name)
     git_remote *remote = NULL;
     git_repository *repository = NULL;
 
-    if (check_string_arg(name))
+    if (git2r_check_string_arg(name))
         error("Invalid arguments to fetch");
 
     repository = get_repository(repo);
