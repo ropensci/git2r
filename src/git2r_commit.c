@@ -20,6 +20,7 @@
 
 #include "git2r_commit.h"
 #include "git2r_error.h"
+#include "git2r_oid.h"
 #include "git2r_repository.h"
 #include "git2r_signature.h"
 #include "git2r_tree.h"
@@ -290,62 +291,6 @@ cleanup:
         error("Error: %s\n", giterr_last()->message);
 
     return result;
-}
-
-/**
- * Get oid from hex SEXP
- *
- * @param hex
- * @param oid
- * @return void
- */
-void git2r_oid_from_hex_sexp(SEXP hex, git_oid *oid)
-{
-    int err;
-    size_t len;
-
-    len = LENGTH(STRING_ELT(hex, 0));
-    if (GIT_OID_HEXSZ == len)
-        git_oid_fromstr(oid, CHAR(STRING_ELT(hex, 0)));
-    else
-        git_oid_fromstrn(oid, CHAR(STRING_ELT(hex, 0)), len);
-}
-
-/**
- * Descendant of
- *
- * @param commit
- * @param ancestor
- * @return TRUE or FALSE
- */
-
-SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor)
-{
-    int result;
-    SEXP slot;
-    git_oid commit_oid;
-    git_oid ancestor_oid;
-    git_repository *repository = NULL;
-
-    slot = GET_SLOT(commit, Rf_install("repo"));
-    repository = git2r_repository_open(slot);
-    if (!repository)
-        error(git2r_err_invalid_repository);
-
-    slot = GET_SLOT(commit, Rf_install("hex"));
-    git2r_oid_from_hex_sexp(slot, &commit_oid);
-
-    slot = GET_SLOT(ancestor, Rf_install("hex"));
-    git2r_oid_from_hex_sexp(slot, &ancestor_oid);
-
-    result = git_graph_descendant_of(repository, &commit_oid, &ancestor_oid);
-    git_repository_free(repository);
-
-    if (result < 0)
-        error("Error: %s\n", giterr_last()->message);
-    if (0 == result)
-        return ScalarLogical(0);
-    return ScalarLogical(1);
 }
 
 /**

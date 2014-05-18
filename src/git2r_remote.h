@@ -16,20 +16,14 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef INCLUDE_git2r_repository_h
-#define INCLUDE_git2r_repository_h
+#ifndef INCLUDE_git2r_remote_h
+#define INCLUDE_git2r_remote_h
 
 #include <R.h>
 #include <Rinternals.h>
 
-#include "git2.h"
-
-git_repository* git2r_repository_open(SEXP repo);
-SEXP git2r_repository_init(SEXP path, SEXP bare);
-SEXP git2r_repository_is_bare(SEXP repo);
-SEXP git2r_repository_head_detached(SEXP repo);
-SEXP git2r_repository_is_empty(SEXP repo);
-SEXP git2r_repository_can_open(SEXP path);
-SEXP git2r_repository_workdir(SEXP repo);
+SEXP git2r_remote_fetch(SEXP repo, SEXP name);
+SEXP git2r_remote_list(SEXP repo);
+SEXP git2r_remote_url(SEXP repo, SEXP remote);
 
 #endif

@@ -16,20 +16,23 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef INCLUDE_git2r_repository_h
-#define INCLUDE_git2r_repository_h
+#include "git2r_oid.h"
 
-#include <R.h>
-#include <Rinternals.h>
+/**
+ * Get oid from hex SEXP
+ *
+ * @param hex
+ * @param oid
+ * @return void
+ */
+void git2r_oid_from_hex_sexp(SEXP hex, git_oid *oid)
+{
+    int err;
+    size_t len;
 
-#include "git2.h"
-
-git_repository* git2r_repository_open(SEXP repo);
-SEXP git2r_repository_init(SEXP path, SEXP bare);
-SEXP git2r_repository_is_bare(SEXP repo);
-SEXP git2r_repository_head_detached(SEXP repo);
-SEXP git2r_repository_is_empty(SEXP repo);
-SEXP git2r_repository_can_open(SEXP path);
-SEXP git2r_repository_workdir(SEXP repo);
-
-#endif
+    len = LENGTH(STRING_ELT(hex, 0));
+    if (GIT_OID_HEXSZ == len)
+        git_oid_fromstr(oid, CHAR(STRING_ELT(hex, 0)));
+    else
+        git_oid_fromstrn(oid, CHAR(STRING_ELT(hex, 0)), len);
+}
