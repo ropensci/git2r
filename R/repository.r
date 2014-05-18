@@ -261,7 +261,7 @@ setMethod("add",
               stopifnot(is.character(path),
                         all(nchar(path) > 0))
 
-              lapply(path, function(x) .Call("add", object, x))
+              lapply(path, function(x) .Call("git2r_index_add", object, x))
 
               invisible(NULL)
           }
@@ -310,7 +310,12 @@ setMethod("commit",
                   parents <- c(parents, head(object)@hex)
               }
 
-              .Call("git2r_commit", object, message, author, committer, parents)
+              .Call("git2r_commit_create",
+                    object,
+                    message,
+                    author,
+                    committer,
+                    parents)
           }
 )
 
@@ -484,7 +489,7 @@ setMethod("remotes",
           signature(object = "git_repository"),
           function (object)
           {
-              .Call("remotes", object)
+              .Call("git2r_remote_list", object)
           }
 )
 
@@ -498,7 +503,8 @@ setMethod("remotes",
 ##' @keywords methods
 setGeneric("remote_url",
            signature = "object",
-           function(object, remote = remotes(object)) standardGeneric("remote_url"))
+           function(object, remote = remotes(object))
+           standardGeneric("remote_url"))
 
 ##' @rdname remote_url-methods
 ##' @export
@@ -506,7 +512,7 @@ setMethod("remote_url",
           signature(object = "git_repository"),
           function (object, remote)
           {
-              .Call("remote_url", object, remote)
+              .Call("git2r_remote_url", object, remote)
           }
 )
 

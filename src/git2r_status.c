@@ -364,10 +364,10 @@ SEXP git2r_status_list(
     git_status_list *status_list = NULL;
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
 
-    if (git2r_check_logical_arg(staged)
-        || git2r_check_logical_arg(unstaged)
-        || git2r_check_logical_arg(untracked)
-        || git2r_check_logical_arg(ignored))
+    if (git2r_error_check_logical_arg(staged)
+        || git2r_error_check_logical_arg(unstaged)
+        || git2r_error_check_logical_arg(untracked)
+        || git2r_error_check_logical_arg(ignored))
         error("Invalid arguments to status");
 
     repository = git2r_repository_open(repo);

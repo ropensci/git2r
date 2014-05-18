@@ -22,7 +22,7 @@
 #include <R.h>
 #include <Rinternals.h>
 
-SEXP git2r_get_config(SEXP repo);
-SEXP git2r_set_config(SEXP repo, SEXP variables);
+SEXP git2r_config_get(SEXP repo);
+SEXP git2r_config_set(SEXP repo, SEXP variables);
 
 #endif

@@ -75,7 +75,7 @@ setMethod("branches",
                               REMOTE = 2L,
                               ALL    = 3L)
 
-              .Call("branches", object, flags)
+              .Call("git2r_branch_list", object, flags)
           }
 )
 

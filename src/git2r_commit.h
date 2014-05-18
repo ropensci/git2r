@@ -24,10 +24,15 @@
 
 #include "git2.h"
 
-SEXP git2r_commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP parent_list);
+SEXP git2r_commit_create(
+    SEXP repo, 
+    SEXP message,
+    SEXP author,
+    SEXP committer,
+    SEXP parent_list);
 SEXP git2r_commit_tree(SEXP commit);
-SEXP git2r_descendant_of(SEXP commit, SEXP ancestor);
-void git2r_init_commit(git_commit *source, SEXP repo, SEXP dest);
-SEXP git2r_parents(SEXP commit);
+SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor);
+void git2r_commit_init(git_commit *source, SEXP repo, SEXP dest);
+SEXP git2r_commit_parent_list(SEXP commit);
 
 #endif

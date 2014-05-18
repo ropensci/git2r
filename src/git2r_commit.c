@@ -34,7 +34,12 @@
  * @param parent_list
  * @return S4 class git_commit
  */
-SEXP git2r_commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP parent_list)
+SEXP git2r_commit_create(
+    SEXP repo,
+    SEXP message,
+    SEXP author,
+    SEXP committer,
+    SEXP parent_list)
 {
     SEXP when, sexp_commit;
     int err;
@@ -53,9 +58,9 @@ SEXP git2r_commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP par
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
     opts.show  = GIT_STATUS_SHOW_INDEX_ONLY;
 
-    if (git2r_check_string_arg(message)
-        || git2r_check_signature_arg(author)
-        || git2r_check_signature_arg(committer)
+    if (git2r_error_check_string_arg(message)
+        || git2r_error_check_signature_arg(author)
+        || git2r_error_check_signature_arg(committer)
         || R_NilValue == parent_list
         || !isString(parent_list))
         error("Invalid arguments to commit");
@@ -172,7 +177,7 @@ SEXP git2r_commit(SEXP repo, SEXP message, SEXP author, SEXP committer, SEXP par
         goto cleanup;
 
     PROTECT(sexp_commit = NEW_OBJECT(MAKE_CLASS("git_commit")));
-    git2r_init_commit(new_commit, repo, sexp_commit);
+    git2r_commit_init(new_commit, repo, sexp_commit);
 
 cleanup:
     if (sig_author)
@@ -224,7 +229,10 @@ cleanup:
  * @param commit
  * @return
  */
-static int git2r_get_commit(git_commit **out, git_repository *repository, SEXP commit)
+static int git2r_commit_lookup(
+    git_commit **out,
+    git_repository *repository,
+    SEXP commit)
 {
     SEXP hex;
     git_oid oid;
@@ -254,7 +262,7 @@ SEXP git2r_commit_tree(SEXP commit)
     if (!repository)
         error(git2r_err_invalid_repository);
 
-    err = git2r_get_commit(&commit_obj, repository, commit);
+    err = git2r_commit_lookup(&commit_obj, repository, commit);
     if (err < 0)
         goto cleanup;
 
@@ -311,7 +319,7 @@ void git2r_oid_from_hex_sexp(SEXP hex, git_oid *oid)
  * @return TRUE or FALSE
  */
 
-SEXP git2r_descendant_of(SEXP commit, SEXP ancestor)
+SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor)
 {
     int result;
     SEXP slot;
@@ -348,7 +356,7 @@ SEXP git2r_descendant_of(SEXP commit, SEXP ancestor)
  * @param dest S4 class git_commit to initialize
  * @return void
  */
-void git2r_init_commit(git_commit *source, SEXP repo, SEXP dest)
+void git2r_commit_init(git_commit *source, SEXP repo, SEXP dest)
 {
     const char *message;
     const char *summary;
@@ -405,7 +413,7 @@ void git2r_init_commit(git_commit *source, SEXP repo, SEXP dest)
  * @param commit
  * @return list of S4 class git_commit objects
  */
-SEXP git2r_parents(SEXP commit)
+SEXP git2r_commit_parent_list(SEXP commit)
 {
     int err;
     size_t i, n;
@@ -419,7 +427,7 @@ SEXP git2r_parents(SEXP commit)
     if (!repository)
         error(git2r_err_invalid_repository);
 
-    err = git2r_get_commit(&commit_obj, repository, commit);
+    err = git2r_commit_lookup(&commit_obj, repository, commit);
     if (err < 0)
         goto cleanup;
 
@@ -435,7 +443,7 @@ SEXP git2r_parents(SEXP commit)
             goto cleanup;
 
         PROTECT(tmp = NEW_OBJECT(MAKE_CLASS("git_commit")));
-        git2r_init_commit(parent, repo, tmp);
+        git2r_commit_init(parent, repo, tmp);
         SET_VECTOR_ELT(list, i, tmp);
         UNPROTECT(1);
     }

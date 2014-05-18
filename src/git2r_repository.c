@@ -45,7 +45,7 @@ git_repository* git2r_repository_open(SEXP repo)
         return NULL;
 
     path = GET_SLOT(repo, Rf_install("path"));
-    if (git2r_check_string_arg(path))
+    if (git2r_error_check_string_arg(path))
         return NULL;
 
     if (git_repository_open(&repository, CHAR(STRING_ELT(path, 0))) < 0)
@@ -66,7 +66,7 @@ SEXP git2r_repository_init(SEXP path, SEXP bare)
     int err;
     git_repository *repository = NULL;
 
-    if (git2r_check_string_arg(path) || git2r_check_logical_arg(bare))
+    if (git2r_error_check_string_arg(path) || git2r_error_check_logical_arg(bare))
         error("Invalid arguments to init");
 
     err = git_repository_init(&repository,
@@ -161,7 +161,7 @@ SEXP git2r_repository_can_open(SEXP path)
 {
     git_repository *repository = NULL;
 
-    if (git2r_check_string_arg(path))
+    if (git2r_error_check_string_arg(path))
         error("Invalid arguments to is_repository");
 
     if (git_repository_open(&repository, CHAR(STRING_ELT(path, 0))) < 0)
@@ -188,7 +188,7 @@ SEXP git2r_object_lookup(SEXP repo, SEXP hex)
     git_oid oid;
     git_repository *repository = NULL;
 
-    if (git2r_check_hex_arg(hex))
+    if (git2r_error_check_hex_arg(hex))
         error("Invalid arguments to lookup");
 
     repository = git2r_repository_open(repo);
@@ -211,7 +211,7 @@ SEXP git2r_object_lookup(SEXP repo, SEXP hex)
     switch (git_object_type(object)) {
     case GIT_OBJ_COMMIT:
         PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_commit")));
-        git2r_init_commit((git_commit*)object, repo, result);
+        git2r_commit_init((git_commit*)object, repo, result);
         break;
     case GIT_OBJ_TREE:
         PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_tree")));
@@ -219,7 +219,7 @@ SEXP git2r_object_lookup(SEXP repo, SEXP hex)
         break;
     case GIT_OBJ_BLOB:
         PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_blob")));
-        git2r_init_blob((git_blob*)object, repo, result);
+        git2r_blob_init((git_blob*)object, repo, result);
         break;
     case GIT_OBJ_TAG:
         PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_tag")));

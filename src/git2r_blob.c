@@ -29,7 +29,7 @@
  * @param dest S4 class git_blob to initialize
  * @return void
  */
-void git2r_init_blob(const git_blob *source, SEXP repo, SEXP dest)
+void git2r_blob_init(const git_blob *source, SEXP repo, SEXP dest)
 {
     const git_oid *oid;
     char hex[GIT_OID_HEXSZ + 1];
@@ -49,7 +49,7 @@ void git2r_init_blob(const git_blob *source, SEXP repo, SEXP dest)
  * @param blob S4 class git_blob
  * @return TRUE if binary data, FALSE if not
  */
-SEXP git2r_is_binary(SEXP blob)
+SEXP git2r_blob_is_binary(SEXP blob)
 {
     int err;
     SEXP result = R_NilValue;
@@ -97,7 +97,7 @@ cleanup:
  * @param blob S4 class git_blob
  * @return size
  */
-SEXP git2r_rawsize(SEXP blob)
+SEXP git2r_blob_rawsize(SEXP blob)
 {
     int err;
     SEXP hex;

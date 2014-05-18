@@ -23,7 +23,7 @@
 typedef struct {
     int received_progress;
     int received_done;
-} progress_data;
+} git2r_clone_progress_data;
 
 /**
  * Show progress of clone
@@ -35,7 +35,7 @@ typedef struct {
 static int git2r_clone_progress(const git_transfer_progress *progress, void *payload)
 {
     int kbytes = progress->received_bytes / 1024;
-    progress_data *pd = (progress_data*)payload;
+    git2r_clone_progress_data *pd = (git2r_clone_progress_data*)payload;
 
     if (progress->received_objects < progress->total_objects) {
         int received_percent =
@@ -75,11 +75,11 @@ SEXP git2r_clone(SEXP url, SEXP local_path, SEXP progress)
     git_repository *repository = NULL;
     git_clone_options clone_opts = GIT_CLONE_OPTIONS_INIT;
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
-    progress_data pd = {0};
+    git2r_clone_progress_data pd = {0};
 
-    if (git2r_check_string_arg(url)
-        || git2r_check_string_arg(local_path)
-        || git2r_check_logical_arg(progress))
+    if (git2r_error_check_string_arg(url)
+        || git2r_error_check_string_arg(local_path)
+        || git2r_error_check_logical_arg(progress))
         error("Invalid arguments to clone");
 
     checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE_CREATE;

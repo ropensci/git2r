@@ -38,7 +38,7 @@ const char git2r_err_unexpected_head_of_branch[] = "Unexpected head of branch";
  * @param arg the arg to check
  * @return 0 if OK, else 1
  */
-int git2r_check_commit_arg(SEXP arg)
+int git2r_error_check_commit_arg(SEXP arg)
 {
     SEXP class_name;
 
@@ -49,7 +49,7 @@ int git2r_check_commit_arg(SEXP arg)
     if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_commit"))
         return 1;
 
-    if (git2r_check_string_arg(GET_SLOT(arg, Rf_install("hex"))))
+    if (git2r_error_check_string_arg(GET_SLOT(arg, Rf_install("hex"))))
         return 1;
 
     return 0;
@@ -61,11 +61,11 @@ int git2r_check_commit_arg(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else 1
  */
-int git2r_check_hex_arg(SEXP arg)
+int git2r_error_check_hex_arg(SEXP arg)
 {
     size_t len;
 
-    if (git2r_check_string_arg(arg))
+    if (git2r_error_check_string_arg(arg))
         return 1;
 
     len = LENGTH(STRING_ELT(arg, 0));
@@ -81,7 +81,7 @@ int git2r_check_hex_arg(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else 1
  */
-int git2r_check_integer_arg(SEXP arg)
+int git2r_error_check_integer_arg(SEXP arg)
 {
     if (R_NilValue == arg
         || !isInteger(arg)
@@ -97,7 +97,7 @@ int git2r_check_integer_arg(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else 1
  */
-int git2r_check_logical_arg(SEXP arg)
+int git2r_error_check_logical_arg(SEXP arg)
 {
     if (R_NilValue == arg
         || !isLogical(arg)
@@ -129,7 +129,7 @@ int check_real_arg(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else 1
  */
-int git2r_check_signature_arg(SEXP arg)
+int git2r_error_check_signature_arg(SEXP arg)
 {
     SEXP class_name;
     SEXP when;
@@ -141,8 +141,8 @@ int git2r_check_signature_arg(SEXP arg)
     if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_signature"))
         return 1;
 
-    if (git2r_check_string_arg(GET_SLOT(arg, Rf_install("name")))
-        || git2r_check_string_arg(GET_SLOT(arg, Rf_install("email"))))
+    if (git2r_error_check_string_arg(GET_SLOT(arg, Rf_install("name")))
+        || git2r_error_check_string_arg(GET_SLOT(arg, Rf_install("email"))))
         return 1;
 
     when = GET_SLOT(arg, Rf_install("when"));
@@ -159,7 +159,7 @@ int git2r_check_signature_arg(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else 1
  */
-int git2r_check_string_arg(SEXP arg)
+int git2r_error_check_string_arg(SEXP arg)
 {
     if (R_NilValue == arg
         || !isString(arg)
@@ -175,7 +175,7 @@ int git2r_check_string_arg(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else 1
  */
-int git2r_check_tag_arg(SEXP arg)
+int git2r_error_check_tag_arg(SEXP arg)
 {
     SEXP class_name;
 
@@ -186,7 +186,7 @@ int git2r_check_tag_arg(SEXP arg)
     if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_tag"))
         return 1;
 
-    if (git2r_check_string_arg(GET_SLOT(arg, Rf_install("target"))))
+    if (git2r_error_check_string_arg(GET_SLOT(arg, Rf_install("target"))))
         return 1;
 
     return 0;
@@ -198,7 +198,7 @@ int git2r_check_tag_arg(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else 1
  */
-int git2r_check_tree_arg(SEXP arg)
+int git2r_error_check_tree_arg(SEXP arg)
 {
     SEXP class_name;
 
@@ -209,7 +209,7 @@ int git2r_check_tree_arg(SEXP arg)
     if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_tree"))
         return 1;
 
-    if (git2r_check_string_arg(GET_SLOT(arg, Rf_install("hex"))))
+    if (git2r_error_check_string_arg(GET_SLOT(arg, Rf_install("hex"))))
         return 1;
 
     return 0;

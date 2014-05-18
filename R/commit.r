@@ -100,7 +100,7 @@ setMethod("commits",
           signature(object = "git_repository"),
           function (object)
           {
-              .Call("revisions", object)
+              .Call("git2r_revwalk_list", object)
           }
 )
 
@@ -135,7 +135,7 @@ setMethod("descendant_of",
           function (commit, ancestor)
           {
               stopifnot(identical(commit@repo, ancestor@repo))
-              .Call("git2r_descendant_of", commit, ancestor)
+              .Call("git2r_graph_descendant_of", commit, ancestor)
           }
 )
 
@@ -166,7 +166,7 @@ setMethod("parents",
           signature(object = "git_commit"),
           function(object)
           {
-              .Call("git2r_parents", object)
+              .Call("git2r_commit_parent_list", object)
           }
 )
 

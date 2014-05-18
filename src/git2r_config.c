@@ -30,7 +30,7 @@
  * @param n_level array to store the number of variables
  * @param 0 on succes, or error code
  */
-static int git2r_count_config_variables(
+static int git2r_config_count_variables(
     const git_config *cfg,
     size_t *n_level,
     char **err_msg)
@@ -95,7 +95,7 @@ cleanup:
  * @param name name of the level to initialize
  * @return index of the config level list in the owning list
  */
-static size_t git2r_init_list_config_level(
+static size_t git2r_config_list_init(
     SEXP list,
     size_t level,
     size_t *n_level,
@@ -129,7 +129,7 @@ static size_t git2r_init_list_config_level(
  * @param entry the config entry to add
  * @return void
  */
-static void git2r_add_list_entry(
+static void git2r_config_list_add_entry(
     SEXP list,
     size_t level,
     size_t *i_level,
@@ -162,7 +162,7 @@ static void git2r_add_list_entry(
  * @param err_msg
  * @return
  */
-static int git2r_list_config_variables(
+static int git2r_config_list_variables(
     git_config *cfg,
     SEXP list,
     size_t *n_level,
@@ -178,12 +178,12 @@ static int git2r_list_config_variables(
     if (err < 0)
         goto cleanup;
 
-    i = git2r_init_list_config_level(list, 0, n_level, i_list, i, "system");
-    i = git2r_init_list_config_level(list, 1, n_level, i_list, i, "xdg");
-    i = git2r_init_list_config_level(list, 2, n_level, i_list, i, "global");
-    i = git2r_init_list_config_level(list, 3, n_level, i_list, i, "local");
-    i = git2r_init_list_config_level(list, 4, n_level, i_list, i, "app");
-    i = git2r_init_list_config_level(list, 5, n_level, i_list, i, "highest");
+    i = git2r_config_list_init(list, 0, n_level, i_list, i, "system");
+    i = git2r_config_list_init(list, 1, n_level, i_list, i, "xdg");
+    i = git2r_config_list_init(list, 2, n_level, i_list, i, "global");
+    i = git2r_config_list_init(list, 3, n_level, i_list, i, "local");
+    i = git2r_config_list_init(list, 4, n_level, i_list, i, "app");
+    i = git2r_config_list_init(list, 5, n_level, i_list, i, "highest");
 
     for (;;) {
         git_config_entry *entry;
@@ -198,22 +198,22 @@ static int git2r_list_config_variables(
 
         switch (entry->level) {
         case GIT_CONFIG_LEVEL_SYSTEM:
-            git2r_add_list_entry(list, 0, i_level, i_list, entry);
+            git2r_config_list_add_entry(list, 0, i_level, i_list, entry);
             break;
         case GIT_CONFIG_LEVEL_XDG:
-            git2r_add_list_entry(list, 1, i_level, i_list, entry);
+            git2r_config_list_add_entry(list, 1, i_level, i_list, entry);
             break;
         case GIT_CONFIG_LEVEL_GLOBAL:
-            git2r_add_list_entry(list, 2, i_level, i_list, entry);
+            git2r_config_list_add_entry(list, 2, i_level, i_list, entry);
             break;
         case GIT_CONFIG_LEVEL_LOCAL:
-            git2r_add_list_entry(list, 3, i_level, i_list, entry);
+            git2r_config_list_add_entry(list, 3, i_level, i_list, entry);
             break;
         case GIT_CONFIG_LEVEL_APP:
-            git2r_add_list_entry(list, 4, i_level, i_list, entry);
+            git2r_config_list_add_entry(list, 4, i_level, i_list, entry);
             break;
         case GIT_CONFIG_HIGHEST_LEVEL:
-            git2r_add_list_entry(list, 5, i_level, i_list, entry);
+            git2r_config_list_add_entry(list, 5, i_level, i_list, entry);
             break;
         default:
             *err_msg = git2r_err_unexpected_config_level;
@@ -237,7 +237,7 @@ cleanup:
  * @param repo S4 class git_repository
  * @return VECSXP list with variables by level
  */
-SEXP git2r_get_config(SEXP repo)
+SEXP git2r_config_get(SEXP repo)
 {
     int err;
     SEXP list = R_NilValue;
@@ -254,7 +254,7 @@ SEXP git2r_get_config(SEXP repo)
     if (err < 0)
         goto cleanup;
 
-    err = git2r_count_config_variables(cfg, n_level, &err_msg);
+    err = git2r_config_count_variables(cfg, n_level, &err_msg);
     if (err < 0)
         goto cleanup;
 
@@ -267,7 +267,7 @@ SEXP git2r_get_config(SEXP repo)
     PROTECT(list = allocVector(VECSXP, n));
     setAttrib(list, R_NamesSymbol, allocVector(STRSXP, n));
 
-    if (git2r_list_config_variables(cfg, list, n_level, &err_msg))
+    if (git2r_config_list_variables(cfg, list, n_level, &err_msg))
         goto cleanup;
 
 cleanup:
@@ -297,7 +297,7 @@ cleanup:
  * @param variables list of variables. If variable is NULL, it's deleted.
  * @return R_NilValue
  */
-SEXP git2r_set_config(SEXP repo, SEXP variables)
+SEXP git2r_config_set(SEXP repo, SEXP variables)
 {
     int err;
     SEXP names;

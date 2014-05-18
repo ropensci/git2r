@@ -44,8 +44,8 @@
 #include "git2r_status.h"
 #include "git2r_tag.h"
 
-static void init_reference(git_reference *ref, SEXP reference);
-static int number_of_branches(git_repository *repo, int flags, size_t *n);
+static void git2r_reference_init(git_reference *ref, SEXP reference);
+static int git2r_branch_count(git_repository *repo, int flags, size_t *n);
 
 /**
  * Add files to a repository
@@ -54,13 +54,13 @@ static int number_of_branches(git_repository *repo, int flags, size_t *n);
  * @param path
  * @return R_NilValue
  */
-SEXP add(SEXP repo, SEXP path)
+SEXP git2r_index_add(SEXP repo, SEXP path)
 {
     int err;
     git_index *index = NULL;
     git_repository *repository = NULL;
 
-    if (git2r_check_string_arg(path))
+    if (git2r_error_check_string_arg(path))
         error("Invalid arguments to add");
 
     repository= git2r_repository_open(repo);
@@ -98,7 +98,7 @@ cleanup:
  * @param repo S4 class git_repository
  * @return VECXSP with S4 objects of class git_branch
  */
-SEXP branches(SEXP repo, SEXP flags)
+SEXP git2r_branch_list(SEXP repo, SEXP flags)
 {
     SEXP list;
     int err = 0;
@@ -113,7 +113,7 @@ SEXP branches(SEXP repo, SEXP flags)
         error(git2r_err_invalid_repository);
 
     /* Count number of branches before creating the list */
-    err = number_of_branches(repository, INTEGER(flags)[0], &n);
+    err = git2r_branch_count(repository, INTEGER(flags)[0], &n);
     if (err < 0)
         goto cleanup;
 
@@ -143,7 +143,7 @@ SEXP branches(SEXP repo, SEXP flags)
         protected++;
 
         refname = git_reference_name(ref);
-        init_reference(ref, branch);
+        git2r_reference_init(ref, branch);
 
         switch (type) {
         case GIT_BRANCH_LOCAL:
@@ -227,13 +227,13 @@ cleanup:
  * @param name
  * @return R_NilValue
  */
-SEXP fetch(SEXP repo, SEXP name)
+SEXP git2r_remote_fetch(SEXP repo, SEXP name)
 {
     int err;
     git_remote *remote = NULL;
     git_repository *repository = NULL;
 
-    if (git2r_check_string_arg(name))
+    if (git2r_error_check_string_arg(name))
         error("Invalid arguments to fetch");
 
     repository = git2r_repository_open(repo);
@@ -268,30 +268,30 @@ cleanup:
  * @param reference
  * @return void
  */
-static void init_reference(git_reference *ref, SEXP reference)
+static void git2r_reference_init(git_reference *source, SEXP dest)
 {
     char out[41];
     out[40] = '\0';
 
-    SET_SLOT(reference,
+    SET_SLOT(dest,
              Rf_install("name"),
-             ScalarString(mkChar(git_reference_name(ref))));
+             ScalarString(mkChar(git_reference_name(source))));
 
-    SET_SLOT(reference,
+    SET_SLOT(dest,
              Rf_install("shorthand"),
-             ScalarString(mkChar(git_reference_shorthand(ref))));
+             ScalarString(mkChar(git_reference_shorthand(source))));
 
-    switch (git_reference_type(ref)) {
+    switch (git_reference_type(source)) {
     case GIT_REF_OID:
-        SET_SLOT(reference, Rf_install("type"), ScalarInteger(GIT_REF_OID));
-        git_oid_fmt(out, git_reference_target(ref));
-        SET_SLOT(reference, Rf_install("hex"), ScalarString(mkChar(out)));
+        SET_SLOT(dest, Rf_install("type"), ScalarInteger(GIT_REF_OID));
+        git_oid_fmt(out, git_reference_target(source));
+        SET_SLOT(dest, Rf_install("hex"), ScalarString(mkChar(out)));
         break;
     case GIT_REF_SYMBOLIC:
-        SET_SLOT(reference, Rf_install("type"), ScalarInteger(GIT_REF_SYMBOLIC));
-        SET_SLOT(reference,
+        SET_SLOT(dest, Rf_install("type"), ScalarInteger(GIT_REF_SYMBOLIC));
+        SET_SLOT(dest,
                  Rf_install("target"),
-                 ScalarString(mkChar(git_reference_symbolic_target(ref))));
+                 ScalarString(mkChar(git_reference_symbolic_target(source))));
         break;
     default:
         error("Unexpected reference type");
@@ -305,7 +305,7 @@ static void init_reference(git_reference *ref, SEXP reference)
  * @param flags
  * @return
  */
-static int number_of_branches(git_repository *repo, int flags, size_t *n)
+static int git2r_branch_count(git_repository *repo, int flags, size_t *n)
 {
     int err;
     git_branch_iterator *iter;
@@ -339,7 +339,7 @@ static int number_of_branches(git_repository *repo, int flags, size_t *n)
  * @param walker
  * @return
  */
-static size_t number_of_revisions(git_revwalk *walker)
+static size_t git2r_revwalk_count(git_revwalk *walker)
 {
     size_t n = 0;
     git_oid oid;
@@ -355,7 +355,7 @@ static size_t number_of_revisions(git_revwalk *walker)
  * @param repo S4 class git_repository
  * @return VECXSP with S4 objects of class git_reference
  */
-SEXP references(SEXP repo)
+SEXP git2r_reference_list(SEXP repo)
 {
     int i, err;
     git_strarray ref_list;
@@ -383,7 +383,7 @@ SEXP references(SEXP repo)
             goto cleanup;
 
         PROTECT(reference = NEW_OBJECT(MAKE_CLASS("git_reference")));
-        init_reference(ref, reference);
+        git2r_reference_init(ref, reference);
         SET_STRING_ELT(names, i, mkChar(ref_list.strings[i]));
         SET_VECTOR_ELT(list, i, reference);
         UNPROTECT(1);
@@ -412,7 +412,7 @@ cleanup:
  * @param repo S4 class git_repository
  * @return
  */
-SEXP remotes(SEXP repo)
+SEXP git2r_remote_list(SEXP repo)
 {
     int i, err;
     git_strarray rem_list;
@@ -450,7 +450,7 @@ cleanup:
  * @param repo S4 class git_repository
  * @return
  */
-SEXP remote_url(SEXP repo, SEXP remote)
+SEXP git2r_remote_url(SEXP repo, SEXP remote)
 {
     int err;
     SEXP url;
@@ -492,7 +492,7 @@ cleanup:
  * @param repo S4 class git_repository
  * @return
  */
-SEXP revisions(SEXP repo)
+SEXP git2r_revwalk_list(SEXP repo)
 {
     int i=0;
     int err = 0;
@@ -520,7 +520,7 @@ SEXP revisions(SEXP repo)
         goto cleanup;
 
     /* Count number of revisions before creating the list */
-    n = number_of_revisions(walker);
+    n = git2r_revwalk_count(walker);
 
     /* Create list to store result */
     PROTECT(list = allocVector(VECSXP, n));
@@ -547,7 +547,7 @@ SEXP revisions(SEXP repo)
             goto cleanup;
 
         PROTECT(sexp_commit = NEW_OBJECT(MAKE_CLASS("git_commit")));
-        git2r_init_commit(commit, repo, sexp_commit);
+        git2r_commit_init(commit, repo, sexp_commit);
         SET_VECTOR_ELT(list, i, sexp_commit);
         UNPROTECT(1);
         i++;
@@ -572,22 +572,26 @@ cleanup:
 
 static const R_CallMethodDef callMethods[] =
 {
-    {"add", (DL_FUNC)&add, 2},
-    {"branches", (DL_FUNC)&branches, 2},
+    {"git2r_blob_is_binary", (DL_FUNC)&git2r_blob_is_binary, 1},
+    {"git2r_blob_rawsize", (DL_FUNC)&git2r_blob_rawsize, 1},
+    {"git2r_branch_list", (DL_FUNC)&git2r_branch_list, 2},
     {"git2r_checkout_commit", (DL_FUNC)&git2r_checkout_commit, 1},
     {"git2r_checkout_tag", (DL_FUNC)&git2r_checkout_tag, 1},
     {"git2r_checkout_tree", (DL_FUNC)&git2r_checkout_tree, 1},
     {"git2r_clone", (DL_FUNC)&git2r_clone, 2},
-    {"git2r_commit", (DL_FUNC)&git2r_commit, 5},
+    {"git2r_commit_create", (DL_FUNC)&git2r_commit_create, 5},
+    {"git2r_commit_parent_list", (DL_FUNC)&git2r_commit_parent_list, 1},
     {"git2r_commit_tree", (DL_FUNC)&git2r_commit_tree, 1},
-    {"git2r_descendant_of", (DL_FUNC)&git2r_descendant_of, 2},
-    {"fetch", (DL_FUNC)&fetch, 2},
-    {"git2r_get_config", (DL_FUNC)&git2r_get_config, 1},
-    {"git2r_is_binary", (DL_FUNC)&git2r_is_binary, 1},
+    {"git2r_config_get", (DL_FUNC)&git2r_config_get, 1},
+    {"git2r_config_set", (DL_FUNC)&git2r_config_set, 2},
+    {"git2r_graph_descendant_of", (DL_FUNC)&git2r_graph_descendant_of, 2},
+    {"git2r_index_add", (DL_FUNC)&git2r_index_add, 2},
     {"git2r_object_lookup", (DL_FUNC)&git2r_object_lookup, 2},
-    {"git2r_parents", (DL_FUNC)&git2r_parents, 1},
     {"git2r_push", (DL_FUNC)&git2r_push, 3},
-    {"git2r_rawsize", (DL_FUNC)&git2r_rawsize, 1},
+    {"git2r_reference_list", (DL_FUNC)&git2r_reference_list, 1},
+    {"git2r_remote_fetch", (DL_FUNC)&git2r_remote_fetch, 2},
+    {"git2r_remote_list", (DL_FUNC)&git2r_remote_list, 1},
+    {"git2r_remote_url", (DL_FUNC)&git2r_remote_url, 2},
     {"git2r_repository_can_open", (DL_FUNC)&git2r_repository_can_open, 1},
     {"git2r_repository_head_detached", (DL_FUNC)&git2r_repository_head_detached, 1},
     {"git2r_repository_init", (DL_FUNC)&git2r_repository_init, 2},
@@ -601,11 +605,7 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_status_list", (DL_FUNC)&git2r_status_list, 5},
     {"git2r_tag_create", (DL_FUNC)&git2r_tag_create, 4},
     {"git2r_tag_list", (DL_FUNC)&git2r_tag_list, 1},
-    {"references", (DL_FUNC)&references, 1},
-    {"remotes", (DL_FUNC)&remotes, 1},
-    {"remote_url", (DL_FUNC)&remote_url, 2},
-    {"revisions", (DL_FUNC)&revisions, 1},
-    {"git2r_set_config", (DL_FUNC)&git2r_set_config, 2},
+    {"git2r_revwalk_list", (DL_FUNC)&git2r_revwalk_list, 1},
     {NULL, NULL, 0}
 };
 
