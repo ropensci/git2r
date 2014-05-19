@@ -33,7 +33,7 @@
 static int git2r_config_count_variables(
     const git_config *cfg,
     size_t *n_level,
-    char **err_msg)
+    const char **err_msg)
 {
     int err;
     git_config_iterator *iterator = NULL;
@@ -166,7 +166,7 @@ static int git2r_config_list_variables(
     git_config *cfg,
     SEXP list,
     size_t *n_level,
-    char **err_msg)
+    const char **err_msg)
 {
     int err;
     size_t i_level[GIT2R_N_CONFIG_LEVELS] = {0}; /* Current index at level */
@@ -241,7 +241,7 @@ SEXP git2r_config_get(SEXP repo)
 {
     int err;
     SEXP list = R_NilValue;
-    char *err_msg = NULL;
+    const char *err_msg = NULL;
     size_t i = 0, n = 0, n_level[GIT2R_N_CONFIG_LEVELS] = {0};
     git_config *cfg = NULL;
     git_repository *repository = NULL;
@@ -301,7 +301,7 @@ SEXP git2r_config_set(SEXP repo, SEXP variables)
 {
     int err;
     SEXP names;
-    char *err_msg = NULL;
+    const char *err_msg = NULL;
     size_t i, n;
     git_config *cfg = NULL;
     git_repository *repository = NULL;

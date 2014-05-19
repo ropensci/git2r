@@ -20,6 +20,7 @@
 #include "git2.h"
 #include "git2r_error.h"
 #include "git2r_oid.h"
+#include "git2r_repository.h"
 
 /**
  * Descendant of

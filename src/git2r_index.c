@@ -19,6 +19,7 @@
 #include "git2.h"
 #include "git2r_error.h"
 #include "git2r_index.h"
+#include "git2r_repository.h"
 
 /**
  * Add files to a repository

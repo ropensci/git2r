@@ -18,7 +18,9 @@
 
 #include <Rdefines.h>
 #include "git2.h"
+#include "git2r_commit.h"
 #include "git2r_error.h"
+#include "git2r_repository.h"
 
 /**
  * Count number of revisions.
