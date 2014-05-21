@@ -22,6 +22,51 @@
 #include "git2r_repository.h"
 
 /**
+ * Get content of a blob
+ *
+ * @param blob S4 class git_blob
+ * @return content
+ */
+SEXP git2r_blob_content(SEXP blob)
+{
+    int err;
+    SEXP result = R_NilValue;
+    SEXP hex;
+    git_blob *blob_obj = NULL;
+    git_oid oid;
+    git_repository *repository = NULL;
+
+    repository = git2r_repository_open(GET_SLOT(blob, Rf_install("repo")));
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    hex = GET_SLOT(blob, Rf_install("hex"));
+    git_oid_fromstr(&oid, CHAR(STRING_ELT(hex, 0)));
+
+    err = git_blob_lookup(&blob_obj, repository, &oid);
+    if (err < 0)
+        goto cleanup;
+
+    PROTECT(result = allocVector(STRSXP, 1));
+    SET_STRING_ELT(result, 0, mkChar(git_blob_rawcontent(blob_obj)));
+
+cleanup:
+    if (blob_obj)
+        git_blob_free(blob_obj);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return result;
+}
+
+/**
  * Init slots in S4 class git_blob
  *
  * @param source a blob

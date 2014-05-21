@@ -42,6 +42,37 @@ setClass("git_blob",
          }
 )
 
+##' Content of blob
+##'
+##' @rdname content-methods
+##' @docType methods
+##' @param object The blob \code{object}.
+##' @param lines Read blob content as text lines. Default TRUE.
+##' @param n integer. If lines is TRUE, the (maximal) number of lines
+##' to read. Negative values indicate that one should read up to the
+##' end of input from blob content.
+##' @return The content of the blob
+##' @keywords methods
+setGeneric("content",
+           signature = "blob",
+           function(blob,
+                    lines = TRUE,
+                    n = -1)
+           standardGeneric("content"))
+
+##' @rdname content-methods
+##' @export
+setMethod("content",
+          signature(blob = "git_blob"),
+          function (blob, lines, n)
+          {
+              ret <- .Call("git2r_blob_content", blob)
+              if(identical(lines, TRUE))
+                  ret <- readLines(textConnection(ret), n = n)
+              ret
+          }
+)
+
 ##' Is blob binary
 ##'
 ##' @rdname is.binary-methods
