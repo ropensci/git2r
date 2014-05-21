@@ -224,15 +224,46 @@ setMethod("summary",
 ##' @rdname tree-index-methods
 ##' @docType methods
 ##' @param x The tree \code{object}
-##' @param i The index of the tree object to extract
+##' @param i The index (integer or logical) of the tree object to
+##' extract. If negative values, all elements except those indicated
+##' are selected. A character vector to match against the names of
+##' objects to extract.
 ##' @return Git object
 ##' @keywords methods
 ##' @export
 setMethod("[",
-          signature(x = "git_tree", i = "ANY", j = "missing"),
+          signature(x = "git_tree", i = "integer", j = "missing"),
           function(x, i)
           {
-              lookup(x@repo, x@id[i])
+              i <- seq_len(length(x))[i]
+              ret <- lapply(i, function(j) lookup(x@repo, x@id[j]))
+              if(identical(length(ret), 1L))
+                  ret <- ret[[1]]
+              ret
+          }
+)
+
+setMethod("[",
+          signature(x = "git_tree", i = "numeric", j = "missing"),
+          function(x, i)
+          {
+              x[as.integer(i)]
+          }
+)
+
+setMethod("[",
+          signature(x = "git_tree", i = "logical", j = "missing"),
+          function(x, i)
+          {
+              x[seq_len(length(x))[i]]
+          }
+)
+
+setMethod("[",
+          signature(x = "git_tree", i = "character", j = "missing"),
+          function(x, i)
+          {
+              x[which(x@name %in% i)]
           }
 )
 
