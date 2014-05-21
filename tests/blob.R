@@ -52,7 +52,7 @@ stopifnot(identical(content(blob), c("Hello world!", "")))
 ##
 ## Add one more commit
 ## 
-writeLines(c("Hello world!", "HELLO WORLD!", "", "HeLlO wOrLd!"),
+writeLines(c("Hello world!", "HELLO WORLD!", "HeLlO wOrLd!"),
            file.path(path, "test.txt"))
 add(repo, "test.txt")
 blob <- tree(commit(repo, "New commit message"))[1]
