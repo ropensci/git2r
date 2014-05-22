@@ -36,11 +36,13 @@ install_github("git2r", "ropensci")
 
 ## Repository
 
-The central object in the `git2r` package is the S4 class `git_repository`. The following three methods can instantiate a repository; `init`, `repository` and `clone`.
+The central object in the `git2r` package is the S4 class
+`git_repository`. The following three methods can instantiate a
+repository; `init`, `repository` and `clone`.
 
 ### Create a new repository
 
-Create a new repository in a temporary directory using ```init```
+Create a new repository in a temporary directory using `init`
 
 ```{r}
 library(git2r)
@@ -89,7 +91,7 @@ unlink(path, recursive=TRUE)
 
 ### Clone a repository
 
-```{r}
+```{r evali=FALSE}
 ## Create a temporary directory to hold the repository
 path <- file.path(tempfile(pattern="git2r-"), "git2r")
 dir.create(path, recursive=TRUE)
@@ -109,7 +111,7 @@ branches(repo)
 
 ### Open an existing repository
 
-```{r}
+```{r eval=FALSE}
 ## Open an existing repository
 repo <- repository(path)
 
@@ -134,7 +136,7 @@ tags(repo)
 
 ## Configuration
 
-```{r}
+```{r eval=FALSE}
 config(repo, user.name="Git2r Vignette", user.email="git2r.vignette@example.org")
 
 ## Display configuration
@@ -143,7 +145,7 @@ config(repo)
 
 ## Commit
 
-```{r}
+```{r eval=FALSE}
 ## Create a new file
 writeLines("Hello world!", file.path(path, "test.txt"))
 
@@ -156,13 +158,13 @@ commit(repo, "Commit message")
 
 ### Contributions by author on a weekly timeline
 
-```{r contributions}
+```{r contributions, eval=FALSE}
 plot(repo, breaks="week", by = "author")
 ```
 
 ### Generate a wordcloud from the commit messages in the repository
 
-```{r wordcloud}
+```{r wordcloud, eval=FALSE}
 library(wordcloud)
 
 ## Paste messages
