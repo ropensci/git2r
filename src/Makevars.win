@@ -48,8 +48,7 @@ OBJECTS.libgit2.xdiff = libgit2/xdiff/xdiffi.o libgit2/xdiff/xemit.o libgit2/xdi
 
 OBJECTS.libgit2.win32 = libgit2/win32/dir.o libgit2/win32/error.o libgit2/win32/findfile.o \
     libgit2/win32/map.o libgit2/win32/posix_w32.o libgit2/win32/precompiled.o \
-    libgit2/win32/pthread.o libgit2/win32/utf-conv.o libgit2/win32/w32_util.o \
-
+    libgit2/win32/pthread.o libgit2/win32/utf-conv.o libgit2/win32/w32_util.o
 
 OBJECTS.http_parser = http-parser/http_parser.o
 

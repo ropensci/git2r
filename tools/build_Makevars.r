@@ -14,7 +14,7 @@ build_objects <- function(files, Makevars) {
         len <- length(files[[obj]])
         for(i in seq_len(len)) {
             prefix <- ifelse(all(i > 1, (i %% 3) == 1), "    ", " ")
-            postfix <- ifelse(all(i > 1, (i %% 3) == 0), " \\\n", "")
+            postfix <- ifelse(all(i > 1, i < len, (i %% 3) == 0), " \\\n", "")
             cat(prefix, files[[obj]][i], postfix, sep="", file = Makevars)
         }
         cat("\n\n", file = Makevars)
@@ -24,7 +24,7 @@ build_objects <- function(files, Makevars) {
     len <- length(names(files))
     for(i in seq_len(len)) {
         prefix <- ifelse(all(i > 1, (i %% 3) == 1), "    ", " ")
-        postfix <- ifelse(all(i > 1, (i %% 3) == 0), " \\\n", "")
+        postfix <- ifelse(all(i > 1, i < len, (i %% 3) == 0), " \\\n", "")
         cat(prefix, "$(OBJECTS.", names(files)[i], ")", postfix, sep="", file = Makevars)
     }
     cat("\n", file = Makevars)
