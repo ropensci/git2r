@@ -91,7 +91,7 @@ unlink(path, recursive=TRUE)
 
 ### Clone a repository
 
-```{r evali=FALSE}
+```{r eval=FALSE}
 ## Create a temporary directory to hold the repository
 path <- file.path(tempfile(pattern="git2r-"), "git2r")
 dir.create(path, recursive=TRUE)
