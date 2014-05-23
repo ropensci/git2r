@@ -60,6 +60,25 @@ stopifnot(identical(content(blob),
                     c("Hello world!", "HELLO WORLD!", "HeLlO wOrLd!")))
 
 ##
+## Hash
+##
+stopifnot(identical(hash("Hello, world!\n"),
+                    "af5626b4a114abcb82d63db7c8082c3c4756e51b"))
+stopifnot(identical(hash("test content\n"),
+                    "d670460b4b4aece5915caf5c68d12f560a9fe3e4"))
+stopifnot(identical(hash(c("Hello, world!\n",
+                           "test content\n")),
+                    c("af5626b4a114abcb82d63db7c8082c3c4756e51b",
+                      "d670460b4b4aece5915caf5c68d12f560a9fe3e4")))
+stopifnot(identical(hash(c("Hello, world!\n",
+                           NA_character_,
+                           "test content\n")),
+                    c("af5626b4a114abcb82d63db7c8082c3c4756e51b",
+                      NA_character_,
+                      "d670460b4b4aece5915caf5c68d12f560a9fe3e4")))
+stopifnot(identical(hash(character(0)), character(0)))
+
+##
 ## Cleanup
 ##
 unlink(path, recursive=TRUE)

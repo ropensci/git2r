@@ -72,6 +72,23 @@ setMethod("content",
           }
 )
 
+##' Determine the sha1 hex of a blob from a string
+##' 
+##' @param data The string vector to hash.
+##' @return A string vector with the sha1 hex for each string in data.
+##' @keywords methods
+##' @export
+##' @examples
+##' \dontrun{
+##' identical(hash(c("Hello, world!\n",
+##'           "test content\n")),
+##'           c("af5626b4a114abcb82d63db7c8082c3c4756e51b",
+##'             "d670460b4b4aece5915caf5c68d12f560a9fe3e4")))
+##' }
+hash <- function(data) {
+    .Call("git2r_odb_hash", data)
+}
+
 ##' Is blob binary
 ##'
 ##' @rdname is.binary-methods
