@@ -5,18 +5,14 @@
 \alias{content,git_blob-method}
 \title{Content of blob}
 \usage{
-content(blob, lines = TRUE, n = -1)
+content(blob, split = TRUE)
 
-\S4method{content}{git_blob}(blob, lines = TRUE, n = -1)
+\S4method{content}{git_blob}(blob, split = TRUE)
 }
 \arguments{
 \item{object}{The blob \code{object}.}
 
-\item{lines}{Read blob content as text lines. Default TRUE.}
-
-\item{n}{integer. If lines is TRUE, the (maximal) number of lines
-to read. Negative values indicate that one should read up to the
-end of input from blob content.}
+\item{split}{Split blob content to text lines. Default TRUE.}
 }
 \value{
 The content of the blob

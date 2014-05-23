@@ -47,7 +47,7 @@ stopifnot(is(blob, "git_blob"))
 stopifnot(identical(is.binary(blob), FALSE))
 stopifnot(identical(blob, lookup(repo, "cd0875")))
 stopifnot(identical(length(blob), 13L))
-stopifnot(identical(content(blob), c("Hello world!", "")))
+stopifnot(identical(content(blob), "Hello world!"))
 
 ##
 ## Add one more commit
@@ -57,7 +57,7 @@ writeLines(c("Hello world!", "HELLO WORLD!", "HeLlO wOrLd!"),
 add(repo, "test.txt")
 blob <- tree(commit(repo, "New commit message"))[1]
 stopifnot(identical(content(blob),
-                    c("Hello world!", "HELLO WORLD!", "HeLlO wOrLd!", "")))
+                    c("Hello world!", "HELLO WORLD!", "HeLlO wOrLd!")))
 
 ##
 ## Cleanup
