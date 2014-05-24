@@ -33,6 +33,29 @@ const char git2r_err_unexpected_type_of_branch[] = "Unexpected type of branch";
 const char git2r_err_unexpected_head_of_branch[] = "Unexpected head of branch";
 
 /**
+ * Check blob argument
+ *
+ * @param arg the arg to check
+ * @return 0 if OK, else 1
+ */
+int git2r_error_check_blob_arg(SEXP arg)
+{
+    SEXP class_name;
+
+    if (R_NilValue == arg || S4SXP != TYPEOF(arg))
+        return 1;
+
+    class_name = getAttrib(arg, R_ClassSymbol);
+    if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_blob"))
+        return 1;
+
+    if (git2r_error_check_string_arg(GET_SLOT(arg, Rf_install("hex"))))
+        return 1;
+
+    return 0;
+}
+
+/**
  * Check commit argument
  *
  * @param arg the arg to check

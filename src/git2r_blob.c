@@ -36,6 +36,9 @@ SEXP git2r_blob_content(SEXP blob)
     git_oid oid;
     git_repository *repository = NULL;
 
+    if (git2r_error_check_blob_arg(blob))
+        error("Invalid arguments to git2r_blob_content");
+
     repository = git2r_repository_open(GET_SLOT(blob, Rf_install("repo")));
     if (!repository)
         error(git2r_err_invalid_repository);
@@ -103,6 +106,9 @@ SEXP git2r_blob_is_binary(SEXP blob)
     git_oid oid;
     git_repository *repository = NULL;
 
+    if (git2r_error_check_blob_arg(blob))
+        error("Invalid arguments to git2r_blob_is_binary");
+
     repository= git2r_repository_open(GET_SLOT(blob, Rf_install("repo")));
     if (!repository)
         error(git2r_err_invalid_repository);
@@ -150,6 +156,9 @@ SEXP git2r_blob_rawsize(SEXP blob)
     git_blob *blob_obj = NULL;
     git_oid oid;
     git_repository *repository = NULL;
+
+    if (git2r_error_check_blob_arg(blob))
+        error("Invalid arguments to git2r_blob_rawsize");
 
     repository= git2r_repository_open(GET_SLOT(blob, Rf_install("repo")));
     if (!repository)
