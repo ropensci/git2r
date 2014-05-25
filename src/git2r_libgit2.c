@@ -20,6 +20,44 @@
 #include "git2r_libgit2.h"
 
 /**
+ * Return compile time options for libgit2.
+ *
+ * @return A VECSXP with threads, https and ssh set to TRUE/FALSE
+ */
+SEXP git2r_libgit2_features(void)
+{
+    SEXP features, names;
+    int value;
+
+    value = git_libgit2_features();
+    PROTECT(features = allocVector(VECSXP, 3));
+    PROTECT(names = allocVector(STRSXP, 3));
+
+    SET_STRING_ELT(names, 0, mkChar("threads"));
+    if (value & GIT_FEATURE_THREADS)
+        SET_VECTOR_ELT(features, 0, ScalarLogical(1));
+    else
+        SET_VECTOR_ELT(features, 0, ScalarLogical(0));
+
+    SET_STRING_ELT(names, 1, mkChar("https"));
+    if (value & GIT_FEATURE_HTTPS)
+        SET_VECTOR_ELT(features, 1, ScalarLogical(1));
+    else
+        SET_VECTOR_ELT(features, 1, ScalarLogical(0));
+
+    SET_STRING_ELT(names, 2, mkChar("ssh"));
+    if (value & GIT_FEATURE_SSH)
+        SET_VECTOR_ELT(features, 2, ScalarLogical(1));
+    else
+        SET_VECTOR_ELT(features, 2, ScalarLogical(0));
+
+    setAttrib(features, R_NamesSymbol, names);
+    UNPROTECT(2);
+
+    return features;
+}
+
+/**
  * Return the version of the libgit2 library being currently used.
  *
  * @return A VECSXP with major, minor and rev.

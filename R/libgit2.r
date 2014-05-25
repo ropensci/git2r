@@ -14,6 +14,20 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+##' Compile time options for libgit2.
+##'
+##' @return A list with threads, https and ssh set to TRUE/FALSE.
+##' @keywords methods
+##' @export
+##' @examples
+##' \dontrun{
+##' libgit2_features()
+##' }
+##'
+libgit2_features <- function() {
+    .Call("git2r_libgit2_features")
+}
+
 ##' Version of the libgit2 library being currently used
 ##'
 ##' @return A list with major, minor and rev

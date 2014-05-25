@@ -70,6 +70,7 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_config_set", (DL_FUNC)&git2r_config_set, 2},
     {"git2r_graph_descendant_of", (DL_FUNC)&git2r_graph_descendant_of, 2},
     {"git2r_index_add", (DL_FUNC)&git2r_index_add, 2},
+    {"git2r_libgit2_features", (DL_FUNC)&git2r_libgit2_features, 0},
     {"git2r_libgit2_version", (DL_FUNC)&git2r_libgit2_version, 0},
     {"git2r_object_lookup", (DL_FUNC)&git2r_object_lookup, 2},
     {"git2r_odb_hash", (DL_FUNC)&git2r_odb_hash, 1},

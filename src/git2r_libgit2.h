@@ -22,6 +22,7 @@
 #include <R.h>
 #include <Rinternals.h>
 
+SEXP git2r_libgit2_features(void);
 SEXP git2r_libgit2_version(void);
 
 #endif
