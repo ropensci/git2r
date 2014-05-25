@@ -26,6 +26,9 @@ writeLines("Hello, world!", path)
 
 hashfile(path)
 identical(hashfile(path), hash("Hello, world!\\n"))
+
+## Delete file
+unlink(path)
 }
 }
 \keyword{methods}

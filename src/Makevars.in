@@ -54,11 +54,11 @@ OBJECTS.http_parser = http-parser/http_parser.o
 OBJECTS.root = git2r_blob.o git2r_branch.o git2r.o \
     git2r_checkout.o git2r_clone.o git2r_commit.o \
     git2r_config.o git2r_error.o git2r_graph.o \
-    git2r_index.o git2r_object.o git2r_odb.o \
-    git2r_oid.o git2r_push.o git2r_reference.o \
-    git2r_remote.o git2r_repository.o git2r_revwalk.o \
-    git2r_signature.o git2r_stash.o git2r_status.o \
-    git2r_tag.o git2r_tree.o
+    git2r_index.o git2r_libgit2.o git2r_object.o \
+    git2r_odb.o git2r_oid.o git2r_push.o \
+    git2r_reference.o git2r_remote.o git2r_repository.o \
+    git2r_revwalk.o git2r_signature.o git2r_stash.o \
+    git2r_status.o git2r_tag.o git2r_tree.o
 
 OBJECTS = $(OBJECTS.libgit2) $(OBJECTS.libgit2.hash) $(OBJECTS.libgit2.transports) \
     $(OBJECTS.libgit2.unix) $(OBJECTS.libgit2.xdiff) $(OBJECTS.http_parser) \

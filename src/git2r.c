@@ -40,6 +40,7 @@
 #include "git2r_error.h"
 #include "git2r_graph.h"
 #include "git2r_index.h"
+#include "git2r_libgit2.h"
 #include "git2r_object.h"
 #include "git2r_odb.h"
 #include "git2r_push.h"
@@ -69,6 +70,7 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_config_set", (DL_FUNC)&git2r_config_set, 2},
     {"git2r_graph_descendant_of", (DL_FUNC)&git2r_graph_descendant_of, 2},
     {"git2r_index_add", (DL_FUNC)&git2r_index_add, 2},
+    {"git2r_libgit2_version", (DL_FUNC)&git2r_libgit2_version, 0},
     {"git2r_object_lookup", (DL_FUNC)&git2r_object_lookup, 2},
     {"git2r_odb_hash", (DL_FUNC)&git2r_odb_hash, 1},
     {"git2r_odb_hashfile", (DL_FUNC)&git2r_odb_hashfile, 1},
