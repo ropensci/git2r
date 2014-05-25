@@ -74,6 +74,7 @@ setMethod("content",
 
 ##' Determine the sha1 hex of a blob from a string
 ##'
+##' The blob is not written to the object database.
 ##' @rdname hash-methods
 ##' @docType methods
 ##' @param data The string vector to hash.
@@ -98,6 +99,38 @@ setMethod("hash",
           function(data)
           {
               .Call("git2r_odb_hash", data)
+          }
+)
+
+##' Determine the sha1 hex of a blob from a file
+##'
+##' The blob is not written to the object database.
+##' @rdname hashfile-methods
+##' @docType methods
+##' @param path The path vector with files to hash.
+##' @return A path vector with the sha1 hex for each file in path.
+##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Create a file
+##' path <- tempfile()
+##' writeLines("Hello, world!", path)
+##'
+##' hashfile(path)
+##' identical(hashfile(path), hash("Hello, world!\n"))
+##' }
+setGeneric("hashfile",
+           signature = "path",
+           function(path)
+           standardGeneric("hashfile"))
+
+##' @rdname hashfile-methods
+##' @export
+setMethod("hashfile",
+          signature(path = "character"),
+          function(path)
+          {
+              .Call("git2r_odb_hashfile", path)
           }
 )
 

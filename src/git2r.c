@@ -71,6 +71,7 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_index_add", (DL_FUNC)&git2r_index_add, 2},
     {"git2r_object_lookup", (DL_FUNC)&git2r_object_lookup, 2},
     {"git2r_odb_hash", (DL_FUNC)&git2r_odb_hash, 1},
+    {"git2r_odb_hashfile", (DL_FUNC)&git2r_odb_hashfile, 1},
     {"git2r_push", (DL_FUNC)&git2r_push, 3},
     {"git2r_reference_list", (DL_FUNC)&git2r_reference_list, 1},
     {"git2r_remote_fetch", (DL_FUNC)&git2r_remote_fetch, 2},

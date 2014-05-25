@@ -16,7 +16,7 @@ hash(data)
 A string vector with the sha1 hex for each string in data.
 }
 \description{
-Determine the sha1 hex of a blob from a string
+The blob is not written to the object database.
 }
 \examples{
 \dontrun{

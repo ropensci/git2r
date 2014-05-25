@@ -79,6 +79,27 @@ stopifnot(identical(hash(c("Hello, world!\n",
 stopifnot(identical(hash(character(0)), character(0)))
 
 ##
+## Hash file
+##
+writeLines("Hello, world!", file.path(path, "test-1.txt"))
+writeLines("test content", file.path(path, "test-2.txt"))
+stopifnot(identical(hash("Hello, world!\n"),
+                    hashfile(file.path(path, "test-1.txt"))))
+stopifnot(identical(hash("test content\n"),
+                    hashfile(file.path(path, "test-2.txt"))))
+stopifnot(identical(hash(c("Hello, world!\n",
+                           "test content\n")),
+                    hashfile(c(file.path(path, "test-1.txt"),
+                               file.path(path, "test-2.txt")))))
+stopifnot(identical(hash(c("Hello, world!\n",
+                           NA_character_,
+                           "test content\n")),
+                    hashfile(c(file.path(path, "test-1.txt"),
+                               NA_character_,
+                               file.path(path, "test-2.txt")))))
+stopifnot(identical(hashfile(character(0)), character(0)))
+
+##
 ## Cleanup
 ##
 unlink(path, recursive=TRUE)

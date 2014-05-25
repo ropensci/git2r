@@ -35,7 +35,7 @@ SEXP git2r_odb_hash(SEXP data)
     git_oid oid;
 
     if (R_NilValue == data || !isString(data))
-        error("Invalid argument to hash");
+        error("Invalid argument to git2r_odb_hash");
 
     len = length(data);
     PROTECT(result = allocVector(STRSXP, len));
@@ -47,6 +47,50 @@ SEXP git2r_odb_hash(SEXP data)
                                CHAR(STRING_ELT(data, i)),
                                LENGTH(STRING_ELT(data, i)),
                                GIT_OBJ_BLOB);
+            if (err < 0)
+                break;
+
+            git_oid_fmt(hex, &oid);
+            hex[GIT_OID_HEXSZ] = '\0';
+            SET_STRING_ELT(result, i, mkChar(hex));
+        }
+    }
+
+    UNPROTECT(1);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return result;
+}
+
+/**
+ * Determine the sha1 hex of files without writing to the object data
+ * base.
+ *
+ * @param path STRSXP with file vectors to hash 
+ * @return A STRSXP with character vector of sha1 hex values
+ */
+SEXP git2r_odb_hashfile(SEXP path)
+{
+    SEXP result;
+    int err;
+    size_t len, i;
+    char hex[GIT_OID_HEXSZ + 1];
+    git_oid oid;
+
+    if (R_NilValue == path || !isString(path))
+        error("Invalid argument to git2r_odb_hashfile");
+
+    len = length(path);
+    PROTECT(result = allocVector(STRSXP, len));
+    for (i = 0; i < len; i++) {
+        if (NA_STRING == STRING_ELT(path, i)) {
+            SET_STRING_ELT(result, i, NA_STRING);
+        } else {
+            err = git_odb_hashfile(&oid,
+                                   CHAR(STRING_ELT(path, i)),
+                                   GIT_OBJ_BLOB);
             if (err < 0)
                 break;
 
