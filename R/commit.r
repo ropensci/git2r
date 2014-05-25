@@ -60,6 +60,40 @@ setClass("git_commit",
          prototype=list(summary=NA_character_,
                         message=NA_character_))
 
+##' Ahead Behind
+##'
+##' Count the number of unique commits between two commit objects.
+##' @rdname ahead_behind-methods
+##' @docType methods
+##' @param local a S4 class git_commit \code{object}.
+##' @param upstream a S4 class git_commit \code{object}.
+##' @return An integer vector of length 2 with number of commits that
+##' the upstream commit is ahead and behind the local commit
+##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository("path/to/git2r")
+##'
+##' ahead_behind(commits(repo)[[1]], commits(repo)[[2]])
+##' }
+##'
+setGeneric("ahead_behind",
+           signature = c("local", "upstream"),
+           function(local, upstream)
+           standardGeneric("ahead_behind"))
+
+##' @rdname ahead_behind-methods
+##' @export
+setMethod("ahead_behind",
+          signature(local = "git_commit", upstream = "git_commit"),
+          function (local, upstream)
+          {
+              stopifnot(identical(local@repo, upstream@repo))
+              .Call("git2r_graph_ahead_behind", local, upstream)
+          }
+)
+
 ##' Commits
 ##'
 ##' @rdname commits-methods

@@ -22,14 +22,60 @@
 #include "git2r_oid.h"
 #include "git2r_repository.h"
 
+SEXP git2r_graph_ahead_behind(SEXP local, SEXP upstream)
+{
+    size_t ahead, behind;
+    int err;
+    SEXP result = R_NilValue;
+    SEXP slot;
+    git_oid local_oid;
+    git_oid upstream_oid;
+    git_repository *repository = NULL;
+
+    if (git2r_error_check_commit_arg(local)
+        || git2r_error_check_commit_arg(upstream))
+        error("Invalid arguments to git2r_graph_ahead_behind");
+
+    slot = GET_SLOT(local, Rf_install("repo"));
+    repository = git2r_repository_open(slot);
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    slot = GET_SLOT(local, Rf_install("hex"));
+    git2r_oid_from_hex_sexp(slot, &local_oid);
+
+    slot = GET_SLOT(upstream, Rf_install("hex"));
+    git2r_oid_from_hex_sexp(slot, &upstream_oid);
+
+    err = git_graph_ahead_behind(&ahead, &behind, repository, &local_oid,
+                                 &upstream_oid);
+    if (err < 0)
+        goto cleanup;
+
+    PROTECT(result = allocVector(INTSXP, 2));
+    INTEGER(result)[0] = ahead;
+    INTEGER(result)[1] = behind;
+
+cleanup:
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return result;
+}
+
 /**
- * Descendant of
+ * Determine if a commit is the descendant of another commit.
  *
  * @param commit
  * @param ancestor
  * @return TRUE or FALSE
  */
-
 SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor)
 {
     int result;
@@ -37,6 +83,10 @@ SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor)
     git_oid commit_oid;
     git_oid ancestor_oid;
     git_repository *repository = NULL;
+
+    if (git2r_error_check_commit_arg(commit)
+        || git2r_error_check_commit_arg(ancestor))
+        error("Invalid arguments to git2r_graph_descendant_of");
 
     slot = GET_SLOT(commit, Rf_install("repo"));
     repository = git2r_repository_open(slot);

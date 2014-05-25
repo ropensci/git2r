@@ -22,6 +22,7 @@
 #include <R.h>
 #include <Rinternals.h>
 
+SEXP git2r_graph_ahead_behind(SEXP local, SEXP upstream);
 SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor);
 
 #endif
