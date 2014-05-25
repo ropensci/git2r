@@ -38,7 +38,8 @@ SEXP git2r_checkout_commit(SEXP commit, SEXP force)
     git_repository *repository = NULL;
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
 
-    if (git2r_error_check_commit_arg(commit) || git2r_error_check_logical_arg(force))
+    if (git2r_error_check_commit_arg(commit)
+        || git2r_error_check_logical_arg(force))
         error("Invalid arguments to checkout_commit");
 
     repository = git2r_repository_open(GET_SLOT(commit, Rf_install("repo")));
@@ -95,7 +96,8 @@ SEXP git2r_checkout_tag(SEXP tag, SEXP force)
     git_repository *repository = NULL;
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
 
-    if (git2r_error_check_tag_arg(tag))
+    if (git2r_error_check_tag_arg(tag)
+        || git2r_error_check_logical_arg(force))
         error("Invalid arguments to checkout_tag");
 
     repository = git2r_repository_open(GET_SLOT(tag, Rf_install("repo")));
@@ -150,7 +152,8 @@ SEXP git2r_checkout_tree(SEXP tree, SEXP force)
     git_oid oid;
     git_repository *repository = NULL;
 
-    if (git2r_error_check_tree_arg(tree))
+    if (git2r_error_check_tree_arg(tree)
+        || git2r_error_check_logical_arg(force))
         error("Invalid arguments to checkout_tree");
 
     repository = git2r_repository_open(GET_SLOT(tree, Rf_install("repo")));
