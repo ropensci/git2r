@@ -118,6 +118,9 @@ setMethod("hash",
 ##'
 ##' hashfile(path)
 ##' identical(hashfile(path), hash("Hello, world!\n"))
+##'
+##' ## Delete file
+##' unlink(path)
 ##' }
 setGeneric("hashfile",
            signature = "path",
