@@ -133,6 +133,7 @@ setMethod("hashfile",
           signature(path = "character"),
           function(path)
           {
+              path <- normalizePath(path, mustWork = TRUE)
               .Call("git2r_odb_hashfile", path)
           }
 )

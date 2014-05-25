@@ -91,12 +91,9 @@ stopifnot(identical(hash(c("Hello, world!\n",
                            "test content\n")),
                     hashfile(c(file.path(path, "test-1.txt"),
                                file.path(path, "test-2.txt")))))
-stopifnot(identical(hash(c("Hello, world!\n",
-                           NA_character_,
-                           "test content\n")),
-                    hashfile(c(file.path(path, "test-1.txt"),
-                               NA_character_,
-                               file.path(path, "test-2.txt")))))
+tools::assertError(hashfile(c(file.path(path, "test-1.txt"),
+                              NA_character_,
+                              file.path(path, "test-2.txt"))))
 stopifnot(identical(hashfile(character(0)), character(0)))
 
 ##
