@@ -64,7 +64,7 @@ SEXP git2r_commit_create(
         || git2r_error_check_signature_arg(committer)
         || R_NilValue == parent_list
         || !isString(parent_list))
-        error("Invalid arguments to commit");
+        error("Invalid arguments to git2r_commit_create");
 
     repository = git2r_repository_open(repo);
     if (!repository)

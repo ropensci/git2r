@@ -67,7 +67,7 @@ SEXP git2r_repository_init(SEXP path, SEXP bare)
     git_repository *repository = NULL;
 
     if (git2r_error_check_string_arg(path) || git2r_error_check_logical_arg(bare))
-        error("Invalid arguments to init");
+        error("Invalid arguments to git2r_repository_init");
 
     err = git_repository_init(&repository,
                               CHAR(STRING_ELT(path, 0)),
@@ -162,7 +162,7 @@ SEXP git2r_repository_can_open(SEXP path)
     git_repository *repository = NULL;
 
     if (git2r_error_check_string_arg(path))
-        error("Invalid arguments to is_repository");
+        error("Invalid arguments to git2r_repository_can_open");
 
     if (git_repository_open(&repository, CHAR(STRING_ELT(path, 0))) < 0)
         return ScalarLogical(FALSE);

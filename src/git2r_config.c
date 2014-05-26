@@ -307,7 +307,7 @@ SEXP git2r_config_set(SEXP repo, SEXP variables)
     git_repository *repository = NULL;
 
     if (R_NilValue == variables || !isNewList(variables))
-        error("Invalid arguments to config");
+        error("Invalid arguments to git2r_config_set");
 
     n = length(variables);
     if (n) {

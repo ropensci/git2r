@@ -368,7 +368,7 @@ SEXP git2r_status_list(
         || git2r_error_check_logical_arg(unstaged)
         || git2r_error_check_logical_arg(untracked)
         || git2r_error_check_logical_arg(ignored))
-        error("Invalid arguments to status");
+        error("Invalid arguments to git2r_status_list");
 
     repository = git2r_repository_open(repo);
     if (!repository)
