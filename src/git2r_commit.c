@@ -258,6 +258,9 @@ SEXP git2r_commit_tree(SEXP commit)
     git_repository *repository = NULL;
     git_tree *tree = NULL;
 
+    if (git2r_error_check_commit_arg(commit))
+        error("Invalid arguments to git2r_commit_tree");
+
     repo = GET_SLOT(commit, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -366,6 +369,9 @@ SEXP git2r_commit_parent_list(SEXP commit)
     SEXP list = R_NilValue;
     git_commit *commit_obj = NULL;
     git_repository *repository = NULL;
+
+    if (git2r_error_check_commit_arg(commit))
+        error("Invalid arguments to git2r_commit_parent_list");
 
     repo = GET_SLOT(commit, Rf_install("repo"));
     repository = git2r_repository_open(repo);
