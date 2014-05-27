@@ -43,6 +43,7 @@ Collate:
     'checkout.r'
     'config.r'
     'contributions.r'
+    'diff.r'
     'fetch.r'
     'git2r.r'
     'libgit2.r'
