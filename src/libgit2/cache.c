@@ -15,12 +15,6 @@
 #include "object.h"
 #include "git2/oid.h"
 
-/*
- * Stefan Widgren <stefan.widgren@gmail.com>
- * 2014-04-19: Added missing include R.h for Rprintf
- */
-#include <R.h>
-
 GIT__USE_OIDMAP
 
 bool git_cache__enabled = true;
@@ -49,8 +43,6 @@ int git_cache_set_max_object_size(git_otype type, size_t size)
 	return 0;
 }
 
-/* Stefan Widgren <stefan.widgren@gmail.com>     */
-/* 2013-12-28: Changed to use R printing routine */
 void git_cache_dump_stats(git_cache *cache)
 {
 	git_cached_obj *object;
@@ -58,12 +50,12 @@ void git_cache_dump_stats(git_cache *cache)
 	if (kh_size(cache->map) == 0)
 		return;
 
-	Rprintf("Cache %p: %d items cached, %d bytes\n",
+	printf("Cache %p: %d items cached, %d bytes\n",
 		cache, kh_size(cache->map), (int)cache->used_memory);
 
 	kh_foreach_value(cache->map, object, {
 		char oid_str[9];
-		Rprintf(" %s%c %s (%d)\n",
+		printf(" %s%c %s (%d)\n",
 			git_object_type2string(object->type),
 			object->flags == GIT_CACHE_STORE_PARSED ? '*' : ' ',
 			git_oid_tostr(oid_str, sizeof(oid_str), &object->oid),

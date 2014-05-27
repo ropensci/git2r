@@ -14,12 +14,6 @@
 # include <Shlwapi.h>
 #endif
 
-/*
- * Stefan Widgren <stefan.widgren@gmail.com>
- * 2014-04-19: Added missing include R.h for Rprintf
- */
-#include <R.h>
-
 void git_strarray_free(git_strarray *array)
 {
 	size_t i;
@@ -308,8 +302,6 @@ char *git__strsep(char **end, const char *sep)
 	return NULL;
 }
 
-/* Stefan Widgren <stefan.widgren@gmail.com>     */
-/* 2013-12-28: Changed to use R printing routine */
 void git__hexdump(const char *buffer, size_t len)
 {
 	static const size_t LINE_WIDTH = 16;
@@ -323,36 +315,36 @@ void git__hexdump(const char *buffer, size_t len)
 	for (i = 0; i < line_count; ++i) {
 		line = buffer + (i * LINE_WIDTH);
 		for (j = 0; j < LINE_WIDTH; ++j, ++line)
-			Rprintf("%02X ", (unsigned char)*line & 0xFF);
+			printf("%02X ", (unsigned char)*line & 0xFF);
 
-		Rprintf("| ");
+		printf("| ");
 
 		line = buffer + (i * LINE_WIDTH);
 		for (j = 0; j < LINE_WIDTH; ++j, ++line)
-			Rprintf("%c", (*line >= 32 && *line <= 126) ? *line : '.');
+			printf("%c", (*line >= 32 && *line <= 126) ? *line : '.');
 
-		Rprintf("\n");
+		printf("\n");
 	}
 
 	if (last_line > 0) {
 
 		line = buffer + (line_count * LINE_WIDTH);
 		for (j = 0; j < last_line; ++j, ++line)
-			Rprintf("%02X ", (unsigned char)*line & 0xFF);
+			printf("%02X ", (unsigned char)*line & 0xFF);
 
 		for (j = 0; j < (LINE_WIDTH - last_line); ++j)
-			Rprintf("	");
+			printf("	");
 
-		Rprintf("| ");
+		printf("| ");
 
 		line = buffer + (line_count * LINE_WIDTH);
 		for (j = 0; j < last_line; ++j, ++line)
-			Rprintf("%c", (*line >= 32 && *line <= 126) ? *line : '.');
+			printf("%c", (*line >= 32 && *line <= 126) ? *line : '.');
 
-		Rprintf("\n");
+		printf("\n");
 	}
 
-	Rprintf("\n");
+	printf("\n");
 }
 
 #ifdef GIT_LEGACY_HASH
