@@ -35,7 +35,7 @@ SEXP git2r_remote_fetch(SEXP repo, SEXP name)
     git_repository *repository = NULL;
 
     if (git2r_error_check_string_arg(name))
-        error("Invalid arguments to git2r_fetch");
+        error("Invalid arguments to git2r_remote_fetch");
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -110,29 +110,39 @@ SEXP git2r_remote_url(SEXP repo, SEXP remote)
 {
     int err;
     SEXP url;
-    size_t len = LENGTH(remote);
+    size_t len;
     size_t i = 0;
-    git_repository *repository;
+    git_remote *tmp_remote;
+    git_repository *repository = NULL;
+
+    if (R_NilValue == remote || !isString(remote))
+        error("Invalid arguments to git2r_remote_url");
 
     repository = git2r_repository_open(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
 
+    len = LENGTH(remote);
     PROTECT(url = allocVector(STRSXP, len));
 
     for (; i < len; i++) {
-        git_remote *r;
+        if (NA_STRING == STRING_ELT(remote, i)) {
+            SET_STRING_ELT(url, i, NA_STRING);
+        } else {
+            err = git_remote_load(&tmp_remote,
+                                  repository,
+                                  CHAR(STRING_ELT(remote, i)));
+            if (err < 0)
+                goto cleanup;
 
-        err = git_remote_load(&r, repository, CHAR(STRING_ELT(remote, i)));
-        if (err < 0)
-            goto cleanup;
-
-        SET_STRING_ELT(url, i, mkChar(git_remote_url(r)));
-        git_remote_free(r);
+            SET_STRING_ELT(url, i, mkChar(git_remote_url(tmp_remote)));
+            git_remote_free(tmp_remote);
+        }
     }
 
 cleanup:
-    git_repository_free(repository);
+    if (repository)
+        git_repository_free(repository);
 
     UNPROTECT(1);
 
