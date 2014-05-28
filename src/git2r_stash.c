@@ -135,7 +135,6 @@ SEXP git2r_stash_list(SEXP repo)
 {
     SEXP list = R_NilValue;
     int err = 0;
-    const char* err_msg = NULL;
     git2r_stash_list_cb_data cb_data = {0, R_NilValue, R_NilValue, NULL};
     git_repository *repository = NULL;
 

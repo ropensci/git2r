@@ -32,7 +32,6 @@
  */
 void git2r_tag_init(git_tag *source, SEXP repo, SEXP dest)
 {
-    int err;
     const git_signature *tagger;
     const git_oid *oid;
     char hex[GIT_OID_HEXSZ + 1];
