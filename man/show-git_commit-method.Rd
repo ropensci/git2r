@@ -14,15 +14,17 @@
 None (invisible 'NULL').
 }
 \description{
-Brief summary of commit
+Displays the first seven characters of the hex, the date and the
+summary of the commit message:
+\code{[shortened hex] yyyy-mm-dd: summary}
 }
 \examples{
 \dontrun{
 ## Open an existing repository
 repo <- repository("path/to/git2r")
 
-## Brief summary of commit in repository
-commits(repo)[[1]]
+## Brief summary of commits in repository
+invisible(lapply(commits(repo), show))
 }
 }
 \keyword{methods}

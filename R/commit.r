@@ -206,6 +206,9 @@ setMethod("parents",
 
 ##' Brief summary of commit
 ##'
+##' Displays the first seven characters of the hex, the date and the
+##' summary of the commit message:
+##' \code{[shortened hex] yyyy-mm-dd: summary}
 ##' @aliases show,git_commit-methods
 ##' @docType methods
 ##' @param object The commit \code{object}
@@ -218,22 +221,17 @@ setMethod("parents",
 ##' ## Open an existing repository
 ##' repo <- repository("path/to/git2r")
 ##'
-##' ## Brief summary of commit in repository
-##' commits(repo)[[1]]
+##' ## Brief summary of commits in repository
+##' invisible(lapply(commits(repo), show))
 ##' }
 ##'
 setMethod("show",
           signature(object = "git_commit"),
           function (object)
           {
-              cat(sprintf(paste0("Commit:  %s\n",
-                                 "Author:  %s <%s>\n",
-                                 "When:    %s\n",
-                                 "Summary: %s\n"),
-                          object@hex,
-                          object@author@name,
-                          object@author@email,
-                          as(object@author@when, "character"),
+              cat(sprintf("[%s] %s: %s\n",
+                          substring(object@hex, 1, 7),
+                          substring(as(object@author@when, "character"), 1, 10),
                           object@summary))
           }
 )
