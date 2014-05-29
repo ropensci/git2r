@@ -47,6 +47,7 @@
 ##'   \item{show}{\code{signature(object = "git_commit")}}
 ##' }
 ##' @keywords methods
+##' @include diff.r
 ##' @include repository.r
 ##' @include signature.r
 ##' @export
@@ -290,16 +291,48 @@ setMethod("summary",
           signature(object = "git_commit"),
           function(object, ...)
           {
-              cat(sprintf(paste0("Commit:  %s\n",
-                                 "Author:  %s <%s>\n",
+              is_merge <- is.merge(object)
+              po <- parents(object)
+
+              cat(sprintf("Commit:  %s\n", object@hex))
+
+              if(is_merge) {
+                  hex <- sapply(po, slot, "hex")
+                  cat(sprintf("Merge:   %s\n", hex[1]))
+                  cat(paste0("         ", hex[-1]), sep="\n")
+              }
+
+              cat(sprintf(paste0("Author:  %s <%s>\n",
                                  "When:    %s\n\n"),
-                          object@hex,
                           object@author@name,
                           object@author@email,
                           as(object@author@when, "character")))
 
               msg <- paste0("    ", readLines(textConnection(object@message)))
-              cat(" ")
-              cat(sprintf("%s\n", msg))
+              cat(" ", sprintf("%s\n", msg))
+
+              if(is_merge) {
+                  lapply(po, function(parent) {
+                      msg <- paste0("    ", readLines(textConnection(parent@message)))
+                      cat(" ", sprintf("%s\n", msg), "\n")
+                  })
+              }
+
+              if (identical(length(po), 1L)) {
+                  df <- diff(tree(po[[1]]), tree(object))
+                  if (length(df) > 0) {
+                      plpf <- print_lines_per_file(df)
+                      hpf <- hunks_per_file(df)
+                      hunk_txt <- ifelse(hpf > 1, " hunks",
+                                         ifelse(hpf > 0, " hunk",
+                                                " hunk (binary file)"))
+                      phpf <- paste0("  in ", format(hpf), hunk_txt)
+                      cat(paste0(plpf, phpf), sep="\n")
+                  }
+
+                  cat("\n")
+              }
+
+              invisible(NULL)
           }
 )
