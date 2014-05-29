@@ -173,6 +173,39 @@ setMethod("descendant_of",
           }
 )
 
+##' Is merge
+##'
+##' Determine if a commit is a merge commit, i.e. has more than one
+##' parent.
+##' @rdname is.merge-methods
+##' @docType methods
+##' @param commit a S4 class git_commit \code{object}.
+##' @return TRUE if commit has more than one parent, else FALSE
+##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository("path/to/git2r")
+##'
+##' ## Display list of merge commits in repository
+##' invisible(lapply(commits(repo)[sapply(commits(repo), is.merge)], show))
+##' }
+##'
+setGeneric("is.merge",
+           signature = c("commit"),
+           function(commit)
+           standardGeneric("is.merge"))
+
+##' @rdname is.merge-methods
+##' @export
+setMethod("is.merge",
+          signature(commit = "git_commit"),
+          function (commit)
+          {
+              length(parents(commit)) > 1
+          }
+)
+
 ##' Parents
 ##'
 ##' Get parents of a commit.
