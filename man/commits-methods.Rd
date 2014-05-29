@@ -6,14 +6,26 @@
 \alias{commits,git_repository-method}
 \title{Commits}
 \usage{
-commits(object)
+commits(repo, topological = TRUE, time = TRUE, reverse = FALSE)
 
-\S4method{commits}{character}(object)
+\S4method{commits}{character}(repo, topological = TRUE, time = TRUE,
+  reverse = FALSE)
 
-\S4method{commits}{git_repository}(object)
+\S4method{commits}{git_repository}(repo, topological = TRUE, time = TRUE,
+  reverse = FALSE)
 }
 \arguments{
-\item{object}{The repository \code{object}.}
+\item{repo}{The repository \code{object}.}
+
+\item{topological}{Sort the commits in topological order (parents
+before children); can be combined with time sorting. Default is
+TRUE.}
+
+\item{time}{Sort the commits by commit time; Can be combined with
+topological sorting. Default is TRUE.}
+
+\item{reverse}{Sort the commits in reverse order; can be combined
+with topological and/or time sorting. Default is FALSE.}
 }
 \value{
 list of commits in repository

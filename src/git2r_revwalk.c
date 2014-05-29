@@ -42,16 +42,29 @@ static size_t git2r_revwalk_count(git_revwalk *walker)
  * List revisions
  *
  * @param repo S4 class git_repository
- * @return
+ * @param topological Sort the commits by topological order; Can be combined with time.
+ * @param time Sort the commits by commit time; can be combined with topological.
+ * @param reverse Sort the commits in reverse order
+ * @return list with S4 class git_commit objects
  */
-SEXP git2r_revwalk_list(SEXP repo)
+SEXP git2r_revwalk_list(
+    SEXP repo,
+    SEXP topological,
+    SEXP time,
+    SEXP reverse)
 {
     int i=0;
     int err = 0;
     SEXP list;
     size_t n = 0;
+    unsigned int sort_mode = GIT_SORT_NONE;
     git_revwalk *walker = NULL;
     git_repository *repository = NULL;
+
+    if (git2r_error_check_logical_arg(topological)
+        || git2r_error_check_logical_arg(time)
+        || git2r_error_check_logical_arg(reverse))
+        error("Invalid arguments to git2r_revwalk_list");
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -63,6 +76,13 @@ SEXP git2r_revwalk_list(SEXP repo)
         goto cleanup;
     }
 
+    if (LOGICAL(topological)[0])
+        sort_mode |= GIT_SORT_TOPOLOGICAL;
+    if (LOGICAL(time)[0])
+        sort_mode |= GIT_SORT_TIME;
+    if (LOGICAL(reverse)[0])
+        sort_mode |= GIT_SORT_REVERSE;
+
     err = git_revwalk_new(&walker, repository);
     if (err < 0)
         goto cleanup;
@@ -70,6 +90,7 @@ SEXP git2r_revwalk_list(SEXP repo)
     err = git_revwalk_push_head(walker);
     if (err < 0)
         goto cleanup;
+    git_revwalk_sorting(walker, sort_mode);
 
     /* Count number of revisions before creating the list */
     n = git2r_revwalk_count(walker);
@@ -81,6 +102,7 @@ SEXP git2r_revwalk_list(SEXP repo)
     err = git_revwalk_push_head(walker);
     if (err < 0)
         goto cleanup;
+    git_revwalk_sorting(walker, sort_mode);
 
     for (;;) {
         git_commit *commit;

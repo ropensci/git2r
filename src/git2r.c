@@ -89,6 +89,7 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_repository_is_bare", (DL_FUNC)&git2r_repository_is_bare, 1},
     {"git2r_repository_is_empty", (DL_FUNC)&git2r_repository_is_empty, 1},
     {"git2r_repository_workdir", (DL_FUNC)&git2r_repository_workdir, 1},
+    {"git2r_revwalk_list", (DL_FUNC)&git2r_revwalk_list, 4},
     {"git2r_signature_default", (DL_FUNC)&git2r_signature_default, 1},
     {"git2r_stash_drop", (DL_FUNC)&git2r_stash_drop, 2},
     {"git2r_stash_list", (DL_FUNC)&git2r_stash_list, 1},
@@ -96,7 +97,6 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_status_list", (DL_FUNC)&git2r_status_list, 5},
     {"git2r_tag_create", (DL_FUNC)&git2r_tag_create, 4},
     {"git2r_tag_list", (DL_FUNC)&git2r_tag_list, 1},
-    {"git2r_revwalk_list", (DL_FUNC)&git2r_revwalk_list, 1},
     {NULL, NULL, 0}
 };
 

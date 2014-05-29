@@ -99,7 +99,14 @@ setMethod("ahead_behind",
 ##'
 ##' @rdname commits-methods
 ##' @docType methods
-##' @param object The repository \code{object}.
+##' @param repo The repository \code{object}.
+##' @param topological Sort the commits in topological order (parents
+##' before children); can be combined with time sorting. Default is
+##' TRUE.
+##' @param time Sort the commits by commit time; Can be combined with
+##' topological sorting. Default is TRUE.
+##' @param reverse Sort the commits in reverse order; can be combined
+##' with topological and/or time sorting. Default is FALSE.
 ##' @return list of commits in repository
 ##' @keywords methods
 ##' @examples
@@ -115,16 +122,23 @@ setMethod("ahead_behind",
 ##' }
 ##'
 setGeneric("commits",
-           signature = "object",
-           function(object) standardGeneric("commits"))
+           signature = "repo",
+           function(repo,
+                    topological = TRUE,
+                    time        = TRUE,
+                    reverse     = FALSE)
+           standardGeneric("commits"))
 
 ##' @rdname commits-methods
 ##' @export
 setMethod("commits",
-          signature(object = "character"),
-          function (object)
+          signature(repo = "character"),
+          function(repo, topological, time, reverse)
           {
-              commits(repository(object))
+              commits(repository(repo),
+                      topological = topological,
+                      time = time,
+                      reverse = reverse)
           }
 )
 
@@ -132,10 +146,14 @@ setMethod("commits",
 ##' @include repository.r
 ##' @export
 setMethod("commits",
-          signature(object = "git_repository"),
-          function (object)
+          signature(repo = "git_repository"),
+          function(repo, topological, time, reverse)
           {
-              .Call("git2r_revwalk_list", object)
+              .Call("git2r_revwalk_list",
+                    repo,
+                    topological,
+                    time,
+                    reverse)
           }
 )
 
