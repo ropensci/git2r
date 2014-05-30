@@ -8,7 +8,9 @@ Version: 0.0.8
 Authors@R: c(person("Stefan", "Widgren", role = c("aut", "cre"),
     email = "stefan.widgren@gmail.com"),
     person("Karthik", "Ram", role = "aut",
-    email = "karthik.ram@gmail.com"))
+    email = "karthik.ram@gmail.com"),
+    person("Gabor", "Csardi", role = "ctb",
+    email = "csardi.gabor@gmail.com"))
 Maintainer: Stefan Widgren <stefan.widgren@gmail.com>
 Copyright: The package includes the source code of libgit2, see
     AUTHORS_libgit2 file for libgit2 authors
