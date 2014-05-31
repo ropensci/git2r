@@ -76,7 +76,7 @@ static int git2r_branch_init(
     SEXP dest,
     const char **err_msg)
 {
-    int err;
+    int err = 0;
     git_buf buf = {0};
     git_remote *remote = NULL;
     const char *refname;
@@ -111,6 +111,7 @@ static int git2r_branch_init(
         git_buf_free(&buf);
         if (remote)
             git_remote_free(remote);
+        remote = NULL;
         break;
     }
     default:
@@ -131,6 +132,8 @@ static int git2r_branch_init(
         *err_msg = git2r_err_unexpected_head_of_branch;
         goto cleanup;
     }
+
+    SET_SLOT(dest, Rf_install("repo"), duplicate(repo));
 
 cleanup:
     if (remote)
