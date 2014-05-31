@@ -58,6 +58,88 @@ static int git2r_branch_count(git_repository *repo, int flags, size_t *n)
 }
 
 /**
+ * Init slots in S4 class git_branch
+ *
+ * @param source a reference
+ * @param repository the repository
+ * @param type the branch type; local or remote
+ * @param repo S4 class git_repository that contains the blob
+ * @param dest S4 class git_branch to initialize
+ * @param err_msg git2r error message
+ * @return int; < 0 if error
+ */
+static int git2r_branch_init(
+    const git_reference *source,
+    git_repository *repository,
+    git_branch_t type,
+    SEXP repo,
+    SEXP dest,
+    const char **err_msg)
+{
+    int err;
+    git_buf buf = {0};
+    git_remote *remote = NULL;
+    const char *refname;
+
+    refname = git_reference_name(source);
+    git2r_reference_init(source, dest);
+
+    switch (type) {
+    case GIT_BRANCH_LOCAL:
+        break;
+    case GIT_BRANCH_REMOTE: {
+        err = git_branch_remote_name(&buf, repository, refname);
+        if (err < 0)
+            goto cleanup;
+        SET_SLOT(dest,
+                 Rf_install("remote"),
+                 ScalarString(mkChar(buf.ptr)));
+
+        err = git_remote_load(&remote, repository, buf.ptr);
+        if (err < 0) {
+            err = git_remote_create_anonymous(&remote, repository, buf.ptr, NULL);
+            if (err < 0) {
+                git_buf_free(&buf);
+                goto cleanup;
+            }
+        }
+
+        SET_SLOT(dest,
+                 Rf_install("url"),
+                 ScalarString(mkChar(git_remote_url(remote))));
+
+        git_buf_free(&buf);
+        if (remote)
+            git_remote_free(remote);
+        break;
+    }
+    default:
+        err = -1;
+        *err_msg = git2r_err_unexpected_type_of_branch;
+        goto cleanup;
+    }
+
+    switch (git_branch_is_head(source)) {
+    case 0:
+        SET_SLOT(dest, Rf_install("head"), ScalarLogical(0));
+        break;
+    case 1:
+        SET_SLOT(dest, Rf_install("head"), ScalarLogical(1));
+        break;
+    default:
+        err = -1;
+        *err_msg = git2r_err_unexpected_head_of_branch;
+        goto cleanup;
+    }
+
+cleanup:
+    if (remote)
+        git_remote_free(remote);
+
+    return err;
+}
+
+/**
  * List branches in a repository
  *
  * @param repo S4 class git_repository
@@ -67,13 +149,14 @@ static int git2r_branch_count(git_repository *repo, int flags, size_t *n)
  */
 SEXP git2r_branch_list(SEXP repo, SEXP flags)
 {
-    SEXP list;
+    SEXP list = R_NilValue;
     int err = 0;
     const char* err_msg = NULL;
     git_branch_iterator *iter = NULL;
     size_t i = 0, n = 0;
-    size_t protected = 0;
     git_repository *repository = NULL;
+    git_reference *reference = NULL;
+    git_branch_t type;
 
     if (git2r_error_check_integer_arg(flags))
         error("Invalid arguments to git2r_branch_list");
@@ -86,9 +169,7 @@ SEXP git2r_branch_list(SEXP repo, SEXP flags)
     err = git2r_branch_count(repository, INTEGER(flags)[0], &n);
     if (err < 0)
         goto cleanup;
-
     PROTECT(list = allocVector(VECSXP, n));
-    protected++;
 
     err = git_branch_iterator_new(&iter, repository,  INTEGER(flags)[0]);
     if (err < 0)
@@ -96,11 +177,8 @@ SEXP git2r_branch_list(SEXP repo, SEXP flags)
 
     for (;;) {
         SEXP branch;
-        git_branch_t type;
-        git_reference *ref;
-        const char *refname;
 
-        err = git_branch_next(&ref, &type, iter);
+        err = git_branch_next(&reference, &type, iter);
         if (err < 0) {
             if (GIT_ITEROVER == err) {
                 err = 0;
@@ -110,63 +188,17 @@ SEXP git2r_branch_list(SEXP repo, SEXP flags)
         }
 
         PROTECT(branch = NEW_OBJECT(MAKE_CLASS("git_branch")));
-        protected++;
-
-        refname = git_reference_name(ref);
-        git2r_reference_init(ref, branch);
-
-        switch (type) {
-        case GIT_BRANCH_LOCAL:
-            break;
-        case GIT_BRANCH_REMOTE: {
-            git_buf buf = {0};
-            git_remote *remote = NULL;
-
-            err = git_branch_remote_name(&buf, repository, refname);
-            if (err < 0)
-                goto cleanup;
-            SET_SLOT(branch, Rf_install("remote"), ScalarString(mkChar(buf.ptr)));
-
-            err = git_remote_load(&remote, repository, buf.ptr);
-            if (err < 0) {
-                err = git_remote_create_anonymous(&remote, repository, buf.ptr, NULL);
-                if (err < 0) {
-                    git_buf_free(&buf);
-                    goto cleanup;
-                }
-            }
-
-            SET_SLOT(branch,
-                     Rf_install("url"),
-                     ScalarString(mkChar(git_remote_url(remote))));
-
-            git_buf_free(&buf);
-            git_remote_free(remote);
-            break;
-        }
-        default:
-            err = -1;
-            err_msg = git2r_err_unexpected_type_of_branch;
+        err = git2r_branch_init(reference, repository, type, repo, branch,
+                                &err_msg);
+        if (err < 0) {
+            UNPROTECT(1);
             goto cleanup;
         }
-
-        switch (git_branch_is_head(ref)) {
-        case 0:
-            SET_SLOT(branch, Rf_install("head"), ScalarLogical(0));
-            break;
-        case 1:
-            SET_SLOT(branch, Rf_install("head"), ScalarLogical(1));
-            break;
-        default:
-            err = -1;
-            err_msg = git2r_err_unexpected_head_of_branch;
-            goto cleanup;
-        }
-
-        git_reference_free(ref);
         SET_VECTOR_ELT(list, i, branch);
         UNPROTECT(1);
-        protected--;
+        if (reference)
+            git_reference_free(reference);
+        reference = NULL;
         i++;
     }
 
@@ -174,11 +206,14 @@ cleanup:
     if (iter)
         git_branch_iterator_free(iter);
 
+    if (reference)
+        git_reference_free(reference);
+
     if (repository)
         git_repository_free(repository);
 
-    if (protected)
-        UNPROTECT(protected);
+    if (R_NilValue != list)
+        UNPROTECT(1);
 
     if (err < 0) {
         if (err_msg)
