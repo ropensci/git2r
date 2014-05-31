@@ -46,6 +46,7 @@ stopifnot(identical(length(branches(repo)), 1L))
 stopifnot(identical(is.head(branches(repo)[[1]]), TRUE))
 stopifnot(identical(is.local(branches(repo)[[1]]), TRUE))
 stopifnot(identical(branches(repo)[[1]]@shorthand, "master"))
+stopifnot(identical(branches(repo)[[1]], head(repo)))
 
 ##
 ## Cleanup
