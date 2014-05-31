@@ -61,6 +61,8 @@ static int git2r_branch_count(git_repository *repo, int flags, size_t *n)
  * List branches in a repository
  *
  * @param repo S4 class git_repository
+ * @param flags Filtering flags for the branch listing. Valid values
+ *        are 1 (LOCAL), 2 (REMOTE) and 3 (ALL)
  * @return VECXSP with S4 objects of class git_branch
  */
 SEXP git2r_branch_list(SEXP repo, SEXP flags)
@@ -72,6 +74,9 @@ SEXP git2r_branch_list(SEXP repo, SEXP flags)
     size_t i = 0, n = 0;
     size_t protected = 0;
     git_repository *repository = NULL;
+
+    if (git2r_error_check_integer_arg(flags))
+        error("Invalid arguments to git2r_branch_list");
 
     repository = git2r_repository_open(repo);
     if (!repository)
