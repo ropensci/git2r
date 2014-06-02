@@ -226,7 +226,7 @@ is.head(head(repo))
 ```coffee
 
 ## Check if HEAD is local
-is.local(head(repo))
+is_local(head(repo))
 ```
 
 ```
