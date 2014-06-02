@@ -41,7 +41,7 @@
 ##' @section Methods:
 ##' \describe{
 ##'   \item{is.head}{\code{signature(object = "git_branch")}}
-##'   \item{is.local}{\code{signature(object = "git_branch")}}
+##'   \item{is_local}{\code{signature(object = "git_branch")}}
 ##'   \item{show}{\code{signature(object = "git_branch")}}
 ##' }
 ##' @keywords methods
@@ -97,7 +97,8 @@ setMethod("branches",
 ##' @keywords methods
 setGeneric("is.head",
            signature = "object",
-           function(object) standardGeneric("is.head"))
+           function(object)
+           standardGeneric("is.head"))
 
 ##' @rdname is.head-methods
 ##' @export
@@ -111,18 +112,19 @@ setMethod("is.head",
 
 ##' Check if branch is local
 ##'
-##' @rdname is.local-methods
+##' @rdname is_local-methods
 ##' @docType methods
 ##' @param object The branch \code{object} to check if it's local
 ##' @return TRUE if branch is local, else FALSE
 ##' @keywords methods
-setGeneric("is.local",
+setGeneric("is_local",
            signature = "object",
-           function(object) standardGeneric("is.local"))
+           function(object)
+           standardGeneric("is_local"))
 
-##' @rdname is.local-methods
+##' @rdname is_local-methods
 ##' @export
-setMethod("is.local",
+setMethod("is_local",
           signature(object = "git_branch"),
           function (object)
           {
@@ -146,7 +148,7 @@ setMethod("show",
                   cat(sprintf("[%s] ", substr(object@hex, 1 , 6)))
               }
 
-              if(is.local(object)) {
+              if(is_local(object)) {
                   cat("(Local) ")
               } else {
                   cat(sprintf("(%s @ %s) ", object@remote, object@url))
@@ -157,7 +159,7 @@ setMethod("show",
               }
 
               if(identical(object@type, 1L)) {
-                  if(is.local(object)) {
+                  if(is_local(object)) {
                       cat(sprintf("%s\n", object@shorthand))
                   } else {
                       cat(sprintf("%s\n",

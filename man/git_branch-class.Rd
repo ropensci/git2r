@@ -31,7 +31,7 @@ Class \code{git_branch}
 
 \describe{
   \item{is.head}{\code{signature(object = "git_branch")}}
-  \item{is.local}{\code{signature(object = "git_branch")}}
+  \item{is_local}{\code{signature(object = "git_branch")}}
   \item{show}{\code{signature(object = "git_branch")}}
 }
 }

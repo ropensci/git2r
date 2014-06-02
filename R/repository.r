@@ -149,7 +149,7 @@ setAs(from="git_repository",
 ##' is.head(head(repo))
 ##'
 ##' ## Check if HEAD is local
-##' is.local(head(repo))
+##' is_local(head(repo))
 ##'
 ##' ## List all tags in repository
 ##' tags(repo)
