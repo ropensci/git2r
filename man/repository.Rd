@@ -44,7 +44,7 @@ branches(repo)
 head(repo)
 
 ## Check if HEAD is head
-is.head(head(repo))
+is_head(head(repo))
 
 ## Check if HEAD is local
 is_local(head(repo))

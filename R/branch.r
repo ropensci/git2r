@@ -40,7 +40,7 @@
 ##' @keywords classes
 ##' @section Methods:
 ##' \describe{
-##'   \item{is.head}{\code{signature(object = "git_branch")}}
+##'   \item{is_head}{\code{signature(object = "git_branch")}}
 ##'   \item{is_local}{\code{signature(object = "git_branch")}}
 ##'   \item{show}{\code{signature(object = "git_branch")}}
 ##' }
@@ -90,23 +90,24 @@ setMethod("branches",
 
 ##' Check if branch is head
 ##'
-##' @rdname is.head-methods
+##' @rdname is_head-methods
 ##' @docType methods
 ##' @param object The branch \code{object} to check if it's head
 ##' @return TRUE if branch is head, else FALSE
 ##' @keywords methods
-setGeneric("is.head",
+setGeneric("is_head",
            signature = "object",
            function(object)
-           standardGeneric("is.head"))
+           standardGeneric("is_head"))
 
-##' @rdname is.head-methods
+##' @rdname is_head-methods
 ##' @export
-setMethod("is.head",
+setMethod("is_head",
           signature(object = "git_branch"),
           function (object)
           {
-              identical(object@head, TRUE)
+              ## identical(object@head, TRUE)
+              .Call("git2r_branch_is_head", object)
           }
 )
 

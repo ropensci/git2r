@@ -30,7 +30,7 @@ Class \code{git_branch}
 \section{Methods}{
 
 \describe{
-  \item{is.head}{\code{signature(object = "git_branch")}}
+  \item{is_head}{\code{signature(object = "git_branch")}}
   \item{is_local}{\code{signature(object = "git_branch")}}
   \item{show}{\code{signature(object = "git_branch")}}
 }

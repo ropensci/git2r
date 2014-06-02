@@ -146,7 +146,7 @@ setAs(from="git_repository",
 ##' head(repo)
 ##'
 ##' ## Check if HEAD is head
-##' is.head(head(repo))
+##' is_head(head(repo))
 ##'
 ##' ## Check if HEAD is local
 ##' is_local(head(repo))
@@ -334,7 +334,7 @@ setMethod("head",
               b <- branches(x)
 
               if(length(b)) {
-                  b <- b[sapply(b, is.head)]
+                  b <- b[sapply(b, is_head)]
                   if(identical(length(b), 1L)) {
                       return(b[[1]])
                   }

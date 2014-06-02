@@ -216,7 +216,7 @@ head(repo)
 ```coffee
 
 ## Check if HEAD is head
-is.head(head(repo))
+is_head(head(repo))
 ```
 
 ```
