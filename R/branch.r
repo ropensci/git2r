@@ -28,6 +28,9 @@
 ##'   \item{head}{
 ##'     TRUE if the current local branch is pointed at by HEAD
 ##'   }
+##'   \item{branch_type}{
+##'     Type of the branch, either 1 (local) or 2 (remote).
+##'   }
 ##'   \item{repo}{
 ##'     The S4 class git_repository that contains the branch
 ##'   }
@@ -46,10 +49,11 @@
 ##' @include repository.r
 ##' @export
 setClass("git_branch",
-         slots=c(remote = "character",
-                 url    = "character",
-                 head   = "logical",
-                 repo   = "git_repository"),
+         slots=c(remote      = "character",
+                 url         = "character",
+                 head        = "logical",
+                 branch_type = "integer",
+                 repo        = "git_repository"),
          contains="git_reference",
          prototype=list(remote=NA_character_,
                         url=NA_character_))

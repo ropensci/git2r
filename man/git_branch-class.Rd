@@ -18,6 +18,9 @@ Class \code{git_branch}
   \item{head}{
     TRUE if the current local branch is pointed at by HEAD
   }
+  \item{branch_type}{
+    Type of the branch, either 1 (local) or 2 (remote).
+  }
   \item{repo}{
     The S4 class git_repository that contains the branch
   }
