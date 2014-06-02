@@ -55,6 +55,38 @@ int git2r_error_check_blob_arg(SEXP arg)
 }
 
 /**
+ * Check branch argument
+ *
+ * @param arg the arg to check
+ * @return 0 if OK, else 1
+ */
+int git2r_error_check_branch_arg(SEXP arg)
+{
+    SEXP class_name;
+    SEXP slot;
+
+    if (R_NilValue == arg || S4SXP != TYPEOF(arg))
+        return 1;
+
+    class_name = getAttrib(arg, R_ClassSymbol);
+    if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_branch"))
+        return 1;
+
+    slot = GET_SLOT(arg, Rf_install("branch_type"));
+    if (git2r_error_check_integer_arg(slot))
+        return 1;
+    switch (INTEGER(slot)[0]) {
+    case GIT_BRANCH_LOCAL:
+    case GIT_BRANCH_REMOTE:
+        break;
+    default:
+        return 1;
+    }
+
+    return 0;
+}
+
+/**
  * Check commit argument
  *
  * @param arg the arg to check
