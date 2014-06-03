@@ -28,6 +28,9 @@
 ##'   \item{head}{
 ##'     TRUE if the current local branch is pointed at by HEAD
 ##'   }
+##'   \item{branch_name}{
+##'     Name of the branch.
+##'   }
 ##'   \item{branch_type}{
 ##'     Type of the branch, either 1 (local) or 2 (remote).
 ##'   }
@@ -49,14 +52,15 @@
 ##' @include repository.r
 ##' @export
 setClass("git_branch",
-         slots=c(remote      = "character",
-                 url         = "character",
-                 head        = "logical",
-                 branch_type = "integer",
-                 repo        = "git_repository"),
-         contains="git_reference",
-         prototype=list(remote=NA_character_,
-                        url=NA_character_))
+         slots = c(remote      = "character",
+                   url         = "character",
+                   head        = "logical",
+                   branch_name = "character",
+                   branch_type = "integer",
+                   repo        = "git_repository"),
+         contains = "git_reference",
+         prototype = list(remote = NA_character_,
+                          url    = NA_character_))
 
 ##' Branches
 ##'
@@ -92,22 +96,21 @@ setMethod("branches",
 ##'
 ##' @rdname is_head-methods
 ##' @docType methods
-##' @param object The branch \code{object} to check if it's head
+##' @param branch The branch \code{object} to check if it's head
 ##' @return TRUE if branch is head, else FALSE
 ##' @keywords methods
 setGeneric("is_head",
-           signature = "object",
-           function(object)
+           signature = "branch",
+           function(branch)
            standardGeneric("is_head"))
 
 ##' @rdname is_head-methods
 ##' @export
 setMethod("is_head",
-          signature(object = "git_branch"),
-          function (object)
+          signature(branch = "git_branch"),
+          function (branch)
           {
-              ## identical(object@head, TRUE)
-              .Call("git2r_branch_is_head", object)
+              .Call("git2r_branch_is_head", branch)
           }
 )
 
@@ -115,21 +118,21 @@ setMethod("is_head",
 ##'
 ##' @rdname is_local-methods
 ##' @docType methods
-##' @param object The branch \code{object} to check if it's local
+##' @param branch The branch \code{object} to check if it's local
 ##' @return TRUE if branch is local, else FALSE
 ##' @keywords methods
 setGeneric("is_local",
-           signature = "object",
-           function(object)
+           signature = "branch",
+           function(branch)
            standardGeneric("is_local"))
 
 ##' @rdname is_local-methods
 ##' @export
 setMethod("is_local",
-          signature(object = "git_branch"),
-          function (object)
+          signature(branch = "git_branch"),
+          function (branch)
           {
-              identical(is.na(object@remote), TRUE)
+              identical(is.na(branch@remote), TRUE)
           }
 )
 

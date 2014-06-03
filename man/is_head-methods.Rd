@@ -5,12 +5,12 @@
 \alias{is_head,git_branch-method}
 \title{Check if branch is head}
 \usage{
-is_head(object)
+is_head(branch)
 
-\S4method{is_head}{git_branch}(object)
+\S4method{is_head}{git_branch}(branch)
 }
 \arguments{
-\item{object}{The branch \code{object} to check if it's head}
+\item{branch}{The branch \code{object} to check if it's head}
 }
 \value{
 TRUE if branch is head, else FALSE

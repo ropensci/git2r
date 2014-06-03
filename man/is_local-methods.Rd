@@ -5,12 +5,12 @@
 \alias{is_local,git_branch-method}
 \title{Check if branch is local}
 \usage{
-is_local(object)
+is_local(branch)
 
-\S4method{is_local}{git_branch}(object)
+\S4method{is_local}{git_branch}(branch)
 }
 \arguments{
-\item{object}{The branch \code{object} to check if it's local}
+\item{branch}{The branch \code{object} to check if it's local}
 }
 \value{
 TRUE if branch is local, else FALSE

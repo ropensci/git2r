@@ -18,6 +18,9 @@ Class \code{git_branch}
   \item{head}{
     TRUE if the current local branch is pointed at by HEAD
   }
+  \item{branch_name}{
+    Name of the branch.
+  }
   \item{branch_type}{
     Type of the branch, either 1 (local) or 2 (remote).
   }
