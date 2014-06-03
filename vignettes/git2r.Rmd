@@ -58,10 +58,10 @@ repo <- init(path)
 repo
 
 ## Check if repository is bare
-is.bare(repo)
+is_bare(repo)
 
 ## Check if repository is empty
-is.empty(repo)
+is_empty(repo)
 ```
 
 
@@ -81,7 +81,7 @@ dir.create(path)
 repo <- init(path, bare=TRUE)
 
 ## Check if repository is bare
-is.bare(repo)
+is_bare(repo)
 ```
 
 ```{r, echo=FALSE, message=FALSE}
