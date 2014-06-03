@@ -26,7 +26,9 @@
  * Count number of branches.
  *
  * @param repo S4 class git_repository
- * @param flags
+ * @param flags Filtering flags for the branch listing. Valid values
+ *        are 1 (LOCAL), 2 (REMOTE) and 3 (ALL)
+ * @param n
  * @return
  */
 static int git2r_branch_count(git_repository *repo, int flags, size_t *n)
@@ -66,7 +68,7 @@ static int git2r_branch_count(git_repository *repo, int flags, size_t *n)
  * @param repo S4 class git_repository that contains the blob
  * @param dest S4 class git_branch to initialize
  * @param err_msg git2r error message
- * @return int; < 0 if error
+ * @return int; < 0 if error, else 0
  */
 static int git2r_branch_init(
     const git_reference *source,
@@ -80,9 +82,19 @@ static int git2r_branch_init(
     git_buf buf = {0};
     git_remote *remote = NULL;
     const char *refname;
+    const char *name;
 
     refname = git_reference_name(source);
     git2r_reference_init(source, dest);
+
+    err = git_branch_name(&name, source);
+    if (err < 0)
+        goto cleanup;
+    SET_SLOT(dest,
+             Rf_install("branch_name"),
+             ScalarString(mkChar(name)));
+
+    SET_SLOT(dest, Rf_install("branch_type"), ScalarInteger(type));
 
     switch (type) {
     case GIT_BRANCH_LOCAL:
@@ -140,6 +152,56 @@ cleanup:
         git_remote_free(remote);
 
     return err;
+}
+
+/**
+ * Determine if the current local branch is pointed at by HEAD
+ *
+ * @param branch S4 class git_branch
+ * @return TRUE if head, FALSE if not
+ */
+SEXP git2r_branch_is_head(SEXP branch)
+{
+    SEXP result = R_NilValue;
+    int err;
+    const char *name;
+    git_reference *reference = NULL;
+    git_repository *repository = NULL;
+
+    if (git2r_error_check_branch_arg(branch))
+        error("Invalid arguments to git2r_branch_is_head");
+
+    repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("branch_name")), 0));
+
+    err = git_branch_lookup(&reference,
+                            repository,
+                            name,
+                            INTEGER(GET_SLOT(branch, Rf_install("branch_type")))[0]);
+    if (err < 0)
+        goto cleanup;
+
+    err = git_branch_is_head(reference);
+    if (err < 0)
+        goto cleanup;
+
+    if (0 == err || 1 == err)
+        result = ScalarLogical(err);
+
+cleanup:
+    if (reference)
+        git_reference_free(reference);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return result;
 }
 
 /**

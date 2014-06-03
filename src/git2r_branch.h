@@ -22,6 +22,7 @@
 #include <R.h>
 #include <Rinternals.h>
 
+SEXP git2r_branch_is_head(SEXP branch);
 SEXP git2r_branch_list(SEXP repo, SEXP flags);
 
 #endif
