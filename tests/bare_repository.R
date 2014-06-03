@@ -31,7 +31,7 @@ repo <- init(path, bare=TRUE)
 ## Check that the state of the repository
 ##
 stopifnot(identical(is_bare(repo), TRUE))
-stopifnot(identical(is.empty(repo), TRUE))
+stopifnot(identical(is_empty(repo), TRUE))
 
 ##
 ## Check that workdir is NULL for a bare repository

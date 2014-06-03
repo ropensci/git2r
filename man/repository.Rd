@@ -32,7 +32,7 @@ workdir(repo)
 is_bare(repo)
 
 ## Check if repository is empty
-is.empty(repo)
+is_empty(repo)
 
 ## List all references in repository
 references(repo)

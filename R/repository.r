@@ -29,7 +29,7 @@
 ##' @section Methods:
 ##' \describe{
 ##'   \item{is_bare}{\code{signature(object = "git_repository")}}
-##'   \item{is.empty}{\code{signature(object = "git_repository")}}
+##'   \item{is_empty}{\code{signature(object = "git_repository")}}
 ##' }
 ##' @keywords methods
 ##' @export
@@ -134,7 +134,7 @@ setAs(from="git_repository",
 ##' is_bare(repo)
 ##'
 ##' ## Check if repository is empty
-##' is.empty(repo)
+##' is_empty(repo)
 ##'
 ##' ## List all references in repository
 ##' references(repo)
@@ -307,7 +307,7 @@ setMethod("commit",
                         is(committer, "git_signature"))
 
               parents <- character(0)
-              if(!is.empty(object)) {
+              if(!is_empty(object)) {
                   parents <- c(parents, head(object)@hex)
               }
 
@@ -411,7 +411,7 @@ setMethod("is.detached",
 
 ##' Check if repository is empty
 ##'
-##' @rdname is.empty-methods
+##' @rdname is_empty-methods
 ##' @docType methods
 ##' @param object The \code{object} to check if it's a empty repository
 ##' @return TRUE or FALSE
@@ -422,17 +422,17 @@ setMethod("is.detached",
 ##' repo <- repository("path/to/git2r")
 ##'
 ##' ## Check if it's an empty repository
-##' is.empty(repo)
+##' is_empty(repo)
 ##' }
 ##'
-setGeneric("is.empty",
+setGeneric("is_empty",
            signature = "object",
            function(object)
-           standardGeneric("is.empty"))
+           standardGeneric("is_empty"))
 
-##' @rdname is.empty-methods
+##' @rdname is_empty-methods
 ##' @export
-setMethod("is.empty",
+setMethod("is_empty",
           signature(object = "git_repository"),
           function (object)
           {
@@ -635,7 +635,7 @@ setMethod("show",
                               remote_url(object, remote)))
               })
 
-              if(is.empty(object)) {
+              if(is_empty(object)) {
                   cat(sprintf("Local:    %s\n", workdir(object)))
                   cat("Head:     nothing commited (yet)\n")
               } else if(is.detached(object)) {

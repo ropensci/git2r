@@ -19,7 +19,7 @@ Class \code{"git_repository"}
 
 \describe{
   \item{is_bare}{\code{signature(object = "git_repository")}}
-  \item{is.empty}{\code{signature(object = "git_repository")}}
+  \item{is_empty}{\code{signature(object = "git_repository")}}
 }
 }
 \keyword{classes}

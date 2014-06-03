@@ -77,7 +77,7 @@ is_bare(repo)
 ```coffee
 
 ## Check if repository is empty
-is.empty(repo)
+is_empty(repo)
 ```
 
 ```

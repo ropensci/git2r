@@ -28,9 +28,9 @@ dir.create(path)
 tools::assertError(is_bare(new("git_repository")))
 
 ##
-## is.empty: "Invalid repository"
+## is_empty: "Invalid repository"
 ##
-tools::assertError(is.empty(new("git_repository")))
+tools::assertError(is_empty(new("git_repository")))
 
 ##
 ## Check that open an invalid repository fails
@@ -46,7 +46,7 @@ repo <- init(path)
 ## Check that the state of the repository
 ##
 stopifnot(identical(is_bare(repo), FALSE))
-stopifnot(identical(is.empty(repo), TRUE))
+stopifnot(identical(is_empty(repo), TRUE))
 stopifnot(identical(branches(repo), list()))
 stopifnot(identical(commits(repo), list()))
 stopifnot(identical(head(repo), NULL))
