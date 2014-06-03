@@ -54,20 +54,20 @@ commit.3 <- commit(repo, "Third commit message")
 ##
 ## Check if HEAD is detached
 ##
-stopifnot(identical(is.detached(repo), FALSE))
+stopifnot(identical(is_detached(repo), FALSE))
 
 ##
 ## Checkout first commit
 ##
 checkout(commit.1, TRUE)
-stopifnot(identical(is.detached(repo), TRUE))
+stopifnot(identical(is_detached(repo), TRUE))
 stopifnot(identical(readLines(file.path(path, "test.txt")), "Hello world!"))
 
 ##
 ## Checkout tag
 ##
 checkout(tags(repo)[[1]], TRUE)
-stopifnot(identical(is.detached(repo), TRUE))
+stopifnot(identical(is_detached(repo), TRUE))
 stopifnot(identical(readLines(file.path(path, "test.txt")),
                     c("Hello world!", "HELLO WORLD!")))
 

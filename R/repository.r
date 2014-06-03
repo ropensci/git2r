@@ -380,7 +380,7 @@ setMethod("is_bare",
 
 ##' Check if HEAD of repository is detached
 ##'
-##' @rdname is.detached-methods
+##' @rdname is_detached-methods
 ##' @docType methods
 ##' @param object The repository \code{object}
 ##' @return TRUE if repository HEAD is detached, else FALSE
@@ -391,17 +391,17 @@ setMethod("is_bare",
 ##' repo <- repository("path/to/git2r")
 ##'
 ##' ## Check if repository HEAD is detached
-##' is.detached(repo)
+##' is_detached(repo)
 ##' }
 ##'
-setGeneric("is.detached",
+setGeneric("is_detached",
            signature = "object",
            function(object)
-           standardGeneric("is.detached"))
+           standardGeneric("is_detached"))
 
-##' @rdname is.detached-methods
+##' @rdname is_detached-methods
 ##' @export
-setMethod("is.detached",
+setMethod("is_detached",
           signature(object = "git_repository"),
           function (object)
           {
@@ -638,7 +638,7 @@ setMethod("show",
               if(is_empty(object)) {
                   cat(sprintf("Local:    %s\n", workdir(object)))
                   cat("Head:     nothing commited (yet)\n")
-              } else if(is.detached(object)) {
+              } else if(is_detached(object)) {
                   cat(sprintf("Local:    (detached) %s\n", workdir(object)))
               } else {
                   cat(sprintf("Local:    %s %s\n",
