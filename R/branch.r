@@ -25,9 +25,6 @@
 ##'   \item{url}{
 ##'     The remote's url
 ##'   }
-##'   \item{head}{
-##'     TRUE if the current local branch is pointed at by HEAD
-##'   }
 ##'   \item{branch_name}{
 ##'     Name of the branch.
 ##'   }
@@ -54,7 +51,6 @@
 setClass("git_branch",
          slots = c(remote      = "character",
                    url         = "character",
-                   head        = "logical",
                    branch_name = "character",
                    branch_type = "integer",
                    repo        = "git_repository"),
@@ -158,7 +154,7 @@ setMethod("show",
                   cat(sprintf("(%s @ %s) ", object@remote, object@url))
               }
 
-              if(identical(object@head, TRUE)) {
+              if(is_head(object)) {
                   cat("(HEAD) ")
               }
 

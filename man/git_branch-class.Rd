@@ -15,9 +15,6 @@ Class \code{git_branch}
   \item{url}{
     The remote's url
   }
-  \item{head}{
-    TRUE if the current local branch is pointed at by HEAD
-  }
   \item{branch_name}{
     Name of the branch.
   }

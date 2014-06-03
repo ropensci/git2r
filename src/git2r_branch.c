@@ -132,19 +132,6 @@ static int git2r_branch_init(
         goto cleanup;
     }
 
-    switch (git_branch_is_head(source)) {
-    case 0:
-        SET_SLOT(dest, Rf_install("head"), ScalarLogical(0));
-        break;
-    case 1:
-        SET_SLOT(dest, Rf_install("head"), ScalarLogical(1));
-        break;
-    default:
-        err = -1;
-        *err_msg = git2r_err_unexpected_head_of_branch;
-        goto cleanup;
-    }
-
     SET_SLOT(dest, Rf_install("repo"), duplicate(repo));
 
 cleanup:
