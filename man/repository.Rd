@@ -29,7 +29,7 @@ summary(repo)
 workdir(repo)
 
 ## Check if repository is bare
-is.bare(repo)
+is_bare(repo)
 
 ## Check if repository is empty
 is.empty(repo)

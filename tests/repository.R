@@ -23,9 +23,9 @@ path <- tempfile(pattern="git2r-")
 dir.create(path)
 
 ##
-## is.bare: "Invalid repository"
+## is_bare: "Invalid repository"
 ##
-tools::assertError(is.bare(new("git_repository")))
+tools::assertError(is_bare(new("git_repository")))
 
 ##
 ## is.empty: "Invalid repository"
@@ -45,7 +45,7 @@ repo <- init(path)
 ##
 ## Check that the state of the repository
 ##
-stopifnot(identical(is.bare(repo), FALSE))
+stopifnot(identical(is_bare(repo), FALSE))
 stopifnot(identical(is.empty(repo), TRUE))
 stopifnot(identical(branches(repo), list()))
 stopifnot(identical(commits(repo), list()))

@@ -18,7 +18,7 @@ Class \code{"git_repository"}
 \section{Methods}{
 
 \describe{
-  \item{is.bare}{\code{signature(object = "git_repository")}}
+  \item{is_bare}{\code{signature(object = "git_repository")}}
   \item{is.empty}{\code{signature(object = "git_repository")}}
 }
 }

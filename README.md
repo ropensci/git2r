@@ -67,7 +67,7 @@ repo
 ```coffee
 
 ## Check if repository is bare
-is.bare(repo)
+is_bare(repo)
 ```
 
 ```
@@ -95,7 +95,7 @@ dir.create(path)
 repo <- init(path, bare=TRUE)
 
 ## Check if repository is bare
-is.bare(repo)
+is_bare(repo)
 ```
 
 ```

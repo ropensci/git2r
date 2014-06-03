@@ -46,9 +46,9 @@ repo2 <- clone(path_bare, path_repo2)
 ##
 ## Check the repositores
 ##
-stopifnot(identical(is.bare(bare_repo), TRUE))
-stopifnot(identical(is.bare(repo1), FALSE))
-stopifnot(identical(is.bare(repo2), FALSE))
+stopifnot(identical(is_bare(bare_repo), TRUE))
+stopifnot(identical(is_bare(repo1), FALSE))
+stopifnot(identical(is_bare(repo2), FALSE))
 
 ##
 ## Config repositories

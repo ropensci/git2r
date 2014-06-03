@@ -28,7 +28,7 @@
 ##' @keywords classes
 ##' @section Methods:
 ##' \describe{
-##'   \item{is.bare}{\code{signature(object = "git_repository")}}
+##'   \item{is_bare}{\code{signature(object = "git_repository")}}
 ##'   \item{is.empty}{\code{signature(object = "git_repository")}}
 ##' }
 ##' @keywords methods
@@ -131,7 +131,7 @@ setAs(from="git_repository",
 ##' workdir(repo)
 ##'
 ##' ## Check if repository is bare
-##' is.bare(repo)
+##' is_bare(repo)
 ##'
 ##' ## Check if repository is empty
 ##' is.empty(repo)
@@ -249,7 +249,8 @@ clone <- function(url, local_path, progress = TRUE) {
 ##'
 setGeneric("add",
            signature = "object",
-           function(object, path) standardGeneric("add"))
+           function(object, path)
+           standardGeneric("add"))
 
 ##' @rdname add-methods
 ##' @export
@@ -348,7 +349,7 @@ setMethod("head",
 
 ##' Check if repository is bare
 ##'
-##' @rdname is.bare-methods
+##' @rdname is_bare-methods
 ##' @docType methods
 ##' @param object The \code{object} to check if it's a bare repository
 ##' @return TRUE if bare repository, else FALSE
@@ -359,16 +360,17 @@ setMethod("head",
 ##' repo <- repository("path/to/git2r")
 ##'
 ##' ## Check if it's a bare repository
-##' is.bare(repo)
+##' is_bare(repo)
 ##' }
 ##'
-setGeneric("is.bare",
+setGeneric("is_bare",
            signature = "object",
-           function(object) standardGeneric("is.bare"))
+           function(object)
+           standardGeneric("is_bare"))
 
-##' @rdname is.bare-methods
+##' @rdname is_bare-methods
 ##' @export
-setMethod("is.bare",
+setMethod("is_bare",
           signature(object = "git_repository"),
           function (object)
           {
@@ -425,7 +427,8 @@ setMethod("is.detached",
 ##'
 setGeneric("is.empty",
            signature = "object",
-           function(object) standardGeneric("is.empty"))
+           function(object)
+           standardGeneric("is.empty"))
 
 ##' @rdname is.empty-methods
 ##' @export
@@ -481,7 +484,8 @@ setMethod("lookup",
 ##' @keywords methods
 setGeneric("remotes",
            signature = "object",
-           function(object) standardGeneric("remotes"))
+           function(object)
+           standardGeneric("remotes"))
 
 ##' @rdname remotes-methods
 ##' @export
@@ -525,7 +529,8 @@ setMethod("remote_url",
 ##' @keywords methods
 setGeneric("remote_add",
            signature = "object",
-           function(object, ...) standardGeneric("remote_add"))
+           function(object, ...)
+           standardGeneric("remote_add"))
 
 ##' @rdname remote_add-methods
 ##' @param name Short name of the remote repository
@@ -549,7 +554,8 @@ setMethod("remote_add",
 ##' @keywords methods
 setGeneric("remote_rename",
            signature = "object",
-           function(object, ...) standardGeneric("remote_rename"))
+           function(object, ...)
+           standardGeneric("remote_rename"))
 
 ##' @rdname remote_rename-methods
 ##' @param oldname Old name of the remote
@@ -573,7 +579,8 @@ setMethod("remote_rename",
 ##' @keywords methods
 setGeneric("remote_remove",
            signature = "object",
-           function(object, ...) standardGeneric("remote_remove"))
+           function(object, ...)
+           standardGeneric("remote_remove"))
 
 ##' @rdname remote_remove-methods
 ##' @param name The name of the remote to remove
@@ -597,7 +604,8 @@ setMethod("remote_remove",
 ##' @keywords methods
 setGeneric("default_signature",
            signature = "object",
-           function(object) standardGeneric("default_signature"))
+           function(object)
+           standardGeneric("default_signature"))
 
 ##' @rdname default_signature-methods
 ##' @export
@@ -696,7 +704,8 @@ setMethod("summary",
 ##' @keywords methods
 setGeneric("workdir",
            signature = "object",
-           function(object) standardGeneric("workdir"))
+           function(object)
+           standardGeneric("workdir"))
 
 ##' @rdname workdir-methods
 ##' @export
