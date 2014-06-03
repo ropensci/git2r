@@ -62,9 +62,9 @@ setMethod("content",
           signature(blob = "git_blob"),
           function (blob, split)
           {
-              if(is.binary(blob))
+              if(is_binary(blob))
                   stop("Content of binary blob is not supported (yet)")
-              
+
               ret <- .Call("git2r_blob_content", blob)
               if(identical(split, TRUE))
                   ret <- strsplit(ret, "\n")[[1]]
@@ -140,19 +140,19 @@ setMethod("hashfile",
 
 ##' Is blob binary
 ##'
-##' @rdname is.binary-methods
+##' @rdname is_binary-methods
 ##' @docType methods
 ##' @param object The blob \code{object}.
 ##' @return TRUE if binary data, FALSE if not.
 ##' @keywords methods
-setGeneric("is.binary",
+setGeneric("is_binary",
            signature = "object",
            function(object)
-           standardGeneric("is.binary"))
+           standardGeneric("is_binary"))
 
-##' @rdname is.binary-methods
+##' @rdname is_binary-methods
 ##' @export
-setMethod("is.binary",
+setMethod("is_binary",
           signature(object = "git_blob"),
           function (object)
           {
