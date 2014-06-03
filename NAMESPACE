@@ -2,7 +2,7 @@
 
 export(clone)
 export(init)
-export(is.blob)
+export(is_blob)
 export(libgit2_features)
 export(libgit2_version)
 export(markdown_link)

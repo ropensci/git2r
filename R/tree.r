@@ -130,7 +130,7 @@ setAs(from="git_tree",
 ##' ## Inspect size of each blob in tree
 ##' invisible(lapply(as(tree(commits(repo)[[1]]), "list"),
 ##'   function(obj) {
-##'     if(is.blob(obj))
+##'     if(is_blob(obj))
 ##'       summary(obj)
 ##'     NULL
 ##'   }))

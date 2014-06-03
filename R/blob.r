@@ -166,7 +166,7 @@ setMethod("is_binary",
 ##' @return TRUE if object is S4 class git_blob, else FALSE
 ##' @keywords methods
 ##' @export
-is.blob <- function(object) {
+is_blob <- function(object) {
     is(object = object, class2 = "git_blob")
 }
 
