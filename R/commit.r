@@ -196,7 +196,7 @@ setMethod("descendant_of",
 ##'
 ##' Determine if a commit is a merge commit, i.e. has more than one
 ##' parent.
-##' @rdname is.merge-methods
+##' @rdname is_merge-methods
 ##' @docType methods
 ##' @param commit a S4 class git_commit \code{object}.
 ##' @return TRUE if commit has more than one parent, else FALSE
@@ -207,17 +207,17 @@ setMethod("descendant_of",
 ##' repo <- repository("path/to/git2r")
 ##'
 ##' ## Display list of merge commits in repository
-##' invisible(lapply(commits(repo)[sapply(commits(repo), is.merge)], show))
+##' invisible(lapply(commits(repo)[sapply(commits(repo), is_merge)], show))
 ##' }
 ##'
-setGeneric("is.merge",
+setGeneric("is_merge",
            signature = c("commit"),
            function(commit)
-           standardGeneric("is.merge"))
+           standardGeneric("is_merge"))
 
-##' @rdname is.merge-methods
+##' @rdname is_merge-methods
 ##' @export
-setMethod("is.merge",
+setMethod("is_merge",
           signature(commit = "git_commit"),
           function (commit)
           {
@@ -309,12 +309,12 @@ setMethod("summary",
           signature(object = "git_commit"),
           function(object, ...)
           {
-              is_merge <- is.merge(object)
+              is_merge_commit <- is_merge(object)
               po <- parents(object)
 
               cat(sprintf("Commit:  %s\n", object@hex))
 
-              if(is_merge) {
+              if(is_merge_commit) {
                   hex <- sapply(po, slot, "hex")
                   cat(sprintf("Merge:   %s\n", hex[1]))
                   cat(paste0("         ", hex[-1]), sep="\n")
@@ -329,7 +329,7 @@ setMethod("summary",
               msg <- paste0("    ", readLines(textConnection(object@message)))
               cat(" ", sprintf("%s\n", msg))
 
-              if(is_merge) {
+              if(is_merge_commit) {
                   lapply(po, function(parent) {
                       msg <- paste0("    ", readLines(textConnection(parent@message)))
                       cat(" ", sprintf("%s\n", msg), "\n")
