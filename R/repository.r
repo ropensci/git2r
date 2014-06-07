@@ -38,7 +38,8 @@ setClass("git_repository",
          validity=function(object) {
              errors <- character()
 
-             if(!identical(.Call("git2r_repository_can_open", object@path), TRUE))
+             can_open <- .Call("git2r_repository_can_open", object@path)
+             if(!identical(can_open, TRUE))
                  errors <- c(errors, "Invalid repository")
 
              if (length(errors) == 0) TRUE else errors
