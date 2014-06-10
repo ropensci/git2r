@@ -98,6 +98,20 @@ tools::assertError(hashfile(c(file.path(path, "test-1.txt"),
 stopifnot(identical(hashfile(character(0)), character(0)))
 
 ##
+## Create blob from disk
+##
+tmp_file_1 <- tempfile()
+tmp_file_2 <- tempfile()
+writeLines("Hello, world!", tmp_file_1)
+writeLines("test content", tmp_file_2)
+blob_list <- create_blob_fromdisk(repo, c(tmp_file_1, tmp_file_2))
+stopifnot(identical(sapply(blob_list, slot, "hex"),
+                    c("af5626b4a114abcb82d63db7c8082c3c4756e51b",
+                      "d670460b4b4aece5915caf5c68d12f560a9fe3e4")))
+
+##
 ## Cleanup
 ##
 unlink(path, recursive=TRUE)
+unlink(tmp_file_1)
+unlink(tmp_file_2)

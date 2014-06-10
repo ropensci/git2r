@@ -57,6 +57,7 @@
 static const R_CallMethodDef callMethods[] =
 {
     {"git2r_blob_content", (DL_FUNC)&git2r_blob_content, 1},
+    {"git2r_blob_create_fromdisk", (DL_FUNC)&git2r_blob_create_fromdisk, 2},
     {"git2r_blob_is_binary", (DL_FUNC)&git2r_blob_is_binary, 1},
     {"git2r_blob_rawsize", (DL_FUNC)&git2r_blob_rawsize, 1},
     {"git2r_branch_list", (DL_FUNC)&git2r_branch_list, 2},

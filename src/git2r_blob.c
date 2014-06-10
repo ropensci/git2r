@@ -70,6 +70,66 @@ cleanup:
 }
 
 /**
+ * Read a file from the filesystem and write its content to the
+ * Object Database as a loose blob
+ * @param repo The repository where the blob will be written. Can be
+ * a bare repository.
+ * @param path The file from which the blob will be created.
+ * @return list of S4 class git_blob objects
+ */
+SEXP git2r_blob_create_fromdisk(SEXP repo, SEXP path)
+{
+    SEXP result = R_NilValue;
+    SEXP sexp_blob;
+    int err;
+    size_t len, i;
+    git_oid oid;
+    git_blob *blob = NULL;
+    git_repository *repository = NULL;
+
+    if (R_NilValue == path || !isString(path))
+        error("Invalid argument to git2r_blob_create_fromdisk");
+
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    len = length(path);
+    PROTECT(result = allocVector(VECSXP, len));
+    for (i = 0; i < len; i++) {
+        if (NA_STRING != STRING_ELT(path, i)) {
+            err = git_blob_create_fromdisk(&oid,
+                                           repository,
+                                           CHAR(STRING_ELT(path, i)));
+            if (err < 0)
+                goto cleanup;
+
+            err = git_blob_lookup(&blob, repository, &oid);
+            if (err < 0)
+                goto cleanup;
+
+            PROTECT(sexp_blob = NEW_OBJECT(MAKE_CLASS("git_blob")));
+            git2r_blob_init(blob, repo, sexp_blob);
+            SET_VECTOR_ELT(result, i, sexp_blob);
+            UNPROTECT(1);
+            git_blob_free(blob);
+        }
+    }
+
+cleanup:
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return result;
+}
+
+/**
  * Init slots in S4 class git_blob
  *
  * @param source a blob

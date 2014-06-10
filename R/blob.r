@@ -42,6 +42,35 @@ setClass("git_blob",
          }
 )
 
+##' Create blob from file on disk
+##'
+##' Read a file from the filesystem and write its content to the
+##' Object Database as a loose blob. The method is vectorized and
+##' accepts a vector of files to create blobs from.
+##' @rdname create_blob_fromdisk-methods
+##' @docType methods
+##' @param repo The repository where the blob will be written. Can be
+##' a bare repository.
+##' @param path The file(s) from which the blob will be created.
+##' @return list of S4 class git_blob \code{objects}
+##' @keywords methods
+setGeneric("create_blob_fromdisk",
+           signature = c("repo", "path"),
+           function(repo, path)
+           standardGeneric("create_blob_fromdisk"))
+
+##' @rdname create_blob_fromdisk-methods
+##' @export
+setMethod("create_blob_fromdisk",
+          signature(repo = "git_repository",
+                    path = "character"),
+          function(repo, path)
+          {
+              path <- normalizePath(path, mustWork = TRUE)
+              .Call("git2r_blob_create_fromdisk", repo, path)
+          }
+)
+
 ##' Content of blob
 ##'
 ##' @rdname content-methods
