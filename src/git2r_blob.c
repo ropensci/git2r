@@ -130,6 +130,70 @@ cleanup:
 }
 
 /**
+ * Create blob from file in working directory
+ *
+ * Read a file from the working folder of a repository and write its
+ * content to the Object Database as a loose blob. The method is
+ * vectorized and accepts a vector of files to create blobs from.
+ * @param repo The repository where the blob(s) will be
+ * written. Cannot be a bare repository.
+ * @param relative_path The file(s) from which the blob will be
+ * created, relative to the repository's working dir.
+ * @return list of S4 class git_blob objects
+ */
+SEXP git2r_blob_create_fromworkdir(SEXP repo, SEXP relative_path)
+{
+    SEXP result = R_NilValue;
+    SEXP sexp_blob;
+    int err;
+    size_t len, i;
+    git_oid oid;
+    git_blob *blob = NULL;
+    git_repository *repository = NULL;
+
+    if (R_NilValue == relative_path || !isString(relative_path))
+        error("Invalid argument to git2r_blob_create_fromworkdir");
+
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    len = length(relative_path);
+    PROTECT(result = allocVector(VECSXP, len));
+    for (i = 0; i < len; i++) {
+        if (NA_STRING != STRING_ELT(relative_path, i)) {
+            err = git_blob_create_fromworkdir(&oid,
+                                              repository,
+                                              CHAR(STRING_ELT(relative_path, i)));
+            if (err < 0)
+                goto cleanup;
+
+            err = git_blob_lookup(&blob, repository, &oid);
+            if (err < 0)
+                goto cleanup;
+
+            PROTECT(sexp_blob = NEW_OBJECT(MAKE_CLASS("git_blob")));
+            git2r_blob_init(blob, repo, sexp_blob);
+            SET_VECTOR_ELT(result, i, sexp_blob);
+            UNPROTECT(1);
+            git_blob_free(blob);
+        }
+    }
+
+cleanup:
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return result;
+}
+
+/**
  * Init slots in S4 class git_blob
  *
  * @param source a blob

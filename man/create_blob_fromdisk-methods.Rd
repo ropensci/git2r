@@ -10,8 +10,8 @@ create_blob_fromdisk(repo, path)
 \S4method{create_blob_fromdisk}{git_repository,character}(repo, path)
 }
 \arguments{
-\item{repo}{The repository where the blob will be written. Can be
-a bare repository.}
+\item{repo}{The repository where the blob(s) will be written. Can
+be a bare repository.}
 
 \item{path}{The file(s) from which the blob will be created.}
 }

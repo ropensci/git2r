@@ -49,8 +49,8 @@ setClass("git_blob",
 ##' accepts a vector of files to create blobs from.
 ##' @rdname create_blob_fromdisk-methods
 ##' @docType methods
-##' @param repo The repository where the blob will be written. Can be
-##' a bare repository.
+##' @param repo The repository where the blob(s) will be written. Can
+##' be a bare repository.
 ##' @param path The file(s) from which the blob will be created.
 ##' @return list of S4 class git_blob \code{objects}
 ##' @keywords methods
@@ -68,6 +68,35 @@ setMethod("create_blob_fromdisk",
           {
               path <- normalizePath(path, mustWork = TRUE)
               .Call("git2r_blob_create_fromdisk", repo, path)
+          }
+)
+
+##' Create blob from file in working directory
+##'
+##' Read a file from the working folder of a repository and write its
+##' content to the Object Database as a loose blob. The method is
+##' vectorized and accepts a vector of files to create blobs from.
+##' @rdname create_blob_fromworkdir-methods
+##' @docType methods
+##' @param repo The repository where the blob(s) will be
+##' written. Cannot be a bare repository.
+##' @param relative_path The file(s) from which the blob will be
+##' created, relative to the repository's working dir.
+##' @return list of S4 class git_blob \code{objects}
+##' @keywords methods
+setGeneric("create_blob_fromworkdir",
+           signature = c("repo", "relative_path"),
+           function(repo, relative_path)
+           standardGeneric("create_blob_fromworkdir"))
+
+##' @rdname create_blob_fromworkdir-methods
+##' @export
+setMethod("create_blob_fromworkdir",
+          signature(repo          = "git_repository",
+                    relative_path = "character"),
+          function(repo, relative_path)
+          {
+              .Call("git2r_blob_create_fromworkdir", repo, relative_path)
           }
 )
 

@@ -25,6 +25,7 @@
 
 SEXP git2r_blob_content(SEXP blob);
 SEXP git2r_blob_create_fromdisk(SEXP repo, SEXP path);
+SEXP git2r_blob_create_fromworkdir(SEXP repo, SEXP relative_path);
 void git2r_blob_init(const git_blob *source, SEXP repo, SEXP dest);
 SEXP git2r_blob_is_binary(SEXP blob);
 SEXP git2r_blob_rawsize(SEXP blob);
