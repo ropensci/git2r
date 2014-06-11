@@ -18,19 +18,19 @@ The \code{data.frame} have the following columns:
 \describe{
 
 \item{filemode}{
-    :TODO:DOCUMENTATION:
+    The UNIX file attributes of a tree entry
   }
 
 \item{type}{
-    :TODO:DOCUMENTATION:
+    String representation of the tree entry type
   }
 
 \item{id}{
-    :TODO:DOCUMENTATION:
+    The hex id of a tree entry
   }
 
 \item{name}{
-    :TODO:DOCUMENTATION:
+    The filename of a tree entry
   }
 
 }

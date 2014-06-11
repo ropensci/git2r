@@ -104,7 +104,7 @@ setMethod("create_blob_fromworkdir",
 ##'
 ##' @rdname content-methods
 ##' @docType methods
-##' @param object The blob \code{object}.
+##' @param blob The blob \code{object}.
 ##' @param split Split blob content to text lines. Default TRUE.
 ##' @return The content of the blob
 ##' @keywords methods

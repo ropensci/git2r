@@ -10,7 +10,7 @@ content(blob, split = TRUE)
 \S4method{content}{git_blob}(blob, split = TRUE)
 }
 \arguments{
-\item{object}{The blob \code{object}.}
+\item{blob}{The blob \code{object}.}
 
 \item{split}{Split blob content to text lines. Default TRUE.}
 }

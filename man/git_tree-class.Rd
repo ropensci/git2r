@@ -13,16 +13,16 @@ Class \code{"git_tree"}
     40 char hexadecimal string
   }
   \item{filemode}{
-    :TODO:DOCUMENTATION:
+    The UNIX file attributes of a tree entry
   }
   \item{type}{
-    :TODO:DOCUMENTATION:
+    String representation of the tree entry type
   }
   \item{id}{
-    :TODO:DOCUMENTATION:
+    The hex id of a tree entry
   }
   \item{name}{
-    :TODO:DOCUMENTATION:
+    The filename of a tree entry
   }
   \item{repo}{
     The S4 class git_repository that contains the commit

@@ -23,16 +23,16 @@
 ##'     40 char hexadecimal string
 ##'   }
 ##'   \item{filemode}{
-##'     :TODO:DOCUMENTATION:
+##'     The UNIX file attributes of a tree entry
 ##'   }
 ##'   \item{type}{
-##'     :TODO:DOCUMENTATION:
+##'     String representation of the tree entry type
 ##'   }
 ##'   \item{id}{
-##'     :TODO:DOCUMENTATION:
+##'     The hex id of a tree entry
 ##'   }
 ##'   \item{name}{
-##'     :TODO:DOCUMENTATION:
+##'     The filename of a tree entry
 ##'   }
 ##'   \item{repo}{
 ##'     The S4 class git_repository that contains the commit
@@ -71,19 +71,19 @@ setClass("git_tree",
 ##' \describe{
 ##'
 ##'   \item{filemode}{
-##'     :TODO:DOCUMENTATION:
+##'     The UNIX file attributes of a tree entry
 ##'   }
 ##'
 ##'   \item{type}{
-##'     :TODO:DOCUMENTATION:
+##'     String representation of the tree entry type
 ##'   }
 ##'
 ##'   \item{id}{
-##'     :TODO:DOCUMENTATION:
+##'     The hex id of a tree entry
 ##'   }
 ##'
 ##'   \item{name}{
-##'     :TODO:DOCUMENTATION:
+##'     The filename of a tree entry
 ##'   }
 ##'
 ##' }
@@ -103,9 +103,9 @@ setClass("git_tree",
 ##'
 ##' str(df)
 ##' }
-setAs(from="git_tree",
-      to="data.frame",
-      def=function(from)
+setAs(from = "git_tree",
+      to = "data.frame",
+      def = function(from)
       {
           data.frame(mode = sprintf("%06o", from@filemode),
                      type = from@type,
@@ -135,9 +135,9 @@ setAs(from="git_tree",
 ##'     NULL
 ##'   }))
 ##' }
-setAs(from="git_tree",
-      to="list",
-      def=function(from)
+setAs(from = "git_tree",
+      to = "list",
+      def = function(from)
       {
           lapply(from@id, function(hex) lookup(from@repo, hex))
       }
@@ -231,6 +231,29 @@ setMethod("summary",
 ##' @return Git object
 ##' @keywords methods
 ##' @export
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository("path/to/git2r")
+##'
+##' ## Pick a tree in the repository
+##' tree_object <- tree(commits(repo)[[1]])
+##'
+##' ## Summarize tree
+##' summary(tree_object)
+##'
+##' ## Select item by name
+##' tree_object[".Rbuildignore"]
+##'
+##' ## Select first item in tree
+##' tree_object[1]
+##'
+##' ## Select first three items in tree
+##' tree_object[1:3]
+##'
+##' ## Select all blobs in tree
+##' tree_object[sapply(as(tree_object, 'list'), is_blob)]
+##' }
 setMethod("[",
           signature(x = "git_tree", i = "integer", j = "missing"),
           function(x, i)
@@ -243,6 +266,8 @@ setMethod("[",
           }
 )
 
+##' @rdname tree-index-methods
+##' @export
 setMethod("[",
           signature(x = "git_tree", i = "numeric", j = "missing"),
           function(x, i)
@@ -251,6 +276,8 @@ setMethod("[",
           }
 )
 
+##' @rdname tree-index-methods
+##' @export
 setMethod("[",
           signature(x = "git_tree", i = "logical", j = "missing"),
           function(x, i)
@@ -259,6 +286,8 @@ setMethod("[",
           }
 )
 
+##' @rdname tree-index-methods
+##' @export
 setMethod("[",
           signature(x = "git_tree", i = "character", j = "missing"),
           function(x, i)
