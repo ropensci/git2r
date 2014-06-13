@@ -85,7 +85,6 @@ static int git2r_branch_init(
     const char *name;
 
     refname = git_reference_name(source);
-    git2r_reference_init(source, dest);
 
     err = git_branch_name(&name, source);
     if (err < 0)

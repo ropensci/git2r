@@ -54,7 +54,6 @@ setClass("git_branch",
                    branch_name = "character",
                    branch_type = "integer",
                    repo        = "git_repository"),
-         contains = "git_reference",
          prototype = list(remote = NA_character_,
                           url    = NA_character_))
 
