@@ -127,7 +127,7 @@ setMethod("is_local",
           signature(branch = "git_branch"),
           function (branch)
           {
-              identical(is.na(branch@remote), TRUE)
+              identical(branch@branch_type, 1L)
           }
 )
 
