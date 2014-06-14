@@ -25,7 +25,7 @@
 ##'   \item{url}{
 ##'     The remote's url
 ##'   }
-##'   \item{branch_name}{
+##'   \item{name}{
 ##'     Name of the branch.
 ##'   }
 ##'   \item{branch_type}{
@@ -51,7 +51,7 @@
 setClass("git_branch",
          slots = c(remote      = "character",
                    url         = "character",
-                   branch_name = "character",
+                   name        = "character",
                    branch_type = "integer",
                    repo        = "git_repository"),
          prototype = list(remote = NA_character_,

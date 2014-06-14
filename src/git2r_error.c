@@ -72,7 +72,7 @@ int git2r_error_check_branch_arg(SEXP arg)
     if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_branch"))
         return 1;
 
-    if (git2r_error_check_string_arg(GET_SLOT(arg, Rf_install("branch_name"))))
+    if (git2r_error_check_string_arg(GET_SLOT(arg, Rf_install("name"))))
         return 1;
 
     slot = GET_SLOT(arg, Rf_install("branch_type"));
