@@ -727,7 +727,8 @@ setMethod("workdir",
           {
               gitdir=.Call("git2r_repository_discover", object)
               if(!is.null(gitdir) && basename(gitdir)=='.git'){
-                dirname(gitdir)
+                  # nb file.path looks after trailing filesep
+                  file.path(dirname(gitdir), '')
               } else NULL
           }
 )
