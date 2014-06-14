@@ -93,7 +93,7 @@ static int git2r_branch_init(
              Rf_install("name"),
              ScalarString(mkChar(name)));
 
-    SET_SLOT(dest, Rf_install("branch_type"), ScalarInteger(type));
+    SET_SLOT(dest, Rf_install("type"), ScalarInteger(type));
 
     switch (type) {
     case GIT_BRANCH_LOCAL:
@@ -166,7 +166,7 @@ SEXP git2r_branch_is_head(SEXP branch)
     err = git_branch_lookup(&reference,
                             repository,
                             name,
-                            INTEGER(GET_SLOT(branch, Rf_install("branch_type")))[0]);
+                            INTEGER(GET_SLOT(branch, Rf_install("type")))[0]);
     if (err < 0)
         goto cleanup;
 
@@ -300,7 +300,7 @@ SEXP git2r_branch_target(SEXP branch)
         error(git2r_err_invalid_repository);
 
     name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
-    type = INTEGER(GET_SLOT(branch, Rf_install("branch_type")))[0];
+    type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
     err = git_branch_lookup(&reference, repository, name, type);
     if (err < 0)
         goto cleanup;

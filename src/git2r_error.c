@@ -75,7 +75,7 @@ int git2r_error_check_branch_arg(SEXP arg)
     if (git2r_error_check_string_arg(GET_SLOT(arg, Rf_install("name"))))
         return 1;
 
-    slot = GET_SLOT(arg, Rf_install("branch_type"));
+    slot = GET_SLOT(arg, Rf_install("type"));
     if (git2r_error_check_integer_arg(slot))
         return 1;
     switch (INTEGER(slot)[0]) {

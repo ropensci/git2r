@@ -28,7 +28,7 @@
 ##'   \item{name}{
 ##'     Name of the branch.
 ##'   }
-##'   \item{branch_type}{
+##'   \item{type}{
 ##'     Type of the branch, either 1 (local) or 2 (remote).
 ##'   }
 ##'   \item{repo}{
@@ -49,11 +49,11 @@
 ##' @include repository.r
 ##' @export
 setClass("git_branch",
-         slots = c(remote      = "character",
-                   url         = "character",
-                   name        = "character",
-                   branch_type = "integer",
-                   repo        = "git_repository"),
+         slots = c(remote = "character",
+                   url    = "character",
+                   name   = "character",
+                   type   = "integer",
+                   repo   = "git_repository"),
          prototype = list(remote = NA_character_,
                           url    = NA_character_))
 
@@ -149,7 +149,7 @@ setMethod("is_local",
           signature(branch = "git_branch"),
           function (branch)
           {
-              identical(branch@branch_type, 1L)
+              identical(branch@type, 1L)
           }
 )
 
