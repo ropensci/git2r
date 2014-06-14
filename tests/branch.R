@@ -45,7 +45,7 @@ new_commit <- commit(repo, "Commit message")
 stopifnot(identical(length(branches(repo)), 1L))
 stopifnot(identical(is_head(branches(repo)[[1]]), TRUE))
 stopifnot(identical(is_local(branches(repo)[[1]]), TRUE))
-stopifnot(identical(branches(repo)[[1]]@branch_name, "master"))
+stopifnot(identical(branches(repo)[[1]]@name, "master"))
 stopifnot(identical(branches(repo)[[1]], head(repo)))
 
 ##
