@@ -61,6 +61,7 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_blob_rawsize", (DL_FUNC)&git2r_blob_rawsize, 1},
     {"git2r_branch_is_head", (DL_FUNC)&git2r_branch_is_head, 1},
     {"git2r_branch_list", (DL_FUNC)&git2r_branch_list, 2},
+    {"git2r_branch_target", (DL_FUNC)&git2r_branch_target, 1},
     {"git2r_checkout_commit", (DL_FUNC)&git2r_checkout_commit, 1},
     {"git2r_checkout_tag", (DL_FUNC)&git2r_checkout_tag, 1},
     {"git2r_checkout_tree", (DL_FUNC)&git2r_checkout_tree, 1},

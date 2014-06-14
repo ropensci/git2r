@@ -275,3 +275,57 @@ cleanup:
 
     return list;
 }
+
+/**
+ * Get hex pointed to by a branch
+ *
+ * @param branch S4 class git_branch
+ * @return 40 character hex value if the reference is direct, else NA
+ */
+SEXP git2r_branch_target(SEXP branch)
+{
+    int err;
+    SEXP result = R_NilValue;
+    const char *name;
+    char hex[GIT_OID_HEXSZ + 1];
+    git_branch_t type;
+    git_reference *reference = NULL;
+    git_repository *repository = NULL;
+
+    if (git2r_error_check_branch_arg(branch))
+        error("Invalid arguments to git2r_branch_is_head");
+
+    repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("branch_name")), 0));
+    type = INTEGER(GET_SLOT(branch, Rf_install("branch_type")))[0];
+    err = git_branch_lookup(&reference, repository, name, type);
+    if (err < 0)
+        goto cleanup;
+
+    PROTECT(result = allocVector(STRSXP, 1));
+    if (GIT_REF_OID == git_reference_type(reference)) {
+        git_oid_fmt(hex, git_reference_target(reference));
+        hex[GIT_OID_HEXSZ] = '\0';
+        SET_STRING_ELT(result, 0, mkChar(hex));
+    } else {
+        SET_STRING_ELT(result, 0, NA_STRING);
+    }
+
+cleanup:
+    if (reference)
+        git_reference_free(reference);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return result;
+}
