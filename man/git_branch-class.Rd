@@ -15,10 +15,10 @@ Class \code{git_branch}
   \item{url}{
     The remote's url
   }
-  \item{branch_name}{
+  \item{name}{
     Name of the branch.
   }
-  \item{branch_type}{
+  \item{type}{
     Type of the branch, either 1 (local) or 2 (remote).
   }
   \item{repo}{

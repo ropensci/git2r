@@ -2,12 +2,12 @@
 \docType{methods}
 \name{branch_target}
 \alias{branch_target}
-\alias{branch_target,branch-method}
+\alias{branch_target,git_branch-method}
 \title{Get hex pointed to by a branch}
 \usage{
 branch_target(branch)
 
-\S4method{branch_target}{branch}(branch)
+\S4method{branch_target}{git_branch}(branch)
 }
 \arguments{
 \item{branch}{The branch}
