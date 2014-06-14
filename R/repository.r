@@ -308,7 +308,7 @@ setMethod("commit",
 
               parents <- character(0)
               if(!is.empty(object)) {
-                  parents <- c(parents, head(object)@hex)
+                  parents <- c(parents, branch_target(head(object)))
               }
 
               .Call("git2r_commit_create",
