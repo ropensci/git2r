@@ -31,5 +31,6 @@ SEXP git2r_repository_head_detached(SEXP repo);
 SEXP git2r_repository_is_empty(SEXP repo);
 SEXP git2r_repository_can_open(SEXP path);
 SEXP git2r_repository_workdir(SEXP repo);
+SEXP git2r_repository_discover(SEXP path);
 
 #endif

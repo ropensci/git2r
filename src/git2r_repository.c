@@ -24,6 +24,7 @@
 #include "git2r_repository.h"
 #include "git2r_tag.h"
 #include "git2r_tree.h"
+#include "buffer.h"
 
 /**
  * Get repo slot from S4 class git_repository
@@ -193,5 +194,33 @@ SEXP git2r_repository_workdir(SEXP repo)
 
     git_repository_free(repository);
 
+    return result;
+}
+
+/**
+ * Find repository base path for given path
+ *
+ * @param path
+ * @return
+ */
+SEXP git2r_repository_discover(SEXP startpath)
+{
+    SEXP result = R_NilValue;
+    git_buf gitdir = GIT_BUF_INIT;
+    
+    if (git2r_error_check_string_arg(startpath))
+        error("Invalid arguments to git2r_repository_discover");
+    
+    /* note that across_fs (arg #3) is set to 0 so this will stop when a
+       filesystem device change is detected while exploring parent directories
+    */
+    int grdres = git_repository_discover(&gitdir, CHAR(STRING_ELT(startpath, 0)), 0, 
+    /* const char *ceiling_dirs */ NULL);
+
+    if (grdres == 0){
+        result = ScalarString(mkChar(gitdir.ptr));
+    }
+    
+    git_buf_free(&gitdir);
     return result;
 }
