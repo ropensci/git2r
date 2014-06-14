@@ -51,6 +51,13 @@ stopifnot(identical(branches(repo), list()))
 stopifnot(identical(commits(repo), list()))
 stopifnot(identical(head(repo), NULL))
 
+# check that we can findworkdir for paths in repository
+wd=workdir(repo)
+stopifnot(identical(workdir(wd), wd))
+writeLines('test file', con=file.path(wd, 'myfile.txt'))
+stopifnot(identical(workdir(file.path(wd,'myfile.txt')), wd))
+stopifnot(identical(workdir(file.path(wd,'doesntexist.txt')), NULL))
+
 ##
 ## Check that lookup with a hex of less than 4 characters or more than
 ## 40 characters fail.
