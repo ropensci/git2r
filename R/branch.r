@@ -57,6 +57,28 @@ setClass("git_branch",
          prototype = list(remote = NA_character_,
                           url    = NA_character_))
 
+##' Get hex pointed to by a branch
+##'
+##' @rdname branch_target-methods
+##' @docType methods
+##' @param branch The branch
+##' @return hex or NA if not a direct reference
+##' @keywords methods
+setGeneric("branch_target",
+           signature = "branch",
+           function(branch)
+           standardGeneric("branch_target"))
+
+##' @rdname branch_target-methods
+##' @export
+setMethod("branch_target",
+          signature = "git_branch",
+          function(branch)
+          {
+              .Call("git2r_branch_target", branch)
+          }
+)
+
 ##' Branches
 ##'
 ##' List branches in repository
