@@ -635,7 +635,7 @@ setMethod("show",
                   cat(sprintf("Local:    (detached) %s\n", workdir(object)))
               } else {
                   cat(sprintf("Local:    %s %s\n",
-                              head(object)@shorthand,
+                              head(object)@branch_name,
                               workdir(object)))
               }
           }
