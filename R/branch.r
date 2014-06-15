@@ -75,6 +75,28 @@ setMethod("branch_remote_name",
           }
 )
 
+##' Remote url of a branch
+##'
+##' @rdname branch_remote_url-methods
+##' @docType methods
+##' @param branch The branch
+##' @return character string with remote url
+##' @keywords methods
+setGeneric("branch_remote_url",
+           signature = "branch",
+           function(branch)
+           standardGeneric("branch_remote_url"))
+
+##' @rdname branch_remote_url-methods
+##' @export
+setMethod("branch_remote_url",
+          signature = "git_branch",
+          function(branch)
+          {
+              .Call("git2r_branch_remote_url", branch)
+          }
+)
+
 ##' Get target (hex) pointed to by a branch
 ##'
 ##' @rdname branch_target-methods
