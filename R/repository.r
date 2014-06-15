@@ -656,7 +656,7 @@ setMethod("summary",
               show(object)
               cat("\n")
 
-              n_branches <- sum(!is.na(unique(sapply(branches(object), slot, "hex"))))
+              n_branches <- sum(!is.na(unique(sapply(branches(object), branch_target))))
               n_tags <- sum(!is.na(unique(sapply(tags(object), slot, "hex"))))
 
               work <- commits(object)
