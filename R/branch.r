@@ -49,13 +49,11 @@
 ##' @include repository.r
 ##' @export
 setClass("git_branch",
-         slots = c(remote = "character",
-                   url    = "character",
+         slots = c(url    = "character",
                    name   = "character",
                    type   = "integer",
                    repo   = "git_repository"),
-         prototype = list(remote = NA_character_,
-                          url    = NA_character_))
+         prototype = list(url = NA_character_))
 
 ##' Remote name of a branch
 ##'

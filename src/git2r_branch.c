@@ -102,9 +102,6 @@ static int git2r_branch_init(
         err = git_branch_remote_name(&buf, repository, refname);
         if (err < 0)
             goto cleanup;
-        SET_SLOT(dest,
-                 Rf_install("remote"),
-                 ScalarString(mkChar(buf.ptr)));
 
         err = git_remote_load(&remote, repository, buf.ptr);
         if (err < 0) {

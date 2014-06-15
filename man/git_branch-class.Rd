@@ -9,9 +9,6 @@ Class \code{git_branch}
 \section{Slots}{
 
 \describe{
-  \item{remote}{
-    The name of remote that the remote tracking branch belongs to
-  }
   \item{url}{
     The remote's url
   }
