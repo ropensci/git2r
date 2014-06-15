@@ -19,9 +19,6 @@
 ##' @title S4_class_to_handle_a_git_branch
 ##' @section Slots:
 ##' \describe{
-##'   \item{remote}{
-##'     The name of remote that the remote tracking branch belongs to
-##'   }
 ##'   \item{url}{
 ##'     The remote's url
 ##'   }
@@ -107,12 +104,12 @@ setMethod("branch_target",
 ##' @docType methods
 ##' @param object The repository
 ##' @param flags Filtering flags for the branch listing. Valid values
-##' are 'ALL', 'LOCAL' or 'REMOTE'
+##' are 'all', 'local' or 'remote'
 ##' @return list of branches in repository
 ##' @keywords methods
 setGeneric("branches",
            signature = "object",
-           function(object, flags=c("ALL", "LOCAL", "REMOTE"))
+           function(object, flags=c("all", "local", "remote"))
            standardGeneric("branches"))
 
 ##' @rdname branches-methods
@@ -122,9 +119,9 @@ setMethod("branches",
           function (object, flags)
           {
               flags <- switch(match.arg(flags),
-                              LOCAL  = 1L,
-                              REMOTE = 2L,
-                              ALL    = 3L)
+                              local  = 1L,
+                              remote = 2L,
+                              all    = 3L)
 
               .Call("git2r_branch_list", object, flags)
           }

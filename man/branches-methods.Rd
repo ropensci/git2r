@@ -5,16 +5,16 @@
 \alias{branches,git_repository-method}
 \title{Branches}
 \usage{
-branches(object, flags = c("ALL", "LOCAL", "REMOTE"))
+branches(object, flags = c("all", "local", "remote"))
 
-\S4method{branches}{git_repository}(object, flags = c("ALL", "LOCAL",
-  "REMOTE"))
+\S4method{branches}{git_repository}(object, flags = c("all", "local",
+  "remote"))
 }
 \arguments{
 \item{object}{The repository}
 
 \item{flags}{Filtering flags for the branch listing. Valid values
-are 'ALL', 'LOCAL' or 'REMOTE'}
+are 'all', 'local' or 'remote'}
 }
 \value{
 list of branches in repository
