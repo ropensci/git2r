@@ -3,7 +3,7 @@
 \name{branch_target}
 \alias{branch_target}
 \alias{branch_target,git_branch-method}
-\title{Get hex pointed to by a branch}
+\title{Get target (hex) pointed to by a branch}
 \usage{
 branch_target(branch)
 
@@ -16,7 +16,7 @@ branch_target(branch)
 hex or NA if not a direct reference
 }
 \description{
-Get hex pointed to by a branch
+Get target (hex) pointed to by a branch
 }
 \keyword{methods}
 

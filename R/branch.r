@@ -57,7 +57,30 @@ setClass("git_branch",
          prototype = list(remote = NA_character_,
                           url    = NA_character_))
 
-##' Get hex pointed to by a branch
+##' Remote name of a branch
+##'
+##' The name of remote that the remote tracking branch belongs to
+##' @rdname branch_remote_name-methods
+##' @docType methods
+##' @param branch The branch
+##' @return character string with remote name
+##' @keywords methods
+setGeneric("branch_remote_name",
+           signature = "branch",
+           function(branch)
+           standardGeneric("branch_remote_name"))
+
+##' @rdname branch_remote_name-methods
+##' @export
+setMethod("branch_remote_name",
+          signature = "git_branch",
+          function(branch)
+          {
+              .Call("git2r_branch_remote_name", branch)
+          }
+)
+
+##' Get target (hex) pointed to by a branch
 ##'
 ##' @rdname branch_target-methods
 ##' @docType methods
