@@ -200,33 +200,30 @@ setMethod("show",
           signature(object = "git_branch"),
           function (object)
           {
-              if(identical(object@type, 1L)) {
-                  cat(sprintf("[%s] ", substr(object@hex, 1 , 6)))
+              hex <- branch_target(object)
+              if(!is.na(hex)) {
+                  cat(sprintf("[%s] ", substr(hex, 1 , 6)))
               }
 
               if(is_local(object)) {
                   cat("(Local) ")
               } else {
-                  cat(sprintf("(%s @ %s) ", object@remote, object@url))
+                  cat(sprintf("(%s @ %s) ",
+                              branch_remote_name(object),
+                              branch_remote_url(object)))
               }
 
               if(is_head(object)) {
                   cat("(HEAD) ")
               }
 
-              if(identical(object@type, 1L)) {
-                  if(is_local(object)) {
-                      cat(sprintf("%s\n", object@shorthand))
-                  } else {
-                      cat(sprintf("%s\n",
-                                  substr(object@shorthand,
-                                         start=nchar(object@remote)+2,
-                                         stop=nchar(object@shorthand))))
-                  }
-              } else if(identical(object@type, 2L)) {
-                  cat(sprintf("%s => %s\n", object@name, object@target))
+              if(is_local(object)) {
+                  cat(sprintf("%s\n", object@name))
               } else {
-                  stop("Unexpected reference type")
+                  cat(sprintf("%s\n",
+                              substr(object@name,
+                                     start = nchar(branch_remote_name(object)) + 2,
+                                     stop = nchar(object@name))))
               }
           }
 )
