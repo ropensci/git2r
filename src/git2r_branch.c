@@ -67,24 +67,16 @@ static int git2r_branch_count(git_repository *repo, int flags, size_t *n)
  * @param type the branch type; local or remote
  * @param repo S4 class git_repository that contains the blob
  * @param dest S4 class git_branch to initialize
- * @param err_msg git2r error message
  * @return int; < 0 if error, else 0
  */
 static int git2r_branch_init(
     const git_reference *source,
-    git_repository *repository,
     git_branch_t type,
     SEXP repo,
-    SEXP dest,
-    const char **err_msg)
+    SEXP dest)
 {
     int err = 0;
-    git_buf buf = {0};
-    git_remote *remote = NULL;
-    const char *refname;
     const char *name;
-
-    refname = git_reference_name(source);
 
     err = git_branch_name(&name, source);
     if (err < 0)
@@ -94,46 +86,9 @@ static int git2r_branch_init(
              ScalarString(mkChar(name)));
 
     SET_SLOT(dest, Rf_install("type"), ScalarInteger(type));
-
-    switch (type) {
-    case GIT_BRANCH_LOCAL:
-        break;
-    case GIT_BRANCH_REMOTE: {
-        err = git_branch_remote_name(&buf, repository, refname);
-        if (err < 0)
-            goto cleanup;
-
-        err = git_remote_load(&remote, repository, buf.ptr);
-        if (err < 0) {
-            err = git_remote_create_anonymous(&remote, repository, buf.ptr, NULL);
-            if (err < 0) {
-                git_buf_free(&buf);
-                goto cleanup;
-            }
-        }
-
-        SET_SLOT(dest,
-                 Rf_install("url"),
-                 ScalarString(mkChar(git_remote_url(remote))));
-
-        git_buf_free(&buf);
-        if (remote)
-            git_remote_free(remote);
-        remote = NULL;
-        break;
-    }
-    default:
-        err = -1;
-        *err_msg = git2r_err_unexpected_type_of_branch;
-        goto cleanup;
-    }
-
     SET_SLOT(dest, Rf_install("repo"), duplicate(repo));
 
 cleanup:
-    if (remote)
-        git_remote_free(remote);
-
     return err;
 }
 
@@ -199,7 +154,6 @@ SEXP git2r_branch_list(SEXP repo, SEXP flags)
 {
     SEXP list = R_NilValue;
     int err = 0;
-    const char* err_msg = NULL;
     git_branch_iterator *iter = NULL;
     size_t i = 0, n = 0;
     git_repository *repository = NULL;
@@ -236,8 +190,7 @@ SEXP git2r_branch_list(SEXP repo, SEXP flags)
         }
 
         PROTECT(branch = NEW_OBJECT(MAKE_CLASS("git_branch")));
-        err = git2r_branch_init(reference, repository, type, repo, branch,
-                                &err_msg);
+        err = git2r_branch_init(reference, type, repo, branch);
         if (err < 0) {
             UNPROTECT(1);
             goto cleanup;
@@ -263,12 +216,8 @@ cleanup:
     if (R_NilValue != list)
         UNPROTECT(1);
 
-    if (err < 0) {
-        if (err_msg)
-            error(err_msg);
-        else
-            error("Error: %s\n", giterr_last()->message);
-    }
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
 
     return list;
 }

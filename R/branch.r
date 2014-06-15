@@ -19,9 +19,6 @@
 ##' @title S4_class_to_handle_a_git_branch
 ##' @section Slots:
 ##' \describe{
-##'   \item{url}{
-##'     The remote's url
-##'   }
 ##'   \item{name}{
 ##'     Name of the branch.
 ##'   }
@@ -46,11 +43,9 @@
 ##' @include repository.r
 ##' @export
 setClass("git_branch",
-         slots = c(url    = "character",
-                   name   = "character",
-                   type   = "integer",
-                   repo   = "git_repository"),
-         prototype = list(url = NA_character_))
+         slots = c(name = "character",
+                   type = "integer",
+                   repo = "git_repository"))
 
 ##' Remote name of a branch
 ##'

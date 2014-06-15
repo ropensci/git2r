@@ -9,9 +9,6 @@ Class \code{git_branch}
 \section{Slots}{
 
 \describe{
-  \item{url}{
-    The remote's url
-  }
   \item{name}{
     Name of the branch.
   }
