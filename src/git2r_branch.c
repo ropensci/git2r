@@ -60,6 +60,48 @@ static int git2r_branch_count(git_repository *repo, int flags, size_t *n)
 }
 
 /**
+ * Delete branch
+ *
+ * @param branch S4 class git_branch
+ * @return R_NilValue
+ */
+SEXP git2r_branch_delete(SEXP branch)
+{
+    int err;
+    const char *name;
+    git_branch_t type;
+    git_reference *reference = NULL;
+    git_repository *repository = NULL;
+
+    if (git2r_error_check_branch_arg(branch))
+        error("Invalid arguments to git2r_branch_is_head");
+
+    repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
+    type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
+    err = git_branch_lookup(&reference, repository, name, type);
+    if (err < 0)
+        goto cleanup;
+
+    err = git_branch_delete(reference);
+
+cleanup:
+    if (reference)
+        git_reference_free(reference);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return R_NilValue;
+}
+
+/**
  * Init slots in S4 class git_branch
  *
  * @param source a reference
