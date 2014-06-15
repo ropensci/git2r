@@ -277,6 +277,64 @@ cleanup:
 }
 
 /**
+ * Get remote name of branch
+ *
+ * @param branch S4 class git_branch
+ * @return character string with remote name.
+ */
+SEXP git2r_branch_remote_name(SEXP branch)
+{
+    int err;
+    SEXP result = R_NilValue;
+    const char *name;
+    git_buf buf = {0};
+    git_branch_t type;
+    git_reference *reference = NULL;
+    git_repository *repository = NULL;
+
+    if (git2r_error_check_branch_arg(branch))
+        error("Invalid arguments to git2r_branch_remote_name");
+
+    type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
+    if (GIT_BRANCH_REMOTE != type)
+        error("branch is not remote");
+
+    repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
+    err = git_branch_lookup(&reference, repository, name, type);
+    if (err < 0)
+        goto cleanup;
+
+    err = git_branch_remote_name(&buf,
+                                 repository,
+                                 git_reference_name(reference));
+    if (err < 0)
+        goto cleanup;
+
+    PROTECT(result = allocVector(STRSXP, 1));
+    SET_STRING_ELT(result, 0, mkChar(buf.ptr));
+    git_buf_free(&buf);
+
+cleanup:
+    if (reference)
+        git_reference_free(reference);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return result;
+}
+
+/**
  * Get hex pointed to by a branch
  *
  * @param branch S4 class git_branch
@@ -293,7 +351,7 @@ SEXP git2r_branch_target(SEXP branch)
     git_repository *repository = NULL;
 
     if (git2r_error_check_branch_arg(branch))
-        error("Invalid arguments to git2r_branch_is_head");
+        error("Invalid arguments to git2r_branch_target");
 
     repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
     if (!repository)
