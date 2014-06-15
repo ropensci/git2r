@@ -201,10 +201,13 @@ SEXP git2r_repository_workdir(SEXP repo)
  * Find repository base path for given path
  *
  * @param path
- * @return
+ * @return R_NilValue if repository cannot be found or 
+ * a character vector of length one with path to repository's git dir
+ * e.g. /path/to/my/repo/.git
  */
 SEXP git2r_repository_discover(SEXP startpath)
 {
+    int err;
     SEXP result = R_NilValue;
     git_buf gitdir = GIT_BUF_INIT;
     
@@ -214,13 +217,18 @@ SEXP git2r_repository_discover(SEXP startpath)
     /* note that across_fs (arg #3) is set to 0 so this will stop when a
        filesystem device change is detected while exploring parent directories
     */
-    int grdres = git_repository_discover(&gitdir, CHAR(STRING_ELT(startpath, 0)), 0, 
+    err = git_repository_discover(&gitdir, CHAR(STRING_ELT(startpath, 0)), 0, 
     /* const char *ceiling_dirs */ NULL);
+    if (err < 0)
+        goto cleanup;
 
-    if (grdres == 0){
-        result = ScalarString(mkChar(gitdir.ptr));
-    }
-    
+    result = ScalarString(mkChar(gitdir.ptr));
+
+cleanup:
     git_buf_free(&gitdir);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
     return result;
 }
