@@ -47,6 +47,28 @@ setClass("git_branch",
                    type = "integer",
                    repo = "git_repository"))
 
+##' Delete a branch
+##'
+##' @rdname branch_delete-methods
+##' @docType methods
+##' @param branch The branch
+##' @return invisible NULL
+##' @keywords methods
+setGeneric("branch_delete",
+           signature = "branch",
+           function(branch)
+           standardGeneric("branch_delete"))
+
+##' @rdname branch_delete-methods
+##' @export
+setMethod("branch_delete",
+          signature = "git_branch",
+          function(branch)
+          {
+              invisible(.Call("git2r_branch_delete", branch))
+          }
+)
+
 ##' Remote name of a branch
 ##'
 ##' The name of remote that the remote tracking branch belongs to
