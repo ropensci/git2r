@@ -25,6 +25,7 @@
 SEXP git2r_branch_is_head(SEXP branch);
 SEXP git2r_branch_list(SEXP repo, SEXP flags);
 SEXP git2r_branch_remote_name(SEXP branch);
+SEXP git2r_branch_remote_url(SEXP branch);
 SEXP git2r_branch_target(SEXP branch);
 
 #endif

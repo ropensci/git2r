@@ -62,6 +62,7 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_branch_is_head", (DL_FUNC)&git2r_branch_is_head, 1},
     {"git2r_branch_list", (DL_FUNC)&git2r_branch_list, 2},
     {"git2r_branch_remote_name", (DL_FUNC)&git2r_branch_remote_name, 1},
+    {"git2r_branch_remote_url", (DL_FUNC)&git2r_branch_remote_url, 1},
     {"git2r_branch_target", (DL_FUNC)&git2r_branch_target, 1},
     {"git2r_checkout_commit", (DL_FUNC)&git2r_checkout_commit, 1},
     {"git2r_checkout_tag", (DL_FUNC)&git2r_checkout_tag, 1},

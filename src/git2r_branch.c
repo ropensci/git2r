@@ -332,6 +332,77 @@ cleanup:
 }
 
 /**
+ * Get remote url of branch
+ *
+ * @param branch S4 class git_branch
+ * @return character string with remote url.
+ */
+SEXP git2r_branch_remote_url(SEXP branch)
+{
+    int err;
+    SEXP result = R_NilValue;
+    const char *name;
+    git_buf buf = {0};
+    git_branch_t type;
+    git_reference *reference = NULL;
+    git_remote *remote = NULL;
+    git_repository *repository = NULL;
+
+    if (git2r_error_check_branch_arg(branch))
+        error("Invalid arguments to git2r_branch_remote_url");
+
+    type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
+    if (GIT_BRANCH_REMOTE != type)
+        error("branch is not remote");
+
+    repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
+    err = git_branch_lookup(&reference, repository, name, type);
+    if (err < 0)
+        goto cleanup;
+
+    err = git_branch_remote_name(&buf,
+                                 repository,
+                                 git_reference_name(reference));
+    if (err < 0)
+        goto cleanup;
+
+    err = git_remote_load(&remote, repository, buf.ptr);
+    if (err < 0) {
+        err = git_remote_create_anonymous(&remote, repository, buf.ptr, NULL);
+        if (err < 0) {
+            git_buf_free(&buf);
+            goto cleanup;
+        }
+    }
+    git_buf_free(&buf);
+
+    PROTECT(result = allocVector(STRSXP, 1));
+    SET_STRING_ELT(result, 0, mkChar(git_remote_url(remote)));
+
+cleanup:
+    if (remote)
+        git_remote_free(remote);
+
+    if (reference)
+        git_reference_free(reference);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return result;
+}
+
+/**
  * Get hex pointed to by a branch
  *
  * @param branch S4 class git_branch
