@@ -308,7 +308,7 @@ setMethod("commit",
                         is(committer, "git_signature"))
 
               parents <- character(0)
-              if(!is.empty(object)) {
+              if(!is_empty(object)) {
                   parents <- c(parents, branch_target(head(object)))
               }
 
