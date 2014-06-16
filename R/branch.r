@@ -47,6 +47,47 @@ setClass("git_branch",
                    type = "integer",
                    repo = "git_repository"))
 
+##' Create a branch
+##'
+##' @rdname branch_create-methods
+##' @docType methods
+##' @param commit Commit to which branch should point.
+##' @param name Name for the branch
+##' @param force Overwrite existing branch. Default = FALSE
+##' @param message The one line long message to the reflog. Default is
+##' NULL, which gives the log message "Branch: created"
+##' @param signature The identity that will be used to populate the
+##' reflog entry. Default is NULL, which gives the default signature.
+##' @return invisible S4 class git_branch object
+##' @keywords methods
+setGeneric("branch_create",
+           signature = "commit",
+           function(commit,
+                    name,
+                    force = FALSE,
+                    message = NULL,
+                    who = NULL)
+           standardGeneric("branch_create"))
+
+##' @rdname branch_create-methods
+##' @export
+setMethod("branch_create",
+          signature = "git_commit",
+          function(commit,
+                   name,
+                   force,
+                   message,
+                   who)
+          {
+              if(is.null(who)) {
+                  who = default_signature(commit@repo)
+              }
+
+              invisible(.Call("git2r_branch_create", name, commit, force,
+                              who, message))
+          }
+)
+
 ##' Delete a branch
 ##'
 ##' @rdname branch_delete-methods
