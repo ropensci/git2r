@@ -25,11 +25,15 @@
 #include "git2.h"
 
 SEXP git2r_commit_create(
-    SEXP repo, 
+    SEXP repo,
     SEXP message,
     SEXP author,
     SEXP committer,
     SEXP parent_list);
+int git2r_commit_lookup(
+    git_commit **out,
+    git_repository *repository,
+    SEXP commit);
 SEXP git2r_commit_tree(SEXP commit);
 void git2r_commit_init(git_commit *source, SEXP repo, SEXP dest);
 SEXP git2r_commit_parent_list(SEXP commit);
