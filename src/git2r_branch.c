@@ -168,8 +168,10 @@ SEXP git2r_branch_is_head(SEXP branch)
     if (err < 0)
         goto cleanup;
 
-    if (0 == err || 1 == err)
-        result = ScalarLogical(err);
+    if (0 == err || 1 == err) {
+        PROTECT(result = allocVector(LGLSXP, 1));
+        LOGICAL(result)[0] = err;
+    }
 
 cleanup:
     if (reference)
@@ -177,6 +179,9 @@ cleanup:
 
     if (repository)
         git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
 
     if (err < 0)
         error("Error: %s\n", giterr_last()->message);
