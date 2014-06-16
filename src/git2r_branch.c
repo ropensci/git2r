@@ -499,6 +499,108 @@ cleanup:
 }
 
 /**
+ * Rename a branch
+ *
+ * @param branch Branch to rename
+ * @param new_branch_name The new name for the branch
+ * @param force Overwrite existing branch
+ * @param signature The identity that will be used to populate the reflog entry
+ * @param message The one line long message to the reflog. If NULL, the default
+ *        value is appended
+ * @return The renamed S4 class git_branch
+ */
+SEXP git2r_branch_rename(
+    SEXP branch,
+    SEXP new_branch_name,
+    SEXP force,
+    SEXP signature,
+    SEXP message)
+{
+    SEXP repo;
+    SEXP result = R_NilValue;
+    SEXP when;
+    int err;
+    int overwrite = 0;
+    const char *log = NULL;
+    const char *name = NULL;
+    git_branch_t type;
+    git_signature *who = NULL;
+    git_reference *reference = NULL;
+    git_reference *new_reference = NULL;
+    git_repository *repository = NULL;
+
+    if (git2r_error_check_branch_arg(branch)
+        || git2r_error_check_string_arg(new_branch_name)
+        || git2r_error_check_logical_arg(force)
+        || git2r_error_check_signature_arg(signature))
+        error("Invalid arguments to git2r_branch_rename");
+
+    if (R_NilValue != message) {
+        if (git2r_error_check_string_arg(message))
+            error("Invalid arguments to git2r_branch_rename");
+        log = CHAR(STRING_ELT(message, 0));
+    }
+
+    repo = GET_SLOT(branch, Rf_install("repo"));
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
+    name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
+    err = git_branch_lookup(&reference, repository, name, type);
+    if (err < 0)
+        goto cleanup;
+
+    if (LOGICAL(force)[0])
+        overwrite = 1;
+
+    when = GET_SLOT(signature, Rf_install("when"));
+    err = git_signature_new(
+        &who,
+        CHAR(STRING_ELT(GET_SLOT(signature, Rf_install("name")), 0)),
+        CHAR(STRING_ELT(GET_SLOT(signature, Rf_install("email")), 0)),
+        REAL(GET_SLOT(when, Rf_install("time")))[0],
+        REAL(GET_SLOT(when, Rf_install("offset")))[0]);
+    if (err < 0)
+        goto cleanup;
+
+    err = git_branch_move(
+        &new_reference,
+        reference,
+        CHAR(STRING_ELT(new_branch_name, 0)),
+        overwrite,
+        who,
+        log);
+    if (err)
+        goto cleanup;
+
+    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_branch")));
+    err = git2r_branch_init(new_reference, type, repo, result);
+
+cleanup:
+    if (reference)
+        git_reference_free(reference);
+
+    if (new_reference)
+        git_reference_free(new_reference);
+
+    if (who)
+        git_signature_free(who);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return result;
+}
+
+/**
  * Get hex pointed to by a branch
  *
  * @param branch S4 class git_branch
