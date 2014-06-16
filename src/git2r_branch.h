@@ -22,6 +22,23 @@
 #include <R.h>
 #include <Rinternals.h>
 
+SEXP git2r_branch_create(
+    SEXP branch_name,
+    SEXP commit,
+    SEXP force,
+    SEXP signature,
+    SEXP message);
+SEXP git2r_branch_delete(SEXP branch);
+SEXP git2r_branch_is_head(SEXP branch);
 SEXP git2r_branch_list(SEXP repo, SEXP flags);
+SEXP git2r_branch_remote_name(SEXP branch);
+SEXP git2r_branch_remote_url(SEXP branch);
+SEXP git2r_branch_rename(
+    SEXP branch,
+    SEXP new_branch_name,
+    SEXP force,
+    SEXP signature,
+    SEXP message);
+SEXP git2r_branch_target(SEXP branch);
 
 #endif

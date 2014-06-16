@@ -44,10 +44,10 @@ branches(repo)
 head(repo)
 
 ## Check if HEAD is head
-is.head(head(repo))
+is_head(head(repo))
 
 ## Check if HEAD is local
-is.local(head(repo))
+is_local(head(repo))
 
 ## List all tags in repository
 tags(repo)

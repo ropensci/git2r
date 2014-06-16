@@ -38,7 +38,8 @@ setClass("git_repository",
          validity=function(object) {
              errors <- character()
 
-             if(!identical(.Call("git2r_repository_can_open", object@path), TRUE))
+             can_open <- .Call("git2r_repository_can_open", object@path)
+             if(!identical(can_open, TRUE))
                  errors <- c(errors, "Invalid repository")
 
              if (length(errors) == 0) TRUE else errors
@@ -146,10 +147,10 @@ setAs(from="git_repository",
 ##' head(repo)
 ##'
 ##' ## Check if HEAD is head
-##' is.head(head(repo))
+##' is_head(head(repo))
 ##'
 ##' ## Check if HEAD is local
-##' is.local(head(repo))
+##' is_local(head(repo))
 ##'
 ##' ## List all tags in repository
 ##' tags(repo)
@@ -307,8 +308,8 @@ setMethod("commit",
                         is(committer, "git_signature"))
 
               parents <- character(0)
-              if(!is_empty(object)) {
-                  parents <- c(parents, head(object)@hex)
+              if(!is.empty(object)) {
+                  parents <- c(parents, branch_target(head(object)))
               }
 
               .Call("git2r_commit_create",
@@ -335,7 +336,7 @@ setMethod("head",
               b <- branches(x)
 
               if(length(b)) {
-                  b <- b[sapply(b, is.head)]
+                  b <- b[sapply(b, is_head)]
                   if(identical(length(b), 1L)) {
                       return(b[[1]])
                   }
@@ -642,7 +643,7 @@ setMethod("show",
                   cat(sprintf("Local:    (detached) %s\n", workdir(object)))
               } else {
                   cat(sprintf("Local:    %s %s\n",
-                              head(object)@shorthand,
+                              head(object)@name,
                               workdir(object)))
               }
           }
@@ -663,7 +664,7 @@ setMethod("summary",
               show(object)
               cat("\n")
 
-              n_branches <- sum(!is.na(unique(sapply(branches(object), slot, "hex"))))
+              n_branches <- sum(!is.na(unique(sapply(branches(object), branch_target))))
               n_tags <- sum(!is.na(unique(sapply(tags(object), slot, "hex"))))
 
               work <- commits(object)

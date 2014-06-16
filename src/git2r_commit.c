@@ -230,7 +230,7 @@ cleanup:
  * @param commit
  * @return
  */
-static int git2r_commit_lookup(
+int git2r_commit_lookup(
     git_commit **out,
     git_repository *repository,
     SEXP commit)
