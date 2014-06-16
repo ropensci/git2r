@@ -155,6 +155,47 @@ setMethod("branch_remote_url",
           }
 )
 
+##' Rename a branch
+##'
+##' @rdname branch_rename-methods
+##' @docType methods
+##' @param branch Branch to rename
+##' @param name The new name for the branch
+##' @param force Overwrite existing branch. Default is FALSE
+##' @param signature The identity that will be used to populate the
+##' reflog entry. Default is NULL, which gives the default signature.
+##' @param message The one line long message to the reflog. If NULL,
+##' the default value is appended
+##' @return invisible renamed S4 class git_branch
+##' @keywords methods
+setGeneric("branch_rename",
+           signature = "branch",
+           function(branch,
+                    name,
+                    force = FALSE,
+                    message = NULL,
+                    who = NULL)
+           standardGeneric("branch_rename"))
+
+##' @rdname branch_rename-methods
+##' @export
+setMethod("branch_rename",
+          signature = "git_branch",
+          function(branch,
+                   name,
+                   force,
+                   message,
+                   who)
+          {
+              if(is.null(who)) {
+                  who = default_signature(branch@repo)
+              }
+
+              invisible(.Call("git2r_branch_rename", branch, name, force,
+                              who, message))
+          }
+)
+
 ##' Get target (hex) pointed to by a branch
 ##'
 ##' @rdname branch_target-methods

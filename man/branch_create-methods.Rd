@@ -7,7 +7,8 @@
 \usage{
 branch_create(commit, name, force = FALSE, message = NULL, who = NULL)
 
-\S4method{branch_create}{git_commit}(commit)
+\S4method{branch_create}{git_commit}(commit, name, force = FALSE,
+  message = NULL, who = NULL)
 }
 \arguments{
 \item{commit}{Commit to which branch should point.}
