@@ -51,7 +51,7 @@ stopifnot(identical(branches(repo)[[1]], head(repo)))
 ##
 ## Create a branch
 ##
-b <- branch_create(commit.1, "test")
+b <- branch_create(commit.1, name = "test")
 stopifnot(identical(b@name, "test"))
 stopifnot(identical(b@type, 1L))
 stopifnot(identical(length(branches(repo)), 2L))
@@ -74,12 +74,12 @@ stopifnot(!identical(branch_target(branches(repo)[[1]]),
 ##
 ## Create a branch with the same name should fail
 ##
-tools::assertError(branch_create(commit.2, "test"))
+tools::assertError(branch_create(commit.2, name = "test"))
 
 ##
 ## Force it and check the branches are identical again
 ##
-b <- branch_create(commit.2, "test", force=TRUE)
+b <- branch_create(commit.2, name = "test", force = TRUE)
 stopifnot(identical(branch_target(branches(repo)[[1]]),
                     branch_target(branches(repo)[[2]])))
 
@@ -88,6 +88,28 @@ stopifnot(identical(branch_target(branches(repo)[[1]]),
 ##
 branch_delete(b)
 stopifnot(identical(length(branches(repo)), 1L))
+
+##
+## Add one more commit
+##
+writeLines(c("Hello world!", "HELLO WORLD!", "hello world"),
+           file.path(path, "test.txt"))
+add(repo, "test.txt")
+commit.3 <- commit(repo, "Another third commit message")
+
+##
+## Create and test renaming of branches
+##
+b.1 <- branch_create(commit.1, name = "test-1")
+b.2 <- branch_create(commit.2, name = "test-2")
+b.3 <- branch_create(commit.3, name = "test-3")
+stopifnot(identical(length(branches(repo)), 4L))
+b.1 <- branch_rename(b.1, name = "test-1-new-name")
+stopifnot(identical(length(branches(repo)), 4L))
+stopifnot(identical(b.1@name, "test-1-new-name"))
+tools::assertError(branch_rename(b.1, name = "test-2"))
+branch_rename(b.1, name = "test-2", force = TRUE)
+stopifnot(identical(length(branches(repo)), 3L))
 
 ##
 ## Cleanup
