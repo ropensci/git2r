@@ -18,6 +18,7 @@
 
 #include <Rdefines.h>
 #include "git2.h"
+#include "git2r_commit.h"
 #include "git2r_error.h"
 #include "git2r_reference.h"
 #include "git2r_repository.h"
@@ -60,6 +61,138 @@ static int git2r_branch_count(git_repository *repo, int flags, size_t *n)
 }
 
 /**
+ * Init slots in S4 class git_branch
+ *
+ * @param source a reference
+ * @param repository the repository
+ * @param type the branch type; local or remote
+ * @param repo S4 class git_repository that contains the blob
+ * @param dest S4 class git_branch to initialize
+ * @return int; < 0 if error, else 0
+ */
+static int git2r_branch_init(
+    const git_reference *source,
+    git_branch_t type,
+    SEXP repo,
+    SEXP dest)
+{
+    int err = 0;
+    const char *name;
+
+    err = git_branch_name(&name, source);
+    if (err < 0)
+        goto cleanup;
+    SET_SLOT(dest,
+             Rf_install("name"),
+             ScalarString(mkChar(name)));
+
+    SET_SLOT(dest, Rf_install("type"), ScalarInteger(type));
+    SET_SLOT(dest, Rf_install("repo"), duplicate(repo));
+
+cleanup:
+    return err;
+}
+
+/**
+ * Create a new branch
+ *
+ * @param branch_name Name for the branch
+ * @param commit Commit to which branch should point.
+ * @param force Overwrite existing branch
+ * @param signature The identity that will be used to populate the reflog entry
+ * @param message The one line long message to the reflog. If NULL, default is
+ *        "Branch: created"
+ * @return S4 class git_branch
+ */
+SEXP git2r_branch_create(
+    SEXP branch_name,
+    SEXP commit,
+    SEXP force,
+    SEXP signature,
+    SEXP message)
+{
+    SEXP repo;
+    SEXP result = R_NilValue;
+    SEXP when;
+    int err;
+    int overwrite = 0;
+    const char *log = NULL;
+    git_commit *target = NULL;
+    git_signature *who = NULL;
+    git_reference *reference = NULL;
+    git_repository *repository = NULL;
+
+    if (git2r_error_check_string_arg(branch_name)
+        || git2r_error_check_commit_arg(commit)
+        || git2r_error_check_logical_arg(force)
+        || git2r_error_check_signature_arg(signature))
+        error("Invalid arguments to git2r_branch_create");
+
+    if (R_NilValue != message) {
+        if (git2r_error_check_string_arg(message))
+            error("Invalid arguments to git2r_branch_create");
+        log = CHAR(STRING_ELT(message, 0));
+    }
+
+    repo = GET_SLOT(commit, Rf_install("repo"));
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    err = git2r_commit_lookup(&target, repository, commit);
+    if (err < 0)
+        goto cleanup;
+
+    if (LOGICAL(force)[0])
+        overwrite = 1;
+
+    when = GET_SLOT(signature, Rf_install("when"));
+    err = git_signature_new(
+        &who,
+        CHAR(STRING_ELT(GET_SLOT(signature, Rf_install("name")), 0)),
+        CHAR(STRING_ELT(GET_SLOT(signature, Rf_install("email")), 0)),
+        REAL(GET_SLOT(when, Rf_install("time")))[0],
+        REAL(GET_SLOT(when, Rf_install("offset")))[0]);
+    if (err < 0)
+        goto cleanup;
+
+    err = git_branch_create(
+        &reference,
+        repository,
+        CHAR(STRING_ELT(branch_name, 0)),
+        target,
+        overwrite,
+        who,
+        log);
+    if (err)
+        goto cleanup;
+
+    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_branch")));
+    err = git2r_branch_init(reference, GIT_BRANCH_LOCAL, repo, result);
+
+cleanup:
+    if (reference)
+        git_reference_free(reference);
+
+    if (target)
+        git_commit_free(target);
+
+    if (who)
+        git_signature_free(who);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return result;
+}
+
+/**
  * Delete branch
  *
  * @param branch S4 class git_branch
@@ -99,39 +232,6 @@ cleanup:
         error("Error: %s\n", giterr_last()->message);
 
     return R_NilValue;
-}
-
-/**
- * Init slots in S4 class git_branch
- *
- * @param source a reference
- * @param repository the repository
- * @param type the branch type; local or remote
- * @param repo S4 class git_repository that contains the blob
- * @param dest S4 class git_branch to initialize
- * @return int; < 0 if error, else 0
- */
-static int git2r_branch_init(
-    const git_reference *source,
-    git_branch_t type,
-    SEXP repo,
-    SEXP dest)
-{
-    int err = 0;
-    const char *name;
-
-    err = git_branch_name(&name, source);
-    if (err < 0)
-        goto cleanup;
-    SET_SLOT(dest,
-             Rf_install("name"),
-             ScalarString(mkChar(name)));
-
-    SET_SLOT(dest, Rf_install("type"), ScalarInteger(type));
-    SET_SLOT(dest, Rf_install("repo"), duplicate(repo));
-
-cleanup:
-    return err;
 }
 
 /**
