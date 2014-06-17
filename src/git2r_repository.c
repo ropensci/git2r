@@ -219,8 +219,12 @@ SEXP git2r_repository_discover(SEXP startpath)
     */
     err = git_repository_discover(&gitdir, CHAR(STRING_ELT(startpath, 0)), 0, 
     /* const char *ceiling_dirs */ NULL);
-    if (err < 0)
+    if (err < 0) {
+        /* NB just return R_NilValue if we can't discover the repo */
+        if (GIT_ENOTFOUND == err)
+            err = 0;
         goto cleanup;
+    }
 
     result = ScalarString(mkChar(gitdir.ptr));
 
