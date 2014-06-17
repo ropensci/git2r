@@ -653,3 +653,63 @@ cleanup:
 
     return result;
 }
+
+/**
+ * Get remote tracking branch, given a local branch.
+ *
+ * @param branch S4 class git_branch
+ * @return S4 class git_branch or R_NilValue if no remote tracking branch.
+ */
+SEXP git2r_branch_upstream(SEXP branch)
+{
+    int err;
+    SEXP result = R_NilValue;
+    SEXP repo;
+    const char *name;
+    git_branch_t type;
+    git_reference *reference = NULL;
+    git_reference *upstream = NULL;
+    git_repository *repository = NULL;
+
+    if (git2r_error_check_branch_arg(branch))
+        error("Invalid arguments to git2r_branch_upstream");
+
+    repo = GET_SLOT(branch, Rf_install("repo"));
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
+    type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
+    err = git_branch_lookup(&reference, repository, name, type);
+    if (err < 0)
+        goto cleanup;
+
+    err = git_branch_upstream(&upstream, reference);
+    if (err < 0) {
+        if (GIT_ENOTFOUND == err)
+            err = 0;
+        goto cleanup;
+    }
+
+    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_branch")));
+    err = git2r_branch_init(upstream, GIT_BRANCH_REMOTE, repo, result);
+
+cleanup:
+    if (reference)
+        git_reference_free(reference);
+
+    if (upstream)
+        git_reference_free(upstream);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return result;
+}
