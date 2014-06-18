@@ -50,6 +50,7 @@ Collate:
     'contributions.r'
     'fetch.r'
     'git2r.r'
+    'index.r'
     'libgit2.r'
     'markdown_link.r'
     'plot.r'

@@ -235,45 +235,6 @@ clone <- function(url, local_path, progress = TRUE) {
     repository(local_path)
 }
 
-##' Add file(s) to index
-##'
-##' @rdname add-methods
-##' @docType methods
-##' @param object The repository \code{object}.
-##' @param path character vector with filenames to add. The path must
-##' be relative to the repository's working filder.
-##' @return invisible(NULL)
-##' @keywords methods
-##' @examples
-##' \dontrun{
-##' ## Open an existing repository
-##' repo <- repository("path/to/git2r")
-##'
-##' ## Add file repository
-##' add(repo, "file-to-add")
-##' }
-##'
-setGeneric("add",
-           signature = "object",
-           function(object, path)
-           standardGeneric("add"))
-
-##' @rdname add-methods
-##' @export
-setMethod("add",
-          signature(object = "git_repository"),
-          function (object, path)
-          {
-              ## Argument checking
-              stopifnot(is.character(path),
-                        all(nchar(path) > 0))
-
-              lapply(path, function(x) .Call("git2r_index_add", object, x))
-
-              invisible(NULL)
-          }
-)
-
 ##' Commit
 ##'
 ##' @rdname commit-methods

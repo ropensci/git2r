@@ -13,7 +13,9 @@ add(object, path)
 \item{object}{The repository \code{object}.}
 
 \item{path}{character vector with filenames to add. The path must
-be relative to the repository's working filder.}
+be relative to the repository's working folder. Only non-ignored
+files are added. If path is a directory, files in sub-folders are
+added (if non-ignored)}
 }
 \value{
 invisible(NULL)
