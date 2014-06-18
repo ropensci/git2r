@@ -696,11 +696,9 @@ setMethod("summary",
 
 ##' Workdir of repository
 ##'
-##' When object is a path, libgit's git_repository_discover is used to identify
-##'   the location of the repository.
 ##' @rdname workdir-methods
 ##' @docType methods
-##' @param object The repository \code{object} to check workdir or a character vector specifying the path to a file or folder
+##' @param object The repository \code{object} to check workdir
 ##' @return Character vector with workdir. If the repository is bare,
 ##' \code{NULL} will be returned.
 ##' @keywords methods
@@ -716,20 +714,6 @@ setMethod("workdir",
           function (object)
           {
               .Call("git2r_repository_workdir", object)
-          }
-)
-
-##' @rdname workdir-methods
-##' @export
-setMethod("workdir",
-          signature(object = "character"),
-          function (object)
-          {
-              gitdir=discover_repository(object)
-              if(!is.null(gitdir) && basename(gitdir)=='.git'){
-                  # nb file.path looks after trailing filesep
-                  file.path(dirname(gitdir), '')
-              } else NULL
           }
 )
 

@@ -2,26 +2,22 @@
 \docType{methods}
 \name{workdir}
 \alias{workdir}
-\alias{workdir,character-method}
 \alias{workdir,git_repository-method}
 \title{Workdir of repository}
 \usage{
 workdir(object)
 
 \S4method{workdir}{git_repository}(object)
-
-\S4method{workdir}{character}(object)
 }
 \arguments{
-\item{object}{The repository \code{object} to check workdir or a character vector specifying the path to a file or folder}
+\item{object}{The repository \code{object} to check workdir}
 }
 \value{
 Character vector with workdir. If the repository is bare,
 \code{NULL} will be returned.
 }
 \description{
-When object is a path, libgit's git_repository_discover is used to identify
-  the location of the repository.
+Workdir of repository
 }
 \keyword{methods}
 

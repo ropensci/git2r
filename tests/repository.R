@@ -51,15 +51,13 @@ stopifnot(identical(branches(repo), list()))
 stopifnot(identical(commits(repo), list()))
 stopifnot(identical(head(repo), NULL))
 
-# check that we can find workdir for paths in repository
+# check that we can find repository from a path
 wd=workdir(repo)
-stopifnot(identical(workdir(wd), wd))
 writeLines('test file', con=file.path(wd, 'myfile.txt'))
-stopifnot(identical(workdir(file.path(wd, 'myfile.txt')), wd))
 stopifnot(identical(discover_repository(file.path(wd, 'myfile.txt')),
                     paste0(wd, '.git', .Platform$file.sep)))
-stopifnot(identical(
-  discover_repository(file.path(wd, 'doesntexist.txt')), NULL))
+stopifnot(identical(discover_repository(file.path(wd, 'doesntexist.txt')),
+                    NULL))
 
 ##
 ## Check that lookup with a hex of less than 4 characters or more than
