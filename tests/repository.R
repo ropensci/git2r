@@ -55,8 +55,11 @@ stopifnot(identical(head(repo), NULL))
 wd=workdir(repo)
 stopifnot(identical(workdir(wd), wd))
 writeLines('test file', con=file.path(wd, 'myfile.txt'))
-stopifnot(identical(workdir(file.path(wd,'myfile.txt')), wd))
-tools::assertError(workdir(file.path(wd,'doesntexist.txt')))
+stopifnot(identical(workdir(file.path(wd, 'myfile.txt')), wd))
+stopifnot(identical(repository_discover(file.path(wd, 'myfile.txt')),
+                    paste0(wd, '.git', .Platform$file.sep)))
+stopifnot(identical(
+  repository_discover(file.path(wd, 'doesntexist.txt')), NULL))
 
 ##
 ## Check that lookup with a hex of less than 4 characters or more than
