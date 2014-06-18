@@ -114,6 +114,7 @@ setAs(from="git_repository",
 ##' Open a repository
 ##'
 ##' @param path A path to an existing local git repository
+##' @param discover Discover repository from path. Default is FALSE.
 ##' @return A S4 \code{git_repository} object
 ##' @keywords methods
 ##' @export
@@ -156,15 +157,19 @@ setAs(from="git_repository",
 ##' tags(repo)
 ##' }
 ##'
-repository <- function(path) {
+repository <- function(path, discover = FALSE) {
     ## Argument checking
     stopifnot(is.character(path),
               identical(length(path), 1L),
               nchar(path) > 0)
 
-    path <- normalizePath(path, winslash = "/", mustWork = TRUE)
-    if(!file.info(path)$isdir)
-        stop("path is not a directory")
+    if (discover) {
+        path <- discover_repository(path)
+    } else {
+        path <- normalizePath(path, winslash = "/", mustWork = TRUE)
+        if(!file.info(path)$isdir)
+            stop("path is not a directory")
+    }
 
     new("git_repository", path=path)
 }

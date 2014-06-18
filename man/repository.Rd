@@ -3,10 +3,12 @@
 \alias{repository}
 \title{Open a repository}
 \usage{
-repository(path)
+repository(path, discover = FALSE)
 }
 \arguments{
 \item{path}{A path to an existing local git repository}
+
+\item{discover}{Discover repository from path. Default is FALSE.}
 }
 \value{
 A S4 \code{git_repository} object
