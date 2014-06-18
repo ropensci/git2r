@@ -725,7 +725,7 @@ setMethod("workdir",
           signature(object = "character"),
           function (object)
           {
-              gitdir=repository_discover(object)
+              gitdir=discover_repository(object)
               if(!is.null(gitdir) && basename(gitdir)=='.git'){
                   # nb file.path looks after trailing filesep
                   file.path(dirname(gitdir), '')
@@ -735,9 +735,9 @@ setMethod("workdir",
 
 ##' Find path to repository for any file
 ##'
-##' libgit's git_repository_discover is used to identify the location of the
+##' libgit's git_discover_repository is used to identify the location of the
 ##'   repository. The path will therefore be terminated by a file separator.
-##' @rdname repository_discover-methods
+##' @rdname discover_repository-methods
 ##' @docType methods
 ##' @param object A character vector specifying the path to a file or folder
 ##' @return Character vector with path to repository or NULL if this cannot be
@@ -747,17 +747,17 @@ setMethod("workdir",
 ##' \dontrun{
 ##' path='/path/to/my/new/repo'
 ##' init(path)
-##' repository_discover(path)
+##' discover_repository(path)
 ##' # /path/to/my/new/repo/.git/
 ##' }
-setGeneric("repository_discover",
+setGeneric("discover_repository",
            signature = "object",
            function(object)
-           standardGeneric("repository_discover"))
+           standardGeneric("discover_repository"))
 
-##' @rdname repository_discover-methods
+##' @rdname discover_repository-methods
 ##' @export
-setMethod("repository_discover",
+setMethod("discover_repository",
          signature(object = "character"),
          function (object)
          {
