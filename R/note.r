@@ -39,3 +39,28 @@ setClass("git_note",
          slots = c(hex  = "character",
                    note = "character",
                    repo = "git_repository"))
+
+##' List notes
+##'
+##' List all the notes within a specified namespace.
+##' @rdname note_list-methods
+##' @docType methods
+##' @param repo The repository
+##' @param ref Reference to read from. Default is NULL, which uses
+##' "refs/notes/commits".
+##' @return list with S4 class git_note objects
+##' @keywords methods
+setGeneric("note_list",
+           signature = "repo",
+           function(repo, ref)
+           standardGeneric("note_list"))
+
+##' @rdname note_list-methods
+##' @export
+setMethod("note_list",
+          signature = "git_repository",
+          function(repo, ref)
+          {
+              .Call("git2r_note_list", repo, ref)
+          }
+)
