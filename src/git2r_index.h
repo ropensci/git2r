@@ -23,5 +23,6 @@
 #include <Rinternals.h>
 
 SEXP git2r_index_add(SEXP repo, SEXP path);
+SEXP git2r_index_add_all(SEXP repo, SEXP path);
 
 #endif
