@@ -713,3 +713,57 @@ cleanup:
 
     return result;
 }
+
+/**
+ * Set remote tracking branch
+ *
+ * Set the upstream configuration for a given local branch
+ * @param branch The branch to configure
+ * @param upstream_name remote-tracking or local branch to set as
+ * upstream. Pass NULL to unset.
+ * @return R_NilValue
+ */
+SEXP git2r_branch_set_upstream(SEXP branch, SEXP upstream_name)
+{
+    int err;
+    SEXP repo;
+    const char *name;
+    const char *u_name = NULL;
+    git_branch_t type;
+    git_reference *reference = NULL;
+    git_repository *repository = NULL;
+
+    if (git2r_error_check_branch_arg(branch))
+        error("Invalid arguments to git2r_branch_set_upstream");
+
+    if (R_NilValue != upstream_name) {
+        if (git2r_error_check_string_arg(upstream_name))
+            error("Invalid arguments to git2r_branch_set_upstream");
+        u_name = CHAR(STRING_ELT(upstream_name, 0));
+    }
+
+    repo = GET_SLOT(branch, Rf_install("repo"));
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
+    type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
+    err = git_branch_lookup(&reference, repository, name, type);
+    if (err < 0)
+        goto cleanup;
+
+    err = git_branch_set_upstream(&reference, u_name);
+
+cleanup:
+    if (reference)
+        git_reference_free(reference);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return R_NilValue;
+}
