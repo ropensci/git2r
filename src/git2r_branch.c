@@ -660,7 +660,7 @@ cleanup:
  * @param branch S4 class git_branch
  * @return S4 class git_branch or R_NilValue if no remote tracking branch.
  */
-SEXP git2r_branch_upstream(SEXP branch)
+SEXP git2r_branch_get_upstream(SEXP branch)
 {
     int err;
     SEXP result = R_NilValue;
@@ -672,7 +672,7 @@ SEXP git2r_branch_upstream(SEXP branch)
     git_repository *repository = NULL;
 
     if (git2r_error_check_branch_arg(branch))
-        error("Invalid arguments to git2r_branch_upstream");
+        error("Invalid arguments to git2r_branch_get_upstream");
 
     repo = GET_SLOT(branch, Rf_install("repo"));
     repository = git2r_repository_open(repo);

@@ -40,6 +40,6 @@ SEXP git2r_branch_rename(
     SEXP signature,
     SEXP message);
 SEXP git2r_branch_target(SEXP branch);
-SEXP git2r_branch_upstream(SEXP branch);
+SEXP git2r_branch_get_upstream(SEXP branch);
 
 #endif

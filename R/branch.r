@@ -221,23 +221,23 @@ setMethod("branch_target",
 ##' Get remote tracking branch
 ##'
 ##' Get remote tracking branch, given a local branch.
-##' @rdname branch_upstream-methods
+##' @rdname branch_get_upstream-methods
 ##' @docType methods
 ##' @param branch The branch
 ##' @return S4 class git_branch or NULL if no remote tracking branch.
 ##' @keywords methods
-setGeneric("branch_upstream",
+setGeneric("branch_get_upstream",
            signature = "branch",
            function(branch)
-           standardGeneric("branch_upstream"))
+           standardGeneric("branch_get_upstream"))
 
-##' @rdname branch_upstream-methods
+##' @rdname branch_get_upstream-methods
 ##' @export
-setMethod("branch_upstream",
+setMethod("branch_get_upstream",
           signature = "git_branch",
           function(branch)
           {
-              .Call("git2r_branch_upstream", branch)
+              .Call("git2r_branch_get_upstream", branch)
           }
 )
 
