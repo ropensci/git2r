@@ -50,7 +50,7 @@ setMethod("add",
               stopifnot(is.character(path),
                         all(nchar(path) > 0))
 
-              lapply(path, function(x) .Call("git2r_index_add", object, x))
+              .Call("git2r_index_add_all", object, path)
 
               invisible(NULL)
           }
