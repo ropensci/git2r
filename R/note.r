@@ -56,7 +56,8 @@ setClass("git_note",
 ##' @keywords methods
 setGeneric("note_list",
            signature = "repo",
-           function(repo, ref)
+           function(repo,
+                    ref = NULL)
            standardGeneric("note_list"))
 
 ##' @rdname note_list-methods
