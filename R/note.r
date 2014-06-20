@@ -20,7 +20,10 @@
 ##' @section Slots:
 ##' \describe{
 ##'   \item{hex}{
-##'     40 char hexadecimal string
+##'     40 char hexadecimal string of blob containing the message
+##'   }
+##'   \item{annotated}{
+##'     40 char hexadecimal string of the git object being annotated
 ##'   }
 ##'   \item{message}{
 ##'     The note message
@@ -36,9 +39,10 @@
 ##' @include repository.r
 ##' @export
 setClass("git_note",
-         slots = c(hex     = "character",
-                   message = "character",
-                   repo    = "git_repository"))
+         slots = c(hex       = "character",
+                   annotated = "character",
+                   message   = "character",
+                   repo      = "git_repository"))
 
 ##' List notes
 ##'
