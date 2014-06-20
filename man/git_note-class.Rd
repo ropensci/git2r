@@ -12,7 +12,7 @@ Class \code{git_note}
   \item{hex}{
     40 char hexadecimal string
   }
-  \item{note}{
+  \item{message}{
     The note message
   }
   \item{repo}{

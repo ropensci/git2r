@@ -22,7 +22,7 @@
 ##'   \item{hex}{
 ##'     40 char hexadecimal string
 ##'   }
-##'   \item{note}{
+##'   \item{message}{
 ##'     The note message
 ##'   }
 ##'   \item{repo}{
@@ -36,9 +36,9 @@
 ##' @include repository.r
 ##' @export
 setClass("git_note",
-         slots = c(hex  = "character",
-                   note = "character",
-                   repo = "git_repository"))
+         slots = c(hex     = "character",
+                   message = "character",
+                   repo    = "git_repository"))
 
 ##' List notes
 ##'
