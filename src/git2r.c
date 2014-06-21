@@ -87,6 +87,7 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_libgit2_features", (DL_FUNC)&git2r_libgit2_features, 0},
     {"git2r_libgit2_version", (DL_FUNC)&git2r_libgit2_version, 0},
     {"git2r_note_default_ref", (DL_FUNC)&git2r_note_default_ref, 1},
+    {"git2r_note_list", (DL_FUNC)&git2r_note_list, 2},
     {"git2r_object_lookup", (DL_FUNC)&git2r_object_lookup, 2},
     {"git2r_odb_hash", (DL_FUNC)&git2r_odb_hash, 1},
     {"git2r_odb_hashfile", (DL_FUNC)&git2r_odb_hashfile, 1},
