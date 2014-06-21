@@ -22,4 +22,6 @@
 #include <R.h>
 #include <Rinternals.h>
 
+SEXP git2r_note_default_ref(SEXP repo);
+
 #endif
