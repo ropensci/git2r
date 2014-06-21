@@ -44,6 +44,30 @@ setClass("git_note",
                    message   = "character",
                    repo      = "git_repository"))
 
+##' Default notes reference
+##'
+##' Get the default notes reference for a repository
+##' @rdname note_default_ref-methods
+##' @docType methods
+##' @param repo The repository
+##' @return Character vector of length one with name of default notes
+##' reference
+##' @keywords methods
+setGeneric("note_default_ref",
+           signature = "repo",
+           function(repo)
+           standardGeneric("note_default_ref"))
+
+##' @rdname note_default_ref-methods
+##' @export
+setMethod("note_default_ref",
+          signature = "git_repository",
+          function(repo)
+          {
+              .Call("git2r_note_default_ref", repo)
+          }
+)
+
 ##' List notes
 ##'
 ##' List all the notes within a specified namespace.
