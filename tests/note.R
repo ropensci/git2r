@@ -40,6 +40,11 @@ add(repo, "test.txt")
 commit.1 <- commit(repo, "Commit message")
 
 ##
+## Check default ref
+##
+stopifnot(identical(note_default_ref(repo),
+                    "refs/notes/commits"))
+##
 ## Check that note_list is an empty list
 ##
 stopifnot(identical(note_list(repo), list()))
