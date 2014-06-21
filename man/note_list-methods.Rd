@@ -5,9 +5,9 @@
 \alias{note_list,git_repository-method}
 \title{List notes}
 \usage{
-note_list(repo, ref)
+note_list(repo, ref = NULL)
 
-\S4method{note_list}{git_repository}(repo, ref)
+\S4method{note_list}{git_repository}(repo, ref = NULL)
 }
 \arguments{
 \item{repo}{The repository}

@@ -10,10 +10,16 @@ Class \code{git_note}
 
 \describe{
   \item{hex}{
-    40 char hexadecimal string
+    40 char hexadecimal string of blob containing the message
+  }
+  \item{annotated}{
+    40 char hexadecimal string of the git object being annotated
   }
   \item{message}{
     The note message
+  }
+  \item{refname}{
+    Name of the reference
   }
   \item{repo}{
     The S4 class git_repository that contains the note
