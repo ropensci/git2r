@@ -28,6 +28,9 @@
 ##'   \item{message}{
 ##'     The note message
 ##'   }
+##'   \item{refname}{
+##'     Name of the reference
+##'   }
 ##'   \item{repo}{
 ##'     The S4 class git_repository that contains the note
 ##'   }
@@ -42,6 +45,7 @@ setClass("git_note",
          slots = c(hex       = "character",
                    annotated = "character",
                    message   = "character",
+                   refname   = "character",
                    repo      = "git_repository"))
 
 ##' Default notes reference
