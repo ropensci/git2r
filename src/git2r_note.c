@@ -32,45 +32,6 @@ typedef struct {
 } git2r_note_list_cb_data;
 
 /**
- * Default notes reference
- *
- * Get the default notes reference for a repository
- * @param repo S4 class git_repository
- * @return Character vector of length one with name of default
- * reference
-*/
-SEXP git2r_note_default_ref(SEXP repo)
-{
-    int err;
-    SEXP result = R_NilValue;
-    const char *ref;
-    git_repository *repository = NULL;
-
-    repository = git2r_repository_open(repo);
-    if (!repository)
-        error(git2r_err_invalid_repository);
-
-    err = git_note_default_ref(&ref, repository);
-    if (err < 0)
-        goto cleanup;
-
-    PROTECT(result = allocVector(STRSXP, 1));
-    SET_STRING_ELT(result, 0, mkChar(ref));
-
-cleanup:
-    if (repository)
-        git_repository_free(repository);
-
-    if (R_NilValue != result)
-        UNPROTECT(1);
-
-    if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
-
-    return result;
-}
-
-/**
  * Init slots in S4 class git_note
  *
  * @param blob_id Oid of the blob containing the message
@@ -80,7 +41,7 @@ cleanup:
  * @param dest S4 class git_note to initialize
  * @return int 0 on success, or an error code.
  */
-int git2r_note_init(
+static int git2r_note_init(
     const git_oid *blob_id,
     const git_oid *annotated_object_id,
     git_repository *repository,
@@ -122,6 +83,154 @@ int git2r_note_init(
         git_note_free(note);
 
     return 0;
+}
+
+/**
+ * Add a note for a object
+ *
+ * @param commit S4 class git_commit
+ * @param message Content of the note to add
+ * @param notes_ref Canonical name of the reference to use
+ * @param author Signature of the notes note author
+ * @param committer Signature of the notes note committer
+ * @param force Overwrite existing note
+ * @return S4 class git_note
+ */
+SEXP git2r_note_create(
+    SEXP commit,
+    SEXP message,
+    SEXP ref,
+    SEXP author,
+    SEXP committer,
+    SEXP force)
+{
+    int err;
+    SEXP repo;
+    SEXP when;
+    SEXP hex;
+    SEXP result = R_NilValue;
+    int overwrite = 0;
+    git_oid note_oid;
+    git_oid commit_oid;
+    git_signature *sig_author = NULL;
+    git_signature *sig_committer = NULL;
+    git_repository *repository = NULL;
+
+    if (git2r_error_check_commit_arg(commit)
+        || git2r_error_check_string_arg(message)
+        || git2r_error_check_string_arg(ref)
+        || git2r_error_check_signature_arg(author)
+        || git2r_error_check_signature_arg(committer)
+        || git2r_error_check_logical_arg(force))
+        error("Invalid arguments to git2r_note_create");
+
+    repo = GET_SLOT(commit, Rf_install("repo"));
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    when = GET_SLOT(author, Rf_install("when"));
+    err = git_signature_new(&sig_author,
+                            CHAR(STRING_ELT(GET_SLOT(author, Rf_install("name")), 0)),
+                            CHAR(STRING_ELT(GET_SLOT(author, Rf_install("email")), 0)),
+                            REAL(GET_SLOT(when, Rf_install("time")))[0],
+                            REAL(GET_SLOT(when, Rf_install("offset")))[0]);
+    if (err < 0)
+        goto cleanup;
+
+    when = GET_SLOT(committer, Rf_install("when"));
+    err = git_signature_new(&sig_committer,
+                            CHAR(STRING_ELT(GET_SLOT(committer, Rf_install("name")), 0)),
+                            CHAR(STRING_ELT(GET_SLOT(committer, Rf_install("email")), 0)),
+                            REAL(GET_SLOT(when, Rf_install("time")))[0],
+                            REAL(GET_SLOT(when, Rf_install("offset")))[0]);
+    if (err < 0)
+        goto cleanup;
+
+    hex = GET_SLOT(commit, Rf_install("hex"));
+    err = git_oid_fromstr(&commit_oid, CHAR(STRING_ELT(hex, 0)));
+    if (err < 0)
+        goto cleanup;
+
+    if (LOGICAL(force)[0])
+        overwrite = 1;
+
+    err = git_note_create(
+        &note_oid,
+        repository,
+        sig_author,
+        sig_committer,
+        CHAR(STRING_ELT(ref, 0)),
+        &commit_oid,
+        CHAR(STRING_ELT(message, 0)),
+        overwrite);
+    if (err < 0)
+        goto cleanup;
+
+    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_note")));
+    err = git2r_note_init(&note_oid,
+                          &commit_oid,
+                          repository,
+                          CHAR(STRING_ELT(ref, 0)),
+                          repo,
+                          result);
+
+cleanup:
+    if (sig_author)
+        git_signature_free(sig_author);
+
+    if (sig_committer)
+        git_signature_free(sig_committer);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return result;
+}
+
+/**
+ * Default notes reference
+ *
+ * Get the default notes reference for a repository
+ * @param repo S4 class git_repository
+ * @return Character vector of length one with name of default
+ * reference
+ */
+SEXP git2r_note_default_ref(SEXP repo)
+{
+    int err;
+    SEXP result = R_NilValue;
+    const char *ref;
+    git_repository *repository = NULL;
+
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    err = git_note_default_ref(&ref, repository);
+    if (err < 0)
+        goto cleanup;
+
+    PROTECT(result = allocVector(STRSXP, 1));
+    SET_STRING_ELT(result, 0, mkChar(ref));
+
+cleanup:
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return result;
 }
 
 /**

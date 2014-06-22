@@ -22,6 +22,13 @@
 #include <R.h>
 #include <Rinternals.h>
 
+SEXP git2r_note_create(
+    SEXP commit,
+    SEXP message,
+    SEXP ref,
+    SEXP author,
+    SEXP committer,
+    SEXP force);
 SEXP git2r_note_default_ref(SEXP repo);
 SEXP git2r_note_list(SEXP repo, SEXP ref);
 
