@@ -72,6 +72,50 @@ setMethod("note_default_ref",
           }
 )
 
+##' Add note for a object
+##'
+##' @rdname note_create-methods
+##' @docType methods
+##' @param object The object to annotate
+##' @param message Content of the note to add
+##' @param ref Canonical name of the reference to use. Default is
+##' \code{note_default_ref}.
+##' @param author Signature of the notes note author
+##' @param committer Signature of the notes note committer
+##' @param force Overwrite existing note. Default is FALSE
+##' @return S4 class git_note
+##' @keywords methods
+setGeneric("note_create",
+           signature = "object",
+           function(object,
+                    message,
+                    ref       = note_default_ref(object@repo),
+                    author    = default_signature(object@repo),
+                    committer = default_signature(object@repo),
+                    force     = FALSE)
+           standardGeneric("note_create"))
+
+##' @rdname note_create-methods
+##' @export
+setMethod("note_create",
+          signature = "git_commit",
+          function(object,
+                   message,
+                   ref,
+                   author,
+                   committer,
+                   force)
+          {
+              .Call("git2r_note_create",
+                    object,
+                    message,
+                    ref,
+                    author,
+                    committer,
+                    force)
+          }
+)
+
 ##' List notes
 ##'
 ##' List all the notes within a specified namespace.
