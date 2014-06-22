@@ -29,25 +29,47 @@ repo <- init(path)
 config(repo, user.name="Repo", user.email="repo@example.org")
 
 ##
-## Create a file
+## Create a file, add and commit
 ##
 writeLines("Hello world!", file.path(path, "test.txt"))
+add(repo, "test.txt")
+commit.1 <- commit(repo, "Commit message 1")
 
 ##
-## add and commit
+## Create another commit
 ##
+writeLines(c("Hello world!",
+             "HELLO WORLD!"),
+           file.path(path, "test.txt"))
 add(repo, "test.txt")
-commit.1 <- commit(repo, "Commit message")
+commit.2 <- commit(repo, "Commit message 2")
 
 ##
 ## Check default ref
 ##
 stopifnot(identical(note_default_ref(repo),
                     "refs/notes/commits"))
+
 ##
 ## Check that note_list is an empty list
 ##
 stopifnot(identical(note_list(repo), list()))
+
+##
+## Create note in default namespace
+##
+note.1 <- note_create(commit.1, "Note-1")
+stopifnot(identical(length(note_list(repo)), 1L))
+tools::assertError(note_create(commit.1, "Note-2"))
+note.2 <- note_create(commit.1, "Note-2", force = TRUE)
+stopifnot(identical(length(note_list(repo)), 1L))
+
+##
+## Create note in named (review) namespace
+##
+note.3 <- note_create(commit.1, "Note-3", ref="ref/notes/review")
+note.4 <- note_create(commit.2, "Note-4", ref="ref/notes/review")
+stopifnot(identical(length(note_list(repo, ref="ref/notes/review")), 2L))
 
 ##
 ## Cleanup
