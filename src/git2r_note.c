@@ -86,11 +86,11 @@ static int git2r_note_init(
 }
 
 /**
- * Add a note for a object
+ * Add a note for an object
  *
  * @param commit S4 class git_commit
  * @param message Content of the note to add
- * @param notes_ref Canonical name of the reference to use
+ * @param ref Canonical name of the reference to use
  * @param author Signature of the notes note author
  * @param committer Signature of the notes note committer
  * @param force Overwrite existing note
@@ -333,4 +333,79 @@ cleanup:
         error("Error: %s\n", giterr_last()->message);
 
     return result;
+}
+
+/**
+ * Remove the note for an object
+ *
+ * @param note S4 class git_note
+ * @param author Signature of the notes commit author
+ * @param committer Signature of the notes commit committer
+ * @return R_NilValue
+ */
+SEXP git2r_note_remove(SEXP note, SEXP author, SEXP committer)
+{
+    int err;
+    SEXP repo;
+    SEXP when;
+    SEXP hex;
+    git_oid note_oid;
+    git_signature *sig_author = NULL;
+    git_signature *sig_committer = NULL;
+    git_repository *repository = NULL;
+
+    if (git2r_error_check_note_arg(note)
+        || git2r_error_check_signature_arg(author)
+        || git2r_error_check_signature_arg(committer))
+        error("Invalid arguments to git2r_note_remove");
+
+    repo = GET_SLOT(note, Rf_install("repo"));
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    when = GET_SLOT(author, Rf_install("when"));
+    err = git_signature_new(&sig_author,
+                            CHAR(STRING_ELT(GET_SLOT(author, Rf_install("name")), 0)),
+                            CHAR(STRING_ELT(GET_SLOT(author, Rf_install("email")), 0)),
+                            REAL(GET_SLOT(when, Rf_install("time")))[0],
+                            REAL(GET_SLOT(when, Rf_install("offset")))[0]);
+    if (err < 0)
+        goto cleanup;
+
+    when = GET_SLOT(committer, Rf_install("when"));
+    err = git_signature_new(&sig_committer,
+                            CHAR(STRING_ELT(GET_SLOT(committer, Rf_install("name")), 0)),
+                            CHAR(STRING_ELT(GET_SLOT(committer, Rf_install("email")), 0)),
+                            REAL(GET_SLOT(when, Rf_install("time")))[0],
+                            REAL(GET_SLOT(when, Rf_install("offset")))[0]);
+    if (err < 0)
+        goto cleanup;
+
+    hex = GET_SLOT(note, Rf_install("hex"));
+    err = git_oid_fromstr(&note_oid, CHAR(STRING_ELT(hex, 0)));
+    if (err < 0)
+        goto cleanup;
+
+    err = git_note_remove(
+        repository,
+        CHAR(STRING_ELT(GET_SLOT(note, Rf_install("refname")), 0)),
+        sig_author,
+        sig_committer,
+        &note_oid);
+
+cleanup:
+    if (sig_author)
+        git_signature_free(sig_author);
+
+    if (sig_committer)
+        git_signature_free(sig_committer);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return R_NilValue;
 }
