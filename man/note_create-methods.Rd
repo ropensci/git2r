@@ -6,12 +6,13 @@
 \title{Add note for a object}
 \usage{
 note_create(object, message, ref = note_default_ref(object@repo),
-  author = default_signature(object), committer = default_signature(object),
-  force = FALSE)
+  author = default_signature(object@repo),
+  committer = default_signature(object@repo), force = FALSE)
 
 \S4method{note_create}{git_commit}(object, message,
-  ref = note_default_ref(object@repo), author = default_signature(object),
-  committer = default_signature(object), force = FALSE)
+  ref = note_default_ref(object@repo),
+  author = default_signature(object@repo),
+  committer = default_signature(object@repo), force = FALSE)
 }
 \arguments{
 \item{object}{The object to annotate}

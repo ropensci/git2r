@@ -2,17 +2,20 @@
 \docType{methods}
 \name{note_list}
 \alias{note_list}
-\alias{note_list,git_repository-method}
+\alias{note_list,git_repository,character-method}
+\alias{note_list,git_repository,missing-method}
 \title{List notes}
 \usage{
-note_list(repo, ref = NULL)
+note_list(repo, ref)
 
-\S4method{note_list}{git_repository}(repo, ref = NULL)
+\S4method{note_list}{git_repository,missing}(repo)
+
+\S4method{note_list}{git_repository,character}(repo, ref)
 }
 \arguments{
 \item{repo}{The repository}
 
-\item{ref}{Reference to read from. Default is NULL, which uses
+\item{ref}{Reference to read from. Default is
 "refs/notes/commits".}
 }
 \value{
