@@ -39,6 +39,7 @@ int git2r_error_check_commit_arg(SEXP arg);
 int git2r_error_check_hex_arg(SEXP arg);
 int git2r_error_check_integer_arg(SEXP arg);
 int git2r_error_check_logical_arg(SEXP arg);
+int git2r_error_check_note_arg(SEXP arg);
 int git2r_error_check_signature_arg(SEXP arg);
 int git2r_error_check_string_arg(SEXP arg);
 int git2r_error_check_tag_arg(SEXP arg);

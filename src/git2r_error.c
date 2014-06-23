@@ -165,6 +165,32 @@ int git2r_error_check_logical_arg(SEXP arg)
 }
 
 /**
+ * Check note argument
+ *
+ * @param arg the arg to check
+ * @return 0 if OK, else 1
+ */
+int git2r_error_check_note_arg(SEXP arg)
+{
+    SEXP class_name;
+
+    if (R_NilValue == arg || S4SXP != TYPEOF(arg))
+        return 1;
+
+    class_name = getAttrib(arg, R_ClassSymbol);
+    if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_note"))
+        return 1;
+
+    if (git2r_error_check_string_arg(GET_SLOT(arg, Rf_install("hex"))))
+        return 1;
+
+    if (git2r_error_check_string_arg(GET_SLOT(arg, Rf_install("refname"))))
+        return 1;
+
+    return 0;
+}
+
+/**
  * Check real argument
  *
  * @param arg the arg to check

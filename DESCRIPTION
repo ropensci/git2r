@@ -50,6 +50,7 @@ Collate:
     'index.r'
     'libgit2.r'
     'markdown_link.r'
+    'note.r'
     'plot.r'
     'pull.r'
     'punch_card.r'
