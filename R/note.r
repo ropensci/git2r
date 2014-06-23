@@ -106,6 +106,10 @@ setMethod("note_create",
                    committer,
                    force)
           {
+              stopifnot(is.character(ref))
+              stopifnot(identical(length(ref), 1L))
+              if(!length(grep("^refs/notes/", ref)))
+                  ref <- paste0("refs/notes/", ref)
               .Call("git2r_note_create",
                     object,
                     message,
@@ -122,22 +126,64 @@ setMethod("note_create",
 ##' @rdname note_list-methods
 ##' @docType methods
 ##' @param repo The repository
-##' @param ref Reference to read from. Default is NULL, which uses
+##' @param ref Reference to read from. Default is
 ##' "refs/notes/commits".
 ##' @return list with S4 class git_note objects
 ##' @keywords methods
 setGeneric("note_list",
-           signature = "repo",
-           function(repo,
-                    ref = NULL)
+           signature = c("repo", "ref"),
+           function(repo, ref)
            standardGeneric("note_list"))
 
 ##' @rdname note_list-methods
 ##' @export
 setMethod("note_list",
-          signature = "git_repository",
+          signature(repo = "git_repository",
+                    ref  = "missing"),
+          function(repo)
+          {
+              note_list(repo = repo, ref = note_default_ref(repo))
+          }
+)
+
+##' @rdname note_list-methods
+##' @export
+setMethod("note_list",
+          signature(repo = "git_repository",
+                    ref  = "character"),
           function(repo, ref)
           {
+              stopifnot(identical(length(ref), 1L))
+              if(!length(grep("^refs/notes/", ref)))
+                  ref <- paste0("refs/notes/", ref)
               .Call("git2r_note_list", repo, ref)
+          }
+)
+
+##' Remove the note for an object
+##'
+##' @rdname note_remove-methods
+##' @docType methods
+##' @param note The note to remove
+##' @param author Signature of the notes commit author.
+##' @param committer Signature of the notes commit committer.
+##' @return invisible NULL
+##' @keywords methods
+setGeneric("note_remove",
+           signature = "note",
+           function(note,
+                    author    = default_signature(note@repo),
+                    committer = default_signature(note@repo))
+           standardGeneric("note_remove"))
+
+##' @rdname note_remove-methods
+##' @export
+setMethod("note_remove",
+          signature = "git_note",
+          function(note,
+                   author,
+                   committer)
+          {
+              invisible(.Call("git2r_note_remove", note, author, committer))
           }
 )
