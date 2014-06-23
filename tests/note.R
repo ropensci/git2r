@@ -67,9 +67,18 @@ stopifnot(identical(length(note_list(repo)), 1L))
 ##
 ## Create note in named (review) namespace
 ##
-note.3 <- note_create(commit.1, "Note-3", ref="ref/notes/review")
-note.4 <- note_create(commit.2, "Note-4", ref="ref/notes/review")
-stopifnot(identical(length(note_list(repo, ref="ref/notes/review")), 2L))
+note.3 <- note_create(commit.1, "Note-3", ref="refs/notes/review")
+note.4 <- note_create(commit.2, "Note-4", ref="refs/notes/review")
+stopifnot(identical(length(note_list(repo, ref="refs/notes/review")), 2L))
+note_remove(note.3)
+note_remove(note.4)
+stopifnot(identical(note_list(repo, ref="refs/notes/review"), list()))
+note.5 <- note_create(commit.1, "Note-5", ref="review")
+note.6 <- note_create(commit.2, "Note-6", ref="review")
+stopifnot(identical(length(note_list(repo, ref="review")), 2L))
+note_remove(note.5)
+note_remove(note.6)
+stopifnot(identical(length(note_list(repo, ref="review")), 0L))
 
 ##
 ## Cleanup
