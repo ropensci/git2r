@@ -348,7 +348,7 @@ SEXP git2r_note_remove(SEXP note, SEXP author, SEXP committer)
     int err;
     SEXP repo;
     SEXP when;
-    SEXP hex;
+    SEXP annotated;
     git_oid note_oid;
     git_signature *sig_author = NULL;
     git_signature *sig_committer = NULL;
@@ -382,8 +382,8 @@ SEXP git2r_note_remove(SEXP note, SEXP author, SEXP committer)
     if (err < 0)
         goto cleanup;
 
-    hex = GET_SLOT(note, Rf_install("hex"));
-    err = git_oid_fromstr(&note_oid, CHAR(STRING_ELT(hex, 0)));
+    annotated = GET_SLOT(note, Rf_install("annotated"));
+    err = git_oid_fromstr(&note_oid, CHAR(STRING_ELT(annotated, 0)));
     if (err < 0)
         goto cleanup;
 
