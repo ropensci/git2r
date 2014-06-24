@@ -89,6 +89,8 @@ static int git2r_note_init(
 /**
  * Add a note for an object
  *
+ * @param repo S4 class git_repository
+ * @param hex hexadecimal string of object
  * @param commit S4 class git_commit
  * @param message Content of the note to add
  * @param ref Canonical name of the reference to use
@@ -98,7 +100,8 @@ static int git2r_note_init(
  * @return S4 class git_note
  */
 SEXP git2r_note_create(
-    SEXP commit,
+    SEXP repo,
+    SEXP hex,
     SEXP message,
     SEXP ref,
     SEXP author,
@@ -106,17 +109,15 @@ SEXP git2r_note_create(
     SEXP force)
 {
     int err;
-    SEXP repo;
-    SEXP hex;
     SEXP result = R_NilValue;
     int overwrite = 0;
     git_oid note_oid;
-    git_oid commit_oid;
+    git_oid object_oid;
     git_signature *sig_author = NULL;
     git_signature *sig_committer = NULL;
     git_repository *repository = NULL;
 
-    if (git2r_error_check_commit_arg(commit)
+    if (git2r_error_check_hex_arg(hex)
         || git2r_error_check_string_arg(message)
         || git2r_error_check_string_arg(ref)
         || git2r_error_check_signature_arg(author)
@@ -124,7 +125,6 @@ SEXP git2r_note_create(
         || git2r_error_check_logical_arg(force))
         error("Invalid arguments to git2r_note_create");
 
-    repo = GET_SLOT(commit, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
@@ -137,8 +137,7 @@ SEXP git2r_note_create(
     if (err < 0)
         goto cleanup;
 
-    hex = GET_SLOT(commit, Rf_install("hex"));
-    err = git_oid_fromstr(&commit_oid, CHAR(STRING_ELT(hex, 0)));
+    err = git_oid_fromstr(&object_oid, CHAR(STRING_ELT(hex, 0)));
     if (err < 0)
         goto cleanup;
 
@@ -151,7 +150,7 @@ SEXP git2r_note_create(
         sig_author,
         sig_committer,
         CHAR(STRING_ELT(ref, 0)),
-        &commit_oid,
+        &object_oid,
         CHAR(STRING_ELT(message, 0)),
         overwrite);
     if (err < 0)
@@ -159,7 +158,7 @@ SEXP git2r_note_create(
 
     PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_note")));
     err = git2r_note_init(&note_oid,
-                          &commit_oid,
+                          &object_oid,
                           repository,
                           CHAR(STRING_ELT(ref, 0)),
                           repo,

@@ -23,7 +23,8 @@
 #include <Rinternals.h>
 
 SEXP git2r_note_create(
-    SEXP commit,
+    SEXP repo,
+    SEXP hex,
     SEXP message,
     SEXP ref,
     SEXP author,
