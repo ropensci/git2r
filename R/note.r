@@ -39,7 +39,9 @@
 ##' @docType class
 ##' @keywords classes
 ##' @keywords methods
+##' @include blob.r
 ##' @include repository.r
+##' @include tree.r
 ##' @export
 setClass("git_note",
          slots = c(hex       = "character",
@@ -85,6 +87,49 @@ setMethod("note_default_ref",
 ##' @param force Overwrite existing note. Default is FALSE
 ##' @return S4 class git_note
 ##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Create a directory in tempdir
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##'
+##' ## Initialize a repository
+##' repo <- init(path)
+##'
+##' ## Create a file, add and commit
+##' writeLines("Hello world!", file.path(path, "test.txt"))
+##' add(repo, "test.txt")
+##' commit.1 <- commit(repo, "Commit message 1")
+##'
+##' ## Create another commit
+##' writeLines(c("Hello world!",
+##'              "HELLO WORLD!"),
+##'            file.path(path, "test.txt"))
+##' add(repo, "test.txt")
+##' commit.2 <- commit(repo, "Commit message 2")
+##'
+##' ## Check that note_list is an empty list
+##' stopifnot(identical(note_list(repo), list()))
+##'
+##' ## Create note in default namespace
+##' note.1 <- note_create(commit.1, "Note-1")
+##' note.2 <- note_create(commit.1, "Note-2", force = TRUE)
+##'
+##' ## Create note in named (review) namespace
+##' note.3 <- note_create(commit.1, "Note-3", ref="refs/notes/review")
+##' note.4 <- note_create(commit.2, "Note-4", ref="refs/notes/review")
+##' note_remove(note.3)
+##' note_remove(note.4)
+##' note.5 <- note_create(commit.1, "Note-5", ref="review")
+##' note.6 <- note_create(commit.2, "Note-6", ref="review")
+##'
+##' ## Create note on blob and tree
+##' note.7 <- note_create(tree(commit.1), "Note-7")
+##' note.8 <- note_create(tree(commit.1)["test.txt"], "Note-8")
+##'
+##' ## Cleanup
+##' unlink(path, recursive=TRUE)
+##' }
 setGeneric("note_create",
            signature = "object",
            function(object,
