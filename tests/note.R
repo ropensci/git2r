@@ -81,6 +81,16 @@ note_remove(note.6)
 stopifnot(identical(length(note_list(repo, ref="review")), 0L))
 
 ##
+## Create note on blob and tree
+##
+note.7 <- note_create(tree(commit.1), "Note-7")
+stopifnot(is(object = lookup(repo, note.7@annotated), class2 = "git_tree"))
+stopifnot(identical(length(note_list(repo)), 2L))
+note.8 <- note_create(tree(commit.1)["test.txt"], "Note-8")
+stopifnot(is(object = lookup(repo, note.8@annotated), class2 = "git_blob"))
+stopifnot(identical(length(note_list(repo)), 3L))
+
+##
 ## Cleanup
 ##
 unlink(path, recursive=TRUE)
