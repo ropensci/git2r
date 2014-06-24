@@ -98,6 +98,32 @@ setGeneric("note_create",
 ##' @rdname note_create-methods
 ##' @export
 setMethod("note_create",
+          signature = "git_blob",
+          function(object,
+                   message,
+                   ref,
+                   author,
+                   committer,
+                   force)
+          {
+              stopifnot(is.character(ref))
+              stopifnot(identical(length(ref), 1L))
+              if(!length(grep("^refs/notes/", ref)))
+                  ref <- paste0("refs/notes/", ref)
+              .Call("git2r_note_create",
+                    object@repo,
+                    object@hex,
+                    message,
+                    ref,
+                    author,
+                    committer,
+                    force)
+          }
+)
+
+##' @rdname note_create-methods
+##' @export
+setMethod("note_create",
           signature = "git_commit",
           function(object,
                    message,
@@ -111,7 +137,34 @@ setMethod("note_create",
               if(!length(grep("^refs/notes/", ref)))
                   ref <- paste0("refs/notes/", ref)
               .Call("git2r_note_create",
-                    object,
+                    object@repo,
+                    object@hex,
+                    message,
+                    ref,
+                    author,
+                    committer,
+                    force)
+          }
+)
+
+##' @rdname note_create-methods
+##' @export
+setMethod("note_create",
+          signature = "git_tree",
+          function(object,
+                   message,
+                   ref,
+                   author,
+                   committer,
+                   force)
+          {
+              stopifnot(is.character(ref))
+              stopifnot(identical(length(ref), 1L))
+              if(!length(grep("^refs/notes/", ref)))
+                  ref <- paste0("refs/notes/", ref)
+              .Call("git2r_note_create",
+                    object@repo,
+                    object@hex,
                     message,
                     ref,
                     author,
