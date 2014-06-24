@@ -24,6 +24,7 @@
 #include "git2.h"
 
 SEXP git2r_signature_default(SEXP repo);
+int git2r_signature_from_arg(git_signature **out, SEXP signature);
 void git2r_signature_init(const git_signature *sig, SEXP signature);
 
 #endif

@@ -42,7 +42,7 @@ SEXP git2r_commit_create(
     SEXP committer,
     SEXP parent_list)
 {
-    SEXP when, sexp_commit;
+    SEXP sexp_commit;
     int err;
     int changes_in_index = 0;
     const char* err_msg = NULL;
@@ -70,21 +70,11 @@ SEXP git2r_commit_create(
     if (!repository)
         error(git2r_err_invalid_repository);
 
-    when = GET_SLOT(author, Rf_install("when"));
-    err = git_signature_new(&sig_author,
-                            CHAR(STRING_ELT(GET_SLOT(author, Rf_install("name")), 0)),
-                            CHAR(STRING_ELT(GET_SLOT(author, Rf_install("email")), 0)),
-                            REAL(GET_SLOT(when, Rf_install("time")))[0],
-                            REAL(GET_SLOT(when, Rf_install("offset")))[0]);
+    err = git2r_signature_from_arg(&sig_author, author);
     if (err < 0)
         goto cleanup;
 
-    when = GET_SLOT(committer, Rf_install("when"));
-    err = git_signature_new(&sig_committer,
-                            CHAR(STRING_ELT(GET_SLOT(committer, Rf_install("name")), 0)),
-                            CHAR(STRING_ELT(GET_SLOT(committer, Rf_install("email")), 0)),
-                            REAL(GET_SLOT(when, Rf_install("time")))[0],
-                            REAL(GET_SLOT(when, Rf_install("offset")))[0]);
+    err = git2r_signature_from_arg(&sig_committer, committer);
     if (err < 0)
         goto cleanup;
 

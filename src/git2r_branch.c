@@ -22,6 +22,7 @@
 #include "git2r_error.h"
 #include "git2r_reference.h"
 #include "git2r_repository.h"
+#include "git2r_signature.h"
 
 /**
  * Count number of branches.
@@ -113,7 +114,6 @@ SEXP git2r_branch_create(
 {
     SEXP repo;
     SEXP result = R_NilValue;
-    SEXP when;
     int err;
     int overwrite = 0;
     const char *log = NULL;
@@ -146,13 +146,7 @@ SEXP git2r_branch_create(
     if (LOGICAL(force)[0])
         overwrite = 1;
 
-    when = GET_SLOT(signature, Rf_install("when"));
-    err = git_signature_new(
-        &who,
-        CHAR(STRING_ELT(GET_SLOT(signature, Rf_install("name")), 0)),
-        CHAR(STRING_ELT(GET_SLOT(signature, Rf_install("email")), 0)),
-        REAL(GET_SLOT(when, Rf_install("time")))[0],
-        REAL(GET_SLOT(when, Rf_install("offset")))[0]);
+    err = git2r_signature_from_arg(&who, signature);
     if (err < 0)
         goto cleanup;
 
@@ -518,7 +512,6 @@ SEXP git2r_branch_rename(
 {
     SEXP repo;
     SEXP result = R_NilValue;
-    SEXP when;
     int err;
     int overwrite = 0;
     const char *log = NULL;
@@ -555,13 +548,7 @@ SEXP git2r_branch_rename(
     if (LOGICAL(force)[0])
         overwrite = 1;
 
-    when = GET_SLOT(signature, Rf_install("when"));
-    err = git_signature_new(
-        &who,
-        CHAR(STRING_ELT(GET_SLOT(signature, Rf_install("name")), 0)),
-        CHAR(STRING_ELT(GET_SLOT(signature, Rf_install("email")), 0)),
-        REAL(GET_SLOT(when, Rf_install("time")))[0],
-        REAL(GET_SLOT(when, Rf_install("offset")))[0]);
+    err = git2r_signature_from_arg(&who, signature);
     if (err < 0)
         goto cleanup;
 

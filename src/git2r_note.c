@@ -21,6 +21,7 @@
 #include "git2r_error.h"
 #include "git2r_note.h"
 #include "git2r_repository.h"
+#include "git2r_signature.h"
 #include "git2.h"
 
 typedef struct {
@@ -106,7 +107,6 @@ SEXP git2r_note_create(
 {
     int err;
     SEXP repo;
-    SEXP when;
     SEXP hex;
     SEXP result = R_NilValue;
     int overwrite = 0;
@@ -129,21 +129,11 @@ SEXP git2r_note_create(
     if (!repository)
         error(git2r_err_invalid_repository);
 
-    when = GET_SLOT(author, Rf_install("when"));
-    err = git_signature_new(&sig_author,
-                            CHAR(STRING_ELT(GET_SLOT(author, Rf_install("name")), 0)),
-                            CHAR(STRING_ELT(GET_SLOT(author, Rf_install("email")), 0)),
-                            REAL(GET_SLOT(when, Rf_install("time")))[0],
-                            REAL(GET_SLOT(when, Rf_install("offset")))[0]);
+    err = git2r_signature_from_arg(&sig_author, author);
     if (err < 0)
         goto cleanup;
 
-    when = GET_SLOT(committer, Rf_install("when"));
-    err = git_signature_new(&sig_committer,
-                            CHAR(STRING_ELT(GET_SLOT(committer, Rf_install("name")), 0)),
-                            CHAR(STRING_ELT(GET_SLOT(committer, Rf_install("email")), 0)),
-                            REAL(GET_SLOT(when, Rf_install("time")))[0],
-                            REAL(GET_SLOT(when, Rf_install("offset")))[0]);
+    err = git2r_signature_from_arg(&sig_committer, committer);
     if (err < 0)
         goto cleanup;
 
@@ -347,7 +337,6 @@ SEXP git2r_note_remove(SEXP note, SEXP author, SEXP committer)
 {
     int err;
     SEXP repo;
-    SEXP when;
     SEXP annotated;
     git_oid note_oid;
     git_signature *sig_author = NULL;
@@ -364,21 +353,11 @@ SEXP git2r_note_remove(SEXP note, SEXP author, SEXP committer)
     if (!repository)
         error(git2r_err_invalid_repository);
 
-    when = GET_SLOT(author, Rf_install("when"));
-    err = git_signature_new(&sig_author,
-                            CHAR(STRING_ELT(GET_SLOT(author, Rf_install("name")), 0)),
-                            CHAR(STRING_ELT(GET_SLOT(author, Rf_install("email")), 0)),
-                            REAL(GET_SLOT(when, Rf_install("time")))[0],
-                            REAL(GET_SLOT(when, Rf_install("offset")))[0]);
+    err = git2r_signature_from_arg(&sig_author, author);
     if (err < 0)
         goto cleanup;
 
-    when = GET_SLOT(committer, Rf_install("when"));
-    err = git_signature_new(&sig_committer,
-                            CHAR(STRING_ELT(GET_SLOT(committer, Rf_install("name")), 0)),
-                            CHAR(STRING_ELT(GET_SLOT(committer, Rf_install("email")), 0)),
-                            REAL(GET_SLOT(when, Rf_install("time")))[0],
-                            REAL(GET_SLOT(when, Rf_install("offset")))[0]);
+    err = git2r_signature_from_arg(&sig_committer, committer);
     if (err < 0)
         goto cleanup;
 

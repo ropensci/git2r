@@ -81,7 +81,6 @@ void git2r_tag_init(git_tag *source, SEXP repo, SEXP dest)
  */
 SEXP git2r_tag_create(SEXP repo, SEXP name, SEXP message, SEXP tagger)
 {
-    SEXP when;
     SEXP sexp_tag = R_NilValue;
     int err;
     git_oid oid;
@@ -99,12 +98,7 @@ SEXP git2r_tag_create(SEXP repo, SEXP name, SEXP message, SEXP tagger)
     if (!repository)
         error(git2r_err_invalid_repository);
 
-    when = GET_SLOT(tagger, Rf_install("when"));
-    err = git_signature_new(&sig_tagger,
-                            CHAR(STRING_ELT(GET_SLOT(tagger, Rf_install("name")), 0)),
-                            CHAR(STRING_ELT(GET_SLOT(tagger, Rf_install("email")), 0)),
-                            REAL(GET_SLOT(when, Rf_install("time")))[0],
-                            REAL(GET_SLOT(when, Rf_install("offset")))[0]);
+    err = git2r_signature_from_arg(&sig_tagger, tagger);
     if (err < 0)
         goto cleanup;
 

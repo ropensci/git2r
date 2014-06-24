@@ -190,7 +190,6 @@ SEXP git2r_stash_save(
     SEXP stasher)
 {
     int err;
-    SEXP when;
     SEXP sexp_stash = R_NilValue;
     git_oid oid;
     git_stash_flags flags = GIT_STASH_DEFAULT;
@@ -215,12 +214,7 @@ SEXP git2r_stash_save(
     if (LOGICAL(ignored)[0])
         flags |= GIT_STASH_INCLUDE_IGNORED;
 
-    when = GET_SLOT(stasher, Rf_install("when"));
-    err = git_signature_new(&sig_stasher,
-                            CHAR(STRING_ELT(GET_SLOT(stasher, Rf_install("name")), 0)),
-                            CHAR(STRING_ELT(GET_SLOT(stasher, Rf_install("email")), 0)),
-                            REAL(GET_SLOT(when, Rf_install("time")))[0],
-                            REAL(GET_SLOT(when, Rf_install("offset")))[0]);
+    err = git2r_signature_from_arg(&sig_stasher, stasher);
     if (err < 0)
         goto cleanup;
 

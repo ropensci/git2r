@@ -61,6 +61,28 @@ cleanup:
 }
 
 /**
+ * Init signature from SEXP signature argument
+ *
+ * @param out new signature
+ * @param signature SEXP argument with S4 class git_signature
+ * @return void
+ */
+int git2r_signature_from_arg(git_signature **out, SEXP signature)
+{
+    int err;
+    SEXP when;
+
+    when = GET_SLOT(signature, Rf_install("when"));
+    err = git_signature_new(out,
+                            CHAR(STRING_ELT(GET_SLOT(signature, Rf_install("name")), 0)),
+                            CHAR(STRING_ELT(GET_SLOT(signature, Rf_install("email")), 0)),
+                            REAL(GET_SLOT(when, Rf_install("time")))[0],
+                            REAL(GET_SLOT(when, Rf_install("offset")))[0]);
+
+    return err;
+}
+
+/**
  * Init slots in S4 class git_signature.
  *
  * @param sig
