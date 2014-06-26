@@ -49,3 +49,32 @@ setClass("git_reflog_entry",
                  committer = "git_signature",
                  refname   = "character",
                  repo      = "git_repository"))
+
+##' Brief summary of a reflog entry
+##'
+##' @aliases show,git_reflog_entry-methods
+##' @docType methods
+##' @param object The reflog entry \code{object}
+##' @return None (invisible 'NULL').
+##' @keywords methods
+##' @export
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository("path/to/git2r")
+##'
+##' ## View repository HEAD reflog
+##' reflog(repo)
+##' }
+##'
+setMethod("show",
+          signature(object = "git_reflog_entry"),
+          function (object)
+          {
+              cat(sprintf("[%s] %s@{%i}: %s\n",
+                          substring(object@hex, 1, 7),
+                          object@refname,
+                          object@index,
+                          object@message))
+          }
+)
