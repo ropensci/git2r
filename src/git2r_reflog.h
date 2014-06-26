@@ -22,4 +22,6 @@
 #include <R.h>
 #include <Rinternals.h>
 
+SEXP git2r_reflog_list(SEXP repo, SEXP ref);
+
 #endif
