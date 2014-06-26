@@ -47,6 +47,7 @@
 #include "git2r_odb.h"
 #include "git2r_push.h"
 #include "git2r_reference.h"
+#include "git2r_reflog.h"
 #include "git2r_repository.h"
 #include "git2r_remote.h"
 #include "git2r_revwalk.h"
@@ -97,6 +98,7 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_odb_hashfile", (DL_FUNC)&git2r_odb_hashfile, 1},
     {"git2r_push", (DL_FUNC)&git2r_push, 3},
     {"git2r_reference_list", (DL_FUNC)&git2r_reference_list, 1},
+    {"git2r_reflog_list", (DL_FUNC)&git2r_reflog_list, 2},
     {"git2r_remote_fetch", (DL_FUNC)&git2r_remote_fetch, 2},
     {"git2r_remote_list", (DL_FUNC)&git2r_remote_list, 1},
     {"git2r_remote_url", (DL_FUNC)&git2r_remote_url, 2},
