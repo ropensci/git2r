@@ -50,6 +50,50 @@ setClass("git_reflog_entry",
                  refname   = "character",
                  repo      = "git_repository"))
 
+##' List and view reflog information
+##'
+##' @rdname reflog-methods
+##' @docType methods
+##' @param repo S4 class git_repository \code{object}.
+##' @param refname The name of the reference to list. HEAD by
+##' default.
+##' @return invisible list of S4 git_reflog_entry objects
+##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository("path/to/git2r")
+##'
+##' reflog(repo)
+##' }
+##'
+setGeneric("reflog",
+           signature = c("repo", "refname"),
+           function(repo, refname)
+           standardGeneric("reflog"))
+
+##' @rdname reflog-methods
+##' @export
+setMethod("reflog",
+          signature(repo = "git_repository", refname="missing"),
+          function(repo)
+          {
+              reflog(repo, "HEAD")
+          }
+)
+
+##' @rdname reflog-methods
+##' @export
+setMethod("reflog",
+          signature(repo = "git_repository", refname="character"),
+          function(repo, refname)
+          {
+              result <- .Call("git2r_reflog_list", repo, refname)
+              lapply(result, show)
+              invisible(result)
+          }
+)
+
 ##' Brief summary of a reflog entry
 ##'
 ##' @aliases show,git_reflog_entry-methods
