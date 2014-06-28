@@ -123,7 +123,7 @@ hunks_per_file <- function(diff) {
 
 #' Show the summary of a diff
 #'
-#' @aliases show,git_diff-methods
+#' @aliases summary,git_diff-methods
 #' @docType methods
 #' @param object The diff \code{object}.
 #' @keywords methods
