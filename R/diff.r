@@ -67,7 +67,13 @@ setClass("git_diff_line",
                  num_lines   = "integer",
                  content     = "character"))
 
-#' @export
+#' Number of files in git_diff object
+#'
+#' @docType methods
+#' @param x The git_diff \code{object}
+#' @return a non-negative integer
+#' @keywords methods
+#' #' @export
 setMethod("length",
           signature(x = "git_diff"),
           function(x)
