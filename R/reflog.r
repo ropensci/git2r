@@ -25,6 +25,9 @@
 ##'   \item{message}{
 ##'     The log message of the entry
 ##'   }
+##'   \item{index}{
+##'     The index (zero-based) of the entry in the reflog
+##'   }
 ##'   \item{committer}{
 ##'     The committer signature
 ##'   }
