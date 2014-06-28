@@ -172,6 +172,7 @@ setMethod("summary",
 #'
 #' @rdname diff-methods
 #' @docType methods
+#' @param ... Additional arguments affecting the diff produced
 #' @return A git_diff object
 #' @keywords methods
 setGeneric("diff",

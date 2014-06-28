@@ -20,7 +20,7 @@ branch_create(commit, name, force = FALSE, message = NULL, who = NULL)
 \item{message}{The one line long message to the reflog. Default is
 NULL, which gives the log message "Branch: created"}
 
-\item{signature}{The identity that will be used to populate the
+\item{who}{The identity that will be used to populate the
 reflog entry. Default is NULL, which gives the default signature.}
 }
 \value{

@@ -56,7 +56,7 @@ setClass("git_branch",
 ##' @param force Overwrite existing branch. Default = FALSE
 ##' @param message The one line long message to the reflog. Default is
 ##' NULL, which gives the log message "Branch: created"
-##' @param signature The identity that will be used to populate the
+##' @param who The identity that will be used to populate the
 ##' reflog entry. Default is NULL, which gives the default signature.
 ##' @return invisible S4 class git_branch object
 ##' @keywords methods
@@ -162,10 +162,10 @@ setMethod("branch_remote_url",
 ##' @param branch Branch to rename
 ##' @param name The new name for the branch
 ##' @param force Overwrite existing branch. Default is FALSE
-##' @param signature The identity that will be used to populate the
-##' reflog entry. Default is NULL, which gives the default signature.
 ##' @param message The one line long message to the reflog. If NULL,
 ##' the default value is appended
+##' @param who The identity that will be used to populate the
+##' reflog entry. Default is NULL, which gives the default signature.
 ##' @return invisible renamed S4 class git_branch
 ##' @keywords methods
 setGeneric("branch_rename",

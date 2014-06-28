@@ -17,11 +17,11 @@ branch_rename(branch, name, force = FALSE, message = NULL, who = NULL)
 
 \item{force}{Overwrite existing branch. Default is FALSE}
 
-\item{signature}{The identity that will be used to populate the
-reflog entry. Default is NULL, which gives the default signature.}
-
 \item{message}{The one line long message to the reflog. If NULL,
 the default value is appended}
+
+\item{who}{The identity that will be used to populate the
+reflog entry. Default is NULL, which gives the default signature.}
 }
 \value{
 invisible renamed S4 class git_branch

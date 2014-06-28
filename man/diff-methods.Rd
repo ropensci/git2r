@@ -13,6 +13,8 @@ diff(object, ...)
 \S4method{diff}{git_tree}(object, new_tree = NULL, index = FALSE)
 }
 \arguments{
+\item{...}{Additional arguments affecting the diff produced}
+
 \item{object}{A git_repository object}
 
 \item{index}{Flag, whether to compare the index to HEAD. If
