@@ -29,12 +29,22 @@ setClass("git_diff",
          prototype=list(old=NA_character_,
                         new=NA_character_))
 
+#' Git diff file
+#'
+#' @name git_diff_file-class
+#' @docType class
+#' @keywords classes
 #' @export
 setClass("git_diff_file",
          slots=c(old_file = "character",
                  new_file = "character",
                  hunks = "list"))
 
+#' Git diff hunk
+#'
+#' @name git_diff_hunk-class
+#' @docType class
+#' @keywords classes
 #' @export
 setClass("git_diff_hunk",
          slots=c(old_start = "integer",
@@ -44,6 +54,11 @@ setClass("git_diff_hunk",
                  header    = "character",
                  lines     = "list"))
 
+#' Git diff line
+#'
+#' @name git_diff_line-class
+#' @docType class
+#' @keywords classes
 #' @export
 setClass("git_diff_line",
          slots=c(origin      = "integer",
