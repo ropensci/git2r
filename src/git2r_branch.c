@@ -740,7 +740,7 @@ SEXP git2r_branch_set_upstream(SEXP branch, SEXP upstream_name)
     if (err < 0)
         goto cleanup;
 
-    err = git_branch_set_upstream(&reference, u_name);
+    err = git_branch_set_upstream(reference, u_name);
 
 cleanup:
     if (reference)
