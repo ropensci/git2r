@@ -315,36 +315,36 @@ void git__hexdump(const char *buffer, size_t len)
 	for (i = 0; i < line_count; ++i) {
 		line = buffer + (i * LINE_WIDTH);
 		for (j = 0; j < LINE_WIDTH; ++j, ++line)
-			printf("%02X ", (unsigned char)*line & 0xFF);
+			Rprintf("%02X ", (unsigned char)*line & 0xFF);
 
-		printf("| ");
+		Rprintf("| ");
 
 		line = buffer + (i * LINE_WIDTH);
 		for (j = 0; j < LINE_WIDTH; ++j, ++line)
-			printf("%c", (*line >= 32 && *line <= 126) ? *line : '.');
+			Rprintf("%c", (*line >= 32 && *line <= 126) ? *line : '.');
 
-		printf("\n");
+		Rprintf("\n");
 	}
 
 	if (last_line > 0) {
 
 		line = buffer + (line_count * LINE_WIDTH);
 		for (j = 0; j < last_line; ++j, ++line)
-			printf("%02X ", (unsigned char)*line & 0xFF);
+			Rprintf("%02X ", (unsigned char)*line & 0xFF);
 
 		for (j = 0; j < (LINE_WIDTH - last_line); ++j)
-			printf("	");
+			Rprintf("	");
 
-		printf("| ");
+		Rprintf("| ");
 
 		line = buffer + (line_count * LINE_WIDTH);
 		for (j = 0; j < last_line; ++j, ++line)
-			printf("%c", (*line >= 32 && *line <= 126) ? *line : '.');
+			Rprintf("%c", (*line >= 32 && *line <= 126) ? *line : '.');
 
-		printf("\n");
+		Rprintf("\n");
 	}
 
-	printf("\n");
+	Rprintf("\n");
 }
 
 #ifdef GIT_LEGACY_HASH
