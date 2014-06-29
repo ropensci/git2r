@@ -31,6 +31,7 @@
 
 #include "git2.h"
 
+#include "git2r_blame.h"
 #include "git2r_blob.h"
 #include "git2r_branch.h"
 #include "git2r_checkout.h"
@@ -56,6 +57,7 @@
 
 static const R_CallMethodDef callMethods[] =
 {
+    {"git2r_blame_file", (DL_FUNC)&git2r_blame_file, 2},
     {"git2r_blob_content", (DL_FUNC)&git2r_blob_content, 1},
     {"git2r_blob_create_fromdisk", (DL_FUNC)&git2r_blob_create_fromdisk, 2},
     {"git2r_blob_create_fromworkdir", (DL_FUNC)&git2r_blob_create_fromworkdir, 2},
