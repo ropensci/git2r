@@ -32,11 +32,11 @@ Suggests:
     knitr
 VignetteBuilder: knitr
 Collate:
+    'time.r'
+    'signature.r'
     'repository.r'
     'blame.r'
     'blob.r'
-    'time.r'
-    'signature.r'
     'diff.r'
     'commit.r'
     'reference.r'
