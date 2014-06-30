@@ -32,8 +32,8 @@ Suggests:
     knitr
 VignetteBuilder: knitr
 Collate:
-    'blame.r'
     'repository.r'
+    'blame.r'
     'blob.r'
     'time.r'
     'signature.r'
