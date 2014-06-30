@@ -114,3 +114,29 @@ setClass("git_blame_hunk",
              if (length(errors) == 0) TRUE else errors
          }
 )
+
+##' Get blame for file
+##'
+##' @rdname blame-methods
+##' @docType methods
+##' @param repo The repository
+##' @param path Path to the file to consider
+##' @return S4 class git_blame object
+##' @keywords methods
+setGeneric("blame",
+           signature = c("repo", "path"),
+           function(repo,
+                    path)
+           standardGeneric("blame"))
+
+##' @rdname blame-methods
+##' @export
+setMethod("blame",
+          signature(repo = "git_repository",
+                    path = "character"),
+          function(repo,
+                   path)
+          {
+              .Call("git2r_blame_file", repo, path)
+          }
+)
