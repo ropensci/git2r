@@ -59,6 +59,9 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
     return R_NilValue;
 }
 
