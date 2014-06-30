@@ -31,10 +31,11 @@ Imports:
     ggplot2,
     scales
 Collate:
-    'repository.r'
-    'blob.r'
     'time.r'
     'signature.r'
+    'repository.r'
+    'blame.r'
+    'blob.r'
     'diff.r'
     'commit.r'
     'reference.r'
