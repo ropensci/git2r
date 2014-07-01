@@ -16,4 +16,75 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <Rdefines.h>
+#include "git2.h"
+#include "git2r_error.h"
 #include "git2r_merge.h"
+
+/**
+ * Find a merge base between two commits
+ *
+ * @param repo S4 class git_repository
+ * @param one One of the commits
+ * @param two The other commit
+ * @return The commit of a merge base between 'one' and 'two'
+ *         or NULL if not found
+ */
+SEXP git2r_merge_base(SEXP repo, SEXP one, SEXP two)
+{
+    int err;
+    SEXP result = R_NilValue;
+    SEXP hex;
+    git_oid oid;
+    git_oid oid_one;
+    git_oid oid_two;
+    git_commit *commit = NULL;
+    git_repository *repository = NULL;
+
+    if (git2r_error_check_commit_arg(one)
+        || git2r_error_check_commit_arg(two))
+        error("Invalid arguments to git2r_merge_base");
+
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    hex = GET_SLOT(one, Rf_install("hex"));
+    err = git_oid_fromstr(&oid_one, CHAR(STRING_ELT(hex, 0)));
+    if (err < 0)
+        goto cleanup;
+
+    hex = GET_SLOT(two, Rf_install("hex"));
+    err = git_oid_fromstr(&oid_two, CHAR(STRING_ELT(hex, 0)));
+    if (err < 0)
+        goto cleanup;
+
+    err = git_merge_base(&oid, repository, &oid_one, &oid_two);
+    if (err < 0) {
+        if (GIT_ENOTFOUND == err)
+            err = 0;
+        goto cleanup;
+    }
+
+    err = git_commit_lookup(&commit, repository, &oid);
+    if (err < 0)
+        goto cleanup;
+
+    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_commit")));
+    git2r_commit_init(commit, repo, result);
+
+cleanup:
+    if (commit)
+        git_commit_free(commit);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return result;
+}

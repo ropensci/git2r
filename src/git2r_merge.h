@@ -22,4 +22,6 @@
 #include <R.h>
 #include <Rinternals.h>
 
+SEXP git2r_merge_base(SEXP repo, SEXP one, SEXP two);
+
 #endif
