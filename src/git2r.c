@@ -43,6 +43,7 @@
 #include "git2r_graph.h"
 #include "git2r_index.h"
 #include "git2r_libgit2.h"
+#include "git2r_merge.h"
 #include "git2r_note.h"
 #include "git2r_object.h"
 #include "git2r_odb.h"
