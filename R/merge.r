@@ -13,3 +13,31 @@
 ## You should have received a copy of the GNU General Public License along
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+##' Find a merge base between two commits
+##'
+##' @rdname merge_base-methods
+##' @docType methods
+##' @param repo The repository
+##' @param one One of the commits
+##' @param two The other commit
+##' @return S4 class git_commit
+##' @keywords methods
+##' @include repository.r
+##' @include commit.r
+setGeneric("merge_base",
+           signature = c("repo", "one", "two"),
+           function(repo, one, two)
+           standardGeneric("merge_base"))
+
+##' @rdname merge_base-methods
+##' @export
+setMethod("merge_base",
+          signature(repo = "git_repository",
+                    one  = "git_commit",
+                    two  = "git_commit"),
+          function(repo, one, two)
+          {
+              .Call("git2r_merge_base", repo, one, two)
+          }
+)
