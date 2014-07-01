@@ -51,6 +51,7 @@ Collate:
     'index.r'
     'libgit2.r'
     'markdown_link.r'
+    'merge.r'
     'note.r'
     'plot.r'
     'pull.r'
