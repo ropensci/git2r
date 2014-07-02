@@ -2,7 +2,7 @@
 \docType{class}
 \name{git_branch-class}
 \alias{git_branch-class}
-\title{S4_class_to_handle_a_git_branch}
+\title{S4 class to handle a git branch}
 \description{
 Class \code{git_branch}
 }

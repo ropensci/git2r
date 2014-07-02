@@ -16,7 +16,7 @@
 
 ##' Class \code{git_branch}
 ##'
-##' @title S4_class_to_handle_a_git_branch
+##' @title S4 class to handle a git branch
 ##' @section Slots:
 ##' \describe{
 ##'   \item{name}{
