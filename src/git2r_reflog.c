@@ -71,7 +71,12 @@ void git2r_reflog_entry_init(
         SET_SLOT(dest,
                  Rf_install("message"),
                  ScalarString(mkChar(message)));
+    } else {
+        SET_SLOT(dest,
+                 Rf_install("message"),
+                 ScalarString(NA_STRING));
     }
+
 
     SET_SLOT(dest, Rf_install("refname"), duplicate(ref));
     SET_SLOT(dest, Rf_install("repo"), duplicate(repo));
