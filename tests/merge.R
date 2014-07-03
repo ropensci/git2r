@@ -36,6 +36,29 @@ add(repo, "test.txt")
 commit.1 <- commit(repo, "Commit message 1")
 
 ##
+## Create first branch, checkout, add file and commit
+##
+b.1 <- branch_create(commit.1, "branch1")
+checkout(b.1)
+writeLines("Branch 1", file.path(path, "branch-1.txt"))
+add(repo, "branch-1.txt")
+commit.2 <- commit(repo, "Commit message branch 1")
+
+##
+## Create second branch, checkout, add file and commit
+##
+b.2 <- branch_create(commit.1, "branch2")
+checkout(b.2)
+writeLines("Branch 2", file.path(path, "branch-2.txt"))
+add(repo, "branch-2.txt")
+commit.3 <- commit(repo, "Commit message branch 2")
+
+##
+## Check that merge base equals commit_1
+##
+stopifnot(identical(merge_base(commit.2, commit.3), commit.1))
+
+##
 ## Cleanup
 ##
 unlink(path, recursive=TRUE)
