@@ -26,24 +26,42 @@
 ##' update the working directory.
 ##' @param force If TRUE, then make working directory match
 ##' target. This will throw away local changes. Default is FALSE.
+##' @param msg The one line long message to be appended to the reflog
+##' @param who The identity that will used to populate the reflog
+##' entry. Default is the default signature for the repository of
+##' \code{object}.
 ##' @return invisible NULL
 ##' @keywords methods
+##' @include branch.r
 ##' @include commit.r
 ##' @include tag.r
 ##' @include tree.r
 setGeneric("checkout",
            signature = "object",
-           function(object, force = FALSE)
+           function (object,
+                     force = FALSE,
+                     msg   = NULL,
+                     who   = default_signature(object@repo))
            standardGeneric("checkout")
 )
 
 ##' @rdname checkout-methods
 ##' @export
 setMethod("checkout",
-          signature(object = "git_commit"),
-          function (object, force)
+          signature(object = "git_branch"),
+          function (object, force, msg, who)
           {
-              invisible(.Call("git2r_checkout_commit", object, force))
+              invisible(.Call("git2r_checkout_branch", object, force, msg, who))
+          }
+)
+
+##' @rdname checkout-methods
+##' @export
+setMethod("checkout",
+          signature(object = "git_commit"),
+          function (object, force, msg, who)
+          {
+              invisible(.Call("git2r_checkout_commit", object, force, msg, who))
           }
 )
 
@@ -51,9 +69,9 @@ setMethod("checkout",
 ##' @export
 setMethod("checkout",
           signature(object = "git_tag"),
-          function (object, force)
+          function (object, force, msg, who)
           {
-              invisible(.Call("git2r_checkout_tag", object, force))
+              invisible(.Call("git2r_checkout_tag", object, force, msg, who))
           }
 )
 
@@ -61,8 +79,8 @@ setMethod("checkout",
 ##' @export
 setMethod("checkout",
           signature(object = "git_tree"),
-          function (object, force)
+          function (object, force, msg, who)
           {
-              invisible(.Call("git2r_checkout_tree", object, force))
+              invisible(.Call("git2r_checkout_tree", object, force, msg, who))
           }
 )
