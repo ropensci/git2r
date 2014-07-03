@@ -2,16 +2,14 @@
 \docType{methods}
 \name{merge_base}
 \alias{merge_base}
-\alias{merge_base,git_repository,git_commit,git_commit-method}
+\alias{merge_base,git_commit,git_commit-method}
 \title{Find a merge base between two commits}
 \usage{
-merge_base(repo, one, two)
+merge_base(one, two)
 
-\S4method{merge_base}{git_repository,git_commit,git_commit}(repo, one, two)
+\S4method{merge_base}{git_commit,git_commit}(one, two)
 }
 \arguments{
-\item{repo}{The repository}
-
 \item{one}{One of the commits}
 
 \item{two}{The other commit}
@@ -21,6 +19,42 @@ S4 class git_commit
 }
 \description{
 Find a merge base between two commits
+}
+\examples{
+\dontrun{
+## Create a directory in tempdir
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+
+## Initialize a repository
+repo <- init(path)
+config(repo, user.name="Repo", user.email="repo@example.org")
+
+## Create a file, add and commit
+writeLines("Master branch", file.path(path, "master_branch.txt"))
+add(repo, "master_branch.txt")
+commit_1 <- commit(repo, "Commit message 1")
+
+## Create first branch, checkout, add file and commit
+branch_1 <- branch_create(commit_1, "branch_1")
+checkout(branch_1)
+writeLines("Branch 1", file.path(path, "branch_1.txt"))
+add(repo, "branch_1.txt")
+commit_2 <- commit(repo, "Commit message branch_1")
+
+## Create second branch, checkout, add file and commit
+branch_2 <- branch_create(commit_1, "branch_2")
+checkout(branch_2)
+writeLines("Branch 2", file.path(path, "branch_2.txt"))
+add(repo, "branch_2.txt")
+commit_3 <- commit(repo, "Commit message branch_2")
+
+## Check that merge base equals commit_1
+stopifnot(identical(merge_base(commit_2, commit_3), commit_1))
+
+## Cleanup
+unlink(path, recursive=TRUE)
+}
 }
 \keyword{methods}
 

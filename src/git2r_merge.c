@@ -24,16 +24,16 @@
 /**
  * Find a merge base between two commits
  *
- * @param repo S4 class git_repository
  * @param one One of the commits
  * @param two The other commit
  * @return The commit of a merge base between 'one' and 'two'
  *         or NULL if not found
  */
-SEXP git2r_merge_base(SEXP repo, SEXP one, SEXP two)
+SEXP git2r_merge_base(SEXP one, SEXP two)
 {
     int err;
     SEXP result = R_NilValue;
+    SEXP repo;
     SEXP hex;
     git_oid oid;
     git_oid oid_one;
@@ -45,6 +45,7 @@ SEXP git2r_merge_base(SEXP repo, SEXP one, SEXP two)
         || git2r_error_check_commit_arg(two))
         error("Invalid arguments to git2r_merge_base");
 
+    repo = GET_SLOT(one, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
         error(git2r_err_invalid_repository);
