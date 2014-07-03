@@ -6,21 +6,23 @@
 \title{Status}
 \usage{
 status(repo, staged = TRUE, unstaged = TRUE, untracked = TRUE,
-  ignored = FALSE)
+  ignored = FALSE, verbose = TRUE)
 
 \S4method{status}{git_repository}(repo, staged = TRUE, unstaged = TRUE,
-  untracked = TRUE, ignored = FALSE)
+  untracked = TRUE, ignored = FALSE, verbose = TRUE)
 }
 \arguments{
-\item{repo}{the \code{git_repository} to get status from.}
+\item{repo}{The \code{git_repository} to get status from.}
 
-\item{staged}{include staged files. Default TRUE.}
+\item{staged}{Include staged files. Default TRUE.}
 
-\item{unstaged}{include unstaged files. Default TRUE.}
+\item{unstaged}{Include unstaged files. Default TRUE.}
 
-\item{untracked}{include untracked files. Default TRUE.}
+\item{untracked}{Include untracked files. Default TRUE.}
 
-\item{ignored}{include ignored files. Default FALSE.}
+\item{ignored}{Include ignored files. Default FALSE.}
+
+\item{verbose}{Display status. Default TRUE.}
 }
 \value{
 invisible(list) with repository status

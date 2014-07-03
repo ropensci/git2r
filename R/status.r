@@ -35,11 +35,12 @@ display_status <- function(title, section) {
 ##' area.
 ##' @rdname status-methods
 ##' @docType methods
-##' @param repo the \code{git_repository} to get status from.
-##' @param staged include staged files. Default TRUE.
-##' @param unstaged include unstaged files. Default TRUE.
-##' @param untracked include untracked files. Default TRUE.
-##' @param ignored include ignored files. Default FALSE.
+##' @param repo The \code{git_repository} to get status from.
+##' @param staged Include staged files. Default TRUE.
+##' @param unstaged Include unstaged files. Default TRUE.
+##' @param untracked Include untracked files. Default TRUE.
+##' @param ignored Include ignored files. Default FALSE.
+##' @param verbose Display status. Default TRUE.
 ##' @return invisible(list) with repository status
 ##' @keywords methods
 ##' @include repository.r
@@ -52,17 +53,18 @@ display_status <- function(title, section) {
 setGeneric("status",
            signature = "repo",
            function(repo,
-                    staged = TRUE,
-                    unstaged = TRUE,
+                    staged    = TRUE,
+                    unstaged  = TRUE,
                     untracked = TRUE,
-                    ignored = FALSE)
+                    ignored   = FALSE,
+                    verbose   = TRUE)
            standardGeneric("status"))
 
 ##' @rdname status-methods
 ##' @export
 setMethod("status",
           signature(repo = "git_repository"),
-          function (repo, staged, unstaged, untracked, ignored)
+          function (repo, staged, unstaged, untracked, ignored, verbose)
           {
               s <- .Call("git2r_status_list",
                          repo,
@@ -71,24 +73,26 @@ setMethod("status",
                          untracked,
                          ignored)
 
-              if(length(s$ignored)) {
-                  display_status("Ignored files", s$ignored)
-                  cat("\n")
-              }
+              if(verbose) {
+                  if(length(s$ignored)) {
+                      display_status("Ignored files", s$ignored)
+                      cat("\n")
+                  }
 
-              if(length(s$untracked)) {
-                  display_status("Untracked files", s$untracked)
-                  cat("\n")
-              }
+                  if(length(s$untracked)) {
+                      display_status("Untracked files", s$untracked)
+                      cat("\n")
+                  }
 
-              if(length(s$unstaged)) {
-                  display_status("Unstaged changes", s$unstaged)
-                  cat("\n")
-              }
+                  if(length(s$unstaged)) {
+                      display_status("Unstaged changes", s$unstaged)
+                      cat("\n")
+                  }
 
-              if(length(s$staged)) {
-                  display_status("Staged changes", s$staged)
-                  cat("\n")
+                  if(length(s$staged)) {
+                      display_status("Staged changes", s$staged)
+                      cat("\n")
+                  }
               }
 
               invisible(s)
