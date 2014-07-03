@@ -201,7 +201,7 @@ SEXP git2r_branch_delete(SEXP branch)
     git_repository *repository = NULL;
 
     if (git2r_error_check_branch_arg(branch))
-        error("Invalid arguments to git2r_branch_is_head");
+        error("Invalid arguments to git2r_branch_delete");
 
     repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
     if (!repository)
