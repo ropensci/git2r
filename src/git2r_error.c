@@ -76,7 +76,7 @@ int git2r_arg_check_branch(SEXP arg)
         return 1;
 
     slot = GET_SLOT(arg, Rf_install("type"));
-    if (git2r_error_check_integer_arg(slot))
+    if (git2r_arg_check_integer(slot))
         return 1;
     switch (INTEGER(slot)[0]) {
     case GIT_BRANCH_LOCAL:
@@ -138,7 +138,7 @@ int git2r_arg_check_hex(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else 1
  */
-int git2r_error_check_integer_arg(SEXP arg)
+int git2r_arg_check_integer(SEXP arg)
 {
     if (R_NilValue == arg
         || !isInteger(arg)

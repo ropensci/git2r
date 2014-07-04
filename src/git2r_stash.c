@@ -44,7 +44,7 @@ SEXP git2r_stash_drop(SEXP repo, SEXP index)
     int err;
     git_repository *repository = NULL;
 
-    if (git2r_error_check_integer_arg(index))
+    if (git2r_arg_check_integer(index))
         error("Invalid arguments to git2r_stash_drop");
     if (0 > INTEGER(index)[0])
         error("'index' out of range");

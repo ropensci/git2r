@@ -37,7 +37,7 @@ int git2r_arg_check_blob(SEXP arg);
 int git2r_arg_check_branch(SEXP arg);
 int git2r_arg_check_commit(SEXP arg);
 int git2r_arg_check_hex(SEXP arg);
-int git2r_error_check_integer_arg(SEXP arg);
+int git2r_arg_check_integer(SEXP arg);
 int git2r_error_check_logical_arg(SEXP arg);
 int git2r_error_check_note_arg(SEXP arg);
 int git2r_error_check_signature_arg(SEXP arg);

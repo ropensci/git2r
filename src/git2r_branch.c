@@ -301,7 +301,7 @@ SEXP git2r_branch_list(SEXP repo, SEXP flags)
     git_reference *reference = NULL;
     git_branch_t type;
 
-    if (git2r_error_check_integer_arg(flags))
+    if (git2r_arg_check_integer(flags))
         error("Invalid arguments to git2r_branch_list");
 
     repository = git2r_repository_open(repo);
