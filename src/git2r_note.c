@@ -342,7 +342,7 @@ SEXP git2r_note_remove(SEXP note, SEXP author, SEXP committer)
     git_signature *sig_committer = NULL;
     git_repository *repository = NULL;
 
-    if (git2r_error_check_note_arg(note)
+    if (git2r_arg_check_note(note)
         || git2r_error_check_signature_arg(author)
         || git2r_error_check_signature_arg(committer))
         error("Invalid arguments to git2r_note_remove");

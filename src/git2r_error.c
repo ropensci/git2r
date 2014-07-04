@@ -170,7 +170,7 @@ int git2r_arg_check_logical(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else 1
  */
-int git2r_error_check_note_arg(SEXP arg)
+int git2r_arg_check_note(SEXP arg)
 {
     SEXP class_name;
 
