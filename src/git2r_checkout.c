@@ -51,7 +51,7 @@ SEXP git2r_checkout_branch(
 
     if (git2r_arg_check_branch(branch)
         || git2r_arg_check_logical(force)
-        || git2r_error_check_signature_arg(who))
+        || git2r_arg_check_signature(who))
         error("Invalid arguments to git2r_checkout_branch");
 
     if (R_NilValue != msg) {
@@ -137,7 +137,7 @@ SEXP git2r_checkout_commit(
 
     if (git2r_arg_check_commit(commit)
         || git2r_arg_check_logical(force)
-        || git2r_error_check_signature_arg(who))
+        || git2r_arg_check_signature(who))
         error("Invalid arguments to git2r_checkout_commit");
 
     if (R_NilValue != msg) {
@@ -222,7 +222,7 @@ SEXP git2r_checkout_tag(
 
     if (git2r_error_check_tag_arg(tag)
         || git2r_arg_check_logical(force)
-        || git2r_error_check_signature_arg(who))
+        || git2r_arg_check_signature(who))
         error("Invalid arguments to git2r_checkout_tag");
 
     if (R_NilValue != msg) {
@@ -305,7 +305,7 @@ SEXP git2r_checkout_tree(
 
     if (git2r_error_check_tree_arg(tree)
         || git2r_arg_check_logical(force)
-        || git2r_error_check_signature_arg(who))
+        || git2r_arg_check_signature(who))
         error("Invalid arguments to git2r_checkout_tree");
 
     if (R_NilValue != msg) {

@@ -200,7 +200,7 @@ SEXP git2r_stash_save(
     if (git2r_arg_check_logical(index)
         || git2r_arg_check_logical(untracked)
         || git2r_arg_check_logical(ignored)
-        || git2r_error_check_signature_arg(stasher))
+        || git2r_arg_check_signature(stasher))
         error("Invalid arguments to git2r_stash_save");
 
     repository = git2r_repository_open(repo);

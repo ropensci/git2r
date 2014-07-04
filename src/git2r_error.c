@@ -212,7 +212,7 @@ int check_real_arg(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else 1
  */
-int git2r_error_check_signature_arg(SEXP arg)
+int git2r_arg_check_signature(SEXP arg)
 {
     SEXP class_name;
     SEXP when;

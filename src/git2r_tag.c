@@ -91,7 +91,7 @@ SEXP git2r_tag_create(SEXP repo, SEXP name, SEXP message, SEXP tagger)
 
     if (git2r_error_check_string_arg(name)
         || git2r_error_check_string_arg(message)
-        || git2r_error_check_signature_arg(tagger))
+        || git2r_arg_check_signature(tagger))
         error("Invalid arguments to git2r_tag_create");
 
     repository = git2r_repository_open(repo);

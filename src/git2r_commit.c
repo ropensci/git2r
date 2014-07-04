@@ -60,8 +60,8 @@ SEXP git2r_commit_create(
     opts.show  = GIT_STATUS_SHOW_INDEX_ONLY;
 
     if (git2r_error_check_string_arg(message)
-        || git2r_error_check_signature_arg(author)
-        || git2r_error_check_signature_arg(committer)
+        || git2r_arg_check_signature(author)
+        || git2r_arg_check_signature(committer)
         || R_NilValue == parent_list
         || !isString(parent_list))
         error("Invalid arguments to git2r_commit_create");

@@ -120,8 +120,8 @@ SEXP git2r_note_create(
     if (git2r_arg_check_hex(hex)
         || git2r_error_check_string_arg(message)
         || git2r_error_check_string_arg(ref)
-        || git2r_error_check_signature_arg(author)
-        || git2r_error_check_signature_arg(committer)
+        || git2r_arg_check_signature(author)
+        || git2r_arg_check_signature(committer)
         || git2r_arg_check_logical(force))
         error("Invalid arguments to git2r_note_create");
 
@@ -343,8 +343,8 @@ SEXP git2r_note_remove(SEXP note, SEXP author, SEXP committer)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_note(note)
-        || git2r_error_check_signature_arg(author)
-        || git2r_error_check_signature_arg(committer))
+        || git2r_arg_check_signature(author)
+        || git2r_arg_check_signature(committer))
         error("Invalid arguments to git2r_note_remove");
 
     repo = GET_SLOT(note, Rf_install("repo"));

@@ -125,7 +125,7 @@ SEXP git2r_branch_create(
     if (git2r_error_check_string_arg(branch_name)
         || git2r_arg_check_commit(commit)
         || git2r_arg_check_logical(force)
-        || git2r_error_check_signature_arg(signature))
+        || git2r_arg_check_signature(signature))
         error("Invalid arguments to git2r_branch_create");
 
     if (R_NilValue != message) {
@@ -525,7 +525,7 @@ SEXP git2r_branch_rename(
     if (git2r_arg_check_branch(branch)
         || git2r_error_check_string_arg(new_branch_name)
         || git2r_arg_check_logical(force)
-        || git2r_error_check_signature_arg(signature))
+        || git2r_arg_check_signature(signature))
         error("Invalid arguments to git2r_branch_rename");
 
     if (R_NilValue != message) {

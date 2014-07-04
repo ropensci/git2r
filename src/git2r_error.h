@@ -40,7 +40,7 @@ int git2r_arg_check_hex(SEXP arg);
 int git2r_arg_check_integer(SEXP arg);
 int git2r_arg_check_logical(SEXP arg);
 int git2r_arg_check_note(SEXP arg);
-int git2r_error_check_signature_arg(SEXP arg);
+int git2r_arg_check_signature(SEXP arg);
 int git2r_error_check_string_arg(SEXP arg);
 int git2r_error_check_tag_arg(SEXP arg);
 int git2r_error_check_tree_arg(SEXP arg);
