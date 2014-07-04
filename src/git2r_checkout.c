@@ -220,7 +220,7 @@ SEXP git2r_checkout_tag(
     git_repository *repository = NULL;
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
 
-    if (git2r_error_check_tag_arg(tag)
+    if (git2r_arg_check_tag(tag)
         || git2r_arg_check_logical(force)
         || git2r_arg_check_signature(who))
         error("Invalid arguments to git2r_checkout_tag");

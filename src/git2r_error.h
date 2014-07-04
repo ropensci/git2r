@@ -42,7 +42,7 @@ int git2r_arg_check_logical(SEXP arg);
 int git2r_arg_check_note(SEXP arg);
 int git2r_arg_check_signature(SEXP arg);
 int git2r_arg_check_string(SEXP arg);
-int git2r_error_check_tag_arg(SEXP arg);
+int git2r_arg_check_tag(SEXP arg);
 int git2r_error_check_tree_arg(SEXP arg);
 
 #endif
