@@ -41,8 +41,8 @@ SEXP git2r_merge_base(SEXP one, SEXP two)
     git_commit *commit = NULL;
     git_repository *repository = NULL;
 
-    if (git2r_error_check_commit_arg(one)
-        || git2r_error_check_commit_arg(two))
+    if (git2r_arg_check_commit(one)
+        || git2r_arg_check_commit(two))
         error("Invalid arguments to git2r_merge_base");
 
     repo = GET_SLOT(one, Rf_install("repo"));

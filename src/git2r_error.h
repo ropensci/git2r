@@ -35,7 +35,7 @@ extern const char git2r_err_unexpected_type_of_branch[];
 
 int git2r_arg_check_blob(SEXP arg);
 int git2r_arg_check_branch(SEXP arg);
-int git2r_error_check_commit_arg(SEXP arg);
+int git2r_arg_check_commit(SEXP arg);
 int git2r_error_check_hex_arg(SEXP arg);
 int git2r_error_check_integer_arg(SEXP arg);
 int git2r_error_check_logical_arg(SEXP arg);

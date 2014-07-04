@@ -123,7 +123,7 @@ SEXP git2r_branch_create(
     git_repository *repository = NULL;
 
     if (git2r_error_check_string_arg(branch_name)
-        || git2r_error_check_commit_arg(commit)
+        || git2r_arg_check_commit(commit)
         || git2r_error_check_logical_arg(force)
         || git2r_error_check_signature_arg(signature))
         error("Invalid arguments to git2r_branch_create");

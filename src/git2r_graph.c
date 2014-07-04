@@ -32,8 +32,8 @@ SEXP git2r_graph_ahead_behind(SEXP local, SEXP upstream)
     git_oid upstream_oid;
     git_repository *repository = NULL;
 
-    if (git2r_error_check_commit_arg(local)
-        || git2r_error_check_commit_arg(upstream))
+    if (git2r_arg_check_commit(local)
+        || git2r_arg_check_commit(upstream))
         error("Invalid arguments to git2r_graph_ahead_behind");
 
     slot = GET_SLOT(local, Rf_install("repo"));
@@ -84,8 +84,8 @@ SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor)
     git_oid ancestor_oid;
     git_repository *repository = NULL;
 
-    if (git2r_error_check_commit_arg(commit)
-        || git2r_error_check_commit_arg(ancestor))
+    if (git2r_arg_check_commit(commit)
+        || git2r_arg_check_commit(ancestor))
         error("Invalid arguments to git2r_graph_descendant_of");
 
     slot = GET_SLOT(commit, Rf_install("repo"));
