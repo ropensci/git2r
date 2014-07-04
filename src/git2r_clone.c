@@ -79,7 +79,7 @@ SEXP git2r_clone(SEXP url, SEXP local_path, SEXP progress)
 
     if (git2r_error_check_string_arg(url)
         || git2r_error_check_string_arg(local_path)
-        || git2r_error_check_logical_arg(progress))
+        || git2r_arg_check_logical(progress))
         error("Invalid arguments to git2r_clone");
 
     checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE_CREATE;

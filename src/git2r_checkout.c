@@ -50,7 +50,7 @@ SEXP git2r_checkout_branch(
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
 
     if (git2r_arg_check_branch(branch)
-        || git2r_error_check_logical_arg(force)
+        || git2r_arg_check_logical(force)
         || git2r_error_check_signature_arg(who))
         error("Invalid arguments to git2r_checkout_branch");
 
@@ -136,7 +136,7 @@ SEXP git2r_checkout_commit(
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
 
     if (git2r_arg_check_commit(commit)
-        || git2r_error_check_logical_arg(force)
+        || git2r_arg_check_logical(force)
         || git2r_error_check_signature_arg(who))
         error("Invalid arguments to git2r_checkout_commit");
 
@@ -221,7 +221,7 @@ SEXP git2r_checkout_tag(
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
 
     if (git2r_error_check_tag_arg(tag)
-        || git2r_error_check_logical_arg(force)
+        || git2r_arg_check_logical(force)
         || git2r_error_check_signature_arg(who))
         error("Invalid arguments to git2r_checkout_tag");
 
@@ -304,7 +304,7 @@ SEXP git2r_checkout_tree(
     git_repository *repository = NULL;
 
     if (git2r_error_check_tree_arg(tree)
-        || git2r_error_check_logical_arg(force)
+        || git2r_arg_check_logical(force)
         || git2r_error_check_signature_arg(who))
         error("Invalid arguments to git2r_checkout_tree");
 

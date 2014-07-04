@@ -67,7 +67,7 @@ SEXP git2r_repository_init(SEXP path, SEXP bare)
     int err;
     git_repository *repository = NULL;
 
-    if (git2r_error_check_string_arg(path) || git2r_error_check_logical_arg(bare))
+    if (git2r_error_check_string_arg(path) || git2r_arg_check_logical(bare))
         error("Invalid arguments to git2r_repository_init");
 
     err = git_repository_init(&repository,
@@ -201,7 +201,7 @@ SEXP git2r_repository_workdir(SEXP repo)
  * Find repository base path for given path
  *
  * @param path
- * @return R_NilValue if repository cannot be found or 
+ * @return R_NilValue if repository cannot be found or
  * a character vector of length one with path to repository's git dir
  * e.g. /path/to/my/repo/.git
  */
@@ -210,14 +210,14 @@ SEXP git2r_repository_discover(SEXP startpath)
     int err;
     SEXP result = R_NilValue;
     git_buf gitdir = GIT_BUF_INIT;
-    
+
     if (git2r_error_check_string_arg(startpath))
         error("Invalid arguments to git2r_repository_discover");
-    
+
     /* note that across_fs (arg #3) is set to 0 so this will stop when a
        filesystem device change is detected while exploring parent directories
     */
-    err = git_repository_discover(&gitdir, CHAR(STRING_ELT(startpath, 0)), 0, 
+    err = git_repository_discover(&gitdir, CHAR(STRING_ELT(startpath, 0)), 0,
     /* const char *ceiling_dirs */ NULL);
     if (err < 0) {
         /* NB just return R_NilValue if we can't discover the repo */

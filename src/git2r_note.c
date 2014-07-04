@@ -122,7 +122,7 @@ SEXP git2r_note_create(
         || git2r_error_check_string_arg(ref)
         || git2r_error_check_signature_arg(author)
         || git2r_error_check_signature_arg(committer)
-        || git2r_error_check_logical_arg(force))
+        || git2r_arg_check_logical(force))
         error("Invalid arguments to git2r_note_create");
 
     repository = git2r_repository_open(repo);

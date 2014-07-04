@@ -154,7 +154,7 @@ int git2r_arg_check_integer(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else 1
  */
-int git2r_error_check_logical_arg(SEXP arg)
+int git2r_arg_check_logical(SEXP arg)
 {
     if (R_NilValue == arg
         || !isLogical(arg)
