@@ -117,7 +117,7 @@ SEXP git2r_note_create(
     git_signature *sig_committer = NULL;
     git_repository *repository = NULL;
 
-    if (git2r_error_check_hex_arg(hex)
+    if (git2r_arg_check_hex(hex)
         || git2r_error_check_string_arg(message)
         || git2r_error_check_string_arg(ref)
         || git2r_error_check_signature_arg(author)

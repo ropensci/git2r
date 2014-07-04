@@ -118,7 +118,7 @@ int git2r_arg_check_commit(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else 1
  */
-int git2r_error_check_hex_arg(SEXP arg)
+int git2r_arg_check_hex(SEXP arg)
 {
     size_t len;
 

@@ -41,7 +41,7 @@ SEXP git2r_object_lookup(SEXP repo, SEXP hex)
     git_oid oid;
     git_repository *repository = NULL;
 
-    if (git2r_error_check_hex_arg(hex))
+    if (git2r_arg_check_hex(hex))
         error("Invalid arguments to git2r_object_lookup");
 
     repository = git2r_repository_open(repo);
