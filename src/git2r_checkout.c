@@ -55,7 +55,7 @@ SEXP git2r_checkout_branch(
         error("Invalid arguments to git2r_checkout_branch");
 
     if (R_NilValue != msg) {
-        if (git2r_error_check_string_arg(msg))
+        if (git2r_arg_check_string(msg))
             error("Invalid arguments to git2r_checkout_branch");
         message = CHAR(STRING_ELT(msg, 0));
     }
@@ -141,7 +141,7 @@ SEXP git2r_checkout_commit(
         error("Invalid arguments to git2r_checkout_commit");
 
     if (R_NilValue != msg) {
-        if (git2r_error_check_string_arg(msg))
+        if (git2r_arg_check_string(msg))
             error("Invalid arguments to git2r_checkout_commit");
         message = CHAR(STRING_ELT(msg, 0));
     }
@@ -226,7 +226,7 @@ SEXP git2r_checkout_tag(
         error("Invalid arguments to git2r_checkout_tag");
 
     if (R_NilValue != msg) {
-        if (git2r_error_check_string_arg(msg))
+        if (git2r_arg_check_string(msg))
             error("Invalid arguments to git2r_checkout_tag");
         message = CHAR(STRING_ELT(msg, 0));
     }
@@ -309,7 +309,7 @@ SEXP git2r_checkout_tree(
         error("Invalid arguments to git2r_checkout_tree");
 
     if (R_NilValue != msg) {
-        if (git2r_error_check_string_arg(msg))
+        if (git2r_arg_check_string(msg))
             error("Invalid arguments to git2r_checkout_tree");
         message = CHAR(STRING_ELT(msg, 0));
     }

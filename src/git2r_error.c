@@ -48,7 +48,7 @@ int git2r_arg_check_blob(SEXP arg)
     if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_blob"))
         return 1;
 
-    if (git2r_error_check_string_arg(GET_SLOT(arg, Rf_install("hex"))))
+    if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("hex"))))
         return 1;
 
     return 0;
@@ -72,7 +72,7 @@ int git2r_arg_check_branch(SEXP arg)
     if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_branch"))
         return 1;
 
-    if (git2r_error_check_string_arg(GET_SLOT(arg, Rf_install("name"))))
+    if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("name"))))
         return 1;
 
     slot = GET_SLOT(arg, Rf_install("type"));
@@ -106,7 +106,7 @@ int git2r_arg_check_commit(SEXP arg)
     if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_commit"))
         return 1;
 
-    if (git2r_error_check_string_arg(GET_SLOT(arg, Rf_install("hex"))))
+    if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("hex"))))
         return 1;
 
     return 0;
@@ -122,7 +122,7 @@ int git2r_arg_check_hex(SEXP arg)
 {
     size_t len;
 
-    if (git2r_error_check_string_arg(arg))
+    if (git2r_arg_check_string(arg))
         return 1;
 
     len = LENGTH(STRING_ELT(arg, 0));
@@ -181,10 +181,10 @@ int git2r_arg_check_note(SEXP arg)
     if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_note"))
         return 1;
 
-    if (git2r_error_check_string_arg(GET_SLOT(arg, Rf_install("hex"))))
+    if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("hex"))))
         return 1;
 
-    if (git2r_error_check_string_arg(GET_SLOT(arg, Rf_install("refname"))))
+    if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("refname"))))
         return 1;
 
     return 0;
@@ -224,8 +224,8 @@ int git2r_arg_check_signature(SEXP arg)
     if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_signature"))
         return 1;
 
-    if (git2r_error_check_string_arg(GET_SLOT(arg, Rf_install("name")))
-        || git2r_error_check_string_arg(GET_SLOT(arg, Rf_install("email"))))
+    if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("name")))
+        || git2r_arg_check_string(GET_SLOT(arg, Rf_install("email"))))
         return 1;
 
     when = GET_SLOT(arg, Rf_install("when"));
@@ -242,7 +242,7 @@ int git2r_arg_check_signature(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else 1
  */
-int git2r_error_check_string_arg(SEXP arg)
+int git2r_arg_check_string(SEXP arg)
 {
     if (R_NilValue == arg
         || !isString(arg)
@@ -269,7 +269,7 @@ int git2r_error_check_tag_arg(SEXP arg)
     if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_tag"))
         return 1;
 
-    if (git2r_error_check_string_arg(GET_SLOT(arg, Rf_install("target"))))
+    if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("target"))))
         return 1;
 
     return 0;
@@ -292,7 +292,7 @@ int git2r_error_check_tree_arg(SEXP arg)
     if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_tree"))
         return 1;
 
-    if (git2r_error_check_string_arg(GET_SLOT(arg, Rf_install("hex"))))
+    if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("hex"))))
         return 1;
 
     return 0;

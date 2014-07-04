@@ -34,7 +34,7 @@ SEXP git2r_remote_fetch(SEXP repo, SEXP name)
     git_remote *remote = NULL;
     git_repository *repository = NULL;
 
-    if (git2r_error_check_string_arg(name))
+    if (git2r_arg_check_string(name))
         error("Invalid arguments to git2r_remote_fetch");
 
     repository = git2r_repository_open(repo);

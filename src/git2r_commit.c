@@ -59,7 +59,7 @@ SEXP git2r_commit_create(
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
     opts.show  = GIT_STATUS_SHOW_INDEX_ONLY;
 
-    if (git2r_error_check_string_arg(message)
+    if (git2r_arg_check_string(message)
         || git2r_arg_check_signature(author)
         || git2r_arg_check_signature(committer)
         || R_NilValue == parent_list

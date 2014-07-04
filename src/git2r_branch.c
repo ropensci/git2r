@@ -122,14 +122,14 @@ SEXP git2r_branch_create(
     git_reference *reference = NULL;
     git_repository *repository = NULL;
 
-    if (git2r_error_check_string_arg(branch_name)
+    if (git2r_arg_check_string(branch_name)
         || git2r_arg_check_commit(commit)
         || git2r_arg_check_logical(force)
         || git2r_arg_check_signature(signature))
         error("Invalid arguments to git2r_branch_create");
 
     if (R_NilValue != message) {
-        if (git2r_error_check_string_arg(message))
+        if (git2r_arg_check_string(message))
             error("Invalid arguments to git2r_branch_create");
         log = CHAR(STRING_ELT(message, 0));
     }
@@ -523,13 +523,13 @@ SEXP git2r_branch_rename(
     git_repository *repository = NULL;
 
     if (git2r_arg_check_branch(branch)
-        || git2r_error_check_string_arg(new_branch_name)
+        || git2r_arg_check_string(new_branch_name)
         || git2r_arg_check_logical(force)
         || git2r_arg_check_signature(signature))
         error("Invalid arguments to git2r_branch_rename");
 
     if (R_NilValue != message) {
-        if (git2r_error_check_string_arg(message))
+        if (git2r_arg_check_string(message))
             error("Invalid arguments to git2r_branch_rename");
         log = CHAR(STRING_ELT(message, 0));
     }
@@ -724,7 +724,7 @@ SEXP git2r_branch_set_upstream(SEXP branch, SEXP upstream_name)
         error("Invalid arguments to git2r_branch_set_upstream");
 
     if (R_NilValue != upstream_name) {
-        if (git2r_error_check_string_arg(upstream_name))
+        if (git2r_arg_check_string(upstream_name))
             error("Invalid arguments to git2r_branch_set_upstream");
         u_name = CHAR(STRING_ELT(upstream_name, 0));
     }

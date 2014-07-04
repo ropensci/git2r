@@ -118,8 +118,8 @@ SEXP git2r_note_create(
     git_repository *repository = NULL;
 
     if (git2r_arg_check_hex(hex)
-        || git2r_error_check_string_arg(message)
-        || git2r_error_check_string_arg(ref)
+        || git2r_arg_check_string(message)
+        || git2r_arg_check_string(ref)
         || git2r_arg_check_signature(author)
         || git2r_arg_check_signature(committer)
         || git2r_arg_check_logical(force))
@@ -277,7 +277,7 @@ SEXP git2r_note_list(SEXP repo, SEXP ref)
     git_repository *repository = NULL;
 
     if (R_NilValue != ref) {
-        if (git2r_error_check_string_arg(ref))
+        if (git2r_arg_check_string(ref))
             error("Invalid arguments to git2r_note_list");
         notes_ref = CHAR(STRING_ELT(ref, 0));
     }
