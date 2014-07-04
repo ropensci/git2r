@@ -16,18 +16,22 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef INCLUDE_git2r_error_h
-#define INCLUDE_git2r_error_h
+#ifndef INCLUDE_git2r_arg_h
+#define INCLUDE_git2r_arg_h
 
-/**
- * Error messages
- */
+#include <R.h>
+#include <Rinternals.h>
 
-extern const char git2r_err_alloc_memory_buffer[];
-extern const char git2r_err_invalid_repository[];
-extern const char git2r_err_nothing_added_to_commit[];
-extern const char git2r_err_unexpected_config_level[];
-extern const char git2r_err_unexpected_head_of_branch[];
-extern const char git2r_err_unexpected_type_of_branch[];
+int git2r_arg_check_blob(SEXP arg);
+int git2r_arg_check_branch(SEXP arg);
+int git2r_arg_check_commit(SEXP arg);
+int git2r_arg_check_hex(SEXP arg);
+int git2r_arg_check_integer(SEXP arg);
+int git2r_arg_check_logical(SEXP arg);
+int git2r_arg_check_note(SEXP arg);
+int git2r_arg_check_signature(SEXP arg);
+int git2r_arg_check_string(SEXP arg);
+int git2r_arg_check_tag(SEXP arg);
+int git2r_arg_check_tree(SEXP arg);
 
 #endif
