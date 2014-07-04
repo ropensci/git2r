@@ -17,6 +17,8 @@
  */
 
 #include "git2.h"
+
+#include "git2r_arg.h"
 #include "git2r_error.h"
 #include "git2r_remote.h"
 #include "git2r_repository.h"
@@ -24,8 +26,8 @@
 /**
  * Fetch
  *
- * @param repo
- * @param name
+ * @param repo :TODO:DOCUMENTATION:
+ * @param name :TODO:DOCUMENTATION:
  * @return R_NilValue
  */
 SEXP git2r_remote_fetch(SEXP repo, SEXP name)
@@ -69,7 +71,7 @@ cleanup:
  * Get the configured remotes for a repo
  *
  * @param repo S4 class git_repository
- * @return
+ * @return :TODO:DOCUMENTATION:
  */
 SEXP git2r_remote_list(SEXP repo)
 {
@@ -107,7 +109,7 @@ cleanup:
  * Get the remote's url
  *
  * @param repo S4 class git_repository
- * @return
+ * @return :TODO:DOCUMENTATION:
  */
 SEXP git2r_remote_url(SEXP repo, SEXP remote)
 {

@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include "git2r_arg.h"
 #include "git2r_error.h"
 #include "git2r_repository.h"
 #include "git2r_status.h"
@@ -23,7 +24,7 @@
 /**
  * Count number of ignored files
  *
- * @param status
+ * @param status :TODO:DOCUMENTATION:
  * @return The number of files
  */
 static size_t git2r_status_count_ignored(git_status_list *status_list)
@@ -45,7 +46,7 @@ static size_t git2r_status_count_ignored(git_status_list *status_list)
 /**
  * Count number of changes in index
  *
- * @param status
+ * @param status :TODO:DOCUMENTATION:
  * @return The number of changes
  */
 static size_t git2r_status_count_staged(git_status_list *status_list)
@@ -78,7 +79,7 @@ static size_t git2r_status_count_staged(git_status_list *status_list)
 /**
  * Count number of changes in workdir relative to index
  *
- * @param status
+ * @param status :TODO:DOCUMENTATION:
  * @return The number of changes
  */
 static size_t git2r_status_count_unstaged(git_status_list *status_list)
@@ -109,7 +110,7 @@ static size_t git2r_status_count_unstaged(git_status_list *status_list)
 /**
  * Count number of untracked files
  *
- * @param status
+ * @param status :TODO:DOCUMENTATION:
  * @return The number of files
  */
 static size_t git2r_status_count_untracked(git_status_list *status_list)
@@ -131,9 +132,9 @@ static size_t git2r_status_count_untracked(git_status_list *status_list)
 /**
  * Add ignored files
  *
- * @param list
- * @param list_index
- * @param status_list
+ * @param list :TODO:DOCUMENTATION:
+ * @param list_index :TODO:DOCUMENTATION:
+ * @param status_list :TODO:DOCUMENTATION:
  * @return void
  */
 static void git2r_status_list_ignored(
@@ -172,9 +173,9 @@ static void git2r_status_list_ignored(
 /**
  * Add changes in index
  *
- * @param list
- * @param list_index
- * @param status_list
+ * @param list :TODO:DOCUMENTATION:
+ * @param list_index :TODO:DOCUMENTATION:
+ * @param status_list :TODO:DOCUMENTATION:
  * @return void
  */
 static void git2r_status_list_staged(
@@ -240,9 +241,9 @@ static void git2r_status_list_staged(
 /**
  * Add changes in workdir relative to index
  *
- * @param list
- * @param list_index
- * @param status_list
+ * @param list :TODO:DOCUMENTATION:
+ * @param list_index :TODO:DOCUMENTATION:
+ * @param status_list :TODO:DOCUMENTATION:
  * @return void
  */
 static void git2r_status_list_unstaged(
@@ -306,9 +307,9 @@ static void git2r_status_list_unstaged(
 /**
  * Add untracked files
  *
- * @param list
- * @param list_index
- * @param status_list
+ * @param list :TODO:DOCUMENTATION:
+ * @param list_index :TODO:DOCUMENTATION:
+ * @param status_list :TODO:DOCUMENTATION:
  * @return void
  */
 static void git2r_status_list_untracked(

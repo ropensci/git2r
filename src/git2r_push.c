@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include "git2r_arg.h"
 #include "git2r_error.h"
 #include "git2r_push.h"
 #include "git2r_repository.h"
@@ -23,9 +24,9 @@
 /**
  * The invoked callback on each status entry
  *
- * @param ref
- * @param msg
- * @param data
+ * @param ref :TODO:DOCUMENTATION:
+ * @param msg :TODO:DOCUMENTATION:
+ * @param data :TODO:DOCUMENTATION:
  * @return 0
  */
 static int git2r_push_status_foreach_cb(
@@ -42,9 +43,9 @@ static int git2r_push_status_foreach_cb(
 /**
  * Push
  *
- * @param repo
- * @param name
- * @param refspec
+ * @param repo :TODO:DOCUMENTATION:
+ * @param name :TODO:DOCUMENTATION:
+ * @param refspec :TODO:DOCUMENTATION:
  * @return R_NilValue
  */
 SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec)

@@ -17,6 +17,8 @@
  */
 
 #include "git2.h"
+
+#include "git2r_arg.h"
 #include "git2r_clone.h"
 #include "git2r_error.h"
 

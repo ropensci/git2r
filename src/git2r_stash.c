@@ -17,13 +17,14 @@
  */
 
 #include <Rdefines.h>
+#include "git2.h"
 
+#include "git2r_arg.h"
 #include "git2r_commit.h"
 #include "git2r_error.h"
 #include "git2r_repository.h"
 #include "git2r_signature.h"
 #include "git2r_stash.h"
-#include "git2.h"
 
 typedef struct {
     size_t n;
@@ -61,8 +62,8 @@ SEXP git2r_stash_drop(SEXP repo, SEXP index)
 /**
  * Init slots in S4 class git_stash
  *
- * @param source
- * @param repository
+ * @param source :TODO:DOCUMENTATION:
+ * @param repository :TODO:DOCUMENTATION:
  * @param repo S4 class git_repository that contains the stash
  * @param dest S4 class git_stash to initialize
  * @return int 0 on success, or an error code.
@@ -88,11 +89,11 @@ int git2r_stash_init(
 /**
  * Callback when iterating over stashes
  *
- * @param index
- * @param message
- * @param stash_id
- * @param payload
- * @return int
+ * @param index :TODO:DOCUMENTATION:
+ * @param message :TODO:DOCUMENTATION:
+ * @param stash_id :TODO:DOCUMENTATION:
+ * @param payload :TODO:DOCUMENTATION:
+ * @return int :TODO:DOCUMENTATION:
  */
 static int git2r_stash_list_cb(
     size_t index,

@@ -17,6 +17,9 @@
  */
 
 #include <Rdefines.h>
+#include "git2.h"
+
+#include "git2r_arg.h"
 
 /**
  * Check blob argument
