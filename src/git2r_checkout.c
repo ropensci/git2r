@@ -303,7 +303,7 @@ SEXP git2r_checkout_tree(
     git_signature *signature = NULL;
     git_repository *repository = NULL;
 
-    if (git2r_error_check_tree_arg(tree)
+    if (git2r_arg_check_tree(tree)
         || git2r_arg_check_logical(force)
         || git2r_arg_check_signature(who))
         error("Invalid arguments to git2r_checkout_tree");
