@@ -60,7 +60,7 @@ int git2r_arg_check_blob(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else 1
  */
-int git2r_error_check_branch_arg(SEXP arg)
+int git2r_arg_check_branch(SEXP arg)
 {
     SEXP class_name;
     SEXP slot;
