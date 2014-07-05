@@ -8,20 +8,15 @@
 \alias{checkout,git_tree-method}
 \title{Checkout}
 \usage{
-checkout(object, force = FALSE, msg = NULL,
-  who = default_signature(object@repo))
+checkout(object, force = FALSE)
 
-\S4method{checkout}{git_branch}(object, force = FALSE, msg = NULL,
-  who = default_signature(object@repo))
+\S4method{checkout}{git_branch}(object, force = FALSE)
 
-\S4method{checkout}{git_commit}(object, force = FALSE, msg = NULL,
-  who = default_signature(object@repo))
+\S4method{checkout}{git_commit}(object, force = FALSE)
 
-\S4method{checkout}{git_tag}(object, force = FALSE, msg = NULL,
-  who = default_signature(object@repo))
+\S4method{checkout}{git_tag}(object, force = FALSE)
 
-\S4method{checkout}{git_tree}(object, force = FALSE, msg = NULL,
-  who = default_signature(object@repo))
+\S4method{checkout}{git_tree}(object, force = FALSE)
 }
 \arguments{
 \item{object}{a commit, tag or tree which content will be used to
@@ -29,12 +24,6 @@ update the working directory.}
 
 \item{force}{If TRUE, then make working directory match
 target. This will throw away local changes. Default is FALSE.}
-
-\item{msg}{The one line long message to be appended to the reflog}
-
-\item{who}{The identity that will used to populate the reflog
-entry. Default is the default signature for the repository of
-\code{object}.}
 }
 \value{
 invisible NULL

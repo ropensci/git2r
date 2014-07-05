@@ -52,15 +52,17 @@ add(repo, 'test.txt')
 commit.3 <- commit(repo, "Third commit message")
 
 ##
-## Check if HEAD is detached
+## Check HEAD
 ##
 stopifnot(identical(is_detached(repo), FALSE))
+stopifnot(identical(head(repo)@name, "master"))
 
 ##
 ## Checkout first commit
 ##
 checkout(commit.1, TRUE)
 stopifnot(identical(is_detached(repo), TRUE))
+stopifnot(identical(head(repo), commit.1))
 stopifnot(identical(readLines(file.path(path, "test.txt")), "Hello world!"))
 
 ##
