@@ -46,7 +46,6 @@ SEXP git2r_checkout_branch(
     SEXP branch_name;
     git_buf ref_name = GIT_BUF_INIT;
     git_oid oid;
-    const char *message = NULL;
     git_signature *signature = NULL;
     git_reference *reference = NULL;
     git_repository *repository = NULL;
@@ -54,14 +53,9 @@ SEXP git2r_checkout_branch(
 
     if (git2r_arg_check_branch(branch)
         || git2r_arg_check_logical(force)
+        || git2r_arg_check_string(msg)
         || git2r_arg_check_signature(who))
         error("Invalid arguments to git2r_checkout_branch");
-
-    if (R_NilValue != msg) {
-        if (git2r_arg_check_string(msg))
-            error("Invalid arguments to git2r_checkout_branch");
-        message = CHAR(STRING_ELT(msg, 0));
-    }
 
     repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
     if (!repository)
@@ -83,7 +77,7 @@ SEXP git2r_checkout_branch(
         repository,
         ref_name.ptr,
         signature,
-        message);
+        CHAR(STRING_ELT(msg, 0)));
     if (err < 0)
         goto cleanup;
 
@@ -132,7 +126,6 @@ SEXP git2r_checkout_commit(
     int err;
     SEXP hex;
     git_oid oid;
-    const char *message = NULL;
     git_signature *signature = NULL;
     git_commit *treeish = NULL;
     git_repository *repository = NULL;
@@ -140,14 +133,9 @@ SEXP git2r_checkout_commit(
 
     if (git2r_arg_check_commit(commit)
         || git2r_arg_check_logical(force)
+        || git2r_arg_check_string(msg)
         || git2r_arg_check_signature(who))
         error("Invalid arguments to git2r_checkout_commit");
-
-    if (R_NilValue != msg) {
-        if (git2r_arg_check_string(msg))
-            error("Invalid arguments to git2r_checkout_commit");
-        message = CHAR(STRING_ELT(msg, 0));
-    }
 
     repository = git2r_repository_open(GET_SLOT(commit, Rf_install("repo")));
     if (!repository)
@@ -170,7 +158,7 @@ SEXP git2r_checkout_commit(
         repository,
         git_commit_id(treeish),
         signature,
-        message);
+        CHAR(STRING_ELT(msg, 0)));
     if (err < 0)
         goto cleanup;
 
@@ -217,7 +205,6 @@ SEXP git2r_checkout_tag(
     int err;
     SEXP slot;
     git_oid oid;
-    const char *message = NULL;
     git_signature *signature = NULL;
     git_commit *treeish = NULL;
     git_repository *repository = NULL;
@@ -225,14 +212,9 @@ SEXP git2r_checkout_tag(
 
     if (git2r_arg_check_tag(tag)
         || git2r_arg_check_logical(force)
+        || git2r_arg_check_string(msg)
         || git2r_arg_check_signature(who))
         error("Invalid arguments to git2r_checkout_tag");
-
-    if (R_NilValue != msg) {
-        if (git2r_arg_check_string(msg))
-            error("Invalid arguments to git2r_checkout_tag");
-        message = CHAR(STRING_ELT(msg, 0));
-    }
 
     repository = git2r_repository_open(GET_SLOT(tag, Rf_install("repo")));
     if (!repository)
@@ -255,7 +237,7 @@ SEXP git2r_checkout_tag(
         repository,
         git_commit_id(treeish),
         signature,
-        message);
+        CHAR(STRING_ELT(msg, 0)));
     if (err < 0)
         goto cleanup;
 
@@ -302,20 +284,14 @@ SEXP git2r_checkout_tree(
     int err;
     SEXP slot;
     git_oid oid;
-    const char *message = NULL;
     git_signature *signature = NULL;
     git_repository *repository = NULL;
 
     if (git2r_arg_check_tree(tree)
         || git2r_arg_check_logical(force)
+        || git2r_arg_check_string(msg)
         || git2r_arg_check_signature(who))
         error("Invalid arguments to git2r_checkout_tree");
-
-    if (R_NilValue != msg) {
-        if (git2r_arg_check_string(msg))
-            error("Invalid arguments to git2r_checkout_tree");
-        message = CHAR(STRING_ELT(msg, 0));
-    }
 
     repository = git2r_repository_open(GET_SLOT(tree, Rf_install("repo")));
     if (!repository)
