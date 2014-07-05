@@ -1,3 +1,7 @@
+RCMD=R CMD
+PKG_VERSION=$(shell grep -i ^version DESCRIPTION | cut -d : -d \  -f 2)
+PKG_NAME=$(shell grep -i ^package DESCRIPTION | cut -d : -d \  -f 2)
+
 all: readme
 readme: $(patsubst %.Rmd, %.md, $(wildcard *.Rmd))
 
@@ -10,6 +14,11 @@ readme: $(patsubst %.Rmd, %.md, $(wildcard *.Rmd))
 doc:
 	rm -f man/*.Rd
 	cd .. && Rscript -e "library(methods); library(utils); library(roxygen2); roxygenize('git2r')"
+
+# Build and check package
+check: clean
+	cd .. && $(RCMD) build --no-build-vignettes $(PKG)
+	cd .. && $(RCMD) check --no-manual --no-vignettes --no-build-vignettes $(PKG_NAME)_$(PKG_VERSION).tar.gz
 
 # Sync git2r with changes in the libgit2 C-library
 #
@@ -25,8 +34,7 @@ doc:
 # files they must be reverted to previous state to pass R CMD check
 #
 # 4) Build and check updated package
-#    - R CMD build git2r
-#    - R CMD check git2r_version.tar.gz
+#    - make check
 sync_libgit2:
 	-rm -f src/http-parser/*
 	-rm -f src/regex/*
@@ -67,6 +75,8 @@ sync_libgit2:
 	-cp -f ../libgit2/AUTHORS inst/AUTHORS_libgit2
 	-cp -f ../libgit2/COPYING inst/NOTICE
 	Rscript tools/build_Makevars.r
+	-echo "\nPotential lines where printf should be replaced with Rprintf\n"
+	grep -rn --include="*.c" --regexp="[[:space:]]printf[(]" *
 
 Makevars:
 	Rscript tools/build_Makevars.r
@@ -85,4 +95,4 @@ clean:
 	-rm -f src/libgit2/xdiff/*.o
 	-rm -f src/http-parser/*.o
 
-.PHONY: all readme doc sync_libgit2 Makevars clean
+.PHONY: all readme doc sync_libgit2 Makevars check clean
