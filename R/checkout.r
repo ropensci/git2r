@@ -23,7 +23,7 @@
 ##' @param ref_log_target The target in the reflog message
 ##' in the reflog
 ##' @keywords internal
-do_checkout <- function(FUN, object, force, ref_log_head_spec) {
+do_checkout <- function(FUN, object, force, ref_log_target) {
     ## Determine the one line long message to be appended to the reflog
     current <- head(object@repo)
     if(is.null(current))

@@ -3,7 +3,7 @@
 \alias{do_checkout}
 \title{Internal function to do the checkout}
 \usage{
-do_checkout(FUN, object, force, ref_log_head_spec)
+do_checkout(FUN, object, force, ref_log_target)
 }
 \arguments{
 \item{FUN}{Name of git2r C function to call}
