@@ -23,7 +23,7 @@
  * Determine the sha1 hex of character vectors without writing to the
  * object data base.
  *
- * @param data STRSXP with character vectors to hash 
+ * @param data STRSXP with character vectors to hash
  * @return A STRSXP with character vector of sha1 hex values
  */
 SEXP git2r_odb_hash(SEXP data)
@@ -68,13 +68,13 @@ SEXP git2r_odb_hash(SEXP data)
  * Determine the sha1 hex of files without writing to the object data
  * base.
  *
- * @param path STRSXP with file vectors to hash 
+ * @param path STRSXP with file vectors to hash
  * @return A STRSXP with character vector of sha1 hex values
  */
 SEXP git2r_odb_hashfile(SEXP path)
 {
     SEXP result;
-    int err;
+    int err = 0;
     size_t len, i;
     char hex[GIT_OID_HEXSZ + 1];
     git_oid oid;
