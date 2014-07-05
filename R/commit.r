@@ -192,6 +192,16 @@ setMethod("descendant_of",
           }
 )
 
+##' Check if object is S4 class git_commit
+##'
+##' @param object Check if object is S4 class git_commit
+##' @return TRUE if object is S4 class git_commit, else FALSE
+##' @keywords methods
+##' @export
+is_commit <- function(object) {
+    is(object = object, class2 = "git_commit")
+}
+
 ##' Is merge
 ##'
 ##' Determine if a commit is a merge commit, i.e. has more than one
