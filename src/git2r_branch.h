@@ -21,6 +21,7 @@
 
 #include <R.h>
 #include <Rinternals.h>
+#include "git2.h"
 
 SEXP git2r_branch_create(
     SEXP branch_name,
@@ -29,6 +30,11 @@ SEXP git2r_branch_create(
     SEXP signature,
     SEXP message);
 SEXP git2r_branch_delete(SEXP branch);
+int git2r_branch_init(
+    const git_reference *source,
+    git_branch_t type,
+    SEXP repo,
+    SEXP dest);
 SEXP git2r_branch_is_head(SEXP branch);
 SEXP git2r_branch_list(SEXP repo, SEXP flags);
 SEXP git2r_branch_remote_name(SEXP branch);

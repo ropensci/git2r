@@ -17,9 +17,9 @@
  */
 
 #include <Rdefines.h>
-#include "git2.h"
 
 #include "git2r_arg.h"
+#include "git2r_branch.h"
 #include "git2r_commit.h"
 #include "git2r_error.h"
 #include "git2r_reference.h"
@@ -73,7 +73,7 @@ static int git2r_branch_count(git_repository *repo, int flags, size_t *n)
  * @param dest S4 class git_branch to initialize
  * @return int; < 0 if error, else 0
  */
-static int git2r_branch_init(
+int git2r_branch_init(
     const git_reference *source,
     git_branch_t type,
     SEXP repo,

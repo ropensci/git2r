@@ -20,6 +20,7 @@
 
 #include "git2r_arg.h"
 #include "git2r_blob.h"
+#include "git2r_branch.h"
 #include "git2r_commit.h"
 #include "git2r_error.h"
 #include "git2r_repository.h"
@@ -57,11 +58,74 @@ git_repository* git2r_repository_open(SEXP repo)
 }
 
 /**
+ * Get head of repository
+ *
+ * @param repo S4 class git_repository
+ * @return R_NilValue if unborn branch or not found.
+           S4 class git_branch if not a detached head.
+           S4 class git_commit if detached head
+ */
+SEXP git2r_repository_head(SEXP repo)
+{
+    int err;
+    SEXP result = R_NilValue;
+    git_commit *commit = NULL;
+    git_reference *reference = NULL;
+    git_repository *repository = NULL;
+
+    repository= git2r_repository_open(repo);
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    err = git_repository_head(&reference, repository);
+    if (err < 0) {
+        if (GIT_EUNBORNBRANCH == err || GIT_ENOTFOUND == err)
+            err = 0;
+        goto cleanup;
+    }
+
+    if (git_reference_is_branch(reference)) {
+        git_branch_t type = GIT_BRANCH_LOCAL;
+        if (git_reference_is_remote(reference))
+            type = GIT_BRANCH_REMOTE;
+        PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_branch")));
+        err = git2r_branch_init(reference, type, repo, result);
+    } else {
+        err = git_commit_lookup(
+            &commit,
+            repository,
+            git_reference_target(reference));
+        if (err < 0)
+            goto cleanup;
+        PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_commit")));
+        git2r_commit_init(commit, repo, result);
+    }
+
+cleanup:
+    if (commit)
+        git_commit_free(commit);
+
+    if (reference)
+        git_reference_free(reference);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
+    if (err < 0)
+        error("Error: %s\n", giterr_last()->message);
+
+    return result;
+}
+
+/**
  * Init a repository.
  *
- * @param path
- * @param bare
- * @return R_NilValue
+ * @param path :TODO:DOCUMENTATION:
+ * @param bare :TODO:DOCUMENTATION:
+ * @return R_NilValue :TODO:DOCUMENTATION:
  */
 SEXP git2r_repository_init(SEXP path, SEXP bare)
 {
@@ -134,7 +198,7 @@ SEXP git2r_repository_head_detached(SEXP repo)
  * Check if repository is empty.
  *
  * @param repo S4 class git_repository
- * @return
+ * @return :TODO:DOCUMENTATION:
  */
 SEXP git2r_repository_is_empty(SEXP repo)
 {
@@ -156,8 +220,8 @@ SEXP git2r_repository_is_empty(SEXP repo)
 /**
  * Check if valid repository.
  *
- * @param path
- * @return
+ * @param path :TODO:DOCUMENTATION:
+ * @return :TODO:DOCUMENTATION:
  */
 SEXP git2r_repository_can_open(SEXP path)
 {
@@ -201,7 +265,7 @@ SEXP git2r_repository_workdir(SEXP repo)
 /**
  * Find repository base path for given path
  *
- * @param path
+ * @param path :TODO:DOCUMENTATION:
  * @return R_NilValue if repository cannot be found or
  * a character vector of length one with path to repository's git dir
  * e.g. /path/to/my/repo/.git
