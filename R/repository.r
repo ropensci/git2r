@@ -287,30 +287,20 @@ setMethod("commit",
           }
 )
 
-##' Get HEAD for a repo
+##' Get HEAD for a repository
 ##'
 ##' @rdname head-methods
 ##' @docType methods
 ##' @param x The repository \code{x} to check head
-##' @return Character vector with head
+##' @return NULL if unborn branch or not found. S4 class git_branch if
+##' not a detached head. S4 class git_commit if detached head
 ##' @keywords methods
 ##' @export
 setMethod("head",
           signature(x = "git_repository"),
           function (x)
           {
-              b <- branches(x)
-
-              if(length(b)) {
-                  b <- b[sapply(b, is_head)]
-                  if(identical(length(b), 1L)) {
-                      return(b[[1]])
-                  }
-
-                  return(b)
-              }
-
-              return(NULL)
+              .Call("git2r_repository_head", x)
           }
 )
 

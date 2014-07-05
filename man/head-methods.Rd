@@ -2,7 +2,7 @@
 \docType{methods}
 \name{head,git_repository-method}
 \alias{head,git_repository-method}
-\title{Get HEAD for a repo}
+\title{Get HEAD for a repository}
 \usage{
 \S4method{head}{git_repository}(x)
 }
@@ -10,10 +10,11 @@
 \item{x}{The repository \code{x} to check head}
 }
 \value{
-Character vector with head
+NULL if unborn branch or not found. S4 class git_branch if
+not a detached head. S4 class git_commit if detached head
 }
 \description{
-Get HEAD for a repo
+Get HEAD for a repository
 }
 \keyword{methods}
 
