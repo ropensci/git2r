@@ -29,7 +29,7 @@
 SEXP git2r_odb_hash(SEXP data)
 {
     SEXP result;
-    int err;
+    int err = 0;
     size_t len, i;
     char hex[GIT_OID_HEXSZ + 1];
     git_oid oid;
