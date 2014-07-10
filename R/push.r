@@ -35,6 +35,14 @@ setMethod("push",
           signature(repo = "git_repository"),
           function (repo, name, refspec)
           {
-              invisible(.Call("git2r_push", repo, name, refspec))
+              result <- .Call(
+                  "git2r_push",
+                  repo,
+                  name,
+                  refspec,
+                  "update by push",
+                  default_signature(repo))
+
+              invisible(result)
           }
 )

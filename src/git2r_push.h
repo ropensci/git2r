@@ -19,12 +19,9 @@
 #ifndef INCLUDE_git2r_push_h
 #define INCLUDE_git2r_push_h
 
-#include <Rdefines.h>
 #include <R.h>
 #include <Rinternals.h>
 
-#include "git2.h"
-
-SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec);
+SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP msg, SEXP who);
 
 #endif
