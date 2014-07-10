@@ -45,6 +45,28 @@ static int git2r_push_status_foreach_cb(
 }
 
 /**
+ * Check if any non NA refspec
+ *
+ * @param refspec The string vector of refspec to push
+ * @return 1 if nothing to push else 0
+ */
+static int git2r_nothing_to_push(SEXP refspec)
+{
+    size_t i, n;
+
+    n = length(refspec);
+    if (0 == n)
+        return 1; /* Nothing to push */
+
+    for (i = 0; i < n; i++) {
+        if (NA_STRING != STRING_ELT(refspec, i))
+            return 0;
+    }
+
+    /* Nothing to push */
+    return 1;
+}
+/**
  * Push
  *
  * @param repo S4 class git_repository
@@ -70,9 +92,8 @@ SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP msg, SEXP who)
         || git2r_arg_check_signature(who))
         error("Invalid arguments to git2r_push");
 
-    n = length(refspec);
-    if (0 == n)
-        return R_NilValue; /* Nothing to push */
+    if (git2r_nothing_to_push(refspec))
+        return R_NilValue;
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -90,10 +111,13 @@ SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP msg, SEXP who)
     if (err < 0)
         goto cleanup;
 
+    n = length(refspec);
     for (i = 0; i < n; i++) {
-        err = git_push_add_refspec(push, CHAR(STRING_ELT(refspec, i)));
-        if (err < 0)
-            goto cleanup;
+        if (NA_STRING != STRING_ELT(refspec, i)) {
+            err = git_push_add_refspec(push, CHAR(STRING_ELT(refspec, i)));
+            if (err < 0)
+                goto cleanup;
+        }
     }
 
     err = git_push_finish(push);
