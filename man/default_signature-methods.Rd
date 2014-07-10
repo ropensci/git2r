@@ -5,18 +5,27 @@
 \alias{default_signature,git_repository-method}
 \title{Get the signature}
 \usage{
-default_signature(object)
+default_signature(repo)
 
-\S4method{default_signature}{git_repository}(object)
+\S4method{default_signature}{git_repository}(repo)
 }
 \arguments{
-\item{object}{The repository \code{object} to check signature}
+\item{repo}{The repository \code{object} to check signature}
 }
 \value{
-Character vector with signature
+S4 class git_signature
 }
 \description{
 Get the signature according to the repository's configuration
+}
+\examples{
+\dontrun{
+## Open an existing repository
+repo <- repository("path/to/git2r")
+
+## Get the default signature
+default_signature(repo)
+}
 }
 \keyword{methods}
 

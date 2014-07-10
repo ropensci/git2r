@@ -556,21 +556,29 @@ setMethod("remote_remove",
 ##' Get the signature according to the repository's configuration
 ##' @rdname default_signature-methods
 ##' @docType methods
-##' @param object The repository \code{object} to check signature
-##' @return Character vector with signature
+##' @param repo The repository \code{object} to check signature
+##' @return S4 class git_signature
 ##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository("path/to/git2r")
+##'
+##' ## Get the default signature
+##' default_signature(repo)
+##' }
 setGeneric("default_signature",
-           signature = "object",
-           function(object)
+           signature = "repo",
+           function(repo)
            standardGeneric("default_signature"))
 
 ##' @rdname default_signature-methods
 ##' @export
 setMethod("default_signature",
-          signature(object = "git_repository"),
-          function (object)
+          signature(repo = "git_repository"),
+          function (repo)
           {
-              .Call("git2r_signature_default", object)
+              .Call("git2r_signature_default", repo)
           }
 )
 
