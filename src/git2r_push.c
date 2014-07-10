@@ -57,6 +57,7 @@ static int git2r_push_status_foreach_cb(
 SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP msg, SEXP who)
 {
     int err;
+    size_t i, n;
     const char *err_msg = NULL;
     git_signature *signature = NULL;
     git_push *push = NULL;
@@ -64,10 +65,14 @@ SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP msg, SEXP who)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_string(name)
-        || git2r_arg_check_string(refspec)
+        || git2r_arg_check_string_vec(refspec)
         || git2r_arg_check_string(msg)
         || git2r_arg_check_signature(who))
         error("Invalid arguments to git2r_push");
+
+    n = length(refspec);
+    if (0 == n)
+        return R_NilValue; /* Nothing to push */
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -85,9 +90,11 @@ SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP msg, SEXP who)
     if (err < 0)
         goto cleanup;
 
-    err = git_push_add_refspec(push, CHAR(STRING_ELT(refspec, 0)));
-    if (err < 0)
-        goto cleanup;
+    for (i = 0; i < n; i++) {
+        err = git_push_add_refspec(push, CHAR(STRING_ELT(refspec, i)));
+        if (err < 0)
+            goto cleanup;
+    }
 
     err = git_push_finish(push);
     if (err < 0)

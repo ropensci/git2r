@@ -22,7 +22,7 @@ library(git2r)
 ##
 
 ##
-## Test collaboration between a bare repository and two clones
+## Test push/pull between a bare repository and two clones
 ##
 
 ##
@@ -71,6 +71,14 @@ stopifnot(identical(new_commit@author@email, "repo.one@example.org"))
 stopifnot(identical(length(commits(repo1)), 1L))
 stopifnot(identical(commits(repo1)[[1]]@author@name, "Repo One"))
 stopifnot(identical(commits(repo1)[[1]]@author@email, "repo.one@example.org"))
+
+##
+## Check push arguments
+##
+tools::assertError(push(repo1, character(0), "refs/heads/master"))
+tools::assertError(push(repo1, NA_character_, "refs/heads/master"))
+tools::assertError(push(repo1, c("origin", "origin"), "refs/heads/master"))
+push(repo1, "origin", character(0))
 
 ##
 ## Push changes from repo1 to origin
