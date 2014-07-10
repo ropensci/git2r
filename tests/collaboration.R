@@ -73,9 +73,19 @@ stopifnot(identical(commits(repo1)[[1]]@author@name, "Repo One"))
 stopifnot(identical(commits(repo1)[[1]]@author@email, "repo.one@example.org"))
 
 ##
-## Collaborate
+## Push changes from repo1 to origin
 ##
 push(repo1, "origin", "refs/heads/master")
+r <- reflog(repo1, "refs/remotes/origin/master")
+stopifnot(identical(length(r), 1L))
+r <- r[[1]]
+stopifnot(identical(r@hex, new_commit@hex))
+stopifnot(identical(r@message, "update by push"))
+stopifnot(identical(r@index, 0L))
+stopifnot(identical(r@committer@name, "Repo One"))
+stopifnot(identical(r@committer@email, "repo.one@example.org"))
+stopifnot(identical(r@refname, "refs/remotes/origin/master"))
+stopifnot(identical(r@repo@path, repo1@path))
 
 ##
 ## Pull changes to repo2
