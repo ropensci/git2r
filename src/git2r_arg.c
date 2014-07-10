@@ -229,15 +229,31 @@ int git2r_arg_check_signature(SEXP arg)
 /**
  * Check string argument
  *
+ * Compared to git2r_arg_check_string_vec, also checks that length of vector
+ * is one and non-NA.
  * @param arg the arg to check
  * @return 0 if OK, else 1
  */
 int git2r_arg_check_string(SEXP arg)
 {
-    if (R_NilValue == arg
-        || !isString(arg)
-        || 1 != length(arg)
-        || NA_STRING == STRING_ELT(arg, 0))
+    if (git2r_arg_check_string_vec(arg))
+        return 1;
+    if (1 != length(arg) || NA_STRING == STRING_ELT(arg, 0))
+        return 1;
+    return 0;
+}
+
+/**
+ * Check string vector argument
+ *
+ * Compared to git2r_arg_check_string, only checks that argument is non-null
+ * and string. Use git2r_arg_check_string to check scalar string.
+ * @param arg the arg to check
+ * @return 0 if OK, else 1
+ */
+int git2r_arg_check_string_vec(SEXP arg)
+{
+    if (R_NilValue == arg || !isString(arg))
         return 1;
     return 0;
 }

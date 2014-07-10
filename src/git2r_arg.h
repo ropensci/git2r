@@ -31,6 +31,7 @@ int git2r_arg_check_logical(SEXP arg);
 int git2r_arg_check_note(SEXP arg);
 int git2r_arg_check_signature(SEXP arg);
 int git2r_arg_check_string(SEXP arg);
+int git2r_arg_check_string_vec(SEXP arg);
 int git2r_arg_check_tag(SEXP arg);
 int git2r_arg_check_tree(SEXP arg);
 
