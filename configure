@@ -3211,6 +3211,13 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_z_inflate" >&5
 $as_echo "$ac_cv_lib_z_inflate" >&6; }
 if test "x$ac_cv_lib_z_inflate" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBZ 1
+_ACEOF
+
+  LIBS="-lz $LIBS"
+
+else
 
         { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
@@ -3332,7 +3339,7 @@ $as_echo "$as_me: WARNING:
 fi
 
 
-# Check for libssh2
+# Check for LibSSH2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libssh2_session_startup in -lssh2" >&5
 $as_echo_n "checking for libssh2_session_startup in -lssh2... " >&6; }
 if ${ac_cv_lib_ssh2_libssh2_session_startup+:} false; then :

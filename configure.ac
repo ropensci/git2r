@@ -53,7 +53,7 @@ CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
 CPPFLAGS="${CPPFLAGS} ${GIT2R_CPPFLAGS}"
 
 # Check for zlib
-AC_CHECK_LIB(z, inflate,
+AC_CHECK_LIB(z, inflate, [],
 [
         AC_MSG_FAILURE([zlib library required])
 ])
@@ -82,7 +82,7 @@ AC_CHECK_LIB([ssl], [SSL_library_init],
   -----------------------------------------------])
 ])
 
-# Check for libssh2
+# Check for LibSSH2
 AC_CHECK_LIB([ssh2], [libssh2_session_startup], [], [])
 AS_IF([test "$ac_cv_lib_ssh2_libssh2_session_startup" = yes],
 [
