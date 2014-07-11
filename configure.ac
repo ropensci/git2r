@@ -86,7 +86,7 @@ AC_CHECK_LIB([ssl], [SSL_library_init],
 AC_CHECK_LIB([ssh2], [libssh2_session_startup], [], [])
 AS_IF([test "$ac_cv_lib_ssh2_libssh2_session_startup" = yes],
 [
-        GIT2R_HAVE_SSH2=-DGIT_SSH2
+        GIT2R_HAVE_SSH2=-DGIT_SSH
 ],
 [
         AC_MSG_WARN([

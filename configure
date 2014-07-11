@@ -3387,7 +3387,7 @@ fi
 
 if test "$ac_cv_lib_ssh2_libssh2_session_startup" = yes; then :
 
-        GIT2R_HAVE_SSH2=-DGIT_SSH2
+        GIT2R_HAVE_SSH2=-DGIT_SSH
 
 else
 
