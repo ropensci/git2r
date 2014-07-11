@@ -112,6 +112,10 @@ sync_libgit2:
 Makevars:
 	Rscript tools/build_Makevars.r
 
+configure: configure.ac
+	autoconf ./configure.ac > ./configure
+	chmod +x ./configure
+
 clean:
 	-rm -f config.log
 	-rm -f config.status
