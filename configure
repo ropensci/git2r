@@ -625,12 +625,13 @@ ac_includes_default="\
 ac_header_list=
 ac_func_list=
 ac_subst_vars='LTLIBOBJS
+GIT2R_HAVE_SSH2
+GIT2R_HAVE_SSL
 LIBOBJS
 ALLOCA
 EGREP
 GREP
 CPP
-GIT2R_HAVE_ZLIB
 OBJEXT
 EXEEXT
 ac_ct_CC
@@ -3211,26 +3212,15 @@ fi
 $as_echo "$ac_cv_lib_z_inflate" >&6; }
 if test "x$ac_cv_lib_z_inflate" = xyes; then :
 
-        GIT2R_HAVE_ZLIB=TRUE
-
-cat >>confdefs.h <<_ACEOF
-#define HAVE_ZLIB 1
-_ACEOF
-
-        cat >>confdefs.h <<_ACEOF
-#define ZLIB_LIBS -lz
-_ACEOF
-
-        LIBS="${LIBS} -lz"
-
-else
-
-        GIT2R_HAVE_ZLIB=FALSE
+        { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "zlib library required
+See \`config.log' for more details" "$LINENO" 5; }
 
 fi
 
 
-
+# Check for OpenSSL
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SSL_library_init in -lssl" >&5
 $as_echo_n "checking for SSL_library_init in -lssl... " >&6; }
 if ${ac_cv_lib_ssl_SSL_library_init+:} false; then :
@@ -3268,20 +3258,8 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ssl_SSL_library_init" >&5
 $as_echo "$ac_cv_lib_ssl_SSL_library_init" >&6; }
 if test "x$ac_cv_lib_ssl_SSL_library_init" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBSSL 1
-_ACEOF
 
-  LIBS="-lssl $LIBS"
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "OpenSSL libraries required
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for EVP_EncryptInit in -lcrypto" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for EVP_EncryptInit in -lcrypto" >&5
 $as_echo_n "checking for EVP_EncryptInit in -lcrypto... " >&6; }
 if ${ac_cv_lib_crypto_EVP_EncryptInit+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -3318,19 +3296,106 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_crypto_EVP_EncryptInit" >&5
 $as_echo "$ac_cv_lib_crypto_EVP_EncryptInit" >&6; }
 if test "x$ac_cv_lib_crypto_EVP_EncryptInit" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBCRYPTO 1
-_ACEOF
 
-  LIBS="-lcrypto $LIBS"
+                GIT2R_HAVE_SSL=-DGIT_SSL
+                LIBS="-lcrypto -lssl ${LIBS}"
 
 else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "OpenSSL libraries required
-See \`config.log' for more details" "$LINENO" 5; }
+
+                { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING:
+  -----------------------------------------------
+   Unable to find OpenSSL on this system.
+   Building a version without support for HTTPS.
+  -----------------------------------------------" >&5
+$as_echo "$as_me: WARNING:
+  -----------------------------------------------
+   Unable to find OpenSSL on this system.
+   Building a version without support for HTTPS.
+  -----------------------------------------------" >&2;}
+
 fi
 
+
+else
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING:
+  -----------------------------------------------
+   Unable to find OpenSSL on this system.
+   Building a version without support for HTTPS.
+  -----------------------------------------------" >&5
+$as_echo "$as_me: WARNING:
+  -----------------------------------------------
+   Unable to find OpenSSL on this system.
+   Building a version without support for HTTPS.
+  -----------------------------------------------" >&2;}
+
+fi
+
+
+# Check for libssh2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libssh2_session_startup in -lssh2" >&5
+$as_echo_n "checking for libssh2_session_startup in -lssh2... " >&6; }
+if ${ac_cv_lib_ssh2_libssh2_session_startup+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lssh2  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char libssh2_session_startup ();
+int
+main ()
+{
+return libssh2_session_startup ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_ssh2_libssh2_session_startup=yes
+else
+  ac_cv_lib_ssh2_libssh2_session_startup=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ssh2_libssh2_session_startup" >&5
+$as_echo "$ac_cv_lib_ssh2_libssh2_session_startup" >&6; }
+if test "x$ac_cv_lib_ssh2_libssh2_session_startup" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBSSH2 1
+_ACEOF
+
+  LIBS="-lssh2 $LIBS"
+
+fi
+
+if test "$ac_cv_lib_ssh2_libssh2_session_startup" = yes; then :
+
+        GIT2R_HAVE_SSH2=-DGIT_SSH2
+
+else
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING:
+  ---------------------------------------------
+   Unable to find libSSH2 on this system.
+   Building a version without support for SSH.
+  ---------------------------------------------" >&5
+$as_echo "$as_me: WARNING:
+  ---------------------------------------------
+   Unable to find libSSH2 on this system.
+   Building a version without support for SSH.
+  ---------------------------------------------" >&2;}
+
+fi
 
 # Checks for header files.
 ac_ext=c
@@ -4920,6 +4985,8 @@ _ACEOF
 
 fi
 done
+
+
 
 
 

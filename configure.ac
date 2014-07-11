@@ -55,20 +55,46 @@ CPPFLAGS="${CPPFLAGS} ${GIT2R_CPPFLAGS}"
 # Check for zlib
 AC_CHECK_LIB(z, inflate,
 [
-        GIT2R_HAVE_ZLIB=TRUE
-        AC_DEFINE_UNQUOTED([HAVE_ZLIB],[1],[Have zlib])
-        AC_DEFINE_UNQUOTED([ZLIB_LIBS],[-lz],[])
-        LIBS="${LIBS} -lz"
+        AC_MSG_FAILURE([zlib library required])
+])
+
+# Check for OpenSSL
+AC_CHECK_LIB([ssl], [SSL_library_init],
+[
+        AC_CHECK_LIB([crypto], [EVP_EncryptInit],
+        [
+                GIT2R_HAVE_SSL=-DGIT_SSL
+                LIBS="-lcrypto -lssl ${LIBS}"
+        ],
+        [
+                AC_MSG_WARN([
+  -----------------------------------------------
+   Unable to find OpenSSL on this system.
+   Building a version without support for HTTPS.
+  -----------------------------------------------])
+        ])
 ],
 [
-        GIT2R_HAVE_ZLIB=FALSE
+        AC_MSG_WARN([
+  -----------------------------------------------
+   Unable to find OpenSSL on this system.
+   Building a version without support for HTTPS.
+  -----------------------------------------------])
 ])
-AC_SUBST(GIT2R_HAVE_ZLIB)
 
-AC_CHECK_LIB([ssl], [SSL_library_init], [],
-             [AC_MSG_FAILURE([OpenSSL libraries required])])
-AC_CHECK_LIB([crypto], [EVP_EncryptInit], [],
-             [AC_MSG_FAILURE([OpenSSL libraries required])])
+# Check for libssh2
+AC_CHECK_LIB([ssh2], [libssh2_session_startup], [], [])
+AS_IF([test "$ac_cv_lib_ssh2_libssh2_session_startup" = yes],
+[
+        GIT2R_HAVE_SSH2=-DGIT_SSH2
+],
+[
+        AC_MSG_WARN([
+  ---------------------------------------------
+   Unable to find libSSH2 on this system.
+   Building a version without support for SSH.
+  ---------------------------------------------])
+])
 
 # Checks for header files.
 AC_FUNC_ALLOCA
@@ -99,6 +125,8 @@ AC_FUNC_MMAP
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([btowc clock_gettime getcwd gethostbyname gettimeofday isascii memchr memmove memset munmap pstat_getdynamic re_comp realpath regcomp select socket strcasecmp strchr strcspn strdup strerror strncasecmp strrchr strspn strstr strtol strtoul])
 
+AC_SUBST(GIT2R_HAVE_SSL)
+AC_SUBST(GIT2R_HAVE_SSH2)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LIBS)
 
