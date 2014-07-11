@@ -83,18 +83,18 @@ AC_CHECK_LIB([ssl], [SSL_library_init],
 ])
 
 # Check for LibSSH2
-AC_CHECK_LIB([ssh2], [libssh2_session_startup], [], [])
-AS_IF([test "$ac_cv_lib_ssh2_libssh2_session_startup" = yes],
-[
+have_ssh2=no
+AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
+
+if test "x${have_ssh2}" = xyes; then
         GIT2R_HAVE_SSH2=-DGIT_SSH
-],
-[
+else
         AC_MSG_WARN([
   ---------------------------------------------
    Unable to find libSSH2 on this system.
    Building a version without support for SSH.
   ---------------------------------------------])
-])
+fi
 
 # Checks for header files.
 AC_FUNC_ALLOCA
