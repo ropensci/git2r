@@ -20,6 +20,7 @@
 #include "git2.h"
 
 #include "git2r_arg.h"
+#include "git2r_cred.h"
 #include "git2r_error.h"
 #include "git2r_push.h"
 #include "git2r_repository.h"
@@ -66,6 +67,7 @@ static int git2r_nothing_to_push(SEXP refspec)
     /* Nothing to push */
     return 1;
 }
+
 /**
  * Push
  *
@@ -85,6 +87,7 @@ SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP msg, SEXP who)
     git_push *push = NULL;
     git_remote *remote = NULL;
     git_repository *repository = NULL;
+    git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
 
     if (git2r_arg_check_string(name)
         || git2r_arg_check_string_vec(refspec)
@@ -104,6 +107,15 @@ SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP msg, SEXP who)
         goto cleanup;
 
     err = git_remote_load(&remote, repository, CHAR(STRING_ELT(name, 0)));
+    if (err < 0)
+        goto cleanup;
+
+    callbacks.credentials = &git2r_cred_acquire_cb;
+    err = git_remote_set_callbacks(remote, &callbacks);
+    if (err < 0)
+        goto cleanup;
+
+    err = git_remote_connect(remote, GIT_DIRECTION_PUSH);
     if (err < 0)
         goto cleanup;
 
@@ -147,11 +159,11 @@ cleanup:
     if (push)
         git_push_free(push);
 
-    if (remote)
-        git_remote_disconnect(remote);
-
-    if (remote)
+    if (remote) {
+        if (git_remote_connected(remote))
+            git_remote_disconnect(remote);
         git_remote_free(remote);
+    }
 
     if (repository)
         git_repository_free(repository);

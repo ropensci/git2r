@@ -20,8 +20,12 @@
 
 #include "git2r_arg.h"
 #include "git2r_clone.h"
+#include "git2r_cred.h"
 #include "git2r_error.h"
 
+/**
+ * :TODO:DOCUMENTATION:
+ */
 typedef struct {
     int received_progress;
     int received_done;
@@ -30,11 +34,13 @@ typedef struct {
 /**
  * Show progress of clone
  *
- * @param progress
- * @param payload
+ * @param progress :TODO:DOCUMENTATION:
+ * @param payload :TODO:DOCUMENTATION:
  * @return 0
  */
-static int git2r_clone_progress(const git_transfer_progress *progress, void *payload)
+static int git2r_clone_progress(
+    const git_transfer_progress *progress,
+    void *payload)
 {
     int kbytes = progress->received_bytes / 1024;
     git2r_clone_progress_data *pd = (git2r_clone_progress_data*)payload;
@@ -86,6 +92,7 @@ SEXP git2r_clone(SEXP url, SEXP local_path, SEXP progress)
 
     checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE_CREATE;
     clone_opts.checkout_opts = checkout_opts;
+    clone_opts.remote_callbacks.credentials = &git2r_cred_acquire_cb;
     if (LOGICAL(progress)[0]) {
         clone_opts.remote_callbacks.transfer_progress = &git2r_clone_progress;
         clone_opts.remote_callbacks.payload = &pd;
