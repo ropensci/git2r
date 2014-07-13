@@ -14,16 +14,13 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-##' Internal function to do the checkout
+##' Internal function to generate checkout reflog message
 ##'
-##' @param FUN Name of git2r C function to call
 ##' @param object The object to checkout
-##' @param force If TRUE, then make working directory match
-##' target. This will throw away local changes.
 ##' @param ref_log_target The target in the reflog message
 ##' in the reflog
 ##' @keywords internal
-do_checkout <- function(FUN, object, force, ref_log_target) {
+checkout_reflog_msg <- function(object, ref_log_target) {
     ## Determine the one line long message to be appended to the reflog
     current <- head(object@repo)
     if(is.null(current))
@@ -34,12 +31,7 @@ do_checkout <- function(FUN, object, force, ref_log_target) {
         current <- current@name
     }
 
-    msg <- sprintf("checkout: moving from %s to %s", current, ref_log_target)
-
-    ## The identity that will used to populate the reflog
-    who <- default_signature(object@repo)
-
-    .Call(FUN, object, force, msg, who)
+    sprintf("checkout: moving from %s to %s", current, ref_log_target)
 }
 
 ##' Checkout
@@ -72,11 +64,12 @@ setMethod("checkout",
           signature(object = "git_branch"),
           function (object, force)
           {
-              ret <- do_checkout(
+              ret <- .Call(
                   "git2r_checkout_branch",
                   object,
                   force,
-                  object@name)
+                  checkout_reflog_msg(object, object@name),
+                  default_signature(object@repo))
               invisible(ret)
           }
 )
@@ -87,11 +80,12 @@ setMethod("checkout",
           signature(object = "git_commit"),
           function (object, force)
           {
-              ret <- do_checkout(
+              ret <- .Call(
                   "git2r_checkout_commit",
                   object,
                   force,
-                  object@hex)
+                  checkout_reflog_msg(object, object@hex),
+                  default_signature(object@repo))
               invisible(ret)
           }
 )
@@ -102,11 +96,12 @@ setMethod("checkout",
           signature(object = "git_tag"),
           function (object, force)
           {
-              ret <- do_checkout(
+              ret <- .Call(
                   "git2r_checkout_tag",
                   object,
                   force,
-                  object@name)
+                  checkout_reflog_msg(object, object@name),
+                  default_signature(object@repo))
               invisible(ret)
           }
 )
@@ -117,7 +112,8 @@ setMethod("checkout",
           signature(object = "git_tree"),
           function (object, force)
           {
-              ret <- do_checkout("git2r_checkout_tree", object, force)
-              invisible(ret)
+              stop("Checkout of S4 class git_tree isn't implemented. Sorry")
+              ## ret <- .Call("git2r_checkout_tree", object, force)
+              ## invisible(ret)
           }
 )
