@@ -22,7 +22,7 @@
 
 #include "git2.h"
 
-SEXP remote_add(SEXP repo, SEXP name, SEXP url)
+SEXP git2r_remote_add(SEXP repo, SEXP name, SEXP url)
 {
     int err = 0;
     git_repository *repository = NULL;
@@ -60,7 +60,7 @@ cleanup:
     return R_NilValue;
 }
 
-SEXP remote_rename(SEXP repo, SEXP oldname, SEXP newname)
+SEXP git2r_remote_rename(SEXP repo, SEXP oldname, SEXP newname)
 {
     int err = 0;
     git_repository *repository = NULL;
@@ -105,7 +105,7 @@ cleanup:
     return R_NilValue;
 }
 
-SEXP remote_remove(SEXP repo, SEXP name)
+SEXP git2r_remote_remove(SEXP repo, SEXP name)
 {
     int err = 0;
     git_repository *repository = NULL;

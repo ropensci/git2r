@@ -21,8 +21,8 @@
 
 #include <Rdefines.h>
 
-SEXP remote_add(SEXP repo, SEXP name, SEXP url);
-SEXP remote_rename(SEXP repo, SEXP oldname, SEXP newname);
-SEXP remote_remove(SEXP repo, SEXP remote);
+SEXP git2r_remote_add(SEXP repo, SEXP name, SEXP url);
+SEXP git2r_remote_rename(SEXP repo, SEXP oldname, SEXP newname);
+SEXP git2r_remote_remove(SEXP repo, SEXP remote);
 
 #endif

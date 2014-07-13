@@ -50,8 +50,9 @@
 #include "git2r_push.h"
 #include "git2r_reference.h"
 #include "git2r_reflog.h"
-#include "git2r_repository.h"
 #include "git2r_remote.h"
+#include "git2r_remotes.h"
+#include "git2r_repository.h"
 #include "git2r_revwalk.h"
 #include "git2r_signature.h"
 #include "git2r_stash.h"
@@ -104,8 +105,11 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_push", (DL_FUNC)&git2r_push, 5},
     {"git2r_reference_list", (DL_FUNC)&git2r_reference_list, 1},
     {"git2r_reflog_list", (DL_FUNC)&git2r_reflog_list, 2},
+    {"git2r_remote_add", (DL_FUNC)&git2r_remote_add, 3},
     {"git2r_remote_fetch", (DL_FUNC)&git2r_remote_fetch, 2},
     {"git2r_remote_list", (DL_FUNC)&git2r_remote_list, 1},
+    {"git2r_remote_remove", (DL_FUNC)&git2r_remote_remove, 2},
+    {"git2r_remote_rename", (DL_FUNC)&git2r_remote_rename, 3},
     {"git2r_remote_url", (DL_FUNC)&git2r_remote_url, 2},
     {"git2r_repository_can_open", (DL_FUNC)&git2r_repository_can_open, 1},
     {"git2r_repository_discover", (DL_FUNC)&git2r_repository_discover, 1},

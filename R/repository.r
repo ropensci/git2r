@@ -497,7 +497,7 @@ setMethod("remote_add",
           signature(object = "git_repository"),
           function(object, name, url)
           {
-              ret <- .Call("remote_add", object, name, url)
+              ret <- .Call("git2r_remote_add", object, name, url)
               invisible(ret)
           }
 )
@@ -522,7 +522,7 @@ setMethod("remote_rename",
           signature(object = "git_repository"),
           function(object, oldname, newname)
           {
-              ret <- .Call("remote_rename", object, oldname, newname)
+              ret <- .Call("git2r_remote_rename", object, oldname, newname)
               invisible(ret)
           }
 )
@@ -546,7 +546,7 @@ setMethod("remote_remove",
           signature(object = "git_repository"),
           function(object, name)
           {
-              ret <- .Call("remote_remove", object, name)
+              ret <- .Call("git2r_remote_remove", object, name)
               invisible(ret)
           }
 )
