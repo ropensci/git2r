@@ -12,9 +12,10 @@ readme: $(patsubst %.Rmd, %.md, $(wildcard *.Rmd))
 	rm README.md
 	mv README2.md README.md
 
+# Build documentation with roxygen
 doc:
 	rm -f man/*.Rd
-	cd .. && Rscript -e "library(methods); library(utils); library(roxygen2); roxygenize('git2r')"
+	cd .. && Rscript -e "library(roxygen2); stopifnot(packageVersion('roxygen2') == '4.0.1'); roxygenize('$(PKG)')"
 
 # Build and check package
 check: clean
@@ -56,16 +57,17 @@ valgrind:
 # 1) clone or pull libgit2 to parent directory from
 # https://github.com/libgit/libgit.git
 #
-# 2) run target sync_libgit2. It first removes files and then copy files
-# from libgit2 directory. Finally, it runs an R script to build
-# Makevars.in and Makevars.win based on source files
+# 2) run 'make sync_libgit2'. It first removes files and then copy
+# files from libgit2 directory. Next it runs an R script to build
+# Makevars.in and Makevars.win based on source files. Finally it runs
+# a grep command to identify potential lines in the source code using
+# printf.
 #
 # 3) Check cache.c and util.c. They have been modified to use R
 # printing routine Rprintf. If there are no other changes in these two
 # files they must be reverted to previous state to pass R CMD check
 #
-# 4) Build and check updated package
-#    - make check
+# 4) Build and check updated package 'make check'
 sync_libgit2:
 	-rm -f src/http-parser/*
 	-rm -f src/regex/*
