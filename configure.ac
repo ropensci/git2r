@@ -53,34 +53,33 @@ CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
 CPPFLAGS="${CPPFLAGS} ${GIT2R_CPPFLAGS}"
 
 # Check for zlib
-AC_CHECK_LIB(z, inflate, [],
-[
+have_zlib=no
+AC_SEARCH_LIBS([inflate], [z], [have_zlib=yes])
+
+if test "x${have_zlib}" = xno; then
         AC_MSG_FAILURE([zlib library required])
-])
+fi
 
 # Check for OpenSSL
-AC_CHECK_LIB([ssl], [SSL_library_init],
-[
-        AC_CHECK_LIB([crypto], [EVP_EncryptInit],
-        [
-                GIT2R_HAVE_SSL=-DGIT_SSL
-                LIBS="-lcrypto -lssl ${LIBS}"
-        ],
-        [
-                AC_MSG_WARN([
-  -----------------------------------------------
-   Unable to find OpenSSL on this system.
-   Building a version without support for HTTPS.
-  -----------------------------------------------])
-        ])
-],
-[
+have_ssl=no
+OLD_LIBS=${LIBS}
+AC_SEARCH_LIBS([SSL_library_init], [ssl], [have_ssl=yes])
+
+have_crypto=no
+if test "x${have_ssl}" = xyes; then
+        AC_SEARCH_LIBS([EVP_EncryptInit], [crypto], [have_crypto=yes])
+fi
+
+if test "x${have_crypto}" = xyes; then
+        GIT2R_HAVE_SSL=-DGIT_SSL
+else
+        LIBS=${OLD_LIBS}
         AC_MSG_WARN([
   -----------------------------------------------
    Unable to find OpenSSL on this system.
    Building a version without support for HTTPS.
   -----------------------------------------------])
-])
+fi
 
 # Check for LibSSH2
 have_ssh2=no

@@ -3173,14 +3173,14 @@ CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
 CPPFLAGS="${CPPFLAGS} ${GIT2R_CPPFLAGS}"
 
 # Check for zlib
+have_zlib=no
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for inflate in -lz" >&5
-$as_echo_n "checking for inflate in -lz... " >&6; }
-if ${ac_cv_lib_z_inflate+:} false; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing inflate" >&5
+$as_echo_n "checking for library containing inflate... " >&6; }
+if ${ac_cv_search_inflate+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lz  $LIBS"
+  ac_func_search_save_LIBS=$LIBS
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -3199,42 +3199,55 @@ return inflate ();
   return 0;
 }
 _ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_z_inflate=yes
-else
-  ac_cv_lib_z_inflate=no
+for ac_lib in '' z; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_inflate=$ac_res
 fi
 rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
+    conftest$ac_exeext
+  if ${ac_cv_search_inflate+:} false; then :
+  break
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_z_inflate" >&5
-$as_echo "$ac_cv_lib_z_inflate" >&6; }
-if test "x$ac_cv_lib_z_inflate" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBZ 1
-_ACEOF
-
-  LIBS="-lz $LIBS"
+done
+if ${ac_cv_search_inflate+:} false; then :
 
 else
+  ac_cv_search_inflate=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_inflate" >&5
+$as_echo "$ac_cv_search_inflate" >&6; }
+ac_res=$ac_cv_search_inflate
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  have_zlib=yes
+fi
 
+
+if test "x${have_zlib}" = xno; then
         { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
 as_fn_error $? "zlib library required
 See \`config.log' for more details" "$LINENO" 5; }
-
 fi
 
-
 # Check for OpenSSL
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for SSL_library_init in -lssl" >&5
-$as_echo_n "checking for SSL_library_init in -lssl... " >&6; }
-if ${ac_cv_lib_ssl_SSL_library_init+:} false; then :
+have_ssl=no
+OLD_LIBS=${LIBS}
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing SSL_library_init" >&5
+$as_echo_n "checking for library containing SSL_library_init... " >&6; }
+if ${ac_cv_search_SSL_library_init+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lssl  $LIBS"
+  ac_func_search_save_LIBS=$LIBS
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -3253,26 +3266,47 @@ return SSL_library_init ();
   return 0;
 }
 _ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_ssl_SSL_library_init=yes
-else
-  ac_cv_lib_ssl_SSL_library_init=no
+for ac_lib in '' ssl; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_SSL_library_init=$ac_res
 fi
 rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
+    conftest$ac_exeext
+  if ${ac_cv_search_SSL_library_init+:} false; then :
+  break
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ssl_SSL_library_init" >&5
-$as_echo "$ac_cv_lib_ssl_SSL_library_init" >&6; }
-if test "x$ac_cv_lib_ssl_SSL_library_init" = xyes; then :
+done
+if ${ac_cv_search_SSL_library_init+:} false; then :
 
-        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for EVP_EncryptInit in -lcrypto" >&5
-$as_echo_n "checking for EVP_EncryptInit in -lcrypto... " >&6; }
-if ${ac_cv_lib_crypto_EVP_EncryptInit+:} false; then :
+else
+  ac_cv_search_SSL_library_init=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_SSL_library_init" >&5
+$as_echo "$ac_cv_search_SSL_library_init" >&6; }
+ac_res=$ac_cv_search_SSL_library_init
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  have_ssl=yes
+fi
+
+
+have_crypto=no
+if test "x${have_ssl}" = xyes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing EVP_EncryptInit" >&5
+$as_echo_n "checking for library containing EVP_EncryptInit... " >&6; }
+if ${ac_cv_search_EVP_EncryptInit+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lcrypto  $LIBS"
+  ac_func_search_save_LIBS=$LIBS
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -3291,40 +3325,44 @@ return EVP_EncryptInit ();
   return 0;
 }
 _ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_crypto_EVP_EncryptInit=yes
-else
-  ac_cv_lib_crypto_EVP_EncryptInit=no
+for ac_lib in '' crypto; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_EVP_EncryptInit=$ac_res
 fi
 rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
+    conftest$ac_exeext
+  if ${ac_cv_search_EVP_EncryptInit+:} false; then :
+  break
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_crypto_EVP_EncryptInit" >&5
-$as_echo "$ac_cv_lib_crypto_EVP_EncryptInit" >&6; }
-if test "x$ac_cv_lib_crypto_EVP_EncryptInit" = xyes; then :
-
-                GIT2R_HAVE_SSL=-DGIT_SSL
-                LIBS="-lcrypto -lssl ${LIBS}"
+done
+if ${ac_cv_search_EVP_EncryptInit+:} false; then :
 
 else
-
-                { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING:
-  -----------------------------------------------
-   Unable to find OpenSSL on this system.
-   Building a version without support for HTTPS.
-  -----------------------------------------------" >&5
-$as_echo "$as_me: WARNING:
-  -----------------------------------------------
-   Unable to find OpenSSL on this system.
-   Building a version without support for HTTPS.
-  -----------------------------------------------" >&2;}
+  ac_cv_search_EVP_EncryptInit=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_EVP_EncryptInit" >&5
+$as_echo "$ac_cv_search_EVP_EncryptInit" >&6; }
+ac_res=$ac_cv_search_EVP_EncryptInit
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  have_crypto=yes
+fi
 
 fi
 
-
+if test "x${have_crypto}" = xyes; then
+        GIT2R_HAVE_SSL=-DGIT_SSL
 else
-
+        LIBS=${OLD_LIBS}
         { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING:
   -----------------------------------------------
    Unable to find OpenSSL on this system.
@@ -3335,9 +3373,7 @@ $as_echo "$as_me: WARNING:
    Unable to find OpenSSL on this system.
    Building a version without support for HTTPS.
   -----------------------------------------------" >&2;}
-
 fi
-
 
 # Check for LibSSH2
 have_ssh2=no
