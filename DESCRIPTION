@@ -48,6 +48,7 @@ Collate:
     'checkout.r'
     'config.r'
     'contributions.r'
+    'credential.r'
     'fetch.r'
     'git2r.r'
     'index.r'
