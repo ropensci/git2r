@@ -47,3 +47,45 @@ setClass("cred_plaintext",
 cred_plaintext <- function(username, password) {
     new("cred_plaintext", username = username, password = password)
 }
+
+##' Class \code{"cred_ssh_key"}
+##'
+##' @title S4 class to handle a passphrase-protected ssh key
+##' credential object
+##' @section Slots:
+##' \describe{
+##'   \item{publickey}{
+##'     The path to the public key of the credential
+##'   }
+##'   \item{privatekey}{
+##'     The path to the private key of the credential
+##'   }
+##'   \item{passphrase}{
+##'     The passphrase of the credential
+##'   }
+##' }
+##' @rdname cred_ssh_key-class
+##' @docType class
+##' @keywords classes
+##' @keywords methods
+##' @export
+setClass("cred_ssh_key",
+         slots=c(publickey  = "character",
+                 privatekey = "character",
+                 passphrase = "character")
+)
+
+##' Create a new passphrase-protected ssh key credential object
+##'
+##' @param publickey The path to the public key of the credential
+##' @param privatekey The path to the private key of the credential
+##' @param passphrase The passphrase of the credential
+##' @return A S4 \code{cred_ssh_key} object
+##' @keywords methods
+##' @export
+cred_ssh_key <- function(publickey, privatekey, passphrase) {
+    new("cred_ssh_key",
+        publickey  = publickey,
+        privatekey = privatekey,
+        passphrase = passphrase)
+}
