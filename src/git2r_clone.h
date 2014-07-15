@@ -22,6 +22,6 @@
 #include <R.h>
 #include <Rinternals.h>
 
-SEXP git2r_clone(SEXP url, SEXP local_path, SEXP progress);
+SEXP git2r_clone(SEXP url, SEXP local_path, SEXP credentials, SEXP progress);
 
 #endif

@@ -3,14 +3,17 @@
 \alias{clone}
 \title{Clone a remote repository}
 \usage{
-clone(url, local_path, progress = TRUE)
+clone(url, local_path, credentials = NULL, progress = TRUE)
 }
 \arguments{
-\item{url}{the remote repository to clone}
+\item{url}{The remote repository to clone}
 
-\item{local_path}{local directory to clone to}
+\item{local_path}{Local directory to clone to}
 
-\item{progress}{show progress}
+\item{credentials}{The credentials for remote repository access. Default
+is NULL.}
+
+\item{progress}{Show progress. Default is TRUE.}
 }
 \value{
 A S4 \code{git_repository} object
@@ -23,6 +26,10 @@ Clone a remote repository
 ## Clone a remote repository
 repo <- clone("https://github.com/ropensci/git2r", "path/to/git2r")
 }
+}
+\seealso{
+\code{\linkS4class{cred_plaintext}},
+\code{\linkS4class{cred_ssh_key}}
 }
 \keyword{methods}
 

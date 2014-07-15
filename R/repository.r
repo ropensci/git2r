@@ -208,10 +208,14 @@ init <- function(path, bare = FALSE) {
 
 ##' Clone a remote repository
 ##'
-##' @param url the remote repository to clone
-##' @param local_path local directory to clone to
-##' @param progress show progress
+##' @param url The remote repository to clone
+##' @param local_path Local directory to clone to
+##' @param credentials The credentials for remote repository access. Default
+##' is NULL.
+##' @param progress Show progress. Default is TRUE.
 ##' @return A S4 \code{git_repository} object
+##' @seealso \code{\linkS4class{cred_plaintext}},
+##' \code{\linkS4class{cred_ssh_key}}
 ##' @keywords methods
 ##' @export
 ##' @examples
@@ -219,7 +223,7 @@ init <- function(path, bare = FALSE) {
 ##' ## Clone a remote repository
 ##' repo <- clone("https://github.com/ropensci/git2r", "path/to/git2r")
 ##' }
-clone <- function(url, local_path, progress = TRUE) {
+clone <- function(url, local_path, credentials = NULL, progress = TRUE) {
     ## Argument checking
     stopifnot(is.character(url),
               is.character(local_path),
@@ -230,7 +234,7 @@ clone <- function(url, local_path, progress = TRUE) {
               nchar(url) > 0,
               nchar(local_path) > 0)
 
-    .Call("git2r_clone", url, local_path, progress)
+    .Call("git2r_clone", url, local_path, credentials, progress)
 
     repository(local_path)
 }

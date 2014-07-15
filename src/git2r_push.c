@@ -74,11 +74,18 @@ static int git2r_nothing_to_push(SEXP refspec)
  * @param repo S4 class git_repository
  * @param name The remote to push to
  * @param refspec The string vector of refspec to push
+ * @param credentials The credentials for remote repository access.
  * @param msg The one line long message to be appended to the reflog
  * @param who The identity that will used to populate the reflog entry
  * @return R_NilValue
  */
-SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP msg, SEXP who)
+SEXP git2r_push(
+    SEXP repo,
+    SEXP name,
+    SEXP refspec,
+    SEXP credentials,
+    SEXP msg,
+    SEXP who)
 {
     int err;
     size_t i, n;
@@ -91,6 +98,7 @@ SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP msg, SEXP who)
 
     if (git2r_arg_check_string(name)
         || git2r_arg_check_string_vec(refspec)
+        || git2r_arg_check_credentials(credentials)
         || git2r_arg_check_string(msg)
         || git2r_arg_check_signature(who))
         error("Invalid arguments to git2r_push");

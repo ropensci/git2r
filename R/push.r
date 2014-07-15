@@ -18,28 +18,36 @@
 ##'
 ##' @rdname push-methods
 ##' @docType methods
-##' @param repo the repository
-##' @param name the remote's name
-##' @param refspec the refspec to be pushed
+##' @param repo The repository
+##' @param name The remote's name
+##' @param refspec The refspec to be pushed
+##' @param credentials The credentials for remote repository access. Default
+##' is NULL.
 ##' @return invisible(NULL)
+##' @seealso \code{\linkS4class{cred_plaintext}},
+##' \code{\linkS4class{cred_ssh_key}}
 ##' @keywords methods
 ##' @include repository.r
 setGeneric("push",
            signature = "repo",
-           function(repo, name, refspec)
+           function(repo,
+                    name,
+                    refspec,
+                    credentials = NULL)
            standardGeneric("push"))
 
 ##' @rdname push-methods
 ##' @export
 setMethod("push",
           signature(repo = "git_repository"),
-          function (repo, name, refspec)
+          function (repo, name, refspec, credentials)
           {
               result <- .Call(
                   "git2r_push",
                   repo,
                   name,
                   refspec,
+                  credentials,
                   "update by push",
                   default_signature(repo))
 

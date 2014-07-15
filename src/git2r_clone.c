@@ -74,10 +74,11 @@ static int git2r_clone_progress(
  *
  * @param url the remote repository to clone
  * @param local_path local directory to clone to
+ * @param credentials The credentials for remote repository access.
  * @param progress show progress
  * @return R_NilValue
  */
-SEXP git2r_clone(SEXP url, SEXP local_path, SEXP progress)
+SEXP git2r_clone(SEXP url, SEXP local_path, SEXP credentials, SEXP progress)
 {
     int err;
     git_repository *repository = NULL;
@@ -87,6 +88,7 @@ SEXP git2r_clone(SEXP url, SEXP local_path, SEXP progress)
 
     if (git2r_arg_check_string(url)
         || git2r_arg_check_string(local_path)
+        || git2r_arg_check_credentials(credentials)
         || git2r_arg_check_logical(progress))
         error("Invalid arguments to git2r_clone");
 

@@ -5,22 +5,29 @@
 \alias{push,git_repository-method}
 \title{Push}
 \usage{
-push(repo, name, refspec)
+push(repo, name, refspec, credentials = NULL)
 
-\S4method{push}{git_repository}(repo, name, refspec)
+\S4method{push}{git_repository}(repo, name, refspec, credentials = NULL)
 }
 \arguments{
-\item{repo}{the repository}
+\item{repo}{The repository}
 
-\item{name}{the remote's name}
+\item{name}{The remote's name}
 
-\item{refspec}{the refspec to be pushed}
+\item{refspec}{The refspec to be pushed}
+
+\item{credentials}{The credentials for remote repository access. Default
+is NULL.}
 }
 \value{
 invisible(NULL)
 }
 \description{
 Push
+}
+\seealso{
+\code{\linkS4class{cred_plaintext}},
+\code{\linkS4class{cred_ssh_key}}
 }
 \keyword{methods}
 
