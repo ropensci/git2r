@@ -103,6 +103,60 @@ int git2r_arg_check_commit(SEXP arg)
 }
 
 /**
+ * Check credentials argument
+ *
+ * @param arg the arg to check
+ * @return 0 if OK, else 1
+ */
+int git2r_arg_check_credentials(SEXP arg)
+{
+    SEXP class_name;
+
+    /* It's ok if the credentials is R_NilValue */
+    if (R_NilValue == arg)
+        return 0;
+
+    if (S4SXP != TYPEOF(arg))
+        return 1;
+
+    class_name = getAttrib(arg, R_ClassSymbol);
+    if (0 == strcmp(CHAR(STRING_ELT(class_name, 0)), "cred_plaintext")) {
+        /* Check username and password */
+        if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("usename")))
+            || git2r_arg_check_string(GET_SLOT(arg, Rf_install("password"))))
+            return 1;
+    } else if (0 == strcmp(CHAR(STRING_ELT(class_name, 0)), "cred_ssh_key")) {
+        SEXP passphrase;
+
+        /* Check public and private key */
+        if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("publickey")))
+            || git2r_arg_check_string(GET_SLOT(arg, Rf_install("privatekey"))))
+            return 1;
+
+        /* Check that passphrase is a character vector */
+        passphrase = GET_SLOT(arg, Rf_install("passphrase"));
+        if (git2r_arg_check_string_vec(passphrase))
+            return 1;
+
+        /* Check that length of passphrase < 2, i.e. it's either
+         * character(0) or some "passphrase" */
+        switch (length(passphrase)) {
+        case 0:
+            break;
+        case 1:
+            if (NA_STRING == passphrase)
+                return 1;
+        default:
+            return 1;
+        }
+    } else {
+        return 1;
+    }
+
+    return 0;
+}
+
+/**
  * Check hex argument
  *
  * @param arg the arg to check
