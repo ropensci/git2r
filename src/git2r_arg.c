@@ -144,8 +144,9 @@ int git2r_arg_check_credentials(SEXP arg)
         case 0:
             break;
         case 1:
-            if (NA_STRING == passphrase)
+            if (NA_STRING == STRING_ELT(passphrase, 0))
                 return 1;
+            break;
         default:
             return 1;
         }
