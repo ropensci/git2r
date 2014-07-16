@@ -77,15 +77,43 @@ setClass("cred_ssh_key",
 
 ##' Create a new passphrase-protected ssh key credential object
 ##'
+##' @rdname cred_ssh_key-methods
 ##' @param publickey The path to the public key of the credential
 ##' @param privatekey The path to the private key of the credential
 ##' @param passphrase The passphrase of the credential
 ##' @return A S4 \code{cred_ssh_key} object
 ##' @keywords methods
+setGeneric("cred_ssh_key",
+           signature = c("publickey", "privatekey", "passphrase"),
+           function(publickey, privatekey, passphrase)
+           standardGeneric("cred_ssh_key"))
+
+##' @rdname cred_ssh_key-methods
 ##' @export
-cred_ssh_key <- function(publickey, privatekey, passphrase) {
-    new("cred_ssh_key",
-        publickey  = publickey,
-        privatekey = privatekey,
-        passphrase = passphrase)
-}
+setMethod("cred_ssh_key",
+          signature(publickey  = "character",
+                    privatekey = "character",
+                    passphrase = "character"),
+          function(publickey, privatekey, passphrase)
+          {
+              new("cred_ssh_key",
+                  publickey  = publickey,
+                  privatekey = privatekey,
+                  passphrase = passphrase)
+          }
+)
+
+##' @rdname cred_ssh_key-methods
+##' @export
+setMethod("cred_ssh_key",
+          signature(publickey  = "character",
+                    privatekey = "character",
+                    passphrase = "missing"),
+          function(publickey, privatekey, passphrase)
+          {
+              new("cred_ssh_key",
+                  publickey  = publickey,
+                  privatekey = privatekey,
+                  passphrase = character(0))
+          }
+)
