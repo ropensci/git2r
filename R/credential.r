@@ -39,14 +39,28 @@ setClass("cred_plaintext",
 
 ##' Create a new plain-text username and password credential object
 ##'
+##' @rdname cred_plaintext-methods
 ##' @param username The username of the credential
 ##' @param password The password of the credential
 ##' @return A S4 \code{cred_plaintext} object
 ##' @keywords methods
+setGeneric("cred_plaintext",
+           signature = c("username", "password"),
+           function(username, password)
+           standardGeneric("cred_plaintext"))
+
+##' @rdname cred_plaintext-methods
 ##' @export
-cred_plaintext <- function(username, password) {
-    new("cred_plaintext", username = username, password = password)
-}
+setMethod("cred_plaintext",
+          signature(username = "character",
+                    password = "character"),
+          function(username, password)
+          {
+              new("cred_plaintext",
+                  username = username,
+                  password = password)
+          }
+)
 
 ##' Class \code{"cred_ssh_key"}
 ##'
