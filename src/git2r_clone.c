@@ -94,7 +94,8 @@ SEXP git2r_clone(SEXP url, SEXP local_path, SEXP credentials, SEXP progress)
 
     checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE_CREATE;
     clone_opts.checkout_opts = checkout_opts;
-    clone_opts.remote_callbacks.credentials = &git2r_cred_acquire_cb;
+    /* :TODO:FIXME: */
+    /* clone_opts.remote_callbacks.credentials = &git2r_cred_acquire_cb; */
     if (LOGICAL(progress)[0]) {
         clone_opts.remote_callbacks.transfer_progress = &git2r_clone_progress;
         clone_opts.remote_callbacks.payload = &pd;
