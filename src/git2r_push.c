@@ -119,6 +119,7 @@ SEXP git2r_push(
         goto cleanup;
 
     callbacks.credentials = &git2r_cred_acquire_cb;
+    callbacks.payload = credentials;
     err = git_remote_set_callbacks(remote, &callbacks);
     if (err < 0)
         goto cleanup;
