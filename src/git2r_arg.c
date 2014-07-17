@@ -122,7 +122,7 @@ int git2r_arg_check_credentials(SEXP arg)
     class_name = getAttrib(arg, R_ClassSymbol);
     if (0 == strcmp(CHAR(STRING_ELT(class_name, 0)), "cred_plaintext")) {
         /* Check username and password */
-        if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("usename")))
+        if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("username")))
             || git2r_arg_check_string(GET_SLOT(arg, Rf_install("password"))))
             return 1;
     } else if (0 == strcmp(CHAR(STRING_ELT(class_name, 0)), "cred_ssh_key")) {
