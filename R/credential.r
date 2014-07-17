@@ -111,8 +111,8 @@ setMethod("cred_ssh_key",
           function(publickey, privatekey, passphrase)
           {
               new("cred_ssh_key",
-                  publickey  = publickey,
-                  privatekey = privatekey,
+                  publickey  = normalizePath(publickey, mustWork = TRUE),
+                  privatekey = normalizePath(privatekey, mustWork = TRUE),
                   passphrase = passphrase)
           }
 )
@@ -125,9 +125,8 @@ setMethod("cred_ssh_key",
                     passphrase = "missing"),
           function(publickey, privatekey, passphrase)
           {
-              new("cred_ssh_key",
-                  publickey  = publickey,
-                  privatekey = privatekey,
-                  passphrase = character(0))
+              cred_ssh_key(publickey  = publickey,
+                           privatekey = privatekey,
+                           passphrase = character(0))
           }
 )
