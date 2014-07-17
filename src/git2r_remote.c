@@ -26,7 +26,7 @@
 /**
  * Fetch
  *
- * @param repo :TODO:DOCUMENTATION:
+ * @param repo S4 class git_repository
  * @param name :TODO:DOCUMENTATION:
  * @return R_NilValue
  */
