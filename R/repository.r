@@ -539,22 +539,23 @@ setMethod("remote_rename",
 ##'
 ##' @rdname remote_remove-methods
 ##' @docType methods
-##' @param object The repository to work on
+##' @param repo The repository to work on
+##' @param name The name of the remote to remove
 ##' @return NULL, invisibly
 ##' @keywords methods
 setGeneric("remote_remove",
-           signature = "object",
-           function(object, ...)
+           signature = c("repo", "name"),
+           function(repo, name)
            standardGeneric("remote_remove"))
 
 ##' @rdname remote_remove-methods
-##' @param name The name of the remote to remove
 ##' @export
 setMethod("remote_remove",
-          signature(object = "git_repository"),
-          function(object, name)
+          signature(repo = "git_repository",
+                    name = "character"),
+          function(repo, name)
           {
-              ret <- .Call("git2r_remote_remove", object, name)
+              ret <- .Call("git2r_remote_remove", repo, name)
               invisible(ret)
           }
 )

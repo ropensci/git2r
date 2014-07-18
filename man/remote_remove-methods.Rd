@@ -2,15 +2,15 @@
 \docType{methods}
 \name{remote_remove}
 \alias{remote_remove}
-\alias{remote_remove,git_repository-method}
+\alias{remote_remove,git_repository,character-method}
 \title{Remove a remote}
 \usage{
-remote_remove(object, ...)
+remote_remove(repo, name)
 
-\S4method{remote_remove}{git_repository}(object, name)
+\S4method{remote_remove}{git_repository,character}(repo, name)
 }
 \arguments{
-\item{object}{The repository to work on}
+\item{repo}{The repository to work on}
 
 \item{name}{The name of the remote to remove}
 }
