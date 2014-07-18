@@ -27,7 +27,7 @@ setClass("git_stash", contains = "git_commit")
 
 ##' Drop stash
 ##'
-##' @rdname drop_stash-methods
+##' @rdname stash_drop-methods
 ##' @docType methods
 ##' @param object The stash \code{object} to drop or a zero-based
 ##' integer to the stash to drop. The last stash has index 0.
@@ -40,21 +40,21 @@ setClass("git_stash", contains = "git_commit")
 ##'
 ##' ## Assuming there are stashes in the repository.
 ##' ## Drop a stash in repository.
-##' drop_stash(stashes(repo)[[1]])
+##' stash_drop(stashes(repo)[[1]])
 ##'
 ##' ## Assuming there are stashes in the repository.
 ##' ## Drop last stash in repository.
-##' drop_stash(repo, 0)
+##' stash_drop(repo, 0)
 ##' }
-setGeneric("drop_stash",
+setGeneric("stash_drop",
            signature = "object",
            function(object, ...)
-           standardGeneric("drop_stash"))
+           standardGeneric("stash_drop"))
 
-##' @rdname drop_stash-methods
+##' @rdname stash_drop-methods
 ##' @include repository.r
 ##' @export
-setMethod("drop_stash",
+setMethod("stash_drop",
           signature(object = "git_repository"),
           function (object, index)
           {
@@ -74,9 +74,9 @@ setMethod("drop_stash",
           }
 )
 
-##' @rdname drop_stash-methods
+##' @rdname stash_drop-methods
 ##' @export
-setMethod("drop_stash",
+setMethod("stash_drop",
           signature(object = "git_stash"),
           function (object)
           {
@@ -84,7 +84,7 @@ setMethod("drop_stash",
               i <- match(object@hex, sapply(stashes(object@repo), slot, "hex"))
 
               ## The stash list is zero-based
-              drop_stash(object@repo, i-1);
+              stash_drop(object@repo, i-1);
           }
 )
 

@@ -72,15 +72,15 @@ stopifnot(identical(length(stashes(repo)), 1L))
 ##
 ## Drop stash
 ##
-drop_stash(repo, 0)
+stash_drop(repo, 0)
 stopifnot(identical(stashes(repo), list()))
 
 ##
-## Check drop_stash argument
+## Check stash_drop argument
 ##
-tools::assertError(drop_stash(repo))
-tools::assertError(drop_stash(repo, -1))
-tools::assertError(drop_stash(repo, 0.5))
+tools::assertError(stash_drop(repo))
+tools::assertError(stash_drop(repo, -1))
+tools::assertError(stash_drop(repo, 0.5))
 
 ##
 ## Cleanup
