@@ -2,15 +2,16 @@
 \docType{methods}
 \name{remote_rename}
 \alias{remote_rename}
-\alias{remote_rename,git_repository-method}
+\alias{remote_rename,git_repository,character,character-method}
 \title{Rename a remote}
 \usage{
-remote_rename(object, ...)
+remote_rename(repo, oldname, newname)
 
-\S4method{remote_rename}{git_repository}(object, oldname, newname)
+\S4method{remote_rename}{git_repository,character,character}(repo, oldname,
+  newname)
 }
 \arguments{
-\item{object}{The repository in which the remote should be renamed.}
+\item{repo}{The repository in which the remote should be renamed.}
 
 \item{oldname}{Old name of the remote}
 

@@ -512,23 +512,25 @@ setMethod("remote_add",
 ##'
 ##' @rdname remote_rename-methods
 ##' @docType methods
-##' @param object The repository in which the remote should be renamed.
+##' @param repo The repository in which the remote should be renamed.
+##' @param oldname Old name of the remote
+##' @param newname New name of the remote
 ##' @return NULL, invisibly
 ##' @keywords methods
 setGeneric("remote_rename",
-           signature = "object",
-           function(object, ...)
+           signature = c("repo", "oldname", "newname"),
+           function(repo, oldname, newname)
            standardGeneric("remote_rename"))
 
 ##' @rdname remote_rename-methods
-##' @param oldname Old name of the remote
-##' @param newname New name of the remote
 ##' @export
 setMethod("remote_rename",
-          signature(object = "git_repository"),
-          function(object, oldname, newname)
+          signature(repo    = "git_repository",
+                    oldname = "character",
+                    newname = "character"),
+          function(repo, oldname, newname)
           {
-              ret <- .Call("git2r_remote_rename", object, oldname, newname)
+              ret <- .Call("git2r_remote_rename", repo, oldname, newname)
               invisible(ret)
           }
 )
