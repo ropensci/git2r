@@ -485,23 +485,25 @@ setMethod("remote_url",
 ##'
 ##' @rdname remote_add-methods
 ##' @docType methods
-##' @param object The repository \code{object} to add the remote to
+##' @param repo The repository \code{object} to add the remote to
+##' @param name Short name of the remote repository
+##' @param url URL of the remote repository
 ##' @return NULL, invisibly
 ##' @keywords methods
 setGeneric("remote_add",
-           signature = "object",
-           function(object, ...)
+           signature = c("repo", "name", "url"),
+           function(repo, name, url)
            standardGeneric("remote_add"))
 
 ##' @rdname remote_add-methods
-##' @param name Short name of the remote repository
-##' @param url URL of the remote repository
 ##' @export
 setMethod("remote_add",
-          signature(object = "git_repository"),
-          function(object, name, url)
+          signature(repo = "git_repository",
+                    name = "character",
+                    url  = "character"),
+          function(repo, name, url)
           {
-              ret <- .Call("git2r_remote_add", object, name, url)
+              ret <- .Call("git2r_remote_add", repo, name, url)
               invisible(ret)
           }
 )

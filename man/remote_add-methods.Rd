@@ -2,15 +2,15 @@
 \docType{methods}
 \name{remote_add}
 \alias{remote_add}
-\alias{remote_add,git_repository-method}
+\alias{remote_add,git_repository,character,character-method}
 \title{Add a remote to a repo}
 \usage{
-remote_add(object, ...)
+remote_add(repo, name, url)
 
-\S4method{remote_add}{git_repository}(object, name, url)
+\S4method{remote_add}{git_repository,character,character}(repo, name, url)
 }
 \arguments{
-\item{object}{The repository \code{object} to add the remote to}
+\item{repo}{The repository \code{object} to add the remote to}
 
 \item{name}{Short name of the remote repository}
 
