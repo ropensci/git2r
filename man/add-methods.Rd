@@ -2,15 +2,15 @@
 \docType{methods}
 \name{add}
 \alias{add}
-\alias{add,git_repository-method}
+\alias{add,git_repository,character-method}
 \title{Add file(s) to index}
 \usage{
-add(object, path)
+add(repo, path)
 
-\S4method{add}{git_repository}(object, path)
+\S4method{add}{git_repository,character}(repo, path)
 }
 \arguments{
-\item{object}{The repository \code{object}.}
+\item{repo}{The repository \code{object}.}
 
 \item{path}{character vector with filenames to add. The path must
 be relative to the repository's working folder. Only non-ignored

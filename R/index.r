@@ -18,7 +18,7 @@
 ##'
 ##' @rdname add-methods
 ##' @docType methods
-##' @param object The repository \code{object}.
+##' @param repo The repository \code{object}.
 ##' @param path character vector with filenames to add. The path must
 ##' be relative to the repository's working folder. Only non-ignored
 ##' files are added. If path is a directory, files in sub-folders are
@@ -36,22 +36,18 @@
 ##' }
 ##'
 setGeneric("add",
-           signature = "object",
-           function(object, path)
+           signature = c("repo", "path"),
+           function(repo, path)
            standardGeneric("add"))
 
 ##' @rdname add-methods
 ##' @export
 setMethod("add",
-          signature(object = "git_repository"),
-          function (object, path)
+          signature(repo = "git_repository",
+                    path = "character"),
+          function (repo, path)
           {
-              ## Argument checking
-              stopifnot(is.character(path),
-                        all(nchar(path) > 0))
-
-              .Call("git2r_index_add_all", object, path)
-
+              .Call("git2r_index_add_all", repo, path)
               invisible(NULL)
           }
 )
