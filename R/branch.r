@@ -274,28 +274,28 @@ setMethod("branch_set_upstream",
 ##' List branches in repository
 ##' @rdname branches-methods
 ##' @docType methods
-##' @param object The repository
+##' @param repo The repository \code{object}
 ##' @param flags Filtering flags for the branch listing. Valid values
 ##' are 'all', 'local' or 'remote'
 ##' @return list of branches in repository
 ##' @keywords methods
 setGeneric("branches",
-           signature = "object",
-           function(object, flags=c("all", "local", "remote"))
+           signature = "repo",
+           function(repo, flags=c("all", "local", "remote"))
            standardGeneric("branches"))
 
 ##' @rdname branches-methods
 ##' @export
 setMethod("branches",
-          signature(object = "git_repository"),
-          function (object, flags)
+          signature(repo = "git_repository"),
+          function (repo, flags)
           {
               flags <- switch(match.arg(flags),
                               local  = 1L,
                               remote = 2L,
                               all    = 3L)
 
-              .Call("git2r_branch_list", object, flags)
+              .Call("git2r_branch_list", repo, flags)
           }
 )
 
