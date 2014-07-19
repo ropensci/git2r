@@ -5,12 +5,12 @@
 \alias{references,git_repository-method}
 \title{Get all references that can be found in a repository.}
 \usage{
-references(object)
+references(repo)
 
-\S4method{references}{git_repository}(object)
+\S4method{references}{git_repository}(repo)
 }
 \arguments{
-\item{object}{The repository \code{object}.}
+\item{repo}{The repository \code{object}.}
 }
 \value{
 Character vector with references

@@ -58,7 +58,7 @@ setClass("git_reference",
 ##'
 ##' @rdname references-methods
 ##' @docType methods
-##' @param object The repository \code{object}.
+##' @param repo The repository \code{object}.
 ##' @return Character vector with references
 ##' @keywords methods
 ##' @examples
@@ -71,17 +71,17 @@ setClass("git_reference",
 ##' }
 ##'
 setGeneric("references",
-           signature = "object",
-           function(object) standardGeneric("references"))
+           signature = "repo",
+           function(repo) standardGeneric("references"))
 
 ##' @rdname references-methods
 ##' @include repository.r
 ##' @export
 setMethod("references",
-          signature(object = "git_repository"),
-          function (object)
+          signature(repo = "git_repository"),
+          function (repo)
           {
-              .Call("git2r_reference_list", object)
+              .Call("git2r_reference_list", repo)
           }
 )
 
