@@ -200,21 +200,21 @@ setMethod("hashfile",
 ##'
 ##' @rdname is_binary-methods
 ##' @docType methods
-##' @param object The blob \code{object}.
+##' @param blob The blob \code{object}.
 ##' @return TRUE if binary data, FALSE if not.
 ##' @keywords methods
 setGeneric("is_binary",
-           signature = "object",
-           function(object)
+           signature = "blob",
+           function(blob)
            standardGeneric("is_binary"))
 
 ##' @rdname is_binary-methods
 ##' @export
 setMethod("is_binary",
-          signature(object = "git_blob"),
-          function (object)
+          signature(blob = "git_blob"),
+          function (blob)
           {
-              .Call("git2r_blob_is_binary", object)
+              .Call("git2r_blob_is_binary", blob)
           }
 )
 

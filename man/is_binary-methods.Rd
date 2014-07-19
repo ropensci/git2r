@@ -5,12 +5,12 @@
 \alias{is_binary,git_blob-method}
 \title{Is blob binary}
 \usage{
-is_binary(object)
+is_binary(blob)
 
-\S4method{is_binary}{git_blob}(object)
+\S4method{is_binary}{git_blob}(blob)
 }
 \arguments{
-\item{object}{The blob \code{object}.}
+\item{blob}{The blob \code{object}.}
 }
 \value{
 TRUE if binary data, FALSE if not.
