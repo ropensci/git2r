@@ -5,12 +5,12 @@
 \alias{is_detached,git_repository-method}
 \title{Check if HEAD of repository is detached}
 \usage{
-is_detached(object)
+is_detached(repo)
 
-\S4method{is_detached}{git_repository}(object)
+\S4method{is_detached}{git_repository}(repo)
 }
 \arguments{
-\item{object}{The repository \code{object}}
+\item{repo}{The repository \code{object}}
 }
 \value{
 TRUE if repository HEAD is detached, else FALSE

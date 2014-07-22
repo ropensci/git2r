@@ -343,7 +343,7 @@ setMethod("is_bare",
 ##'
 ##' @rdname is_detached-methods
 ##' @docType methods
-##' @param object The repository \code{object}
+##' @param repo The repository \code{object}
 ##' @return TRUE if repository HEAD is detached, else FALSE
 ##' @keywords methods
 ##' @examples
@@ -356,17 +356,17 @@ setMethod("is_bare",
 ##' }
 ##'
 setGeneric("is_detached",
-           signature = "object",
-           function(object)
+           signature = "repo",
+           function(repo)
            standardGeneric("is_detached"))
 
 ##' @rdname is_detached-methods
 ##' @export
 setMethod("is_detached",
-          signature(object = "git_repository"),
-          function (object)
+          signature(repo = "git_repository"),
+          function (repo)
           {
-              .Call("git2r_repository_head_detached", object)
+              .Call("git2r_repository_head_detached", repo)
           }
 )
 
