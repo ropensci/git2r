@@ -5,15 +5,14 @@
 \alias{commit,git_repository-method}
 \title{Commit}
 \usage{
-commit(object, message = NULL, reference = "HEAD",
-  author = default_signature(object), committer = default_signature(object))
+commit(repo, message = NULL, reference = "HEAD",
+  author = default_signature(repo), committer = default_signature(repo))
 
-\S4method{commit}{git_repository}(object, message = NULL,
-  reference = "HEAD", author = default_signature(object),
-  committer = default_signature(object))
+\S4method{commit}{git_repository}(repo, message = NULL, reference = "HEAD",
+  author = default_signature(repo), committer = default_signature(repo))
 }
 \arguments{
-\item{object}{The repository \code{object}.}
+\item{repo}{The repository \code{object}.}
 
 \item{message}{The commit message.}
 

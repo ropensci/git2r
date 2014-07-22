@@ -243,7 +243,7 @@ clone <- function(url, local_path, credentials = NULL, progress = TRUE) {
 ##'
 ##' @rdname commit-methods
 ##' @docType methods
-##' @param object The repository \code{object}.
+##' @param repo The repository \code{object}.
 ##' @param message The commit message.
 ##' @param reference Name of the reference that will be updated to
 ##' point to this commit.
@@ -252,19 +252,19 @@ clone <- function(url, local_path, credentials = NULL, progress = TRUE) {
 ##' @return \code{git_commit} object
 ##' @keywords methods
 setGeneric("commit",
-           signature = "object",
-           function(object,
+           signature = "repo",
+           function(repo,
                     message = NULL,
                     reference = "HEAD",
-                    author = default_signature(object),
-                    committer = default_signature(object))
+                    author = default_signature(repo),
+                    committer = default_signature(repo))
            standardGeneric("commit"))
 
 ##' @rdname commit-methods
 ##' @export
 setMethod("commit",
-          signature(object = "git_repository"),
-          function (object,
+          signature(repo = "git_repository"),
+          function (repo,
                     message,
                     reference,
                     author,
@@ -278,12 +278,12 @@ setMethod("commit",
                         is(committer, "git_signature"))
 
               parents <- character(0)
-              if(!is_empty(object)) {
-                  parents <- c(parents, branch_target(head(object)))
+              if(!is_empty(repo)) {
+                  parents <- c(parents, branch_target(head(repo)))
               }
 
               .Call("git2r_commit_create",
-                    object,
+                    repo,
                     message,
                     author,
                     committer,
