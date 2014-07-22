@@ -1,5 +1,3 @@
-RCMD=R CMD
-PKG=git2r
 PKG_VERSION=$(shell grep -i ^version DESCRIPTION | cut -d : -d \  -f 2)
 PKG_NAME=$(shell grep -i ^package DESCRIPTION | cut -d : -d \  -f 2)
 
@@ -15,17 +13,17 @@ readme: $(patsubst %.Rmd, %.md, $(wildcard *.Rmd))
 # Build documentation with roxygen
 doc:
 	rm -f man/*.Rd
-	cd .. && Rscript -e "library(roxygen2); stopifnot(packageVersion('roxygen2') == '4.0.1'); roxygenize('$(PKG)')"
+	cd .. && Rscript -e "library(roxygen2); stopifnot(packageVersion('roxygen2') == '4.0.1'); roxygenize('$(PKG_NAME)')"
 
 # Build and check package
 check: clean
-	cd .. && $(RCMD) build --no-build-vignettes $(PKG)
-	cd .. && $(RCMD) check --no-manual --no-vignettes --no-build-vignettes $(PKG_NAME)_$(PKG_VERSION).tar.gz
+	cd .. && R CMD build --no-build-vignettes $(PKG_NAME)
+	cd .. && R CMD check --no-manual --no-vignettes --no-build-vignettes $(PKG_NAME)_$(PKG_VERSION).tar.gz
 
 # Build and check package with valgrind
 check_valgrind: clean
-	cd .. && $(RCMD) build --no-build-vignettes $(PKG)
-	cd .. && $(RCMD) check --as-cran --no-manual --no-vignettes --no-build-vignettes --use-valgrind $(PKG_NAME)_$(PKG_VERSION).tar.gz
+	cd .. && R CMD build --no-build-vignettes $(PKG_NAME)
+	cd .. && R CMD check --as-cran --no-manual --no-vignettes --no-build-vignettes --use-valgrind $(PKG_NAME)_$(PKG_VERSION).tar.gz
 
 # Run all tests with valgrind
 valgrind:
