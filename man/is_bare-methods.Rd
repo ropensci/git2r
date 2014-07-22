@@ -5,12 +5,12 @@
 \alias{is_bare,git_repository-method}
 \title{Check if repository is bare}
 \usage{
-is_bare(object)
+is_bare(repo)
 
-\S4method{is_bare}{git_repository}(object)
+\S4method{is_bare}{git_repository}(repo)
 }
 \arguments{
-\item{object}{The \code{object} to check if it's a bare repository}
+\item{repo}{The repository to check if it's bare}
 }
 \value{
 TRUE if bare repository, else FALSE

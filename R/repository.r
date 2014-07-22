@@ -312,7 +312,7 @@ setMethod("head",
 ##'
 ##' @rdname is_bare-methods
 ##' @docType methods
-##' @param object The \code{object} to check if it's a bare repository
+##' @param repo The repository to check if it's bare
 ##' @return TRUE if bare repository, else FALSE
 ##' @keywords methods
 ##' @examples
@@ -325,17 +325,17 @@ setMethod("head",
 ##' }
 ##'
 setGeneric("is_bare",
-           signature = "object",
-           function(object)
+           signature = "repo",
+           function(repo)
            standardGeneric("is_bare"))
 
 ##' @rdname is_bare-methods
 ##' @export
 setMethod("is_bare",
-          signature(object = "git_repository"),
-          function (object)
+          signature(repo = "git_repository"),
+          function (repo)
           {
-              .Call("git2r_repository_is_bare", object)
+              .Call("git2r_repository_is_bare", repo)
           }
 )
 
