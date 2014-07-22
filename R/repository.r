@@ -374,8 +374,8 @@ setMethod("is_detached",
 ##'
 ##' @rdname is_empty-methods
 ##' @docType methods
-##' @param object The \code{object} to check if it's a empty repository
-##' @return TRUE or FALSE
+##' @param repo The repository to check if it's empty
+##' @return TRUE if empty else FALSE
 ##' @keywords methods
 ##' @examples
 ##' \dontrun{
@@ -387,17 +387,17 @@ setMethod("is_detached",
 ##' }
 ##'
 setGeneric("is_empty",
-           signature = "object",
-           function(object)
+           signature = "repo",
+           function(repo)
            standardGeneric("is_empty"))
 
 ##' @rdname is_empty-methods
 ##' @export
 setMethod("is_empty",
-          signature(object = "git_repository"),
-          function (object)
+          signature(repo = "git_repository"),
+          function (repo)
           {
-              .Call("git2r_repository_is_empty", object)
+              .Call("git2r_repository_is_empty", repo)
           }
 )
 

@@ -5,15 +5,15 @@
 \alias{is_empty,git_repository-method}
 \title{Check if repository is empty}
 \usage{
-is_empty(object)
+is_empty(repo)
 
-\S4method{is_empty}{git_repository}(object)
+\S4method{is_empty}{git_repository}(repo)
 }
 \arguments{
-\item{object}{The \code{object} to check if it's a empty repository}
+\item{repo}{The repository to check if it's empty}
 }
 \value{
-TRUE or FALSE
+TRUE if empty else FALSE
 }
 \description{
 Check if repository is empty
