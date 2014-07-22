@@ -406,7 +406,7 @@ setMethod("is_empty",
 ##' Lookup one object in a repository.
 ##' @rdname lookup-methods
 ##' @docType methods
-##' @param object The repository \code{object}.
+##' @param repo The repository.
 ##' @param hex the identity of the object to lookup. Must be 4 to 40
 ##' characters long.
 ##' @return a \code{git_blob} or \code{git_commit} or \code{git_tag}
@@ -422,17 +422,18 @@ setMethod("is_empty",
 ##' }
 ##'
 setGeneric("lookup",
-           signature = "object",
-           function(object, hex)
+           signature = c("repo", "hex"),
+           function(repo, hex)
            standardGeneric("lookup"))
 
 ##' @rdname lookup-methods
 ##' @export
 setMethod("lookup",
-          signature(object = "git_repository"),
-          function (object, hex)
+          signature(repo = "git_repository",
+                    hex  = "character"),
+          function (repo, hex)
           {
-              .Call("git2r_object_lookup", object, hex)
+              .Call("git2r_object_lookup", repo, hex)
           }
 )
 

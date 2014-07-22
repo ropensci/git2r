@@ -2,15 +2,15 @@
 \docType{methods}
 \name{lookup}
 \alias{lookup}
-\alias{lookup,git_repository-method}
+\alias{lookup,git_repository,character-method}
 \title{Lookup}
 \usage{
-lookup(object, hex)
+lookup(repo, hex)
 
-\S4method{lookup}{git_repository}(object, hex)
+\S4method{lookup}{git_repository,character}(repo, hex)
 }
 \arguments{
-\item{object}{The repository \code{object}.}
+\item{repo}{The repository.}
 
 \item{hex}{the identity of the object to lookup. Must be 4 to 40
 characters long.}
