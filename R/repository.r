@@ -673,22 +673,30 @@ setMethod("summary",
 ##'
 ##' @rdname workdir-methods
 ##' @docType methods
-##' @param object The repository \code{object} to check workdir
-##' @return Character vector with workdir. If the repository is bare,
-##' \code{NULL} will be returned.
+##' @param repo The repository \code{object}.
+##' @return Character vector with the path of the workdir. If the
+##' repository is bare, \code{NULL} will be returned.
 ##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository("path/to/git2r")
+##'
+##' ## Get the path of the workdir for repository
+##' workdir(repo)
+##' }
 setGeneric("workdir",
-           signature = "object",
-           function(object)
+           signature = "repo",
+           function(repo)
            standardGeneric("workdir"))
 
 ##' @rdname workdir-methods
 ##' @export
 setMethod("workdir",
-          signature(object = "git_repository"),
-          function (object)
+          signature(repo = "git_repository"),
+          function (repo)
           {
-              .Call("git2r_repository_workdir", object)
+              .Call("git2r_repository_workdir", repo)
           }
 )
 

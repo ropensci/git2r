@@ -5,19 +5,28 @@
 \alias{workdir,git_repository-method}
 \title{Workdir of repository}
 \usage{
-workdir(object)
+workdir(repo)
 
-\S4method{workdir}{git_repository}(object)
+\S4method{workdir}{git_repository}(repo)
 }
 \arguments{
-\item{object}{The repository \code{object} to check workdir}
+\item{repo}{The repository \code{object}.}
 }
 \value{
-Character vector with workdir. If the repository is bare,
-\code{NULL} will be returned.
+Character vector with the path of the workdir. If the
+repository is bare, \code{NULL} will be returned.
 }
 \description{
 Workdir of repository
+}
+\examples{
+\dontrun{
+## Open an existing repository
+repo <- repository("path/to/git2r")
+
+## Get the path of workdir for repository
+workdir(repo)
+}
 }
 \keyword{methods}
 
