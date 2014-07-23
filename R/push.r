@@ -18,38 +18,74 @@
 ##'
 ##' @rdname push-methods
 ##' @docType methods
-##' @param repo The repository
-##' @param name The remote's name
-##' @param refspec The refspec to be pushed
-##' @param credentials The credentials for remote repository access. Default
-##' is NULL.
+##' @param object S4 class \code{git_repository} or \code{git_branch}.
+##' @param ... Additional arguments affecting the push.
+##' @param credentials The credentials for remote repository
+##' access. Default is NULL.
 ##' @return invisible(NULL)
 ##' @seealso \code{\linkS4class{cred_plaintext}},
 ##' \code{\linkS4class{cred_ssh_key}}
 ##' @keywords methods
 ##' @include repository.r
+##' @include branch.r
 setGeneric("push",
-           signature = "repo",
-           function(repo,
-                    name,
-                    refspec,
-                    credentials = NULL)
+           signature = "object",
+           function(object, ...)
            standardGeneric("push"))
 
 ##' @rdname push-methods
 ##' @export
 setMethod("push",
-          signature(repo = "git_repository"),
-          function (repo, name, refspec, credentials)
+          signature(object = "git_branch"),
+          function (object,
+                    credentials = NULL)
           {
+              upstream <- branch_get_upstream(object)
+              if (is.null(upstream)) {
+                  stop(paste0("The branch '", object@name, "' that you are ",
+                              "trying to push does not track an upstream branch."))
+              }
+
+              stop("Push of S4 class git_branch isn't implemented. Sorry")
+
+              ##
+              ## :TODO:FIXME: Determine the remote's name and refspec
+              ## and call push
+              ##
+          }
+)
+
+##' @rdname push-methods
+##' @param name The remote's name. Default is NULL.
+##' @param refspec The refspec to be pushed. Default is NULL.
+##' @export
+setMethod("push",
+          signature(object = "git_repository"),
+          function (object,
+                    name        = NULL,
+                    refspec     = NULL,
+                    credentials = NULL)
+          {
+              if (all(is.null(name), is.null(refspec))) {
+                  stop("Push when both name and refspec equals NULL isn't implemented. Sorry")
+
+                  ##
+                  ## :TODO:FIXME: Read remote's name and refspec from
+                  ## config
+                  ##
+
+              } else if (any(is.null(name), is.null(refspec))) {
+                  stop("Both 'name' and 'refspec' must be 'character' or 'NULL'")
+              }
+
               result <- .Call(
                   "git2r_push",
-                  repo,
+                  object,
                   name,
                   refspec,
                   credentials,
                   "update by push",
-                  default_signature(repo))
+                  default_signature(object))
 
               invisible(result)
           }

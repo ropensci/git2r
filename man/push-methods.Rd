@@ -2,22 +2,28 @@
 \docType{methods}
 \name{push}
 \alias{push}
+\alias{push,git_branch-method}
 \alias{push,git_repository-method}
 \title{Push}
 \usage{
-push(repo, name, refspec, credentials = NULL)
+push(object, ...)
 
-\S4method{push}{git_repository}(repo, name, refspec, credentials = NULL)
+\S4method{push}{git_branch}(object, credentials = NULL)
+
+\S4method{push}{git_repository}(object, name = NULL, refspec = NULL,
+  credentials = NULL)
 }
 \arguments{
-\item{repo}{The repository}
+\item{object}{S4 class \code{git_repository} or \code{git_branch}.}
 
-\item{name}{The remote's name}
+\item{...}{Additional arguments affecting the push.}
 
-\item{refspec}{The refspec to be pushed}
+\item{credentials}{The credentials for remote repository
+access. Default is NULL.}
 
-\item{credentials}{The credentials for remote repository access. Default
-is NULL.}
+\item{name}{The remote's name. Default is NULL.}
+
+\item{refspec}{The refspec to be pushed. Default is NULL.}
 }
 \value{
 invisible(NULL)
