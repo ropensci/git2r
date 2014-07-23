@@ -15,6 +15,10 @@ stash_drop(object, ...)
 \arguments{
 \item{object}{The stash \code{object} to drop or a zero-based
 integer to the stash to drop. The last stash has index 0.}
+
+\item{...}{Additional arguments affecting the stash drop method.}
+
+\item{index}{Zero based index to the stash to drop.}
 }
 \value{
 invisible NULL

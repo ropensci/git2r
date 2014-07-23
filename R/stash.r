@@ -31,6 +31,7 @@ setClass("git_stash", contains = "git_commit")
 ##' @docType methods
 ##' @param object The stash \code{object} to drop or a zero-based
 ##' integer to the stash to drop. The last stash has index 0.
+##' @param ... Additional arguments affecting the stash drop method.
 ##' @return invisible NULL
 ##' @keywords methods
 ##' @examples
@@ -52,6 +53,7 @@ setGeneric("stash_drop",
            standardGeneric("stash_drop"))
 
 ##' @rdname stash_drop-methods
+##' @param index Zero based index to the stash to drop.
 ##' @include repository.r
 ##' @export
 setMethod("stash_drop",

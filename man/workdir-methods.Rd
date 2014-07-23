@@ -24,7 +24,7 @@ Workdir of repository
 ## Open an existing repository
 repo <- repository("path/to/git2r")
 
-## Get the path of workdir for repository
+## Get the path of the workdir for repository
 workdir(repo)
 }
 }
