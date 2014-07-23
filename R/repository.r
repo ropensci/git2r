@@ -698,7 +698,7 @@ setMethod("workdir",
 ##'   repository. The path will therefore be terminated by a file separator.
 ##' @rdname discover_repository-methods
 ##' @docType methods
-##' @param object A character vector specifying the path to a file or folder
+##' @param path A character vector specifying the path to a file or folder
 ##' @return Character vector with path to repository or NULL if this cannot be
 ##'   established.
 ##' @keywords methods
@@ -710,16 +710,16 @@ setMethod("workdir",
 ##' # /path/to/my/new/repo/.git/
 ##' }
 setGeneric("discover_repository",
-           signature = "object",
-           function(object)
+           signature = "path",
+           function(path)
            standardGeneric("discover_repository"))
 
 ##' @rdname discover_repository-methods
 ##' @export
 setMethod("discover_repository",
-         signature(object = "character"),
-         function (object)
-         {
-             .Call("git2r_repository_discover", object)
-         }
+          signature(path = "character"),
+          function (path)
+          {
+              .Call("git2r_repository_discover", path)
+          }
 )

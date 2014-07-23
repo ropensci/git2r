@@ -5,12 +5,12 @@
 \alias{discover_repository,character-method}
 \title{Find path to repository for any file}
 \usage{
-discover_repository(object)
+discover_repository(path)
 
-\S4method{discover_repository}{character}(object)
+\S4method{discover_repository}{character}(path)
 }
 \arguments{
-\item{object}{A character vector specifying the path to a file or folder}
+\item{path}{A character vector specifying the path to a file or folder}
 }
 \value{
 Character vector with path to repository or NULL if this cannot be
