@@ -78,10 +78,18 @@ stopifnot(identical(commits(repo1)[[1]]@author@email, "repo.one@example.org"))
 tools::assertError(push(repo1, character(0), "refs/heads/master"))
 tools::assertError(push(repo1, NA_character_, "refs/heads/master"))
 tools::assertError(push(repo1, c("origin", "origin"), "refs/heads/master"))
+tools::assertError(push(repo1, "origin"))
+tools::assertError(push(repo1, name = "origin"))
+tools::assertError(push(repo1, refspec = "refs/heads/master"))
 push(repo1, "origin", character(0))
 push(repo1, "origin", NA_character_)
 push(repo1, "origin", c(NA_character_, NA_character_))
 stopifnot(identical(reflog(repo1, "refs/remotes/origin/master"), list()))
+
+##
+## No tracking branch assigned to master
+##
+tools::assertError(push(branches(repo1)[[1]]))
 
 ##
 ## Push changes from repo1 to origin
