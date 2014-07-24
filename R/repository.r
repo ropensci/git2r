@@ -401,6 +401,37 @@ setMethod("is_empty",
           }
 )
 
+##' Determine if the repository was a shallow clone
+##'
+##' @rdname is_shallow-methods
+##' @docType methods
+##' @param repo The repository
+##' @return TRUE if shallow clone, else FALSE
+##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Open an existing repository
+##' repo <- repository("path/to/git2r")
+##'
+##' ## Check if it's a shallow clone
+##' is_shallow(repo)
+##' }
+##'
+setGeneric("is_shallow",
+           signature = "repo",
+           function(repo)
+           standardGeneric("is_shallow"))
+
+##' @rdname is_shallow-methods
+##' @export
+setMethod("is_shallow",
+          signature(repo = "git_repository"),
+          function (repo)
+          {
+              .Call("git2r_repository_is_shallow", repo)
+          }
+)
+
 ##' Lookup
 ##'
 ##' Lookup one object in a repository.

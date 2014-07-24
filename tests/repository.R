@@ -47,6 +47,7 @@ repo <- init(path)
 ##
 stopifnot(identical(is_bare(repo), FALSE))
 stopifnot(identical(is_empty(repo), TRUE))
+stopifnot(identical(is_shallow(repo), FALSE))
 stopifnot(identical(branches(repo), list()))
 stopifnot(identical(commits(repo), list()))
 stopifnot(identical(head(repo), NULL))

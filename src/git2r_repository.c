@@ -172,6 +172,31 @@ SEXP git2r_repository_is_bare(SEXP repo)
 }
 
 /**
+ * Determine if the repository was a shallow clone.
+ *
+ * @param repo S4 class git_repository
+ * @return TRUE if shallow else FALSE
+ */
+SEXP git2r_repository_is_shallow(SEXP repo)
+{
+    SEXP result;
+    git_repository *repository;
+
+    repository= git2r_repository_open(repo);
+    if (!repository)
+        error(git2r_err_invalid_repository);
+
+    if (git_repository_is_shallow(repository))
+        result = ScalarLogical(TRUE);
+    else
+        result = ScalarLogical(FALSE);
+
+    git_repository_free(repository);
+
+    return result;
+}
+
+/**
  * Check if head of repository is detached
  *
  * @param repo S4 class git_repository
