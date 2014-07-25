@@ -24,7 +24,7 @@ point to this commit.}
 \item{committer}{Signature with committer and commit time of commit.}
 }
 \value{
-\code{git_commit} object
+\code{\linkS4class{git_commit}} object
 }
 \description{
 Commit

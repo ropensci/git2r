@@ -113,11 +113,12 @@ setAs(from="git_repository",
 
 ##' Open a repository
 ##'
+##' @rdname repository-methods
+##' @docType methods
 ##' @param path A path to an existing local git repository
 ##' @param discover Discover repository from path. Default is FALSE.
-##' @return A S4 \code{git_repository} object
+##' @return A S4 \code{\linkS4class{git_repository}} object
 ##' @keywords methods
-##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository
@@ -138,6 +139,9 @@ setAs(from="git_repository",
 ##' ## Check if repository is empty
 ##' is_empty(repo)
 ##'
+##' ## Check if repository is a shallow clone
+##' is_shallow(repo)
+##'
 ##' ## List all references in repository
 ##' references(repo)
 ##'
@@ -156,23 +160,36 @@ setAs(from="git_repository",
 ##' ## List all tags in repository
 ##' tags(repo)
 ##' }
-##'
-repository <- function(path, discover = FALSE) {
-    ## Argument checking
-    stopifnot(is.character(path),
-              identical(length(path), 1L),
-              nchar(path) > 0)
+setGeneric("repository",
+           signature = "path",
+           function(path,
+                    discover = FALSE)
+           standardGeneric("repository"))
 
-    if (discover) {
-        path <- discover_repository(path)
-    } else {
-        path <- normalizePath(path, winslash = "/", mustWork = TRUE)
-        if(!file.info(path)$isdir)
-            stop("path is not a directory")
-    }
+##' @rdname repository-methods
+##' @export
+setMethod("repository",
+          signature(path = "character"),
+          function(path,
+                   discover)
+          {
+              ## Argument checking
+              stopifnot(identical(length(path), 1L),
+                        nchar(path) > 0,
+                        is.logical(discover),
+                        identical(length(discover), 1L))
 
-    new("git_repository", path=path)
-}
+              if (discover) {
+                  path <- discover_repository(path)
+              } else {
+                  path <- normalizePath(path, winslash = "/", mustWork = TRUE)
+                  if (!file.info(path)$isdir)
+                      stop("'path' is not a directory")
+              }
+
+              new("git_repository", path = path)
+          }
+)
 
 ##' Init a repository
 ##'
@@ -249,7 +266,7 @@ clone <- function(url, local_path, credentials = NULL, progress = TRUE) {
 ##' point to this commit.
 ##' @param author Signature with author and author time of commit.
 ##' @param committer Signature with committer and commit time of commit.
-##' @return \code{git_commit} object
+##' @return \code{\linkS4class{git_commit}} object
 ##' @keywords methods
 setGeneric("commit",
            signature = "repo",
