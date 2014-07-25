@@ -5,12 +5,12 @@
 \alias{tags,git_repository-method}
 \title{Tags}
 \usage{
-tags(object)
+tags(repo)
 
-\S4method{tags}{git_repository}(object)
+\S4method{tags}{git_repository}(repo)
 }
 \arguments{
-\item{object}{The repository \code{object}.}
+\item{repo}{The repository}
 }
 \value{
 list of tags in repository

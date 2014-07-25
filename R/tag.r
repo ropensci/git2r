@@ -116,21 +116,21 @@ setMethod("tag",
 ##'
 ##' @rdname tags-methods
 ##' @docType methods
-##' @param object The repository \code{object}.
+##' @param repo The repository
 ##' @return list of tags in repository
 ##' @keywords methods
-##' @export
 setGeneric("tags",
-           signature = "object",
-           function(object) standardGeneric("tags"))
+           signature = "repo",
+           function(repo)
+           standardGeneric("tags"))
 
 ##' @rdname tags-methods
 ##' @export
 setMethod("tags",
-          signature(object = "git_repository"),
-          function (object)
+          signature(repo = "git_repository"),
+          function (repo)
           {
-              .Call("git2r_tag_list", object)
+              .Call("git2r_tag_list", repo)
           }
 )
 
