@@ -170,8 +170,7 @@ setGeneric("repository",
 ##' @export
 setMethod("repository",
           signature(path = "character"),
-          function(path,
-                   discover)
+          function(path, discover)
           {
               ## Argument checking
               stopifnot(identical(length(path), 1L),
@@ -193,35 +192,51 @@ setMethod("repository",
 
 ##' Init a repository
 ##'
+##' @rdname init-methods
+##' @docType methods
 ##' @param path A path to where to init a git repository
 ##' @param bare If TRUE, a Git repository without a working directory
 ##' is created at the pointed path. If FALSE, provided path will be
 ##' considered as the working directory into which the .git directory
 ##' will be created.
-##' @return A S4 \code{git_repository} object
+##' @return A S4 \code{\linkS4class{git_repository}} object
 ##' @keywords methods
-##' @export
+##' @seealso \link{repository}
 ##' @examples
 ##' \dontrun{
 ##' ## Init a repository
-##' repo <- init("path/to/git2r")
+##' repo <- init("path/to/repository-1")
+##'
+##' ## Init a bare repository
+##' repo <- init("path/to/repository-2", bare = TRUE)
 ##' }
-init <- function(path, bare = FALSE) {
-    ## Argument checking
-    stopifnot(is.character(path),
-              identical(length(path), 1L),
-              nchar(path) > 0,
-              is.logical(bare),
-              identical(length(bare), 1L))
+setGeneric("init",
+           signature = "path",
+           function(path,
+                    bare = FALSE)
+           standardGeneric("init"))
 
-    path <- normalizePath(path, winslash = "/", mustWork = TRUE)
-    if(!file.info(path)$isdir)
-        stop("path is not a directory")
+##' @rdname init-methods
+##' @export
+setMethod("init",
+          signature(path = "character"),
+          function(path, bare)
+          {
+              ## Argument checking
+              stopifnot(identical(length(path), 1L),
+                        nchar(path) > 0,
+                        is.logical(bare),
+                        identical(length(bare), 1L))
 
-    .Call("git2r_repository_init", path, bare)
+              path <- normalizePath(path, winslash = "/", mustWork = TRUE)
+              if(!file.info(path)$isdir)
+                  stop("path is not a directory")
 
-    new("git_repository", path=path)
-}
+              .Call("git2r_repository_init", path, bare)
+
+              new("git_repository", path=path)
+          }
+)
 
 ##' Clone a remote repository
 ##'
