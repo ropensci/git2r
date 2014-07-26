@@ -240,36 +240,53 @@ setMethod("init",
 
 ##' Clone a remote repository
 ##'
+##' @rdname clone-methods
+##' @docType methods
 ##' @param url The remote repository to clone
-##' @param local_path Local directory to clone to
+##' @param local_path Local directory to clone to.
 ##' @param credentials The credentials for remote repository access. Default
 ##' is NULL.
 ##' @param progress Show progress. Default is TRUE.
-##' @return A S4 \code{git_repository} object
+##' @return A S4 \code{\linkS4class{git_repository}} object
 ##' @seealso \code{\linkS4class{cred_plaintext}},
 ##' \code{\linkS4class{cred_ssh_key}}
 ##' @keywords methods
-##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Clone a remote repository
 ##' repo <- clone("https://github.com/ropensci/git2r", "path/to/git2r")
 ##' }
-clone <- function(url, local_path, credentials = NULL, progress = TRUE) {
-    ## Argument checking
-    stopifnot(is.character(url),
-              is.character(local_path),
-              is.logical(progress),
-              identical(length(url), 1L),
-              identical(length(local_path), 1L),
-              identical(length(progress), 1L),
-              nchar(url) > 0,
-              nchar(local_path) > 0)
+setGeneric("clone",
+           signature = c("url", "local_path"),
+           function(url,
+                    local_path,
+                    credentials = NULL,
+                    progress    = TRUE)
+           standardGeneric("clone"))
 
-    .Call("git2r_clone", url, local_path, credentials, progress)
+##' @rdname clone-methods
+##' @export
+setMethod("clone",
+          signature(url        = "character",
+                    local_path = "character"),
+          function(url,
+                   local_path,
+                   credentials,
+                   progress)
+          {
+              ## Argument checking
+              stopifnot(is.logical(progress),
+                        identical(length(url), 1L),
+                        identical(length(local_path), 1L),
+                        identical(length(progress), 1L),
+                        nchar(url) > 0,
+                        nchar(local_path) > 0)
 
-    repository(local_path)
-}
+              .Call("git2r_clone", url, local_path, credentials, progress)
+
+              repository(local_path)
+          }
+)
 
 ##' Commit
 ##'
