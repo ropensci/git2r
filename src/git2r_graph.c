@@ -36,12 +36,12 @@ SEXP git2r_graph_ahead_behind(SEXP local, SEXP upstream)
 
     if (git2r_arg_check_commit(local)
         || git2r_arg_check_commit(upstream))
-        error("Invalid arguments to git2r_graph_ahead_behind");
+        Rf_error("Invalid arguments to git2r_graph_ahead_behind");
 
     slot = GET_SLOT(local, Rf_install("repo"));
     repository = git2r_repository_open(slot);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     slot = GET_SLOT(local, Rf_install("hex"));
     git2r_oid_from_hex_sexp(slot, &local_oid);
@@ -66,7 +66,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return result;
 }
@@ -88,12 +88,12 @@ SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor)
 
     if (git2r_arg_check_commit(commit)
         || git2r_arg_check_commit(ancestor))
-        error("Invalid arguments to git2r_graph_descendant_of");
+        Rf_error("Invalid arguments to git2r_graph_descendant_of");
 
     slot = GET_SLOT(commit, Rf_install("repo"));
     repository = git2r_repository_open(slot);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     slot = GET_SLOT(commit, Rf_install("hex"));
     git2r_oid_from_hex_sexp(slot, &commit_oid);
@@ -105,7 +105,7 @@ SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor)
     git_repository_free(repository);
 
     if (result < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
     if (0 == result)
         return ScalarLogical(0);
     return ScalarLogical(1);

@@ -100,11 +100,11 @@ SEXP git2r_reflog_list(SEXP repo, SEXP ref)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_string(ref))
-        error("Invalid arguments to git2r_reflog_list");
+        Rf_error("Invalid arguments to git2r_reflog_list");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     err = git_reflog_read(&reflog, repository, CHAR(STRING_ELT(ref, 0)));
     if (err < 0)
@@ -136,7 +136,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return result;
 }

@@ -29,17 +29,17 @@ SEXP git2r_remote_add(SEXP repo, SEXP name, SEXP url)
     git_remote *remote = NULL;
 
     if (!IS_CHARACTER(name) || LENGTH(name) != 1)
-	error("Invalid remote name");
+	Rf_error("Invalid remote name");
 
     if (!IS_CHARACTER(url) || LENGTH(url) != 1)
-	error("Invalid remote url");
+	Rf_error("Invalid remote url");
 
     if (!git_remote_is_valid_name(CHAR(STRING_ELT(name, 0))))
-	error("Invalid remote name");
+	Rf_error("Invalid remote name");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     err = git_remote_create(&remote,
 			    repository,
@@ -55,7 +55,7 @@ cleanup:
 	git_repository_free(repository);
 
     if (err != 0)
-	error("Error: %s\n", giterr_last()->message);
+	Rf_error("Error: %s\n", giterr_last()->message);
 
     return R_NilValue;
 }
@@ -67,17 +67,17 @@ SEXP git2r_remote_rename(SEXP repo, SEXP oldname, SEXP newname)
     git_remote *remote = NULL;
 
     if (!IS_CHARACTER(oldname) || LENGTH(oldname) != 1)
-	error("Invalid remote name");
+	Rf_error("Invalid remote name");
 
     if (!IS_CHARACTER(newname) || LENGTH(newname) != 1)
-	error("Invalid remote name");
+	Rf_error("Invalid remote name");
 
     if (!git_remote_is_valid_name(CHAR(STRING_ELT(newname, 0))))
-	error("Invalid remote name");
+	Rf_error("Invalid remote name");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     err = git_remote_load(&remote,
 			  repository,
@@ -100,7 +100,7 @@ cleanup:
 	git_repository_free(repository);
 
     if (err != 0)
-	error("Error: %s\n", giterr_last()->message);
+	Rf_error("Error: %s\n", giterr_last()->message);
 
     return R_NilValue;
 }
@@ -112,11 +112,11 @@ SEXP git2r_remote_remove(SEXP repo, SEXP name)
     git_remote *remote = NULL;
 
     if (!IS_CHARACTER(name) || LENGTH(name) != 1)
-	error("Invalid remote name");
+	Rf_error("Invalid remote name");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     err = git_remote_load(&remote,
 			  repository,
@@ -142,7 +142,7 @@ cleanup:
 	git_repository_free(repository);
 
     if (err != 0)
-	error("Error: %s\n", giterr_last()->message);
+	Rf_error("Error: %s\n", giterr_last()->message);
 
     return R_NilValue;
 }

@@ -66,23 +66,23 @@ SEXP git2r_diff(SEXP repo, SEXP tree1, SEXP tree2, SEXP index)
 
     if (isNull(tree1) && ! c_index) {
 	if (!isNull(tree2))
-	    error("Invalid diff parameters");
+	    Rf_error("Invalid diff parameters");
 	return git2r_diff_index_to_wd(repo);
     } else if (isNull(tree1) && c_index) {
 	if (!isNull(tree2))
-	    error("Invalid diff parameters");
+	    Rf_error("Invalid diff parameters");
 	return git2r_diff_head_to_index(repo);
     } else if (!isNull(tree1) && isNull(tree2) && ! c_index) {
 	if (!isNull(repo))
-	    error("Invalid diff parameters");
+	    Rf_error("Invalid diff parameters");
 	return git2r_diff_tree_to_wd(tree1);
     } else if (!isNull(tree1) && isNull(tree2) && c_index) {
 	if (!isNull(repo))
-	    error("Invalid diff parameters");
+	    Rf_error("Invalid diff parameters");
 	return git2r_diff_tree_to_index(tree1);
     } else {
 	if (!isNull(repo))
-	    error("Invalid diff parameters");
+	    Rf_error("Invalid diff parameters");
 	return git2r_diff_tree_to_tree(tree1, tree2);
     }
 }
@@ -100,7 +100,7 @@ SEXP git2r_diff_index_to_wd(SEXP repo)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     err = git_diff_index_to_workdir(&diff,
 				    repository,
@@ -122,7 +122,7 @@ cleanup:
         git_repository_free(repository);
 
     if (err != 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return result;
 }
@@ -142,7 +142,7 @@ SEXP git2r_diff_head_to_index(SEXP repo)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     err = git_revparse_single(&obj, repository, "HEAD^{tree}");
 
@@ -182,7 +182,7 @@ cleanup:
         git_repository_free(repository);
 
     if (err != 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return result;
 }
@@ -205,7 +205,7 @@ SEXP git2r_diff_tree_to_wd(SEXP tree)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     hex = GET_SLOT(tree, Rf_install("hex"));
     err = git_revparse_single(&obj, repository,
@@ -242,7 +242,7 @@ cleanup:
 	git_repository_free(repository);
 
     if (err != 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return result;
 }
@@ -265,7 +265,7 @@ SEXP git2r_diff_tree_to_index(SEXP tree)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     hex = GET_SLOT(tree, Rf_install("hex"));
     err = git_revparse_single(&obj, repository,
@@ -303,7 +303,7 @@ cleanup:
 	git_repository_free(repository);
 
     if (err != 0)
-	error("Error: %s\n", giterr_last()->message);
+	Rf_error("Error: %s\n", giterr_last()->message);
 
     return result;
 
@@ -328,7 +328,7 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2)
     /* We already checked that tree2 is from the same repo, in R */
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     hex1 = GET_SLOT(tree1, Rf_install("hex"));
     err = git_revparse_single(&obj1, repository,
@@ -363,7 +363,7 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2)
     if (err != 0)
 	goto cleanup;
 
-    result = git2r_diff_format_to_r(diff, /* old= */ tree1, 
+    result = git2r_diff_format_to_r(diff, /* old= */ tree1,
 				    /* new= */ tree2);
 
 cleanup:
@@ -384,7 +384,7 @@ cleanup:
 	git_repository_free(repository);
 
     if (err != 0)
-	error("Error: %s\n", giterr_last()->message);
+	Rf_error("Error: %s\n", giterr_last()->message);
 
     return result;
 }
@@ -673,7 +673,7 @@ SEXP git2r_diff_format_to_r(git_diff *diff, SEXP old, SEXP new)
   err = git2r_diff_count(diff, &num_files, &max_hunks, &max_lines);
 
   if (err != 0)
-      error("cannot diff, internal error");
+      Rf_error("cannot diff, internal error");
 
   PROTECT(payload.result = allocVector(VECSXP, num_files));
   PROTECT(payload.hunk_tmp = allocVector(VECSXP, max_hunks));
@@ -686,7 +686,7 @@ SEXP git2r_diff_format_to_r(git_diff *diff, SEXP old, SEXP new)
 			 &payload);
   if (err != 0) {
       UNPROTECT(3);
-      error("Error: %s\n", giterr_last()->message);
+      Rf_error("Error: %s\n", giterr_last()->message);
   }
 
   /* Need to call them once more, to put in the last lines/hunks/files. */

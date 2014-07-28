@@ -44,11 +44,11 @@ SEXP git2r_object_lookup(SEXP repo, SEXP hex)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_hex(hex))
-        error("Invalid arguments to git2r_object_lookup");
+        Rf_error("Invalid arguments to git2r_object_lookup");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     len = LENGTH(STRING_ELT(hex, 0));
     if (GIT_OID_HEXSZ == len) {
@@ -81,7 +81,7 @@ SEXP git2r_object_lookup(SEXP repo, SEXP hex)
         git2r_tag_init((git_tag*)object, repo, result);
         break;
     default:
-        error("Unimplemented");
+        Rf_error("Unimplemented");
     }
 
 cleanup:
@@ -95,7 +95,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return result;
 }

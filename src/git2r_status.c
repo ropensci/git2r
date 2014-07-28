@@ -369,11 +369,11 @@ SEXP git2r_status_list(
         || git2r_arg_check_logical(unstaged)
         || git2r_arg_check_logical(untracked)
         || git2r_arg_check_logical(ignored))
-        error("Invalid arguments to git2r_status_list");
+        Rf_error("Invalid arguments to git2r_status_list");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     opts.show  = GIT_STATUS_SHOW_INDEX_AND_WORKDIR;
     opts.flags = GIT_STATUS_OPT_RENAMES_HEAD_TO_INDEX |
@@ -430,7 +430,7 @@ cleanup:
     UNPROTECT(2);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return list;
 }

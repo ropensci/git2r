@@ -90,7 +90,7 @@ SEXP git2r_clone(SEXP url, SEXP local_path, SEXP credentials, SEXP progress)
         || git2r_arg_check_string(local_path)
         || git2r_arg_check_credentials(credentials)
         || git2r_arg_check_logical(progress))
-        error("Invalid arguments to git2r_clone");
+        Rf_error("Invalid arguments to git2r_clone");
 
     checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE_CREATE;
     clone_opts.checkout_opts = checkout_opts;
@@ -111,7 +111,7 @@ SEXP git2r_clone(SEXP url, SEXP local_path, SEXP credentials, SEXP progress)
         git_repository_free(repository);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return R_NilValue;
 }

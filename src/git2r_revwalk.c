@@ -66,11 +66,11 @@ SEXP git2r_revwalk_list(
     if (git2r_arg_check_logical(topological)
         || git2r_arg_check_logical(time)
         || git2r_arg_check_logical(reverse))
-        error("Invalid arguments to git2r_revwalk_list");
+        Rf_error("Invalid arguments to git2r_revwalk_list");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     if (git_repository_is_empty(repository)) {
         /* No commits, create empty list */
@@ -141,7 +141,7 @@ cleanup:
     UNPROTECT(1);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return list;
 }

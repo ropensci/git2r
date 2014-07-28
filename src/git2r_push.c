@@ -101,14 +101,14 @@ SEXP git2r_push(
         || git2r_arg_check_credentials(credentials)
         || git2r_arg_check_string(msg)
         || git2r_arg_check_signature(who))
-        error("Invalid arguments to git2r_push");
+        Rf_error("Invalid arguments to git2r_push");
 
     if (git2r_nothing_to_push(refspec))
         return R_NilValue;
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     err = git2r_signature_from_arg(&signature, who);
     if (err < 0)
@@ -179,9 +179,9 @@ cleanup:
 
     if (err < 0) {
         if (NULL != err_msg)
-            error("Error: %s\n", err_msg);
+            Rf_error("Error: %s\n", err_msg);
         else
-            error("Error: %s\n", giterr_last()->message);
+            Rf_error("Error: %s\n", giterr_last()->message);
     }
 
     return R_NilValue;

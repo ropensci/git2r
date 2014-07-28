@@ -37,11 +37,11 @@ SEXP git2r_index_add(SEXP repo, SEXP path)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_string(path))
-        error("Invalid arguments to git2r_index_add");
+        Rf_error("Invalid arguments to git2r_index_add");
 
     repository= git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     err = git_repository_index(&index, repository);
     if (err < 0)
@@ -63,7 +63,7 @@ cleanup:
         git_repository_free(repository);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return R_NilValue;
 }
@@ -86,11 +86,11 @@ SEXP git2r_index_add_all(SEXP repo, SEXP path)
     git_repository *repository = NULL;
 
     if (R_NilValue == path || !isString(path))
-        error("Invalid arguments to git2r_index_add_all");
+        Rf_error("Invalid arguments to git2r_index_add_all");
 
     repository= git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     /* Count number of non NA values */
     len = length(path);
@@ -139,9 +139,9 @@ cleanup:
 
     if (err < 0) {
         if (err_msg)
-            error(err_msg);
+            Rf_error(err_msg);
         else
-            error("Error: %s\n", giterr_last()->message);
+            Rf_error("Error: %s\n", giterr_last()->message);
     }
 
     return R_NilValue;

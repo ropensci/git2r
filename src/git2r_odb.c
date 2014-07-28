@@ -35,7 +35,7 @@ SEXP git2r_odb_hash(SEXP data)
     git_oid oid;
 
     if (R_NilValue == data || !isString(data))
-        error("Invalid argument to git2r_odb_hash");
+        Rf_error("Invalid argument to git2r_odb_hash");
 
     len = length(data);
     PROTECT(result = allocVector(STRSXP, len));
@@ -59,7 +59,7 @@ SEXP git2r_odb_hash(SEXP data)
     UNPROTECT(1);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return result;
 }
@@ -80,7 +80,7 @@ SEXP git2r_odb_hashfile(SEXP path)
     git_oid oid;
 
     if (R_NilValue == path || !isString(path))
-        error("Invalid argument to git2r_odb_hashfile");
+        Rf_error("Invalid argument to git2r_odb_hashfile");
 
     len = length(path);
     PROTECT(result = allocVector(STRSXP, len));
@@ -103,7 +103,7 @@ SEXP git2r_odb_hashfile(SEXP path)
     UNPROTECT(1);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return result;
 }

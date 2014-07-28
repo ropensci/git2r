@@ -55,7 +55,7 @@ void git2r_reference_init(git_reference *source, SEXP dest)
                  ScalarString(mkChar(git_reference_symbolic_target(source))));
         break;
     default:
-        error("Unexpected reference type");
+        Rf_error("Unexpected reference type");
     }
 }
 
@@ -76,7 +76,7 @@ SEXP git2r_reference_list(SEXP repo)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     err = git_reference_list(&ref_list, repository);
     if (err < 0)
@@ -111,7 +111,7 @@ cleanup:
     }
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return list;
 }

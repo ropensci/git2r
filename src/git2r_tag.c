@@ -94,11 +94,11 @@ SEXP git2r_tag_create(SEXP repo, SEXP name, SEXP message, SEXP tagger)
     if (git2r_arg_check_string(name)
         || git2r_arg_check_string(message)
         || git2r_arg_check_signature(tagger))
-        error("Invalid arguments to git2r_tag_create");
+        Rf_error("Invalid arguments to git2r_tag_create");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     err = git2r_signature_from_arg(&sig_tagger, tagger);
     if (err < 0)
@@ -142,7 +142,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return sexp_tag;
 }
@@ -165,7 +165,7 @@ SEXP git2r_tag_list(SEXP repo)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     err = git_tag_list(&tag_names, repository);
     if (err < 0)
@@ -213,7 +213,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return list;
 }

@@ -75,7 +75,7 @@ SEXP git2r_repository_head(SEXP repo)
 
     repository= git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     err = git_repository_head(&reference, repository);
     if (err < 0) {
@@ -115,7 +115,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return result;
 }
@@ -133,13 +133,13 @@ SEXP git2r_repository_init(SEXP path, SEXP bare)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_string(path) || git2r_arg_check_logical(bare))
-        error("Invalid arguments to git2r_repository_init");
+        Rf_error("Invalid arguments to git2r_repository_init");
 
     err = git_repository_init(&repository,
                               CHAR(STRING_ELT(path, 0)),
                               LOGICAL(bare)[0]);
     if (err < 0)
-        error("Unable to init repository");
+        Rf_error("Unable to init repository");
 
     git_repository_free(repository);
 
@@ -159,7 +159,7 @@ SEXP git2r_repository_is_bare(SEXP repo)
 
     repository= git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     if (git_repository_is_bare(repository))
         result = ScalarLogical(TRUE);
@@ -184,7 +184,7 @@ SEXP git2r_repository_is_shallow(SEXP repo)
 
     repository= git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     if (git_repository_is_shallow(repository))
         result = ScalarLogical(TRUE);
@@ -209,11 +209,11 @@ SEXP git2r_repository_head_detached(SEXP repo)
 
     repository= git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
     result = git_repository_head_detached(repository);
     git_repository_free(repository);
     if (result < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
     if (1 == result)
         return ScalarLogical(TRUE);
     return ScalarLogical(FALSE);
@@ -232,11 +232,11 @@ SEXP git2r_repository_is_empty(SEXP repo)
 
     repository= git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
     result = git_repository_is_empty(repository);
     git_repository_free(repository);
     if (result < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
     if (1 == result)
         return ScalarLogical(TRUE);
     return ScalarLogical(FALSE);
@@ -253,7 +253,7 @@ SEXP git2r_repository_can_open(SEXP path)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_string(path))
-        error("Invalid arguments to git2r_repository_can_open");
+        Rf_error("Invalid arguments to git2r_repository_can_open");
 
     if (git_repository_open(&repository, CHAR(STRING_ELT(path, 0))) < 0)
         return ScalarLogical(FALSE);
@@ -277,7 +277,7 @@ SEXP git2r_repository_workdir(SEXP repo)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     if (!git_repository_is_bare(repository))
         result = ScalarString(mkChar(git_repository_workdir(repository)));
@@ -302,7 +302,7 @@ SEXP git2r_repository_discover(SEXP startpath)
     git_buf gitdir = GIT_BUF_INIT;
 
     if (git2r_arg_check_string(startpath))
-        error("Invalid arguments to git2r_repository_discover");
+        Rf_error("Invalid arguments to git2r_repository_discover");
 
     /* note that across_fs (arg #3) is set to 0 so this will stop when a
        filesystem device change is detected while exploring parent directories
@@ -322,7 +322,7 @@ cleanup:
     git_buf_free(&gitdir);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return result;
 }

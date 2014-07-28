@@ -55,11 +55,11 @@ SEXP git2r_checkout_branch(
         || git2r_arg_check_logical(force)
         || git2r_arg_check_string(msg)
         || git2r_arg_check_signature(who))
-        error("Invalid arguments to git2r_checkout_branch");
+        Rf_error("Invalid arguments to git2r_checkout_branch");
 
     repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     branch_name = GET_SLOT(branch, Rf_install("name"));
     err = git_buf_joinpath(
@@ -102,7 +102,7 @@ cleanup:
         git_repository_free(repository);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return R_NilValue;
 }
@@ -135,11 +135,11 @@ SEXP git2r_checkout_commit(
         || git2r_arg_check_logical(force)
         || git2r_arg_check_string(msg)
         || git2r_arg_check_signature(who))
-        error("Invalid arguments to git2r_checkout_commit");
+        Rf_error("Invalid arguments to git2r_checkout_commit");
 
     repository = git2r_repository_open(GET_SLOT(commit, Rf_install("repo")));
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     hex = GET_SLOT(commit, Rf_install("hex"));
     err = git_oid_fromstr(&oid, CHAR(STRING_ELT(hex, 0)));
@@ -181,7 +181,7 @@ cleanup:
         git_repository_free(repository);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return R_NilValue;
 }
@@ -214,11 +214,11 @@ SEXP git2r_checkout_tag(
         || git2r_arg_check_logical(force)
         || git2r_arg_check_string(msg)
         || git2r_arg_check_signature(who))
-        error("Invalid arguments to git2r_checkout_tag");
+        Rf_error("Invalid arguments to git2r_checkout_tag");
 
     repository = git2r_repository_open(GET_SLOT(tag, Rf_install("repo")));
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     slot = GET_SLOT(tag, Rf_install("target"));
     err = git_oid_fromstr(&oid, CHAR(STRING_ELT(slot, 0)));
@@ -260,7 +260,7 @@ cleanup:
         git_repository_free(repository);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return R_NilValue;
 }
@@ -291,11 +291,11 @@ SEXP git2r_checkout_tree(
         || git2r_arg_check_logical(force)
         || git2r_arg_check_string(msg)
         || git2r_arg_check_signature(who))
-        error("Invalid arguments to git2r_checkout_tree");
+        Rf_error("Invalid arguments to git2r_checkout_tree");
 
     repository = git2r_repository_open(GET_SLOT(tree, Rf_install("repo")));
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     slot = GET_SLOT(tree, Rf_install("hex"));
     err = git_oid_fromstr(&oid, CHAR(STRING_ELT(slot, 0)));
@@ -310,7 +310,7 @@ cleanup:
         git_repository_free(repository);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return R_NilValue;
 }

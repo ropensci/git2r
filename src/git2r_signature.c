@@ -36,7 +36,7 @@ SEXP git2r_signature_default(SEXP repo)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     err = git_signature_default(&signature, repository);
     if (err < 0)
@@ -55,7 +55,7 @@ cleanup:
     UNPROTECT(1);
 
     if (err < 0)
-        error("Error %d/%d: %s\n", giterr_last()->message);
+        Rf_error("Error %d/%d: %s\n", giterr_last()->message);
 
     return sig;
 }

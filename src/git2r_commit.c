@@ -65,11 +65,11 @@ SEXP git2r_commit_create(
         || git2r_arg_check_signature(committer)
         || R_NilValue == parent_list
         || !isString(parent_list))
-        error("Invalid arguments to git2r_commit_create");
+        Rf_error("Invalid arguments to git2r_commit_create");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     err = git2r_signature_from_arg(&sig_author, author);
     if (err < 0)
@@ -205,9 +205,9 @@ cleanup:
 
     if (err < 0) {
         if (err_msg)
-            error(err_msg);
+            Rf_error(err_msg);
         else
-            error("Error: %s\n", giterr_last()->message);
+            Rf_error("Error: %s\n", giterr_last()->message);
     }
 
     return sexp_commit;
@@ -250,12 +250,12 @@ SEXP git2r_commit_tree(SEXP commit)
     git_tree *tree = NULL;
 
     if (git2r_arg_check_commit(commit))
-        error("Invalid arguments to git2r_commit_tree");
+        Rf_error("Invalid arguments to git2r_commit_tree");
 
     repo = GET_SLOT(commit, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     err = git2r_commit_lookup(&commit_obj, repository, commit);
     if (err < 0)
@@ -282,7 +282,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return result;
 }
@@ -362,12 +362,12 @@ SEXP git2r_commit_parent_list(SEXP commit)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_commit(commit))
-        error("Invalid arguments to git2r_commit_parent_list");
+        Rf_error("Invalid arguments to git2r_commit_parent_list");
 
     repo = GET_SLOT(commit, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     err = git2r_commit_lookup(&commit_obj, repository, commit);
     if (err < 0)
@@ -398,7 +398,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return list;
 }

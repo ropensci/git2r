@@ -124,11 +124,11 @@ SEXP git2r_note_create(
         || git2r_arg_check_signature(author)
         || git2r_arg_check_signature(committer)
         || git2r_arg_check_logical(force))
-        error("Invalid arguments to git2r_note_create");
+        Rf_error("Invalid arguments to git2r_note_create");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     err = git2r_signature_from_arg(&sig_author, author);
     if (err < 0)
@@ -179,7 +179,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return result;
 }
@@ -201,7 +201,7 @@ SEXP git2r_note_default_ref(SEXP repo)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     err = git_note_default_ref(&ref, repository);
     if (err < 0)
@@ -218,7 +218,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return result;
 }
@@ -279,13 +279,13 @@ SEXP git2r_note_list(SEXP repo, SEXP ref)
 
     if (R_NilValue != ref) {
         if (git2r_arg_check_string(ref))
-            error("Invalid arguments to git2r_note_list");
+            Rf_error("Invalid arguments to git2r_note_list");
         notes_ref = CHAR(STRING_ELT(ref, 0));
     }
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     if (NULL == notes_ref) {
         err = git_note_default_ref(&notes_ref, repository);
@@ -320,7 +320,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return result;
 }
@@ -346,12 +346,12 @@ SEXP git2r_note_remove(SEXP note, SEXP author, SEXP committer)
     if (git2r_arg_check_note(note)
         || git2r_arg_check_signature(author)
         || git2r_arg_check_signature(committer))
-        error("Invalid arguments to git2r_note_remove");
+        Rf_error("Invalid arguments to git2r_note_remove");
 
     repo = GET_SLOT(note, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     err = git2r_signature_from_arg(&sig_author, author);
     if (err < 0)
@@ -384,7 +384,7 @@ cleanup:
         git_repository_free(repository);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return R_NilValue;
 }

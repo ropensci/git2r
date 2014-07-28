@@ -39,11 +39,11 @@ SEXP git2r_blob_content(SEXP blob)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_blob(blob))
-        error("Invalid arguments to git2r_blob_content");
+        Rf_error("Invalid arguments to git2r_blob_content");
 
     repository = git2r_repository_open(GET_SLOT(blob, Rf_install("repo")));
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     hex = GET_SLOT(blob, Rf_install("hex"));
     git_oid_fromstr(&oid, CHAR(STRING_ELT(hex, 0)));
@@ -66,7 +66,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return result;
 }
@@ -90,11 +90,11 @@ SEXP git2r_blob_create_fromdisk(SEXP repo, SEXP path)
     git_repository *repository = NULL;
 
     if (R_NilValue == path || !isString(path))
-        error("Invalid argument to git2r_blob_create_fromdisk");
+        Rf_error("Invalid argument to git2r_blob_create_fromdisk");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     len = length(path);
     PROTECT(result = allocVector(VECSXP, len));
@@ -126,7 +126,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return result;
 }
@@ -154,11 +154,11 @@ SEXP git2r_blob_create_fromworkdir(SEXP repo, SEXP relative_path)
     git_repository *repository = NULL;
 
     if (R_NilValue == relative_path || !isString(relative_path))
-        error("Invalid argument to git2r_blob_create_fromworkdir");
+        Rf_error("Invalid argument to git2r_blob_create_fromworkdir");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     len = length(relative_path);
     PROTECT(result = allocVector(VECSXP, len));
@@ -190,7 +190,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return result;
 }
@@ -233,11 +233,11 @@ SEXP git2r_blob_is_binary(SEXP blob)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_blob(blob))
-        error("Invalid arguments to git2r_blob_is_binary");
+        Rf_error("Invalid arguments to git2r_blob_is_binary");
 
     repository= git2r_repository_open(GET_SLOT(blob, Rf_install("repo")));
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     hex = GET_SLOT(blob, Rf_install("hex"));
     git_oid_fromstr(&oid, CHAR(STRING_ELT(hex, 0)));
@@ -263,7 +263,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return result;
 }
@@ -284,11 +284,11 @@ SEXP git2r_blob_rawsize(SEXP blob)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_blob(blob))
-        error("Invalid arguments to git2r_blob_rawsize");
+        Rf_error("Invalid arguments to git2r_blob_rawsize");
 
     repository= git2r_repository_open(GET_SLOT(blob, Rf_install("repo")));
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     hex = GET_SLOT(blob, Rf_install("hex"));
     git_oid_fromstr(&oid, CHAR(STRING_ELT(hex, 0)));
@@ -307,7 +307,7 @@ cleanup:
         git_repository_free(repository);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return ScalarInteger(size);
 }

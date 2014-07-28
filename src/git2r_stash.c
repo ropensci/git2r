@@ -46,16 +46,16 @@ SEXP git2r_stash_drop(SEXP repo, SEXP index)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_integer(index))
-        error("Invalid arguments to git2r_stash_drop");
+        Rf_error("Invalid arguments to git2r_stash_drop");
     if (0 > INTEGER(index)[0])
-        error("'index' out of range");
+        Rf_error("'index' out of range");
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
     err = git_stash_drop(repository, INTEGER(index)[0]);
     git_repository_free(repository);
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
     return R_NilValue;
 }
 
@@ -141,7 +141,7 @@ SEXP git2r_stash_list(SEXP repo)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     /* Count number of stashes before creating the list */
     git_stash_foreach(repository, &git2r_stash_list_cb, &cb_data);
@@ -163,7 +163,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return list;
 }
@@ -202,11 +202,11 @@ SEXP git2r_stash_save(
         || git2r_arg_check_logical(untracked)
         || git2r_arg_check_logical(ignored)
         || git2r_arg_check_signature(stasher))
-        error("Invalid arguments to git2r_stash_save");
+        Rf_error("Invalid arguments to git2r_stash_save");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     if (LOGICAL(index)[0])
         flags |= GIT_STASH_KEEP_INDEX;
@@ -248,7 +248,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return sexp_stash;
 }

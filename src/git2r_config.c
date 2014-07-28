@@ -152,7 +152,7 @@ static void git2r_config_list_add_entry(
         }
     }
 
-    error("Unexpected");
+    Rf_error("Unexpected");
 }
 
 /**
@@ -250,7 +250,7 @@ SEXP git2r_config_get(SEXP repo)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     err = git_repository_config(&cfg, repository);
     if (err < 0)
@@ -284,9 +284,9 @@ cleanup:
 
     if (err < 0) {
         if (err_msg)
-            error("Error: %s\n", err_msg);
+            Rf_error("Error: %s\n", err_msg);
         else
-            error("Error: %s\n", giterr_last()->message);
+            Rf_error("Error: %s\n", giterr_last()->message);
     }
 
     return list;
@@ -309,13 +309,13 @@ SEXP git2r_config_set(SEXP repo, SEXP variables)
     git_repository *repository = NULL;
 
     if (R_NilValue == variables || !isNewList(variables))
-        error("Invalid arguments to git2r_config_set");
+        Rf_error("Invalid arguments to git2r_config_set");
 
     n = length(variables);
     if (n) {
         repository = git2r_repository_open(repo);
         if (!repository)
-            error(git2r_err_invalid_repository);
+            Rf_error(git2r_err_invalid_repository);
 
         err = git_repository_config(&cfg, repository);
         if (err < 0)
@@ -349,9 +349,9 @@ cleanup:
 
     if (err < 0) {
         if (err_msg)
-            error("Error: %s\n", err_msg);
+            Rf_error("Error: %s\n", err_msg);
         else
-            error("Error: %s\n", giterr_last()->message);
+            Rf_error("Error: %s\n", giterr_last()->message);
     }
 
     return R_NilValue;

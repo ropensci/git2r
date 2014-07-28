@@ -47,12 +47,12 @@ SEXP git2r_merge_base(SEXP one, SEXP two)
 
     if (git2r_arg_check_commit(one)
         || git2r_arg_check_commit(two))
-        error("Invalid arguments to git2r_merge_base");
+        Rf_error("Invalid arguments to git2r_merge_base");
 
     repo = GET_SLOT(one, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
-        error(git2r_err_invalid_repository);
+        Rf_error(git2r_err_invalid_repository);
 
     hex = GET_SLOT(one, Rf_install("hex"));
     err = git_oid_fromstr(&oid_one, CHAR(STRING_ELT(hex, 0)));
@@ -89,7 +89,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        error("Error: %s\n", giterr_last()->message);
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return result;
 }
