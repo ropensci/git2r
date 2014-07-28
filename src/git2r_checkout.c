@@ -51,10 +51,10 @@ SEXP git2r_checkout_branch(
     git_repository *repository = NULL;
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
 
-    if (git2r_arg_check_branch(branch)
-        || git2r_arg_check_logical(force)
-        || git2r_arg_check_string(msg)
-        || git2r_arg_check_signature(who))
+    if (0 != git2r_arg_check_branch(branch)
+        || 0 != git2r_arg_check_logical(force)
+        || 0 != git2r_arg_check_string(msg)
+        || 0 != git2r_arg_check_signature(who))
         Rf_error("Invalid arguments to git2r_checkout_branch");
 
     repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
@@ -131,10 +131,10 @@ SEXP git2r_checkout_commit(
     git_repository *repository = NULL;
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
 
-    if (git2r_arg_check_commit(commit)
-        || git2r_arg_check_logical(force)
-        || git2r_arg_check_string(msg)
-        || git2r_arg_check_signature(who))
+    if (0 != git2r_arg_check_commit(commit)
+        || 0 != git2r_arg_check_logical(force)
+        || 0 != git2r_arg_check_string(msg)
+        || 0 != git2r_arg_check_signature(who))
         Rf_error("Invalid arguments to git2r_checkout_commit");
 
     repository = git2r_repository_open(GET_SLOT(commit, Rf_install("repo")));
@@ -210,10 +210,10 @@ SEXP git2r_checkout_tag(
     git_repository *repository = NULL;
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
 
-    if (git2r_arg_check_tag(tag)
-        || git2r_arg_check_logical(force)
-        || git2r_arg_check_string(msg)
-        || git2r_arg_check_signature(who))
+    if (0 != git2r_arg_check_tag(tag)
+        || 0 != git2r_arg_check_logical(force)
+        || 0 != git2r_arg_check_string(msg)
+        || 0 != git2r_arg_check_signature(who))
         Rf_error("Invalid arguments to git2r_checkout_tag");
 
     repository = git2r_repository_open(GET_SLOT(tag, Rf_install("repo")));
@@ -287,10 +287,10 @@ SEXP git2r_checkout_tree(
     git_signature *signature = NULL;
     git_repository *repository = NULL;
 
-    if (git2r_arg_check_tree(tree)
-        || git2r_arg_check_logical(force)
-        || git2r_arg_check_string(msg)
-        || git2r_arg_check_signature(who))
+    if (0 != git2r_arg_check_tree(tree)
+        || 0 != git2r_arg_check_logical(force)
+        || 0 != git2r_arg_check_string(msg)
+        || 0 != git2r_arg_check_signature(who))
         Rf_error("Invalid arguments to git2r_checkout_tree");
 
     repository = git2r_repository_open(GET_SLOT(tree, Rf_install("repo")));

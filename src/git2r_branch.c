@@ -124,14 +124,14 @@ SEXP git2r_branch_create(
     git_reference *reference = NULL;
     git_repository *repository = NULL;
 
-    if (git2r_arg_check_string(branch_name)
-        || git2r_arg_check_commit(commit)
-        || git2r_arg_check_logical(force)
-        || git2r_arg_check_signature(signature))
+    if (0 != git2r_arg_check_string(branch_name)
+        || 0 != git2r_arg_check_commit(commit)
+        || 0 != git2r_arg_check_logical(force)
+        || 0 != git2r_arg_check_signature(signature))
         Rf_error("Invalid arguments to git2r_branch_create");
 
     if (R_NilValue != message) {
-        if (git2r_arg_check_string(message))
+        if (0 != git2r_arg_check_string(message))
             Rf_error("Invalid arguments to git2r_branch_create");
         log = CHAR(STRING_ELT(message, 0));
     }
@@ -202,7 +202,7 @@ SEXP git2r_branch_delete(SEXP branch)
     git_reference *reference = NULL;
     git_repository *repository = NULL;
 
-    if (git2r_arg_check_branch(branch))
+    if (0 != git2r_arg_check_branch(branch))
         Rf_error("Invalid arguments to git2r_branch_delete");
 
     repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
@@ -244,7 +244,7 @@ SEXP git2r_branch_is_head(SEXP branch)
     git_reference *reference = NULL;
     git_repository *repository = NULL;
 
-    if (git2r_arg_check_branch(branch))
+    if (0 != git2r_arg_check_branch(branch))
         Rf_error("Invalid arguments to git2r_branch_is_head");
 
     repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
@@ -303,7 +303,7 @@ SEXP git2r_branch_list(SEXP repo, SEXP flags)
     git_reference *reference = NULL;
     git_branch_t type;
 
-    if (git2r_arg_check_integer(flags))
+    if (0 != git2r_arg_check_integer(flags))
         Rf_error("Invalid arguments to git2r_branch_list");
 
     repository = git2r_repository_open(repo);
@@ -381,7 +381,7 @@ SEXP git2r_branch_remote_name(SEXP branch)
     git_reference *reference = NULL;
     git_repository *repository = NULL;
 
-    if (git2r_arg_check_branch(branch))
+    if (0 != git2r_arg_check_branch(branch))
         Rf_error("Invalid arguments to git2r_branch_remote_name");
 
     type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
@@ -440,7 +440,7 @@ SEXP git2r_branch_remote_url(SEXP branch)
     git_remote *remote = NULL;
     git_repository *repository = NULL;
 
-    if (git2r_arg_check_branch(branch))
+    if (0 != git2r_arg_check_branch(branch))
         Rf_error("Invalid arguments to git2r_branch_remote_url");
 
     type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
@@ -524,14 +524,14 @@ SEXP git2r_branch_rename(
     git_reference *new_reference = NULL;
     git_repository *repository = NULL;
 
-    if (git2r_arg_check_branch(branch)
-        || git2r_arg_check_string(new_branch_name)
-        || git2r_arg_check_logical(force)
-        || git2r_arg_check_signature(signature))
+    if (0 != git2r_arg_check_branch(branch)
+        || 0 != git2r_arg_check_string(new_branch_name)
+        || 0 != git2r_arg_check_logical(force)
+        || 0 != git2r_arg_check_signature(signature))
         Rf_error("Invalid arguments to git2r_branch_rename");
 
     if (R_NilValue != message) {
-        if (git2r_arg_check_string(message))
+        if (0 != git2r_arg_check_string(message))
             Rf_error("Invalid arguments to git2r_branch_rename");
         log = CHAR(STRING_ELT(message, 0));
     }
@@ -605,7 +605,7 @@ SEXP git2r_branch_target(SEXP branch)
     git_reference *reference = NULL;
     git_repository *repository = NULL;
 
-    if (git2r_arg_check_branch(branch))
+    if (0 != git2r_arg_check_branch(branch))
         Rf_error("Invalid arguments to git2r_branch_target");
 
     repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
@@ -660,7 +660,7 @@ SEXP git2r_branch_get_upstream(SEXP branch)
     git_reference *upstream = NULL;
     git_repository *repository = NULL;
 
-    if (git2r_arg_check_branch(branch))
+    if (0 != git2r_arg_check_branch(branch))
         Rf_error("Invalid arguments to git2r_branch_get_upstream");
 
     repo = GET_SLOT(branch, Rf_install("repo"));
@@ -722,11 +722,11 @@ SEXP git2r_branch_set_upstream(SEXP branch, SEXP upstream_name)
     git_reference *reference = NULL;
     git_repository *repository = NULL;
 
-    if (git2r_arg_check_branch(branch))
+    if (0 != git2r_arg_check_branch(branch))
         Rf_error("Invalid arguments to git2r_branch_set_upstream");
 
     if (R_NilValue != upstream_name) {
-        if (git2r_arg_check_string(upstream_name))
+        if (0 != git2r_arg_check_string(upstream_name))
             Rf_error("Invalid arguments to git2r_branch_set_upstream");
         u_name = CHAR(STRING_ELT(upstream_name, 0));
     }

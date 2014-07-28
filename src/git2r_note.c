@@ -118,12 +118,12 @@ SEXP git2r_note_create(
     git_signature *sig_committer = NULL;
     git_repository *repository = NULL;
 
-    if (git2r_arg_check_hex(hex)
-        || git2r_arg_check_string(message)
-        || git2r_arg_check_string(ref)
-        || git2r_arg_check_signature(author)
-        || git2r_arg_check_signature(committer)
-        || git2r_arg_check_logical(force))
+    if (0 != git2r_arg_check_hex(hex)
+        || 0 != git2r_arg_check_string(message)
+        || 0 != git2r_arg_check_string(ref)
+        || 0 != git2r_arg_check_signature(author)
+        || 0 != git2r_arg_check_signature(committer)
+        || 0 != git2r_arg_check_logical(force))
         Rf_error("Invalid arguments to git2r_note_create");
 
     repository = git2r_repository_open(repo);
@@ -278,7 +278,7 @@ SEXP git2r_note_list(SEXP repo, SEXP ref)
     git_repository *repository = NULL;
 
     if (R_NilValue != ref) {
-        if (git2r_arg_check_string(ref))
+        if (0 != git2r_arg_check_string(ref))
             Rf_error("Invalid arguments to git2r_note_list");
         notes_ref = CHAR(STRING_ELT(ref, 0));
     }
@@ -343,9 +343,9 @@ SEXP git2r_note_remove(SEXP note, SEXP author, SEXP committer)
     git_signature *sig_committer = NULL;
     git_repository *repository = NULL;
 
-    if (git2r_arg_check_note(note)
-        || git2r_arg_check_signature(author)
-        || git2r_arg_check_signature(committer))
+    if (0 != git2r_arg_check_note(note)
+        || 0 != git2r_arg_check_signature(author)
+        || 0 != git2r_arg_check_signature(committer))
         Rf_error("Invalid arguments to git2r_note_remove");
 
     repo = GET_SLOT(note, Rf_install("repo"));

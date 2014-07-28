@@ -48,7 +48,7 @@ git_repository* git2r_repository_open(SEXP repo)
         return NULL;
 
     path = GET_SLOT(repo, Rf_install("path"));
-    if (git2r_arg_check_string(path))
+    if (0 != git2r_arg_check_string(path))
         return NULL;
 
     if (git_repository_open(&repository, CHAR(STRING_ELT(path, 0))) < 0)
@@ -132,7 +132,7 @@ SEXP git2r_repository_init(SEXP path, SEXP bare)
     int err;
     git_repository *repository = NULL;
 
-    if (git2r_arg_check_string(path) || git2r_arg_check_logical(bare))
+    if (0 != git2r_arg_check_string(path) || 0 != git2r_arg_check_logical(bare))
         Rf_error("Invalid arguments to git2r_repository_init");
 
     err = git_repository_init(&repository,
@@ -252,7 +252,7 @@ SEXP git2r_repository_can_open(SEXP path)
 {
     git_repository *repository = NULL;
 
-    if (git2r_arg_check_string(path))
+    if (0 != git2r_arg_check_string(path))
         Rf_error("Invalid arguments to git2r_repository_can_open");
 
     if (git_repository_open(&repository, CHAR(STRING_ELT(path, 0))) < 0)
@@ -301,7 +301,7 @@ SEXP git2r_repository_discover(SEXP startpath)
     SEXP result = R_NilValue;
     git_buf gitdir = GIT_BUF_INIT;
 
-    if (git2r_arg_check_string(startpath))
+    if (0 != git2r_arg_check_string(startpath))
         Rf_error("Invalid arguments to git2r_repository_discover");
 
     /* note that across_fs (arg #3) is set to 0 so this will stop when a

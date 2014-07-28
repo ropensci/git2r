@@ -365,10 +365,10 @@ SEXP git2r_status_list(
     git_status_list *status_list = NULL;
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
 
-    if (git2r_arg_check_logical(staged)
-        || git2r_arg_check_logical(unstaged)
-        || git2r_arg_check_logical(untracked)
-        || git2r_arg_check_logical(ignored))
+    if (0 != git2r_arg_check_logical(staged)
+        || 0 != git2r_arg_check_logical(unstaged)
+        || 0 != git2r_arg_check_logical(untracked)
+        || 0 != git2r_arg_check_logical(ignored))
         Rf_error("Invalid arguments to git2r_status_list");
 
     repository = git2r_repository_open(repo);

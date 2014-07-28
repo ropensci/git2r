@@ -99,7 +99,7 @@ SEXP git2r_reflog_list(SEXP repo, SEXP ref)
     git_reflog *reflog = NULL;
     git_repository *repository = NULL;
 
-    if (git2r_arg_check_string(ref))
+    if (0 != git2r_arg_check_string(ref))
         Rf_error("Invalid arguments to git2r_reflog_list");
 
     repository = git2r_repository_open(repo);

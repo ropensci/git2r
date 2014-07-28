@@ -63,9 +63,9 @@ SEXP git2r_revwalk_list(
     git_revwalk *walker = NULL;
     git_repository *repository = NULL;
 
-    if (git2r_arg_check_logical(topological)
-        || git2r_arg_check_logical(time)
-        || git2r_arg_check_logical(reverse))
+    if (0 != git2r_arg_check_logical(topological)
+        || 0 != git2r_arg_check_logical(time)
+        || 0 != git2r_arg_check_logical(reverse))
         Rf_error("Invalid arguments to git2r_revwalk_list");
 
     repository = git2r_repository_open(repo);

@@ -60,9 +60,9 @@ SEXP git2r_commit_create(
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
     opts.show  = GIT_STATUS_SHOW_INDEX_ONLY;
 
-    if (git2r_arg_check_string(message)
-        || git2r_arg_check_signature(author)
-        || git2r_arg_check_signature(committer)
+    if (0 != git2r_arg_check_string(message)
+        || 0 != git2r_arg_check_signature(author)
+        || 0 != git2r_arg_check_signature(committer)
         || R_NilValue == parent_list
         || !isString(parent_list))
         Rf_error("Invalid arguments to git2r_commit_create");
@@ -249,7 +249,7 @@ SEXP git2r_commit_tree(SEXP commit)
     git_repository *repository = NULL;
     git_tree *tree = NULL;
 
-    if (git2r_arg_check_commit(commit))
+    if (0 != git2r_arg_check_commit(commit))
         Rf_error("Invalid arguments to git2r_commit_tree");
 
     repo = GET_SLOT(commit, Rf_install("repo"));
@@ -361,7 +361,7 @@ SEXP git2r_commit_parent_list(SEXP commit)
     git_commit *commit_obj = NULL;
     git_repository *repository = NULL;
 
-    if (git2r_arg_check_commit(commit))
+    if (0 != git2r_arg_check_commit(commit))
         Rf_error("Invalid arguments to git2r_commit_parent_list");
 
     repo = GET_SLOT(commit, Rf_install("repo"));

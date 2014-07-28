@@ -45,7 +45,7 @@ SEXP git2r_stash_drop(SEXP repo, SEXP index)
     int err;
     git_repository *repository = NULL;
 
-    if (git2r_arg_check_integer(index))
+    if (0 != git2r_arg_check_integer(index))
         Rf_error("Invalid arguments to git2r_stash_drop");
     if (0 > INTEGER(index)[0])
         Rf_error("'index' out of range");
@@ -198,10 +198,10 @@ SEXP git2r_stash_save(
     git_repository *repository = NULL;
     git_signature *sig_stasher = NULL;
 
-    if (git2r_arg_check_logical(index)
-        || git2r_arg_check_logical(untracked)
-        || git2r_arg_check_logical(ignored)
-        || git2r_arg_check_signature(stasher))
+    if (0 != git2r_arg_check_logical(index)
+        || 0 != git2r_arg_check_logical(untracked)
+        || 0 != git2r_arg_check_logical(ignored)
+        || 0 != git2r_arg_check_signature(stasher))
         Rf_error("Invalid arguments to git2r_stash_save");
 
     repository = git2r_repository_open(repo);
