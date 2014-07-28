@@ -37,7 +37,7 @@ SEXP git2r_index_add(SEXP repo, SEXP path)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_string(path))
-        Rf_error("Invalid arguments to git2r_index_add");
+        Rf_error(git2r_err_string_arg, "path");
 
     repository= git2r_repository_open(repo);
     if (!repository)

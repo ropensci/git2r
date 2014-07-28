@@ -51,11 +51,14 @@ SEXP git2r_checkout_branch(
     git_repository *repository = NULL;
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
 
-    if (0 != git2r_arg_check_branch(branch)
-        || 0 != git2r_arg_check_logical(force)
-        || 0 != git2r_arg_check_string(msg)
-        || 0 != git2r_arg_check_signature(who))
-        Rf_error("Invalid arguments to git2r_checkout_branch");
+    if (0 != git2r_arg_check_branch(branch))
+        Rf_error(git2r_err_branch_arg, "branch");
+    if (0 != git2r_arg_check_logical(force))
+        Rf_error(git2r_err_logical_arg, "force");
+    if (0 != git2r_arg_check_string(msg))
+        Rf_error(git2r_err_string_arg, "msg");
+    if (0 != git2r_arg_check_signature(who))
+        Rf_error(git2r_err_signature_arg, "who");
 
     repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
     if (!repository)
@@ -131,11 +134,14 @@ SEXP git2r_checkout_commit(
     git_repository *repository = NULL;
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
 
-    if (0 != git2r_arg_check_commit(commit)
-        || 0 != git2r_arg_check_logical(force)
-        || 0 != git2r_arg_check_string(msg)
-        || 0 != git2r_arg_check_signature(who))
-        Rf_error("Invalid arguments to git2r_checkout_commit");
+    if (0 != git2r_arg_check_commit(commit))
+        Rf_error(git2r_err_commit_arg, "commit");
+    if (0 != git2r_arg_check_logical(force))
+        Rf_error(git2r_err_logical_arg, "force");
+    if (0 != git2r_arg_check_string(msg))
+        Rf_error(git2r_err_string_arg, "msg");
+    if (0 != git2r_arg_check_signature(who))
+        Rf_error(git2r_err_signature_arg, "who");
 
     repository = git2r_repository_open(GET_SLOT(commit, Rf_install("repo")));
     if (!repository)
@@ -210,11 +216,14 @@ SEXP git2r_checkout_tag(
     git_repository *repository = NULL;
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
 
-    if (0 != git2r_arg_check_tag(tag)
-        || 0 != git2r_arg_check_logical(force)
-        || 0 != git2r_arg_check_string(msg)
-        || 0 != git2r_arg_check_signature(who))
-        Rf_error("Invalid arguments to git2r_checkout_tag");
+    if (0 != git2r_arg_check_tag(tag))
+        Rf_error(git2r_err_tag_arg, "tag");
+    if (0 != git2r_arg_check_logical(force))
+        Rf_error(git2r_err_logical_arg, "force");
+    if (0 != git2r_arg_check_string(msg))
+        Rf_error(git2r_err_string_arg, "msg");
+    if (0 != git2r_arg_check_signature(who))
+        Rf_error(git2r_err_signature_arg, "who");
 
     repository = git2r_repository_open(GET_SLOT(tag, Rf_install("repo")));
     if (!repository)
@@ -287,11 +296,14 @@ SEXP git2r_checkout_tree(
     git_signature *signature = NULL;
     git_repository *repository = NULL;
 
-    if (0 != git2r_arg_check_tree(tree)
-        || 0 != git2r_arg_check_logical(force)
-        || 0 != git2r_arg_check_string(msg)
-        || 0 != git2r_arg_check_signature(who))
-        Rf_error("Invalid arguments to git2r_checkout_tree");
+    if (0 != git2r_arg_check_tree(tree))
+        Rf_error(git2r_err_tree_arg, "tree");
+    if (0 != git2r_arg_check_logical(force))
+        Rf_error(git2r_err_logical_arg, "force");
+    if (0 != git2r_arg_check_string(msg))
+        Rf_error(git2r_err_string_arg, "msg");
+    if (0 != git2r_arg_check_signature(who))
+        Rf_error(git2r_err_signature_arg, "who");
 
     repository = git2r_repository_open(GET_SLOT(tree, Rf_install("repo")));
     if (!repository)

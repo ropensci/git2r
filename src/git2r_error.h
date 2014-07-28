@@ -30,4 +30,18 @@ extern const char git2r_err_unexpected_config_level[];
 extern const char git2r_err_unexpected_head_of_branch[];
 extern const char git2r_err_unexpected_type_of_branch[];
 
+/**
+ * Error messages specific to argument checking
+ */
+extern const char git2r_err_blob_arg[];
+extern const char git2r_err_branch_arg[];
+extern const char git2r_err_commit_arg[];
+extern const char git2r_err_credentials_arg[];
+extern const char git2r_err_integer_arg[];
+extern const char git2r_err_logical_arg[];
+extern const char git2r_err_signature_arg[];
+extern const char git2r_err_string_arg[];
+extern const char git2r_err_tag_arg[];
+extern const char git2r_err_tree_arg[];
+
 #endif

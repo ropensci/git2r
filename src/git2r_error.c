@@ -26,3 +26,27 @@ const char git2r_err_nothing_added_to_commit[] = "Nothing added to commit";
 const char git2r_err_unexpected_config_level[] = "Unexpected config level";
 const char git2r_err_unexpected_type_of_branch[] = "Unexpected type of branch";
 const char git2r_err_unexpected_head_of_branch[] = "Unexpected head of branch";
+
+/**
+ * Error messages specific to argument checking
+ */
+const char git2r_err_blob_arg[] =
+    "Error: '%s' must be a S4 class git_blob";
+const char git2r_err_branch_arg[] =
+    "Error: '%s' must be a S4 class git_branch";
+const char git2r_err_commit_arg[] =
+    "Error: '%s' must be a S4 class git_commit";
+const char git2r_err_credentials_arg[] =
+    "Error: '%s' must be a S4 class with credentials";
+const char git2r_err_integer_arg[] =
+    "Error: '%s' must be an integer vector of length one with non NA value";
+const char git2r_err_logical_arg[] =
+    "Error: '%s' must be logical vector of length one with non NA value";
+const char git2r_err_signature_arg[] =
+    "Error: '%s' must be a S4 class git_signature";
+const char git2r_err_string_arg[] =
+    "Error: '%s' must be a character vector of length one with non NA value";
+const char git2r_err_tag_arg[] =
+    "Error: '%s' must be a S4 class git_tag";
+const char git2r_err_tree_arg[] =
+    "Error: '%s' must be a S4 class git_tree";
