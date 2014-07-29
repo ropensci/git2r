@@ -46,12 +46,13 @@ setMethod("push",
                               "trying to push does not track an upstream branch."))
               }
 
-              stop("Push of S4 class git_branch isn't implemented. Sorry")
+              src <- .Call("git2r_branch_canonical_name", object)
+              dst <- .Call("git2r_branch_upstream_canonical_name", object)
 
-              ##
-              ## :TODO:FIXME: Determine the remote's name and refspec
-              ## and call push
-              ##
+              push(object      = object@repo,
+                   name        = branch_remote_name(upstream),
+                   refspec     = paste0(src, ":", dst),
+                   credentials = credentials)
           }
 )
 
