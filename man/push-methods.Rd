@@ -31,6 +31,17 @@ invisible(NULL)
 \description{
 Push
 }
+\examples{
+\dontrun{
+## Open an existing repository
+repo <- repository("path/to/git2r")
+
+## Make some changes and commit...
+
+## push changes to remote
+push(head(repo))
+}
+}
 \seealso{
 \code{\linkS4class{cred_plaintext}},
 \code{\linkS4class{cred_ssh_key}}

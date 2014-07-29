@@ -28,6 +28,15 @@
 ##' @keywords methods
 ##' @include repository.r
 ##' @include branch.r
+##' @examples \dontrun{
+##' ## Open an existing repository
+##' repo <- repository("path/to/git2r")
+##'
+##' ## Make some changes and commit...
+##'
+##' ## push changes to remote
+##' push(head(repo))
+##' }
 setGeneric("push",
            signature = "object",
            function(object, ...)
