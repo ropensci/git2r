@@ -17,6 +17,7 @@
  */
 
 #include <Rdefines.h>
+#include "refs.h"
 
 #include "git2r_arg.h"
 #include "git2r_branch.h"
@@ -365,6 +366,71 @@ cleanup:
         Rf_error("Error: %s\n", giterr_last()->message);
 
     return list;
+}
+
+/**
+ * Get the configured canonical name of the upstream branch, given a
+ * local branch, i.e "branch.branch_name.merge" property of the config
+ * file.
+ *
+ * @param branch S4 class git_branch.
+ * @return Character vector of length one with upstream canonical name.
+ */
+SEXP git2r_branch_upstream_canonical_name(SEXP branch)
+{
+    int err;
+    SEXP result = R_NilValue;
+    SEXP repo;
+    const char *name;
+    git_branch_t type;
+    git_buf buf = GIT_BUF_INIT;
+    git_config *cfg = NULL;
+    git_repository *repository = NULL;
+
+    if (0 != git2r_arg_check_branch(branch))
+        Rf_error(git2r_err_branch_arg, "branch");
+
+    type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
+    if (GIT_BRANCH_LOCAL != type)
+        Rf_error("'branch' is not local");
+
+    repo = GET_SLOT(branch, Rf_install("repo"));
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        Rf_error(git2r_err_invalid_repository);
+
+    err = git_repository_config(&cfg, repository);
+    if (err < 0)
+        goto cleanup;
+
+    err = git_buf_join3(
+        &buf,
+        '.',
+        "branch",
+        CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0)),
+        "merge");
+    if (err < 0)
+        goto cleanup;
+
+    git_config_get_string(&name, cfg, buf.ptr);
+    git_buf_free(&buf);
+    PROTECT(result = allocVector(STRSXP, 1));
+    SET_STRING_ELT(result, 0, mkChar(name));
+
+cleanup:
+    if (cfg)
+        git_config_free(cfg);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
+    if (err < 0)
+        Rf_error("Error: %s\n", giterr_last()->message);
+
+    return result;
 }
 
 /**

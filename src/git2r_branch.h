@@ -48,5 +48,6 @@ SEXP git2r_branch_rename(
 SEXP git2r_branch_target(SEXP branch);
 SEXP git2r_branch_get_upstream(SEXP branch);
 SEXP git2r_branch_set_upstream(SEXP branch, SEXP upstream_name);
+SEXP git2r_branch_upstream_canonical_name(SEXP branch);
 
 #endif
