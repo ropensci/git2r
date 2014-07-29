@@ -23,6 +23,7 @@
 #include <Rinternals.h>
 #include "git2.h"
 
+SEXP git2r_branch_canonical_name(SEXP branch);
 SEXP git2r_branch_create(
     SEXP branch_name,
     SEXP commit,

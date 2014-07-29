@@ -369,6 +369,52 @@ cleanup:
 }
 
 /**
+ * Get the full name of a branch
+ *
+ * @param branch S4 class git_branch
+ * @return character string with full name of branch.
+ */
+SEXP git2r_branch_canonical_name(SEXP branch)
+{
+    int err;
+    SEXP result = R_NilValue;
+    const char *name;
+    git_branch_t type;
+    git_reference *reference = NULL;
+    git_repository *repository = NULL;
+
+    if (0 != git2r_arg_check_branch(branch))
+        Rf_error(git2r_err_branch_arg, "branch");
+
+    repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
+    if (!repository)
+        Rf_error(git2r_err_invalid_repository);
+
+    name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
+    type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
+    err = git_branch_lookup(&reference, repository, name, type);
+    if (err < 0)
+        goto cleanup;
+
+    PROTECT(result = allocVector(STRSXP, 1));
+    SET_STRING_ELT(result, 0, mkChar(git_reference_name(reference)));
+
+cleanup:
+    if (reference)
+        git_reference_free(reference);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
+    if (err < 0)
+        Rf_error("Error: %s\n", giterr_last()->message);
+
+    return result;
+}
+/**
  * Get the configured canonical name of the upstream branch, given a
  * local branch, i.e "branch.branch_name.merge" property of the config
  * file.
