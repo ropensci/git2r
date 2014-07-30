@@ -231,6 +231,8 @@ SEXP git2r_diff_tree_to_wd(SEXP tree)
 				    /* new= */ mkString("workdir"));
 
 cleanup:
+    if (diff)
+        git_diff_free(diff);
 
     if (c_tree)
 	git_tree_free(c_tree);
@@ -292,6 +294,8 @@ SEXP git2r_diff_tree_to_index(SEXP tree)
 				    /* new= */ mkString("index"));
 
 cleanup:
+    if (diff)
+        git_diff_free(diff);
 
     if (c_tree)
 	git_tree_free(c_tree);
@@ -367,6 +371,8 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2)
 				    /* new= */ tree2);
 
 cleanup:
+    if (diff)
+        git_diff_free(diff);
 
     if (c_tree1)
 	git_tree_free(c_tree1);
