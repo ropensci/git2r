@@ -388,9 +388,13 @@ SEXP git2r_commit_parent_list(SEXP commit)
         git2r_commit_init(parent, repo, tmp);
         SET_VECTOR_ELT(list, i, tmp);
         UNPROTECT(1);
+        git_commit_free(parent);
     }
 
 cleanup:
+    if (commit_obj)
+        git_commit_free(commit_obj);
+
     if (repository)
         git_repository_free(repository);
 
