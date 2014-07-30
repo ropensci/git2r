@@ -37,29 +37,9 @@ check_valgrind: clean
 	cd .. && R CMD check --as-cran --no-manual --no-vignettes --no-build-vignettes --use-valgrind $(PKG_TAR)
 
 # Run all tests with valgrind
+test_objects = $(wildcard tests/*.R)
 valgrind:
-	R -d "valgrind --tool=memcheck --leak-check=full" --vanilla < tests/bare_repository.R
-	R -d "valgrind --tool=memcheck --leak-check=full" --vanilla < tests/blame.R
-	R -d "valgrind --tool=memcheck --leak-check=full" --vanilla < tests/blob.R
-	R -d "valgrind --tool=memcheck --leak-check=full" --vanilla < tests/branch.R
-	R -d "valgrind --tool=memcheck --leak-check=full" --vanilla < tests/checkout.R
-	R -d "valgrind --tool=memcheck --leak-check=full" --vanilla < tests/collaboration.R
-	R -d "valgrind --tool=memcheck --leak-check=full" --vanilla < tests/commit.R
-	R -d "valgrind --tool=memcheck --leak-check=full" --vanilla < tests/config.R
-	R -d "valgrind --tool=memcheck --leak-check=full" --vanilla < tests/diff.R
-	R -d "valgrind --tool=memcheck --leak-check=full" --vanilla < tests/index.R
-	R -d "valgrind --tool=memcheck --leak-check=full" --vanilla < tests/merge.R
-	R -d "valgrind --tool=memcheck --leak-check=full" --vanilla < tests/note.R
-	R -d "valgrind --tool=memcheck --leak-check=full" --vanilla < tests/reflog.R
-	R -d "valgrind --tool=memcheck --leak-check=full" --vanilla < tests/remotes.R
-	R -d "valgrind --tool=memcheck --leak-check=full" --vanilla < tests/repository.R
-	R -d "valgrind --tool=memcheck --leak-check=full" --vanilla < tests/signature.R
-	R -d "valgrind --tool=memcheck --leak-check=full" --vanilla < tests/stash.R
-	R -d "valgrind --tool=memcheck --leak-check=full" --vanilla < tests/status.R
-	R -d "valgrind --tool=memcheck --leak-check=full" --vanilla < tests/tag.R
-	R -d "valgrind --tool=memcheck --leak-check=full" --vanilla < tests/time.R
-	R -d "valgrind --tool=memcheck --leak-check=full" --vanilla < tests/tree.R
-	R -d "valgrind --tool=memcheck --leak-check=full" --vanilla < tests/when.R
+	$(foreach var,$(test_objects),R -d "valgrind --tool=memcheck --leak-check=full" --vanilla < $(var);)
 
 # Sync git2r with changes in the libgit2 C-library
 #
