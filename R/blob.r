@@ -120,11 +120,11 @@ setMethod("content",
           signature(blob = "git_blob"),
           function (blob, split)
           {
-              if(is_binary(blob))
+              if (is_binary(blob))
                   stop("Content of binary blob is not supported (yet)")
 
               ret <- .Call("git2r_blob_content", blob)
-              if(identical(split, TRUE))
+              if (identical(split, TRUE))
                   ret <- strsplit(ret, "\n")[[1]]
               ret
           }

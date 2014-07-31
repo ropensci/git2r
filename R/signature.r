@@ -43,15 +43,15 @@ setClass("git_signature",
          {
              errors <- validObject(object@when)
 
-             if(identical(errors, TRUE))
+             if (identical(errors, TRUE))
                errors <- character()
 
-             if(!identical(length(object@name), 1L))
+             if (!identical(length(object@name), 1L))
                  errors <- c(errors, "name must have length equal to one")
-             if(!identical(length(object@email), 1L))
+             if (!identical(length(object@email), 1L))
                  errors <- c(errors, "email must have length equal to one")
 
-             if(length(errors) == 0) TRUE else errors
+             if (length(errors) == 0) TRUE else errors
          }
 )
 

@@ -60,14 +60,14 @@ setMethod("stash_drop",
           signature(object = "git_repository"),
           function (object, index)
           {
-              if(missing(index))
+              if (missing(index))
                   stop("Missing parameter 'index'")
-              if(!is.integer(index)) {
-                  if(!is.numeric(index))
+              if (!is.integer(index)) {
+                  if (!is.numeric(index))
                       stop("'index' must be an integer")
-                  if(!identical(length(index), 1L))
+                  if (!identical(length(index), 1L))
                       stop("'index' must have length one")
-                  if(abs(index - round(index)) >= .Machine$double.eps^0.5)
+                  if (abs(index - round(index)) >= .Machine$double.eps^0.5)
                       stop("'index' must be an integer")
                   index <- as.integer(index)
               }

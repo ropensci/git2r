@@ -79,7 +79,7 @@ setMethod("branch_create",
                    message,
                    who)
           {
-              if(is.null(who)) {
+              if (is.null(who)) {
                   who = default_signature(commit@repo)
               }
 
@@ -187,7 +187,7 @@ setMethod("branch_rename",
                    message,
                    who)
           {
-              if(is.null(who)) {
+              if (is.null(who)) {
                   who = default_signature(branch@repo)
               }
 
@@ -262,7 +262,7 @@ setMethod("branch_set_upstream",
           signature(branch = "git_branch"),
           function(branch, name)
           {
-              if(missing(name)) {
+              if (missing(name)) {
                   stop("Missing argument name")
               }
               invisible(.Call("git2r_branch_set_upstream", branch, name))
@@ -356,11 +356,11 @@ setMethod("show",
           function (object)
           {
               hex <- branch_target(object)
-              if(!is.na(hex)) {
+              if (!is.na(hex)) {
                   cat(sprintf("[%s] ", substr(hex, 1 , 6)))
               }
 
-              if(is_local(object)) {
+              if (is_local(object)) {
                   cat("(Local) ")
               } else {
                   cat(sprintf("(%s @ %s) ",
@@ -368,11 +368,11 @@ setMethod("show",
                               branch_remote_url(object)))
               }
 
-              if(is_head(object)) {
+              if (is_head(object)) {
                   cat("(HEAD) ")
               }
 
-              if(is_local(object)) {
+              if (is_local(object)) {
                   cat(sprintf("%s\n", object@name))
               } else {
                   cat(sprintf("%s\n",

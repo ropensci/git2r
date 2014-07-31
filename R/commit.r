@@ -324,7 +324,7 @@ setMethod("summary",
 
               cat(sprintf("Commit:  %s\n", object@hex))
 
-              if(is_merge_commit) {
+              if (is_merge_commit) {
                   hex <- sapply(po, slot, "hex")
                   cat(sprintf("Merge:   %s\n", hex[1]))
                   cat(paste0("         ", hex[-1]), sep="\n")
@@ -339,7 +339,7 @@ setMethod("summary",
               msg <- paste0("    ", readLines(textConnection(object@message)))
               cat(" ", sprintf("%s\n", msg))
 
-              if(is_merge_commit) {
+              if (is_merge_commit) {
                   lapply(po, function(parent) {
                       msg <- paste0("    ", readLines(textConnection(parent@message)))
                       cat(" ", sprintf("%s\n", msg), "\n")

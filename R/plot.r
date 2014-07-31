@@ -52,7 +52,7 @@ setMethod("plot",
               ylab <- "Number of commits"
               title <- sprintf("Commits on repository: %s", basename(workdir(x)))
 
-              if(identical(by, "commits")) {
+              if (identical(by, "commits")) {
                   ggplot(df, aes(x = when, y = n)) +
                       geom_bar(stat = "identity", fill = "steelblue") +
                       scale_x_date(xlab, labels = scales::date_format("%m-%Y")) +

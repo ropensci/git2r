@@ -76,7 +76,7 @@ setMethod("contributions",
               df <- as(repo, "data.frame")
               df$when <- as.POSIXct(cut(df$when, breaks = breaks))
 
-              if(identical(by, "commits")) {
+              if (identical(by, "commits")) {
                   df <- as.data.frame(table(df$when))
                   names(df) <- c("when", "n")
                   df$when <- as.Date(df$when)

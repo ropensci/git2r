@@ -39,7 +39,7 @@ setClass("git_repository",
              errors <- character()
 
              can_open <- .Call("git2r_repository_can_open", object@path)
-             if(!identical(can_open, TRUE))
+             if (!identical(can_open, TRUE))
                  errors <- c(errors, "Invalid repository")
 
              if (length(errors) == 0) TRUE else errors
@@ -229,7 +229,7 @@ setMethod("init",
                         identical(length(bare), 1L))
 
               path <- normalizePath(path, winslash = "/", mustWork = TRUE)
-              if(!file.info(path)$isdir)
+              if (!file.info(path)$isdir)
                   stop("path is not a directory")
 
               .Call("git2r_repository_init", path, bare)
@@ -327,7 +327,7 @@ setMethod("commit",
                         is(committer, "git_signature"))
 
               parents <- character(0)
-              if(!is_empty(repo)) {
+              if (!is_empty(repo)) {
                   parents <- c(parents, branch_target(head(repo)))
               }
 
@@ -690,10 +690,10 @@ setMethod("show",
                               remote_url(object, remote)))
               })
 
-              if(is_empty(object)) {
+              if (is_empty(object)) {
                   cat(sprintf("Local:    %s\n", workdir(object)))
                   cat("Head:     nothing commited (yet)\n")
-              } else if(is_detached(object)) {
+              } else if (is_detached(object)) {
                   cat(sprintf("Local:    (detached) %s\n", workdir(object)))
               } else {
                   cat(sprintf("Local:    %s %s\n",

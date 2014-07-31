@@ -55,10 +55,10 @@ setClass("git_tree",
          {
              errors <- character(0)
 
-             if(!identical(length(object@hex), 1L))
+             if (!identical(length(object@hex), 1L))
                  errors <- c(errors, "hex must have length equal to one")
 
-             if(length(errors) == 0) TRUE else errors
+             if (length(errors) == 0) TRUE else errors
          }
 )
 
@@ -130,7 +130,7 @@ setAs(from = "git_tree",
 ##' ## Inspect size of each blob in tree
 ##' invisible(lapply(as(tree(commits(repo)[[1]]), "list"),
 ##'   function(obj) {
-##'     if(is_blob(obj))
+##'     if (is_blob(obj))
 ##'       summary(obj)
 ##'     NULL
 ##'   }))
@@ -260,7 +260,7 @@ setMethod("[",
           {
               i <- seq_len(length(x))[i]
               ret <- lapply(i, function(j) lookup(x@repo, x@id[j]))
-              if(identical(length(ret), 1L))
+              if (identical(length(ret), 1L))
                   ret <- ret[[1]]
               ret
           }

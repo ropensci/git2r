@@ -98,11 +98,11 @@ setMethod("show",
           signature(object = "git_reference"),
           function (object)
           {
-              if(identical(object@type, 1L)) {
+              if (identical(object@type, 1L)) {
                   cat(sprintf("[%s] %s\n",
                               substr(object@hex, 1 , 6),
                               object@shorthand))
-              } else if(identical(object@type, 2L)) {
+              } else if (identical(object@type, 2L)) {
                   cat(sprintf("%s => %s\n",
                               object@name,
                               object@target))

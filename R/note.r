@@ -153,7 +153,7 @@ setMethod("note_create",
           {
               stopifnot(is.character(ref))
               stopifnot(identical(length(ref), 1L))
-              if(!length(grep("^refs/notes/", ref)))
+              if (!length(grep("^refs/notes/", ref)))
                   ref <- paste0("refs/notes/", ref)
               .Call("git2r_note_create",
                     object@repo,
@@ -179,7 +179,7 @@ setMethod("note_create",
           {
               stopifnot(is.character(ref))
               stopifnot(identical(length(ref), 1L))
-              if(!length(grep("^refs/notes/", ref)))
+              if (!length(grep("^refs/notes/", ref)))
                   ref <- paste0("refs/notes/", ref)
               .Call("git2r_note_create",
                     object@repo,
@@ -205,7 +205,7 @@ setMethod("note_create",
           {
               stopifnot(is.character(ref))
               stopifnot(identical(length(ref), 1L))
-              if(!length(grep("^refs/notes/", ref)))
+              if (!length(grep("^refs/notes/", ref)))
                   ref <- paste0("refs/notes/", ref)
               .Call("git2r_note_create",
                     object@repo,
@@ -252,7 +252,7 @@ setMethod("note_list",
           function(repo, ref)
           {
               stopifnot(identical(length(ref), 1L))
-              if(!length(grep("^refs/notes/", ref)))
+              if (!length(grep("^refs/notes/", ref)))
                   ref <- paste0("refs/notes/", ref)
               .Call("git2r_note_list", repo, ref)
           }

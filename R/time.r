@@ -45,9 +45,9 @@ setClass("git_time",
          {
              errors <- character()
 
-             if(!identical(length(object@time), 1L))
+             if (!identical(length(object@time), 1L))
                  errors <- c(errors, "time must have length equal to one")
-             if(!identical(length(object@offset), 1L))
+             if (!identical(length(object@offset), 1L))
                  errors <- c(errors, "offset must have length equal to one")
 
              if (length(errors) == 0) TRUE else errors

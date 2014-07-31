@@ -20,7 +20,7 @@ repo <- repository("path/to/git2r")
 ## Inspect size of each blob in tree
 invisible(lapply(as(tree(commits(repo)[[1]]), "list"),
   function(obj) {
-    if(is_blob(obj))
+    if (is_blob(obj))
       summary(obj)
     NULL
   }))

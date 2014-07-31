@@ -57,13 +57,13 @@ setMethod("config",
               variables <- as.list(match.call(expand.dots = TRUE))
               variables <- variables[-(1:2)]
 
-              if(length(variables)) {
+              if (length(variables)) {
                   ## Check that the variable is either a character vector or NULL
                   check_is_character <- sapply(variables, function(v) {
                       any(is.character(v), is.null(v))
                   })
                   check_is_character <- check_is_character[!check_is_character]
-                  if(length(check_is_character)) {
+                  if (length(check_is_character)) {
                       stop(sprintf("\n%s", paste(names(check_is_character),
                                                  "must be character",
                                                  collapse="\n")))
@@ -77,7 +77,7 @@ setMethod("config",
               ## Sort the variables within levels by name
               cfg <- lapply(cfg, function(x) x[order(names(x))])
 
-              if(!length(variables)) {
+              if (!length(variables)) {
                   lapply(names(cfg), function(level) {
                       cat(sprintf("%s:\n", level))
                       lapply(names(cfg[[level]]), function(entry) {

@@ -73,23 +73,23 @@ setMethod("status",
                          untracked,
                          ignored)
 
-              if(verbose) {
-                  if(length(s$ignored)) {
+              if (verbose) {
+                  if (length(s$ignored)) {
                       display_status("Ignored files", s$ignored)
                       cat("\n")
                   }
 
-                  if(length(s$untracked)) {
+                  if (length(s$untracked)) {
                       display_status("Untracked files", s$untracked)
                       cat("\n")
                   }
 
-                  if(length(s$unstaged)) {
+                  if (length(s$unstaged)) {
                       display_status("Unstaged changes", s$unstaged)
                       cat("\n")
                   }
 
-                  if(length(s$staged)) {
+                  if (length(s$staged)) {
                       display_status("Staged changes", s$staged)
                       cat("\n")
                   }

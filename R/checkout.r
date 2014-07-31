@@ -23,9 +23,9 @@
 checkout_reflog_msg <- function(object, ref_log_target) {
     ## Determine the one line long message to be appended to the reflog
     current <- head(object@repo)
-    if(is.null(current))
+    if (is.null(current))
         stop("Current head is NULL")
-    if(is_commit(current)) {
+    if (is_commit(current)) {
         current <- current@hex
     } else {
         current <- current@name
