@@ -1,0 +1,1 @@
+dlltool -k --output-lib src/winhttp/libwinhttp.a --def src/winhttp/winhttp.def
