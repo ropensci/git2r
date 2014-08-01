@@ -15,6 +15,10 @@
 #include "object.h"
 #include "git2/oid.h"
 
+/* Changed printf to Rprintf */
+/* 2014-08-01: Stefan Widgren */
+#include <Rdefines.h>
+
 GIT__USE_OIDMAP
 
 bool git_cache__enabled = true;

@@ -1190,6 +1190,7 @@ static int repo_init_structure(
 	bool external_tpl =
 		((opts->flags & GIT_REPOSITORY_INIT_EXTERNAL_TEMPLATE) != 0);
 	mode_t dmode = pick_dir_mode(opts);
+	bool chmod = opts->mode != GIT_REPOSITORY_INIT_SHARED_UMASK;
 
 	/* Hide the ".git" directory */
 #ifdef GIT_WIN32
@@ -1230,10 +1231,12 @@ static int repo_init_structure(
 			default_template = true;
 		}
 
-		if (tdir)
-			error = git_futils_cp_r(tdir, repo_dir,
-				GIT_CPDIR_COPY_SYMLINKS | GIT_CPDIR_CHMOD_DIRS |
-				GIT_CPDIR_SIMPLE_TO_MODE, dmode);
+		if (tdir) {
+			uint32_t cpflags = GIT_CPDIR_COPY_SYMLINKS | GIT_CPDIR_SIMPLE_TO_MODE;
+			if (opts->mode != GIT_REPOSITORY_INIT_SHARED_UMASK)
+					cpflags |= GIT_CPDIR_CHMOD_DIRS;
+			error = git_futils_cp_r(tdir, repo_dir, cpflags, dmode);
+		}
 
 		git_buf_free(&template_buf);
 		git_config_free(cfg);
@@ -1254,9 +1257,14 @@ static int repo_init_structure(
 	 * - only create files if no external template was specified
 	 */
 	for (tpl = repo_template; !error && tpl->path; ++tpl) {
-		if (!tpl->content)
+		if (!tpl->content) {
+			uint32_t mkdir_flags = GIT_MKDIR_PATH;
+			if (chmod)
+				mkdir_flags |= GIT_MKDIR_CHMOD;
+
 			error = git_futils_mkdir(
-				tpl->path, repo_dir, dmode, GIT_MKDIR_PATH | GIT_MKDIR_CHMOD);
+				tpl->path, repo_dir, dmode, mkdir_flags);
+		}
 		else if (!external_tpl) {
 			const char *content = tpl->content;
 
@@ -1907,8 +1915,8 @@ int git_repository_state(git_repository *repo)
 		state = GIT_REPOSITORY_STATE_MERGE;
 	else if(git_path_contains_file(&repo_path, GIT_REVERT_HEAD_FILE))
 		state = GIT_REPOSITORY_STATE_REVERT;
-	else if(git_path_contains_file(&repo_path, GIT_CHERRY_PICK_HEAD_FILE))
-		state = GIT_REPOSITORY_STATE_CHERRY_PICK;
+	else if(git_path_contains_file(&repo_path, GIT_CHERRYPICK_HEAD_FILE))
+		state = GIT_REPOSITORY_STATE_CHERRYPICK;
 	else if(git_path_contains_file(&repo_path, GIT_BISECT_LOG_FILE))
 		state = GIT_REPOSITORY_STATE_BISECT;
 
@@ -1950,7 +1958,7 @@ static const char *state_files[] = {
 	GIT_MERGE_MODE_FILE,
 	GIT_MERGE_MSG_FILE,
 	GIT_REVERT_HEAD_FILE,
-	GIT_CHERRY_PICK_HEAD_FILE,
+	GIT_CHERRYPICK_HEAD_FILE,
 	GIT_BISECT_LOG_FILE,
 	GIT_REBASE_MERGE_DIR,
 	GIT_REBASE_APPLY_DIR,

@@ -419,20 +419,19 @@ GIT_EXTERN(int) git_remote_list(git_strarray *out, git_repository *repo);
 GIT_EXTERN(void) git_remote_check_cert(git_remote *remote, int check);
 
 /**
- * Sets a custom transport for the remote. The caller can use this function
- * to bypass the automatic discovery of a transport by URL scheme (i.e.
- * http://, https://, git://) and supply their own transport to be used
- * instead. After providing the transport to a remote using this function,
- * the transport object belongs exclusively to that remote, and the remote will
- * free it when it is freed with git_remote_free.
+ * Sets a custom transport factory for the remote. The caller can use this
+ * function to override the transport used for this remote when performing
+ * network operations.
  *
  * @param remote the remote to configure
- * @param transport the transport object for the remote to use
+ * @param transport_cb the function to use to create a transport
+ * @param payload opaque parameter passed to transport_cb
  * @return 0 or an error code
  */
 GIT_EXTERN(int) git_remote_set_transport(
 	git_remote *remote,
-	git_transport *transport);
+	git_transport_cb transport_cb,
+	void *payload);
 
 /**
  * Argument to the completion callback which tells it which operation
@@ -572,18 +571,17 @@ GIT_EXTERN(void) git_remote_set_autotag(
  *
  * A temporary in-memory remote cannot be given a name with this method.
  *
+ * @param problems non-default refspecs cannot be renamed and will be
+ * stored here for further processing by the caller. Always free this
+ * strarray on succesful return.
  * @param remote the remote to rename
  * @param new_name the new name the remote should bear
- * @param callback Optional callback to notify the consumer of fetch refspecs
- * that haven't been automatically updated and need potential manual tweaking.
- * @param payload Additional data to pass to the callback
  * @return 0, GIT_EINVALIDSPEC, GIT_EEXISTS or an error code
  */
 GIT_EXTERN(int) git_remote_rename(
+	git_strarray *problems,
 	git_remote *remote,
-	const char *new_name,
-	git_remote_rename_problem_cb callback,
-	void *payload);
+	const char *new_name);
 
 /**
  * Retrieve the update FETCH_HEAD setting.
@@ -616,12 +614,28 @@ GIT_EXTERN(int) git_remote_is_valid_name(const char *remote_name);
 * All remote-tracking branches and configuration settings
 * for the remote will be removed.
 *
-* once deleted, the passed remote object will be freed and invalidated.
-*
 * @param remote A valid remote
 * @return 0 on success, or an error code.
 */
 GIT_EXTERN(int) git_remote_delete(git_remote *remote);
+
+/**
+ * Retrieve the name of the remote's default branch
+ *
+ * The default branch of a repository is the branch which HEAD points
+ * to. If the remote does not support reporting this information
+ * directly, it performs the guess as git does; that is, if there are
+ * multiple branches which point to the same commit, the first one is
+ * chosen. If the master branch is a candidate, it wins.
+ *
+ * This function must only be called after connecting.
+ *
+ * @param out the buffern in which to store the reference name
+ * @param remote the remote
+ * @return 0, GIT_ENOTFOUND if the remote does not have any references
+ * or none of them point to HEAD's commit, or an error message.
+ */
+GIT_EXTERN(int) git_remote_default_branch(git_buf *out, git_remote *remote);
 
 /** @} */
 GIT_END_DECL
