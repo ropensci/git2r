@@ -63,6 +63,7 @@ cleanup:
 SEXP git2r_remote_rename(SEXP repo, SEXP oldname, SEXP newname)
 {
     int err = 0;
+    git_strarray problems;
     git_repository *repository = NULL;
     git_remote *remote = NULL;
 
@@ -86,10 +87,14 @@ SEXP git2r_remote_rename(SEXP repo, SEXP oldname, SEXP newname)
     if (err != 0)
 	goto cleanup;
 
-    err = git_remote_rename(remote,
-			    CHAR(STRING_ELT(newname, 0)),
-			    /* callback= */ NULL,
-			    /* payload= */ NULL);
+    err = git_remote_rename(&problems,
+                            remote,
+			    CHAR(STRING_ELT(newname, 0)));
+
+    if (err != 0)
+	goto cleanup;
+
+    git_strarray_free(&problems);
 
 cleanup:
 
