@@ -10,7 +10,7 @@ remote_add(repo, name, url)
 \S4method{remote_add}{git_repository,character,character}(repo, name, url)
 }
 \arguments{
-\item{repo}{The repository \code{object} to add the remote to}
+\item{repo}{The repository to add the remote to}
 
 \item{name}{Short name of the remote repository}
 

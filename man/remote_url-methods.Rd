@@ -5,20 +5,33 @@
 \alias{remote_url,git_repository-method}
 \title{Get the remote url for remotes in a repo}
 \usage{
-remote_url(object, remote = remotes(object))
+remote_url(repo, remote = remotes(repo))
 
-\S4method{remote_url}{git_repository}(object, remote = remotes(object))
+\S4method{remote_url}{git_repository}(repo, remote = remotes(repo))
 }
 \arguments{
-\item{object}{The repository \code{object} to check remote_url}
+\item{repo}{The repository to get remote urls from}
 
-\item{remote}{:TODO:DOCUMENTATION:}
+\item{remote}{Character vector with the remotes to get the url
+from. Default is the remotes of the repository.}
 }
 \value{
-Character vector with remote_url
+Character vector with remote_url for each of the remote
 }
 \description{
 Get the remote url for remotes in a repo
+}
+\examples{
+\dontrun{
+## Open an existing repository
+repo <- repository("path/to/git2r")
+
+## Get the url's for the remotes of the repository
+remote_url(repo)
+
+## Get the url for a specific remote of the repository
+remote_url(repo, "origin")
+}
 }
 \keyword{methods}
 

@@ -63,5 +63,6 @@ Collate:
     'punch_card.r'
     'push.r'
     'reflog.r'
+    'remote.r'
     'status.r'
     'when.r'

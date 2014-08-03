@@ -5,12 +5,12 @@
 \alias{remotes,git_repository-method}
 \title{Get the configured remotes for a repo}
 \usage{
-remotes(object)
+remotes(repo)
 
-\S4method{remotes}{git_repository}(object)
+\S4method{remotes}{git_repository}(repo)
 }
 \arguments{
-\item{object}{The repository \code{object} to check remotes}
+\item{repo}{The repository to get remotes from}
 }
 \value{
 Character vector with remotes
