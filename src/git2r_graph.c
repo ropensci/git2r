@@ -25,11 +25,12 @@
 #include "git2r_repository.h"
 
 /**
- * :TODO:DOCUMENTATION:
+ * Count the number of unique commits between two commit objects
  *
- * @param local :TODO:DOCUMENTATION:
- * @param upstream :TODO:DOCUMENTATION:
- * @return :TODO:DOCUMENTATION:
+ * @param local The commit for local
+ * @param upstream The commit for upstream
+ * @return Integer vector of length two with the values ahead and
+ * behind.
  */
 SEXP git2r_graph_ahead_behind(SEXP local, SEXP upstream)
 {
@@ -82,8 +83,8 @@ cleanup:
 /**
  * Determine if a commit is the descendant of another commit.
  *
- * @param commit :TODO:DOCUMENTATION:
- * @param ancestor :TODO:DOCUMENTATION:
+ * @param commit A commit.
+ * @param ancestor A potential ancestor commit.
  * @return TRUE or FALSE
  */
 SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor)
