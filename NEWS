@@ -1,3 +1,31 @@
+Under development
+-----------------
+
+NEW S4 CLASSES
+
+* git_blame: Handle a git blame for a single file
+
+* git_blame_hunk: Handle a blame hunk
+
+* git_blob: Handle a git blob
+
+* git_diff: Handle a git diff
+
+* git_diff_file: Handle a git diff file
+
+* git_diff_hunk: Handle a git diff hunk
+
+* git_diff_line: Handle a git diff line
+
+* git_note: Handle a git note
+
+* git_reflog_entry: Handle a git reflog entry
+
+* git_stash: Handle a git stash
+
+* git_tree: Handle a git tree
+
+
 git2r 0.0.8
 -----------
 
