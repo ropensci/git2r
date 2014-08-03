@@ -24,10 +24,55 @@
 #include "git2r_repository.h"
 
 /**
- * Fetch
+ * Add a remote with the default fetch refspec to the repository's
+ * configuration.
  *
  * @param repo S4 class git_repository
- * @param name :TODO:DOCUMENTATION:
+ * @param name The name of the remote
+ * @param url The url of the remote
+ * @return R_NilValue
+ */
+SEXP git2r_remote_add(SEXP repo, SEXP name, SEXP url)
+{
+    int err = 0;
+    git_repository *repository = NULL;
+    git_remote *remote = NULL;
+
+    if (0 != git2r_arg_check_string(name))
+        Rf_error(git2r_err_string_arg, "name");
+    if (0 != git2r_arg_check_string(url))
+        Rf_error(git2r_err_string_arg, "url");
+
+    if (!git_remote_is_valid_name(CHAR(STRING_ELT(name, 0))))
+	Rf_error("Invalid remote name");
+
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        Rf_error(git2r_err_invalid_repository);
+
+    err = git_remote_create(&remote,
+			    repository,
+			    CHAR(STRING_ELT(name, 0)),
+			    CHAR(STRING_ELT(url, 0)));
+
+cleanup:
+    if (remote)
+	git_remote_free(remote);
+
+    if (repository)
+	git_repository_free(repository);
+
+    if (err != 0)
+	Rf_error("Error: %s\n", giterr_last()->message);
+
+    return R_NilValue;
+}
+
+/**
+ * Fetch new data and update tips
+ *
+ * @param repo S4 class git_repository
+ * @param name The name of the remote to fetch from
  * @return R_NilValue
  */
 SEXP git2r_remote_fetch(SEXP repo, SEXP name)
@@ -37,7 +82,7 @@ SEXP git2r_remote_fetch(SEXP repo, SEXP name)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_string(name))
-        Rf_error("Invalid arguments to git2r_remote_fetch");
+        Rf_error(git2r_err_string_arg, "name");
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -71,7 +116,7 @@ cleanup:
  * Get the configured remotes for a repo
  *
  * @param repo S4 class git_repository
- * @return :TODO:DOCUMENTATION:
+ * @return Character vector with name of the remotes
  */
 SEXP git2r_remote_list(SEXP repo)
 {
@@ -106,10 +151,119 @@ cleanup:
 }
 
 /**
+ * Remove an existing remote
+ *
+ * All remote-tracking branches and configuration settings for the
+ * remote will be removed.
+ * @param repo S4 class git_repository
+ * @param name The name of the remote to remove
+ * @return R_NilValue
+ */
+SEXP git2r_remote_remove(SEXP repo, SEXP name)
+{
+    int err = 0;
+    git_repository *repository = NULL;
+    git_remote *remote = NULL;
+
+    if (0 != git2r_arg_check_string(name))
+        Rf_error(git2r_err_string_arg, "name");
+
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        Rf_error(git2r_err_invalid_repository);
+
+    err = git_remote_load(&remote,
+			  repository,
+			  CHAR(STRING_ELT(name, 0)));
+
+    if (err != 0)
+	goto cleanup;
+
+    err = git_remote_delete(remote);
+
+    if (err != 0)
+	goto cleanup;
+
+    /* Was freed by git_remote_delete */
+    remote = NULL;
+
+cleanup:
+    if (remote)
+	git_remote_free(remote);
+
+    if (repository)
+	git_repository_free(repository);
+
+    if (err != 0)
+	Rf_error("Error: %s\n", giterr_last()->message);
+
+    return R_NilValue;
+}
+
+/**
+ * Give the remote a new name
+ *
+ * @param repo S4 class git_repository
+ * @param oldname The old name of the remote
+ * @param newname The new name of the remote
+ * @return R_NilValue
+ */
+SEXP git2r_remote_rename(SEXP repo, SEXP oldname, SEXP newname)
+{
+    int err = 0;
+    git_strarray problems;
+    git_repository *repository = NULL;
+    git_remote *remote = NULL;
+
+    if (0 != git2r_arg_check_string(oldname))
+        Rf_error(git2r_err_string_arg, "oldname");
+    if (0 != git2r_arg_check_string(newname))
+        Rf_error(git2r_err_string_arg, "newname");
+
+    if (!git_remote_is_valid_name(CHAR(STRING_ELT(newname, 0))))
+	Rf_error("Invalid new remote name");
+
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        Rf_error(git2r_err_invalid_repository);
+
+    err = git_remote_load(&remote,
+			  repository,
+			  CHAR(STRING_ELT(oldname, 0)));
+
+    if (err != 0)
+	goto cleanup;
+
+    err = git_remote_rename(&problems,
+                            remote,
+			    CHAR(STRING_ELT(newname, 0)));
+
+    if (err != 0)
+	goto cleanup;
+
+    git_strarray_free(&problems);
+
+cleanup:
+    if (remote)
+	git_remote_free(remote);
+
+    if (repository)
+	git_repository_free(repository);
+
+    if (err != 0)
+	Rf_error("Error: %s\n", giterr_last()->message);
+
+    return R_NilValue;
+}
+
+/**
  * Get the remote's url
  *
  * @param repo S4 class git_repository
- * @return :TODO:DOCUMENTATION:
+ * @param remote Character vector with name of remote. NA values are
+ * ok and give NA values as result at corresponding index in url
+ * vector
+ * @return Character vector with url for each remote
  */
 SEXP git2r_remote_url(SEXP repo, SEXP remote)
 {
@@ -120,8 +274,8 @@ SEXP git2r_remote_url(SEXP repo, SEXP remote)
     git_remote *tmp_remote;
     git_repository *repository = NULL;
 
-    if (R_NilValue == remote || !isString(remote))
-        Rf_error("Invalid arguments to git2r_remote_url");
+    if (0 != git2r_arg_check_string_vec(remote))
+        Rf_error(git2r_err_string_vec_arg, "remote");
 
     repository = git2r_repository_open(repo);
     if (!repository)

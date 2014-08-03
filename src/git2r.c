@@ -51,7 +51,6 @@
 #include "git2r_reference.h"
 #include "git2r_reflog.h"
 #include "git2r_remote.h"
-#include "git2r_remotes.h"
 #include "git2r_repository.h"
 #include "git2r_revwalk.h"
 #include "git2r_signature.h"
