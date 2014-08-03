@@ -41,6 +41,7 @@ extern const char git2r_err_integer_arg[];
 extern const char git2r_err_logical_arg[];
 extern const char git2r_err_signature_arg[];
 extern const char git2r_err_string_arg[];
+extern const char git2r_err_string_vec_arg[];
 extern const char git2r_err_tag_arg[];
 extern const char git2r_err_tree_arg[];
 

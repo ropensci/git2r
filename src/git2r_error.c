@@ -46,6 +46,8 @@ const char git2r_err_signature_arg[] =
     "Error: '%s' must be a S4 class git_signature";
 const char git2r_err_string_arg[] =
     "Error: '%s' must be a character vector of length one with non NA value";
+const char git2r_err_string_vec_arg[] =
+    "Error: '%s' must be a character vector";
 const char git2r_err_tag_arg[] =
     "Error: '%s' must be a S4 class git_tag";
 const char git2r_err_tree_arg[] =
