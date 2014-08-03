@@ -92,6 +92,8 @@ setMethod("remote_rename",
 
 ##' Remove a remote
 ##'
+##' All remote-tracking branches and configuration settings for the
+##' remote will be removed.
 ##' @rdname remote_remove-methods
 ##' @docType methods
 ##' @param repo The repository to work on

@@ -18,7 +18,8 @@ remote_remove(repo, name)
 NULL, invisibly
 }
 \description{
-Remove a remote
+All remote-tracking branches and configuration settings for the
+remote will be removed.
 }
 \keyword{methods}
 
