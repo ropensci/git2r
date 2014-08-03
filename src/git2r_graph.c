@@ -24,6 +24,13 @@
 #include "git2r_oid.h"
 #include "git2r_repository.h"
 
+/**
+ * :TODO:DOCUMENTATION:
+ *
+ * @param local :TODO:DOCUMENTATION:
+ * @param upstream :TODO:DOCUMENTATION:
+ * @return :TODO:DOCUMENTATION:
+ */
 SEXP git2r_graph_ahead_behind(SEXP local, SEXP upstream)
 {
     size_t ahead, behind;
@@ -75,8 +82,8 @@ cleanup:
 /**
  * Determine if a commit is the descendant of another commit.
  *
- * @param commit
- * @param ancestor
+ * @param commit :TODO:DOCUMENTATION:
+ * @param ancestor :TODO:DOCUMENTATION:
  * @return TRUE or FALSE
  */
 SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor)

@@ -26,6 +26,9 @@
 #include "git2r_signature.h"
 #include "git2r_stash.h"
 
+/**
+ * :TODO:DOCUMENTATION:
+ */
 typedef struct {
     size_t n;
     SEXP list;

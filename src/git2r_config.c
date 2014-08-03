@@ -126,8 +126,8 @@ static size_t git2r_config_list_init(
  * @param list the result list
  * @param level the level of the entry
  * @param i_level the index where to add the entry within the level
- * @param n_level
- * @param i_list
+ * @param n_level :TODO:DOCUMENTATION:
+ * @param i_list :TODO:DOCUMENTATION:
  * @param entry the config entry to add
  * @return void
  */
@@ -158,11 +158,11 @@ static void git2r_config_list_add_entry(
 /**
  * List config variables
  *
- * @param cfg
- * @param list
- * @param n_level
- * @param err_msg
- * @return
+ * @param cfg :TODO:DOCUMENTATION:
+ * @param list :TODO:DOCUMENTATION:
+ * @param n_level :TODO:DOCUMENTATION:
+ * @param err_msg :TODO:DOCUMENTATION:
+ * @return :TODO:DOCUMENTATION:
  */
 static int git2r_config_list_variables(
     git_config *cfg,

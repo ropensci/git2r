@@ -27,7 +27,7 @@
  * Add files to a repository
  *
  * @param repo S4 class git_repository
- * @param path
+ * @param path :TODO:DOCUMENTATION:
  * @return R_NilValue
  */
 SEXP git2r_index_add(SEXP repo, SEXP path)

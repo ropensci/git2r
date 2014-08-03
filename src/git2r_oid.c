@@ -21,8 +21,8 @@
 /**
  * Get oid from hex SEXP
  *
- * @param hex
- * @param oid
+ * @param hex :TODO:DOCUMENTATION:
+ * @param oid :TODO:DOCUMENTATION:
  * @return void
  */
 void git2r_oid_from_hex_sexp(SEXP hex, git_oid *oid)

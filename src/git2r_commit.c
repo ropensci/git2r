@@ -30,10 +30,10 @@
  * Commit
  *
  * @param repo S4 class git_repository
- * @param message
+ * @param message :TODO:DOCUMENTATION:
  * @param author S4 class git_signature
  * @param committer S4 class git_signature
- * @param parent_list
+ * @param parent_list :TODO:DOCUMENTATION:
  * @return S4 class git_commit
  */
 SEXP git2r_commit_create(
@@ -216,10 +216,10 @@ cleanup:
 /**
  * Get commit object from S4 class git_commit
  *
- * @param out
- * @param repository
- * @param commit
- * @return
+ * @param out :TODO:DOCUMENTATION:
+ * @param repository :TODO:DOCUMENTATION:
+ * @param commit :TODO:DOCUMENTATION:
+ * @return :TODO:DOCUMENTATION:
  */
 int git2r_commit_lookup(
     git_commit **out,
@@ -349,7 +349,7 @@ void git2r_commit_init(git_commit *source, SEXP repo, SEXP dest)
 /**
  * Parents of a commit
  *
- * @param commit
+ * @param commit :TODO:DOCUMENTATION:
  * @return list of S4 class git_commit objects
  */
 SEXP git2r_commit_parent_list(SEXP commit)

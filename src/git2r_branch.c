@@ -33,8 +33,8 @@
  * @param repo S4 class git_repository
  * @param flags Filtering flags for the branch listing. Valid values
  *        are 1 (LOCAL), 2 (REMOTE) and 3 (ALL)
- * @param n
- * @return
+ * @param n :TODO:DOCUMENTATION:
+ * @return :TODO:DOCUMENTATION:
  */
 static int git2r_branch_count(git_repository *repo, int flags, size_t *n)
 {

@@ -22,6 +22,14 @@
 
 #include "git2.h"
 
+/**
+ * :TODO:DOCUMENTATION:
+ *
+ * @param repo :TODO:DOCUMENTATION:
+ * @param name :TODO:DOCUMENTATION:
+ * @param url :TODO:DOCUMENTATION:
+ * @return :TODO:DOCUMENTATION:
+ */
 SEXP git2r_remote_add(SEXP repo, SEXP name, SEXP url)
 {
     int err = 0;
@@ -60,6 +68,14 @@ cleanup:
     return R_NilValue;
 }
 
+/**
+ * :TODO:DOCUMENTATION:
+ *
+ * @param repo :TODO:DOCUMENTATION:
+ * @param oldname :TODO:DOCUMENTATION:
+ * @param newname :TODO:DOCUMENTATION:
+ * @return :TODO:DOCUMENTATION:
+ */
 SEXP git2r_remote_rename(SEXP repo, SEXP oldname, SEXP newname)
 {
     int err = 0;
@@ -110,6 +126,13 @@ cleanup:
     return R_NilValue;
 }
 
+/**
+ * :TODO:DOCUMENTATION:
+ *
+ * @param repo :TODO:DOCUMENTATION:
+ * @param name :TODO:DOCUMENTATION:
+ * @return :TODO:DOCUMENTATION:
+ */
 SEXP git2r_remote_remove(SEXP repo, SEXP name)
 {
     int err = 0;

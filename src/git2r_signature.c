@@ -85,8 +85,8 @@ int git2r_signature_from_arg(git_signature **out, SEXP signature)
 /**
  * Init slots in S4 class git_signature.
  *
- * @param sig
- * @param signature
+ * @param sig :TODO:DOCUMENTATION:
+ * @param signature :TODO:DOCUMENTATION:
  * @return void
  */
 void git2r_signature_init(const git_signature *sig, SEXP signature)

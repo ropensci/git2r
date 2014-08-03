@@ -88,7 +88,10 @@ SEXP git2r_diff(SEXP repo, SEXP tree1, SEXP tree2, SEXP index)
 }
 
 /**
- * @param repo
+ * :TODO:DOCUMENTATION:
+ *
+ * @param repo :TODO:DOCUMENTATION:
+ * @return :TODO:DOCUMENTATION:
  */
 
 SEXP git2r_diff_index_to_wd(SEXP repo)
@@ -128,7 +131,10 @@ cleanup:
 }
 
 /**
- * @param repo
+ * :TODO:DOCUMENTATION:
+ *
+ * @param repo :TODO:DOCUMENTATION:
+ * @return :TODO:DOCUMENTATION:
  */
 
 SEXP git2r_diff_head_to_index(SEXP repo)
@@ -188,8 +194,11 @@ cleanup:
 }
 
 /**
- * @param repo
- * @param tree
+ * :TODO:DOCUMENTATION:
+ *
+ * @param repo :TODO:DOCUMENTATION:
+ * @param tree :TODO:DOCUMENTATION:
+ * @return :TODO:DOCUMENTATION:
  */
 
 SEXP git2r_diff_tree_to_wd(SEXP tree)
@@ -250,8 +259,11 @@ cleanup:
 }
 
 /**
- * @param repo
- * @param tree
+ * :TODO:DOCUMENTATION:
+ *
+ * @param repo :TODO:DOCUMENTATION:
+ * @param tree :TODO:DOCUMENTATION:
+ * @return :TODO:DOCUMENTATION:
  */
 
 SEXP git2r_diff_tree_to_index(SEXP tree)
@@ -314,8 +326,11 @@ cleanup:
 }
 
 /**
- * @param tree1
- * @param tree2
+ * :TODO:DOCUMENTATION:
+ *
+ * @param tree1 :TODO:DOCUMENTATION:
+ * @param tree2 :TODO:DOCUMENTATION:
+ * @return :TODO:DOCUMENTATION:
  */
 
 SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2)
@@ -395,6 +410,9 @@ cleanup:
     return result;
 }
 
+/**
+ * :TODO:DOCUMENTATION:
+ */
 typedef struct {
     size_t num_files;
     size_t max_hunks;
@@ -404,9 +422,12 @@ typedef struct {
 } git2r_diff_count_payload;
 
 /**
- * @param delta
- * @param progre
- * @param payload
+ * :TODO:DOCUMENTATION:
+ *
+ * @param delta :TODO:DOCUMENTATION:
+ * @param progre :TODO:DOCUMENTATION:
+ * @param payload :TODO:DOCUMENTATION:
+ * @return :TODO:DOCUMENTATION:
  */
 
 int git2r_diff_count_file_cb(const git_diff_delta *delta,
@@ -420,9 +441,12 @@ int git2r_diff_count_file_cb(const git_diff_delta *delta,
 }
 
 /**
- * @param delta
- * @param hunk
- * @param payload
+ * :TODO:DOCUMENTATION:
+ *
+ * @param delta :TODO:DOCUMENTATION:
+ * @param hunk :TODO:DOCUMENTATION:
+ * @param payload :TODO:DOCUMENTATION:
+ * @return :TODO:DOCUMENTATION:
  */
 
 int git2r_diff_count_hunk_cb(const git_diff_delta *delta,
@@ -435,6 +459,16 @@ int git2r_diff_count_hunk_cb(const git_diff_delta *delta,
     n->num_lines = 0;
     return 0;
 }
+
+/**
+ * :TODO:DOCUMENTATION:
+ *
+ * @param delta :TODO:DOCUMENTATION:
+ * @param hunk :TODO:DOCUMENTATION:
+ * @param line  :TODO:DOCUMENTATION:
+ * @param payload :TODO:DOCUMENTATION:
+ * @return :TODO:DOCUMENTATION:
+ */
 
 int git2r_diff_count_line_cb(const git_diff_delta *delta,
 			     const git_diff_hunk *hunk,
@@ -449,9 +483,12 @@ int git2r_diff_count_line_cb(const git_diff_delta *delta,
 
 
 /**
- * @param diff
- * @param num_file
- * @param num_hunk
+ * :TODO:DOCUMENTATION:
+ *
+ * @param diff :TODO:DOCUMENTATION:
+ * @param num_file :TODO:DOCUMENTATION:
+ * @param num_hunk :TODO:DOCUMENTATION:
+ * @return :TODO:DOCUMENTATION:
  */
 
 int git2r_diff_count(git_diff *diff, size_t *num_files,
@@ -477,6 +514,9 @@ int git2r_diff_count(git_diff *diff, size_t *num_files,
     return 0;
 }
 
+/**
+ * :TODO:DOCUMENTATION:
+ */
 typedef struct {
     SEXP result;
     SEXP hunk_tmp;
@@ -494,9 +534,12 @@ int git2r_diff_get_line_cb(const git_diff_delta *delta,
 			   void *payload);
 
 /**
- * @param delta
- * @param progre
- * @param payload
+ * :TODO:DOCUMENTATION:
+ *
+ * @param delta :TODO:DOCUMENTATION:
+ * @param progre :TODO:DOCUMENTATION:
+ * @param payload :TODO:DOCUMENTATION:
+ * @return :TODO:DOCUMENTATION:
  */
 
 int git2r_diff_get_file_cb(const git_diff_delta *delta,
@@ -549,9 +592,10 @@ int git2r_diff_get_file_cb(const git_diff_delta *delta,
  * First we save the previous hunk, if there was one. Then create an
  * empty hunk (i.e. without any lines) and put it in the result.
  *
- * @param delta
- * @param hunk
- * @param payload
+ * @param delta :TODO:DOCUMENTATION:
+ * @param hunk :TODO:DOCUMENTATION:
+ * @param payload :TODO:DOCUMENTATION:
+ * @return :TODO:DOCUMENTATION:
  */
 
 int git2r_diff_get_hunk_cb(const git_diff_delta *delta,
@@ -603,10 +647,11 @@ int git2r_diff_get_hunk_cb(const git_diff_delta *delta,
  * This is easy, just populate a git_diff_line object and
  * put it in the temporary hunk.
  *
- * @param delta
- * @param hunk
- * @param line
- * @param payload
+ * @param delta :TODO:DOCUMENTATION:
+ * @param hunk :TODO:DOCUMENTATION:
+ * @param line :TODO:DOCUMENTATION:
+ * @param payload :TODO:DOCUMENTATION:
+ * @return :TODO:DOCUMENTATION:
  */
 
 int git2r_diff_get_line_cb(const git_diff_delta *delta,
@@ -659,8 +704,8 @@ int git2r_diff_get_line_cb(const git_diff_delta *delta,
  * Then in the second walk, we have a correspondingly allocated
  * list that we use for temporary storage.
  *
- * @param diff
- * @return
+ * @param diff :TODO:DOCUMENTATION:
+ * @return :TODO:DOCUMENTATION:
  */
 
 SEXP git2r_diff_format_to_r(git_diff *diff, SEXP old, SEXP new)

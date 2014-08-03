@@ -25,8 +25,8 @@
 /**
  * Init slots in S4 class git_reference.
  *
- * @param ref
- * @param reference
+ * @param ref :TODO:DOCUMENTATION:
+ * @param reference :TODO:DOCUMENTATION:
  * @return void
  */
 void git2r_reference_init(git_reference *source, SEXP dest)
