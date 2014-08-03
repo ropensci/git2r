@@ -27,7 +27,8 @@
  * Add files to a repository
  *
  * @param repo S4 class git_repository
- * @param path :TODO:DOCUMENTATION:
+ * @param path Character vector with filename to add. The file path
+ * must be relative to the repository's working folder.
  * @return R_NilValue
  */
 SEXP git2r_index_add(SEXP repo, SEXP path)
@@ -52,8 +53,6 @@ SEXP git2r_index_add(SEXP repo, SEXP path)
         goto cleanup;
 
     err = git_index_write(index);
-    if (err < 0)
-        goto cleanup;
 
 cleanup:
     if (index)
@@ -85,8 +84,8 @@ SEXP git2r_index_add_all(SEXP repo, SEXP path)
     git_index *index = NULL;
     git_repository *repository = NULL;
 
-    if (R_NilValue == path || !isString(path))
-        Rf_error("Invalid arguments to git2r_index_add_all");
+    if (0 != git2r_arg_check_string_vec(path))
+        Rf_error(git2r_err_string_vec_arg, "path");
 
     repository= git2r_repository_open(repo);
     if (!repository)
@@ -124,8 +123,6 @@ SEXP git2r_index_add_all(SEXP repo, SEXP path)
         goto cleanup;
 
     err = git_index_write(index);
-    if (err < 0)
-        goto cleanup;
 
 cleanup:
     if (pathspec.strings)
