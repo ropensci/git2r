@@ -65,3 +65,7 @@ remote_remove(repo, "foobar")
 
 stopifnot(identical(remotes(repo), character(0)))
 
+##
+## Cleanup
+##
+unlink(path, recursive=TRUE)
