@@ -181,12 +181,6 @@ SEXP git2r_remote_remove(SEXP repo, SEXP name)
 
     err = git_remote_delete(remote);
 
-    if (err != 0)
-	goto cleanup;
-
-    /* Was freed by git_remote_delete */
-    remote = NULL;
-
 cleanup:
     if (remote)
 	git_remote_free(remote);
