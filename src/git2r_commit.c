@@ -30,10 +30,10 @@
  * Commit
  *
  * @param repo S4 class git_repository
- * @param message :TODO:DOCUMENTATION:
+ * @param message The message for the commit
  * @param author S4 class git_signature
  * @param committer S4 class git_signature
- * @param parent_list :TODO:DOCUMENTATION:
+ * @param parent_list Character vector with hex (sha1) values of parents
  * @return S4 class git_commit
  */
 SEXP git2r_commit_create(
@@ -60,12 +60,14 @@ SEXP git2r_commit_create(
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
     opts.show  = GIT_STATUS_SHOW_INDEX_ONLY;
 
-    if (0 != git2r_arg_check_string(message)
-        || 0 != git2r_arg_check_signature(author)
-        || 0 != git2r_arg_check_signature(committer)
-        || R_NilValue == parent_list
-        || !isString(parent_list))
-        Rf_error("Invalid arguments to git2r_commit_create");
+    if (0 != git2r_arg_check_string(message))
+        Rf_error(git2r_err_string_arg, "message");
+    if (0 != git2r_arg_check_signature(author))
+        Rf_error(git2r_err_signature_arg, "author");
+    if (0 != git2r_arg_check_signature(committer))
+        Rf_error(git2r_err_signature_arg, "committer");
+    if (0 != git2r_arg_check_string_vec(parent_list))
+        Rf_error(git2r_err_string_vec_arg, "parent_list");
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -216,10 +218,10 @@ cleanup:
 /**
  * Get commit object from S4 class git_commit
  *
- * @param out :TODO:DOCUMENTATION:
- * @param repository :TODO:DOCUMENTATION:
- * @param commit :TODO:DOCUMENTATION:
- * @return :TODO:DOCUMENTATION:
+ * @param out Pointer to the looked up commit
+ * @param repository The repository
+ * @param commit S4 class git_commit
+ * @return 0 or an error code
  */
 int git2r_commit_lookup(
     git_commit **out,
@@ -250,7 +252,7 @@ SEXP git2r_commit_tree(SEXP commit)
     git_tree *tree = NULL;
 
     if (0 != git2r_arg_check_commit(commit))
-        Rf_error("Invalid arguments to git2r_commit_tree");
+        Rf_error(git2r_err_commit_arg, "commit");
 
     repo = GET_SLOT(commit, Rf_install("repo"));
     repository = git2r_repository_open(repo);
@@ -349,7 +351,7 @@ void git2r_commit_init(git_commit *source, SEXP repo, SEXP dest)
 /**
  * Parents of a commit
  *
- * @param commit :TODO:DOCUMENTATION:
+ * @param commit S4 class git_commit
  * @return list of S4 class git_commit objects
  */
 SEXP git2r_commit_parent_list(SEXP commit)
@@ -362,7 +364,7 @@ SEXP git2r_commit_parent_list(SEXP commit)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_commit(commit))
-        Rf_error("Invalid arguments to git2r_commit_parent_list");
+        Rf_error(git2r_err_commit_arg, "commit");
 
     repo = GET_SLOT(commit, Rf_install("repo"));
     repository = git2r_repository_open(repo);
