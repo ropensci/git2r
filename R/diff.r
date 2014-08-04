@@ -172,6 +172,18 @@ setMethod("summary",
 #'
 #' @rdname diff-methods
 #' @docType methods
+#' @param object A \code{git_repository} object or the old
+#' \code{git_tree} object to compare to.
+#' @param index \describe{
+#'   \item{\emph{When object equals a git_repository}}{
+#'     Whether to compare the index to HEAD. If FALSE (the default),
+#'     then the working tree is compared to the index.
+#'   }
+#'   \item{\emph{When object equals a git_tree}}{
+#'     Whether to use the working directory (by default), or the index
+#'     (if set to TRUE) in the comparison to \code{object}.
+#'   }
+#' }
 #' @param ... Additional arguments affecting the diff produced
 #' @return A git_diff object
 #' @keywords methods
@@ -181,14 +193,10 @@ setGeneric("diff",
            standardGeneric("diff"))
 
 #' @rdname diff-methods
-#' @param object A git_repository object
-#' @param index Flag, whether to compare the index to HEAD. If
-#'        FALSE (the default), then the working tree is compared to
-#'        the index.
 #' @export
 setMethod("diff",
           signature(object = "git_repository"),
-          function(object, index=FALSE)
+          function(object, index = FALSE)
           {
               .Call("git2r_diff", repo = object, tree1 = NULL,
                     tree2 = NULL, index = index)
@@ -196,17 +204,13 @@ setMethod("diff",
 )
 
 #' @rdname diff-methods
-#' @param object The old git_tree object to compare to
 #' @param new_tree The new git_tree object to compare, or NULL.
 #'        If NULL, then we use the working directory or the index (see
 #'        the \code{index} argument).
-#' @param index Whether to use the working directory (by default),
-#'        or the index (if set to TRUE) in the comparison to
-#'        \code{object}.
 #' @export
 setMethod("diff",
           signature(object = "git_tree"),
-          function(object, new_tree=NULL, index=FALSE)
+          function(object, new_tree = NULL, index = FALSE)
           {
               if (!is.null(new_tree)) {
                   if (! is(new_tree, "git_tree")) {

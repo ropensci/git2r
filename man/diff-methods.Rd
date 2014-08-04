@@ -13,23 +13,25 @@ diff(object, ...)
 \S4method{diff}{git_tree}(object, new_tree = NULL, index = FALSE)
 }
 \arguments{
+\item{object}{A \code{git_repository} object or the old
+\code{git_tree} object to compare to.}
+
+\item{index}{\describe{
+  \item{\emph{When object equals a git_repository}}{
+    Whether to compare the index to HEAD. If FALSE (the default),
+    then the working tree is compared to the index.
+  }
+  \item{\emph{When object equals a git_tree}}{
+    Whether to use the working directory (by default), or the index
+    (if set to TRUE) in the comparison to \code{object}.
+  }
+}}
+
 \item{...}{Additional arguments affecting the diff produced}
-
-\item{object}{A git_repository object}
-
-\item{index}{Flag, whether to compare the index to HEAD. If
-FALSE (the default), then the working tree is compared to
-the index.}
-
-\item{object}{The old git_tree object to compare to}
 
 \item{new_tree}{The new git_tree object to compare, or NULL.
 If NULL, then we use the working directory or the index (see
 the \code{index} argument).}
-
-\item{index}{Whether to use the working directory (by default),
-or the index (if set to TRUE) in the comparison to
-\code{object}.}
 }
 \value{
 A git_diff object
