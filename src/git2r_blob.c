@@ -89,8 +89,8 @@ SEXP git2r_blob_create_fromdisk(SEXP repo, SEXP path)
     git_blob *blob = NULL;
     git_repository *repository = NULL;
 
-    if (R_NilValue == path || !isString(path))
-        Rf_error("Invalid argument to git2r_blob_create_fromdisk");
+    if (0 != git2r_arg_check_string_vec(path))
+        Rf_error(git2r_err_string_vec_arg, "path");
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -153,8 +153,8 @@ SEXP git2r_blob_create_fromworkdir(SEXP repo, SEXP relative_path)
     git_blob *blob = NULL;
     git_repository *repository = NULL;
 
-    if (R_NilValue == relative_path || !isString(relative_path))
-        Rf_error("Invalid argument to git2r_blob_create_fromworkdir");
+    if (0 != git2r_arg_check_string_vec(relative_path))
+        Rf_error(git2r_err_string_vec_arg, "relative_path");
 
     repository = git2r_repository_open(repo);
     if (!repository)
