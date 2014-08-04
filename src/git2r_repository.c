@@ -61,9 +61,9 @@ git_repository* git2r_repository_open(SEXP repo)
  * Get head of repository
  *
  * @param repo S4 class git_repository
- * @return R_NilValue if unborn branch or not found.
-           S4 class git_branch if not a detached head.
-           S4 class git_commit if detached head
+ * @return R_NilValue if unborn branch or not found. S4 class
+ * git_branch if not a detached head. S4 class git_commit if detached
+ * head
  */
 SEXP git2r_repository_head(SEXP repo)
 {
@@ -123,17 +123,22 @@ cleanup:
 /**
  * Init a repository.
  *
- * @param path :TODO:DOCUMENTATION:
- * @param bare :TODO:DOCUMENTATION:
- * @return R_NilValue :TODO:DOCUMENTATION:
+ * @param path A path to where to init a git repository
+ * @param bare If TRUE, a Git repository without a working directory
+ * is created at the pointed path. If FALSE, provided path will be
+ * considered as the working directory into which the .git directory
+ * will be created.
+ * @return R_NilValue
  */
 SEXP git2r_repository_init(SEXP path, SEXP bare)
 {
     int err;
     git_repository *repository = NULL;
 
-    if (0 != git2r_arg_check_string(path) || 0 != git2r_arg_check_logical(bare))
-        Rf_error("Invalid arguments to git2r_repository_init");
+    if (0 != git2r_arg_check_string(path))
+        Rf_error(git2r_err_string_arg, "path");
+    if (0 != git2r_arg_check_logical(bare))
+        Rf_error(git2r_err_logical_arg, "bare");
 
     err = git_repository_init(&repository,
                               CHAR(STRING_ELT(path, 0)),
@@ -141,7 +146,8 @@ SEXP git2r_repository_init(SEXP path, SEXP bare)
     if (err < 0)
         Rf_error("Unable to init repository");
 
-    git_repository_free(repository);
+    if (repository)
+        git_repository_free(repository);
 
     return R_NilValue;
 }
@@ -155,18 +161,22 @@ SEXP git2r_repository_init(SEXP path, SEXP bare)
 SEXP git2r_repository_is_bare(SEXP repo)
 {
     SEXP result;
+    int is_bare;
     git_repository *repository;
 
     repository= git2r_repository_open(repo);
     if (!repository)
         Rf_error(git2r_err_invalid_repository);
 
-    if (git_repository_is_bare(repository))
-        result = ScalarLogical(TRUE);
-    else
-        result = ScalarLogical(FALSE);
-
+    is_bare = git_repository_is_bare(repository);
     git_repository_free(repository);
+
+    PROTECT(result = allocVector(LGLSXP, 1));
+    if (1 == is_bare)
+        LOGICAL(result)[0] = 1;
+    else
+        LOGICAL(result)[0] = 0;
+    UNPROTECT(1);
 
     return result;
 }
@@ -180,18 +190,24 @@ SEXP git2r_repository_is_bare(SEXP repo)
 SEXP git2r_repository_is_shallow(SEXP repo)
 {
     SEXP result;
+    int is_shallow;
     git_repository *repository;
 
     repository= git2r_repository_open(repo);
     if (!repository)
         Rf_error(git2r_err_invalid_repository);
 
-    if (git_repository_is_shallow(repository))
-        result = ScalarLogical(TRUE);
-    else
-        result = ScalarLogical(FALSE);
-
+    is_shallow = git_repository_is_shallow(repository);
     git_repository_free(repository);
+    if (is_shallow < 0)
+        Rf_error("Error: %s\n", giterr_last()->message);
+
+    PROTECT(result = allocVector(LGLSXP, 1));
+    if (1 == is_shallow)
+        LOGICAL(result)[0] = 1;
+    else
+        LOGICAL(result)[0] = 0;
+    UNPROTECT(1);
 
     return result;
 }
@@ -204,63 +220,87 @@ SEXP git2r_repository_is_shallow(SEXP repo)
  */
 SEXP git2r_repository_head_detached(SEXP repo)
 {
-    int result;
+    SEXP result;
+    int head_detached;
     git_repository *repository;
 
     repository= git2r_repository_open(repo);
     if (!repository)
         Rf_error(git2r_err_invalid_repository);
-    result = git_repository_head_detached(repository);
+
+    head_detached = git_repository_head_detached(repository);
     git_repository_free(repository);
-    if (result < 0)
+    if (head_detached < 0)
         Rf_error("Error: %s\n", giterr_last()->message);
-    if (1 == result)
-        return ScalarLogical(TRUE);
-    return ScalarLogical(FALSE);
+
+    PROTECT(result = allocVector(LGLSXP, 1));
+    if (1 == head_detached)
+        LOGICAL(result)[0] = 1;
+    else
+        LOGICAL(result)[0] = 0;
+    UNPROTECT(1);
+
+    return result;
 }
 
 /**
  * Check if repository is empty.
  *
  * @param repo S4 class git_repository
- * @return :TODO:DOCUMENTATION:
+ * @return TRUE if empty else FALSE
  */
 SEXP git2r_repository_is_empty(SEXP repo)
 {
-    int result;
+    SEXP result;
+    int is_empty;
     git_repository *repository;
 
     repository= git2r_repository_open(repo);
     if (!repository)
         Rf_error(git2r_err_invalid_repository);
-    result = git_repository_is_empty(repository);
+
+    is_empty = git_repository_is_empty(repository);
     git_repository_free(repository);
-    if (result < 0)
+    if (is_empty < 0)
         Rf_error("Error: %s\n", giterr_last()->message);
-    if (1 == result)
-        return ScalarLogical(TRUE);
-    return ScalarLogical(FALSE);
+
+    PROTECT(result = allocVector(LGLSXP, 1));
+    if (1 == is_empty)
+        LOGICAL(result)[0] = 1;
+    else
+        LOGICAL(result)[0] = 0;
+    UNPROTECT(1);
+
+    return result;
 }
 
 /**
  * Check if valid repository.
  *
- * @param path :TODO:DOCUMENTATION:
- * @return :TODO:DOCUMENTATION:
+ * @param path The path to the potential repository
+ * @return TRUE if the repository can be opened else FALSE
  */
 SEXP git2r_repository_can_open(SEXP path)
 {
+    SEXP result;
+    int can_open;
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_string(path))
-        Rf_error("Invalid arguments to git2r_repository_can_open");
+        Rf_error(git2r_err_string_arg, "path");
 
-    if (git_repository_open(&repository, CHAR(STRING_ELT(path, 0))) < 0)
-        return ScalarLogical(FALSE);
+    can_open = git_repository_open(&repository, CHAR(STRING_ELT(path, 0)));
+    if (repository)
+        git_repository_free(repository);
 
-    git_repository_free(repository);
+    PROTECT(result = allocVector(LGLSXP, 1));
+    if (0 != can_open)
+        LOGICAL(result)[0] = 0;
+    else
+        LOGICAL(result)[0] = 1;
+    UNPROTECT(1);
 
-    return ScalarLogical(TRUE);
+    return result;
 }
 
 /**
@@ -279,8 +319,12 @@ SEXP git2r_repository_workdir(SEXP repo)
     if (!repository)
         Rf_error(git2r_err_invalid_repository);
 
-    if (!git_repository_is_bare(repository))
-        result = ScalarString(mkChar(git_repository_workdir(repository)));
+    if (!git_repository_is_bare(repository)) {
+        const char *wd = git_repository_workdir(repository);
+        PROTECT(result = allocVector(STRSXP, 1));
+        SET_STRING_ELT(result, 0, mkChar(wd));
+        UNPROTECT(1);
+    }
 
     git_repository_free(repository);
 
@@ -290,25 +334,27 @@ SEXP git2r_repository_workdir(SEXP repo)
 /**
  * Find repository base path for given path
  *
- * @param path :TODO:DOCUMENTATION:
+ * @param path A character vector specifying the path to a file or folder
  * @return R_NilValue if repository cannot be found or
  * a character vector of length one with path to repository's git dir
  * e.g. /path/to/my/repo/.git
  */
-SEXP git2r_repository_discover(SEXP startpath)
+SEXP git2r_repository_discover(SEXP path)
 {
     int err;
     SEXP result = R_NilValue;
-    git_buf gitdir = GIT_BUF_INIT;
+    git_buf buf = GIT_BUF_INIT;
 
-    if (0 != git2r_arg_check_string(startpath))
-        Rf_error("Invalid arguments to git2r_repository_discover");
+    if (0 != git2r_arg_check_string(path))
+        Rf_error(git2r_err_string_arg, "path");
 
-    /* note that across_fs (arg #3) is set to 0 so this will stop when a
-       filesystem device change is detected while exploring parent directories
-    */
-    err = git_repository_discover(&gitdir, CHAR(STRING_ELT(startpath, 0)), 0,
-    /* const char *ceiling_dirs */ NULL);
+    /* note that across_fs (arg #3) is set to 0 so this will stop when
+     * a filesystem device change is detected while exploring parent
+     * directories */
+    err = git_repository_discover(&buf,
+                                  CHAR(STRING_ELT(path, 0)),
+                                  0,
+                                  /* const char *ceiling_dirs */ NULL);
     if (err < 0) {
         /* NB just return R_NilValue if we can't discover the repo */
         if (GIT_ENOTFOUND == err)
@@ -316,10 +362,14 @@ SEXP git2r_repository_discover(SEXP startpath)
         goto cleanup;
     }
 
-    result = ScalarString(mkChar(gitdir.ptr));
+    PROTECT(result = allocVector(STRSXP, 1));
+    SET_STRING_ELT(result, 0, mkChar(buf.ptr));
 
 cleanup:
-    git_buf_free(&gitdir);
+    git_buf_free(&buf);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
 
     if (err < 0)
         Rf_error("Error: %s\n", giterr_last()->message);
