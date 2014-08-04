@@ -27,7 +27,8 @@
 #include "git2r_stash.h"
 
 /**
- * :TODO:DOCUMENTATION:
+ * Data structure to hold information when iterating over stash
+ * objects.
  */
 typedef struct {
     size_t n;
@@ -48,25 +49,26 @@ SEXP git2r_stash_drop(SEXP repo, SEXP index)
     int err;
     git_repository *repository = NULL;
 
-    if (0 != git2r_arg_check_integer(index))
-        Rf_error("Invalid arguments to git2r_stash_drop");
-    if (0 > INTEGER(index)[0])
-        Rf_error("'index' out of range");
+    if (0 != git2r_arg_check_integer_gte_zero(index))
+        Rf_error(git2r_err_integer_gte_zero_arg, "index");
+
     repository = git2r_repository_open(repo);
     if (!repository)
         Rf_error(git2r_err_invalid_repository);
+
     err = git_stash_drop(repository, INTEGER(index)[0]);
     git_repository_free(repository);
     if (err < 0)
         Rf_error("Error: %s\n", giterr_last()->message);
+
     return R_NilValue;
 }
 
 /**
  * Init slots in S4 class git_stash
  *
- * @param source :TODO:DOCUMENTATION:
- * @param repository :TODO:DOCUMENTATION:
+ * @param source The commit oid of the stashed state.
+ * @param repository The repository
  * @param repo S4 class git_repository that contains the stash
  * @param dest S4 class git_stash to initialize
  * @return int 0 on success, or an error code.
@@ -92,11 +94,12 @@ int git2r_stash_init(
 /**
  * Callback when iterating over stashes
  *
- * @param index :TODO:DOCUMENTATION:
- * @param message :TODO:DOCUMENTATION:
- * @param stash_id :TODO:DOCUMENTATION:
- * @param payload :TODO:DOCUMENTATION:
- * @return int :TODO:DOCUMENTATION:
+ * @param index The position within the stash list. 0 points to the
+ * most recent stashed state.
+ * @param message The stash message.
+ * @param stash_id The commit oid of the stashed state.
+ * @param payload Pointer to a git2r_stash_list_cb_data data structure.
+ * @return 0 if OK, else error code
  */
 static int git2r_stash_list_cb(
     size_t index,
@@ -194,18 +197,21 @@ SEXP git2r_stash_save(
     SEXP stasher)
 {
     int err;
-    SEXP sexp_stash = R_NilValue;
+    SEXP result = R_NilValue;
     git_oid oid;
     git_stash_flags flags = GIT_STASH_DEFAULT;
     git_commit *commit = NULL;
     git_repository *repository = NULL;
-    git_signature *sig_stasher = NULL;
+    git_signature *c_stasher = NULL;
 
-    if (0 != git2r_arg_check_logical(index)
-        || 0 != git2r_arg_check_logical(untracked)
-        || 0 != git2r_arg_check_logical(ignored)
-        || 0 != git2r_arg_check_signature(stasher))
-        Rf_error("Invalid arguments to git2r_stash_save");
+    if (0 != git2r_arg_check_logical(index))
+        Rf_error(git2r_err_logical_arg, "index");
+    if (0 != git2r_arg_check_logical(untracked))
+        Rf_error(git2r_err_logical_arg, "untracked");
+    if (0 != git2r_arg_check_logical(ignored))
+        Rf_error(git2r_err_logical_arg, "ignored");
+    if (0 != git2r_arg_check_signature(stasher))
+        Rf_error(git2r_err_signature_arg, "stasher");
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -218,13 +224,13 @@ SEXP git2r_stash_save(
     if (LOGICAL(ignored)[0])
         flags |= GIT_STASH_INCLUDE_IGNORED;
 
-    err = git2r_signature_from_arg(&sig_stasher, stasher);
+    err = git2r_signature_from_arg(&c_stasher, stasher);
     if (err < 0)
         goto cleanup;
 
     err = git_stash_save(&oid,
                          repository,
-                         sig_stasher,
+                         c_stasher,
                          CHAR(STRING_ELT(message, 0)),
                          flags);
     if (GIT_ENOTFOUND == err) {
@@ -234,24 +240,24 @@ SEXP git2r_stash_save(
         goto cleanup;
     }
 
-    PROTECT(sexp_stash = NEW_OBJECT(MAKE_CLASS("git_stash")));
-    err = git2r_stash_init(&oid, repository, repo, sexp_stash);
+    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_stash")));
+    err = git2r_stash_init(&oid, repository, repo, result);
 
 cleanup:
     if (commit)
         git_commit_free(commit);
 
-    if (sig_stasher)
-        git_signature_free(sig_stasher);
+    if (c_stasher)
+        git_signature_free(c_stasher);
 
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != sexp_stash)
+    if (R_NilValue != result)
         UNPROTECT(1);
 
     if (err < 0)
         Rf_error("Error: %s\n", giterr_last()->message);
 
-    return sexp_stash;
+    return result;
 }

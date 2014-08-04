@@ -196,6 +196,21 @@ int git2r_arg_check_integer(SEXP arg)
 }
 
 /**
+ * Check integer argument and that arg is greater than or equal to 0.
+ *
+ * @param arg the arg to check
+ * @return 0 if OK, else -1
+ */
+int git2r_arg_check_integer_gte_zero(SEXP arg)
+{
+    if (0 != git2r_arg_check_integer(arg))
+        return -1;
+    if (0 > INTEGER(arg)[0])
+        return -1;
+    return 0;
+}
+
+/**
  * Check logical argument
  *
  * @param arg the arg to check

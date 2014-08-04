@@ -40,6 +40,8 @@ const char git2r_err_credentials_arg[] =
     "Error: '%s' must be a S4 class with credentials";
 const char git2r_err_integer_arg[] =
     "Error: '%s' must be an integer vector of length one with non NA value";
+const char git2r_err_integer_gte_zero_arg[] =
+    "Error: '%s' must be an integer vector of length one with value greater than or equal to zero";
 const char git2r_err_logical_arg[] =
     "Error: '%s' must be logical vector of length one with non NA value";
 const char git2r_err_signature_arg[] =
