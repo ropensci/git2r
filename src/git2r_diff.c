@@ -55,14 +55,18 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2);
  *
  * @param repo Repository.
  * @param tree1 The first tree to compare.
- * @param tree2 The second gree to compare.
+ * @param tree2 The second tree to compare.
  * @param index Whether to compare to the index.
  * @return The diff.
  */
-
 SEXP git2r_diff(SEXP repo, SEXP tree1, SEXP tree2, SEXP index)
 {
-    int c_index=LOGICAL(index)[0];
+    int c_index;
+
+    if (0 != git2r_arg_check_logical(index))
+        Rf_error(git2r_err_logical_arg, "index");
+
+    c_index = LOGICAL(index)[0];
 
     if (isNull(tree1) && ! c_index) {
 	if (!isNull(tree2))
@@ -88,12 +92,12 @@ SEXP git2r_diff(SEXP repo, SEXP tree1, SEXP tree2, SEXP index)
 }
 
 /**
- * :TODO:DOCUMENTATION:
+ * Create a diff between the repository index and the workdir
+ * directory.
  *
- * @param repo :TODO:DOCUMENTATION:
- * @return :TODO:DOCUMENTATION:
+ * @param repo S4 class git_repository
+ * @return S4 class git_diff
  */
-
 SEXP git2r_diff_index_to_wd(SEXP repo)
 {
     int err;
@@ -113,7 +117,8 @@ SEXP git2r_diff_index_to_wd(SEXP repo)
     if (err != 0)
 	goto cleanup;
 
-    result = git2r_diff_format_to_r(diff, /* old= */ mkString("index"),
+    result = git2r_diff_format_to_r(diff,
+                                    /* old= */ mkString("index"),
 				    /* new= */ mkString("workdir"));
 
 cleanup:
@@ -131,10 +136,10 @@ cleanup:
 }
 
 /**
- * :TODO:DOCUMENTATION:
+ * Create a diff between head and repository index
  *
- * @param repo :TODO:DOCUMENTATION:
- * @return :TODO:DOCUMENTATION:
+ * @param repo S4 class git_repository
+ * @return S4 class git_diff
  */
 
 SEXP git2r_diff_head_to_index(SEXP repo)
@@ -170,11 +175,11 @@ SEXP git2r_diff_head_to_index(SEXP repo)
 	goto cleanup;
 
     /* TODO: object instead of HEAD string */
-    result = git2r_diff_format_to_r(diff, /* old= */ mkString("HEAD"),
-				    /* new=*/ mkString("index"));
+    result = git2r_diff_format_to_r(diff,
+                                    /* old= */ mkString("HEAD"),
+				    /* new= */ mkString("index"));
 
 cleanup:
-
     if (head)
 	git_tree_free(head);
 
@@ -194,11 +199,10 @@ cleanup:
 }
 
 /**
- * :TODO:DOCUMENTATION:
+ * Create a diff between a tree and the working directory
  *
- * @param repo :TODO:DOCUMENTATION:
- * @param tree :TODO:DOCUMENTATION:
- * @return :TODO:DOCUMENTATION:
+ * @param tree S4 class git_tree
+ * @return S4 class git_diff
  */
 
 SEXP git2r_diff_tree_to_wd(SEXP tree)
@@ -210,8 +214,12 @@ SEXP git2r_diff_tree_to_wd(SEXP tree)
     git_tree *c_tree = NULL;
     SEXP hex;
     SEXP result;
-    SEXP repo = GET_SLOT(tree, Rf_install("repo"));
+    SEXP repo;
 
+    if (0 != git2r_arg_check_tree(tree))
+        Rf_error(git2r_err_tree_arg, "tree");
+
+    repo = GET_SLOT(tree, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
         Rf_error(git2r_err_invalid_repository);
@@ -236,7 +244,8 @@ SEXP git2r_diff_tree_to_wd(SEXP tree)
     if (err != 0)
 	goto cleanup;
 
-    result = git2r_diff_format_to_r(diff, /* old= */ tree,
+    result = git2r_diff_format_to_r(diff,
+                                    /* old= */ tree,
 				    /* new= */ mkString("workdir"));
 
 cleanup:
@@ -259,11 +268,10 @@ cleanup:
 }
 
 /**
- * :TODO:DOCUMENTATION:
+ * Create a diff between a tree and repository index
  *
- * @param repo :TODO:DOCUMENTATION:
- * @param tree :TODO:DOCUMENTATION:
- * @return :TODO:DOCUMENTATION:
+ * @param tree S4 class git_tree
+ * @return S4 class git_diff
  */
 
 SEXP git2r_diff_tree_to_index(SEXP tree)
@@ -275,8 +283,12 @@ SEXP git2r_diff_tree_to_index(SEXP tree)
     git_tree *c_tree = NULL;
     SEXP hex;
     SEXP result;
-    SEXP repo = GET_SLOT(tree, Rf_install("repo"));
+    SEXP repo;
 
+    if (0 != git2r_arg_check_tree(tree))
+        Rf_error(git2r_err_tree_arg, "tree");
+
+    repo = GET_SLOT(tree, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
         Rf_error(git2r_err_invalid_repository);
@@ -302,7 +314,8 @@ SEXP git2r_diff_tree_to_index(SEXP tree)
     if (err != 0)
 	goto cleanup;
 
-    result = git2r_diff_format_to_r(diff, /* old= */ tree,
+    result = git2r_diff_format_to_r(diff,
+                                    /* old= */ tree,
 				    /* new= */ mkString("index"));
 
 cleanup:
@@ -326,13 +339,12 @@ cleanup:
 }
 
 /**
- * :TODO:DOCUMENTATION:
+ * Create a diff with the difference between two tree objects
  *
- * @param tree1 :TODO:DOCUMENTATION:
- * @param tree2 :TODO:DOCUMENTATION:
- * @return :TODO:DOCUMENTATION:
+ * @param tree1 S4 class git_tree
+ * @param tree2 S4 class git_tree
+ * @return S4 class git_diff
  */
-
 SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2)
 {
     int err;
@@ -341,10 +353,16 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2)
     git_object *obj1 = NULL, *obj2 = NULL;
     git_tree *c_tree1 = NULL, *c_tree2 = NULL;
     SEXP result;
-    SEXP repo = GET_SLOT(tree1, Rf_install("repo"));
+    SEXP repo;
     SEXP hex1, hex2;
 
+    if (0 != git2r_arg_check_tree(tree1))
+        Rf_error(git2r_err_tree_arg, "tree1");
+    if (0 != git2r_arg_check_tree(tree2))
+        Rf_error(git2r_err_tree_arg, "tree2");
+
     /* We already checked that tree2 is from the same repo, in R */
+    repo = GET_SLOT(tree1, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
         Rf_error(git2r_err_invalid_repository);
@@ -382,7 +400,8 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2)
     if (err != 0)
 	goto cleanup;
 
-    result = git2r_diff_format_to_r(diff, /* old= */ tree1,
+    result = git2r_diff_format_to_r(diff,
+                                    /* old= */ tree1,
 				    /* new= */ tree2);
 
 cleanup:
@@ -411,7 +430,7 @@ cleanup:
 }
 
 /**
- * :TODO:DOCUMENTATION:
+ * Data structure to hold the information when counting diff objects.
  */
 typedef struct {
     size_t num_files;
@@ -422,14 +441,13 @@ typedef struct {
 } git2r_diff_count_payload;
 
 /**
- * :TODO:DOCUMENTATION:
+ * Callback per file in the diff
  *
- * @param delta :TODO:DOCUMENTATION:
- * @param progre :TODO:DOCUMENTATION:
- * @param payload :TODO:DOCUMENTATION:
- * @return :TODO:DOCUMENTATION:
+ * @param delta A pointer to the delta data for the file
+ * @param progress Goes from 0 to 1 over the diff
+ * @param payload A pointer to the git2r_diff_count_payload data structure
+ * @return 0
  */
-
 int git2r_diff_count_file_cb(const git_diff_delta *delta,
 			     float progress,
 			     void *payload)
@@ -441,14 +459,13 @@ int git2r_diff_count_file_cb(const git_diff_delta *delta,
 }
 
 /**
- * :TODO:DOCUMENTATION:
+ * Callback per hunk in the diff
  *
- * @param delta :TODO:DOCUMENTATION:
- * @param hunk :TODO:DOCUMENTATION:
- * @param payload :TODO:DOCUMENTATION:
- * @return :TODO:DOCUMENTATION:
+ * @param delta A pointer to the delta data for the file
+ * @param hunk A pointer to the structure describing a hunk of a diff
+ * @param payload A pointer to the git2r_diff_count_payload data structure
+ * @return 0
  */
-
 int git2r_diff_count_hunk_cb(const git_diff_delta *delta,
 			     const git_diff_hunk *hunk,
 			     void *payload)
@@ -461,15 +478,15 @@ int git2r_diff_count_hunk_cb(const git_diff_delta *delta,
 }
 
 /**
- * :TODO:DOCUMENTATION:
+ * Callback per text diff line
  *
- * @param delta :TODO:DOCUMENTATION:
- * @param hunk :TODO:DOCUMENTATION:
- * @param line  :TODO:DOCUMENTATION:
- * @param payload :TODO:DOCUMENTATION:
- * @return :TODO:DOCUMENTATION:
+ * @param delta A pointer to the delta data for the file
+ * @param hunk A pointer to the structure describing a hunk of a diff
+ * @param line A pointer to the structure describing a line (or data
+ * span) of a diff.
+ * @param payload A pointer to the git2r_diff_count_payload data structure
+ * @return 0
  */
-
 int git2r_diff_count_line_cb(const git_diff_delta *delta,
 			     const git_diff_hunk *hunk,
 			     const git_diff_line *line,
@@ -483,18 +500,19 @@ int git2r_diff_count_line_cb(const git_diff_delta *delta,
 
 
 /**
- * :TODO:DOCUMENTATION:
+ *  Count diff objects
  *
- * @param diff :TODO:DOCUMENTATION:
- * @param num_file :TODO:DOCUMENTATION:
- * @param num_hunk :TODO:DOCUMENTATION:
- * @return :TODO:DOCUMENTATION:
+ * @param diff Pointer to the diff
+ * @param num_files Pointer where to save the number of files
+ * @param max_hunks Pointer where to save the maximum number of hunks
+ * @param max_lines Pointer where to save the maximum number of lines
+ * @return 0 if OK, else -1
  */
-
-int git2r_diff_count(git_diff *diff, size_t *num_files,
-		     size_t *max_hunks, size_t *max_lines)
+int git2r_diff_count(git_diff *diff,
+                     size_t *num_files,
+		     size_t *max_hunks,
+                     size_t *max_lines)
 {
-
     int err;
     git2r_diff_count_payload n = { 0, 0, 0 };
 
@@ -515,7 +533,8 @@ int git2r_diff_count(git_diff *diff, size_t *num_files,
 }
 
 /**
- * :TODO:DOCUMENTATION:
+ * Data structure to hold the callback information when generating
+ * diff objects.
  */
 typedef struct {
     SEXP result;
@@ -534,19 +553,17 @@ int git2r_diff_get_line_cb(const git_diff_delta *delta,
 			   void *payload);
 
 /**
- * :TODO:DOCUMENTATION:
+ * Callback per file in the diff
  *
- * @param delta :TODO:DOCUMENTATION:
- * @param progre :TODO:DOCUMENTATION:
- * @param payload :TODO:DOCUMENTATION:
- * @return :TODO:DOCUMENTATION:
+ * @param delta A pointer to the delta data for the file
+ * @param progress Goes from 0 to 1 over the diff
+ * @param payload A pointer to the git2r_diff_payload data structure
+ * @return 0
  */
-
 int git2r_diff_get_file_cb(const git_diff_delta *delta,
 			   float progress,
 			   void *payload)
 {
-
     git2r_diff_payload *p = (git2r_diff_payload *) payload;
 
     /* Save previous hunk's lines in hunk_tmp, we just call the
@@ -592,12 +609,11 @@ int git2r_diff_get_file_cb(const git_diff_delta *delta,
  * First we save the previous hunk, if there was one. Then create an
  * empty hunk (i.e. without any lines) and put it in the result.
  *
- * @param delta :TODO:DOCUMENTATION:
- * @param hunk :TODO:DOCUMENTATION:
- * @param payload :TODO:DOCUMENTATION:
- * @return :TODO:DOCUMENTATION:
+ * @param delta A pointer to the delta data for the file
+ * @param hunk A pointer to the structure describing a hunk of a diff
+ * @param payload Pointer to a git2r_diff_payload data structure
+ * @return 0
  */
-
 int git2r_diff_get_hunk_cb(const git_diff_delta *delta,
 			   const git_diff_hunk *hunk,
 			   void *payload)
@@ -647,13 +663,13 @@ int git2r_diff_get_hunk_cb(const git_diff_delta *delta,
  * This is easy, just populate a git_diff_line object and
  * put it in the temporary hunk.
  *
- * @param delta :TODO:DOCUMENTATION:
- * @param hunk :TODO:DOCUMENTATION:
- * @param line :TODO:DOCUMENTATION:
- * @param payload :TODO:DOCUMENTATION:
- * @return :TODO:DOCUMENTATION:
+ * @param delta A pointer to the delta data for the file
+ * @param hunk A pointer to the structure describing a hunk of a diff
+ * @param line A pointer to the structure describing a line (or data
+ * span) of a diff.
+ * @param payload Pointer to a git2r_diff_payload data structure
+ * @return 0
  */
-
 int git2r_diff_get_line_cb(const git_diff_delta *delta,
 			   const git_diff_hunk *hunk,
 			   const git_diff_line *line,
@@ -704,10 +720,11 @@ int git2r_diff_get_line_cb(const git_diff_delta *delta,
  * Then in the second walk, we have a correspondingly allocated
  * list that we use for temporary storage.
  *
- * @param diff :TODO:DOCUMENTATION:
- * @return :TODO:DOCUMENTATION:
+ * @param diff Pointer to the diff
+ * @param old S4 class git_tree, "index" or "HEAD"
+ * @param new S4 class git_tree, "index" or "workdir"
+ * @return S4 class git_diff
  */
-
 SEXP git2r_diff_format_to_r(git_diff *diff, SEXP old, SEXP new)
 {
   int err;
