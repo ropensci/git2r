@@ -28,7 +28,7 @@
 
 int git2r_diff_count(git_diff *diff, size_t *num_files,
 		     size_t *max_hunks, size_t *max_lines);
-SEXP git2r_diff_format_to_r(git_diff *diff, SEXP old, SEXP new);
+int git2r_diff_format_to_r(git_diff *diff, SEXP dest, SEXP old, SEXP new);
 SEXP git2r_diff_index_to_wd(SEXP repo);
 SEXP git2r_diff_head_to_index(SEXP repo);
 SEXP git2r_diff_tree_to_wd(SEXP tree);
@@ -117,17 +117,21 @@ SEXP git2r_diff_index_to_wd(SEXP repo)
     if (err != 0)
 	goto cleanup;
 
-    result = git2r_diff_format_to_r(diff,
-                                    /* old= */ mkString("index"),
-				    /* new= */ mkString("workdir"));
+    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
+    err = git2r_diff_format_to_r(diff,
+                                 result,
+                                 /* old= */ mkString("index"),
+                                 /* new= */ mkString("workdir"));
 
 cleanup:
-
     if (diff)
 	git_diff_free(diff);
 
     if (repository)
         git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
 
     if (err != 0)
         Rf_error("Error: %s\n", giterr_last()->message);
@@ -175,9 +179,11 @@ SEXP git2r_diff_head_to_index(SEXP repo)
 	goto cleanup;
 
     /* TODO: object instead of HEAD string */
-    result = git2r_diff_format_to_r(diff,
-                                    /* old= */ mkString("HEAD"),
-				    /* new= */ mkString("index"));
+    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
+    err = git2r_diff_format_to_r(diff,
+                                 result,
+                                 /* old= */ mkString("HEAD"),
+                                 /* new= */ mkString("index"));
 
 cleanup:
     if (head)
@@ -191,6 +197,9 @@ cleanup:
 
     if (repository)
         git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
 
     if (err != 0)
         Rf_error("Error: %s\n", giterr_last()->message);
@@ -213,7 +222,7 @@ SEXP git2r_diff_tree_to_wd(SEXP tree)
     git_object *obj = NULL;
     git_tree *c_tree = NULL;
     SEXP hex;
-    SEXP result;
+    SEXP result = R_NilValue;
     SEXP repo;
 
     if (0 != git2r_arg_check_tree(tree))
@@ -244,9 +253,11 @@ SEXP git2r_diff_tree_to_wd(SEXP tree)
     if (err != 0)
 	goto cleanup;
 
-    result = git2r_diff_format_to_r(diff,
-                                    /* old= */ tree,
-				    /* new= */ mkString("workdir"));
+    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
+    err = git2r_diff_format_to_r(diff,
+                                 result,
+                                 /* old= */ tree,
+                                 /* new= */ mkString("workdir"));
 
 cleanup:
     if (diff)
@@ -260,6 +271,9 @@ cleanup:
 
     if (repository)
 	git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
 
     if (err != 0)
         Rf_error("Error: %s\n", giterr_last()->message);
@@ -282,7 +296,7 @@ SEXP git2r_diff_tree_to_index(SEXP tree)
     git_object *obj = NULL;
     git_tree *c_tree = NULL;
     SEXP hex;
-    SEXP result;
+    SEXP result = R_NilValue;
     SEXP repo;
 
     if (0 != git2r_arg_check_tree(tree))
@@ -314,9 +328,11 @@ SEXP git2r_diff_tree_to_index(SEXP tree)
     if (err != 0)
 	goto cleanup;
 
-    result = git2r_diff_format_to_r(diff,
-                                    /* old= */ tree,
-				    /* new= */ mkString("index"));
+    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
+    err = git2r_diff_format_to_r(diff,
+                                 result,
+                                 /* old= */ tree,
+                                 /* new= */ mkString("index"));
 
 cleanup:
     if (diff)
@@ -331,11 +347,13 @@ cleanup:
     if (repository)
 	git_repository_free(repository);
 
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
     if (err != 0)
 	Rf_error("Error: %s\n", giterr_last()->message);
 
     return result;
-
 }
 
 /**
@@ -352,7 +370,7 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2)
     git_diff *diff = NULL;
     git_object *obj1 = NULL, *obj2 = NULL;
     git_tree *c_tree1 = NULL, *c_tree2 = NULL;
-    SEXP result;
+    SEXP result = R_NilValue;
     SEXP repo;
     SEXP hex1, hex2;
 
@@ -400,9 +418,11 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2)
     if (err != 0)
 	goto cleanup;
 
-    result = git2r_diff_format_to_r(diff,
-                                    /* old= */ tree1,
-				    /* new= */ tree2);
+    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
+    err = git2r_diff_format_to_r(diff,
+                                 result,
+                                 /* old= */ tree1,
+                                 /* new= */ tree2);
 
 cleanup:
     if (diff)
@@ -422,6 +442,9 @@ cleanup:
 
     if (repository)
 	git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
 
     if (err != 0)
 	Rf_error("Error: %s\n", giterr_last()->message);
@@ -721,11 +744,12 @@ int git2r_diff_get_line_cb(const git_diff_delta *delta,
  * list that we use for temporary storage.
  *
  * @param diff Pointer to the diff
+ * @param dest The S4 class git_diff to hold the formated diff
  * @param old S4 class git_tree, "index" or "HEAD"
  * @param new S4 class git_tree, "index" or "workdir"
- * @return S4 class git_diff
+ * @return 0 if OK, else error code
  */
-SEXP git2r_diff_format_to_r(git_diff *diff, SEXP old, SEXP new)
+int git2r_diff_format_to_r(git_diff *diff, SEXP dest, SEXP old, SEXP new)
 {
   int err;
   git2r_diff_payload payload = { /* result=   */ R_NilValue,
@@ -736,12 +760,11 @@ SEXP git2r_diff_format_to_r(git_diff *diff, SEXP old, SEXP new)
 				 /* line_ptr= */ 0 };
 
   size_t num_files, max_hunks, max_lines;
-  SEXP result;
 
   err = git2r_diff_count(diff, &num_files, &max_hunks, &max_lines);
 
   if (err != 0)
-      Rf_error("cannot diff, internal error");
+      return err;
 
   PROTECT(payload.result = allocVector(VECSXP, num_files));
   PROTECT(payload.hunk_tmp = allocVector(VECSXP, max_hunks));
@@ -754,17 +777,21 @@ SEXP git2r_diff_format_to_r(git_diff *diff, SEXP old, SEXP new)
 			 &payload);
   if (err != 0) {
       UNPROTECT(3);
-      Rf_error("Error: %s\n", giterr_last()->message);
+      return err;
   }
 
   /* Need to call them once more, to put in the last lines/hunks/files. */
-  git2r_diff_get_file_cb(/* delta= */ NULL, /* progress= */ 100, &payload);
+  err = git2r_diff_get_file_cb(/* delta= */ NULL, /* progress= */ 100, &payload);
+  if (err != 0) {
+      UNPROTECT(3);
+      return err;
+  }
 
-  PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
-  SET_SLOT(result, Rf_install("old"), old);
-  SET_SLOT(result, Rf_install("new"), new);
-  SET_SLOT(result, Rf_install("files"), payload.result);
+  SET_SLOT(dest, Rf_install("old"), old);
+  SET_SLOT(dest, Rf_install("new"), new);
+  SET_SLOT(dest, Rf_install("files"), payload.result);
 
-  UNPROTECT(4);
-  return result;
+  UNPROTECT(3);
+
+  return 0;
 }
