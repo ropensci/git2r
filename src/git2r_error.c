@@ -40,12 +40,16 @@ const char git2r_err_credentials_arg[] =
     "Error: '%s' must be a S4 class with credentials";
 const char git2r_err_filename_arg[] =
     "Error: '%s' must be either 1) NULL, or 2) a character vector of length 0 or 3) a character vector of length 1 and nchar > 0";
+const char git2r_err_hex_arg[] =
+    "Error: '%s' must be a sha1 hex value";
 const char git2r_err_integer_arg[] =
     "Error: '%s' must be an integer vector of length one with non NA value";
 const char git2r_err_integer_gte_zero_arg[] =
     "Error: '%s' must be an integer vector of length one with value greater than or equal to zero";
 const char git2r_err_logical_arg[] =
     "Error: '%s' must be logical vector of length one with non NA value";
+const char git2r_err_note_arg[] =
+    "Error: '%s' must be a S4 class git_note";
 const char git2r_err_signature_arg[] =
     "Error: '%s' must be a S4 class git_signature";
 const char git2r_err_string_arg[] =
