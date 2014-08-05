@@ -16,12 +16,15 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include "git2r_arg.h"
 #include "git2r_diff.h"
 #include "git2r_error.h"
 #include "git2r_tree.h"
 #include "git2r_repository.h"
 
 #include "git2.h"
+#include "buffer.h"
+#include "diff.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -29,11 +32,11 @@
 int git2r_diff_count(git_diff *diff, size_t *num_files,
 		     size_t *max_hunks, size_t *max_lines);
 int git2r_diff_format_to_r(git_diff *diff, SEXP dest, SEXP old, SEXP new);
-SEXP git2r_diff_index_to_wd(SEXP repo);
-SEXP git2r_diff_head_to_index(SEXP repo);
-SEXP git2r_diff_tree_to_wd(SEXP tree);
-SEXP git2r_diff_tree_to_index(SEXP tree);
-SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2);
+SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename);
+SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename);
+SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename);
+SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename);
+SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename);
 
 /**
  * Diff
@@ -57,9 +60,18 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2);
  * @param tree1 The first tree to compare.
  * @param tree2 The second tree to compare.
  * @param index Whether to compare to the index.
- * @return The diff.
+ * @param filename Determines where to write the diff. If filename is
+ * R_NilValue, then the diff is written to a S4 class git_diff
+ * object. If filename has length 0 or filename[0] equals NA_STRING,
+ * then the diff is written to a character vector. If filename is a
+ * character vector of length one with non-NA value, the diff is
+ * written to a file with name filename (the file is overwritten if it
+ * exists).
+ * @return A S4 class git_diff object if filename equals R_NilValue. A
+ * character vector with diff if filename has length 0 or filename[0]
+ * equals NA_STRING. Oterwise NULL.
  */
-SEXP git2r_diff(SEXP repo, SEXP tree1, SEXP tree2, SEXP index)
+SEXP git2r_diff(SEXP repo, SEXP tree1, SEXP tree2, SEXP index, SEXP filename)
 {
     int c_index;
 
@@ -71,23 +83,23 @@ SEXP git2r_diff(SEXP repo, SEXP tree1, SEXP tree2, SEXP index)
     if (isNull(tree1) && ! c_index) {
 	if (!isNull(tree2))
 	    Rf_error("Invalid diff parameters");
-	return git2r_diff_index_to_wd(repo);
+	return git2r_diff_index_to_wd(repo, filename);
     } else if (isNull(tree1) && c_index) {
 	if (!isNull(tree2))
 	    Rf_error("Invalid diff parameters");
-	return git2r_diff_head_to_index(repo);
+	return git2r_diff_head_to_index(repo, filename);
     } else if (!isNull(tree1) && isNull(tree2) && ! c_index) {
 	if (!isNull(repo))
 	    Rf_error("Invalid diff parameters");
-	return git2r_diff_tree_to_wd(tree1);
+	return git2r_diff_tree_to_wd(tree1, filename);
     } else if (!isNull(tree1) && isNull(tree2) && c_index) {
 	if (!isNull(repo))
 	    Rf_error("Invalid diff parameters");
-	return git2r_diff_tree_to_index(tree1);
+	return git2r_diff_tree_to_index(tree1, filename);
     } else {
 	if (!isNull(repo))
 	    Rf_error("Invalid diff parameters");
-	return git2r_diff_tree_to_tree(tree1, tree2);
+	return git2r_diff_tree_to_tree(tree1, tree2, filename);
     }
 }
 
@@ -96,14 +108,26 @@ SEXP git2r_diff(SEXP repo, SEXP tree1, SEXP tree2, SEXP index)
  * directory.
  *
  * @param repo S4 class git_repository
- * @return S4 class git_diff
+ * @param filename Determines where to write the diff. If filename is
+ * R_NilValue, then the diff is written to a S4 class git_diff
+ * object. If filename has length 0 or filename[0] equals NA_STRING,
+ * then the diff is written to a character vector. If filename is a
+ * character vector of length one with non-NA value, the diff is
+ * written to a file with name filename (the file is overwritten if it
+ * exists).
+ * @return A S4 class git_diff object if filename equals R_NilValue. A
+ * character vector with diff if filename has length 0 or filename[0]
+ * equals NA_STRING. Oterwise NULL.
  */
-SEXP git2r_diff_index_to_wd(SEXP repo)
+SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename)
 {
     int err;
     git_repository *repository = NULL;
     git_diff *diff = NULL;
     SEXP result = R_NilValue;
+
+    if (0 != git2r_arg_check_filename(filename))
+        Rf_error(git2r_err_filename_arg, "filename");
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -117,11 +141,39 @@ SEXP git2r_diff_index_to_wd(SEXP repo)
     if (err != 0)
 	goto cleanup;
 
-    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
-    err = git2r_diff_format_to_r(diff,
-                                 result,
-                                 /* old= */ mkString("index"),
-                                 /* new= */ mkString("workdir"));
+    if (R_NilValue == filename) {
+        PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
+        err = git2r_diff_format_to_r(diff,
+                                     result,
+                                     /* old= */ mkString("index"),
+                                     /* new= */ mkString("workdir"));
+    } else if (0 == length(filename) || NA_STRING == STRING_ELT(filename, 0)) {
+        git_buf buf = GIT_BUF_INIT;
+
+        err = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_buf,
+            &buf);
+
+        if (0 == err) {
+            PROTECT(result = allocVector(STRSXP, 1));
+            SET_STRING_ELT(result, 0, mkChar(buf.ptr));
+        }
+
+        git_buf_free(&buf);
+    } else {
+        FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
+
+        err = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_buf,
+            fp);
+
+        if (fp)
+            fclose(fp);
+    }
 
 cleanup:
     if (diff)
@@ -143,10 +195,18 @@ cleanup:
  * Create a diff between head and repository index
  *
  * @param repo S4 class git_repository
- * @return S4 class git_diff
+ * @param filename Determines where to write the diff. If filename is
+ * R_NilValue, then the diff is written to a S4 class git_diff
+ * object. If filename has length 0 or filename[0] equals NA_STRING,
+ * then the diff is written to a character vector. If filename is a
+ * character vector of length one with non-NA value, the diff is
+ * written to a file with name filename (the file is overwritten if it
+ * exists).
+ * @return A S4 class git_diff object if filename equals R_NilValue. A
+ * character vector with diff if filename has length 0 or filename[0]
+ * equals NA_STRING. Oterwise NULL.
  */
-
-SEXP git2r_diff_head_to_index(SEXP repo)
+SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
 {
     int err;
     git_repository *repository = NULL;
@@ -154,6 +214,9 @@ SEXP git2r_diff_head_to_index(SEXP repo)
     git_object *obj = NULL;
     git_tree *head = NULL;
     SEXP result = R_NilValue;
+
+    if (0 != git2r_arg_check_filename(filename))
+        Rf_error(git2r_err_filename_arg, "filename");
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -178,12 +241,41 @@ SEXP git2r_diff_head_to_index(SEXP repo)
     if (err != 0)
 	goto cleanup;
 
-    /* TODO: object instead of HEAD string */
-    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
-    err = git2r_diff_format_to_r(diff,
-                                 result,
-                                 /* old= */ mkString("HEAD"),
-                                 /* new= */ mkString("index"));
+    if (R_NilValue == filename) {
+        /* TODO: object instead of HEAD string */
+        PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
+        err = git2r_diff_format_to_r(
+            diff,
+            result,
+            /* old= */ mkString("HEAD"),
+            /* new= */ mkString("index"));
+    } else if (0 == length(filename) || NA_STRING == STRING_ELT(filename, 0)) {
+        git_buf buf = GIT_BUF_INIT;
+
+        err = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_buf,
+            &buf);
+
+        if (0 == err) {
+            PROTECT(result = allocVector(STRSXP, 1));
+            SET_STRING_ELT(result, 0, mkChar(buf.ptr));
+        }
+
+        git_buf_free(&buf);
+    } else {
+        FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
+
+        err = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_buf,
+            fp);
+
+        if (fp)
+            fclose(fp);
+    }
 
 cleanup:
     if (head)
@@ -211,10 +303,18 @@ cleanup:
  * Create a diff between a tree and the working directory
  *
  * @param tree S4 class git_tree
- * @return S4 class git_diff
+ * @param filename Determines where to write the diff. If filename is
+ * R_NilValue, then the diff is written to a S4 class git_diff
+ * object. If filename has length 0 or filename[0] equals NA_STRING,
+ * then the diff is written to a character vector. If filename is a
+ * character vector of length one with non-NA value, the diff is
+ * written to a file with name filename (the file is overwritten if it
+ * exists).
+ * @return A S4 class git_diff object if filename equals R_NilValue. A
+ * character vector with diff if filename has length 0 or filename[0]
+ * equals NA_STRING. Oterwise NULL.
  */
-
-SEXP git2r_diff_tree_to_wd(SEXP tree)
+SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
 {
     int err;
     git_repository *repository = NULL;
@@ -227,6 +327,8 @@ SEXP git2r_diff_tree_to_wd(SEXP tree)
 
     if (0 != git2r_arg_check_tree(tree))
         Rf_error(git2r_err_tree_arg, "tree");
+    if (0 != git2r_arg_check_filename(filename))
+        Rf_error(git2r_err_filename_arg, "filename");
 
     repo = GET_SLOT(tree, Rf_install("repo"));
     repository = git2r_repository_open(repo);
@@ -253,11 +355,39 @@ SEXP git2r_diff_tree_to_wd(SEXP tree)
     if (err != 0)
 	goto cleanup;
 
-    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
-    err = git2r_diff_format_to_r(diff,
-                                 result,
-                                 /* old= */ tree,
-                                 /* new= */ mkString("workdir"));
+    if (R_NilValue == filename) {
+        PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
+        err = git2r_diff_format_to_r(diff,
+                                     result,
+                                     /* old= */ tree,
+                                     /* new= */ mkString("workdir"));
+    } else if (0 == length(filename) || NA_STRING == STRING_ELT(filename, 0)) {
+        git_buf buf = GIT_BUF_INIT;
+
+        err = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_buf,
+            &buf);
+
+        if (0 == err) {
+            PROTECT(result = allocVector(STRSXP, 1));
+            SET_STRING_ELT(result, 0, mkChar(buf.ptr));
+        }
+
+        git_buf_free(&buf);
+    } else {
+        FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
+
+        err = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_buf,
+            fp);
+
+        if (fp)
+            fclose(fp);
+    }
 
 cleanup:
     if (diff)
@@ -285,10 +415,18 @@ cleanup:
  * Create a diff between a tree and repository index
  *
  * @param tree S4 class git_tree
- * @return S4 class git_diff
+ * @param filename Determines where to write the diff. If filename is
+ * R_NilValue, then the diff is written to a S4 class git_diff
+ * object. If filename has length 0 or filename[0] equals NA_STRING,
+ * then the diff is written to a character vector. If filename is a
+ * character vector of length one with non-NA value, the diff is
+ * written to a file with name filename (the file is overwritten if it
+ * exists).
+ * @return A S4 class git_diff object if filename equals R_NilValue. A
+ * character vector with diff if filename has length 0 or filename[0]
+ * equals NA_STRING. Oterwise NULL.
  */
-
-SEXP git2r_diff_tree_to_index(SEXP tree)
+SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
 {
     int err;
     git_repository *repository = NULL;
@@ -301,6 +439,8 @@ SEXP git2r_diff_tree_to_index(SEXP tree)
 
     if (0 != git2r_arg_check_tree(tree))
         Rf_error(git2r_err_tree_arg, "tree");
+    if (0 != git2r_arg_check_filename(filename))
+        Rf_error(git2r_err_filename_arg, "filename");
 
     repo = GET_SLOT(tree, Rf_install("repo"));
     repository = git2r_repository_open(repo);
@@ -328,11 +468,39 @@ SEXP git2r_diff_tree_to_index(SEXP tree)
     if (err != 0)
 	goto cleanup;
 
-    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
-    err = git2r_diff_format_to_r(diff,
-                                 result,
-                                 /* old= */ tree,
-                                 /* new= */ mkString("index"));
+    if (R_NilValue == filename) {
+        PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
+        err = git2r_diff_format_to_r(diff,
+                                     result,
+                                     /* old= */ tree,
+                                     /* new= */ mkString("index"));
+    } else if (0 == length(filename) || NA_STRING == STRING_ELT(filename, 0)) {
+        git_buf buf = GIT_BUF_INIT;
+
+        err = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_buf,
+            &buf);
+
+        if (0 == err) {
+            PROTECT(result = allocVector(STRSXP, 1));
+            SET_STRING_ELT(result, 0, mkChar(buf.ptr));
+        }
+
+        git_buf_free(&buf);
+    } else {
+        FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
+
+        err = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_buf,
+            fp);
+
+        if (fp)
+            fclose(fp);
+    }
 
 cleanup:
     if (diff)
@@ -361,9 +529,18 @@ cleanup:
  *
  * @param tree1 S4 class git_tree
  * @param tree2 S4 class git_tree
- * @return S4 class git_diff
+ * @param filename Determines where to write the diff. If filename is
+ * R_NilValue, then the diff is written to a S4 class git_diff
+ * object. If filename has length 0 or filename[0] equals NA_STRING,
+ * then the diff is written to a character vector. If filename is a
+ * character vector of length one with non-NA value, the diff is
+ * written to a file with name filename (the file is overwritten if it
+ * exists).
+ * @return A S4 class git_diff object if filename equals R_NilValue. A
+ * character vector with diff if filename has length 0 or filename[0]
+ * equals NA_STRING. Oterwise NULL.
  */
-SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2)
+SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
 {
     int err;
     git_repository *repository = NULL;
@@ -378,6 +555,8 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2)
         Rf_error(git2r_err_tree_arg, "tree1");
     if (0 != git2r_arg_check_tree(tree2))
         Rf_error(git2r_err_tree_arg, "tree2");
+    if (0 != git2r_arg_check_filename(filename))
+        Rf_error(git2r_err_filename_arg, "filename");
 
     /* We already checked that tree2 is from the same repo, in R */
     repo = GET_SLOT(tree1, Rf_install("repo"));
@@ -418,11 +597,39 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2)
     if (err != 0)
 	goto cleanup;
 
-    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
-    err = git2r_diff_format_to_r(diff,
-                                 result,
-                                 /* old= */ tree1,
-                                 /* new= */ tree2);
+    if (R_NilValue == filename) {
+        PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
+        err = git2r_diff_format_to_r(diff,
+                                     result,
+                                     /* old= */ tree1,
+                                     /* new= */ tree2);
+    } else if (0 == length(filename) || NA_STRING == STRING_ELT(filename, 0)) {
+        git_buf buf = GIT_BUF_INIT;
+
+        err = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_buf,
+            &buf);
+
+        if (0 == err) {
+            PROTECT(result = allocVector(STRSXP, 1));
+            SET_STRING_ELT(result, 0, mkChar(buf.ptr));
+        }
+
+        git_buf_free(&buf);
+    } else {
+        FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
+
+        err = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_buf,
+            fp);
+
+        if (fp)
+            fclose(fp);
+    }
 
 cleanup:
     if (diff)

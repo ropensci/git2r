@@ -26,6 +26,7 @@ int git2r_arg_check_blob(SEXP arg);
 int git2r_arg_check_branch(SEXP arg);
 int git2r_arg_check_commit(SEXP arg);
 int git2r_arg_check_credentials(SEXP arg);
+int git2r_arg_check_filename(SEXP arg);
 int git2r_arg_check_hex(SEXP arg);
 int git2r_arg_check_integer(SEXP arg);
 int git2r_arg_check_integer_gte_zero(SEXP arg);

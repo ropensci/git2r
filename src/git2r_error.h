@@ -37,6 +37,7 @@ extern const char git2r_err_blob_arg[];
 extern const char git2r_err_branch_arg[];
 extern const char git2r_err_commit_arg[];
 extern const char git2r_err_credentials_arg[];
+extern const char git2r_err_filename_arg[];
 extern const char git2r_err_integer_arg[];
 extern const char git2r_err_integer_gte_zero_arg[];
 extern const char git2r_err_logical_arg[];

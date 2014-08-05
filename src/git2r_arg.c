@@ -160,6 +160,38 @@ int git2r_arg_check_credentials(SEXP arg)
 }
 
 /**
+ * Check filename argument
+ *
+ * It's OK:
+ *  - R_NilValue
+ *  - Zero length character vector
+ *  - character vector with length one with NA value
+ *  - character vector with length one with strlen(value) > 0
+ * @param arg the arg to check
+ * @return 0 if OK, else -1
+ */
+int git2r_arg_check_filename(SEXP arg)
+{
+    if (R_NilValue == arg)
+        return 0;
+    if (!isString(arg))
+        return -1;
+    switch (length(arg)) {
+    case 0:
+        break;
+    case 1:
+        if (NA_STRING == STRING_ELT(arg, 0))
+            break;
+        if (0 == strlen(CHAR(STRING_ELT(arg, 0))))
+            return -1;
+    default:
+        return -1;
+    }
+
+    return 0;
+}
+
+/**
  * Check hex argument
  *
  * @param arg the arg to check

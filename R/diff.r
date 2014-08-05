@@ -184,8 +184,17 @@ setMethod("summary",
 #'     (if set to TRUE) in the comparison to \code{object}.
 #'   }
 #' }
+#' @param filename Determines where to write the diff. If filename is
+#' NULL (the default), then the diff is written to a S4 class
+#' \code{\linkS4class{git_diff}} object. If filename equals
+#' \code{character(0)} or \code{NA_character_}, then the diff is
+#' written to a character vector. If filename is a character vector of
+#' length one with non-NA value, the diff is written to a file with
+#' name filename (the file is overwritten if it exists).
 #' @param ... Additional arguments affecting the diff produced
-#' @return A git_diff object
+#' @return A git_diff object if filename equals NULL. A character
+#' vector if filename equals \code{character(0)} or
+#' \code{NA_character_}. Oterwise NULL.
 #' @keywords methods
 setGeneric("diff",
            signature = c("object"),
@@ -196,10 +205,11 @@ setGeneric("diff",
 #' @export
 setMethod("diff",
           signature(object = "git_repository"),
-          function(object, index = FALSE)
+          function(object, index = FALSE, filename = NULL)
           {
-              .Call("git2r_diff", repo = object, tree1 = NULL,
-                    tree2 = NULL, index = index)
+              if (all(is.character(filename), nchar(filename)))
+                  filename <- normalizePath(filename, mustWork = FALSE)
+              .Call("git2r_diff", object, NULL, NULL, index, filename)
           }
 )
 
@@ -210,7 +220,7 @@ setMethod("diff",
 #' @export
 setMethod("diff",
           signature(object = "git_tree"),
-          function(object, new_tree = NULL, index = FALSE)
+          function(object, new_tree = NULL, index = FALSE, filename = NULL)
           {
               if (!is.null(new_tree)) {
                   if (! is(new_tree, "git_tree")) {
@@ -220,7 +230,9 @@ setMethod("diff",
                       stop("Cannot compare trees in different repositories")
                   }
               }
-              .Call("git2r_diff", repo = NULL, tree1 = object,
-                    tree2 = new_tree, index = index)
+
+              if (all(is.character(filename), nchar(filename)))
+                  filename <- normalizePath(filename, mustWork = FALSE)
+              .Call("git2r_diff", NULL, object, new_tree, index, filename)
           }
 )

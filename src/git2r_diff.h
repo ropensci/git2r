@@ -23,6 +23,6 @@
 
 #include "git2.h"
 
-SEXP git2r_diff(SEXP repo, SEXP tree1, SEXP tree2, SEXP index);
+SEXP git2r_diff(SEXP repo, SEXP tree1, SEXP tree2, SEXP index, SEXP filename);
 
 #endif
