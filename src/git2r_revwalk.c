@@ -27,8 +27,8 @@
 /**
  * Count number of revisions.
  *
- * @param walker :TODO:DOCUMENTATION:
- * @return :TODO:DOCUMENTATION:
+ * @param walker The walker to pop the commit from.
+ * @return The number of revisions
  */
 static size_t git2r_revwalk_count(git_revwalk *walker)
 {
@@ -44,8 +44,10 @@ static size_t git2r_revwalk_count(git_revwalk *walker)
  * List revisions
  *
  * @param repo S4 class git_repository
- * @param topological Sort the commits by topological order; Can be combined with time.
- * @param time Sort the commits by commit time; can be combined with topological.
+ * @param topological Sort the commits by topological order; Can be
+ * combined with time.
+ * @param time Sort the commits by commit time; can be combined with
+ * topological.
  * @param reverse Sort the commits in reverse order
  * @return list with S4 class git_commit objects
  */
@@ -63,10 +65,12 @@ SEXP git2r_revwalk_list(
     git_revwalk *walker = NULL;
     git_repository *repository = NULL;
 
-    if (0 != git2r_arg_check_logical(topological)
-        || 0 != git2r_arg_check_logical(time)
-        || 0 != git2r_arg_check_logical(reverse))
-        Rf_error("Invalid arguments to git2r_revwalk_list");
+    if (0 != git2r_arg_check_logical(topological))
+        Rf_error(git2r_err_logical_arg, "topological");
+    if (0 != git2r_arg_check_logical(time))
+        Rf_error(git2r_err_logical_arg, "time");
+    if (0 != git2r_arg_check_logical(reverse))
+        Rf_error(git2r_err_logical_arg, "reverse");
 
     repository = git2r_repository_open(repo);
     if (!repository)

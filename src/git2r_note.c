@@ -26,7 +26,8 @@
 #include "git2r_signature.h"
 
 /**
- * :TODO:DOCUMENTATION:
+ * Data structure to hold information when iterating over note
+ * objects.
  */
 typedef struct {
     size_t n;
@@ -121,13 +122,18 @@ SEXP git2r_note_create(
     git_signature *sig_committer = NULL;
     git_repository *repository = NULL;
 
-    if (0 != git2r_arg_check_hex(hex)
-        || 0 != git2r_arg_check_string(message)
-        || 0 != git2r_arg_check_string(ref)
-        || 0 != git2r_arg_check_signature(author)
-        || 0 != git2r_arg_check_signature(committer)
-        || 0 != git2r_arg_check_logical(force))
-        Rf_error("Invalid arguments to git2r_note_create");
+    if (0 != git2r_arg_check_hex(hex))
+        Rf_error(git2r_err_hex_arg, "hex");
+    if (0 != git2r_arg_check_string(message))
+        Rf_error(git2r_err_string_arg, "message");
+    if (0 != git2r_arg_check_string(ref))
+        Rf_error(git2r_err_string_arg, "ref");
+    if (0 != git2r_arg_check_signature(author))
+        Rf_error(git2r_err_signature_arg, "author");
+    if (0 != git2r_arg_check_signature(committer))
+        Rf_error(git2r_err_signature_arg, "committer");
+    if (0 != git2r_arg_check_logical(force))
+        Rf_error(git2r_err_logical_arg, "force");
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -282,7 +288,7 @@ SEXP git2r_note_list(SEXP repo, SEXP ref)
 
     if (R_NilValue != ref) {
         if (0 != git2r_arg_check_string(ref))
-            Rf_error("Invalid arguments to git2r_note_list");
+            Rf_error(git2r_err_string_arg, "ref");
         notes_ref = CHAR(STRING_ELT(ref, 0));
     }
 
@@ -346,10 +352,12 @@ SEXP git2r_note_remove(SEXP note, SEXP author, SEXP committer)
     git_signature *sig_committer = NULL;
     git_repository *repository = NULL;
 
-    if (0 != git2r_arg_check_note(note)
-        || 0 != git2r_arg_check_signature(author)
-        || 0 != git2r_arg_check_signature(committer))
-        Rf_error("Invalid arguments to git2r_note_remove");
+    if (0 != git2r_arg_check_note(note))
+        Rf_error(git2r_err_note_arg, "note");
+    if (0 != git2r_arg_check_signature(author))
+        Rf_error(git2r_err_signature_arg, "author");
+    if (0 != git2r_arg_check_signature(committer))
+        Rf_error(git2r_err_signature_arg, "committer");
 
     repo = GET_SLOT(note, Rf_install("repo"));
     repository = git2r_repository_open(repo);
