@@ -613,7 +613,10 @@ int git_diff_print_callback__to_file_handle(
 	const git_diff_line *line,
 	void *payload)
 {
-	FILE *fp = payload ? payload : stdout;
+	FILE *fp = payload;
+
+        if (!fp)
+            return -1;
 
 	GIT_UNUSED(delta); GIT_UNUSED(hunk);
 
