@@ -39,7 +39,7 @@ const char git2r_err_commit_arg[] =
 const char git2r_err_credentials_arg[] =
     "Error: '%s' must be a S4 class with credentials";
 const char git2r_err_filename_arg[] =
-    "Error: '%s' must be 1) NULL or a character vector of 2) length 0 or 3) length 1 with NA value or a character string";
+    "Error: '%s' must be either 1) NULL, or 2) a character vector of length 0 or 3) a character vector of length 1 and nchar > 0";
 const char git2r_err_integer_arg[] =
     "Error: '%s' must be an integer vector of length one with non NA value";
 const char git2r_err_integer_gte_zero_arg[] =

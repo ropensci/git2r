@@ -184,17 +184,8 @@ setMethod("summary",
 #'     (if set to TRUE) in the comparison to \code{object}.
 #'   }
 #' }
-#' @param filename Determines where to write the diff. If filename is
-#' NULL (the default), then the diff is written to a S4 class
-#' \code{\linkS4class{git_diff}} object. If filename equals
-#' \code{character(0)} or \code{NA_character_}, then the diff is
-#' written to a character vector. If filename is a character vector of
-#' length one with non-NA value, the diff is written to a file with
-#' name filename (the file is overwritten if it exists).
 #' @param ... Additional arguments affecting the diff produced
-#' @return A git_diff object if filename equals NULL. A character
-#' vector if filename equals \code{character(0)} or
-#' \code{NA_character_}. Oterwise NULL.
+#' @return A \code{\linkS4class{git_diff}} object.
 #' @keywords methods
 setGeneric("diff",
            signature = c("object"),
@@ -205,11 +196,9 @@ setGeneric("diff",
 #' @export
 setMethod("diff",
           signature(object = "git_repository"),
-          function(object, index = FALSE, filename = NULL)
+          function(object, index = FALSE)
           {
-              if (all(is.character(filename), nchar(filename)))
-                  filename <- normalizePath(filename, mustWork = FALSE)
-              .Call("git2r_diff", object, NULL, NULL, index, filename)
+              .Call("git2r_diff", object, NULL, NULL, index, NULL)
           }
 )
 
@@ -219,6 +208,81 @@ setMethod("diff",
 #'        the \code{index} argument).
 #' @export
 setMethod("diff",
+          signature(object = "git_tree"),
+          function(object, new_tree = NULL, index = FALSE)
+          {
+              if (!is.null(new_tree)) {
+                  if (! is(new_tree, "git_tree")) {
+                      stop("Not a git tree")
+                  }
+                  if (object@repo@path != new_tree@repo@path) {
+                      stop("Cannot compare trees in different repositories")
+                  }
+              }
+
+              .Call("git2r_diff", NULL, object, new_tree, index, NULL)
+          }
+)
+
+#' Print changes between commits, trees, working tree, etc.
+#'
+#' @rdname diff_print-methods
+#' @docType methods
+#' @param object A \code{git_repository} object or the old
+#' \code{git_tree} object to compare to.
+#' @param index \describe{
+#'   \item{\emph{When object equals a git_repository}}{
+#'     Whether to compare the index to HEAD. If FALSE (the default),
+#'     then the working tree is compared to the index.
+#'   }
+#'   \item{\emph{When object equals a git_tree}}{
+#'     Whether to use the working directory (by default), or the index
+#'     (if set to TRUE) in the comparison to \code{object}.
+#'   }
+#' }
+#' @param filename Determines where to write the diff. If filename
+#' equals \code{NULL}, \code{character(0)}, \code{NA_character_} or
+#' \code{""}, then the diff is written to a character vector. If
+#' filename is a character vector of length one with non-NA value, the
+#' diff is written to a file with name filename (the file is
+#' overwritten if it exists). Default is NULL.
+#' @param ... Additional arguments affecting the diff_print produced
+#' @return A character vector if filename equals \code{NULL},
+#' \code{character(0)}, \code{NA_character_} or \code{""}. Oterwise
+#' NULL.
+#' @keywords methods
+setGeneric("diff_print",
+           signature = c("object"),
+           function(object, ...)
+           standardGeneric("diff_print"))
+
+#' @rdname diff_print-methods
+#' @export
+setMethod("diff_print",
+          signature(object = "git_repository"),
+          function(object, index = FALSE, filename = NULL)
+          {
+              ## Make sure filename is character(0) to write to a
+              ## character vector or a character vector with path in
+              ## order to write to a file.
+              filename <- as.character(filename)
+              if (any(identical(filename, NA_character_),
+                      identical(nchar(filename), 0L))) {
+                  filename <- character(0)
+              } else if (length(filename)) {
+                  filename <- normalizePath(filename, mustWork = FALSE)
+              }
+
+              .Call("git2r_diff", object, NULL, NULL, index, filename)
+          }
+)
+
+#' @rdname diff_print-methods
+#' @param new_tree The new git_tree object to compare, or NULL.
+#'        If NULL, then we use the working directory or the index (see
+#'        the \code{index} argument).
+#' @export
+setMethod("diff_print",
           signature(object = "git_tree"),
           function(object, new_tree = NULL, index = FALSE, filename = NULL)
           {
@@ -231,8 +295,17 @@ setMethod("diff",
                   }
               }
 
-              if (all(is.character(filename), nchar(filename)))
+              ## Make sure filename is character(0) to write to a
+              ## character vector or a character vector with path in
+              ## order to write to a file.
+              filename <- as.character(filename)
+              if (any(identical(filename, NA_character_),
+                      identical(nchar(filename), 0L))) {
+                  filename <- character(0)
+              } else if (length(filename)) {
                   filename <- normalizePath(filename, mustWork = FALSE)
+              }
+
               .Call("git2r_diff", NULL, object, new_tree, index, filename)
           }
 )

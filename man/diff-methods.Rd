@@ -8,10 +8,9 @@
 \usage{
 diff(object, ...)
 
-\S4method{diff}{git_repository}(object, index = FALSE, filename = NULL)
+\S4method{diff}{git_repository}(object, index = FALSE)
 
-\S4method{diff}{git_tree}(object, new_tree = NULL, index = FALSE,
-  filename = NULL)
+\S4method{diff}{git_tree}(object, new_tree = NULL, index = FALSE)
 }
 \arguments{
 \item{object}{A \code{git_repository} object or the old
@@ -28,14 +27,6 @@ diff(object, ...)
   }
 }}
 
-\item{filename}{Determines where to write the diff. If filename is
-NULL (the default), then the diff is written to a S4 class
-\code{\linkS4class{git_diff}} object. If filename equals
-\code{character(0)} or \code{NA_character_}, then the diff is
-written to a character vector. If filename is a character vector of
-length one with non-NA value, the diff is written to a file with
-name filename (the file is overwritten if it exists).}
-
 \item{...}{Additional arguments affecting the diff produced}
 
 \item{new_tree}{The new git_tree object to compare, or NULL.
@@ -43,9 +34,7 @@ If NULL, then we use the working directory or the index (see
 the \code{index} argument).}
 }
 \value{
-A git_diff object if filename equals NULL. A character
-vector if filename equals \code{character(0)} or
-\code{NA_character_}. Oterwise NULL.
+A \code{\linkS4class{git_diff}} object.
 }
 \description{
 Changes between commits, trees, working tree, etc.

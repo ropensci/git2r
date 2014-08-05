@@ -62,14 +62,12 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename);
  * @param index Whether to compare to the index.
  * @param filename Determines where to write the diff. If filename is
  * R_NilValue, then the diff is written to a S4 class git_diff
- * object. If filename has length 0 or filename[0] equals NA_STRING,
- * then the diff is written to a character vector. If filename is a
- * character vector of length one with non-NA value, the diff is
- * written to a file with name filename (the file is overwritten if it
- * exists).
+ * object. If filename is a character vector of length 0, then the
+ * diff is written to a character vector. If filename is a character
+ * vector of length one with non-NA value, the diff is written to a
+ * file with name filename (the file is overwritten if it exists).
  * @return A S4 class git_diff object if filename equals R_NilValue. A
- * character vector with diff if filename has length 0 or filename[0]
- * equals NA_STRING. Oterwise NULL.
+ * character vector with diff if filename has length 0. Oterwise NULL.
  */
 SEXP git2r_diff(SEXP repo, SEXP tree1, SEXP tree2, SEXP index, SEXP filename)
 {
@@ -110,14 +108,12 @@ SEXP git2r_diff(SEXP repo, SEXP tree1, SEXP tree2, SEXP index, SEXP filename)
  * @param repo S4 class git_repository
  * @param filename Determines where to write the diff. If filename is
  * R_NilValue, then the diff is written to a S4 class git_diff
- * object. If filename has length 0 or filename[0] equals NA_STRING,
- * then the diff is written to a character vector. If filename is a
- * character vector of length one with non-NA value, the diff is
- * written to a file with name filename (the file is overwritten if it
- * exists).
+ * object. If filename is a character vector of length 0, then the
+ * diff is written to a character vector. If filename is a character
+ * vector of length one with non-NA value, the diff is written to a
+ * file with name filename (the file is overwritten if it exists).
  * @return A S4 class git_diff object if filename equals R_NilValue. A
- * character vector with diff if filename has length 0 or filename[0]
- * equals NA_STRING. Oterwise NULL.
+ * character vector with diff if filename has length 0. Oterwise NULL.
  */
 SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename)
 {
@@ -147,7 +143,7 @@ SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename)
                                      result,
                                      /* old= */ mkString("index"),
                                      /* new= */ mkString("workdir"));
-    } else if (0 == length(filename) || NA_STRING == STRING_ELT(filename, 0)) {
+    } else if (0 == length(filename)) {
         git_buf buf = GIT_BUF_INIT;
 
         err = git_diff_print(
@@ -197,14 +193,12 @@ cleanup:
  * @param repo S4 class git_repository
  * @param filename Determines where to write the diff. If filename is
  * R_NilValue, then the diff is written to a S4 class git_diff
- * object. If filename has length 0 or filename[0] equals NA_STRING,
- * then the diff is written to a character vector. If filename is a
- * character vector of length one with non-NA value, the diff is
- * written to a file with name filename (the file is overwritten if it
- * exists).
+ * object. If filename is a character vector of length 0, then the
+ * diff is written to a character vector. If filename is a character
+ * vector of length one with non-NA value, the diff is written to a
+ * file with name filename (the file is overwritten if it exists).
  * @return A S4 class git_diff object if filename equals R_NilValue. A
- * character vector with diff if filename has length 0 or filename[0]
- * equals NA_STRING. Oterwise NULL.
+ * character vector with diff if filename has length 0. Oterwise NULL.
  */
 SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
 {
@@ -249,7 +243,7 @@ SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
             result,
             /* old= */ mkString("HEAD"),
             /* new= */ mkString("index"));
-    } else if (0 == length(filename) || NA_STRING == STRING_ELT(filename, 0)) {
+    } else if (0 == length(filename)) {
         git_buf buf = GIT_BUF_INIT;
 
         err = git_diff_print(
@@ -305,14 +299,12 @@ cleanup:
  * @param tree S4 class git_tree
  * @param filename Determines where to write the diff. If filename is
  * R_NilValue, then the diff is written to a S4 class git_diff
- * object. If filename has length 0 or filename[0] equals NA_STRING,
- * then the diff is written to a character vector. If filename is a
- * character vector of length one with non-NA value, the diff is
- * written to a file with name filename (the file is overwritten if it
- * exists).
+ * object. If filename is a character vector of length 0, then the
+ * diff is written to a character vector. If filename is a character
+ * vector of length one with non-NA value, the diff is written to a
+ * file with name filename (the file is overwritten if it exists).
  * @return A S4 class git_diff object if filename equals R_NilValue. A
- * character vector with diff if filename has length 0 or filename[0]
- * equals NA_STRING. Oterwise NULL.
+ * character vector with diff if filename has length 0. Oterwise NULL.
  */
 SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
 {
@@ -361,7 +353,7 @@ SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
                                      result,
                                      /* old= */ tree,
                                      /* new= */ mkString("workdir"));
-    } else if (0 == length(filename) || NA_STRING == STRING_ELT(filename, 0)) {
+    } else if (0 == length(filename)) {
         git_buf buf = GIT_BUF_INIT;
 
         err = git_diff_print(
@@ -417,14 +409,12 @@ cleanup:
  * @param tree S4 class git_tree
  * @param filename Determines where to write the diff. If filename is
  * R_NilValue, then the diff is written to a S4 class git_diff
- * object. If filename has length 0 or filename[0] equals NA_STRING,
- * then the diff is written to a character vector. If filename is a
- * character vector of length one with non-NA value, the diff is
- * written to a file with name filename (the file is overwritten if it
- * exists).
+ * object. If filename is a character vector of length 0, then the
+ * diff is written to a character vector. If filename is a character
+ * vector of length one with non-NA value, the diff is written to a
+ * file with name filename (the file is overwritten if it exists).
  * @return A S4 class git_diff object if filename equals R_NilValue. A
- * character vector with diff if filename has length 0 or filename[0]
- * equals NA_STRING. Oterwise NULL.
+ * character vector with diff if filename has length 0. Oterwise NULL.
  */
 SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
 {
@@ -474,7 +464,7 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
                                      result,
                                      /* old= */ tree,
                                      /* new= */ mkString("index"));
-    } else if (0 == length(filename) || NA_STRING == STRING_ELT(filename, 0)) {
+    } else if (0 == length(filename)) {
         git_buf buf = GIT_BUF_INIT;
 
         err = git_diff_print(
@@ -531,14 +521,12 @@ cleanup:
  * @param tree2 S4 class git_tree
  * @param filename Determines where to write the diff. If filename is
  * R_NilValue, then the diff is written to a S4 class git_diff
- * object. If filename has length 0 or filename[0] equals NA_STRING,
- * then the diff is written to a character vector. If filename is a
- * character vector of length one with non-NA value, the diff is
- * written to a file with name filename (the file is overwritten if it
- * exists).
+ * object. If filename is a character vector of length 0, then the
+ * diff is written to a character vector. If filename is a character
+ * vector of length one with non-NA value, the diff is written to a
+ * file with name filename (the file is overwritten if it exists).
  * @return A S4 class git_diff object if filename equals R_NilValue. A
- * character vector with diff if filename has length 0 or filename[0]
- * equals NA_STRING. Oterwise NULL.
+ * character vector with diff if filename has length 0. Oterwise NULL.
  */
 SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
 {
@@ -603,7 +591,7 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
                                      result,
                                      /* old= */ tree1,
                                      /* new= */ tree2);
-    } else if (0 == length(filename) || NA_STRING == STRING_ELT(filename, 0)) {
+    } else if (0 == length(filename)) {
         git_buf buf = GIT_BUF_INIT;
 
         err = git_diff_print(
