@@ -21,8 +21,9 @@
 /**
  * Get oid from hex SEXP
  *
- * @param hex :TODO:DOCUMENTATION:
- * @param oid :TODO:DOCUMENTATION:
+ * @param hex A character vector with sha1 in hex format. The length
+ * can be less than 40 bytes.
+ * @param oid result is written into the oid
  * @return void
  */
 void git2r_oid_from_hex_sexp(SEXP hex, git_oid *oid)

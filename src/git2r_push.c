@@ -29,19 +29,25 @@
 /**
  * The invoked callback on each status entry
  *
- * @param ref :TODO:DOCUMENTATION:
- * @param msg :TODO:DOCUMENTATION:
- * @param data :TODO:DOCUMENTATION:
+ * @param ref The reference name pointer
+ * @param msg Status report for each of the updated references.
+ * @param payload A pointer to the payload data structure
  * @return 0
  */
 static int git2r_push_status_foreach_cb(
     const char *ref,
     const char *msg,
-    void *data)
+    void *payload)
 {
-    const char **msg_dst = (const char **)data;
+    const char **msg_dst = (const char **)payload;
+
+    /* The reference name pointer should never be NULL */
+    if (!ref)
+        return -1;
+
     if (msg != NULL && *msg_dst == NULL)
         *msg_dst = msg;
+
     return 0;
 }
 
@@ -96,12 +102,16 @@ SEXP git2r_push(
     git_repository *repository = NULL;
     git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
 
-    if (0 != git2r_arg_check_string(name)
-        || 0 != git2r_arg_check_string_vec(refspec)
-        || 0 != git2r_arg_check_credentials(credentials)
-        || 0 != git2r_arg_check_string(msg)
-        || 0 != git2r_arg_check_signature(who))
-        Rf_error("Invalid arguments to git2r_push");
+    if (0 != git2r_arg_check_string(name))
+        Rf_error(git2r_err_string_arg, "name");
+    if (0 != git2r_arg_check_string_vec(refspec))
+        Rf_error(git2r_err_string_vec_arg, "refspec");
+    if (0 != git2r_arg_check_credentials(credentials))
+        Rf_error(git2r_err_credentials_arg, "credentials");
+    if (0 != git2r_arg_check_string(msg))
+        Rf_error(git2r_err_string_arg, "msg");
+    if (0 != git2r_arg_check_signature(who))
+        Rf_error(git2r_err_signature_arg, "who");
 
     if (git2r_nothing_to_push(refspec))
         return R_NilValue;

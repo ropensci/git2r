@@ -73,11 +73,12 @@ int git2r_signature_from_arg(git_signature **out, SEXP signature)
     SEXP when;
 
     when = GET_SLOT(signature, Rf_install("when"));
-    err = git_signature_new(out,
-                            CHAR(STRING_ELT(GET_SLOT(signature, Rf_install("name")), 0)),
-                            CHAR(STRING_ELT(GET_SLOT(signature, Rf_install("email")), 0)),
-                            REAL(GET_SLOT(when, Rf_install("time")))[0],
-                            REAL(GET_SLOT(when, Rf_install("offset")))[0]);
+    err = git_signature_new(
+        out,
+        CHAR(STRING_ELT(GET_SLOT(signature, Rf_install("name")), 0)),
+        CHAR(STRING_ELT(GET_SLOT(signature, Rf_install("email")), 0)),
+        REAL(GET_SLOT(when, Rf_install("time")))[0],
+        REAL(GET_SLOT(when, Rf_install("offset")))[0]);
 
     return err;
 }
@@ -85,29 +86,29 @@ int git2r_signature_from_arg(git_signature **out, SEXP signature)
 /**
  * Init slots in S4 class git_signature.
  *
- * @param sig :TODO:DOCUMENTATION:
- * @param signature :TODO:DOCUMENTATION:
+ * @param source A git signature
+ * @param dest S4 class git_signature to initialize
  * @return void
  */
-void git2r_signature_init(const git_signature *sig, SEXP signature)
+void git2r_signature_init(const git_signature *source, SEXP dest)
 {
     SEXP when;
 
-    SET_SLOT(signature,
+    SET_SLOT(dest,
              Rf_install("name"),
-             ScalarString(mkChar(sig->name)));
+             ScalarString(mkChar(source->name)));
 
-    SET_SLOT(signature,
+    SET_SLOT(dest,
              Rf_install("email"),
-             ScalarString(mkChar(sig->email)));
+             ScalarString(mkChar(source->email)));
 
-    when = GET_SLOT(signature, Rf_install("when"));
+    when = GET_SLOT(dest, Rf_install("when"));
 
     SET_SLOT(when,
              Rf_install("time"),
-             ScalarReal((double)sig->when.time));
+             ScalarReal((double)source->when.time));
 
     SET_SLOT(when,
              Rf_install("offset"),
-             ScalarReal((double)sig->when.offset));
+             ScalarReal((double)source->when.offset));
 }

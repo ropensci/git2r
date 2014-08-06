@@ -24,7 +24,7 @@
 #include "git2r_error.h"
 
 /**
- * :TODO:DOCUMENTATION:
+ * Data structure to hold progress information when performing clone.
  */
 typedef struct {
     int received_progress;
@@ -34,8 +34,9 @@ typedef struct {
 /**
  * Show progress of clone
  *
- * @param progress :TODO:DOCUMENTATION:
- * @param payload :TODO:DOCUMENTATION:
+ * @param progress The clone progress data
+ * @param payload A pointer to a git2r_clone_progress_data data
+ * structure
  * @return 0
  */
 static int git2r_clone_progress(
