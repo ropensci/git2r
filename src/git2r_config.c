@@ -34,8 +34,7 @@
  */
 static int git2r_config_count_variables(
     const git_config *cfg,
-    size_t *n_level,
-    const char **err_msg)
+    size_t *n_level)
 {
     int err;
     git_config_iterator *iterator = NULL;
@@ -47,8 +46,11 @@ static int git2r_config_count_variables(
     for (;;) {
         git_config_entry *entry;
         err = git_config_next(&entry, iterator);
-        if (err < 0)
-            break;
+        if (err < 0) {
+            if (GIT_ITEROVER == err)
+                err = GIT_OK;
+            goto cleanup;
+        }
 
         switch (entry->level) {
         case GIT_CONFIG_LEVEL_SYSTEM:
@@ -70,7 +72,9 @@ static int git2r_config_count_variables(
             n_level[5]++;
             break;
         default:
-            *err_msg = git2r_err_unexpected_config_level;
+            giterr_set_str(GITERR_CONFIG,
+                           git2r_err_unexpected_config_level);
+            err = GIT_ERROR;
             goto cleanup;
         }
     }
@@ -79,13 +83,7 @@ cleanup:
     if (iterator)
         git_config_iterator_free(iterator);
 
-    if (*err_msg)
-        return -1;
-
-    if (GIT_ITEROVER != err)
-        return err;
-
-    return 0;
+    return err;
 }
 
 /**
@@ -125,9 +123,10 @@ static size_t git2r_config_list_init(
  *
  * @param list the result list
  * @param level the level of the entry
- * @param i_level the index where to add the entry within the level
- * @param n_level :TODO:DOCUMENTATION:
- * @param i_list :TODO:DOCUMENTATION:
+ * @param i_level vector with the index where to add the entry within
+ * the level
+ * @param i_list vector with the index to the sub-list of the list at
+ * level
  * @param entry the config entry to add
  * @return void
  */
@@ -151,24 +150,21 @@ static void git2r_config_list_add_entry(
             return;
         }
     }
-
-    Rf_error("Unexpected");
 }
 
 /**
  * List config variables
  *
- * @param cfg :TODO:DOCUMENTATION:
- * @param list :TODO:DOCUMENTATION:
- * @param n_level :TODO:DOCUMENTATION:
- * @param err_msg :TODO:DOCUMENTATION:
- * @return :TODO:DOCUMENTATION:
+ * @param cfg Memory representation the configuration file for this
+ * repository.
+ * @param list The result list
+ * @param n_level vector with number of entries per level
+ * @return 0 if OK, else error code
  */
 static int git2r_config_list_variables(
     git_config *cfg,
     SEXP list,
-    size_t *n_level,
-    const char **err_msg)
+    size_t *n_level)
 {
     int err;
     size_t i_level[GIT2R_N_CONFIG_LEVELS] = {0}; /* Current index at level */
@@ -191,10 +187,8 @@ static int git2r_config_list_variables(
         git_config_entry *entry;
         err = git_config_next(&entry, iterator);
         if (err < 0) {
-            if (GIT_ITEROVER == err) {
-                err = 0;
-                break;
-            }
+            if (GIT_ITEROVER == err)
+                err = GIT_OK;
             goto cleanup;
         }
 
@@ -218,7 +212,9 @@ static int git2r_config_list_variables(
             git2r_config_list_add_entry(list, 5, i_level, i_list, entry);
             break;
         default:
-            *err_msg = git2r_err_unexpected_config_level;
+            giterr_set_str(GITERR_CONFIG,
+                           git2r_err_unexpected_config_level);
+            err = GIT_ERROR;
             goto cleanup;
         }
     }
@@ -226,9 +222,6 @@ static int git2r_config_list_variables(
 cleanup:
     if (iterator)
         git_config_iterator_free(iterator);
-
-    if (*err_msg)
-        return -1;
 
     return err;
 }
@@ -243,7 +236,6 @@ SEXP git2r_config_get(SEXP repo)
 {
     int err;
     SEXP list = R_NilValue;
-    const char *err_msg = NULL;
     size_t i = 0, n = 0, n_level[GIT2R_N_CONFIG_LEVELS] = {0};
     git_config *cfg = NULL;
     git_repository *repository = NULL;
@@ -256,7 +248,7 @@ SEXP git2r_config_get(SEXP repo)
     if (err < 0)
         goto cleanup;
 
-    err = git2r_config_count_variables(cfg, n_level, &err_msg);
+    err = git2r_config_count_variables(cfg, n_level);
     if (err < 0)
         goto cleanup;
 
@@ -269,7 +261,7 @@ SEXP git2r_config_get(SEXP repo)
     PROTECT(list = allocVector(VECSXP, n));
     setAttrib(list, R_NamesSymbol, allocVector(STRSXP, n));
 
-    if (git2r_config_list_variables(cfg, list, n_level, &err_msg))
+    if (git2r_config_list_variables(cfg, list, n_level))
         goto cleanup;
 
 cleanup:
@@ -282,12 +274,8 @@ cleanup:
     if (R_NilValue != list)
         UNPROTECT(1);
 
-    if (err < 0) {
-        if (err_msg)
-            Rf_error("Error: %s\n", err_msg);
-        else
-            Rf_error("Error: %s\n", giterr_last()->message);
-    }
+    if (err < 0)
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return list;
 }
@@ -303,13 +291,12 @@ SEXP git2r_config_set(SEXP repo, SEXP variables)
 {
     int err;
     SEXP names;
-    const char *err_msg = NULL;
     size_t i, n;
     git_config *cfg = NULL;
     git_repository *repository = NULL;
 
-    if (R_NilValue == variables || !isNewList(variables))
-        Rf_error("Invalid arguments to git2r_config_set");
+    if (0 != git2r_arg_check_list(variables))
+        Rf_error(git2r_err_list_arg, "variables");
 
     n = length(variables);
     if (n) {
@@ -347,12 +334,8 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (err < 0) {
-        if (err_msg)
-            Rf_error("Error: %s\n", err_msg);
-        else
-            Rf_error("Error: %s\n", giterr_last()->message);
-    }
+    if (err < 0)
+        Rf_error("Error: %s\n", giterr_last()->message);
 
     return R_NilValue;
 }

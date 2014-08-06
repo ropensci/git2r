@@ -24,7 +24,7 @@
 /**
  * Count number of ignored files
  *
- * @param status :TODO:DOCUMENTATION:
+ * @param status_list Representation of a status collection
  * @return The number of files
  */
 static size_t git2r_status_count_ignored(git_status_list *status_list)
@@ -46,7 +46,7 @@ static size_t git2r_status_count_ignored(git_status_list *status_list)
 /**
  * Count number of changes in index
  *
- * @param status :TODO:DOCUMENTATION:
+ * @param status_list Representation of a status collection
  * @return The number of changes
  */
 static size_t git2r_status_count_staged(git_status_list *status_list)
@@ -79,7 +79,7 @@ static size_t git2r_status_count_staged(git_status_list *status_list)
 /**
  * Count number of changes in workdir relative to index
  *
- * @param status :TODO:DOCUMENTATION:
+ * @param status_list Representation of a status collection
  * @return The number of changes
  */
 static size_t git2r_status_count_unstaged(git_status_list *status_list)
@@ -110,7 +110,7 @@ static size_t git2r_status_count_unstaged(git_status_list *status_list)
 /**
  * Count number of untracked files
  *
- * @param status :TODO:DOCUMENTATION:
+ * @param status_list Representation of a status collection
  * @return The number of files
  */
 static size_t git2r_status_count_untracked(git_status_list *status_list)
@@ -132,9 +132,10 @@ static size_t git2r_status_count_untracked(git_status_list *status_list)
 /**
  * Add ignored files
  *
- * @param list :TODO:DOCUMENTATION:
- * @param list_index :TODO:DOCUMENTATION:
- * @param status_list :TODO:DOCUMENTATION:
+ * @param list The list to hold the result
+ * @param list_index The index in list where to add the new sub list
+ * with ignored files.
+ * @param status_list Representation of a status collection
  * @return void
  */
 static void git2r_status_list_ignored(
@@ -173,9 +174,10 @@ static void git2r_status_list_ignored(
 /**
  * Add changes in index
  *
- * @param list :TODO:DOCUMENTATION:
- * @param list_index :TODO:DOCUMENTATION:
- * @param status_list :TODO:DOCUMENTATION:
+ * @param list The list to hold the result
+ * @param list_index The index in list where to add the new sub list
+ * with changed files in index.
+ * @param status_list Representation of a status collection
  * @return void
  */
 static void git2r_status_list_staged(
@@ -241,9 +243,10 @@ static void git2r_status_list_staged(
 /**
  * Add changes in workdir relative to index
  *
- * @param list :TODO:DOCUMENTATION:
- * @param list_index :TODO:DOCUMENTATION:
- * @param status_list :TODO:DOCUMENTATION:
+ * @param list The list to hold the result
+ * @param list_index The index in list where to add the new sub list
+ * with unstaged files.
+ * @param status_list Representation of a status collection
  * @return void
  */
 static void git2r_status_list_unstaged(
@@ -307,9 +310,10 @@ static void git2r_status_list_unstaged(
 /**
  * Add untracked files
  *
- * @param list :TODO:DOCUMENTATION:
- * @param list_index :TODO:DOCUMENTATION:
- * @param status_list :TODO:DOCUMENTATION:
+ * @param list The list to hold the result
+ * @param list_index The index in list where to add the new sub list
+ * with untracked files.
+ * @param status_list Representation of a status collection
  * @return void
  */
 static void git2r_status_list_untracked(
@@ -349,6 +353,10 @@ static void git2r_status_list_untracked(
  * Get state of the repository working directory and the staging area.
  *
  * @param repo S4 class git_repository
+ * @param staged Include staged files.
+ * @param unstaged Include unstaged files.
+ * @param untracked Include untracked files.
+ * @param ignored Include ignored files.
  * @return VECXSP with status
  */
 SEXP git2r_status_list(
@@ -365,11 +373,14 @@ SEXP git2r_status_list(
     git_status_list *status_list = NULL;
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
 
-    if (0 != git2r_arg_check_logical(staged)
-        || 0 != git2r_arg_check_logical(unstaged)
-        || 0 != git2r_arg_check_logical(untracked)
-        || 0 != git2r_arg_check_logical(ignored))
-        Rf_error("Invalid arguments to git2r_status_list");
+    if (0 != git2r_arg_check_logical(staged))
+        Rf_error(git2r_err_logical_arg, "staged");
+    if (0 != git2r_arg_check_logical(unstaged))
+        Rf_error(git2r_err_logical_arg, "unstaged");
+    if (0 != git2r_arg_check_logical(untracked))
+        Rf_error(git2r_err_logical_arg, "untracked");
+    if (0 != git2r_arg_check_logical(ignored))
+        Rf_error(git2r_err_logical_arg, "ignored");
 
     repository = git2r_repository_open(repo);
     if (!repository)

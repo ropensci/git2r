@@ -17,6 +17,9 @@
  */
 
 #include "git2.h"
+
+#include "git2r_arg.h"
+#include "git2r_error.h"
 #include "git2r_odb.h"
 
 /**
@@ -34,8 +37,8 @@ SEXP git2r_odb_hash(SEXP data)
     char hex[GIT_OID_HEXSZ + 1];
     git_oid oid;
 
-    if (R_NilValue == data || !isString(data))
-        Rf_error("Invalid argument to git2r_odb_hash");
+    if (0 != git2r_arg_check_string_vec(data))
+        Rf_error(git2r_err_string_vec_arg, "data");
 
     len = length(data);
     PROTECT(result = allocVector(STRSXP, len));
@@ -79,8 +82,8 @@ SEXP git2r_odb_hashfile(SEXP path)
     char hex[GIT_OID_HEXSZ + 1];
     git_oid oid;
 
-    if (R_NilValue == path || !isString(path))
-        Rf_error("Invalid argument to git2r_odb_hashfile");
+    if (0 != git2r_arg_check_string_vec(path))
+        Rf_error(git2r_err_string_vec_arg, "path");
 
     len = length(path);
     PROTECT(result = allocVector(STRSXP, len));

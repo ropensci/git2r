@@ -242,6 +242,20 @@ int git2r_arg_check_integer_gte_zero(SEXP arg)
 }
 
 /**
+ * Check list argument
+ *
+ * @param arg the arg to check
+ * @return 0 if OK, else -1
+ */
+int git2r_arg_check_list(SEXP arg)
+{
+    if (R_NilValue == arg || !isNewList(arg))
+        return -1;
+    return 0;
+}
+
+
+/**
  * Check logical argument
  *
  * @param arg the arg to check
