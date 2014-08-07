@@ -198,7 +198,7 @@ setMethod("diff",
           signature(object = "git_repository"),
           function(object, index = FALSE)
           {
-              .Call("git2r_diff", object, NULL, NULL, index, NULL)
+              .Call(git2r_diff, object, NULL, NULL, index, NULL)
           }
 )
 
@@ -220,7 +220,7 @@ setMethod("diff",
                   }
               }
 
-              .Call("git2r_diff", NULL, object, new_tree, index, NULL)
+              .Call(git2r_diff, NULL, object, new_tree, index, NULL)
           }
 )
 
@@ -273,7 +273,7 @@ setMethod("diff_print",
                   filename <- normalizePath(filename, mustWork = FALSE)
               }
 
-              .Call("git2r_diff", object, NULL, NULL, index, filename)
+              .Call(git2r_diff, object, NULL, NULL, index, filename)
           }
 )
 
@@ -306,6 +306,6 @@ setMethod("diff_print",
                   filename <- normalizePath(filename, mustWork = FALSE)
               }
 
-              .Call("git2r_diff", NULL, object, new_tree, index, filename)
+              .Call(git2r_diff, NULL, object, new_tree, index, filename)
           }
 )

@@ -108,7 +108,7 @@ setMethod("tag",
                         nchar(message[1]) > 0,
                         is(tagger, "git_signature"))
 
-              invisible(.Call("git2r_tag_create", object, name, message, tagger))
+              invisible(.Call(git2r_tag_create, object, name, message, tagger))
           }
 )
 
@@ -130,7 +130,7 @@ setMethod("tags",
           signature(repo = "git_repository"),
           function (repo)
           {
-              .Call("git2r_tag_list", repo)
+              .Call(git2r_tag_list, repo)
           }
 )
 

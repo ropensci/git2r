@@ -70,7 +70,7 @@ setMethod("note_default_ref",
           signature = "git_repository",
           function(repo)
           {
-              .Call("git2r_note_default_ref", repo)
+              .Call(git2r_note_default_ref, repo)
           }
 )
 
@@ -155,7 +155,7 @@ setMethod("note_create",
               stopifnot(identical(length(ref), 1L))
               if (!length(grep("^refs/notes/", ref)))
                   ref <- paste0("refs/notes/", ref)
-              .Call("git2r_note_create",
+              .Call(git2r_note_create,
                     object@repo,
                     object@hex,
                     message,
@@ -181,7 +181,7 @@ setMethod("note_create",
               stopifnot(identical(length(ref), 1L))
               if (!length(grep("^refs/notes/", ref)))
                   ref <- paste0("refs/notes/", ref)
-              .Call("git2r_note_create",
+              .Call(git2r_note_create,
                     object@repo,
                     object@hex,
                     message,
@@ -207,7 +207,7 @@ setMethod("note_create",
               stopifnot(identical(length(ref), 1L))
               if (!length(grep("^refs/notes/", ref)))
                   ref <- paste0("refs/notes/", ref)
-              .Call("git2r_note_create",
+              .Call(git2r_note_create,
                     object@repo,
                     object@hex,
                     message,
@@ -254,7 +254,7 @@ setMethod("note_list",
               stopifnot(identical(length(ref), 1L))
               if (!length(grep("^refs/notes/", ref)))
                   ref <- paste0("refs/notes/", ref)
-              .Call("git2r_note_list", repo, ref)
+              .Call(git2r_note_list, repo, ref)
           }
 )
 
@@ -282,6 +282,6 @@ setMethod("note_remove",
                    author,
                    committer)
           {
-              invisible(.Call("git2r_note_remove", note, author, committer))
+              invisible(.Call(git2r_note_remove, note, author, committer))
           }
 )

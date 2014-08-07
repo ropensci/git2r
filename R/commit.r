@@ -91,7 +91,7 @@ setMethod("ahead_behind",
           function (local, upstream)
           {
               stopifnot(identical(local@repo, upstream@repo))
-              .Call("git2r_graph_ahead_behind", local, upstream)
+              .Call(git2r_graph_ahead_behind, local, upstream)
           }
 )
 
@@ -149,7 +149,7 @@ setMethod("commits",
           signature(repo = "git_repository"),
           function(repo, topological, time, reverse)
           {
-              .Call("git2r_revwalk_list",
+              .Call(git2r_revwalk_list,
                     repo,
                     topological,
                     time,
@@ -188,7 +188,7 @@ setMethod("descendant_of",
           function (commit, ancestor)
           {
               stopifnot(identical(commit@repo, ancestor@repo))
-              .Call("git2r_graph_descendant_of", commit, ancestor)
+              .Call(git2r_graph_descendant_of, commit, ancestor)
           }
 )
 
@@ -262,7 +262,7 @@ setMethod("parents",
           signature(object = "git_commit"),
           function(object)
           {
-              .Call("git2r_commit_parent_list", object)
+              .Call(git2r_commit_parent_list, object)
           }
 )
 

@@ -33,6 +33,6 @@ setMethod("fetch",
           signature(repo = "git_repository"),
           function (repo, name)
           {
-              invisible(.Call("git2r_remote_fetch", repo, name))
+              invisible(.Call(git2r_remote_fetch, repo, name))
           }
 )

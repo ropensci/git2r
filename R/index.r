@@ -47,7 +47,7 @@ setMethod("add",
                     path = "character"),
           function (repo, path)
           {
-              .Call("git2r_index_add_all", repo, path)
+              .Call(git2r_index_add_all, repo, path)
               invisible(NULL)
           }
 )

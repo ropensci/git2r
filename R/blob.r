@@ -67,7 +67,7 @@ setMethod("create_blob_fromdisk",
           function(repo, path)
           {
               path <- normalizePath(path, mustWork = TRUE)
-              .Call("git2r_blob_create_fromdisk", repo, path)
+              .Call(git2r_blob_create_fromdisk, repo, path)
           }
 )
 
@@ -96,7 +96,7 @@ setMethod("create_blob_fromworkdir",
                     relative_path = "character"),
           function(repo, relative_path)
           {
-              .Call("git2r_blob_create_fromworkdir", repo, relative_path)
+              .Call(git2r_blob_create_fromworkdir, repo, relative_path)
           }
 )
 
@@ -123,7 +123,7 @@ setMethod("content",
               if (is_binary(blob))
                   stop("Content of binary blob is not supported (yet)")
 
-              ret <- .Call("git2r_blob_content", blob)
+              ret <- .Call(git2r_blob_content, blob)
               if (identical(split, TRUE))
                   ret <- strsplit(ret, "\n")[[1]]
               ret
@@ -156,7 +156,7 @@ setMethod("hash",
           signature(data = "character"),
           function(data)
           {
-              .Call("git2r_odb_hash", data)
+              .Call(git2r_odb_hash, data)
           }
 )
 
@@ -192,7 +192,7 @@ setMethod("hashfile",
           function(path)
           {
               path <- normalizePath(path, mustWork = TRUE)
-              .Call("git2r_odb_hashfile", path)
+              .Call(git2r_odb_hashfile, path)
           }
 )
 
@@ -214,7 +214,7 @@ setMethod("is_binary",
           signature(blob = "git_blob"),
           function (blob)
           {
-              .Call("git2r_blob_is_binary", blob)
+              .Call(git2r_blob_is_binary, blob)
           }
 )
 
@@ -239,7 +239,7 @@ setMethod("length",
           signature(x = "git_blob"),
           function(x)
           {
-              .Call("git2r_blob_rawsize", x)
+              .Call(git2r_blob_rawsize, x)
           }
 )
 

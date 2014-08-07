@@ -38,7 +38,7 @@ setClass("git_repository",
          validity=function(object) {
              errors <- character()
 
-             can_open <- .Call("git2r_repository_can_open", object@path)
+             can_open <- .Call(git2r_repository_can_open, object@path)
              if (!identical(can_open, TRUE))
                  errors <- c(errors, "Invalid repository")
 
@@ -232,7 +232,7 @@ setMethod("init",
               if (!file.info(path)$isdir)
                   stop("path is not a directory")
 
-              .Call("git2r_repository_init", path, bare)
+              .Call(git2r_repository_init, path, bare)
 
               new("git_repository", path=path)
           }
@@ -282,7 +282,7 @@ setMethod("clone",
                         nchar(url) > 0,
                         nchar(local_path) > 0)
 
-              .Call("git2r_clone", url, local_path, credentials, progress)
+              .Call(git2r_clone, url, local_path, credentials, progress)
 
               repository(local_path)
           }
@@ -331,7 +331,7 @@ setMethod("commit",
                   parents <- c(parents, branch_target(head(repo)))
               }
 
-              .Call("git2r_commit_create",
+              .Call(git2r_commit_create,
                     repo,
                     message,
                     author,
@@ -353,7 +353,7 @@ setMethod("head",
           signature(x = "git_repository"),
           function (x)
           {
-              .Call("git2r_repository_head", x)
+              .Call(git2r_repository_head, x)
           }
 )
 
@@ -384,7 +384,7 @@ setMethod("is_bare",
           signature(repo = "git_repository"),
           function (repo)
           {
-              .Call("git2r_repository_is_bare", repo)
+              .Call(git2r_repository_is_bare, repo)
           }
 )
 
@@ -415,7 +415,7 @@ setMethod("is_detached",
           signature(repo = "git_repository"),
           function (repo)
           {
-              .Call("git2r_repository_head_detached", repo)
+              .Call(git2r_repository_head_detached, repo)
           }
 )
 
@@ -446,7 +446,7 @@ setMethod("is_empty",
           signature(repo = "git_repository"),
           function (repo)
           {
-              .Call("git2r_repository_is_empty", repo)
+              .Call(git2r_repository_is_empty, repo)
           }
 )
 
@@ -477,7 +477,7 @@ setMethod("is_shallow",
           signature(repo = "git_repository"),
           function (repo)
           {
-              .Call("git2r_repository_is_shallow", repo)
+              .Call(git2r_repository_is_shallow, repo)
           }
 )
 
@@ -513,7 +513,7 @@ setMethod("lookup",
                     hex  = "character"),
           function (repo, hex)
           {
-              .Call("git2r_object_lookup", repo, hex)
+              .Call(git2r_object_lookup, repo, hex)
           }
 )
 
@@ -544,7 +544,7 @@ setMethod("default_signature",
           signature(repo = "git_repository"),
           function (repo)
           {
-              .Call("git2r_signature_default", repo)
+              .Call(git2r_signature_default, repo)
           }
 )
 
@@ -601,7 +601,7 @@ setMethod("summary",
               n_commits <- length(work)
               n_authors <- length(unique(sapply(lapply(work, slot, "author"), slot, "name")))
 
-              s <- .Call("git2r_status_list", object, TRUE, TRUE, TRUE, TRUE)
+              s <- .Call(git2r_status_list, object, TRUE, TRUE, TRUE, TRUE)
               n_ignored <- length(s$ignored)
               n_untracked <- length(s$untracked)
               n_unstaged <- length(s$unstaged)
@@ -652,7 +652,7 @@ setMethod("workdir",
           signature(repo = "git_repository"),
           function (repo)
           {
-              .Call("git2r_repository_workdir", repo)
+              .Call(git2r_repository_workdir, repo)
           }
 )
 
@@ -684,6 +684,6 @@ setMethod("discover_repository",
           signature(path = "character"),
           function (path)
           {
-              .Call("git2r_repository_discover", path)
+              .Call(git2r_repository_discover, path)
           }
 )

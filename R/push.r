@@ -55,8 +55,8 @@ setMethod("push",
                               "trying to push does not track an upstream branch."))
               }
 
-              src <- .Call("git2r_branch_canonical_name", object)
-              dst <- .Call("git2r_branch_upstream_canonical_name", object)
+              src <- .Call(git2r_branch_canonical_name, object)
+              dst <- .Call(git2r_branch_upstream_canonical_name, object)
 
               push(object      = object@repo,
                    name        = branch_remote_name(upstream),
@@ -89,7 +89,7 @@ setMethod("push",
               }
 
               result <- .Call(
-                  "git2r_push",
+                  git2r_push,
                   object,
                   name,
                   refspec,

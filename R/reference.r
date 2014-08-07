@@ -81,7 +81,7 @@ setMethod("references",
           signature(repo = "git_repository"),
           function (repo)
           {
-              .Call("git2r_reference_list", repo)
+              .Call(git2r_reference_list, repo)
           }
 )
 

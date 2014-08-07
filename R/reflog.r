@@ -91,7 +91,7 @@ setMethod("reflog",
           signature(repo = "git_repository", refname="character"),
           function(repo, refname)
           {
-              result <- .Call("git2r_reflog_list", repo, refname)
+              result <- .Call(git2r_reflog_list, repo, refname)
               lapply(result, show)
               invisible(result)
           }

@@ -137,6 +137,6 @@ setMethod("blame",
           function(repo,
                    path)
           {
-              .Call("git2r_blame_file", repo, path)
+              .Call(git2r_blame_file, repo, path)
           }
 )

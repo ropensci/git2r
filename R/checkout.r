@@ -65,7 +65,7 @@ setMethod("checkout",
           function (object, force)
           {
               ret <- .Call(
-                  "git2r_checkout_branch",
+                  git2r_checkout_branch,
                   object,
                   force,
                   checkout_reflog_msg(object, object@name),
@@ -81,7 +81,7 @@ setMethod("checkout",
           function (object, force)
           {
               ret <- .Call(
-                  "git2r_checkout_commit",
+                  git2r_checkout_commit,
                   object,
                   force,
                   checkout_reflog_msg(object, object@hex),
@@ -97,7 +97,7 @@ setMethod("checkout",
           function (object, force)
           {
               ret <- .Call(
-                  "git2r_checkout_tag",
+                  git2r_checkout_tag,
                   object,
                   force,
                   checkout_reflog_msg(object, object@name),
@@ -113,7 +113,7 @@ setMethod("checkout",
           function (object, force)
           {
               stop("Checkout of S4 class git_tree isn't implemented. Sorry")
-              ## ret <- .Call("git2r_checkout_tree", object, force)
+              ## ret <- .Call(git2r_checkout_tree, object, force)
               ## invisible(ret)
           }
 )

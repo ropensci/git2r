@@ -32,7 +32,7 @@ setMethod("remotes",
           signature(repo = "git_repository"),
           function (repo)
           {
-              .Call("git2r_remote_list", repo)
+              .Call(git2r_remote_list, repo)
           }
 )
 
@@ -58,7 +58,7 @@ setMethod("remote_add",
                     url  = "character"),
           function(repo, name, url)
           {
-              ret <- .Call("git2r_remote_add", repo, name, url)
+              ret <- .Call(git2r_remote_add, repo, name, url)
               invisible(ret)
           }
 )
@@ -85,7 +85,7 @@ setMethod("remote_rename",
                     newname = "character"),
           function(repo, oldname, newname)
           {
-              ret <- .Call("git2r_remote_rename", repo, oldname, newname)
+              ret <- .Call(git2r_remote_rename, repo, oldname, newname)
               invisible(ret)
           }
 )
@@ -112,7 +112,7 @@ setMethod("remote_remove",
                     name = "character"),
           function(repo, name)
           {
-              ret <- .Call("git2r_remote_remove", repo, name)
+              ret <- .Call(git2r_remote_remove, repo, name)
               invisible(ret)
           }
 )
@@ -147,6 +147,6 @@ setMethod("remote_url",
           signature(repo = "git_repository"),
           function (repo, remote)
           {
-              .Call("git2r_remote_url", repo, remote)
+              .Call(git2r_remote_url, repo, remote)
           }
 )

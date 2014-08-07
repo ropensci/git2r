@@ -72,7 +72,7 @@ setMethod("stash_drop",
                   index <- as.integer(index)
               }
 
-              invisible(.Call("git2r_stash_drop", object, index))
+              invisible(.Call(git2r_stash_drop, object, index))
           }
 )
 
@@ -135,7 +135,7 @@ setMethod("stash",
                     ignored,
                     stasher)
           {
-              invisible(.Call("git2r_stash_save",
+              invisible(.Call(git2r_stash_save,
                               object,
                               message,
                               index,
@@ -171,7 +171,7 @@ setMethod("stashes",
           signature(object = "git_repository"),
           function (object)
           {
-              .Call("git2r_stash_list", object)
+              .Call(git2r_stash_list, object)
           }
 )
 

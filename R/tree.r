@@ -162,7 +162,7 @@ setMethod("tree",
           signature(object = "git_commit"),
           function (object)
           {
-              .Call("git2r_commit_tree", object)
+              .Call(git2r_commit_tree, object)
           }
 )
 
@@ -173,7 +173,7 @@ setMethod("tree",
           signature(object = "git_stash"),
           function (object)
           {
-              .Call("git2r_commit_tree", object)
+              .Call(git2r_commit_tree, object)
           }
 )
 

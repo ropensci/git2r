@@ -25,7 +25,7 @@
 ##' }
 ##'
 libgit2_features <- function() {
-    .Call("git2r_libgit2_features")
+    .Call(git2r_libgit2_features)
 }
 
 ##' Version of the libgit2 library being currently used
@@ -39,5 +39,5 @@ libgit2_features <- function() {
 ##' }
 ##'
 libgit2_version <- function() {
-    .Call("git2r_libgit2_version")
+    .Call(git2r_libgit2_version)
 }

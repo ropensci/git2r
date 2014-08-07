@@ -66,7 +66,7 @@ setMethod("status",
           signature(repo = "git_repository"),
           function (repo, staged, unstaged, untracked, ignored, verbose)
           {
-              s <- .Call("git2r_status_list",
+              s <- .Call(git2r_status_list,
                          repo,
                          staged,
                          unstaged,

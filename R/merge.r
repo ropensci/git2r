@@ -70,6 +70,6 @@ setMethod("merge_base",
           function(one, two)
           {
               stopifnot(identical(one@repo, two@repo))
-              .Call("git2r_merge_base", one, two)
+              .Call(git2r_merge_base, one, two)
           }
 )

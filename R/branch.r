@@ -83,7 +83,7 @@ setMethod("branch_create",
                   who = default_signature(commit@repo)
               }
 
-              invisible(.Call("git2r_branch_create", name, commit, force,
+              invisible(.Call(git2r_branch_create, name, commit, force,
                               who, message))
           }
 )
@@ -106,7 +106,7 @@ setMethod("branch_delete",
           signature = "git_branch",
           function(branch)
           {
-              invisible(.Call("git2r_branch_delete", branch))
+              invisible(.Call(git2r_branch_delete, branch))
           }
 )
 
@@ -129,7 +129,7 @@ setMethod("branch_remote_name",
           signature = "git_branch",
           function(branch)
           {
-              .Call("git2r_branch_remote_name", branch)
+              .Call(git2r_branch_remote_name, branch)
           }
 )
 
@@ -151,7 +151,7 @@ setMethod("branch_remote_url",
           signature = "git_branch",
           function(branch)
           {
-              .Call("git2r_branch_remote_url", branch)
+              .Call(git2r_branch_remote_url, branch)
           }
 )
 
@@ -191,7 +191,7 @@ setMethod("branch_rename",
                   who = default_signature(branch@repo)
               }
 
-              invisible(.Call("git2r_branch_rename", branch, name, force,
+              invisible(.Call(git2r_branch_rename, branch, name, force,
                               who, message))
           }
 )
@@ -214,7 +214,7 @@ setMethod("branch_target",
           signature = "git_branch",
           function(branch)
           {
-              .Call("git2r_branch_target", branch)
+              .Call(git2r_branch_target, branch)
           }
 )
 
@@ -237,7 +237,7 @@ setMethod("branch_get_upstream",
           signature = "git_branch",
           function(branch)
           {
-              .Call("git2r_branch_get_upstream", branch)
+              .Call(git2r_branch_get_upstream, branch)
           }
 )
 
@@ -265,7 +265,7 @@ setMethod("branch_set_upstream",
               if (missing(name)) {
                   stop("Missing argument name")
               }
-              invisible(.Call("git2r_branch_set_upstream", branch, name))
+              invisible(.Call(git2r_branch_set_upstream, branch, name))
           }
 )
 
@@ -295,7 +295,7 @@ setMethod("branches",
                               remote = 2L,
                               all    = 3L)
 
-              .Call("git2r_branch_list", repo, flags)
+              .Call(git2r_branch_list, repo, flags)
           }
 )
 
@@ -317,7 +317,7 @@ setMethod("is_head",
           signature(branch = "git_branch"),
           function (branch)
           {
-              .Call("git2r_branch_is_head", branch)
+              .Call(git2r_branch_is_head, branch)
           }
 )
 
