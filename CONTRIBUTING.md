@@ -1,6 +1,6 @@
 # Welcome to git2r!
 
-Contributions to the `git2r` project are welcome and appreciated. Here follows a guideline and description of the project to make it easier for you to create pull requests, report issues and give feedback.
+Contributions to the `git2r` project are welcome and appreciated. Here follow some guidelines and description of the project to make it easier for you to submit pull requests, report issues, and provide feedback.
 
 ## Licensing
 
