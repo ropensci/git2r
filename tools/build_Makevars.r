@@ -139,7 +139,7 @@ extract_git2r_calls <- function(files) {
         lines <- paste0(lines, collapse=" ")
 
         ## Find .Call
-        pattern <- "[.]Call[[:space:]]*[(][[:space:]]*[.[:alpha:]\"][^\",]*"
+        pattern <- "[.]Call[[:space:]]*[(][[:space:]]*[.[:alpha:]\"][^\\),]*"
         calls <- gregexpr(pattern, lines)
         start <- as.integer(calls[[1]])
 
@@ -149,7 +149,7 @@ extract_git2r_calls <- function(files) {
             calls <- substr(rep(lines, length(start)), start, start + len - 1)
 
             ## Trim .Call to extract .NAME
-            pattern <- "[.]Call[[:space:]]*[(][[:space:]]*[\"]?"
+            pattern <- "[.]Call[[:space:]]*[(][[:space:]]*"
             calls <- sub(pattern, "", calls)
             return(data.frame(filename = filename,
                               .NAME = calls,
@@ -181,9 +181,28 @@ check_git2r_prefix <- function(calls) {
     invisible(NULL)
 }
 
-## Check that all git2r C functions are prefixed with 'git2r_'
+##' Check that .NAME is a registered symbol in .Call(.NAME
+##'
+##' Raise an error in case of .NAME is of the form "git2r_"
+##' @param calls data.frame with the name of the C function to call
+##' @return invisible NULL
+check_git2r_use_registered_symbol <- function(calls) {
+    .NAME <- grep("^\"", calls$.NAME)
+
+    if (!identical(length(.NAME), 0L)) {
+        msg <- sprintf("%s in %s\n", calls$.NAME[.NAME], calls$filename[.NAME])
+        msg <- c("\n\nUse registered symbol instead of:\n", msg, "\n")
+        stop(msg)
+    }
+
+    invisible(NULL)
+}
+
+## Check that all git2r C functions are prefixed with 'git2r_' and
+## registered
 calls <- extract_git2r_calls(list.files("R", "*.r"))
 check_git2r_prefix(calls)
+check_git2r_use_registered_symbol(calls)
 
 ## Generate Makevars
 build_Makevars.in()
