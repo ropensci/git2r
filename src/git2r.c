@@ -138,7 +138,7 @@ static const R_CallMethodDef callMethods[] =
  * @param info Information about the DLL being loaded
  */
 void
-R_init_gitr(DllInfo *info)
+R_init_git2r(DllInfo *info)
 {
     R_registerRoutines(info, NULL, callMethods, NULL, NULL);
 }
