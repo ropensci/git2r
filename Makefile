@@ -49,14 +49,10 @@ valgrind:
 # 2) run 'make sync_libgit2'. It first removes files and then copy
 # files from libgit2 directory. Next it runs an R script to build
 # Makevars.in and Makevars.win based on source files. Finally it runs
-# a grep command to identify potential lines in the source code using
-# printf.
+# a patch command to change some lines in the source code to pass
+# 'R CMD check git2r'
 #
-# 3) Check cache.c and util.c. They have been modified to use R
-# printing routine Rprintf. If there are no other changes in these two
-# files they must be reverted to previous state to pass R CMD check
-#
-# 4) Build and check updated package 'make check'
+# 3) Build and check updated package 'make check'
 sync_libgit2:
 	-rm -f src/http-parser/*
 	-rm -f src/regex/*
@@ -96,9 +92,10 @@ sync_libgit2:
 	-cp -f ../libgit2/src/xdiff/*.h src/libgit2/xdiff
 	-cp -f ../libgit2/AUTHORS inst/AUTHORS_libgit2
 	-cp -f ../libgit2/COPYING inst/NOTICE
+	cd src/libgit2 && patch -p0 < ../../tools/cache-pass-R-CMD-check-git2r.patch
+	cd src/libgit2 && patch -p0 < ../../tools/diff_print-pass-R-CMD-check-git2r.patch
+	cd src/libgit2 && patch -p0 < ../../tools/util-pass-R-CMD-check-git2r.patch
 	Rscript tools/build_Makevars.r
-	-echo "\nPotential lines where printf should be replaced with Rprintf\n"
-	grep -rn --include="*.c" --regexp="[[:space:]]printf[(]" *
 
 Makevars:
 	Rscript tools/build_Makevars.r

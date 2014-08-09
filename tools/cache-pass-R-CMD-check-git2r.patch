@@ -1,0 +1,28 @@
+--- cache.c	2014-08-09 14:27:25.068512074 +0200
++++ cache-pass-R-CMD-check-git2r.c	2014-08-09 14:27:07.704511612 +0200
+@@ -15,6 +15,10 @@
+ #include "object.h"
+ #include "git2/oid.h"
+ 
++/* Changed all printf to Rprintf to pass 'R CMD check git2r'*/
++/* 2014-08-09: Stefan Widgren <stefan.widgren@gmail.com>*/
++#include <Rdefines.h>
++
+ GIT__USE_OIDMAP
+ 
+ bool git_cache__enabled = true;
+@@ -50,12 +54,12 @@
+ 	if (kh_size(cache->map) == 0)
+ 		return;
+ 
+-	printf("Cache %p: %d items cached, %d bytes\n",
++	Rprintf("Cache %p: %d items cached, %d bytes\n",
+ 		cache, kh_size(cache->map), (int)cache->used_memory);
+ 
+ 	kh_foreach_value(cache->map, object, {
+ 		char oid_str[9];
+-		printf(" %s%c %s (%d)\n",
++		Rprintf(" %s%c %s (%d)\n",
+ 			git_object_type2string(object->type),
+ 			object->flags == GIT_CACHE_STORE_PARSED ? '*' : ' ',
+ 			git_oid_tostr(oid_str, sizeof(oid_str), &object->oid),

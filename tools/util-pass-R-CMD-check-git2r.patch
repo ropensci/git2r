@@ -1,0 +1,60 @@
+--- util.c	2014-08-09 13:35:27.384428586 +0200
++++ util-pass-R-CMD-check-git2r.c	2014-08-09 13:40:32.476436755 +0200
+@@ -14,6 +14,10 @@
+ # include <Shlwapi.h>
+ #endif
+ 
++/* Changed all printf to Rprintf to pass 'R CMD check git2r'*/
++/* 2014-08-09: Stefan Widgren <stefan.widgren@gmail.com>*/
++#include <Rdefines.h>
++
+ void git_strarray_free(git_strarray *array)
+ {
+ 	size_t i;
+@@ -315,36 +319,36 @@
+ 	for (i = 0; i < line_count; ++i) {
+ 		line = buffer + (i * LINE_WIDTH);
+ 		for (j = 0; j < LINE_WIDTH; ++j, ++line)
+-			printf("%02X ", (unsigned char)*line & 0xFF);
++			Rprintf("%02X ", (unsigned char)*line & 0xFF);
+ 
+-		printf("| ");
++		Rprintf("| ");
+ 
+ 		line = buffer + (i * LINE_WIDTH);
+ 		for (j = 0; j < LINE_WIDTH; ++j, ++line)
+-			printf("%c", (*line >= 32 && *line <= 126) ? *line : '.');
++			Rprintf("%c", (*line >= 32 && *line <= 126) ? *line : '.');
+ 
+-		printf("\n");
++		Rprintf("\n");
+ 	}
+ 
+ 	if (last_line > 0) {
+ 
+ 		line = buffer + (line_count * LINE_WIDTH);
+ 		for (j = 0; j < last_line; ++j, ++line)
+-			printf("%02X ", (unsigned char)*line & 0xFF);
++			Rprintf("%02X ", (unsigned char)*line & 0xFF);
+ 
+ 		for (j = 0; j < (LINE_WIDTH - last_line); ++j)
+-			printf("	");
++			Rprintf("	");
+ 
+-		printf("| ");
++		Rprintf("| ");
+ 
+ 		line = buffer + (line_count * LINE_WIDTH);
+ 		for (j = 0; j < last_line; ++j, ++line)
+-			printf("%c", (*line >= 32 && *line <= 126) ? *line : '.');
++			Rprintf("%c", (*line >= 32 && *line <= 126) ? *line : '.');
+ 
+-		printf("\n");
++		Rprintf("\n");
+ 	}
+ 
+-	printf("\n");
++	Rprintf("\n");
+ }
+ 
+ #ifdef GIT_LEGACY_HASH
