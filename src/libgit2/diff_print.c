@@ -13,6 +13,15 @@
 #include "delta.h"
 #include "git2/sys/diff.h"
 
+/* Change to pass 'R CMD check git2r'
+ *
+ * Remove stdout from git_diff_print_callback__to_file_handle and
+ * return error code (-1) instead of using stdout if FILE pointer is
+ * NULL.
+ *
+ * 2014-08-09: Stefan Widgren <stefan.widgren@gmail.com>
+*/
+
 typedef struct {
 	git_diff *diff;
 	git_diff_format_t format;

@@ -14,8 +14,8 @@
 # include <Shlwapi.h>
 #endif
 
-/* Changed printf to Rprintf */
-/* 2014-08-01: Stefan Widgren */
+/* Changed all printf to Rprintf to pass 'R CMD check git2r'*/
+/* 2014-08-09: Stefan Widgren <stefan.widgren@gmail.com>*/
 #include <Rdefines.h>
 
 void git_strarray_free(git_strarray *array)
