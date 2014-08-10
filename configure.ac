@@ -15,7 +15,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 AC_PREREQ([2.69])
-AC_INIT([git2r], [see.DESCRIPTION.file], [stefan.widgren@gmail.com])
+AC_INIT([git2r], [see.DESCRIPTION.file], [https://github.com/ropensci/git2r/issues])
 AC_CONFIG_SRCDIR([src/git2r.c])
 
 # Checks for programs.
