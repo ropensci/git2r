@@ -58,6 +58,40 @@ if test [ -n "$libssh2_lib_path" ] ; then
   LIBS="-L${libssh2_lib_path} ${LIBS}"
 fi
 
+# libssl include and library path
+AC_ARG_WITH([libssl-include],
+    AC_HELP_STRING([--with-libssl-include=INCLUDE_PATH],
+                   [the location of libssl header files]),
+    [libssl_include_path=$withval])
+if test [ -n "$libssl_include_path" ] ; then
+  GIT2R_CPPFLAGS="${GIT2R_CPPFLAGS} -I${libssl_include_path}"
+fi
+
+AC_ARG_WITH([libssl-lib],
+    AC_HELP_STRING([--with-libssl-lib=LIB_PATH],
+                   [the location of libssl libraries]),
+    [libssl_lib_path=$withval])
+if test [ -n "$libssl_lib_path" ] ; then
+  LIBS="-L${libssl_lib_path} ${LIBS}"
+fi
+
+# libcrypto include and library path
+AC_ARG_WITH([libcrypto-include],
+    AC_HELP_STRING([--with-libcrypto-include=INCLUDE_PATH],
+                   [the location of libcrypto header files]),
+    [libcrypto_include_path=$withval])
+if test [ -n "$libcrypto_include_path" ] ; then
+  GIT2R_CPPFLAGS="${GIT2R_CPPFLAGS} -I${libcrypto_include_path}"
+fi
+
+AC_ARG_WITH([libcrypto-lib],
+    AC_HELP_STRING([--with-libcrypto-lib=LIB_PATH],
+                   [the location of libcrypto libraries]),
+    [libcrypto_lib_path=$withval])
+if test [ -n "$libcrypto_lib_path" ] ; then
+  LIBS="-L${libcrypto_lib_path} ${LIBS}"
+fi
+
 # Find the compiler and compiler flags to use
 : ${R_HOME=`R RHOME`}
 if test -z "${R_HOME}"; then
