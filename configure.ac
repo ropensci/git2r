@@ -21,15 +21,16 @@ AC_CONFIG_SRCDIR([src/git2r.c])
 # Checks for programs.
 AC_PROG_CC
 
+# Handle optional include and library paths
+GIT2R_CPPFLAGS="-I."
+
 # zlib include and library path
 AC_ARG_WITH([zlib-include],
     AC_HELP_STRING([--with-zlib-include=INCLUDE_PATH],
                    [the location of zlib header files]),
     [zlib_include_path=$withval])
 if test [ -n "$zlib_include_path" ] ; then
-  GIT2R_CPPFLAGS="-I. -I${zlib_include_path}"
-else
-  GIT2R_CPPFLAGS="-I."
+  GIT2R_CPPFLAGS="${GIT2R_CPPFLAGS} -I${zlib_include_path}"
 fi
 
 AC_ARG_WITH([zlib-lib],
@@ -38,6 +39,23 @@ AC_ARG_WITH([zlib-lib],
     [zlib_lib_path=$withval])
 if test [ -n "$zlib_lib_path" ] ; then
   LIBS="-L${zlib_lib_path} ${LIBS}"
+fi
+
+# LibSSH2 include and library path
+AC_ARG_WITH([libssh2-include],
+    AC_HELP_STRING([--with-libssh2-include=INCLUDE_PATH],
+                   [the location of LibSSH2 header files]),
+    [libssh2_include_path=$withval])
+if test [ -n "$libssh2_include_path" ] ; then
+  GIT2R_CPPFLAGS="${GIT2R_CPPFLAGS} -I${libssh2_include_path}"
+fi
+
+AC_ARG_WITH([libssh2-lib],
+    AC_HELP_STRING([--with-libssh2-lib=LIB_PATH],
+                   [the location of LibSSH2 libraries]),
+    [libssh2_lib_path=$withval])
+if test [ -n "$libssh2_lib_path" ] ; then
+  LIBS="-L${libssh2_lib_path} ${LIBS}"
 fi
 
 # Find the compiler and compiler flags to use
@@ -90,7 +108,7 @@ if test "x${have_ssh2}" = xyes; then
 else
         AC_MSG_WARN([
   ---------------------------------------------
-   Unable to find libSSH2 on this system.
+   Unable to find LibSSH2 on this system.
    Building a version without support for SSH.
   ---------------------------------------------])
 fi
