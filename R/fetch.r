@@ -22,7 +22,7 @@
 ##' @param name the remote's name
 ##' @return invisible(NULL)
 ##' @keywords methods
-##' @include S4-classes.r
+##' @include S4_classes.r
 setGeneric("fetch",
            signature = "repo",
            function(repo, name) standardGeneric("fetch"))

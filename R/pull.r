@@ -21,7 +21,7 @@
 ##' @param repo the repository
 ##' @return invisible(NULL)
 ##' @keywords methods
-##' @include S4-classes.r
+##' @include S4_classes.r
 setGeneric("pull",
            signature = "repo",
            function(repo) standardGeneric("pull"))

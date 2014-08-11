@@ -96,7 +96,7 @@ setMethod("commits",
 )
 
 ##' @rdname commits-methods
-##' @include S4-classes.r
+##' @include S4_classes.r
 ##' @export
 setMethod("commits",
           signature(repo = "git_repository"),
@@ -229,7 +229,7 @@ setMethod("parents",
 ##' @param object The commit \code{object}
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
-##' @include S4-classes.r
+##' @include S4_classes.r
 ##' @export
 ##' @examples
 ##' \dontrun{

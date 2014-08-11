@@ -14,7 +14,7 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-#' @include S4-classes.r
+#' @include S4_classes.r
 #' @name markdown_link
 #'
 #' @title Generate a markdown link for current commit

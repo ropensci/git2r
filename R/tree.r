@@ -103,7 +103,7 @@ setAs(from = "git_tree",
 ##' @param object the \code{commit} or \code{stash} object
 ##' @return A S4 class git_tree object
 ##' @keywords methods
-##' @include S4-classes.r
+##' @include S4_classes.r
 setGeneric("tree",
            signature = "object",
            function(object) standardGeneric("tree"))

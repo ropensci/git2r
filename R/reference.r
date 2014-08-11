@@ -35,7 +35,7 @@ setGeneric("references",
            function(repo) standardGeneric("references"))
 
 ##' @rdname references-methods
-##' @include S4-classes.r
+##' @include S4_classes.r
 ##' @export
 setMethod("references",
           signature(repo = "git_repository"),
@@ -52,7 +52,7 @@ setMethod("references",
 ##' @param object The reference \code{object}
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
-##' @include S4-classes.r
+##' @include S4_classes.r
 ##' @export
 setMethod("show",
           signature(object = "git_reference"),

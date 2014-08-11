@@ -31,7 +31,7 @@
 ##' @keywords methods
 ##' @import ggplot2
 ##' @importFrom scales date_format
-##' @include S4-classes.r
+##' @include S4_classes.r
 ##' @export
 setMethod("plot",
           signature(x = "git_repository"),

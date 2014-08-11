@@ -85,6 +85,7 @@ setMethod("branch_delete",
 ##' @param branch The branch
 ##' @return character string with remote name
 ##' @keywords methods
+##' @include S4_classes.r
 setGeneric("branch_remote_name",
            signature = "branch",
            function(branch)
@@ -107,6 +108,7 @@ setMethod("branch_remote_name",
 ##' @param branch The branch
 ##' @return character string with remote url
 ##' @keywords methods
+##' @include S4_classes.r
 setGeneric("branch_remote_url",
            signature = "branch",
            function(branch)
@@ -135,6 +137,7 @@ setMethod("branch_remote_url",
 ##' reflog entry. Default is NULL, which gives the default signature.
 ##' @return invisible renamed S4 class git_branch
 ##' @keywords methods
+##' @include S4_classes.r
 setGeneric("branch_rename",
            signature = "branch",
            function(branch,
@@ -170,6 +173,7 @@ setMethod("branch_rename",
 ##' @param branch The branch
 ##' @return hex or NA if not a direct reference
 ##' @keywords methods
+##' @include S4_classes.r
 setGeneric("branch_target",
            signature = "branch",
            function(branch)
@@ -193,6 +197,7 @@ setMethod("branch_target",
 ##' @param branch The branch
 ##' @return S4 class git_branch or NULL if no remote tracking branch.
 ##' @keywords methods
+##' @include S4_classes.r
 setGeneric("branch_get_upstream",
            signature = "branch",
            function(branch)
@@ -218,6 +223,7 @@ setMethod("branch_get_upstream",
 ##' upstream. Pass NULL to unset.
 ##' @return invisible NULL
 ##' @keywords methods
+##' @include S4_classes.r
 setGeneric("branch_set_upstream",
            signature = "branch",
            function(branch, name)
@@ -246,6 +252,7 @@ setMethod("branch_set_upstream",
 ##' are 'all', 'local' or 'remote'
 ##' @return list of branches in repository
 ##' @keywords methods
+##' @include S4_classes.r
 setGeneric("branches",
            signature = "repo",
            function(repo, flags=c("all", "local", "remote"))
@@ -273,6 +280,7 @@ setMethod("branches",
 ##' @param branch The branch \code{object} to check if it's head
 ##' @return TRUE if branch is head, else FALSE
 ##' @keywords methods
+##' @include S4_classes.r
 setGeneric("is_head",
            signature = "branch",
            function(branch)
@@ -295,6 +303,7 @@ setMethod("is_head",
 ##' @param branch The branch \code{object} to check if it's local
 ##' @return TRUE if branch is local, else FALSE
 ##' @keywords methods
+##' @include S4_classes.r
 setGeneric("is_local",
            signature = "branch",
            function(branch)
@@ -317,6 +326,7 @@ setMethod("is_local",
 ##' @param object The branch \code{object}
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
+##' @include S4_classes.r
 ##' @export
 setMethod("show",
           signature(object = "git_branch"),

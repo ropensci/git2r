@@ -22,7 +22,7 @@
 ##' @param two The other commit
 ##' @return S4 class git_commit
 ##' @keywords methods
-##' @include S4-classes.r
+##' @include S4_classes.r
 ##' @examples \dontrun{
 ##' ## Create a directory in tempdir
 ##' path <- tempfile(pattern="git2r-")

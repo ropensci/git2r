@@ -24,7 +24,7 @@
 ##' @param by Contributions by "commits" or "author". Default is "commits".
 ##' @return A \code{data.frame} with contributions.
 ##' @keywords methods
-##' @include S4-classes.r
+##' @include S4_classes.r
 ##' @author Karthik Ram \email{karthik.ram@@gmail.com}
 ##' @author Stefan Widgren \email{stefan.widgren@@gmail.com}
 ##' @examples \dontrun{

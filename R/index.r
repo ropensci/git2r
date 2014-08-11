@@ -25,7 +25,7 @@
 ##' added (if non-ignored)
 ##' @return invisible(NULL)
 ##' @keywords methods
-##' @include S4-classes.r
+##' @include S4_classes.r
 ##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository

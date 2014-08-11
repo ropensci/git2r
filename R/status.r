@@ -43,7 +43,7 @@ display_status <- function(title, section) {
 ##' @param verbose Display status. Default TRUE.
 ##' @return invisible(list) with repository status
 ##' @keywords methods
-##' @include S4-classes.r
+##' @include S4_classes.r
 ##' @examples \dontrun{
 ##' ## Open an existing repository
 ##' repo <- repository("path/to/git2r")
