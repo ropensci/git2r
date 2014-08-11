@@ -14,38 +14,6 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-##' Class \code{"git_repository"}
-##'
-##' @title  S4 class to handle a git repository
-##' @section Slots:
-##' \describe{
-##'   \item{path}{
-##'     Path to a git repository
-##'   }
-##' }
-##' @rdname git_repository-class
-##' @docType class
-##' @keywords classes
-##' @section Methods:
-##' \describe{
-##'   \item{is_bare}{\code{signature(object = "git_repository")}}
-##'   \item{is_empty}{\code{signature(object = "git_repository")}}
-##' }
-##' @keywords methods
-##' @export
-setClass("git_repository",
-         slots=c(path="character"),
-         validity=function(object) {
-             errors <- character()
-
-             can_open <- .Call(git2r_repository_can_open, object@path)
-             if (!identical(can_open, TRUE))
-                 errors <- c(errors, "Invalid repository")
-
-             if (length(errors) == 0) TRUE else errors
-         }
-)
-
 ##' Coerce Git repository to a \code{data.frame}
 ##'
 ##' The commits in the repository are coerced to a \code{data.frame}

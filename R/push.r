@@ -26,8 +26,7 @@
 ##' @seealso \code{\linkS4class{cred_plaintext}},
 ##' \code{\linkS4class{cred_ssh_key}}
 ##' @keywords methods
-##' @include repository.r
-##' @include branch.r
+##' @include S4-classes.r
 ##' @examples \dontrun{
 ##' ## Open an existing repository
 ##' repo <- repository("path/to/git2r")

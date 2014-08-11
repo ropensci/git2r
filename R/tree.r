@@ -14,54 +14,6 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-##' Class \code{"git_tree"}
-##'
-##' @title S4 class to handle a git tree
-##' @section Slots:
-##' \describe{
-##'   \item{hex}{
-##'     40 char hexadecimal string
-##'   }
-##'   \item{filemode}{
-##'     The UNIX file attributes of a tree entry
-##'   }
-##'   \item{type}{
-##'     String representation of the tree entry type
-##'   }
-##'   \item{id}{
-##'     The hex id of a tree entry
-##'   }
-##'   \item{name}{
-##'     The filename of a tree entry
-##'   }
-##'   \item{repo}{
-##'     The S4 class git_repository that contains the commit
-##'   }
-##' }
-##' @name git_tree-class
-##' @docType class
-##' @keywords classes
-##' @keywords methods
-##' @include repository.r
-##' @export
-setClass("git_tree",
-         slots=c(hex      = "character",
-                 filemode = "integer",
-                 type     = "character",
-                 id       = "character",
-                 name     = "character",
-                 repo     = "git_repository"),
-         validity=function(object)
-         {
-             errors <- character(0)
-
-             if (!identical(length(object@hex), 1L))
-                 errors <- c(errors, "hex must have length equal to one")
-
-             if (length(errors) == 0) TRUE else errors
-         }
-)
-
 ##' Coerce entries in a git_tree to a \code{data.frame}
 ##'
 ##' The entries in a tree are coerced to a \code{data.frame}
@@ -151,7 +103,7 @@ setAs(from = "git_tree",
 ##' @param object the \code{commit} or \code{stash} object
 ##' @return A S4 class git_tree object
 ##' @keywords methods
-##' @include commit.r
+##' @include S4-classes.r
 setGeneric("tree",
            signature = "object",
            function(object) standardGeneric("tree"))
@@ -167,7 +119,6 @@ setMethod("tree",
 )
 
 ##' @rdname tree-methods
-##' @include stash.r
 ##' @export
 setMethod("tree",
           signature(object = "git_stash"),

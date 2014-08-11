@@ -25,7 +25,7 @@
 ##' @param user.email the e-mail address. Use NULL to delete the entry
 ##' @return An invisible \code{list} with the configuration
 ##' @keywords methods
-##' @include repository.r
+##' @include S4-classes.r
 ##' @examples \dontrun{
 ##' ## Open an existing repository
 ##' repo <- repository("path/to/git2r")

@@ -14,42 +14,6 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-##' Class \code{git_note}
-##'
-##' @title S4 class to handle a git note
-##' @section Slots:
-##' \describe{
-##'   \item{hex}{
-##'     40 char hexadecimal string of blob containing the message
-##'   }
-##'   \item{annotated}{
-##'     40 char hexadecimal string of the git object being annotated
-##'   }
-##'   \item{message}{
-##'     The note message
-##'   }
-##'   \item{refname}{
-##'     Name of the reference
-##'   }
-##'   \item{repo}{
-##'     The S4 class git_repository that contains the note
-##'   }
-##' }
-##' @name git_note-class
-##' @docType class
-##' @keywords classes
-##' @keywords methods
-##' @include blob.r
-##' @include repository.r
-##' @include tree.r
-##' @export
-setClass("git_note",
-         slots = c(hex       = "character",
-                   annotated = "character",
-                   message   = "character",
-                   refname   = "character",
-                   repo      = "git_repository"))
-
 ##' Default notes reference
 ##'
 ##' Get the default notes reference for a repository

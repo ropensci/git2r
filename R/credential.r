@@ -14,29 +14,6 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-##' Class \code{"cred_plaintext"}
-##'
-##' @title S4 class to handle plain-text username and password
-##' credential object
-##' @section Slots:
-##' \describe{
-##'   \item{username}{
-##'     The username of the credential
-##'   }
-##'   \item{password}{
-##'     The password of the credential
-##'   }
-##' }
-##' @rdname cred_plaintext-class
-##' @docType class
-##' @keywords classes
-##' @keywords methods
-##' @export
-setClass("cred_plaintext",
-         slots=c(username = "character",
-                 password = "character")
-)
-
 ##' Create a new plain-text username and password credential object
 ##'
 ##' @rdname cred_plaintext-methods
@@ -60,33 +37,6 @@ setMethod("cred_plaintext",
                   username = username,
                   password = password)
           }
-)
-
-##' Class \code{"cred_ssh_key"}
-##'
-##' @title S4 class to handle a passphrase-protected ssh key
-##' credential object
-##' @section Slots:
-##' \describe{
-##'   \item{publickey}{
-##'     The path to the public key of the credential
-##'   }
-##'   \item{privatekey}{
-##'     The path to the private key of the credential
-##'   }
-##'   \item{passphrase}{
-##'     The passphrase of the credential
-##'   }
-##' }
-##' @rdname cred_ssh_key-class
-##' @docType class
-##' @keywords classes
-##' @keywords methods
-##' @export
-setClass("cred_ssh_key",
-         slots=c(publickey  = "character",
-                 privatekey = "character",
-                 passphrase = "character")
 )
 
 ##' Create a new passphrase-protected ssh key credential object

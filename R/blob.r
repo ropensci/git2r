@@ -14,34 +14,6 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-##' Class \code{"git_blob"}
-##'
-##' @title  S4 class to handle a git blob
-##' @section Slots:
-##' \describe{
-##'   \item{hex}{
-##'     40 char hexadecimal string
-##'   }
-##'   \item{repo}{
-##'     The S4 class git_repository that contains the blob
-##'   }
-##' }
-##' @rdname git_blob-class
-##' @docType class
-##' @keywords classes
-##' @keywords methods
-##' @include repository.r
-##' @export
-setClass("git_blob",
-         slots=c(hex  = "character",
-                 repo = "git_repository"),
-         validity=function(object) {
-             errors <- character()
-
-             if (length(errors) == 0) TRUE else errors
-         }
-)
-
 ##' Create blob from file on disk
 ##'
 ##' Read a file from the filesystem and write its content to the

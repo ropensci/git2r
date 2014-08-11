@@ -24,11 +24,7 @@
 ##' @param object the \code{object} to extract the time slot from.
 ##' @return A \code{character} vector of length one.
 ##' @keywords methods
-##' @include commit.r
-##' @include signature.r
-##' @include stash.r
-##' @include tag.r
-##' @include time.r
+##' @include S4-classes.r
 ##' @examples \dontrun{
 ##' ## Open an existing repository
 ##' repo <- repository("path/to/git2r")

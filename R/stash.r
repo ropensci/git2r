@@ -14,17 +14,6 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-##' Class \code{"git_stash"}
-##'
-##' @title S4 class to handle a git stash
-##' @name git_stash-class
-##' @docType class
-##' @keywords classes
-##' @keywords methods
-##' @include commit.r
-##' @export
-setClass("git_stash", contains = "git_commit")
-
 ##' Drop stash
 ##'
 ##' @rdname stash_drop-methods
@@ -54,7 +43,7 @@ setGeneric("stash_drop",
 
 ##' @rdname stash_drop-methods
 ##' @param index Zero based index to the stash to drop.
-##' @include repository.r
+##' @include S4-classes.r
 ##' @export
 setMethod("stash_drop",
           signature(object = "git_repository"),
@@ -124,7 +113,7 @@ setGeneric("stash",
            standardGeneric("stash"))
 
 ##' @rdname stash-methods
-##' @include repository.r
+##' @include S4-classes.r
 ##' @export
 setMethod("stash",
           signature(object = "git_repository"),
@@ -165,7 +154,7 @@ setGeneric("stashes",
            function(object) standardGeneric("stashes"))
 
 ##' @rdname stashes-methods
-##' @include repository.r
+##' @include S4-classes.r
 ##' @export
 setMethod("stashes",
           signature(object = "git_repository"),

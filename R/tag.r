@@ -14,64 +14,6 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-##' Class \code{"git_tag"}
-##'
-##' @title S4 class to handle a git tag
-##' @section Slots:
-##' \describe{
-##'   \item{hex}{
-##'     40 char hexadecimal string
-##'   }
-##'   \item{message}{
-##'     The message of the tag
-##'   }
-##'   \item{name}{
-##'     The name of the tag
-##'   }
-##'   \item{tagger}{
-##'     The tagger (author) of the tag
-##'   }
-##'   \item{target}{
-##'     The target of the tag
-##'   }
-##'   \item{repo}{
-##'     The S4 class git_repository that contains the tag
-##'   }
-##' }
-##' @name git_tag-class
-##' @docType class
-##' @keywords classes
-##' @keywords methods
-##' @include signature.r
-##' @include repository.r
-##' @export
-setClass("git_tag",
-         slots=c(hex     = "character",
-                 message = "character",
-                 name    = "character",
-                 tagger  = "git_signature",
-                 target  = "character",
-                 repo    = "git_repository"),
-         validity=function(object)
-         {
-             errors <- validObject(object@tagger)
-
-             if (identical(errors, TRUE))
-               errors <- character()
-
-             if (!identical(length(object@hex), 1L))
-                 errors <- c(errors, "hex must have length equal to one")
-             if (!identical(length(object@message), 1L))
-                 errors <- c(errors, "message must have length equal to one")
-             if (!identical(length(object@name), 1L))
-                 errors <- c(errors, "name must have length equal to one")
-             if (!identical(length(object@target), 1L))
-                 errors <- c(errors, "target must have length equal to one")
-
-             if (length(errors) == 0) TRUE else errors
-         }
-)
-
 ##' Tag
 ##'
 ##' @rdname tag-methods

@@ -14,47 +14,6 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-##' Class \code{"git_signature"}
-##'
-##' @title S4 class to handle a git signature
-##' @section Slots:
-##' \describe{
-##'   \item{name}{
-##'     The full name of the author.
-##'   }
-##'   \item{email}{
-##'     Email of the author.
-##'   }
-##'   \item{when}{
-##'     Time when the action happened.
-##'   }
-##' }
-##' @name git_signature-class
-##' @docType class
-##' @keywords classes
-##' @keywords methods
-##' @include time.r
-##' @export
-setClass("git_signature",
-         slots=c(name="character",
-                 email="character",
-                 when="git_time"),
-         validity=function(object)
-         {
-             errors <- validObject(object@when)
-
-             if (identical(errors, TRUE))
-               errors <- character()
-
-             if (!identical(length(object@name), 1L))
-                 errors <- c(errors, "name must have length equal to one")
-             if (!identical(length(object@email), 1L))
-                 errors <- c(errors, "email must have length equal to one")
-
-             if (length(errors) == 0) TRUE else errors
-         }
-)
-
 ##' Brief summary of signature
 ##'
 ##' @aliases show,git_signature-methods

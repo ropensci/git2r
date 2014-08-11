@@ -14,39 +14,6 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-##' Class \code{git_branch}
-##'
-##' @title S4 class to handle a git branch
-##' @section Slots:
-##' \describe{
-##'   \item{name}{
-##'     Name of the branch.
-##'   }
-##'   \item{type}{
-##'     Type of the branch, either 1 (local) or 2 (remote).
-##'   }
-##'   \item{repo}{
-##'     The S4 class git_repository that contains the branch
-##'   }
-##' }
-##' @name git_branch-class
-##' @docType class
-##' @keywords classes
-##' @section Methods:
-##' \describe{
-##'   \item{is_head}{\code{signature(object = "git_branch")}}
-##'   \item{is_local}{\code{signature(object = "git_branch")}}
-##'   \item{show}{\code{signature(object = "git_branch")}}
-##' }
-##' @keywords methods
-##' @include reference.r
-##' @include repository.r
-##' @export
-setClass("git_branch",
-         slots = c(name = "character",
-                   type = "integer",
-                   repo = "git_repository"))
-
 ##' Create a branch
 ##'
 ##' @rdname branch_create-methods

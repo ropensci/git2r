@@ -14,53 +14,6 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-##' Class \code{"git_commit"}
-##'
-##' @title S4 class to handle a git commit.
-##' @section Slots:
-##' \describe{
-##'   \item{hex}{
-##'     40 char hexadecimal string
-##'   }
-##'   \item{author}{
-##'     An author signature
-##'   }
-##'   \item{committer}{
-##'     The committer signature
-##'   }
-##'   \item{summary}{
-##'     The short "summary" of a git commit message, comprising the first
-##'     paragraph of the message with whitespace trimmed and squashed.
-##'   }
-##'   \item{message}{
-##'     The message of a commit
-##'   }
-##'   \item{repo}{
-##'     The S4 class git_repository that contains the commit
-##'   }
-##' }
-##' @name git_commit-class
-##' @docType class
-##' @keywords classes
-##' @section Methods:
-##' \describe{
-##'   \item{show}{\code{signature(object = "git_commit")}}
-##' }
-##' @keywords methods
-##' @include diff.r
-##' @include repository.r
-##' @include signature.r
-##' @export
-setClass("git_commit",
-         slots=c(hex       = "character",
-                 author    = "git_signature",
-                 committer = "git_signature",
-                 summary   = "character",
-                 message   = "character",
-                 repo      = "git_repository"),
-         prototype=list(summary=NA_character_,
-                        message=NA_character_))
-
 ##' Ahead Behind
 ##'
 ##' Count the number of unique commits between two commit objects.
@@ -143,7 +96,7 @@ setMethod("commits",
 )
 
 ##' @rdname commits-methods
-##' @include repository.r
+##' @include S4-classes.r
 ##' @export
 setMethod("commits",
           signature(repo = "git_repository"),
@@ -276,7 +229,7 @@ setMethod("parents",
 ##' @param object The commit \code{object}
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
-##' @include commit.r
+##' @include S4-classes.r
 ##' @export
 ##' @examples
 ##' \dontrun{

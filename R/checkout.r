@@ -48,10 +48,7 @@ checkout_reflog_msg <- function(object, ref_log_target) {
 ##' target. This will throw away local changes. Default is FALSE.
 ##' @return invisible NULL
 ##' @keywords methods
-##' @include branch.r
-##' @include commit.r
-##' @include tag.r
-##' @include tree.r
+##' @include S4-classes.r
 setGeneric("checkout",
            signature = "object",
            function (object, force = FALSE)

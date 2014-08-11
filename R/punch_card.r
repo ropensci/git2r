@@ -28,7 +28,7 @@ setGeneric("punch_card",
 
 ##' @rdname punch_card-methods
 ##' @import ggplot2
-##' @include repository.r
+##' @include S4-classes.r
 ##' @export
 setMethod("punch_card",
           signature(object = "git_repository"),

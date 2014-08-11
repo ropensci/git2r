@@ -14,46 +14,6 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-##' Class \code{"git_reference"}
-##'
-##' @title S4 class to handle a git reference
-##' @section Slots:
-##' \describe{
-##'   \item{name}{
-##'     The full name of the reference.
-##'   }
-##'   \item{type}{
-##'     Type of the reference, either direct (GIT_REF_OID == 1) or
-##'     symbolic (GIT_REF_SYMBOLIC == 2)
-##'   }
-##'   \item{hex}{
-##'     40 char hexadecimal string
-##'   }
-##'   \item{target}{
-##'     :TODO:DOCUMENTATION:
-##'   }
-##'   \item{shorthand}{
-##'     The reference's short name
-##'   }
-##' }
-##' @rdname git_reference-class
-##' @docType class
-##' @keywords classes
-##' @section Methods:
-##' \describe{
-##'   \item{show}{\code{signature(object = "git_reference")}}
-##' }
-##' @keywords methods
-##' @export
-setClass("git_reference",
-         slots=c(name="character",
-                 type="integer",
-                 hex="character",
-                 target="character",
-                 shorthand="character"),
-         prototype=list(hex=NA_character_,
-                        target=NA_character_))
-
 ##' Get all references that can be found in a repository.
 ##'
 ##' @rdname references-methods
@@ -75,7 +35,7 @@ setGeneric("references",
            function(repo) standardGeneric("references"))
 
 ##' @rdname references-methods
-##' @include repository.r
+##' @include S4-classes.r
 ##' @export
 setMethod("references",
           signature(repo = "git_repository"),
@@ -92,7 +52,7 @@ setMethod("references",
 ##' @param object The reference \code{object}
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
-##' @include commit.r
+##' @include S4-classes.r
 ##' @export
 setMethod("show",
           signature(object = "git_reference"),
