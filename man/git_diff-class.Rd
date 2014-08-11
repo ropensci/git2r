@@ -6,5 +6,19 @@
 \description{
 Git diff
 }
+\section{Slots}{
+
+\describe{
+  \item{old}{
+    :TODO:DOCUMENTATION:
+  }
+  \item{new}{
+    :TODO:DOCUMENTATION:
+  }
+  \item{files}{
+    :TODO:DOCUMENTATION:
+  }
+}
+}
 \keyword{classes}
 

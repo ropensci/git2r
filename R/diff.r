@@ -15,13 +15,25 @@
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-#' Git diff
-#'
-#' @name git_diff-class
-#' @docType class
-#' @keywords classes
-#' @include repository.r
-#' @export
+##' Git diff
+##'
+##' @section Slots:
+##' \describe{
+##'   \item{old}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##'   \item{new}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##'   \item{files}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##' }
+##' @name git_diff-class
+##' @docType class
+##' @keywords classes
+##' @include repository.r
+##' @export
 setClass("git_diff",
          slots=c(old   = "ANY",
                  new   = "ANY",
@@ -29,23 +41,56 @@ setClass("git_diff",
          prototype=list(old=NA_character_,
                         new=NA_character_))
 
-#' Git diff file
-#'
-#' @name git_diff_file-class
-#' @docType class
-#' @keywords classes
-#' @export
+##' Git diff file
+##'
+##' @section Slots:
+##' \describe{
+##'   \item{old_file}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##'   \item{new_file}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##'   \item{hunks}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##' }
+##' @name git_diff_file-class
+##' @docType class
+##' @keywords classes
+##' @export
 setClass("git_diff_file",
          slots=c(old_file = "character",
                  new_file = "character",
-                 hunks = "list"))
+                 hunks    = "list"))
 
-#' Git diff hunk
-#'
-#' @name git_diff_hunk-class
-#' @docType class
-#' @keywords classes
-#' @export
+##' Git diff hunk
+##'
+##' @section Slots:
+##' \describe{
+##'   \item{old_start}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##'   \item{old_lines}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##'   \item{new_start}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##'   \item{new_lines}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##'   \item{header}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##'   \item{lines}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##' }
+##' @name git_diff_hunk-class
+##' @docType class
+##' @keywords classes
+##' @export
 setClass("git_diff_hunk",
          slots=c(old_start = "integer",
                  old_lines = "integer",
@@ -54,12 +99,30 @@ setClass("git_diff_hunk",
                  header    = "character",
                  lines     = "list"))
 
-#' Git diff line
-#'
-#' @name git_diff_line-class
-#' @docType class
-#' @keywords classes
-#' @export
+##' Git diff line
+##'
+##' @section Slots:
+##' \describe{
+##'   \item{origin}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##'   \item{old_lineno}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##'   \item{new_lineno}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##'   \item{num_lines}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##'   \item{content}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##' }
+##' @name git_diff_line-class
+##' @docType class
+##' @keywords classes
+##' @export
 setClass("git_diff_line",
          slots=c(origin      = "integer",
                  old_lineno  = "integer",

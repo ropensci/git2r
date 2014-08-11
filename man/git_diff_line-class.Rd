@@ -6,5 +6,25 @@
 \description{
 Git diff line
 }
+\section{Slots}{
+
+\describe{
+  \item{origin}{
+    :TODO:DOCUMENTATION:
+  }
+  \item{old_lineno}{
+    :TODO:DOCUMENTATION:
+  }
+  \item{new_lineno}{
+    :TODO:DOCUMENTATION:
+  }
+  \item{num_lines}{
+    :TODO:DOCUMENTATION:
+  }
+  \item{content}{
+    :TODO:DOCUMENTATION:
+  }
+}
+}
 \keyword{classes}
 

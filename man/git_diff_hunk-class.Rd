@@ -6,5 +6,28 @@
 \description{
 Git diff hunk
 }
+\section{Slots}{
+
+\describe{
+  \item{old_start}{
+    :TODO:DOCUMENTATION:
+  }
+  \item{old_lines}{
+    :TODO:DOCUMENTATION:
+  }
+  \item{new_start}{
+    :TODO:DOCUMENTATION:
+  }
+  \item{new_lines}{
+    :TODO:DOCUMENTATION:
+  }
+  \item{header}{
+    :TODO:DOCUMENTATION:
+  }
+  \item{lines}{
+    :TODO:DOCUMENTATION:
+  }
+}
+}
 \keyword{classes}
 
