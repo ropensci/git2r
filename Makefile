@@ -21,7 +21,7 @@ readme: $(patsubst %.Rmd, %.md, $(wildcard *.Rmd))
 # 1) Check version of roxygen2 before building documentation
 # 2) Remove old doc
 # 3) Generate documentation
-doc:
+roxygen:
 	Rscript -e "library(roxygen2); stopifnot(packageVersion('roxygen2') == '$(ROXYGEN_VERSION)')"
 	rm -f man/*.Rd
 	cd .. && Rscript -e "library(roxygen2); roxygenize('$(PKG_NAME)')"
