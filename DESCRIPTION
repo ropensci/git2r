@@ -64,5 +64,6 @@ Collate:
     'push.r'
     'reflog.r'
     'remote.r'
+    'reset.r'
     'status.r'
     'when.r'
