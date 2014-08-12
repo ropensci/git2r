@@ -6,6 +6,66 @@ Contributions to the `git2r` project are welcome and appreciated. Here follow so
 
 By contributing to git2r, you agree to release your contribution under the terms of the [GPL v2 license](LICENSE).
 
+## Sign your work
+
+To improve tracking of who did what, we've borrowed the "sign-off"
+procedure from the Linux kernel project -
+[A Developer’s Certificate of Origin](http://elinux.org/Developer_Certificate_Of_Origin).
+Although `git2r` is a lot smaller project it is a good discipline to
+follow it.
+
+The sign-off is a simple line at the end of the explanation for
+the patch, which certifies that you wrote it or otherwise have
+the right to pass it on as a open-source patch. The rules are
+pretty simple: if you can certify the below:
+
+```
+Developer's Certificate of Origin 1.1
+
+By making a contribution to this project, I certify that:
+
+(a) The contribution was created in whole or in part by me and I
+    have the right to submit it under the open source license
+    indicated in the file; or
+
+(b) The contribution is based upon previous work that, to the best
+    of my knowledge, is covered under an appropriate open source
+    license and I have the right under that license to submit that
+    work with modifications, whether created in whole or in part
+    by me, under the same open source license (unless I am
+    permitted to submit under a different license), as indicated
+    in the file; or
+
+(c) The contribution was provided directly to me by some other
+    person who certified (a), (b) or (c) and I have not modified
+    it.
+
+(d) I understand and agree that this project and the contribution
+    are public and that a record of the contribution (including all
+    personal information I submit with it, including my sign-off) is
+    maintained indefinitely and may be redistributed consistent with
+    this project or the open source license(s) involved.
+```
+
+Then you just add a line to every git commit message:
+
+```
+Signed-off-by: Random J Developer <random@developer.example.org>
+```
+
+Using your real name (sorry, no pseudonyms or anonymous contributions).
+
+This line can be automatically added by Git if you
+[configure](http://git-scm.com/book/en/Customizing-Git-Git-Configuration)
+your `user.name` and `user.email` and run the git commit command with
+the
+[-s](https://www.kernel.org/pub/software/scm/git/docs/git-commit.html)
+option:
+
+```
+git commit -s.
+```
+
 ## Overall design `git2r <- libgit2 + R`
 
 Internally the git2r package use the [libgit2](https://libgit2.github.com/) C library to interface a Git repository. C code can be called from R using the `.Call` method. However, in order to map the R data structures to C data structures used by libgit2 an intermediate layer of C code is between the R methods and libgit2, see figure below.
