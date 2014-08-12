@@ -32,6 +32,6 @@ setMethod("pull",
           signature(repo = "git_repository"),
           function (repo)
           {
-              invisible(NULL)
+              stop("'pull' isn't implemented. Sorry")
           }
 )
