@@ -49,7 +49,7 @@ commit(repo, "Next commit message")
 ##
 ## Check that there are no stashes
 ##
-stopifnot(identical(stashes(repo), list()))
+stopifnot(identical(stash_list(repo), list()))
 
 ##
 ## Create one more file
@@ -59,21 +59,21 @@ writeLines("Hello world!", file.path(path, "test-2.txt"))
 ##
 ## Check that there are no stashes
 ##
-stopifnot(identical(stashes(repo), list()))
+stopifnot(identical(stash_list(repo), list()))
 
 ##
 ## Stash
 ##
 stash(repo)
-stopifnot(identical(stashes(repo), list()))
+stopifnot(identical(stash_list(repo), list()))
 stash(repo, untracked=TRUE)
-stopifnot(identical(length(stashes(repo)), 1L))
+stopifnot(identical(length(stash_list(repo)), 1L))
 
 ##
 ## Drop stash
 ##
 stash_drop(repo, 0)
-stopifnot(identical(stashes(repo), list()))
+stopifnot(identical(stash_list(repo), list()))
 
 ##
 ## Check stash_drop argument

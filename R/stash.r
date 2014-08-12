@@ -134,11 +134,11 @@ setMethod("stash",
           }
 )
 
-##' Stashes
+##' List stashes in repository
 ##'
-##' @rdname stashes-methods
+##' @rdname stash_list-methods
 ##' @docType methods
-##' @param object The repository \code{object}.
+##' @param repo The repository.
 ##' @return list of stashes in repository
 ##' @keywords methods
 ##' @examples
@@ -147,20 +147,21 @@ setMethod("stash",
 ##' repo <- repository("path/to/git2r")
 ##'
 ##' ## List stashes in repository
-##' stashes(repo)
+##' stash_list(repo)
 ##' }
-setGeneric("stashes",
-           signature = "object",
-           function(object) standardGeneric("stashes"))
+setGeneric("stash_list",
+           signature = "repo",
+           function(repo)
+           standardGeneric("stash_list"))
 
-##' @rdname stashes-methods
+##' @rdname stash_list-methods
 ##' @include S4_classes.r
 ##' @export
-setMethod("stashes",
-          signature(object = "git_repository"),
-          function (object)
+setMethod("stash_list",
+          signature(repo = "git_repository"),
+          function(repo)
           {
-              .Call(git2r_stash_list, object)
+              .Call(git2r_stash_list, repo)
           }
 )
 
