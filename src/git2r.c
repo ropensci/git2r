@@ -52,6 +52,7 @@
 #include "git2r_reflog.h"
 #include "git2r_remote.h"
 #include "git2r_repository.h"
+#include "git2r_reset.h"
 #include "git2r_revwalk.h"
 #include "git2r_signature.h"
 #include "git2r_stash.h"
@@ -121,6 +122,7 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_repository_is_empty", (DL_FUNC)&git2r_repository_is_empty, 1},
     {"git2r_repository_is_shallow", (DL_FUNC)&git2r_repository_is_shallow, 1},
     {"git2r_repository_workdir", (DL_FUNC)&git2r_repository_workdir, 1},
+    {"git2r_reset", (DL_FUNC)&git2r_reset, 4},
     {"git2r_revwalk_list", (DL_FUNC)&git2r_revwalk_list, 4},
     {"git2r_signature_default", (DL_FUNC)&git2r_signature_default, 1},
     {"git2r_stash_drop", (DL_FUNC)&git2r_stash_drop, 2},
