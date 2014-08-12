@@ -20,7 +20,7 @@
 ##' @docType methods
 ##' @param object The stash \code{object} to drop or a zero-based
 ##' integer to the stash to drop. The last stash has index 0.
-##' @param ... Additional arguments affecting the stash drop method.
+##' @param index Zero based index to the stash to drop.
 ##' @return invisible NULL
 ##' @keywords methods
 ##' @examples
@@ -37,45 +37,48 @@
 ##' stash_drop(repo, 0)
 ##' }
 setGeneric("stash_drop",
-           signature = "object",
-           function(object, ...)
+           signature = c("object", "index"),
+           function(object, index)
            standardGeneric("stash_drop"))
 
 ##' @rdname stash_drop-methods
-##' @param index Zero based index to the stash to drop.
 ##' @include S4_classes.r
 ##' @export
 setMethod("stash_drop",
-          signature(object = "git_repository"),
+          signature(object = "git_repository",
+                    index  = "integer"),
           function (object, index)
           {
-              if (missing(index))
-                  stop("Missing parameter 'index'")
-              if (!is.integer(index)) {
-                  if (!is.numeric(index))
-                      stop("'index' must be an integer")
-                  if (!identical(length(index), 1L))
-                      stop("'index' must have length one")
-                  if (abs(index - round(index)) >= .Machine$double.eps^0.5)
-                      stop("'index' must be an integer")
-                  index <- as.integer(index)
-              }
-
               invisible(.Call(git2r_stash_drop, object, index))
+          }
+)
+
+##' @rdname stash_drop-methods
+##' @include S4_classes.r
+##' @export
+setMethod("stash_drop",
+          signature(object = "git_repository",
+                    index  = "numeric"),
+          function (object, index)
+          {
+              if (abs(index - round(index)) >= .Machine$double.eps^0.5)
+                  stop("'index' must be an integer")
+              stash_drop(object, as.integer(index));
           }
 )
 
 ##' @rdname stash_drop-methods
 ##' @export
 setMethod("stash_drop",
-          signature(object = "git_stash"),
+          signature(object = "git_stash",
+                    index  = "missing"),
           function (object)
           {
               ## Determine the index of the stash in the stash list
               i <- match(object@hex, sapply(stashes(object@repo), slot, "hex"))
 
               ## The stash list is zero-based
-              stash_drop(object@repo, i-1);
+              stash_drop(object@repo, i-1L);
           }
 )
 
