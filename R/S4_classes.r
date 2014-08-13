@@ -216,7 +216,7 @@ setClass("git_blame",
 
 ##' Class \code{"git_blame_hunk"}
 ##'
-##' @title  S4 class to handle a blame hunk
+##' @title  S4 class to represent a blame hunk
 ##' @section Slots:
 ##' \describe{
 ##'   \item{lines_in_hunk}{
@@ -233,19 +233,22 @@ setClass("git_blame",
 ##'     :TODO:DOCUMENTATION:
 ##'   }
 ##'   \item{orig_commit_id}{
-##'     :TODO:DOCUMENTATION:
+##'     The hex of the commit where this hunk was found. This will usually
+##'     be the same as 'final_commit_id'.
 ##'   }
 ##'   \item{orig_start_line_number}{
-##'     :TODO:DOCUMENTATION:
+##'      The 1-based line number where this hunk begins in the file
+##'      named by 'orig_path' in the commit specified by 'orig_commit_id'.
 ##'   }
 ##'   \item{orig_signature}{
 ##'     :TODO:DOCUMENTATION:
 ##'   }
 ##'   \item{orig_path}{
-##'     :TODO:DOCUMENTATION:
+##'     The path to the file where this hunk originated, as of the commit
+##'     specified by 'orig_commit_id'
 ##'   }
 ##'   \item{boundary}{
-##'     :TODO:DOCUMENTATION:
+##'     TRUE iff the hunk has been tracked to a boundary commit.
 ##'   }
 ##'   \item{repo}{
 ##'     The S4 class git_repository that contains the blame hunk
@@ -429,16 +432,16 @@ setClass("git_diff_file",
 ##' @section Slots:
 ##' \describe{
 ##'   \item{old_start}{
-##'     :TODO:DOCUMENTATION:
+##'     Starting line number in old_file.
 ##'   }
 ##'   \item{old_lines}{
-##'     :TODO:DOCUMENTATION:
+##'     Number of lines in old_file.
 ##'   }
 ##'   \item{new_start}{
-##'     :TODO:DOCUMENTATION:
+##'     Starting line number in new_file.
 ##'   }
 ##'   \item{new_lines}{
-##'     :TODO:DOCUMENTATION:
+##'     Number of lines in new_file.
 ##'   }
 ##'   \item{header}{
 ##'     :TODO:DOCUMENTATION:
@@ -467,13 +470,13 @@ setClass("git_diff_hunk",
 ##'     :TODO:DOCUMENTATION:
 ##'   }
 ##'   \item{old_lineno}{
-##'     :TODO:DOCUMENTATION:
+##'     Line number in old file or -1 for added line.
 ##'   }
 ##'   \item{new_lineno}{
-##'     :TODO:DOCUMENTATION:
+##'     Line number in new file or -1 for deleted line.
 ##'   }
 ##'   \item{num_lines}{
-##'     :TODO:DOCUMENTATION:
+##'     Number of newline characters in content.
 ##'   }
 ##'   \item{content}{
 ##'     :TODO:DOCUMENTATION:

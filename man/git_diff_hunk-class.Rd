@@ -10,16 +10,16 @@ Git diff hunk
 
 \describe{
   \item{old_start}{
-    :TODO:DOCUMENTATION:
+    Starting line number in old_file.
   }
   \item{old_lines}{
-    :TODO:DOCUMENTATION:
+    Number of lines in old_file.
   }
   \item{new_start}{
-    :TODO:DOCUMENTATION:
+    Starting line number in new_file.
   }
   \item{new_lines}{
-    :TODO:DOCUMENTATION:
+    Number of lines in new_file.
   }
   \item{header}{
     :TODO:DOCUMENTATION:

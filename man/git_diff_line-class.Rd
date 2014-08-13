@@ -13,13 +13,13 @@ Git diff line
     :TODO:DOCUMENTATION:
   }
   \item{old_lineno}{
-    :TODO:DOCUMENTATION:
+    Line number in old file or -1 for added line.
   }
   \item{new_lineno}{
-    :TODO:DOCUMENTATION:
+    Line number in new file or -1 for deleted line.
   }
   \item{num_lines}{
-    :TODO:DOCUMENTATION:
+    Number of newline characters in content.
   }
   \item{content}{
     :TODO:DOCUMENTATION:

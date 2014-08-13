@@ -2,7 +2,7 @@
 \docType{class}
 \name{git_blame_hunk-class}
 \alias{git_blame_hunk-class}
-\title{S4 class to handle a blame hunk}
+\title{S4 class to represent a blame hunk}
 \description{
 Class \code{"git_blame_hunk"}
 }
@@ -23,19 +23,22 @@ Class \code{"git_blame_hunk"}
     :TODO:DOCUMENTATION:
   }
   \item{orig_commit_id}{
-    :TODO:DOCUMENTATION:
+    The hex of the commit where this hunk was found. This will usually
+    be the same as 'final_commit_id'.
   }
   \item{orig_start_line_number}{
-    :TODO:DOCUMENTATION:
+     The 1-based line number where this hunk begins in the file
+     named by 'orig_path' in the commit specified by 'orig_commit_id'.
   }
   \item{orig_signature}{
     :TODO:DOCUMENTATION:
   }
   \item{orig_path}{
-    :TODO:DOCUMENTATION:
+    The path to the file where this hunk originated, as of the commit
+    specified by 'orig_commit_id'
   }
   \item{boundary}{
-    :TODO:DOCUMENTATION:
+    TRUE iff the hunk has been tracked to a boundary commit.
   }
   \item{repo}{
     The S4 class git_repository that contains the blame hunk
