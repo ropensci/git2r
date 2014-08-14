@@ -17,6 +17,9 @@
 AC_PREREQ([2.69])
 AC_INIT([git2r], [see.DESCRIPTION.file], [https://github.com/ropensci/git2r/issues])
 AC_CONFIG_SRCDIR([src/git2r.c])
+AC_CONFIG_AUX_DIR([tools])
+
+AC_CANONICAL_HOST
 
 # Checks for programs.
 AC_PROG_CC
@@ -147,6 +150,24 @@ else
   ---------------------------------------------])
 fi
 
+# Check for iconv
+case "${host_os}" in
+  darwin*)
+        have_iconv=no
+        AC_SEARCH_LIBS([iconv_open], [iconv], [have_iconv=yes])
+
+        if test "x${have_iconv}" = xyes; then
+                GIT2R_USE_ICONV=-DGIT_USE_ICONV
+        else
+                AC_MSG_WARN([
+  ---------------------------------------------
+   Unable to find iconv on this system.
+   Building a version without support for iconv.
+  ---------------------------------------------])
+        fi
+    ;;
+esac
+
 # Checks for header files.
 AC_FUNC_ALLOCA
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h langinfo.h libintl.h limits.h locale.h malloc.h netdb.h netinet/in.h stddef.h stdint.h stdlib.h string.h sys/param.h sys/socket.h sys/time.h unistd.h wchar.h wctype.h])
@@ -178,6 +199,7 @@ AC_CHECK_FUNCS([btowc clock_gettime getcwd gethostbyname gettimeofday isascii me
 
 AC_SUBST(GIT2R_HAVE_SSL)
 AC_SUBST(GIT2R_HAVE_SSH2)
+AC_SUBST(GIT2R_USE_ICONV)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LIBS)
 
