@@ -36,7 +36,7 @@
  * @return void
  */
 void git2r_reflog_entry_init(
-    git_reflog_entry *source,
+    const git_reflog_entry *source,
     size_t index,
     SEXP repo,
     SEXP ref,
@@ -113,7 +113,7 @@ SEXP git2r_reflog_list(SEXP repo, SEXP ref)
     n = git_reflog_entrycount(reflog);
     PROTECT(result = allocVector(VECSXP, n));
     for (i = 0; i < n; i++) {
-        git_reflog_entry *reflog_entry = git_reflog_entry_byindex(reflog, i);
+        const git_reflog_entry *reflog_entry = git_reflog_entry_byindex(reflog, i);
 
         if (reflog_entry) {
             SEXP entry;
