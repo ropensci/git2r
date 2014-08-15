@@ -92,15 +92,15 @@ SEXP git2r_tag_create(SEXP repo, SEXP name, SEXP message, SEXP tagger)
     git_object *target = NULL;
 
     if (0 != git2r_arg_check_string(name))
-        Rf_error(git2r_err_string_arg, "name");
+        git2r_error(git2r_err_string_arg, __func__, "name");
     if (0 != git2r_arg_check_string(message))
-        Rf_error(git2r_err_string_arg, "message");
+        git2r_error(git2r_err_string_arg, __func__, "message");
     if (0 != git2r_arg_check_signature(tagger))
-        Rf_error(git2r_err_signature_arg, "tagger");
+        git2r_error(git2r_err_signature_arg, __func__, "tagger");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git2r_signature_from_arg(&sig_tagger, tagger);
     if (err < 0)
@@ -144,7 +144,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return sexp_tag;
 }
@@ -167,7 +167,7 @@ SEXP git2r_tag_list(SEXP repo)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_tag_list(&tag_names, repository);
     if (err < 0)
@@ -215,7 +215,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return list;
 }

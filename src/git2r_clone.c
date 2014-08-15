@@ -88,13 +88,13 @@ SEXP git2r_clone(SEXP url, SEXP local_path, SEXP credentials, SEXP progress)
     git2r_clone_progress_data pd = {0};
 
     if (0 != git2r_arg_check_string(url))
-        Rf_error(git2r_err_string_arg, "url");
+        git2r_error(git2r_err_string_arg, __func__, "url");
     if (0 != git2r_arg_check_string(local_path))
-        Rf_error(git2r_err_string_arg, "local_path");
+        git2r_error(git2r_err_string_arg, __func__, "local_path");
     if (0 != git2r_arg_check_credentials(credentials))
-        Rf_error(git2r_err_credentials_arg, "credentials");
+        git2r_error(git2r_err_credentials_arg, __func__, "credentials");
     if (0 != git2r_arg_check_logical(progress))
-        Rf_error(git2r_err_logical_arg, "progress");
+        git2r_error(git2r_err_logical_arg, __func__, "progress");
 
     checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE_CREATE;
     clone_opts.checkout_opts = checkout_opts;
@@ -115,7 +115,7 @@ SEXP git2r_clone(SEXP url, SEXP local_path, SEXP credentials, SEXP progress)
         git_repository_free(repository);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
 }

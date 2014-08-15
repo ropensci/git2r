@@ -103,22 +103,22 @@ SEXP git2r_push(
     git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
 
     if (0 != git2r_arg_check_string(name))
-        Rf_error(git2r_err_string_arg, "name");
+        git2r_error(git2r_err_string_arg, __func__, "name");
     if (0 != git2r_arg_check_string_vec(refspec))
-        Rf_error(git2r_err_string_vec_arg, "refspec");
+        git2r_error(git2r_err_string_vec_arg, __func__, "refspec");
     if (0 != git2r_arg_check_credentials(credentials))
-        Rf_error(git2r_err_credentials_arg, "credentials");
+        git2r_error(git2r_err_credentials_arg, __func__, "credentials");
     if (0 != git2r_arg_check_string(msg))
-        Rf_error(git2r_err_string_arg, "msg");
+        git2r_error(git2r_err_string_arg, __func__, "msg");
     if (0 != git2r_arg_check_signature(who))
-        Rf_error(git2r_err_signature_arg, "who");
+        git2r_error(git2r_err_signature_arg, __func__, "who");
 
     if (git2r_nothing_to_push(refspec))
         return R_NilValue;
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git2r_signature_from_arg(&signature, who);
     if (err < 0)
@@ -163,7 +163,8 @@ SEXP git2r_push(
     if (err < 0)
         goto cleanup;
     if (err_msg != NULL) {
-        err = -1;
+        giterr_set_str(GITERR_NONE, err_msg);
+        err = GIT_ERROR;
         goto cleanup;
     }
 
@@ -187,12 +188,8 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (err < 0) {
-        if (NULL != err_msg)
-            Rf_error("Error: %s\n", err_msg);
-        else
-            Rf_error("Error: %s\n", giterr_last()->message);
-    }
+    if (err < 0)
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
 }

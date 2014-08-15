@@ -46,7 +46,6 @@ SEXP git2r_commit_create(
     SEXP sexp_commit;
     int err;
     int changes_in_index = 0;
-    const char* err_msg = NULL;
     git_signature *sig_author = NULL;
     git_signature *sig_committer = NULL;
     git_index *index = NULL;
@@ -61,17 +60,17 @@ SEXP git2r_commit_create(
     opts.show  = GIT_STATUS_SHOW_INDEX_ONLY;
 
     if (0 != git2r_arg_check_string(message))
-        Rf_error(git2r_err_string_arg, "message");
+        git2r_error(git2r_err_string_arg, __func__, "message");
     if (0 != git2r_arg_check_signature(author))
-        Rf_error(git2r_err_signature_arg, "author");
+        git2r_error(git2r_err_signature_arg, __func__, "author");
     if (0 != git2r_arg_check_signature(committer))
-        Rf_error(git2r_err_signature_arg, "committer");
+        git2r_error(git2r_err_signature_arg, __func__, "committer");
     if (0 != git2r_arg_check_string_vec(parent_list))
-        Rf_error(git2r_err_string_vec_arg, "parent_list");
+        git2r_error(git2r_err_string_vec_arg, __func__, "parent_list");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git2r_signature_from_arg(&sig_author, author);
     if (err < 0)
@@ -108,8 +107,8 @@ SEXP git2r_commit_create(
     }
 
     if (!changes_in_index) {
-        err = -1;
-        err_msg = git2r_err_nothing_added_to_commit;
+        giterr_set_str(GITERR_NONE, git2r_err_nothing_added_to_commit);
+        err = GIT_ERROR;
         goto cleanup;
     }
 
@@ -118,8 +117,8 @@ SEXP git2r_commit_create(
         goto cleanup;
 
     if (!git_index_entrycount(index)) {
-        err = -1;
-        err_msg = git2r_err_nothing_added_to_commit;
+        giterr_set_str(GITERR_NONE, git2r_err_nothing_added_to_commit);
+        err = GIT_ERROR;
         goto cleanup;
     }
 
@@ -135,8 +134,8 @@ SEXP git2r_commit_create(
     if (count) {
         parents = calloc(count, sizeof(git_commit*));
         if (NULL == parents) {
-            err = -1;
-            err_msg = git2r_err_alloc_memory_buffer;
+            giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
+            err = GIT_ERROR;
             goto cleanup;
         }
 
@@ -205,12 +204,8 @@ cleanup:
 
     UNPROTECT(1);
 
-    if (err < 0) {
-        if (err_msg)
-            Rf_error(err_msg);
-        else
-            Rf_error("Error: %s\n", giterr_last()->message);
-    }
+    if (err < 0)
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return sexp_commit;
 }
@@ -252,12 +247,12 @@ SEXP git2r_commit_tree(SEXP commit)
     git_tree *tree = NULL;
 
     if (0 != git2r_arg_check_commit(commit))
-        Rf_error(git2r_err_commit_arg, "commit");
+        git2r_error(git2r_err_commit_arg, __func__, "commit");
 
     repo = GET_SLOT(commit, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git2r_commit_lookup(&commit_obj, repository, commit);
     if (err < 0)
@@ -284,7 +279,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }
@@ -364,12 +359,12 @@ SEXP git2r_commit_parent_list(SEXP commit)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_commit(commit))
-        Rf_error(git2r_err_commit_arg, "commit");
+        git2r_error(git2r_err_commit_arg, __func__, "commit");
 
     repo = GET_SLOT(commit, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git2r_commit_lookup(&commit_obj, repository, commit);
     if (err < 0)
@@ -404,7 +399,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return list;
 }

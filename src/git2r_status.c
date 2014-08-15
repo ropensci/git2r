@@ -374,17 +374,17 @@ SEXP git2r_status_list(
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
 
     if (0 != git2r_arg_check_logical(staged))
-        Rf_error(git2r_err_logical_arg, "staged");
+        git2r_error(git2r_err_logical_arg, __func__, "staged");
     if (0 != git2r_arg_check_logical(unstaged))
-        Rf_error(git2r_err_logical_arg, "unstaged");
+        git2r_error(git2r_err_logical_arg, __func__, "unstaged");
     if (0 != git2r_arg_check_logical(untracked))
-        Rf_error(git2r_err_logical_arg, "untracked");
+        git2r_error(git2r_err_logical_arg, __func__, "untracked");
     if (0 != git2r_arg_check_logical(ignored))
-        Rf_error(git2r_err_logical_arg, "ignored");
+        git2r_error(git2r_err_logical_arg, __func__, "ignored");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     opts.show  = GIT_STATUS_SHOW_INDEX_AND_WORKDIR;
     opts.flags = GIT_STATUS_OPT_RENAMES_HEAD_TO_INDEX |
@@ -441,7 +441,7 @@ cleanup:
     UNPROTECT(2);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return list;
 }

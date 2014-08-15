@@ -123,21 +123,21 @@ SEXP git2r_note_create(
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_hex(hex))
-        Rf_error(git2r_err_hex_arg, "hex");
+        git2r_error(git2r_err_hex_arg, __func__, "hex");
     if (0 != git2r_arg_check_string(message))
-        Rf_error(git2r_err_string_arg, "message");
+        git2r_error(git2r_err_string_arg, __func__, "message");
     if (0 != git2r_arg_check_string(ref))
-        Rf_error(git2r_err_string_arg, "ref");
+        git2r_error(git2r_err_string_arg, __func__, "ref");
     if (0 != git2r_arg_check_signature(author))
-        Rf_error(git2r_err_signature_arg, "author");
+        git2r_error(git2r_err_signature_arg, __func__, "author");
     if (0 != git2r_arg_check_signature(committer))
-        Rf_error(git2r_err_signature_arg, "committer");
+        git2r_error(git2r_err_signature_arg, __func__, "committer");
     if (0 != git2r_arg_check_logical(force))
-        Rf_error(git2r_err_logical_arg, "force");
+        git2r_error(git2r_err_logical_arg, __func__, "force");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git2r_signature_from_arg(&sig_author, author);
     if (err < 0)
@@ -188,7 +188,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }
@@ -210,7 +210,7 @@ SEXP git2r_note_default_ref(SEXP repo)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_note_default_ref(&ref, repository);
     if (err < 0)
@@ -227,7 +227,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }
@@ -288,13 +288,13 @@ SEXP git2r_note_list(SEXP repo, SEXP ref)
 
     if (R_NilValue != ref) {
         if (0 != git2r_arg_check_string(ref))
-            Rf_error(git2r_err_string_arg, "ref");
+            git2r_error(git2r_err_string_arg, __func__, "ref");
         notes_ref = CHAR(STRING_ELT(ref, 0));
     }
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     if (NULL == notes_ref) {
         err = git_note_default_ref(&notes_ref, repository);
@@ -329,7 +329,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }
@@ -353,16 +353,16 @@ SEXP git2r_note_remove(SEXP note, SEXP author, SEXP committer)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_note(note))
-        Rf_error(git2r_err_note_arg, "note");
+        git2r_error(git2r_err_note_arg, __func__, "note");
     if (0 != git2r_arg_check_signature(author))
-        Rf_error(git2r_err_signature_arg, "author");
+        git2r_error(git2r_err_signature_arg, __func__, "author");
     if (0 != git2r_arg_check_signature(committer))
-        Rf_error(git2r_err_signature_arg, "committer");
+        git2r_error(git2r_err_signature_arg, __func__, "committer");
 
     repo = GET_SLOT(note, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git2r_signature_from_arg(&sig_author, author);
     if (err < 0)
@@ -395,7 +395,7 @@ cleanup:
         git_repository_free(repository);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
 }

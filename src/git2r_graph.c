@@ -43,14 +43,14 @@ SEXP git2r_graph_ahead_behind(SEXP local, SEXP upstream)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_commit(local))
-        Rf_error(git2r_err_commit_arg, "local");
+        git2r_error(git2r_err_commit_arg, __func__, "local");
     if (0 != git2r_arg_check_commit(upstream))
-        Rf_error(git2r_err_commit_arg, "upstream");
+        git2r_error(git2r_err_commit_arg, __func__, "upstream");
 
     slot = GET_SLOT(local, Rf_install("repo"));
     repository = git2r_repository_open(slot);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     slot = GET_SLOT(local, Rf_install("hex"));
     git2r_oid_from_hex_sexp(slot, &local_oid);
@@ -75,7 +75,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }
@@ -96,14 +96,14 @@ SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_commit(commit))
-        Rf_error(git2r_err_commit_arg, "commit");
+        git2r_error(git2r_err_commit_arg, __func__, "commit");
     if (0 != git2r_arg_check_commit(ancestor))
-        Rf_error(git2r_err_commit_arg, "ancestor");
+        git2r_error(git2r_err_commit_arg, __func__, "ancestor");
 
     slot = GET_SLOT(commit, Rf_install("repo"));
     repository = git2r_repository_open(slot);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     slot = GET_SLOT(commit, Rf_install("hex"));
     git2r_oid_from_hex_sexp(slot, &commit_oid);
@@ -115,7 +115,7 @@ SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor)
     git_repository_free(repository);
 
     if (result < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
     if (0 == result)
         return ScalarLogical(0);
     return ScalarLogical(1);

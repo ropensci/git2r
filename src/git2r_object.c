@@ -44,11 +44,11 @@ SEXP git2r_object_lookup(SEXP repo, SEXP hex)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_hex(hex))
-        Rf_error(git2r_err_hex_arg, "hex");
+        git2r_error(git2r_err_hex_arg, __func__, "hex");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     len = LENGTH(STRING_ELT(hex, 0));
     if (GIT_OID_HEXSZ == len) {
@@ -81,7 +81,7 @@ SEXP git2r_object_lookup(SEXP repo, SEXP hex)
         git2r_tag_init((git_tag*)object, repo, result);
         break;
     default:
-        Rf_error("Unimplemented");
+        git2r_error("Error in '%s': Unimplemented object type. Sorry.", __func__, NULL);
     }
 
 cleanup:
@@ -95,7 +95,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }

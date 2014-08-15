@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2014 The git2r contributor
+ *  Copyright (C) 2013-2014 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -74,29 +74,29 @@ SEXP git2r_diff(SEXP repo, SEXP tree1, SEXP tree2, SEXP index, SEXP filename)
     int c_index;
 
     if (0 != git2r_arg_check_logical(index))
-        Rf_error(git2r_err_logical_arg, "index");
+        git2r_error(git2r_err_logical_arg, __func__, "index");
 
     c_index = LOGICAL(index)[0];
 
     if (isNull(tree1) && ! c_index) {
 	if (!isNull(tree2))
-	    Rf_error("Invalid diff parameters");
+	    git2r_error(git2r_err_diff_arg, __func__, NULL);
 	return git2r_diff_index_to_wd(repo, filename);
     } else if (isNull(tree1) && c_index) {
 	if (!isNull(tree2))
-	    Rf_error("Invalid diff parameters");
+	    git2r_error(git2r_err_diff_arg, __func__, NULL);
 	return git2r_diff_head_to_index(repo, filename);
     } else if (!isNull(tree1) && isNull(tree2) && ! c_index) {
 	if (!isNull(repo))
-	    Rf_error("Invalid diff parameters");
+	    git2r_error(git2r_err_diff_arg, __func__, NULL);
 	return git2r_diff_tree_to_wd(tree1, filename);
     } else if (!isNull(tree1) && isNull(tree2) && c_index) {
 	if (!isNull(repo))
-	    Rf_error("Invalid diff parameters");
+	    git2r_error(git2r_err_diff_arg, __func__, NULL);
 	return git2r_diff_tree_to_index(tree1, filename);
     } else {
 	if (!isNull(repo))
-	    Rf_error("Invalid diff parameters");
+	    git2r_error(git2r_err_diff_arg, __func__, NULL);
 	return git2r_diff_tree_to_tree(tree1, tree2, filename);
     }
 }
@@ -123,11 +123,11 @@ SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename)
     SEXP result = R_NilValue;
 
     if (0 != git2r_arg_check_filename(filename))
-        Rf_error(git2r_err_filename_arg, "filename");
+        git2r_error(git2r_err_filename_arg, __func__, "filename");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_diff_index_to_workdir(&diff,
 				    repository,
@@ -182,7 +182,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err != 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }
@@ -210,11 +210,11 @@ SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
     SEXP result = R_NilValue;
 
     if (0 != git2r_arg_check_filename(filename))
-        Rf_error(git2r_err_filename_arg, "filename");
+        git2r_error(git2r_err_filename_arg, __func__, "filename");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_revparse_single(&obj, repository, "HEAD^{tree}");
 
@@ -288,7 +288,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err != 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }
@@ -318,14 +318,14 @@ SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
     SEXP repo;
 
     if (0 != git2r_arg_check_tree(tree))
-        Rf_error(git2r_err_tree_arg, "tree");
+        git2r_error(git2r_err_tree_arg, __func__, "tree");
     if (0 != git2r_arg_check_filename(filename))
-        Rf_error(git2r_err_filename_arg, "filename");
+        git2r_error(git2r_err_filename_arg, __func__, "filename");
 
     repo = GET_SLOT(tree, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     hex = GET_SLOT(tree, Rf_install("hex"));
     err = git_revparse_single(&obj, repository,
@@ -398,7 +398,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err != 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }
@@ -428,14 +428,14 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
     SEXP repo;
 
     if (0 != git2r_arg_check_tree(tree))
-        Rf_error(git2r_err_tree_arg, "tree");
+        git2r_error(git2r_err_tree_arg, __func__, "tree");
     if (0 != git2r_arg_check_filename(filename))
-        Rf_error(git2r_err_filename_arg, "filename");
+        git2r_error(git2r_err_filename_arg, __func__, "filename");
 
     repo = GET_SLOT(tree, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     hex = GET_SLOT(tree, Rf_install("hex"));
     err = git_revparse_single(&obj, repository,
@@ -509,7 +509,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err != 0)
-	Rf_error("Error: %s\n", giterr_last()->message);
+	git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }
@@ -540,17 +540,17 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
     SEXP hex1, hex2;
 
     if (0 != git2r_arg_check_tree(tree1))
-        Rf_error(git2r_err_tree_arg, "tree1");
+        git2r_error(git2r_err_tree_arg, __func__, "tree1");
     if (0 != git2r_arg_check_tree(tree2))
-        Rf_error(git2r_err_tree_arg, "tree2");
+        git2r_error(git2r_err_tree_arg, __func__, "tree2");
     if (0 != git2r_arg_check_filename(filename))
-        Rf_error(git2r_err_filename_arg, "filename");
+        git2r_error(git2r_err_filename_arg, __func__, "filename");
 
     /* We already checked that tree2 is from the same repo, in R */
     repo = GET_SLOT(tree1, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     hex1 = GET_SLOT(tree1, Rf_install("hex"));
     err = git_revparse_single(&obj1, repository,
@@ -642,7 +642,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err != 0)
-	Rf_error("Error: %s\n", giterr_last()->message);
+	git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }

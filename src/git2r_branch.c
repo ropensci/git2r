@@ -126,23 +126,23 @@ SEXP git2r_branch_create(
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_string(branch_name))
-        Rf_error(git2r_err_string_arg, "branch_name");
+        git2r_error(git2r_err_string_arg, __func__, "branch_name");
     if (0 != git2r_arg_check_commit(commit))
-        Rf_error(git2r_err_commit_arg, "commit");
+        git2r_error(git2r_err_commit_arg, __func__, "commit");
     if (0 != git2r_arg_check_logical(force))
-        Rf_error(git2r_err_logical_arg, "force");
+        git2r_error(git2r_err_logical_arg, __func__, "force");
     if (0 != git2r_arg_check_signature(signature))
-        Rf_error(git2r_err_signature_arg, "signature");
+        git2r_error(git2r_err_signature_arg, __func__, "signature");
     if (R_NilValue != message) {
         if (0 != git2r_arg_check_string(message))
-            Rf_error(git2r_err_string_arg, "message");
+            git2r_error(git2r_err_string_arg, __func__, "message");
         log = CHAR(STRING_ELT(message, 0));
     }
 
     repo = GET_SLOT(commit, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git2r_commit_lookup(&target, repository, commit);
     if (err < 0)
@@ -186,7 +186,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }
@@ -206,11 +206,11 @@ SEXP git2r_branch_delete(SEXP branch)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_branch(branch))
-        Rf_error(git2r_err_branch_arg, "branch");
+        git2r_error(git2r_err_branch_arg, __func__, "branch");
 
     repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
     type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
@@ -228,7 +228,7 @@ cleanup:
         git_repository_free(repository);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
 }
@@ -248,11 +248,11 @@ SEXP git2r_branch_is_head(SEXP branch)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_branch(branch))
-        Rf_error(git2r_err_branch_arg, "branch");
+        git2r_error(git2r_err_branch_arg, __func__, "branch");
 
     repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
 
@@ -283,7 +283,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }
@@ -307,11 +307,11 @@ SEXP git2r_branch_list(SEXP repo, SEXP flags)
     git_branch_t type;
 
     if (0 != git2r_arg_check_integer(flags))
-        Rf_error(git2r_err_integer_arg, "flags");
+        git2r_error(git2r_err_integer_arg, __func__, "flags");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     /* Count number of branches before creating the list */
     err = git2r_branch_count(repository, INTEGER(flags)[0], &n);
@@ -363,7 +363,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return list;
 }
@@ -384,11 +384,11 @@ SEXP git2r_branch_canonical_name(SEXP branch)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_branch(branch))
-        Rf_error(git2r_err_branch_arg, "branch");
+        git2r_error(git2r_err_branch_arg, __func__, "branch");
 
     repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
     type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
@@ -410,7 +410,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }
@@ -434,16 +434,16 @@ SEXP git2r_branch_upstream_canonical_name(SEXP branch)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_branch(branch))
-        Rf_error(git2r_err_branch_arg, "branch");
+        git2r_error(git2r_err_branch_arg, __func__, "branch");
 
     type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
     if (GIT_BRANCH_LOCAL != type)
-        Rf_error("'branch' is not local");
+        git2r_error("Error in '%s': 'branch' is not local", __func__, NULL);
 
     repo = GET_SLOT(branch, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_repository_config(&cfg, repository);
     if (err < 0)
@@ -474,7 +474,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }
@@ -496,15 +496,15 @@ SEXP git2r_branch_remote_name(SEXP branch)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_branch(branch))
-        Rf_error(git2r_err_branch_arg, "branch");
+        git2r_error(git2r_err_branch_arg, __func__, "branch");
 
     type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
     if (GIT_BRANCH_REMOTE != type)
-        Rf_error("branch is not remote");
+        git2r_error("Error in '%s': 'branch' is not remote", __func__, NULL);
 
     repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
     err = git_branch_lookup(&reference, repository, name, type);
@@ -532,7 +532,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }
@@ -555,15 +555,15 @@ SEXP git2r_branch_remote_url(SEXP branch)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_branch(branch))
-        Rf_error(git2r_err_branch_arg, "branch");
+        git2r_error(git2r_err_branch_arg, __func__, "branch");
 
     type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
     if (GIT_BRANCH_REMOTE != type)
-        Rf_error("branch is not remote");
+        git2r_error("Error in '%s': 'branch' is not remote", __func__, NULL);
 
     repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
     err = git_branch_lookup(&reference, repository, name, type);
@@ -603,7 +603,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }
@@ -639,23 +639,23 @@ SEXP git2r_branch_rename(
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_branch(branch))
-        Rf_error(git2r_err_branch_arg, "branch");
+        git2r_error(git2r_err_branch_arg, __func__, "branch");
     if (0 != git2r_arg_check_string(new_branch_name))
-        Rf_error(git2r_err_string_arg, "new_branch_name");
+        git2r_error(git2r_err_string_arg, __func__, "new_branch_name");
     if (0 != git2r_arg_check_logical(force))
-        Rf_error(git2r_err_logical_arg, "force");
+        git2r_error(git2r_err_logical_arg, __func__, "force");
     if (0 != git2r_arg_check_signature(signature))
-        Rf_error(git2r_err_signature_arg, "signature");
+        git2r_error(git2r_err_signature_arg, __func__, "signature");
     if (R_NilValue != message) {
         if (0 != git2r_arg_check_string(message))
-            Rf_error(git2r_err_string_arg, "message");
+            git2r_error(git2r_err_string_arg, __func__, "message");
         log = CHAR(STRING_ELT(message, 0));
     }
 
     repo = GET_SLOT(branch, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
     name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
@@ -700,7 +700,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }
@@ -722,11 +722,11 @@ SEXP git2r_branch_target(SEXP branch)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_branch(branch))
-        Rf_error(git2r_err_branch_arg, "branch");
+        git2r_error(git2r_err_branch_arg, __func__, "branch");
 
     repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
     type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
@@ -754,7 +754,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }
@@ -777,12 +777,12 @@ SEXP git2r_branch_get_upstream(SEXP branch)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_branch(branch))
-        Rf_error(git2r_err_branch_arg, "branch");
+        git2r_error(git2r_err_branch_arg, __func__, "branch");
 
     repo = GET_SLOT(branch, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
     type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
@@ -814,7 +814,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }
@@ -839,17 +839,17 @@ SEXP git2r_branch_set_upstream(SEXP branch, SEXP upstream_name)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_branch(branch))
-        Rf_error(git2r_err_branch_arg, "branch");
+        git2r_error(git2r_err_branch_arg, __func__, "branch");
     if (R_NilValue != upstream_name) {
         if (0 != git2r_arg_check_string(upstream_name))
-            Rf_error(git2r_err_string_arg, "upstream_name");
+            git2r_error(git2r_err_string_arg, __func__, "upstream_name");
         u_name = CHAR(STRING_ELT(upstream_name, 0));
     }
 
     repo = GET_SLOT(branch, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
     type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
@@ -867,7 +867,7 @@ cleanup:
         git_repository_free(repository);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
 }

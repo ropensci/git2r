@@ -126,11 +126,11 @@ SEXP git2r_blame_file(SEXP repo, SEXP path)
     git_blame_options blame_opts = GIT_BLAME_OPTIONS_INIT;
 
     if (0 != git2r_arg_check_string(path))
-        Rf_error(git2r_err_string_arg, "path");
+        git2r_error(git2r_err_string_arg, __func__, "path");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_blame_file(
         &blame,
@@ -154,7 +154,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }

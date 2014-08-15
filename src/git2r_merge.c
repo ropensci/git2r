@@ -46,14 +46,14 @@ SEXP git2r_merge_base(SEXP one, SEXP two)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_commit(one))
-        Rf_error(git2r_err_commit_arg, "one");
+        git2r_error(git2r_err_commit_arg, __func__, "one");
     if (0 != git2r_arg_check_commit(two))
-        Rf_error(git2r_err_commit_arg, "two");
+        git2r_error(git2r_err_commit_arg, __func__, "two");
 
     repo = GET_SLOT(one, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     hex = GET_SLOT(one, Rf_install("hex"));
     err = git_oid_fromstr(&oid_one, CHAR(STRING_ELT(hex, 0)));
@@ -90,7 +90,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }

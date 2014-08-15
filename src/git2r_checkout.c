@@ -52,17 +52,17 @@ SEXP git2r_checkout_branch(
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
 
     if (0 != git2r_arg_check_branch(branch))
-        Rf_error(git2r_err_branch_arg, "branch");
+        git2r_error(git2r_err_branch_arg, __func__, "branch");
     if (0 != git2r_arg_check_logical(force))
-        Rf_error(git2r_err_logical_arg, "force");
+        git2r_error(git2r_err_logical_arg, __func__, "force");
     if (0 != git2r_arg_check_string(msg))
-        Rf_error(git2r_err_string_arg, "msg");
+        git2r_error(git2r_err_string_arg, __func__, "msg");
     if (0 != git2r_arg_check_signature(who))
-        Rf_error(git2r_err_signature_arg, "who");
+        git2r_error(git2r_err_signature_arg, __func__, "who");
 
     repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     branch_name = GET_SLOT(branch, Rf_install("name"));
     err = git_buf_joinpath(
@@ -105,7 +105,7 @@ cleanup:
         git_repository_free(repository);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
 }
@@ -135,17 +135,17 @@ SEXP git2r_checkout_commit(
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
 
     if (0 != git2r_arg_check_commit(commit))
-        Rf_error(git2r_err_commit_arg, "commit");
+        git2r_error(git2r_err_commit_arg, __func__, "commit");
     if (0 != git2r_arg_check_logical(force))
-        Rf_error(git2r_err_logical_arg, "force");
+        git2r_error(git2r_err_logical_arg, __func__, "force");
     if (0 != git2r_arg_check_string(msg))
-        Rf_error(git2r_err_string_arg, "msg");
+        git2r_error(git2r_err_string_arg, __func__, "msg");
     if (0 != git2r_arg_check_signature(who))
-        Rf_error(git2r_err_signature_arg, "who");
+        git2r_error(git2r_err_signature_arg, __func__, "who");
 
     repository = git2r_repository_open(GET_SLOT(commit, Rf_install("repo")));
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     hex = GET_SLOT(commit, Rf_install("hex"));
     err = git_oid_fromstr(&oid, CHAR(STRING_ELT(hex, 0)));
@@ -187,7 +187,7 @@ cleanup:
         git_repository_free(repository);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
 }
@@ -217,17 +217,17 @@ SEXP git2r_checkout_tag(
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
 
     if (0 != git2r_arg_check_tag(tag))
-        Rf_error(git2r_err_tag_arg, "tag");
+        git2r_error(git2r_err_tag_arg, __func__, "tag");
     if (0 != git2r_arg_check_logical(force))
-        Rf_error(git2r_err_logical_arg, "force");
+        git2r_error(git2r_err_logical_arg, __func__, "force");
     if (0 != git2r_arg_check_string(msg))
-        Rf_error(git2r_err_string_arg, "msg");
+        git2r_error(git2r_err_string_arg, __func__, "msg");
     if (0 != git2r_arg_check_signature(who))
-        Rf_error(git2r_err_signature_arg, "who");
+        git2r_error(git2r_err_signature_arg, __func__, "who");
 
     repository = git2r_repository_open(GET_SLOT(tag, Rf_install("repo")));
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     slot = GET_SLOT(tag, Rf_install("target"));
     err = git_oid_fromstr(&oid, CHAR(STRING_ELT(slot, 0)));
@@ -269,7 +269,7 @@ cleanup:
         git_repository_free(repository);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
 }
@@ -297,17 +297,17 @@ SEXP git2r_checkout_tree(
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_tree(tree))
-        Rf_error(git2r_err_tree_arg, "tree");
+        git2r_error(git2r_err_tree_arg, __func__, "tree");
     if (0 != git2r_arg_check_logical(force))
-        Rf_error(git2r_err_logical_arg, "force");
+        git2r_error(git2r_err_logical_arg, __func__, "force");
     if (0 != git2r_arg_check_string(msg))
-        Rf_error(git2r_err_string_arg, "msg");
+        git2r_error(git2r_err_string_arg, __func__, "msg");
     if (0 != git2r_arg_check_signature(who))
-        Rf_error(git2r_err_signature_arg, "who");
+        git2r_error(git2r_err_signature_arg, __func__, "who");
 
     repository = git2r_repository_open(GET_SLOT(tree, Rf_install("repo")));
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     slot = GET_SLOT(tree, Rf_install("hex"));
     err = git_oid_fromstr(&oid, CHAR(STRING_ELT(slot, 0)));
@@ -322,7 +322,7 @@ cleanup:
         git_repository_free(repository);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
 }

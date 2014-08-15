@@ -50,13 +50,13 @@ SEXP git2r_reset(SEXP commit, SEXP reset_type, SEXP msg, SEXP who)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_commit(commit))
-        Rf_error(git2r_err_commit_arg, "commit");
+        git2r_error(git2r_err_commit_arg, __func__, "commit");
     if (0 != git2r_arg_check_integer(reset_type))
-        Rf_error(git2r_err_integer_arg, "reset_type");
+        git2r_error(git2r_err_integer_arg, __func__, "reset_type");
     if (0 != git2r_arg_check_string(msg))
-        Rf_error(git2r_err_string_arg, "msg");
+        git2r_error(git2r_err_string_arg, __func__, "msg");
     if (0 != git2r_arg_check_signature(who))
-        Rf_error(git2r_err_signature_arg, "who");
+        git2r_error(git2r_err_signature_arg, __func__, "who");
 
     err = git2r_signature_from_arg(&signature, who);
     if (err < 0)
@@ -65,7 +65,7 @@ SEXP git2r_reset(SEXP commit, SEXP reset_type, SEXP msg, SEXP who)
     repo = GET_SLOT(commit, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git2r_commit_lookup(&target, repository, commit);
     if (err < 0)
@@ -88,7 +88,7 @@ cleanup:
         git_repository_free(repository);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
 }

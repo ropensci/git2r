@@ -75,7 +75,7 @@ SEXP git2r_repository_head(SEXP repo)
 
     repository= git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_repository_head(&reference, repository);
     if (err < 0) {
@@ -115,7 +115,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }
@@ -136,15 +136,15 @@ SEXP git2r_repository_init(SEXP path, SEXP bare)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_string(path))
-        Rf_error(git2r_err_string_arg, "path");
+        git2r_error(git2r_err_string_arg, __func__, "path");
     if (0 != git2r_arg_check_logical(bare))
-        Rf_error(git2r_err_logical_arg, "bare");
+        git2r_error(git2r_err_logical_arg, __func__, "bare");
 
     err = git_repository_init(&repository,
                               CHAR(STRING_ELT(path, 0)),
                               LOGICAL(bare)[0]);
     if (err < 0)
-        Rf_error("Unable to init repository");
+        git2r_error("Error in '%s': Unable to init repository", __func__, NULL);
 
     if (repository)
         git_repository_free(repository);
@@ -166,7 +166,7 @@ SEXP git2r_repository_is_bare(SEXP repo)
 
     repository= git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     is_bare = git_repository_is_bare(repository);
     git_repository_free(repository);
@@ -195,12 +195,12 @@ SEXP git2r_repository_is_shallow(SEXP repo)
 
     repository= git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     is_shallow = git_repository_is_shallow(repository);
     git_repository_free(repository);
     if (is_shallow < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     PROTECT(result = allocVector(LGLSXP, 1));
     if (1 == is_shallow)
@@ -226,12 +226,12 @@ SEXP git2r_repository_head_detached(SEXP repo)
 
     repository= git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     head_detached = git_repository_head_detached(repository);
     git_repository_free(repository);
     if (head_detached < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     PROTECT(result = allocVector(LGLSXP, 1));
     if (1 == head_detached)
@@ -257,12 +257,12 @@ SEXP git2r_repository_is_empty(SEXP repo)
 
     repository= git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     is_empty = git_repository_is_empty(repository);
     git_repository_free(repository);
     if (is_empty < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     PROTECT(result = allocVector(LGLSXP, 1));
     if (1 == is_empty)
@@ -287,7 +287,7 @@ SEXP git2r_repository_can_open(SEXP path)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_string(path))
-        Rf_error(git2r_err_string_arg, "path");
+        git2r_error(git2r_err_string_arg, __func__, "path");
 
     can_open = git_repository_open(&repository, CHAR(STRING_ELT(path, 0)));
     if (repository)
@@ -317,7 +317,7 @@ SEXP git2r_repository_workdir(SEXP repo)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     if (!git_repository_is_bare(repository)) {
         const char *wd = git_repository_workdir(repository);
@@ -346,7 +346,7 @@ SEXP git2r_repository_discover(SEXP path)
     git_buf buf = GIT_BUF_INIT;
 
     if (0 != git2r_arg_check_string(path))
-        Rf_error(git2r_err_string_arg, "path");
+        git2r_error(git2r_err_string_arg, __func__, "path");
 
     /* note that across_fs (arg #3) is set to 0 so this will stop when
      * a filesystem device change is detected while exploring parent
@@ -372,7 +372,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }

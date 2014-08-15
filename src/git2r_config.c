@@ -242,7 +242,7 @@ SEXP git2r_config_get(SEXP repo)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_repository_config(&cfg, repository);
     if (err < 0)
@@ -275,7 +275,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return list;
 }
@@ -296,13 +296,13 @@ SEXP git2r_config_set(SEXP repo, SEXP variables)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_list(variables))
-        Rf_error(git2r_err_list_arg, "variables");
+        git2r_error(git2r_err_list_arg, __func__, "variables");
 
     n = length(variables);
     if (n) {
         repository = git2r_repository_open(repo);
         if (!repository)
-            Rf_error(git2r_err_invalid_repository);
+            git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
         err = git_repository_config(&cfg, repository);
         if (err < 0)
@@ -335,7 +335,7 @@ cleanup:
         git_repository_free(repository);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
 }

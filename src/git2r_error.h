@@ -22,8 +22,8 @@
 /**
  * Error messages
  */
-
 extern const char git2r_err_alloc_memory_buffer[];
+extern const char git2r_err_from_libgit2[];
 extern const char git2r_err_invalid_repository[];
 extern const char git2r_err_nothing_added_to_commit[];
 extern const char git2r_err_unexpected_config_level[];
@@ -37,6 +37,7 @@ extern const char git2r_err_blob_arg[];
 extern const char git2r_err_branch_arg[];
 extern const char git2r_err_commit_arg[];
 extern const char git2r_err_credentials_arg[];
+extern const char git2r_err_diff_arg[];
 extern const char git2r_err_filename_arg[];
 extern const char git2r_err_hex_arg[];
 extern const char git2r_err_integer_arg[];
@@ -49,5 +50,7 @@ extern const char git2r_err_string_arg[];
 extern const char git2r_err_string_vec_arg[];
 extern const char git2r_err_tag_arg[];
 extern const char git2r_err_tree_arg[];
+
+void git2r_error(const char *format, const char *func_name, const char *arg);
 
 #endif

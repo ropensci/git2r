@@ -38,11 +38,11 @@ SEXP git2r_index_add(SEXP repo, SEXP path)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_string(path))
-        Rf_error(git2r_err_string_arg, "path");
+        git2r_error(git2r_err_string_arg, __func__, "path");
 
     repository= git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_repository_index(&index, repository);
     if (err < 0)
@@ -62,7 +62,7 @@ cleanup:
         git_repository_free(repository);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
 }
@@ -85,11 +85,11 @@ SEXP git2r_index_add_all(SEXP repo, SEXP path)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_string_vec(path))
-        Rf_error(git2r_err_string_vec_arg, "path");
+        git2r_error(git2r_err_string_vec_arg, __func__, "path");
 
     repository= git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     /* Count number of non NA values */
     len = length(path);
@@ -104,8 +104,8 @@ SEXP git2r_index_add_all(SEXP repo, SEXP path)
     /* Allocate the strings in pathspec */
     pathspec.strings = malloc(pathspec.count * sizeof(char*));
     if (!pathspec.strings) {
-        err = -1;
-        err_msg = git2r_err_alloc_memory_buffer;
+        giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
+        err = GIT_ERROR;
         goto cleanup;
     }
 
@@ -134,12 +134,8 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (err < 0) {
-        if (err_msg)
-            Rf_error(err_msg);
-        else
-            Rf_error("Error: %s\n", giterr_last()->message);
-    }
+    if (err < 0)
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
 }

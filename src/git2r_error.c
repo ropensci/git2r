@@ -21,6 +21,7 @@
  */
 
 const char git2r_err_alloc_memory_buffer[] = "Unable to allocate memory buffer";
+const char git2r_err_from_libgit2[] = "Error in '%s': %s\n";
 const char git2r_err_invalid_repository[] = "Invalid repository";
 const char git2r_err_nothing_added_to_commit[] = "Nothing added to commit";
 const char git2r_err_unexpected_config_level[] = "Unexpected config level";
@@ -31,34 +32,52 @@ const char git2r_err_unexpected_head_of_branch[] = "Unexpected head of branch";
  * Error messages specific to argument checking
  */
 const char git2r_err_blob_arg[] =
-    "Error: '%s' must be a S4 class git_blob";
+    "Error in '%s': '%s' must be a S4 class git_blob";
 const char git2r_err_branch_arg[] =
-    "Error: '%s' must be a S4 class git_branch";
+    "Error in '%s': '%s' must be a S4 class git_branch";
 const char git2r_err_commit_arg[] =
-    "Error: '%s' must be a S4 class git_commit";
+    "Error in '%s': '%s' must be a S4 class git_commit";
 const char git2r_err_credentials_arg[] =
-    "Error: '%s' must be a S4 class with credentials";
+    "Error in '%s': '%s' must be a S4 class with credentials";
+const char git2r_err_diff_arg[] =
+    "Error in '%s': Invalid diff parameters";
 const char git2r_err_filename_arg[] =
-    "Error: '%s' must be either 1) NULL, or 2) a character vector of length 0 or 3) a character vector of length 1 and nchar > 0";
+    "Error in '%s': '%s' must be either 1) NULL, or 2) a character vector of length 0 or 3) a character vector of length 1 and nchar > 0";
 const char git2r_err_hex_arg[] =
-    "Error: '%s' must be a sha1 hex value";
+    "Error in '%s': '%s' must be a sha1 hex value";
 const char git2r_err_integer_arg[] =
-    "Error: '%s' must be an integer vector of length one with non NA value";
+    "Error in '%s': '%s' must be an integer vector of length one with non NA value";
 const char git2r_err_integer_gte_zero_arg[] =
-    "Error: '%s' must be an integer vector of length one with value greater than or equal to zero";
+    "Error in '%s': '%s' must be an integer vector of length one with value greater than or equal to zero";
 const char git2r_err_list_arg[] =
-    "Error: '%s' must be a list";
+    "Error in '%s': '%s' must be a list";
 const char git2r_err_logical_arg[] =
-    "Error: '%s' must be logical vector of length one with non NA value";
+    "Error in '%s': '%s' must be logical vector of length one with non NA value";
 const char git2r_err_note_arg[] =
-    "Error: '%s' must be a S4 class git_note";
+    "Error in '%s': '%s' must be a S4 class git_note";
 const char git2r_err_signature_arg[] =
-    "Error: '%s' must be a S4 class git_signature";
+    "Error in '%s': '%s' must be a S4 class git_signature";
 const char git2r_err_string_arg[] =
-    "Error: '%s' must be a character vector of length one with non NA value";
+    "Error in '%s': '%s' must be a character vector of length one with non NA value";
 const char git2r_err_string_vec_arg[] =
-    "Error: '%s' must be a character vector";
+    "Error in '%s': '%s' must be a character vector";
 const char git2r_err_tag_arg[] =
-    "Error: '%s' must be a S4 class git_tag";
+    "Error in '%s': '%s' must be a S4 class git_tag";
 const char git2r_err_tree_arg[] =
-    "Error: '%s' must be a S4 class git_tree";
+    "Error in '%s': '%s' must be a S4 class git_tree";
+
+/**
+ * Raise error
+ *
+ * @param format C string that contains the text to be written to
+ * Rf_error
+ * @param func_name The name of the function that raise the error
+ * @param arg Optional text argument
+ */
+void git2r_error(const char *format, const char *func_name, const char *arg)
+{
+    if (arg)
+        Rf_error(format, func_name, arg);
+    else
+        Rf_error(format, func_name);
+}

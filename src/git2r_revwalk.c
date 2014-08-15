@@ -66,15 +66,15 @@ SEXP git2r_revwalk_list(
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_logical(topological))
-        Rf_error(git2r_err_logical_arg, "topological");
+        git2r_error(git2r_err_logical_arg, __func__, "topological");
     if (0 != git2r_arg_check_logical(time))
-        Rf_error(git2r_err_logical_arg, "time");
+        git2r_error(git2r_err_logical_arg, __func__, "time");
     if (0 != git2r_arg_check_logical(reverse))
-        Rf_error(git2r_err_logical_arg, "reverse");
+        git2r_error(git2r_err_logical_arg, __func__, "reverse");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     if (git_repository_is_empty(repository)) {
         /* No commits, create empty list */
@@ -145,7 +145,7 @@ cleanup:
     UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return list;
 }

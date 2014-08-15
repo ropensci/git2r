@@ -50,16 +50,16 @@ SEXP git2r_stash_drop(SEXP repo, SEXP index)
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_integer_gte_zero(index))
-        Rf_error(git2r_err_integer_gte_zero_arg, "index");
+        git2r_error(git2r_err_integer_gte_zero_arg, __func__, "index");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_stash_drop(repository, INTEGER(index)[0]);
     git_repository_free(repository);
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
 }
@@ -147,7 +147,7 @@ SEXP git2r_stash_list(SEXP repo)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     /* Count number of stashes before creating the list */
     git_stash_foreach(repository, &git2r_stash_list_cb, &cb_data);
@@ -169,7 +169,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return list;
 }
@@ -205,17 +205,17 @@ SEXP git2r_stash_save(
     git_signature *c_stasher = NULL;
 
     if (0 != git2r_arg_check_logical(index))
-        Rf_error(git2r_err_logical_arg, "index");
+        git2r_error(git2r_err_logical_arg, __func__, "index");
     if (0 != git2r_arg_check_logical(untracked))
-        Rf_error(git2r_err_logical_arg, "untracked");
+        git2r_error(git2r_err_logical_arg, __func__, "untracked");
     if (0 != git2r_arg_check_logical(ignored))
-        Rf_error(git2r_err_logical_arg, "ignored");
+        git2r_error(git2r_err_logical_arg, __func__, "ignored");
     if (0 != git2r_arg_check_signature(stasher))
-        Rf_error(git2r_err_signature_arg, "stasher");
+        git2r_error(git2r_err_signature_arg, __func__, "stasher");
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        Rf_error(git2r_err_invalid_repository);
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     if (LOGICAL(index)[0])
         flags |= GIT_STASH_KEEP_INDEX;
@@ -257,7 +257,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err < 0)
-        Rf_error("Error: %s\n", giterr_last()->message);
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
 }
