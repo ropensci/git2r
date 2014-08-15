@@ -625,6 +625,7 @@ ac_includes_default="\
 ac_header_list=
 ac_func_list=
 ac_subst_vars='LTLIBOBJS
+GIT2R_SRC_REGEX
 GIT2R_USE_ICONV
 GIT2R_HAVE_SSH2
 GIT2R_HAVE_SSL
@@ -5311,6 +5312,7 @@ _ACEOF
 
 fi
 done
+
 
 
 

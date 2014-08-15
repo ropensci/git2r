@@ -32,9 +32,10 @@ o_files <- function(path, exclude = NULL) {
 ##' Generate build objects
 ##'
 ##' @param files The object files
+##' @param substitution Any substitutions to apply in OBJECTS
 ##' @param Makevars The Makevars file
 ##' @return invisible NULL
-build_objects <- function(files, Makevars) {
+build_objects <- function(files, substitution, Makevars) {
     lapply(names(files), function(obj) {
         cat("OBJECTS.", obj, " =", sep="", file = Makevars)
         len <- length(files[[obj]])
@@ -53,6 +54,9 @@ build_objects <- function(files, Makevars) {
         postfix <- ifelse(all(i > 1, i < len, (i %% 3) == 0), " \\\n", "")
         cat(prefix, "$(OBJECTS.", names(files)[i], ")", postfix, sep="", file = Makevars)
     }
+
+    if (!is.null(substitution))
+        cat(substitution, file = Makevars)
     cat("\n", file = Makevars)
 
     invisible(NULL)
@@ -79,7 +83,7 @@ build_Makevars.in <- function() {
     cat("PKG_CFLAGS = -Ilibgit2 -Ilibgit2/include -Ihttp-parser @GIT2R_HAVE_SSL@ @GIT2R_HAVE_SSH2@ @GIT2R_USE_ICONV@\n", file = Makevars)
     cat("\n", file = Makevars)
 
-    build_objects(files, Makevars)
+    build_objects(files, " @GIT2R_SRC_REGEX@", Makevars)
 
     invisible(NULL)
 }
@@ -105,7 +109,7 @@ build_Makevars.win <- function() {
     cat("PKG_CFLAGS = -I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser -Iwin32 -Iregex -DWIN32 -D_WIN32_WINNT=0x0501 -D__USE_MINGW_ANSI_STDIO=1\n", file=Makevars)
     cat("\n", file = Makevars)
 
-    build_objects(files, Makevars)
+    build_objects(files, NULL, Makevars)
 
     invisible(NULL)
 }
