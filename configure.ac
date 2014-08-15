@@ -197,6 +197,7 @@ AC_FUNC_MMAP
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([btowc clock_gettime getcwd gethostbyname gettimeofday isascii memchr memmove memset munmap pstat_getdynamic re_comp realpath regcomp select socket strcasecmp strchr strcspn strdup strerror strncasecmp strrchr strspn strstr strtol strtoul])
 
+AC_SUBST(GIT2R_INCLUDE_REGEX)
 AC_SUBST(GIT2R_HAVE_SSL)
 AC_SUBST(GIT2R_HAVE_SSH2)
 AC_SUBST(GIT2R_USE_ICONV)
