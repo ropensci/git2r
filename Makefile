@@ -92,13 +92,13 @@ sync_libgit2:
 	-cp -f ../libgit2/src/xdiff/*.h src/libgit2/xdiff
 	-cp -f ../libgit2/AUTHORS inst/AUTHORS_libgit2
 	-cp -f ../libgit2/COPYING inst/NOTICE
-	cd src/libgit2 && patch -p0 < ../../tools/cache-pass-R-CMD-check-git2r.patch
-	cd src/libgit2 && patch -p0 < ../../tools/diff_print-pass-R-CMD-check-git2r.patch
-	cd src/libgit2 && patch -p0 < ../../tools/util-pass-R-CMD-check-git2r.patch
-	Rscript tools/build_Makevars.r
+	cd src/libgit2 && patch -p0 < ../../misc/cache-pass-R-CMD-check-git2r.patch
+	cd src/libgit2 && patch -p0 < ../../misc/diff_print-pass-R-CMD-check-git2r.patch
+	cd src/libgit2 && patch -p0 < ../../misc/util-pass-R-CMD-check-git2r.patch
+	Rscript misc/build_Makevars.r
 
 Makevars:
-	Rscript tools/build_Makevars.r
+	Rscript misc/build_Makevars.r
 
 configure: configure.ac
 	autoconf ./configure.ac > ./configure

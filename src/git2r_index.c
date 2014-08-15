@@ -112,7 +112,7 @@ SEXP git2r_index_add_all(SEXP repo, SEXP path)
     /* Populate the strings in pathspec */
     for (i = 0; i < pathspec.count; i++)
         if (NA_STRING != STRING_ELT(path, i))
-            pathspec.strings[i] = CHAR(STRING_ELT(path, i));
+            pathspec.strings[i] = (char *)CHAR(STRING_ELT(path, i));
 
     err = git_repository_index(&index, repository);
     if (err < 0)

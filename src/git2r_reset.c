@@ -72,7 +72,7 @@ SEXP git2r_reset(SEXP commit, SEXP reset_type, SEXP msg, SEXP who)
         goto cleanup;
 
     err = git_reset(repository,
-                    target,
+                    (git_object*)target,
                     INTEGER(reset_type)[0],
                     signature,
                     CHAR(STRING_ELT(msg, 0)));
