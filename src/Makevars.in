@@ -39,10 +39,10 @@ OBJECTS.libgit2 = libgit2/attr.o libgit2/attrcache.o libgit2/attr_file.o \
 
 OBJECTS.libgit2.hash = libgit2/hash/hash_generic.o
 
-OBJECTS.libgit2.transports = libgit2/transports/cred.o libgit2/transports/cred_helpers.o libgit2/transports/git.o \
-    libgit2/transports/http.o libgit2/transports/local.o libgit2/transports/smart.o \
-    libgit2/transports/smart_pkt.o libgit2/transports/smart_protocol.o libgit2/transports/ssh.o \
-    libgit2/transports/winhttp.o
+OBJECTS.libgit2.transports = libgit2/transports/auth.o libgit2/transports/auth_negotiate.o libgit2/transports/cred.o \
+    libgit2/transports/cred_helpers.o libgit2/transports/git.o libgit2/transports/http.o \
+    libgit2/transports/local.o libgit2/transports/smart.o libgit2/transports/smart_pkt.o \
+    libgit2/transports/smart_protocol.o libgit2/transports/ssh.o libgit2/transports/winhttp.o
 
 OBJECTS.libgit2.unix = libgit2/unix/map.o libgit2/unix/realpath.o
 
