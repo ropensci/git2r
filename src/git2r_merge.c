@@ -57,23 +57,23 @@ SEXP git2r_merge_base(SEXP one, SEXP two)
 
     hex = GET_SLOT(one, Rf_install("hex"));
     err = git_oid_fromstr(&oid_one, CHAR(STRING_ELT(hex, 0)));
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     hex = GET_SLOT(two, Rf_install("hex"));
     err = git_oid_fromstr(&oid_two, CHAR(STRING_ELT(hex, 0)));
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git_merge_base(&oid, repository, &oid_one, &oid_two);
-    if (err < 0) {
+    if (GIT_OK != err) {
         if (GIT_ENOTFOUND == err)
-            err = 0;
+            err = GIT_OK;
         goto cleanup;
     }
 
     err = git_commit_lookup(&commit, repository, &oid);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_commit")));
@@ -89,7 +89,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;

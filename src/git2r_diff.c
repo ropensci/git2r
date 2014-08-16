@@ -134,7 +134,7 @@ SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename)
 				    /*index=*/ NULL,
 				    /*opts=*/ NULL);
 
-    if (err != 0)
+    if (GIT_OK != err)
 	goto cleanup;
 
     if (R_NilValue == filename) {
@@ -181,7 +181,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (err != 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -218,12 +218,12 @@ SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
 
     err = git_revparse_single(&obj, repository, "HEAD^{tree}");
 
-    if (err != 0)
+    if (GIT_OK != err)
 	goto cleanup;
 
     err = git_tree_lookup(&head, repository, git_object_id(obj));
 
-    if (err != 0)
+    if (GIT_OK != err)
 	goto cleanup;
 
     err = git_diff_tree_to_index(&diff,
@@ -232,7 +232,7 @@ SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
 				 /* index= */ NULL,
 				 /* opts = */ NULL);
 
-    if (err != 0)
+    if (GIT_OK != err)
 	goto cleanup;
 
     if (R_NilValue == filename) {
@@ -287,7 +287,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (err != 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -331,12 +331,12 @@ SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
     err = git_revparse_single(&obj, repository,
 			      CHAR(STRING_ELT(hex, 0)));
 
-    if (err != 0)
+    if (GIT_OK != err)
 	goto cleanup;
 
     err = git_tree_lookup(&c_tree, repository, git_object_id(obj));
 
-    if (err != 0)
+    if (GIT_OK != err)
 	goto cleanup;
 
     err = git_diff_tree_to_workdir(&diff,
@@ -344,7 +344,7 @@ SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
 				   c_tree,
 				   /* opts = */ NULL);
 
-    if (err != 0)
+    if (GIT_OK != err)
 	goto cleanup;
 
     if (R_NilValue == filename) {
@@ -397,7 +397,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (err != 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -441,12 +441,12 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
     err = git_revparse_single(&obj, repository,
 			      CHAR(STRING_ELT(hex, 0)));
 
-    if (err != 0)
+    if (GIT_OK != err)
 	goto cleanup;
 
     err = git_tree_lookup(&c_tree, repository, git_object_id(obj));
 
-    if (err != 0)
+    if (GIT_OK != err)
 	goto cleanup;
 
     err = git_diff_tree_to_index(&diff,
@@ -455,7 +455,7 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
 				 /* index= */ NULL,
 				 /* opts= */ NULL);
 
-    if (err != 0)
+    if (GIT_OK != err)
 	goto cleanup;
 
     if (R_NilValue == filename) {
@@ -508,7 +508,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (err != 0)
+    if (GIT_OK != err)
 	git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -556,24 +556,24 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
     err = git_revparse_single(&obj1, repository,
 			      CHAR(STRING_ELT(hex1, 0)));
 
-    if (err != 0)
+    if (GIT_OK != err)
 	goto cleanup;
 
     hex2 = GET_SLOT(tree2, Rf_install("hex"));
     err = git_revparse_single(&obj2, repository,
 			      CHAR(STRING_ELT(hex2, 0)));
 
-    if (err != 0)
+    if (GIT_OK != err)
 	goto cleanup;
 
     err = git_tree_lookup(&c_tree1, repository, git_object_id(obj1));
 
-    if (err != 0)
+    if (GIT_OK != err)
 	goto cleanup;
 
     err = git_tree_lookup(&c_tree2, repository, git_object_id(obj2));
 
-    if (err != 0)
+    if (GIT_OK != err)
 	goto cleanup;
 
     err = git_diff_tree_to_tree(&diff,
@@ -582,7 +582,7 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
 				c_tree2,
 				/* opts= */ NULL);
 
-    if (err != 0)
+    if (GIT_OK != err)
 	goto cleanup;
 
     if (R_NilValue == filename) {
@@ -641,7 +641,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (err != 0)
+    if (GIT_OK != err)
 	git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -740,7 +740,7 @@ int git2r_diff_count(git_diff *diff,
 			   git2r_diff_count_line_cb,
 			   /* payload= */ (void*) &n);
 
-    if (err != 0)
+    if (GIT_OK != err)
 	return -1;
 
     *num_files = n.num_files;
@@ -958,7 +958,7 @@ int git2r_diff_format_to_r(git_diff *diff, SEXP dest, SEXP old, SEXP new)
 
   err = git2r_diff_count(diff, &num_files, &max_hunks, &max_lines);
 
-  if (err != 0)
+  if (GIT_OK != err)
       return err;
 
   PROTECT(payload.result = allocVector(VECSXP, num_files));
@@ -970,14 +970,14 @@ int git2r_diff_format_to_r(git_diff *diff, SEXP dest, SEXP old, SEXP new)
 			 git2r_diff_get_hunk_cb,
 			 git2r_diff_get_line_cb,
 			 &payload);
-  if (err != 0) {
+  if (GIT_OK != err) {
       UNPROTECT(3);
       return err;
   }
 
   /* Need to call them once more, to put in the last lines/hunks/files. */
   err = git2r_diff_get_file_cb(/* delta= */ NULL, /* progress= */ 100, &payload);
-  if (err != 0) {
+  if (GIT_OK != err) {
       UNPROTECT(3);
       return err;
   }

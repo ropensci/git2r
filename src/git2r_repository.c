@@ -78,9 +78,9 @@ SEXP git2r_repository_head(SEXP repo)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_repository_head(&reference, repository);
-    if (err < 0) {
+    if (GIT_OK != err) {
         if (GIT_EUNBORNBRANCH == err || GIT_ENOTFOUND == err)
-            err = 0;
+            err = GIT_OK;
         goto cleanup;
     }
 
@@ -95,7 +95,7 @@ SEXP git2r_repository_head(SEXP repo)
             &commit,
             repository,
             git_reference_target(reference));
-        if (err < 0)
+        if (GIT_OK != err)
             goto cleanup;
         PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_commit")));
         git2r_commit_init(commit, repo, result);
@@ -114,7 +114,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -143,7 +143,7 @@ SEXP git2r_repository_init(SEXP path, SEXP bare)
     err = git_repository_init(&repository,
                               CHAR(STRING_ELT(path, 0)),
                               LOGICAL(bare)[0]);
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error("Error in '%s': Unable to init repository", __func__, NULL);
 
     if (repository)
@@ -355,10 +355,10 @@ SEXP git2r_repository_discover(SEXP path)
                                   CHAR(STRING_ELT(path, 0)),
                                   0,
                                   /* const char *ceiling_dirs */ NULL);
-    if (err < 0) {
+    if (GIT_OK != err) {
         /* NB just return R_NilValue if we can't discover the repo */
         if (GIT_ENOTFOUND == err)
-            err = 0;
+            err = GIT_OK;
         goto cleanup;
     }
 
@@ -371,7 +371,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;

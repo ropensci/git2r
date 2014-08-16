@@ -103,11 +103,11 @@ SEXP git2r_tag_create(SEXP repo, SEXP name, SEXP message, SEXP tagger)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git2r_signature_from_arg(&sig_tagger, tagger);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git_revparse_single(&target, repository, "HEAD^{commit}");
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git_tag_create(&oid,
@@ -117,11 +117,11 @@ SEXP git2r_tag_create(SEXP repo, SEXP name, SEXP message, SEXP tagger)
                          sig_tagger,
                          CHAR(STRING_ELT(message, 0)),
                          0);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git_tag_lookup(&new_tag, repository, &oid);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     PROTECT(sexp_tag = NEW_OBJECT(MAKE_CLASS("git_tag")));
@@ -143,7 +143,7 @@ cleanup:
     if (R_NilValue != sexp_tag)
         UNPROTECT(1);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return sexp_tag;
@@ -170,7 +170,7 @@ SEXP git2r_tag_list(SEXP repo)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_tag_list(&tag_names, repository);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     PROTECT(list = allocVector(VECSXP, tag_names.count));
@@ -180,12 +180,12 @@ SEXP git2r_tag_list(SEXP repo)
         const git_oid *oid;
 
         err = git_reference_dwim(&reference, repository, tag_names.strings[i]);
-        if (err < 0)
+        if (GIT_OK != err)
             goto cleanup;
 
         oid = git_reference_target(reference);
         err = git_tag_lookup(&tag, repository, oid);
-        if (err < 0)
+        if (GIT_OK != err)
             goto cleanup;
 
         PROTECT(sexp_tag = NEW_OBJECT(MAKE_CLASS("git_tag")));
@@ -214,7 +214,7 @@ cleanup:
     if (R_NilValue != list)
         UNPROTECT(1);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return list;

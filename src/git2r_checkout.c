@@ -69,11 +69,11 @@ SEXP git2r_checkout_branch(
         &ref_name,
         GIT_REFS_HEADS_DIR,
         CHAR(STRING_ELT(branch_name, 0)));
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git2r_signature_from_arg(&signature, who);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git_repository_set_head(
@@ -81,7 +81,7 @@ SEXP git2r_checkout_branch(
         ref_name.ptr,
         signature,
         CHAR(STRING_ELT(msg, 0)));
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     if (LOGICAL(force)[0])
@@ -89,8 +89,6 @@ SEXP git2r_checkout_branch(
     else
         checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE_CREATE;
     err = git_checkout_head(repository, &checkout_opts);
-    if (err < 0)
-        goto cleanup;
 
 cleanup:
     git_buf_free(&ref_name);
@@ -104,7 +102,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
@@ -149,15 +147,15 @@ SEXP git2r_checkout_commit(
 
     hex = GET_SLOT(commit, Rf_install("hex"));
     err = git_oid_fromstr(&oid, CHAR(STRING_ELT(hex, 0)));
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git_commit_lookup(&treeish, repository, &oid);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git2r_signature_from_arg(&signature, who);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git_repository_set_head_detached(
@@ -165,7 +163,7 @@ SEXP git2r_checkout_commit(
         git_commit_id(treeish),
         signature,
         CHAR(STRING_ELT(msg, 0)));
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     if (LOGICAL(force)[0])
@@ -173,8 +171,6 @@ SEXP git2r_checkout_commit(
     else
         checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE_CREATE;
     err = git_checkout_head(repository, &checkout_opts);
-    if (err < 0)
-        goto cleanup;
 
 cleanup:
     if (signature)
@@ -186,7 +182,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
@@ -231,15 +227,15 @@ SEXP git2r_checkout_tag(
 
     slot = GET_SLOT(tag, Rf_install("target"));
     err = git_oid_fromstr(&oid, CHAR(STRING_ELT(slot, 0)));
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git_commit_lookup(&treeish, repository, &oid);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git2r_signature_from_arg(&signature, who);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git_repository_set_head_detached(
@@ -247,7 +243,7 @@ SEXP git2r_checkout_tag(
         git_commit_id(treeish),
         signature,
         CHAR(STRING_ELT(msg, 0)));
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     if (LOGICAL(force)[0])
@@ -255,8 +251,6 @@ SEXP git2r_checkout_tag(
     else
         checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE_CREATE;
     err = git_checkout_head(repository, &checkout_opts);
-    if (err < 0)
-        goto cleanup;
 
 cleanup:
     if (signature)
@@ -268,7 +262,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
@@ -311,8 +305,6 @@ SEXP git2r_checkout_tree(
 
     slot = GET_SLOT(tree, Rf_install("hex"));
     err = git_oid_fromstr(&oid, CHAR(STRING_ELT(slot, 0)));
-    if (err < 0)
-        goto cleanup;
 
 cleanup:
     if (signature)
@@ -321,7 +313,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;

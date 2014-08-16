@@ -59,7 +59,7 @@ SEXP git2r_reset(SEXP commit, SEXP reset_type, SEXP msg, SEXP who)
         git2r_error(git2r_err_signature_arg, __func__, "who");
 
     err = git2r_signature_from_arg(&signature, who);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     repo = GET_SLOT(commit, Rf_install("repo"));
@@ -68,7 +68,7 @@ SEXP git2r_reset(SEXP commit, SEXP reset_type, SEXP msg, SEXP who)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git2r_commit_lookup(&target, repository, commit);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git_reset(repository,
@@ -87,7 +87,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;

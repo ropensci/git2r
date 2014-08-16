@@ -60,7 +60,7 @@ static int git2r_note_init(
     char hex[GIT_OID_HEXSZ + 1];
 
     err = git_note_read(&note, repository, notes_ref, annotated_object_id);
-    if (err < 0)
+    if (GIT_OK != err)
         return err;
 
     git_oid_fmt(hex, blob_id);
@@ -140,15 +140,15 @@ SEXP git2r_note_create(
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git2r_signature_from_arg(&sig_author, author);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git2r_signature_from_arg(&sig_committer, committer);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git_oid_fromstr(&object_oid, CHAR(STRING_ELT(hex, 0)));
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     if (LOGICAL(force)[0])
@@ -163,7 +163,7 @@ SEXP git2r_note_create(
         &object_oid,
         CHAR(STRING_ELT(message, 0)),
         overwrite);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_note")));
@@ -187,7 +187,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -213,7 +213,7 @@ SEXP git2r_note_default_ref(SEXP repo)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_note_default_ref(&ref, repository);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     PROTECT(result = allocVector(STRSXP, 1));
@@ -226,7 +226,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -258,7 +258,7 @@ static int git2r_note_list_cb(
                               cb_data->notes_ref,
                               cb_data->repo,
                               note);
-        if (err < 0) {
+        if (GIT_OK != err) {
             UNPROTECT(1);
             return err;
         }
@@ -298,15 +298,15 @@ SEXP git2r_note_list(SEXP repo, SEXP ref)
 
     if (NULL == notes_ref) {
         err = git_note_default_ref(&notes_ref, repository);
-        if (err < 0)
+        if (GIT_OK != err)
             goto cleanup;
     }
 
     /* Count number of notes before creating the list */
     err = git_note_foreach(repository, notes_ref, &git2r_note_list_cb, &cb_data);
-    if (err < 0) {
+    if (GIT_OK != err) {
         if (GIT_ENOTFOUND == err) {
-            err = 0;
+            err = GIT_OK;
             PROTECT(result = allocVector(VECSXP, 0));
         }
 
@@ -328,7 +328,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -365,16 +365,16 @@ SEXP git2r_note_remove(SEXP note, SEXP author, SEXP committer)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git2r_signature_from_arg(&sig_author, author);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git2r_signature_from_arg(&sig_committer, committer);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     annotated = GET_SLOT(note, Rf_install("annotated"));
     err = git_oid_fromstr(&note_oid, CHAR(STRING_ELT(annotated, 0)));
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git_note_remove(
@@ -394,7 +394,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;

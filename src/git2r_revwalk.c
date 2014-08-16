@@ -58,7 +58,7 @@ SEXP git2r_revwalk_list(
     SEXP reverse)
 {
     int i=0;
-    int err = 0;
+    int err = GIT_OK;
     SEXP list;
     size_t n = 0;
     unsigned int sort_mode = GIT_SORT_NONE;
@@ -90,11 +90,11 @@ SEXP git2r_revwalk_list(
         sort_mode |= GIT_SORT_REVERSE;
 
     err = git_revwalk_new(&walker, repository);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git_revwalk_push_head(walker);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
     git_revwalk_sorting(walker, sort_mode);
 
@@ -106,7 +106,7 @@ SEXP git2r_revwalk_list(
 
     git_revwalk_reset(walker);
     err = git_revwalk_push_head(walker);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
     git_revwalk_sorting(walker, sort_mode);
 
@@ -116,14 +116,14 @@ SEXP git2r_revwalk_list(
         git_oid oid;
 
         err = git_revwalk_next(&oid, walker);
-        if (err < 0) {
+        if (GIT_OK != err) {
             if (GIT_ITEROVER == err)
-                err = 0;
+                err = GIT_OK;
             goto cleanup;
         }
 
         err = git_commit_lookup(&commit, repository, &oid);
-        if (err < 0)
+        if (GIT_OK != err)
             goto cleanup;
 
         PROTECT(sexp_commit = NEW_OBJECT(MAKE_CLASS("git_commit")));
@@ -144,7 +144,7 @@ cleanup:
 
     UNPROTECT(1);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return list;

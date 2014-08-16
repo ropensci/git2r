@@ -107,7 +107,7 @@ SEXP git2r_reflog_list(SEXP repo, SEXP ref)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_reflog_read(&reflog, repository, CHAR(STRING_ELT(ref, 0)));
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     n = git_reflog_entrycount(reflog);
@@ -135,7 +135,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;

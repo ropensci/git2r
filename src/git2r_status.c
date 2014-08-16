@@ -395,7 +395,7 @@ SEXP git2r_status_list(
     if (LOGICAL(ignored)[0])
         opts.flags |= GIT_STATUS_OPT_INCLUDE_IGNORED;
     err = git_status_list_new(&status_list, repository, &opts);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     count = LOGICAL(staged)[0] +
@@ -440,7 +440,7 @@ cleanup:
 
     UNPROTECT(2);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return list;

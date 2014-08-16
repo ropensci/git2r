@@ -45,11 +45,11 @@ SEXP git2r_index_add(SEXP repo, SEXP path)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_repository_index(&index, repository);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git_index_add_bypath(index, CHAR(STRING_ELT(path, 0)));
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git_index_write(index);
@@ -61,7 +61,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
@@ -115,11 +115,11 @@ SEXP git2r_index_add_all(SEXP repo, SEXP path)
             pathspec.strings[i] = (char *)CHAR(STRING_ELT(path, i));
 
     err = git_repository_index(&index, repository);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git_index_add_all(index, &pathspec, 0, NULL, NULL);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git_index_write(index);
@@ -134,7 +134,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;

@@ -38,7 +38,6 @@
 void git2r_blame_init(git_blame *source, SEXP repo, SEXP path, SEXP dest)
 {
     SEXP hunks;
-    int err = 0;
     size_t i, n;
 
     n = git_blame_get_hunk_count(source);
@@ -137,7 +136,7 @@ SEXP git2r_blame_file(SEXP repo, SEXP path)
         repository,
         CHAR(STRING_ELT(path, 0)),
         &blame_opts);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_blame")));
@@ -153,7 +152,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;

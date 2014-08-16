@@ -121,46 +121,49 @@ SEXP git2r_push(
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git2r_signature_from_arg(&signature, who);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git_remote_load(&remote, repository, CHAR(STRING_ELT(name, 0)));
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     callbacks.credentials = &git2r_cred_acquire_cb;
     callbacks.payload = credentials;
     err = git_remote_set_callbacks(remote, &callbacks);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git_remote_connect(remote, GIT_DIRECTION_PUSH);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     err = git_push_new(&push, remote);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
     n = length(refspec);
     for (i = 0; i < n; i++) {
         if (NA_STRING != STRING_ELT(refspec, i)) {
             err = git_push_add_refspec(push, CHAR(STRING_ELT(refspec, i)));
-            if (err < 0)
+            if (GIT_OK != err)
                 goto cleanup;
         }
     }
 
     err = git_push_finish(push);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
 
-    err = git_push_unpack_ok(push);
-    if (err < 0)
-        goto cleanup;
+    if (1 != git_push_unpack_ok(push)) {
+        giterr_set_str(
+            GITERR_NONE,
+            "Push failed - remote did not successfully unpack objects.");
+        err = GIT_ERROR;
+    }
 
     err = git_push_status_foreach(push, git2r_push_status_foreach_cb, &err_msg);
-    if (err < 0)
+    if (GIT_OK != err)
         goto cleanup;
     if (err_msg != NULL) {
         giterr_set_str(GITERR_NONE, err_msg);
@@ -169,8 +172,6 @@ SEXP git2r_push(
     }
 
     err = git_push_update_tips(push, signature, CHAR(STRING_ELT(msg, 0)));
-    if (err < 0)
-        goto cleanup;
 
 cleanup:
     if (signature)
@@ -188,7 +189,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;

@@ -54,12 +54,12 @@ SEXP git2r_object_lookup(SEXP repo, SEXP hex)
     if (GIT_OID_HEXSZ == len) {
         git_oid_fromstr(&oid, CHAR(STRING_ELT(hex, 0)));
         err = git_object_lookup(&object, repository, &oid, GIT_OBJ_ANY);
-        if (err < 0)
+        if (GIT_OK != err)
             goto cleanup;
     } else {
         git_oid_fromstrn(&oid, CHAR(STRING_ELT(hex, 0)), len);
         err = git_object_lookup_prefix(&object, repository, &oid, len, GIT_OBJ_ANY);
-        if (err < 0)
+        if (GIT_OK != err)
             goto cleanup;
     }
 
@@ -94,7 +94,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;

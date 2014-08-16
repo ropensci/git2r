@@ -32,7 +32,7 @@
 SEXP git2r_odb_hash(SEXP data)
 {
     SEXP result;
-    int err = 0;
+    int err = GIT_OK;
     size_t len, i;
     char hex[GIT_OID_HEXSZ + 1];
     git_oid oid;
@@ -50,7 +50,7 @@ SEXP git2r_odb_hash(SEXP data)
                                CHAR(STRING_ELT(data, i)),
                                LENGTH(STRING_ELT(data, i)),
                                GIT_OBJ_BLOB);
-            if (err < 0)
+            if (GIT_OK != err)
                 break;
 
             git_oid_fmt(hex, &oid);
@@ -61,7 +61,7 @@ SEXP git2r_odb_hash(SEXP data)
 
     UNPROTECT(1);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -77,7 +77,7 @@ SEXP git2r_odb_hash(SEXP data)
 SEXP git2r_odb_hashfile(SEXP path)
 {
     SEXP result;
-    int err = 0;
+    int err = GIT_OK;
     size_t len, i;
     char hex[GIT_OID_HEXSZ + 1];
     git_oid oid;
@@ -94,7 +94,7 @@ SEXP git2r_odb_hashfile(SEXP path)
             err = git_odb_hashfile(&oid,
                                    CHAR(STRING_ELT(path, i)),
                                    GIT_OBJ_BLOB);
-            if (err < 0)
+            if (GIT_OK != err)
                 break;
 
             git_oid_fmt(hex, &oid);
@@ -105,7 +105,7 @@ SEXP git2r_odb_hashfile(SEXP path)
 
     UNPROTECT(1);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;

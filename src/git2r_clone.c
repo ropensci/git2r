@@ -114,7 +114,7 @@ SEXP git2r_clone(SEXP url, SEXP local_path, SEXP credentials, SEXP progress)
     if (repository)
         git_repository_free(repository);
 
-    if (err < 0)
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
