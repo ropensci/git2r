@@ -3,22 +3,25 @@
 \name{fetch}
 \alias{fetch}
 \alias{fetch,git_repository-method}
-\title{Fetch}
+\title{Fetch new data and update tips}
 \usage{
-fetch(repo, name)
+fetch(repo, name, credentials = NULL)
 
-\S4method{fetch}{git_repository}(repo, name)
+\S4method{fetch}{git_repository}(repo, name, credentials = NULL)
 }
 \arguments{
 \item{repo}{the repository}
 
 \item{name}{the remote's name}
+
+\item{credentials}{The credentials for remote repository
+access. Default is NULL.}
 }
 \value{
 invisible(NULL)
 }
 \description{
-Fetch
+Fetch new data and update tips
 }
 \keyword{methods}
 

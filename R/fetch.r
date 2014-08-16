@@ -20,23 +20,30 @@
 ##' @docType methods
 ##' @param repo the repository
 ##' @param name the remote's name
+##' @param credentials The credentials for remote repository
+##' access. Default is NULL.
 ##' @return invisible(NULL)
 ##' @keywords methods
 ##' @include S4_classes.r
 setGeneric("fetch",
            signature = "repo",
-           function(repo, name) standardGeneric("fetch"))
+           function(repo,
+                    name,
+                    credentials = NULL) standardGeneric("fetch"))
 
 ##' @rdname fetch-methods
 ##' @export
 setMethod("fetch",
           signature(repo = "git_repository"),
-          function (repo, name)
+          function (repo,
+                    name,
+                    credentials)
           {
               result <- .Call(
                   git2r_remote_fetch,
                   repo,
                   name,
+                  credentials,
                   "fetch",
                   default_signature(repo))
               invisible(result)

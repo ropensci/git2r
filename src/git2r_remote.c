@@ -19,6 +19,7 @@
 #include "git2.h"
 
 #include "git2r_arg.h"
+#include "git2r_cred.h"
 #include "git2r_error.h"
 #include "git2r_remote.h"
 #include "git2r_repository.h"
@@ -74,19 +75,28 @@ cleanup:
  *
  * @param repo S4 class git_repository
  * @param name The name of the remote to fetch from
+ * @param credentials The credentials for remote repository access.
  * @param msg The one line long message to be appended to the reflog
  * @param who The identity that will used to populate the reflog entry
  * @return R_NilValue
  */
-SEXP git2r_remote_fetch(SEXP repo, SEXP name, SEXP msg, SEXP who)
+SEXP git2r_remote_fetch(
+    SEXP repo,
+    SEXP name,
+    SEXP credentials,
+    SEXP msg,
+    SEXP who)
 {
     int err;
     git_remote *remote = NULL;
     git_signature *signature = NULL;
     git_repository *repository = NULL;
+    git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
 
     if (0 != git2r_arg_check_string(name))
         git2r_error(git2r_err_string_arg, __func__, "name");
+    if (0 != git2r_arg_check_credentials(credentials))
+        git2r_error(git2r_err_credentials_arg, __func__, "credentials");
     if (0 != git2r_arg_check_string(msg))
         git2r_error(git2r_err_string_arg, __func__, "msg");
     if (0 != git2r_arg_check_signature(who))
@@ -96,11 +106,17 @@ SEXP git2r_remote_fetch(SEXP repo, SEXP name, SEXP msg, SEXP who)
     if (!repository)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
+    err = git2r_signature_from_arg(&signature, who);
+    if (GIT_OK != err)
+        goto cleanup;
+
     err = git_remote_load(&remote, repository, CHAR(STRING_ELT(name, 0)));
     if (GIT_OK != err)
         goto cleanup;
 
-    err = git2r_signature_from_arg(&signature, who);
+    callbacks.credentials = &git2r_cred_acquire_cb;
+    callbacks.payload = credentials;
+    err = git_remote_set_callbacks(remote, &callbacks);
     if (GIT_OK != err)
         goto cleanup;
 
@@ -110,11 +126,11 @@ cleanup:
     if (signature)
         git_signature_free(signature);
 
-    if (remote)
-        git_remote_disconnect(remote);
-
-    if (remote)
+    if (remote) {
+        if (git_remote_connected(remote))
+            git_remote_disconnect(remote);
         git_remote_free(remote);
+    }
 
     if (repository)
         git_repository_free(repository);
