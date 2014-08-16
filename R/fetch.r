@@ -14,7 +14,7 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-##' Fetch
+##' Fetch new data and update tips
 ##'
 ##' @rdname fetch-methods
 ##' @docType methods
@@ -33,6 +33,12 @@ setMethod("fetch",
           signature(repo = "git_repository"),
           function (repo, name)
           {
-              invisible(.Call(git2r_remote_fetch, repo, name))
+              result <- .Call(
+                  git2r_remote_fetch,
+                  repo,
+                  name,
+                  "fetch",
+                  default_signature(repo))
+              invisible(result)
           }
 )

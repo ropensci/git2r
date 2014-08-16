@@ -22,6 +22,7 @@
 #include "git2r_error.h"
 #include "git2r_remote.h"
 #include "git2r_repository.h"
+#include "git2r_signature.h"
 
 /**
  * Add a remote with the default fetch refspec to the repository's
@@ -73,16 +74,23 @@ cleanup:
  *
  * @param repo S4 class git_repository
  * @param name The name of the remote to fetch from
+ * @param msg The one line long message to be appended to the reflog
+ * @param who The identity that will used to populate the reflog entry
  * @return R_NilValue
  */
-SEXP git2r_remote_fetch(SEXP repo, SEXP name)
+SEXP git2r_remote_fetch(SEXP repo, SEXP name, SEXP msg, SEXP who)
 {
     int err;
     git_remote *remote = NULL;
+    git_signature *signature = NULL;
     git_repository *repository = NULL;
 
     if (0 != git2r_arg_check_string(name))
         git2r_error(git2r_err_string_arg, __func__, "name");
+    if (0 != git2r_arg_check_string(msg))
+        git2r_error(git2r_err_string_arg, __func__, "msg");
+    if (0 != git2r_arg_check_signature(who))
+        git2r_error(git2r_err_signature_arg, __func__, "who");
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -92,11 +100,16 @@ SEXP git2r_remote_fetch(SEXP repo, SEXP name)
     if (err < 0)
         goto cleanup;
 
-    err = git_remote_fetch(remote, NULL, NULL);
+    err = git2r_signature_from_arg(&signature, who);
     if (err < 0)
         goto cleanup;
 
+    err = git_remote_fetch(remote, signature, CHAR(STRING_ELT(msg, 0)));
+
 cleanup:
+    if (signature)
+        git_signature_free(signature);
+
     if (remote)
         git_remote_disconnect(remote);
 
