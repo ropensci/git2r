@@ -1,30 +1,43 @@
 Under development
 -----------------
 
+NEW FEATURES
+
+* Many new features and methods added, see the documention for a
+  description of the methods below:
+
+  - Blob: content, create_blob_fromdisk, create_blob_fromworkdir,
+          hash, hashfile, is_binary, is_blob, length, show, summary
+
+  - Branch: branch_create, branch_delete, branch_get_upstream,
+            branch_remote_name, branch_remote_url, branch_rename,
+            branch_set_upstream and branch_target
+
+  - Libgit2: libgit2_features and libgit2_version.
+
+  - Note: note_create, note_default_ref, note_list and note_remove.
+
+  - Remote: remote_add, remote_remove, remote_rename and remote_url.
+
+  - Stash: stash, stash_drop and stash_list.
+
+* Improved error messages to give detailed information and from which
+  function the error was raised.
+
 NEW S4 CLASSES
 
-* git_blame: Handle a git blame for a single file
-
-* git_blame_hunk: Handle a blame hunk
-
-* git_blob: Handle a git blob
-
-* git_diff: Handle a git diff
-
-* git_diff_file: Handle a git diff file
-
-* git_diff_hunk: Handle a git diff hunk
-
-* git_diff_line: Handle a git diff line
-
-* git_note: Handle a git note
-
-* git_reflog_entry: Handle a git reflog entry
-
-* git_stash: Handle a git stash
-
-* git_tree: Handle a git tree
-
+* The following new S4 classes to handle the libgit2 data structures:
+  - git_blame
+  - git_blame_hunk
+  - git_blob
+  - git_diff
+  - git_diff_file
+  - git_diff_hunk
+  - git_diff_line
+  - git_note
+  - git_reflog_entry
+  - git_stash
+  - git_tree
 
 git2r 0.0.8
 -----------
