@@ -626,10 +626,6 @@ ac_header_list=
 ac_func_list=
 ac_subst_vars='LTLIBOBJS
 GIT2R_SRC_REGEX
-GIT2R_USE_ICONV
-GIT2R_HAVE_SSH2
-GIT2R_HAVE_SSL
-GIT2R_INCLUDE_REGEX
 LIBOBJS
 ALLOCA
 EGREP
@@ -3272,7 +3268,15 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 # Handle optional include and library paths
-GIT2R_CPPFLAGS="-I."
+GIT2R_CPPFLAGS="-I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser"
+
+# Include and use regex on solaris
+case "${host_os}" in
+  solaris*)
+    GIT2R_CPPFLAGS="${GIT2R_CPPFLAGS} -Iregex"
+    GIT2R_SRC_REGEX=regex/regex.o
+    ;;
+esac
 
 # zlib include and library path
 
@@ -3558,7 +3562,7 @@ fi
 fi
 
 if test "x${have_crypto}" = xyes; then
-        GIT2R_HAVE_SSL=-DGIT_SSL
+        CPPFLAGS="${CPPFLAGS} -DGIT_SSL"
 else
         LIBS=${OLD_LIBS}
         { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING:
@@ -3633,7 +3637,7 @@ fi
 
 
 if test "x${have_ssh2}" = xyes; then
-        GIT2R_HAVE_SSH2=-DGIT_SSH
+        CPPFLAGS="${CPPFLAGS} -DGIT_SSH"
 else
         { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING:
   ---------------------------------------------
@@ -3709,7 +3713,7 @@ fi
 
 
         if test "x${have_iconv}" = xyes; then
-                GIT2R_USE_ICONV=-DGIT_USE_ICONV
+                CPPFLAGS="${CPPFLAGS} -DGIT_USE_ICONV"
         else
                 { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING:
   ---------------------------------------------
@@ -3722,6 +3726,125 @@ $as_echo "$as_me: WARNING:
    Building a version without support for iconv.
   ---------------------------------------------" >&2;}
         fi
+    ;;
+esac
+
+# Configuration specific for solaris
+case "${host_os}" in
+  solaris*)
+    CPPFLAGS="${CPPFLAGS} -D_POSIX_C_SOURCE=200112L -D__EXTENSIONS__ -D_POSIX_PTHREAD_SEMANTICS"
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing connect" >&5
+$as_echo_n "checking for library containing connect... " >&6; }
+if ${ac_cv_search_connect+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char connect ();
+int
+main ()
+{
+return connect ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' socket; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_connect=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_connect+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_connect+:} false; then :
+
+else
+  ac_cv_search_connect=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_connect" >&5
+$as_echo "$ac_cv_search_connect" >&6; }
+ac_res=$ac_cv_search_connect
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+
+fi
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing gethostbyname" >&5
+$as_echo_n "checking for library containing gethostbyname... " >&6; }
+if ${ac_cv_search_gethostbyname+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char gethostbyname ();
+int
+main ()
+{
+return gethostbyname ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' nsl socket; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_gethostbyname=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_gethostbyname+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_gethostbyname+:} false; then :
+
+else
+  ac_cv_search_gethostbyname=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_gethostbyname" >&5
+$as_echo "$ac_cv_search_gethostbyname" >&6; }
+ac_res=$ac_cv_search_gethostbyname
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+
+fi
+
     ;;
 esac
 
@@ -5313,10 +5436,6 @@ _ACEOF
 
 fi
 done
-
-
-
-
 
 
 

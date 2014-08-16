@@ -25,7 +25,15 @@ AC_CANONICAL_HOST
 AC_PROG_CC
 
 # Handle optional include and library paths
-GIT2R_CPPFLAGS="-I."
+GIT2R_CPPFLAGS="-I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser"
+
+# Include and use regex on solaris
+case "${host_os}" in
+  solaris*)
+    GIT2R_CPPFLAGS="${GIT2R_CPPFLAGS} -Iregex"
+    GIT2R_SRC_REGEX=regex/regex.o
+    ;;
+esac
 
 # zlib include and library path
 AC_ARG_WITH([zlib-include],
@@ -126,7 +134,7 @@ if test "x${have_ssl}" = xyes; then
 fi
 
 if test "x${have_crypto}" = xyes; then
-        GIT2R_HAVE_SSL=-DGIT_SSL
+        CPPFLAGS="${CPPFLAGS} -DGIT_SSL"
 else
         LIBS=${OLD_LIBS}
         AC_MSG_WARN([
@@ -141,7 +149,7 @@ have_ssh2=no
 AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
 
 if test "x${have_ssh2}" = xyes; then
-        GIT2R_HAVE_SSH2=-DGIT_SSH
+        CPPFLAGS="${CPPFLAGS} -DGIT_SSH"
 else
         AC_MSG_WARN([
   ---------------------------------------------
@@ -157,7 +165,7 @@ case "${host_os}" in
         AC_SEARCH_LIBS([iconv_open], [iconv], [have_iconv=yes])
 
         if test "x${have_iconv}" = xyes; then
-                GIT2R_USE_ICONV=-DGIT_USE_ICONV
+                CPPFLAGS="${CPPFLAGS} -DGIT_USE_ICONV"
         else
                 AC_MSG_WARN([
   ---------------------------------------------
@@ -165,6 +173,15 @@ case "${host_os}" in
    Building a version without support for iconv.
   ---------------------------------------------])
         fi
+    ;;
+esac
+
+# Configuration specific for solaris
+case "${host_os}" in
+  solaris*)
+    CPPFLAGS="${CPPFLAGS} -D_POSIX_C_SOURCE=200112L -D__EXTENSIONS__ -D_POSIX_PTHREAD_SEMANTICS"
+    AC_SEARCH_LIBS(connect, [socket])
+    AC_SEARCH_LIBS(gethostbyname, [nsl socket])
     ;;
 esac
 
@@ -197,10 +214,6 @@ AC_FUNC_MMAP
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([btowc clock_gettime getcwd gethostbyname gettimeofday isascii memchr memmove memset munmap pstat_getdynamic re_comp realpath regcomp select socket strcasecmp strchr strcspn strdup strerror strncasecmp strrchr strspn strstr strtol strtoul])
 
-AC_SUBST(GIT2R_INCLUDE_REGEX)
-AC_SUBST(GIT2R_HAVE_SSL)
-AC_SUBST(GIT2R_HAVE_SSH2)
-AC_SUBST(GIT2R_USE_ICONV)
 AC_SUBST(GIT2R_SRC_REGEX)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LIBS)
