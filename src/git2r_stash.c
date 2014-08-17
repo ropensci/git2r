@@ -18,6 +18,7 @@
 
 #include <Rdefines.h>
 #include "git2.h"
+#include "cc-compat.h"
 
 #include "git2r_arg.h"
 #include "git2r_commit.h"
@@ -108,6 +109,9 @@ static int git2r_stash_list_cb(
     void *payload)
 {
     git2r_stash_list_cb_data *cb_data = (git2r_stash_list_cb_data*)payload;
+
+    GIT_UNUSED(index);
+    GIT_UNUSED(message);
 
     /* Check if we have a list to populate */
     if (R_NilValue != cb_data->list) {
