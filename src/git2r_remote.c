@@ -149,7 +149,8 @@ cleanup:
  */
 SEXP git2r_remote_list(SEXP repo)
 {
-    int i, err;
+    int err;
+    size_t i;
     git_strarray rem_list;
     SEXP list = R_NilValue;
     git_repository *repository;

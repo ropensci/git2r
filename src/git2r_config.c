@@ -137,10 +137,10 @@ static void git2r_config_list_add_entry(
     size_t *i_list,
     git_config_entry *entry)
 {
-    if (i_list[level] < LENGTH(list)) {
+    if (i_list[level] < (size_t)LENGTH(list)) {
         SEXP sub_list = VECTOR_ELT(list, i_list[level]);
 
-        if (i_level[level] < LENGTH(sub_list)) {
+        if (i_level[level] < (size_t)LENGTH(sub_list)) {
             SEXP names = getAttrib(sub_list, R_NamesSymbol);
             SET_STRING_ELT(names, i_level[level], mkChar(entry->name));
             SET_VECTOR_ELT(sub_list,

@@ -67,7 +67,8 @@ void git2r_reference_init(git_reference *source, SEXP dest)
  */
 SEXP git2r_reference_list(SEXP repo)
 {
-    int i, err;
+    int err;
+    size_t i;
     git_strarray ref_list;
     SEXP list = R_NilValue;
     SEXP names = R_NilValue;
