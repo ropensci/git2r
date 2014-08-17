@@ -45,7 +45,6 @@ SEXP git2r_checkout_branch(
     int err;
     SEXP branch_name;
     git_buf ref_name = GIT_BUF_INIT;
-    git_oid oid;
     git_signature *signature = NULL;
     git_reference *reference = NULL;
     git_repository *repository = NULL;

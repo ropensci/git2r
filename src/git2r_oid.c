@@ -28,7 +28,6 @@
  */
 void git2r_oid_from_hex_sexp(SEXP hex, git_oid *oid)
 {
-    int err;
     size_t len;
 
     len = LENGTH(STRING_ELT(hex, 0));
