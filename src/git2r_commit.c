@@ -43,7 +43,7 @@ SEXP git2r_commit_create(
     SEXP committer,
     SEXP parent_list)
 {
-    SEXP sexp_commit;
+    SEXP sexp_commit = R_NilValue;
     int err;
     int changes_in_index = 0;
     git_signature *sig_author = NULL;

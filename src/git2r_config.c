@@ -289,7 +289,7 @@ cleanup:
  */
 SEXP git2r_config_set(SEXP repo, SEXP variables)
 {
-    int err;
+    int err = GIT_OK;
     SEXP names;
     size_t i, n;
     git_config *cfg = NULL;

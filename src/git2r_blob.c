@@ -83,7 +83,7 @@ SEXP git2r_blob_create_fromdisk(SEXP repo, SEXP path)
 {
     SEXP result = R_NilValue;
     SEXP sexp_blob;
-    int err;
+    int err = GIT_OK;
     size_t len, i;
     git_oid oid;
     git_blob *blob = NULL;
@@ -147,7 +147,7 @@ SEXP git2r_blob_create_fromworkdir(SEXP repo, SEXP relative_path)
 {
     SEXP result = R_NilValue;
     SEXP sexp_blob;
-    int err;
+    int err = GIT_OK;
     size_t len, i;
     git_oid oid;
     git_blob *blob = NULL;
@@ -278,7 +278,7 @@ SEXP git2r_blob_rawsize(SEXP blob)
 {
     int err;
     SEXP hex;
-    git_off_t size;
+    git_off_t size = 0;
     git_blob *blob_obj = NULL;
     git_oid oid;
     git_repository *repository = NULL;

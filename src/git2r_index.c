@@ -77,7 +77,7 @@ cleanup:
  */
 SEXP git2r_index_add_all(SEXP repo, SEXP path)
 {
-    int err;
+    int err = GIT_OK;
     size_t i, len;
     git_strarray pathspec = {0};
     git_index *index = NULL;

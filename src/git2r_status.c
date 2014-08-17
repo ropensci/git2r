@@ -368,7 +368,8 @@ SEXP git2r_status_list(
 {
     int err;
     size_t i=0, count;
-    SEXP list, list_names;
+    SEXP list = R_NilValue;
+    SEXP list_names = R_NilValue;
     git_repository *repository;
     git_status_list *status_list = NULL;
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
@@ -438,7 +439,8 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    UNPROTECT(2);
+    if (R_NilValue != list)
+        UNPROTECT(2);
 
     if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);

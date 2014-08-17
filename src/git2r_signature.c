@@ -32,7 +32,7 @@ SEXP git2r_signature_default(SEXP repo)
     int err;
     git_repository *repository = NULL;
     git_signature *signature = NULL;
-    SEXP sig;
+    SEXP result = R_NilValue;
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -42,8 +42,8 @@ SEXP git2r_signature_default(SEXP repo)
     if (GIT_OK != err)
         goto cleanup;
 
-    PROTECT(sig = NEW_OBJECT(MAKE_CLASS("git_signature")));
-    git2r_signature_init(signature, sig);
+    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_signature")));
+    git2r_signature_init(signature, result);
 
 cleanup:
     if (repository)
@@ -52,12 +52,13 @@ cleanup:
     if (signature)
         git_signature_free(signature);
 
-    UNPROTECT(1);
+    if (R_NilValue != result)
+        UNPROTECT(1);
 
     if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
-    return sig;
+    return result;
 }
 
 /**

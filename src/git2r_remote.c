@@ -151,7 +151,7 @@ SEXP git2r_remote_list(SEXP repo)
 {
     int i, err;
     git_strarray rem_list;
-    SEXP list;
+    SEXP list = R_NilValue;
     git_repository *repository;
 
     repository = git2r_repository_open(repo);
@@ -165,13 +165,15 @@ SEXP git2r_remote_list(SEXP repo)
     PROTECT(list = allocVector(STRSXP, rem_list.count));
     for (i = 0; i < rem_list.count; i++)
         SET_STRING_ELT(list, i, mkChar(rem_list.strings[i]));
-    UNPROTECT(1);
 
 cleanup:
     git_strarray_free(&rem_list);
 
     if (repository)
         git_repository_free(repository);
+
+    if (R_NilValue != list)
+        UNPROTECT(1);
 
     if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
@@ -290,7 +292,7 @@ cleanup:
  */
 SEXP git2r_remote_url(SEXP repo, SEXP remote)
 {
-    int err;
+    int err = GIT_OK;
     SEXP url;
     size_t len;
     size_t i = 0;

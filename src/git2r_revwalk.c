@@ -59,7 +59,7 @@ SEXP git2r_revwalk_list(
 {
     int i=0;
     int err = GIT_OK;
-    SEXP list;
+    SEXP result = R_NilValue;
     size_t n = 0;
     unsigned int sort_mode = GIT_SORT_NONE;
     git_revwalk *walker = NULL;
@@ -78,7 +78,7 @@ SEXP git2r_revwalk_list(
 
     if (git_repository_is_empty(repository)) {
         /* No commits, create empty list */
-        PROTECT(list = allocVector(VECSXP, 0));
+        PROTECT(result = allocVector(VECSXP, 0));
         goto cleanup;
     }
 
@@ -102,7 +102,7 @@ SEXP git2r_revwalk_list(
     n = git2r_revwalk_count(walker);
 
     /* Create list to store result */
-    PROTECT(list = allocVector(VECSXP, n));
+    PROTECT(result = allocVector(VECSXP, n));
 
     git_revwalk_reset(walker);
     err = git_revwalk_push_head(walker);
@@ -128,7 +128,7 @@ SEXP git2r_revwalk_list(
 
         PROTECT(sexp_commit = NEW_OBJECT(MAKE_CLASS("git_commit")));
         git2r_commit_init(commit, repo, sexp_commit);
-        SET_VECTOR_ELT(list, i, sexp_commit);
+        SET_VECTOR_ELT(result, i, sexp_commit);
         UNPROTECT(1);
         i++;
 
@@ -142,10 +142,11 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    UNPROTECT(1);
+    if (R_NilValue != result)
+        UNPROTECT(1);
 
     if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
-    return list;
+    return result;
 }
