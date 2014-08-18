@@ -304,6 +304,12 @@ SEXP git2r_checkout_tree(
 
     slot = GET_SLOT(tree, Rf_install("hex"));
     err = git_oid_fromstr(&oid, CHAR(STRING_ELT(slot, 0)));
+    if (GIT_OK != err)
+        goto cleanup;
+
+    /* :TODO:FIXME: Implement */
+    giterr_set_str(GITERR_NONE, "Not implemented. Sorry.");
+    err = GIT_ERROR;
 
 cleanup:
     if (signature)

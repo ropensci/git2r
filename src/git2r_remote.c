@@ -57,7 +57,6 @@ SEXP git2r_remote_add(SEXP repo, SEXP name, SEXP url)
 			    CHAR(STRING_ELT(name, 0)),
 			    CHAR(STRING_ELT(url, 0)));
 
-cleanup:
     if (remote)
 	git_remote_free(remote);
 
