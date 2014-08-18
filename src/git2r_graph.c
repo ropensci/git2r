@@ -89,8 +89,9 @@ cleanup:
  */
 SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor)
 {
-    int result;
+    int err;
     SEXP slot;
+    SEXP result = R_NilValue;
     git_oid commit_oid;
     git_oid ancestor_oid;
     git_repository *repository = NULL;
@@ -111,12 +112,23 @@ SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor)
     slot = GET_SLOT(ancestor, Rf_install("hex"));
     git2r_oid_from_hex_sexp(slot, &ancestor_oid);
 
-    result = git_graph_descendant_of(repository, &commit_oid, &ancestor_oid);
-    git_repository_free(repository);
+    err = git_graph_descendant_of(repository, &commit_oid, &ancestor_oid);
+    if (0 > err || 1 < err)
+        goto cleanup;
 
-    if (result < 0)
+    PROTECT(result = allocVector(LGLSXP, 1));
+    LOGICAL(result)[0] = err;
+    err = GIT_OK;
+
+cleanup:
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
+    if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
-    if (0 == result)
-        return ScalarLogical(0);
-    return ScalarLogical(1);
+
+    return result;
 }
