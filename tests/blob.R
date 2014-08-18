@@ -82,8 +82,12 @@ stopifnot(identical(hash(character(0)), character(0)))
 ##
 ## Hash file
 ##
-writeLines("Hello, world!", file.path(path, "test-1.txt"))
-writeLines("test content", file.path(path, "test-2.txt"))
+test_1_txt <- file(file.path(path, "test-1.txt"), "wb")
+writeChar("Hello, world!\n", test_1_txt, eos = NULL)
+close(test_1_txt)
+test_2_txt <- file(file.path(path, "test-2.txt"), "wb")
+writeChar("test content\n", test_2_txt, eos = NULL)
+close(test_2_txt)
 stopifnot(identical(hash("Hello, world!\n"),
                     hashfile(file.path(path, "test-1.txt"))))
 stopifnot(identical(hash("test content\n"),
