@@ -15,8 +15,8 @@
 #endif
 
 /* Changed all printf to Rprintf to pass 'R CMD check git2r'*/
-/* 2014-08-09: Stefan Widgren <stefan.widgren@gmail.com>*/
-#include <Rdefines.h>
+/* 2014-08-19: Stefan Widgren <stefan.widgren@gmail.com>*/
+void Rprintf(const char*, ...);
 
 void git_strarray_free(git_strarray *array)
 {
