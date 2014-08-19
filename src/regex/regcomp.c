@@ -18,6 +18,10 @@
    Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
    02110-1301 USA.  */
 
+/* Changed all 'abort' to 'Rf_error' to pass 'R CMD check git2r'*/
+/* 2014-08-19: Stefan Widgren <stefan.widgren@gmail.com>*/
+void Rf_error(const char*, ...);
+
 static reg_errcode_t re_compile_internal (regex_t *preg, const char * pattern,
 					  size_t length, reg_syntax_t syntax);
 static void re_compile_fastmap_iter (regex_t *bufp,
@@ -208,7 +212,7 @@ const size_t __re_error_msgid_idx[] attribute_hidden =
 
 /* For ZOS USS we must define btowc */
 
-wchar_t 
+wchar_t
 btowc (int c)
 {
    wchar_t wtmp[2];
@@ -555,7 +559,10 @@ regerror(int errcode, UNUSED const regex_t *__restrict preg,
        to this routine.  If we are given anything else, or if other regex
        code generates an invalid error code, then the program has a bug.
        Dump core so we can fix it.  */
-    abort ();
+      Rf_error(
+          "Error in %s: Unexpected error. Please report at"
+          " https://github.com/ropensci/git2r/issues",
+          __call__);
 
   msg = gettext (__re_error_msgid + __re_error_msgid_idx[errcode]);
 
@@ -1094,7 +1101,10 @@ optimize_utf8 (re_dfa_t *dfa)
 	    return;
 	break;
       default:
-	abort ();
+          Rf_error(
+              "Error in %s: Unexpected error. Please report at"
+              " https://github.com/ropensci/git2r/issues",
+              __call__);
       }
 
   if (mb_chars || has_period)

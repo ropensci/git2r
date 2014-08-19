@@ -95,6 +95,7 @@ sync_libgit2:
 	cd src/libgit2 && patch -p0 < ../../misc/cache-pass-R-CMD-check-git2r.patch
 	cd src/libgit2 && patch -p0 < ../../misc/diff_print-pass-R-CMD-check-git2r.patch
 	cd src/libgit2 && patch -p0 < ../../misc/util-pass-R-CMD-check-git2r.patch
+	cd src/regex && patch -i ../../misc/regcomp-pass-R-CMD-check-git2r.patch
 	Rscript misc/build_Makevars.r
 
 Makevars:
