@@ -715,3 +715,45 @@ setClass("git_tree",
              if (length(errors) == 0) TRUE else errors
          }
 )
+
+##' Class \code{"git_transfer_progress"}
+##'
+##' The statistics structure that is filled in by the fetch operation.
+##' @section Slots:
+##' \describe{
+##'   \item{total_objects}{
+##'     Number of objects in the packfile being downloaded
+##'   }
+##'   \item{indexed_objects}{
+##'     Received objects that have been hashed
+##'   }
+##'   \item{received_objects}{
+##'     Objects which have been downloaded
+##'   }
+##'   \item{total_deltas}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##'   \item{indexed_deltas}{
+##'     :TODO:DOCUMENTATION:
+##'   }
+##'   \item{local_objects}{
+##'     Locally-available objects that have been injected in order to
+##'     fix a thin pack
+##'   }
+##'   \item{received_bytes}{
+##'     Size of the packfile received up to now
+##'   }
+##' }
+##' @name git_transfer_progress-class
+##' @docType class
+##' @keywords classes
+##' @keywords methods
+##' @export
+setClass("git_transfer_progress",
+         slots=c(total_objects    = "integer",
+                 indexed_objects  = "integer",
+                 received_objects = "integer",
+                 local_objects    = "integer",
+                 total_deltas     = "integer",
+                 indexed_deltas   = "integer",
+                 received_bytes   = "integer"))
