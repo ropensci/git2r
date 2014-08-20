@@ -76,13 +76,17 @@ setMethod("push",
                     credentials = NULL)
           {
               if (all(is.null(name), is.null(refspec))) {
-                  stop("Push when both name and refspec equals NULL isn't implemented. Sorry")
+                  b <- head(object)
+                  upstream <- branch_get_upstream(b)
+                  if (is.null(upstream)) {
+                      stop(paste0("The branch '", b@name, "' that you are ",
+                                  "trying to push does not track an upstream branch."))
+                  }
 
-                  ##
-                  ## :TODO:FIXME: Read remote's name and refspec from
-                  ## config
-                  ##
-
+                  src <- .Call(git2r_branch_canonical_name, b)
+                  dst <- .Call(git2r_branch_upstream_canonical_name, b)
+                  name <- branch_remote_name(upstream)
+                  refspec <- paste0(src, ":", dst)
               } else if (any(is.null(name), is.null(refspec))) {
                   stop("Both 'name' and 'refspec' must be 'character' or 'NULL'")
               }
