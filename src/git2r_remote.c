@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <Rdefines.h>
 #include "git2.h"
 
 #include "git2r_arg.h"
@@ -24,6 +25,7 @@
 #include "git2r_remote.h"
 #include "git2r_repository.h"
 #include "git2r_signature.h"
+#include "git2r_transfer.h"
 
 /**
  * Add a remote with the default fetch refspec to the repository's
@@ -87,6 +89,8 @@ SEXP git2r_remote_fetch(
     SEXP who)
 {
     int err;
+    SEXP result = R_NilValue;
+    const git_transfer_progress *stats;
     git_remote *remote = NULL;
     git_signature *signature = NULL;
     git_repository *repository = NULL;
@@ -120,6 +124,12 @@ SEXP git2r_remote_fetch(
         goto cleanup;
 
     err = git_remote_fetch(remote, signature, CHAR(STRING_ELT(msg, 0)));
+    if (GIT_OK != err)
+        goto cleanup;
+
+    stats = git_remote_stats(remote);
+    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_transfer_progress")));
+    git2r_transfer_progress_init(stats, result);
 
 cleanup:
     if (signature)
@@ -134,10 +144,13 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
     if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
-    return R_NilValue;
+    return result;
 }
 
 /**

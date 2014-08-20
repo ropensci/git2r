@@ -718,7 +718,7 @@ setClass("git_tree",
 
 ##' Class \code{"git_transfer_progress"}
 ##'
-##' The statistics structure that is filled in by the fetch operation.
+##' Statistics from the fetch operation.
 ##' @section Slots:
 ##' \describe{
 ##'   \item{total_objects}{

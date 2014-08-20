@@ -22,7 +22,7 @@
 ##' @param name the remote's name
 ##' @param credentials The credentials for remote repository
 ##' access. Default is NULL.
-##' @return invisible(NULL)
+##' @return invisible \code{\linkS4class{git_transfer_progress}} object
 ##' @keywords methods
 ##' @include S4_classes.r
 setGeneric("fetch",
@@ -46,6 +46,7 @@ setMethod("fetch",
                   credentials,
                   "fetch",
                   default_signature(repo))
+
               invisible(result)
           }
 )

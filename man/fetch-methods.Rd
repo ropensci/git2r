@@ -18,7 +18,7 @@ fetch(repo, name, credentials = NULL)
 access. Default is NULL.}
 }
 \value{
-invisible(NULL)
+invisible \code{\linkS4class{git_transfer_progress}} object
 }
 \description{
 Fetch new data and update tips

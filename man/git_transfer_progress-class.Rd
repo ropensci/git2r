@@ -4,7 +4,7 @@
 \alias{git_transfer_progress-class}
 \title{Class \code{"git_transfer_progress"}}
 \description{
-The statistics structure that is filled in by the fetch operation.
+Statistics from the fetch operation.
 }
 \section{Slots}{
 
