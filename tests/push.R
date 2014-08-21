@@ -17,104 +17,111 @@
 library(git2r)
 
 ##
-## :TODO:FIX: functionality to:
-##  2) pull
-##
-
-##
-## Test push/pull between a bare repository and two clones
-##
-
-##
-## Create 3 directories in tempdir
+## Create 2 directories in tempdir
 ##
 path_bare <- tempfile(pattern="git2r-")
-path_repo1 <- tempfile(pattern="git2r-")
-path_repo2 <- tempfile(pattern="git2r-")
+path_repo <- tempfile(pattern="git2r-")
 
 dir.create(path_bare)
-dir.create(path_repo1)
-dir.create(path_repo2)
+dir.create(path_repo)
 
 ##
 ## Create repositories
 ##
 bare_repo <- init(path_bare, bare = TRUE)
-repo1 <- clone(path_bare, path_repo1)
-repo2 <- clone(path_bare, path_repo2)
+repo <- clone(path_bare, path_repo)
 
 ##
 ## Check the repositores
 ##
 stopifnot(identical(is_bare(bare_repo), TRUE))
-stopifnot(identical(is_bare(repo1), FALSE))
-stopifnot(identical(is_bare(repo2), FALSE))
+stopifnot(identical(is_bare(repo), FALSE))
 
 ##
 ## Config repositories
 ##
-config(repo1, user.name="Repo One", user.email="repo.one@example.org")
-config(repo2, user.name="Repo Two", user.email="repo.two@example.org")
+config(repo, user.name="Repo One", user.email="repo.one@example.org")
 
 ##
-## Add changes to repo1
+## Add changes to repo
 ##
-writeLines("Hello world", con = file.path(path_repo1, "test.txt"))
-add(repo1, "test.txt")
-new_commit <- commit(repo1, "Commit message")
+writeLines("Hello world", con = file.path(path_repo, "test.txt"))
+add(repo, "test.txt")
+commit_1 <- commit(repo, "Commit message")
 
 ##
 ## Check commit
 ##
-stopifnot(identical(new_commit@author@name, "Repo One"))
-stopifnot(identical(new_commit@author@email, "repo.one@example.org"))
-stopifnot(identical(length(commits(repo1)), 1L))
-stopifnot(identical(commits(repo1)[[1]]@author@name, "Repo One"))
-stopifnot(identical(commits(repo1)[[1]]@author@email, "repo.one@example.org"))
+stopifnot(identical(commit_1@author@name, "Repo One"))
+stopifnot(identical(commit_1@author@email, "repo.one@example.org"))
+stopifnot(identical(length(commits(repo)), 1L))
+stopifnot(identical(commits(repo)[[1]]@author@name, "Repo One"))
+stopifnot(identical(commits(repo)[[1]]@author@email, "repo.one@example.org"))
 
 ##
 ## Check push arguments
 ##
-tools::assertError(push(repo1, character(0), "refs/heads/master"))
-tools::assertError(push(repo1, NA_character_, "refs/heads/master"))
-tools::assertError(push(repo1, c("origin", "origin"), "refs/heads/master"))
-tools::assertError(push(repo1, "origin"))
-tools::assertError(push(repo1, name = "origin"))
-tools::assertError(push(repo1, refspec = "refs/heads/master"))
-push(repo1, "origin", character(0))
-push(repo1, "origin", NA_character_)
-push(repo1, "origin", c(NA_character_, NA_character_))
-stopifnot(identical(reflog(repo1, "refs/remotes/origin/master"), list()))
+tools::assertError(push(repo, character(0), "refs/heads/master"))
+tools::assertError(push(repo, NA_character_, "refs/heads/master"))
+tools::assertError(push(repo, c("origin", "origin"), "refs/heads/master"))
+tools::assertError(push(repo, "origin"))
+tools::assertError(push(repo, name = "origin"))
+tools::assertError(push(repo, refspec = "refs/heads/master"))
+push(repo, "origin", character(0))
+push(repo, "origin", NA_character_)
+push(repo, "origin", c(NA_character_, NA_character_))
+stopifnot(identical(reflog(repo, "refs/remotes/origin/master"), list()))
 
 ##
 ## No tracking branch assigned to master
 ##
-tools::assertError(push(branches(repo1)[[1]]))
+tools::assertError(push(branches(repo)[[1]]))
 
 ##
-## Push changes from repo1 to origin
+## Push changes from repo to origin
 ##
-push(repo1, "origin", "refs/heads/master")
-r <- reflog(repo1, "refs/remotes/origin/master")
+push(repo, "origin", "refs/heads/master")
+r <- reflog(repo, "refs/remotes/origin/master")
 stopifnot(identical(length(r), 1L))
 r <- r[[1]]
-stopifnot(identical(r@hex, new_commit@hex))
+stopifnot(identical(r@hex, commit_1@hex))
 stopifnot(identical(r@message, "update by push"))
 stopifnot(identical(r@index, 0L))
 stopifnot(identical(r@committer@name, "Repo One"))
 stopifnot(identical(r@committer@email, "repo.one@example.org"))
 stopifnot(identical(r@refname, "refs/remotes/origin/master"))
-stopifnot(identical(r@repo@path, repo1@path))
+stopifnot(identical(r@repo@path, repo@path))
 
 ##
-## Pull changes to repo2
+## Check result in bare repository
 ##
-## pull(repo2)
-## stopifnot(identical(commits(repo1), commits(repo2)))
+stopifnot(identical(length(commits(bare_repo)), 1L))
+bare_commit_1 <- commits(bare_repo)[[1]]
+stopifnot(identical(commit_1@hex, bare_commit_1@hex))
+stopifnot(identical(commit_1@author, bare_commit_1@author))
+stopifnot(identical(commit_1@committer, bare_commit_1@committer))
+stopifnot(identical(commit_1@summary, bare_commit_1@summary))
+stopifnot(identical(commit_1@message, bare_commit_1@message))
+stopifnot(!identical(commit_1@repo, bare_commit_1@repo))
+
+##
+## Add changes to repo and push head
+##
+writeLines(c("Hello world", "HELLO WORLD"),
+           con = file.path(path_repo, "test.txt"))
+add(repo, "test.txt")
+commit_2 <- commit(repo, "Commit message 2")
+push(repo)
+bare_commit_2 <- lookup(bare_repo, commit_2@hex)
+stopifnot(identical(commit_2@hex, bare_commit_2@hex))
+stopifnot(identical(commit_2@author, bare_commit_2@author))
+stopifnot(identical(commit_2@committer, bare_commit_2@committer))
+stopifnot(identical(commit_2@summary, bare_commit_2@summary))
+stopifnot(identical(commit_2@message, bare_commit_2@message))
+stopifnot(!identical(commit_2@repo, bare_commit_2@repo))
 
 ##
 ## Cleanup
 ##
 unlink(path_bare, recursive=TRUE)
-unlink(path_repo1, recursive=TRUE)
-unlink(path_repo2, recursive=TRUE)
+unlink(path_repo, recursive=TRUE)
