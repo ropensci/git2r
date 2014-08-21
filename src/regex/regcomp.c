@@ -19,7 +19,7 @@
    02110-1301 USA.  */
 
 /* Changed all 'abort' to 'Rf_error' to pass 'R CMD check git2r'*/
-/* 2014-08-19: Stefan Widgren <stefan.widgren@gmail.com>*/
+/* 2014-08-21: Stefan Widgren <stefan.widgren@gmail.com>*/
 void Rf_error(const char*, ...);
 
 static reg_errcode_t re_compile_internal (regex_t *preg, const char * pattern,
@@ -212,7 +212,7 @@ const size_t __re_error_msgid_idx[] attribute_hidden =
 
 /* For ZOS USS we must define btowc */
 
-wchar_t
+wchar_t 
 btowc (int c)
 {
    wchar_t wtmp[2];
@@ -560,9 +560,8 @@ regerror(int errcode, UNUSED const regex_t *__restrict preg,
        code generates an invalid error code, then the program has a bug.
        Dump core so we can fix it.  */
       Rf_error(
-          "Error in %s: Unexpected error. Please report at"
-          " https://github.com/ropensci/git2r/issues",
-          __call__);
+          "Error in 'regerror': Unexpected error. Please report at"
+          " https://github.com/ropensci/git2r/issues");
 
   msg = gettext (__re_error_msgid + __re_error_msgid_idx[errcode]);
 
@@ -1102,9 +1101,8 @@ optimize_utf8 (re_dfa_t *dfa)
 	break;
       default:
           Rf_error(
-              "Error in %s: Unexpected error. Please report at"
-              " https://github.com/ropensci/git2r/issues",
-              __call__);
+              "Error in 'optimize_utf8': Unexpected error. Please report at"
+              " https://github.com/ropensci/git2r/issues");
       }
 
   if (mb_chars || has_period)
