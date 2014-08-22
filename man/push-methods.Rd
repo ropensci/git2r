@@ -39,7 +39,7 @@ repo <- repository("path/to/git2r")
 ## Make some changes and commit...
 
 ## push changes to remote
-push(head(repo))
+push(repo)
 }
 }
 \seealso{

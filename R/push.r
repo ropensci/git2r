@@ -34,7 +34,7 @@
 ##' ## Make some changes and commit...
 ##'
 ##' ## push changes to remote
-##' push(head(repo))
+##' push(repo)
 ##' }
 setGeneric("push",
            signature = "object",
