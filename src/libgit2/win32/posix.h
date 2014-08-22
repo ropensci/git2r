@@ -7,6 +7,13 @@
 #ifndef INCLUDE_posix__w32_h__
 #define INCLUDE_posix__w32_h__
 
+/**
+ * Changed to use the 'gnu_printf' format attribute on 'p_snprintf' to
+ * pass 'R CMD check git2r' on Windows
+ *
+ * 2014-08-22: Stefan Widgren <stefan.widgren@gmail.com>
+ */
+
 #include "common.h"
 #include "../posix.h"
 #include "utf-conv.h"
@@ -34,7 +41,7 @@ extern int p_inet_pton(int af, const char* src, void* dst);
 #define strcasecmp(s1, s2) _stricmp(s1, s2)
 #define strncasecmp(s1, s2, c) _strnicmp(s1, s2, c)
 extern int p_vsnprintf(char *buffer, size_t count, const char *format, va_list argptr);
-extern int p_snprintf(char *buffer, size_t count, const char *format, ...) GIT_FORMAT_PRINTF(3, 4);
+extern int p_snprintf(char *buffer, size_t count, const char *format, ...) __attribute__((__format__ (gnu_printf, 3, 4)));
 extern int p_mkstemp(char *tmp_path);
 extern int p_chdir(const char* path);
 extern int p_chmod(const char* path, mode_t mode);
