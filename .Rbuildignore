@@ -8,3 +8,4 @@
 ^figure$
 ^misc$
 ^CONTRIBUTING.md$
+appveyor.yml
