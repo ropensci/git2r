@@ -230,7 +230,7 @@ setClass("git_blame",
 ##'     version of the file
 ##'   }
 ##'   \item{final_signature}{
-##'     :TODO:DOCUMENTATION:
+##'     Final committer
 ##'   }
 ##'   \item{orig_commit_id}{
 ##'     The hex of the commit where this hunk was found. This will usually
@@ -241,7 +241,7 @@ setClass("git_blame",
 ##'      named by 'orig_path' in the commit specified by 'orig_commit_id'.
 ##'   }
 ##'   \item{orig_signature}{
-##'     :TODO:DOCUMENTATION:
+##'     Origin committer
 ##'   }
 ##'   \item{orig_path}{
 ##'     The path to the file where this hunk originated, as of the commit
@@ -731,10 +731,10 @@ setClass("git_tree",
 ##'     Objects which have been downloaded
 ##'   }
 ##'   \item{total_deltas}{
-##'     :TODO:DOCUMENTATION:
+##'     Total number of deltas in the pack
 ##'   }
 ##'   \item{indexed_deltas}{
-##'     :TODO:DOCUMENTATION:
+##'     Deltas which have been indexed
 ##'   }
 ##'   \item{local_objects}{
 ##'     Locally-available objects that have been injected in order to

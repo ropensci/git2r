@@ -20,7 +20,7 @@ Class \code{"git_blame_hunk"}
     version of the file
   }
   \item{final_signature}{
-    :TODO:DOCUMENTATION:
+    Final committer
   }
   \item{orig_commit_id}{
     The hex of the commit where this hunk was found. This will usually
@@ -31,7 +31,7 @@ Class \code{"git_blame_hunk"}
      named by 'orig_path' in the commit specified by 'orig_commit_id'.
   }
   \item{orig_signature}{
-    :TODO:DOCUMENTATION:
+    Origin committer
   }
   \item{orig_path}{
     The path to the file where this hunk originated, as of the commit

@@ -19,10 +19,10 @@ Statistics from the fetch operation.
     Objects which have been downloaded
   }
   \item{total_deltas}{
-    :TODO:DOCUMENTATION:
+    Total number of deltas in the pack
   }
   \item{indexed_deltas}{
-    :TODO:DOCUMENTATION:
+    Deltas which have been indexed
   }
   \item{local_objects}{
     Locally-available objects that have been injected in order to
