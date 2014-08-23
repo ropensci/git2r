@@ -33,7 +33,7 @@ repo <- clone("https://github.com/ropensci/git2r", "path/to/git2r")
 }
 }
 \seealso{
-\code{\linkS4class{cred_plaintext}},
+\code{\linkS4class{cred_user_pass}},
 \code{\linkS4class{cred_ssh_key}}
 }
 \keyword{methods}

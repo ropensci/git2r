@@ -126,7 +126,7 @@ setClass("git_signature",
          }
 )
 
-##' Class \code{"cred_plaintext"}
+##' Class \code{"cred_user_pass"}
 ##'
 ##' @title S4 class to handle plain-text username and password
 ##' credential object
@@ -139,12 +139,12 @@ setClass("git_signature",
 ##'     The password of the credential
 ##'   }
 ##' }
-##' @rdname cred_plaintext-class
+##' @rdname cred_user_pass-class
 ##' @docType class
 ##' @keywords classes
 ##' @keywords methods
 ##' @export
-setClass("cred_plaintext",
+setClass("cred_user_pass",
          slots=c(username = "character",
                  password = "character")
 )

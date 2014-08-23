@@ -16,24 +16,24 @@
 
 ##' Create a new plain-text username and password credential object
 ##'
-##' @rdname cred_plaintext-methods
+##' @rdname cred_user_pass-methods
 ##' @param username The username of the credential
 ##' @param password The password of the credential
-##' @return A S4 \code{cred_plaintext} object
+##' @return A S4 \code{cred_user_pass} object
 ##' @keywords methods
-setGeneric("cred_plaintext",
+setGeneric("cred_user_pass",
            signature = c("username", "password"),
            function(username, password)
-           standardGeneric("cred_plaintext"))
+           standardGeneric("cred_user_pass"))
 
-##' @rdname cred_plaintext-methods
+##' @rdname cred_user_pass-methods
 ##' @export
-setMethod("cred_plaintext",
+setMethod("cred_user_pass",
           signature(username = "character",
                     password = "character"),
           function(username, password)
           {
-              new("cred_plaintext",
+              new("cred_user_pass",
                   username = username,
                   password = password)
           }

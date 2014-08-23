@@ -43,7 +43,7 @@ push(repo)
 }
 }
 \seealso{
-\code{\linkS4class{cred_plaintext}},
+\code{\linkS4class{cred_user_pass}},
 \code{\linkS4class{cred_ssh_key}}
 }
 \keyword{methods}

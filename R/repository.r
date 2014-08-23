@@ -216,7 +216,7 @@ setMethod("init",
 ##' is NULL.
 ##' @param progress Show progress. Default is TRUE.
 ##' @return A S4 \code{\linkS4class{git_repository}} object
-##' @seealso \code{\linkS4class{cred_plaintext}},
+##' @seealso \code{\linkS4class{cred_user_pass}},
 ##' \code{\linkS4class{cred_ssh_key}}
 ##' @keywords methods
 ##' @examples

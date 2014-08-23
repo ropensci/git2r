@@ -79,7 +79,7 @@ int git2r_cred_acquire_cb(
                     privatekey,
                     passphrase);
             }
-        } else if (0 == strcmp(CHAR(STRING_ELT(class_name, 0)), "cred_plaintext")) {
+        } else if (0 == strcmp(CHAR(STRING_ELT(class_name, 0)), "cred_user_pass")) {
             if (GIT_CREDTYPE_USERPASS_PLAINTEXT & allowed_types) {
                 const char *username;
                 const char *password;
