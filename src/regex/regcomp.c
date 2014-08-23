@@ -18,8 +18,14 @@
    Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
    02110-1301 USA.  */
 
-/* Changed all 'abort' to 'Rf_error' to pass 'R CMD check git2r'*/
-/* 2014-08-21: Stefan Widgren <stefan.widgren@gmail.com>*/
+/**
+ * Changed all 'abort' to 'Rf_error' to pass 'R CMD check git2r'
+ * 2014-08-21: Stefan Widgren <stefan.widgren@gmail.com>
+ *
+ * Replaced cast from int to void* via 'long' with 'intptr_t' in
+ * 'parse_dup_op' and 'mark_opt_subexp'.
+ * 2014-08-23: Stefan Widgren <stefan.widgren@gmail.com>
+ */
 void Rf_error(const char*, ...);
 
 static reg_errcode_t re_compile_internal (regex_t *preg, const char * pattern,
@@ -2558,7 +2564,7 @@ parse_dup_op (bin_tree_t *elem, re_string_t *regexp, re_dfa_t *dfa,
     old_tree = NULL;
 
   if (elem->token.type == SUBEXP)
-    postorder (elem, mark_opt_subexp, (void *) (long) elem->token.opr.idx);
+    postorder (elem, mark_opt_subexp, (void *) (intptr_t) elem->token.opr.idx);
 
   tree = create_tree (dfa, elem, NULL, (end == -1 ? OP_DUP_ASTERISK : OP_ALT));
   if (BE (tree == NULL, 0))
@@ -3787,7 +3793,7 @@ create_token_tree (re_dfa_t *dfa, bin_tree_t *left, bin_tree_t *right,
 static reg_errcode_t
 mark_opt_subexp (void *extra, bin_tree_t *node)
 {
-  int idx = (int) (long) extra;
+  int idx = (intptr_t) extra;
   if (node->token.type == SUBEXP && node->token.opr.idx == idx)
     node->token.opt_subexp = 1;
 
