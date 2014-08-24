@@ -5,6 +5,15 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
+/**
+ * Changes to build with mingw-w64:
+ *  - Remove #include <strsafe.h>
+ *  - Add CLSID_InternetSecurityManager
+ *  - Add IID_IInternetSecurityManager
+ *
+ * 2014-08-24: Stefan Widgren <stefan.widgren@gmail.com>
+ */
+
 #ifdef GIT_WINHTTP
 
 #include "git2.h"
@@ -19,11 +28,12 @@
 #include <winhttp.h>
 #pragma comment(lib, "winhttp")
 
-#include <strsafe.h>
-
 /* For IInternetSecurityManager zone check */
 #include <objbase.h>
 #include <urlmon.h>
+
+const IID CLSID_InternetSecurityManager = {0x7b8a2d94,0x0ac9,0x11d1,{0x89,0x6c,0x00,0xc0,0x4f,0xb6,0xbf,0xc4}};
+const IID IID_IInternetSecurityManager  = {0x79EAC9EE,0xBAF9,0x11CE,{0x8C,0x82,0x00,0xAA,0x00,0x4B,0xA9,0x0B}};
 
 /* For UuidCreate */
 #pragma comment(lib, "rpcrt4")
