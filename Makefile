@@ -113,6 +113,10 @@ clean:
 	-rm -f src/Makevars
 	-rm -f src/*.o
 	-rm -f src/*.so
+	-rm -rf src-x64
+	-rm -rf src-i386
+	-rm -f src/winhttp/libwinhttp-x64.a
+	-rm -f src/winhttp/libwinhttp.a
 	-rm -f src/libgit2/*.o
 	-rm -f src/libgit2/hash/*.o
 	-rm -f src/libgit2/transports/*.o
@@ -120,5 +124,6 @@ clean:
 	-rm -f src/libgit2/win32/*.o
 	-rm -f src/libgit2/xdiff/*.o
 	-rm -f src/http-parser/*.o
+	-rm -f src/regex/*.o
 
 .PHONY: all readme doc sync_libgit2 Makevars check clean
