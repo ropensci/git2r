@@ -6,12 +6,21 @@
  */
 
 /**
- * Changes to build with mingw-w64:
- *  - Remove #include <strsafe.h>
+ * Changes to build and fix compiler warnings with mingw-w64:
+ *  - Define __CRT_STRSAFE_IMPL to fix duplicate extern error from strsafe.h
  *  - Add CLSID_InternetSecurityManager
  *  - Add IID_IInternetSecurityManager
+ *  - Remove #pragma comment(lib, "winhttp")
+ *  - Remove #pragma comment(lib, "rpcrt4")
+ *  - Remove unused variable 'default_port' in function 'winhttp_connect'
+ *  - Remove unused variable 't' in function 'winhttp_stream_write_single'
+ *  - Remove unused variable 't' in function 'winhttp_stream_write_buffered'
+ *  - Remove unused variable 't' in function 'winhttp_stream_write_chunked'
+ *  - Remove defined but unused 'prefix_http'
+ *  - Use format specifier PRIxZ in git_buf_printf in function 'write_chunk'
+ *  - Initialize 'wide_len' to 0 in function 'apply_basic_credential'
  *
- * 2014-08-24: Stefan Widgren <stefan.widgren@gmail.com>
+ * 2014-08-26: Stefan Widgren <stefan.widgren@gmail.com>
  */
 
 #ifdef GIT_WINHTTP
@@ -26,7 +35,9 @@
 #include "repository.h"
 
 #include <winhttp.h>
-#pragma comment(lib, "winhttp")
+
+#define __CRT_STRSAFE_IMPL
+#include <strsafe.h>
 
 /* For IInternetSecurityManager zone check */
 #include <objbase.h>
@@ -34,9 +45,6 @@
 
 const IID CLSID_InternetSecurityManager = {0x7b8a2d94,0x0ac9,0x11d1,{0x89,0x6c,0x00,0xc0,0x4f,0xb6,0xbf,0xc4}};
 const IID IID_IInternetSecurityManager  = {0x79EAC9EE,0xBAF9,0x11CE,{0x8C,0x82,0x00,0xAA,0x00,0x4B,0xA9,0x0B}};
-
-/* For UuidCreate */
-#pragma comment(lib, "rpcrt4")
 
 #define WIDEN2(s) L ## s
 #define WIDEN(s) WIDEN2(s)
@@ -50,7 +58,6 @@ const IID IID_IInternetSecurityManager  = {0x79EAC9EE,0xBAF9,0x11CE,{0x8C,0x82,0
 #define WINHTTP_IGNORE_REQUEST_TOTAL_LENGTH 0
 #endif
 
-static const char *prefix_http = "http://";
 static const char *prefix_https = "https://";
 static const char *upload_pack_service = "upload-pack";
 static const char *upload_pack_ls_service_url = "/info/refs?service=git-upload-pack";
@@ -105,7 +112,7 @@ static int apply_basic_credential(HINTERNET request, git_cred *cred)
 	git_cred_userpass_plaintext *c = (git_cred_userpass_plaintext *)cred;
 	git_buf buf = GIT_BUF_INIT, raw = GIT_BUF_INIT;
 	wchar_t *wide = NULL;
-	int error = -1, wide_len;
+	int error = -1, wide_len = 0;
 
 	git_buf_printf(&raw, "%s:%s", c->username, c->password);
 
@@ -434,7 +441,7 @@ static int write_chunk(HINTERNET request, const char *buffer, size_t len)
 	git_buf buf = GIT_BUF_INIT;
 
 	/* Chunk header */
-	git_buf_printf(&buf, "%X\r\n", len);
+	git_buf_printf(&buf, "%" PRIxZ "\r\n", len);
 
 	if (git_buf_oom(&buf))
 		return -1;
@@ -475,7 +482,6 @@ static int winhttp_connect(
 	wchar_t *ua = L"git/1.0 (libgit2 " WIDEN(LIBGIT2_VERSION) L")";
 	wchar_t *wide_host;
 	int32_t port;
-	const char *default_port = "80";
 	int error = -1;
 
 	/* Prepare port */
@@ -807,7 +813,6 @@ static int winhttp_stream_write_single(
 	size_t len)
 {
 	winhttp_stream *s = (winhttp_stream *)stream;
-	winhttp_subtransport *t = OWNING_SUBTRANSPORT(s);
 	DWORD bytes_written;
 
 	if (!s->request && winhttp_stream_connect(s) < 0)
@@ -901,7 +906,6 @@ static int winhttp_stream_write_buffered(
 	size_t len)
 {
 	winhttp_stream *s = (winhttp_stream *)stream;
-	winhttp_subtransport *t = OWNING_SUBTRANSPORT(s);
 	DWORD bytes_written;
 
 	if (!s->request && winhttp_stream_connect(s) < 0)
@@ -947,7 +951,6 @@ static int winhttp_stream_write_chunked(
 	size_t len)
 {
 	winhttp_stream *s = (winhttp_stream *)stream;
-	winhttp_subtransport *t = OWNING_SUBTRANSPORT(s);
 
 	if (!s->request && winhttp_stream_connect(s) < 0)
 		return -1;
