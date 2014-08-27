@@ -19,8 +19,9 @@
  *  - Remove defined but unused 'prefix_http'
  *  - Use format specifier PRIxZ in git_buf_printf in function 'write_chunk'
  *  - Initialize 'wide_len' to 0 in function 'apply_basic_credential'
+ *  - Change 'wchar_t *types[]' to 'const WCHAR *types[]' in 'winhttp_stream_connect'
  *
- * 2014-08-26: Stefan Widgren <stefan.widgren@gmail.com>
+ * 2014-08-27: Stefan Widgren <stefan.widgren@gmail.com>
  */
 
 #ifdef GIT_WINHTTP
@@ -225,7 +226,7 @@ static int winhttp_stream_connect(winhttp_stream *s)
 	git_buf buf = GIT_BUF_INIT;
 	char *proxy_url = NULL;
 	wchar_t ct[MAX_CONTENT_TYPE_LEN];
-	wchar_t *types[] = { L"*/*", NULL };
+	const WCHAR *types[] = { L"*/*", NULL };
 	BOOL peerdist = FALSE;
 	int error = -1;
 	unsigned long disable_redirects = WINHTTP_DISABLE_REDIRECTS;
