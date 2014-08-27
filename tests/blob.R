@@ -108,7 +108,7 @@ tmp_file_1 <- tempfile()
 tmp_file_2 <- tempfile()
 writeLines("Hello, world!", tmp_file_1)
 writeLines("test content", tmp_file_2)
-blob_list_1 <- create_blob_fromdisk(repo, c(tmp_file_1, tmp_file_2))
+blob_list_1 <- blob_create(repo, c(tmp_file_1, tmp_file_2), relative = FALSE)
 unlink(tmp_file_1)
 unlink(tmp_file_2)
 stopifnot(identical(sapply(blob_list_1, slot, "hex"),
@@ -120,8 +120,8 @@ stopifnot(identical(sapply(blob_list_1, slot, "hex"),
 ##
 writeLines("Hello, world!", file.path(path, "test-workdir-1.txt"))
 writeLines("test content", file.path(path, "test-workdir-2.txt"))
-blob_list_2 <- create_blob_fromworkdir(repo, c("test-workdir-1.txt",
-                                               "test-workdir-2.txt"))
+blob_list_2 <- blob_create(repo, c("test-workdir-1.txt",
+                                   "test-workdir-2.txt"))
 stopifnot(identical(sapply(blob_list_2, slot, "hex"),
                     c("af5626b4a114abcb82d63db7c8082c3c4756e51b",
                       "d670460b4b4aece5915caf5c68d12f560a9fe3e4")))
