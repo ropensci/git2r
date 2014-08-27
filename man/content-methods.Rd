@@ -20,5 +20,22 @@ The content of the blob
 \description{
 Content of blob
 }
+\examples{
+\dontrun{
+## Initialize a temporary repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+repo <- init(path)
+
+## Create a user and commit a file
+config(repo, user.name="Developer", user.email="developer@example.org")
+writeLines("Hello world!", file.path(path, "example.txt"))
+add(repo, "example.txt")
+commit(repo, "First commit message")
+
+## Display content of blob.
+content(tree(commits(repo)[[1]])["example.txt"])
+}
+}
 \keyword{methods}
 
