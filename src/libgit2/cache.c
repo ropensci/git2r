@@ -15,9 +15,18 @@
 #include "object.h"
 #include "git2/oid.h"
 
-/* Changed all printf to Rprintf to pass 'R CMD check git2r'*/
-/* 2014-08-09: Stefan Widgren <stefan.widgren@gmail.com>*/
-void Rprintf(const char*, ...);
+/**
+ * Changed all printf to Rprintf to pass 'R CMD check git2r'
+ * 2014-08-09: Stefan Widgren <stefan.widgren@gmail.com>
+ *
+ * Use R's 'runif' instead of 'rand' in function 'cache_evict_entries'
+ * to fix 'R CMD check git2r' note: "Compiled code should not call
+ * entry points which might terminate R nor write to stdout/stderr
+ * instead of to the console, nor the C RNG".
+ * 2014-08-28: Stefan Widgren <stefan.widgren@gmail.com>
+ */
+#include <R.h>
+#include <Rmath.h>
 
 GIT__USE_OIDMAP
 
@@ -117,9 +126,14 @@ void git_cache_free(git_cache *cache)
 /* Called with lock */
 static void cache_evict_entries(git_cache *cache)
 {
-	uint32_t seed = rand();
+        uint32_t seed;
 	size_t evict_count = 8;
 	ssize_t evicted_memory = 0;
+
+        /* Use R's 'runif' instead of 'rand' to pass 'R CMD check git2r' */
+        GetRNGstate();
+        seed = (uint32_t)runif(0, RAND_MAX);
+        PutRNGstate();
 
 	/* do not infinite loop if there's not enough entries to evict  */
 	if (evict_count > kh_size(cache->map)) {
