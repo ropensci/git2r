@@ -27,6 +27,33 @@
 ##' reflog entry. Default is NULL, which gives the default signature.
 ##' @return invisible S4 class git_branch object
 ##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a user and commit a file
+##' config(repo, user.name="Developer", user.email="developer@@example.org")
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit_1 <- commit(repo, "First commit message")
+##'
+##' ## Create a branch
+##' branch_1 <- branch_create(commit_1, name = "test-branch")
+##'
+##' ## Add one more commit
+##' writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit_2 <- commit(repo, "Another commit message")
+##'
+##' ## Create a branch with the same name should fail
+##' branch_create(commit_2, name = "test-branch")
+##'
+##' ## Force it
+##' branch_2 <- branch_create(commit_2, name = "test-branch", force = TRUE)
+##' }
 setGeneric("branch_create",
            signature = "commit",
            function(commit,

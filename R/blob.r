@@ -166,15 +166,17 @@ setMethod("hash",
 ##' @keywords methods
 ##' @examples
 ##' \dontrun{
-##' ## Create a file
+##' ## Create a file. NOTE: The line endings from writeLines gives
+##' ## LF (line feed) on Unix/Linux and CRLF (carriage return, line feed)
+##' ## on Windows. The example use writeChar to have more control.
 ##' path <- tempfile()
-##' writeLines("Hello, world!", path)
+##' f <- file(path, "wb")
+##' writeChar("Hello, world!\n", f, eos = NULL)
+##' close(f)
 ##'
+##' ## Generate hash
 ##' hashfile(path)
 ##' identical(hashfile(path), hash("Hello, world!\n"))
-##'
-##' ## Delete file
-##' unlink(path)
 ##' }
 setGeneric("hashfile",
            signature = "path",
@@ -199,6 +201,38 @@ setMethod("hashfile",
 ##' @param blob The blob \code{object}.
 ##' @return TRUE if binary data, FALSE if not.
 ##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a user
+##' config(repo, user.name="Developer", user.email="developer@@example.org")
+##'
+##' ## Commit a text file
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit_1 <- commit(repo, "First commit message")
+##'
+##' ## Check if binary
+##' b_text <- tree(commit_1)["example.txt"]
+##' is_binary(b_text)
+##'
+##' ## Commit plot file (binary)
+##' x <- 1:100
+##' y <- x^2
+##' png(file.path(path, "plot.png"))
+##' plot(y ~ x, type = "l")
+##' dev.off()
+##' add(repo, "plot.png")
+##' commit_2 <- commit(repo, "Second commit message")
+##'
+##' ## Check if binary
+##' b_png <- tree(commit_2)["plot.png"]
+##' is_binary(b_png)
+##' }
 setGeneric("is_binary",
            signature = "blob",
            function(blob)
@@ -220,6 +254,26 @@ setMethod("is_binary",
 ##' @return TRUE if object is S4 class git_blob, else FALSE
 ##' @keywords methods
 ##' @export
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a user
+##' config(repo, user.name="Developer", user.email="developer@@example.org")
+##'
+##' ## Commit a text file
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit_1 <- commit(repo, "First commit message")
+##' blob_1 <- tree(commit_1)["example.txt"]
+##'
+##' ## Check if blob
+##' is_blob(commit_1)
+##' is_blob(blob_1)
+##' }
 is_blob <- function(object) {
     is(object = object, class2 = "git_blob")
 }
@@ -231,6 +285,25 @@ is_blob <- function(object) {
 ##' @return a non-negative integer
 ##' @keywords methods
 ##' @export
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a user
+##' config(repo, user.name="Developer", user.email="developer@@example.org")
+##'
+##' ## Commit a text file
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit_1 <- commit(repo, "First commit message")
+##' blob_1 <- tree(commit_1)["example.txt"]
+##'
+##' ## Get length in size of bytes of the content of the blob
+##' length(blob_1)
+##' }
 setMethod("length",
           signature(x = "git_blob"),
           function(x)

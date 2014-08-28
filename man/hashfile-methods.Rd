@@ -20,15 +20,17 @@ The blob is not written to the object database.
 }
 \examples{
 \dontrun{
-## Create a file
+## Create a file. NOTE: The line endings from writeLines gives
+## LF (line feed) on Unix/Linux and CRLF (carriage return, line feed)
+## on Windows. The example use writeChar to have more control.
 path <- tempfile()
-writeLines("Hello, world!", path)
+f <- file(path, "wb")
+writeChar("Hello, world!\\n", f, eos = NULL)
+close(f)
 
+## Generate hash
 hashfile(path)
 identical(hashfile(path), hash("Hello, world!\\n"))
-
-## Delete file
-unlink(path)
 }
 }
 \keyword{methods}
