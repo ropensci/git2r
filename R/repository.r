@@ -534,7 +534,7 @@ setMethod("show",
                               remote_url(object, remote)))
               })
 
-              if (is_empty(object)) {
+              if (any(is_empty(object), is.null(head(object)))) {
                   cat(sprintf("Local:    %s\n", workdir(object)))
                   cat("Head:     nothing commited (yet)\n")
               } else if (is_detached(object)) {
