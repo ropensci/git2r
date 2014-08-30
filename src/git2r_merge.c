@@ -45,9 +45,9 @@ SEXP git2r_merge_base(SEXP one, SEXP two)
     git_commit *commit = NULL;
     git_repository *repository = NULL;
 
-    if (0 != git2r_arg_check_commit(one))
+    if (GIT_OK != git2r_arg_check_commit(one))
         git2r_error(git2r_err_commit_arg, __func__, "one");
-    if (0 != git2r_arg_check_commit(two))
+    if (GIT_OK != git2r_arg_check_commit(two))
         git2r_error(git2r_err_commit_arg, __func__, "two");
 
     repo = GET_SLOT(one, Rf_install("repo"));

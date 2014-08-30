@@ -49,13 +49,13 @@ SEXP git2r_reset(SEXP commit, SEXP reset_type, SEXP msg, SEXP who)
     git_commit *target = NULL;
     git_repository *repository = NULL;
 
-    if (0 != git2r_arg_check_commit(commit))
+    if (GIT_OK != git2r_arg_check_commit(commit))
         git2r_error(git2r_err_commit_arg, __func__, "commit");
-    if (0 != git2r_arg_check_integer(reset_type))
+    if (GIT_OK != git2r_arg_check_integer(reset_type))
         git2r_error(git2r_err_integer_arg, __func__, "reset_type");
-    if (0 != git2r_arg_check_string(msg))
+    if (GIT_OK != git2r_arg_check_string(msg))
         git2r_error(git2r_err_string_arg, __func__, "msg");
-    if (0 != git2r_arg_check_signature(who))
+    if (GIT_OK != git2r_arg_check_signature(who))
         git2r_error(git2r_err_signature_arg, __func__, "who");
 
     err = git2r_signature_from_arg(&signature, who);

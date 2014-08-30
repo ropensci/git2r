@@ -48,7 +48,7 @@ git_repository* git2r_repository_open(SEXP repo)
         return NULL;
 
     path = GET_SLOT(repo, Rf_install("path"));
-    if (0 != git2r_arg_check_string(path))
+    if (GIT_OK != git2r_arg_check_string(path))
         return NULL;
 
     if (git_repository_open(&repository, CHAR(STRING_ELT(path, 0))) < 0)
@@ -253,9 +253,9 @@ SEXP git2r_repository_init(SEXP path, SEXP bare)
     int err;
     git_repository *repository = NULL;
 
-    if (0 != git2r_arg_check_string(path))
+    if (GIT_OK != git2r_arg_check_string(path))
         git2r_error(git2r_err_string_arg, __func__, "path");
-    if (0 != git2r_arg_check_logical(bare))
+    if (GIT_OK != git2r_arg_check_logical(bare))
         git2r_error(git2r_err_logical_arg, __func__, "bare");
 
     err = git_repository_init(&repository,
@@ -404,7 +404,7 @@ SEXP git2r_repository_can_open(SEXP path)
     int can_open;
     git_repository *repository = NULL;
 
-    if (0 != git2r_arg_check_string(path))
+    if (GIT_OK != git2r_arg_check_string(path))
         git2r_error(git2r_err_string_arg, __func__, "path");
 
     can_open = git_repository_open(&repository, CHAR(STRING_ELT(path, 0)));
@@ -463,7 +463,7 @@ SEXP git2r_repository_discover(SEXP path)
     SEXP result = R_NilValue;
     git_buf buf = GIT_BUF_INIT;
 
-    if (0 != git2r_arg_check_string(path))
+    if (GIT_OK != git2r_arg_check_string(path))
         git2r_error(git2r_err_string_arg, __func__, "path");
 
     /* note that across_fs (arg #3) is set to 0 so this will stop when

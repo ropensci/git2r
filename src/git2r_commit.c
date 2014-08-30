@@ -59,13 +59,13 @@ SEXP git2r_commit_create(
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
     opts.show  = GIT_STATUS_SHOW_INDEX_ONLY;
 
-    if (0 != git2r_arg_check_string(message))
+    if (GIT_OK != git2r_arg_check_string(message))
         git2r_error(git2r_err_string_arg, __func__, "message");
-    if (0 != git2r_arg_check_signature(author))
+    if (GIT_OK != git2r_arg_check_signature(author))
         git2r_error(git2r_err_signature_arg, __func__, "author");
-    if (0 != git2r_arg_check_signature(committer))
+    if (GIT_OK != git2r_arg_check_signature(committer))
         git2r_error(git2r_err_signature_arg, __func__, "committer");
-    if (0 != git2r_arg_check_string_vec(parent_list))
+    if (GIT_OK != git2r_arg_check_string_vec(parent_list))
         git2r_error(git2r_err_string_vec_arg, __func__, "parent_list");
 
     repository = git2r_repository_open(repo);
@@ -246,7 +246,7 @@ SEXP git2r_commit_tree(SEXP commit)
     git_repository *repository = NULL;
     git_tree *tree = NULL;
 
-    if (0 != git2r_arg_check_commit(commit))
+    if (GIT_OK != git2r_arg_check_commit(commit))
         git2r_error(git2r_err_commit_arg, __func__, "commit");
 
     repo = GET_SLOT(commit, Rf_install("repo"));
@@ -358,7 +358,7 @@ SEXP git2r_commit_parent_list(SEXP commit)
     git_commit *commit_obj = NULL;
     git_repository *repository = NULL;
 
-    if (0 != git2r_arg_check_commit(commit))
+    if (GIT_OK != git2r_arg_check_commit(commit))
         git2r_error(git2r_err_commit_arg, __func__, "commit");
 
     repo = GET_SLOT(commit, Rf_install("repo"));

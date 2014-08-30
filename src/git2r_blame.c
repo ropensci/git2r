@@ -124,7 +124,7 @@ SEXP git2r_blame_file(SEXP repo, SEXP path)
     git_repository *repository = NULL;
     git_blame_options blame_opts = GIT_BLAME_OPTIONS_INIT;
 
-    if (0 != git2r_arg_check_string(path))
+    if (GIT_OK != git2r_arg_check_string(path))
         git2r_error(git2r_err_string_arg, __func__, "path");
 
     repository = git2r_repository_open(repo);

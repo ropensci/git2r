@@ -43,7 +43,7 @@ SEXP git2r_object_lookup(SEXP repo, SEXP hex)
     git_oid oid;
     git_repository *repository = NULL;
 
-    if (0 != git2r_arg_check_hex(hex))
+    if (GIT_OK != git2r_arg_check_hex(hex))
         git2r_error(git2r_err_hex_arg, __func__, "hex");
 
     repository = git2r_repository_open(repo);

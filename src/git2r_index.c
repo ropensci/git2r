@@ -37,7 +37,7 @@ SEXP git2r_index_add(SEXP repo, SEXP path)
     git_index *index = NULL;
     git_repository *repository = NULL;
 
-    if (0 != git2r_arg_check_string(path))
+    if (GIT_OK != git2r_arg_check_string(path))
         git2r_error(git2r_err_string_arg, __func__, "path");
 
     repository= git2r_repository_open(repo);
@@ -83,7 +83,7 @@ SEXP git2r_index_add_all(SEXP repo, SEXP path)
     git_index *index = NULL;
     git_repository *repository = NULL;
 
-    if (0 != git2r_arg_check_string_vec(path))
+    if (GIT_OK != git2r_arg_check_string_vec(path))
         git2r_error(git2r_err_string_vec_arg, __func__, "path");
 
     repository= git2r_repository_open(repo);

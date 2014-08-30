@@ -73,7 +73,7 @@ SEXP git2r_diff(SEXP repo, SEXP tree1, SEXP tree2, SEXP index, SEXP filename)
 {
     int c_index;
 
-    if (0 != git2r_arg_check_logical(index))
+    if (GIT_OK != git2r_arg_check_logical(index))
         git2r_error(git2r_err_logical_arg, __func__, "index");
 
     c_index = LOGICAL(index)[0];
@@ -122,7 +122,7 @@ SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename)
     git_diff *diff = NULL;
     SEXP result = R_NilValue;
 
-    if (0 != git2r_arg_check_filename(filename))
+    if (GIT_OK != git2r_arg_check_filename(filename))
         git2r_error(git2r_err_filename_arg, __func__, "filename");
 
     repository = git2r_repository_open(repo);
@@ -209,7 +209,7 @@ SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
     git_tree *head = NULL;
     SEXP result = R_NilValue;
 
-    if (0 != git2r_arg_check_filename(filename))
+    if (GIT_OK != git2r_arg_check_filename(filename))
         git2r_error(git2r_err_filename_arg, __func__, "filename");
 
     repository = git2r_repository_open(repo);
@@ -317,9 +317,9 @@ SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
     SEXP result = R_NilValue;
     SEXP repo;
 
-    if (0 != git2r_arg_check_tree(tree))
+    if (GIT_OK != git2r_arg_check_tree(tree))
         git2r_error(git2r_err_tree_arg, __func__, "tree");
-    if (0 != git2r_arg_check_filename(filename))
+    if (GIT_OK != git2r_arg_check_filename(filename))
         git2r_error(git2r_err_filename_arg, __func__, "filename");
 
     repo = GET_SLOT(tree, Rf_install("repo"));
@@ -427,9 +427,9 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
     SEXP result = R_NilValue;
     SEXP repo;
 
-    if (0 != git2r_arg_check_tree(tree))
+    if (GIT_OK != git2r_arg_check_tree(tree))
         git2r_error(git2r_err_tree_arg, __func__, "tree");
-    if (0 != git2r_arg_check_filename(filename))
+    if (GIT_OK != git2r_arg_check_filename(filename))
         git2r_error(git2r_err_filename_arg, __func__, "filename");
 
     repo = GET_SLOT(tree, Rf_install("repo"));
@@ -539,11 +539,11 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
     SEXP repo;
     SEXP hex1, hex2;
 
-    if (0 != git2r_arg_check_tree(tree1))
+    if (GIT_OK != git2r_arg_check_tree(tree1))
         git2r_error(git2r_err_tree_arg, __func__, "tree1");
-    if (0 != git2r_arg_check_tree(tree2))
+    if (GIT_OK != git2r_arg_check_tree(tree2))
         git2r_error(git2r_err_tree_arg, __func__, "tree2");
-    if (0 != git2r_arg_check_filename(filename))
+    if (GIT_OK != git2r_arg_check_filename(filename))
         git2r_error(git2r_err_filename_arg, __func__, "filename");
 
     /* We already checked that tree2 is from the same repo, in R */

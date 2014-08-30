@@ -99,7 +99,7 @@ SEXP git2r_reflog_list(SEXP repo, SEXP ref)
     git_reflog *reflog = NULL;
     git_repository *repository = NULL;
 
-    if (0 != git2r_arg_check_string(ref))
+    if (GIT_OK != git2r_arg_check_string(ref))
         git2r_error(git2r_err_string_arg, __func__, "ref");
 
     repository = git2r_repository_open(repo);
