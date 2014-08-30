@@ -136,7 +136,9 @@ static const R_CallMethodDef callMethods[] =
 };
 
 /**
- * Register routines to R.
+ * Load 'git2r'
+ *  - Register routines to R.
+ *  - Initialize SSL
  *
  * @param info Information about the DLL being loaded
  */
@@ -144,4 +146,11 @@ void
 R_init_git2r(DllInfo *info)
 {
     R_registerRoutines(info, NULL, callMethods, NULL, NULL);
+
+    /**
+     * Note: libgit2 is not built with threads. However, to initialize
+     * ssl 'git_threads_init' in 'src/libgit2/global.c' must be
+     * called.
+     */
+    git_threads_init();
 }
