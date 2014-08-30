@@ -24,18 +24,19 @@
 #include "git2r_error.h"
 
 /**
- * Data structure to hold progress information when performing clone.
+ * Data structure to hold information when performing clone.
  */
 typedef struct {
     int received_progress;
     int received_done;
-} git2r_clone_progress_data;
+    SEXP credentials;
+} git2r_clone_data;
 
 /**
  * Show progress of clone
  *
  * @param progress The clone progress data
- * @param payload A pointer to a git2r_clone_progress_data data
+ * @param payload A pointer to a git2r_clone_data data
  * structure
  * @return 0
  */
@@ -44,7 +45,7 @@ static int git2r_clone_progress(
     void *payload)
 {
     int kbytes = progress->received_bytes / 1024;
-    git2r_clone_progress_data *pd = (git2r_clone_progress_data*)payload;
+    git2r_clone_data *pd = (git2r_clone_data*)payload;
 
     if (progress->received_objects < progress->total_objects) {
         int received_percent =
@@ -71,6 +72,33 @@ static int git2r_clone_progress(
 }
 
 /**
+ * Callback if the remote host requires authentication in order to
+ * connect to it
+ *
+ * @param cred The newly created credential object.
+ * @param url The resource for which we are demanding a credential.
+ * @param user_from_url The username that was embedded in a "user@host"
+ * remote url, or NULL if not included.
+ * @param allowed_types A bitmask stating which cred types are OK to return.
+ * @param payload The payload provided when specifying this callback.
+ * @return 0 on success, else -1.
+ */
+int git2r_clone_cred_acquire(
+    git_cred **cred,
+    const char *url,
+    const char *username_from_url,
+    unsigned int allowed_types,
+    void *payload)
+{
+    return git2r_cred_acquire_cb(
+        cred,
+        url,
+        username_from_url,
+        allowed_types,
+        ((git2r_clone_data*)payload)->credentials);
+}
+
+/**
  * Clone a remote repository
  *
  * @param url the remote repository to clone
@@ -85,7 +113,7 @@ SEXP git2r_clone(SEXP url, SEXP local_path, SEXP credentials, SEXP progress)
     git_repository *repository = NULL;
     git_clone_options clone_opts = GIT_CLONE_OPTIONS_INIT;
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
-    git2r_clone_progress_data pd = {0};
+    git2r_clone_data payload = {0, 0, R_NilValue};
 
     if (GIT_OK != git2r_arg_check_string(url))
         git2r_error(git2r_err_string_arg, __func__, "url");
@@ -98,11 +126,12 @@ SEXP git2r_clone(SEXP url, SEXP local_path, SEXP credentials, SEXP progress)
 
     checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE_CREATE;
     clone_opts.checkout_opts = checkout_opts;
-    /* :TODO:FIXME: */
-    /* clone_opts.remote_callbacks.credentials = &git2r_cred_acquire_cb; */
+    payload.credentials = credentials;
+    clone_opts.remote_callbacks.payload = &payload;
+    clone_opts.remote_callbacks.credentials = &git2r_clone_cred_acquire;
+
     if (LOGICAL(progress)[0]) {
         clone_opts.remote_callbacks.transfer_progress = &git2r_clone_progress;
-        clone_opts.remote_callbacks.payload = &pd;
         Rprintf("cloning into '%s'...\n", CHAR(STRING_ELT(local_path, 0)));
     }
 
