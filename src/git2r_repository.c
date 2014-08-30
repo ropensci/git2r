@@ -58,6 +58,124 @@ git_repository* git2r_repository_open(SEXP repo)
 }
 
 /**
+ * Data structure to hold information when iterating over FETCH_HEAD
+ * entries.
+ */
+typedef struct {
+    size_t n;
+    SEXP list;
+    SEXP repo;
+} git2r_fetch_head_cb_data;
+
+/**
+ * Invoked 'callback' for each entry in the given FETCH_HEAD file.
+ *
+ * @param ref_name The name of the ref.
+ * @param remote_url The url of the remote.
+ * @param oid The id of the remote head that were updated during the
+ * last fetch.
+ * @param is_merge Is head for merge.
+ * @return 0
+ */
+static int git2r_repository_fetchhead_foreach_cb(
+    const char *ref_name,
+    const char *remote_url,
+    const git_oid *oid,
+    unsigned int is_merge,
+    void *payload)
+{
+    git2r_fetch_head_cb_data *cb_data = (git2r_fetch_head_cb_data*)payload;
+
+    /* Check if we have a list to populate */
+    if (R_NilValue != cb_data->list) {
+        char sha[GIT_OID_HEXSZ + 1];
+        SEXP fetch_head;
+
+        PROTECT(fetch_head = NEW_OBJECT(MAKE_CLASS("git_fetch_head")));
+
+        SET_SLOT(fetch_head,
+             Rf_install("ref_name"),
+             ScalarString(mkChar(ref_name)));
+
+        SET_SLOT(fetch_head,
+             Rf_install("remote_url"),
+             ScalarString(mkChar(remote_url)));
+
+        git_oid_tostr(sha, sizeof(sha), oid);
+        SET_SLOT(fetch_head,
+             Rf_install("sha"),
+             ScalarString(mkChar(sha)));
+
+        SET_SLOT(fetch_head,
+                 Rf_install("is_merge"),
+                 ScalarLogical(is_merge));
+
+        SET_SLOT(fetch_head,
+                 Rf_install("repo"),
+                 duplicate(cb_data->repo));
+
+        SET_VECTOR_ELT(cb_data->list, cb_data->n, fetch_head);
+        UNPROTECT(1);
+    }
+
+    cb_data->n += 1;
+
+    return 0;
+}
+
+/**
+ * Get entries in FETCH_HEAD file
+ *
+ * @param repo S4 class git_repository
+ * @return list with the S4 class git_fetch_head entries. R_NilValue
+ * if there is no FETCH_HEAD file.
+ */
+SEXP git2r_repository_fetch_heads(SEXP repo)
+{
+    int err;
+    SEXP result = R_NilValue;
+    git2r_fetch_head_cb_data cb_data = {0, R_NilValue, R_NilValue};
+    git_repository *repository = NULL;
+
+    repository= git2r_repository_open(repo);
+    if (!repository)
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+
+    /* Count number of fetch heads before creating the list */
+    err = git_repository_fetchhead_foreach(
+        repository,
+        git2r_repository_fetchhead_foreach_cb,
+        &cb_data);
+
+    if (GIT_OK != err) {
+        if (GIT_ENOTFOUND == err)
+            err = GIT_OK;
+        goto cleanup;
+    }
+
+    PROTECT(result = allocVector(VECSXP, cb_data.n));
+    cb_data.n = 0;
+    cb_data.list = result;
+    cb_data.repo = repo;
+    err = git_repository_fetchhead_foreach(
+        repository,
+        git2r_repository_fetchhead_foreach_cb,
+        &cb_data);
+
+cleanup:
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
+    if (GIT_OK != err)
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+
+    return result;
+}
+
+/**
  * Get head of repository
  *
  * @param repo S4 class git_repository
