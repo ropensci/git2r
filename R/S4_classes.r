@@ -757,3 +757,37 @@ setClass("git_transfer_progress",
                  total_deltas     = "integer",
                  indexed_deltas   = "integer",
                  received_bytes   = "integer"))
+
+##' Class \code{"git_fetch_head"}
+##'
+##' @title S4 class to handle a fetch head
+##' @section Slots:
+##' \describe{
+##'   \item{ref_name}{
+##'     The name of the ref.
+##'   }
+##'   \item{remote_url}{
+##'     The url of the remote.
+##'   }
+##'   \item{sha}{
+##'     The SHA of the remote head that were updated during the last fetch.
+##'   }
+##'   \item{is_merge}{
+##'     Is head for merge.
+##'   }
+##'   \item{repo}{
+##'     The S4 class git_repository that contains the fetch head.
+##'   }
+##' }
+##' @rdname git_fetch_head
+##' @docType class
+##' @keywords classes
+##' @keywords methods
+##' @export
+setClass("git_fetch_head",
+         slots=c(ref_name   = "character",
+                 remote_url = "character",
+                 sha        = "character",
+                 is_merge   = "logical",
+                 repo       = "git_repository")
+)
