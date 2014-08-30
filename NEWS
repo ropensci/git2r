@@ -17,6 +17,8 @@ NEW FEATURES
 
   - Diff: diff and diff_print.
 
+  - Fetch: fetch and fetch_heads.
+
   - Libgit2: libgit2_features and libgit2_version.
 
   - Note: note_create, note_default_ref, note_list and note_remove.
@@ -33,6 +35,8 @@ NEW FEATURES
 NEW S4 CLASSES
 
 * The following new S4 classes to handle the libgit2 data structures:
+  - cred_ssh_key
+  - cred_user_pass
   - git_blame
   - git_blame_hunk
   - git_blob
@@ -40,9 +44,11 @@ NEW S4 CLASSES
   - git_diff_file
   - git_diff_hunk
   - git_diff_line
+  - git_fetch_head
   - git_note
   - git_reflog_entry
   - git_stash
+  - git_transfer_progress
   - git_tree
 
 CHANGES
