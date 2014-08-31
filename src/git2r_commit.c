@@ -27,58 +27,19 @@
 #include "git2r_tree.h"
 
 /**
- * Commit
+ * Check for any changes in index
  *
- * @param repo S4 class git_repository
- * @param message The message for the commit
- * @param author S4 class git_signature
- * @param committer S4 class git_signature
- * @param parent_list Character vector with hex (sha1) values of parents
- * @return S4 class git_commit
+ * @param repository The repository
+ * @return 0 if ok, else error code.
  */
-SEXP git2r_commit_create(
-    SEXP repo,
-    SEXP message,
-    SEXP author,
-    SEXP committer,
-    SEXP parent_list)
+static int git2r_any_changes_in_index(git_repository *repository)
 {
-    SEXP sexp_commit = R_NilValue;
     int err;
     int changes_in_index = 0;
-    git_signature *sig_author = NULL;
-    git_signature *sig_committer = NULL;
-    git_index *index = NULL;
-    git_oid commit_id, tree_oid;
-    git_repository *repository = NULL;
-    git_tree *tree = NULL;
     size_t i, count;
-    git_commit **parents = NULL;
-    git_commit *new_commit = NULL;
     git_status_list *status = NULL;
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
     opts.show  = GIT_STATUS_SHOW_INDEX_ONLY;
-
-    if (GIT_OK != git2r_arg_check_string(message))
-        git2r_error(git2r_err_string_arg, __func__, "message");
-    if (GIT_OK != git2r_arg_check_signature(author))
-        git2r_error(git2r_err_signature_arg, __func__, "author");
-    if (GIT_OK != git2r_arg_check_signature(committer))
-        git2r_error(git2r_err_signature_arg, __func__, "committer");
-    if (GIT_OK != git2r_arg_check_string_vec(parent_list))
-        git2r_error(git2r_err_string_vec_arg, __func__, "parent_list");
-
-    repository = git2r_repository_open(repo);
-    if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
-
-    err = git2r_signature_from_arg(&sig_author, author);
-    if (GIT_OK != err)
-        goto cleanup;
-
-    err = git2r_signature_from_arg(&sig_committer, committer);
-    if (GIT_OK != err)
-        goto cleanup;
 
     err = git_status_list_new(&status, repository, &opts);
     if (GIT_OK != err)
@@ -109,8 +70,130 @@ SEXP git2r_commit_create(
     if (!changes_in_index) {
         giterr_set_str(GITERR_NONE, git2r_err_nothing_added_to_commit);
         err = GIT_ERROR;
-        goto cleanup;
     }
+
+cleanup:
+    if (status)
+        git_status_list_free(status);
+
+    return err;
+}
+
+/**
+ * Create and populate vector of commits.
+ *
+ * @param out The vector of parents to create and populate.
+ * @param repository
+ * @param parents The parents as character vector of sha's.
+ * @param count The length of parents.
+ * @return 0 if ok, else error code.
+ */
+static int git2r_parents_lookup(
+    git_commit ***out,
+    git_repository *repository,
+    SEXP parents,
+    size_t count)
+{
+    if (count) {
+        size_t i = 0;
+
+        *out = calloc(count, sizeof(git_commit*));
+        if (NULL == out) {
+            giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
+            return GIT_ERROR;
+        }
+
+        for (; i < count; i++) {
+            int err;
+            git_oid oid;
+
+            err = git_oid_fromstr(&oid, CHAR(STRING_ELT(parents, 0)));
+            if (GIT_OK != err)
+                return err;
+
+            err = git_commit_lookup((&(*out))[i], repository, &oid);
+            if (GIT_OK != err)
+                return err;
+        }
+    }
+
+    return GIT_OK;
+}
+
+/**
+ * Close the commits in parents and free memory of parents.
+ *
+ * @param parents The parent vector of commits.
+ * @param count The number of parents.
+ * @return void
+ */
+static void git2r_parents_free(git_commit **parents, size_t count)
+{
+    if (parents) {
+        size_t i;
+
+        for (i = 0; i < count; i++) {
+            if (parents[i])
+                git_commit_free(parents[i]);
+        }
+
+        free(parents);
+    }
+}
+
+/**
+ * Commit
+ *
+ * @param repo S4 class git_repository
+ * @param message The message for the commit
+ * @param author S4 class git_signature
+ * @param committer S4 class git_signature
+ * @param parent_list Character vector with hex (sha1) values of parents
+ * @return S4 class git_commit
+ */
+SEXP git2r_commit_create(
+    SEXP repo,
+    SEXP message,
+    SEXP author,
+    SEXP committer,
+    SEXP parent_list)
+{
+    int err;
+    SEXP result = R_NilValue;
+    git_signature *c_author = NULL;
+    git_signature *c_committer = NULL;
+    git_index *index = NULL;
+    git_oid commit_id, tree_oid;
+    git_repository *repository = NULL;
+    git_tree *tree = NULL;
+    size_t count;
+    git_commit **parents = NULL;
+    git_commit *commit = NULL;
+
+    if (GIT_OK != git2r_arg_check_string(message))
+        git2r_error(git2r_err_string_arg, __func__, "message");
+    if (GIT_OK != git2r_arg_check_signature(author))
+        git2r_error(git2r_err_signature_arg, __func__, "author");
+    if (GIT_OK != git2r_arg_check_signature(committer))
+        git2r_error(git2r_err_signature_arg, __func__, "committer");
+    if (GIT_OK != git2r_arg_check_string_vec(parent_list))
+        git2r_error(git2r_err_string_vec_arg, __func__, "parent_list");
+
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+
+    err = git2r_signature_from_arg(&c_author, author);
+    if (GIT_OK != err)
+        goto cleanup;
+
+    err = git2r_signature_from_arg(&c_committer, committer);
+    if (GIT_OK != err)
+        goto cleanup;
+
+    err = git2r_any_changes_in_index(repository);
+    if (GIT_OK != err)
+        goto cleanup;
 
     err = git_repository_index(&index, repository);
     if (GIT_OK != err)
@@ -131,59 +214,40 @@ SEXP git2r_commit_create(
         goto cleanup;
 
     count = LENGTH(parent_list);
-    if (count) {
-        parents = calloc(count, sizeof(git_commit*));
-        if (NULL == parents) {
-            giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
-            err = GIT_ERROR;
-            goto cleanup;
-        }
-
-        for (i = 0; i < count; i++) {
-            git_oid oid;
-
-            err = git_oid_fromstr(&oid, CHAR(STRING_ELT(parent_list, 0)));
-            if (GIT_OK != err)
-                goto cleanup;
-
-            err = git_commit_lookup(&parents[i], repository, &oid);
-            if (GIT_OK != err)
-                goto cleanup;
-        }
-    }
-
-    err = git_commit_create(&commit_id,
-                            repository,
-                            "HEAD",
-                            sig_author,
-                            sig_committer,
-                            NULL,
-                            CHAR(STRING_ELT(message, 0)),
-                            tree,
-                            count,
-                            (const git_commit**)parents);
+    err = git2r_parents_lookup(&parents, repository, parent_list, count);
     if (GIT_OK != err)
         goto cleanup;
 
-    err = git_commit_lookup(&new_commit, repository, &commit_id);
+    err = git_commit_create(
+        &commit_id,
+        repository,
+        "HEAD",
+        c_author,
+        c_committer,
+        NULL,
+        CHAR(STRING_ELT(message, 0)),
+        tree,
+        count,
+        (const git_commit**)parents);
     if (GIT_OK != err)
         goto cleanup;
 
-    PROTECT(sexp_commit = NEW_OBJECT(MAKE_CLASS("git_commit")));
-    git2r_commit_init(new_commit, repo, sexp_commit);
+    err = git_commit_lookup(&commit, repository, &commit_id);
+    if (GIT_OK != err)
+        goto cleanup;
+
+    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_commit")));
+    git2r_commit_init(commit, repo, result);
 
 cleanup:
-    if (sig_author)
-        git_signature_free(sig_author);
+    if (c_author)
+        git_signature_free(c_author);
 
-    if (sig_committer)
-        git_signature_free(sig_committer);
+    if (c_committer)
+        git_signature_free(c_committer);
 
     if (index)
         git_index_free(index);
-
-    if (status)
-        git_status_list_free(status);
 
     if (tree)
         git_tree_free(tree);
@@ -191,23 +255,19 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (parents) {
-        for (i = 0; i < count; i++) {
-            if (parents[i])
-                git_commit_free(parents[i]);
-        }
-        free(parents);
-    }
+    if (parents)
+        git2r_parents_free(parents, count);
 
-    if (new_commit)
-        git_commit_free(new_commit);
+    if (commit)
+        git_commit_free(commit);
 
-    UNPROTECT(1);
+    if (R_NilValue != result)
+        UNPROTECT(1);
 
     if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
-    return sexp_commit;
+    return result;
 }
 
 /**
