@@ -32,6 +32,25 @@ setMethod("pull",
           signature(repo = "git_repository"),
           function (repo)
           {
+              current_branch <- head(repo)
+
+              if (is.null(current_branch))
+                  stop("'branch' is NULL")
+              if (!is_local(current_branch))
+                  stop("'branch' is not local")
+              upstream_branch <- branch_get_upstream(current_branch)
+              if (is.null(upstream_branch))
+                  stop("'branch' is not tracking a remote branch")
+
+              fetch(repo, branch_remote_name(upstream_branch))
+
+              ## fetch heads marked for merge
+              fh <- fetch_heads(repo)
+              fh <- fh[sapply(fh, slot, "is_merge")]
+
+              if (identical(length(fh), 0L))
+                  stop("Remote ref was not feteched")
+
               stop("'pull' isn't implemented. Sorry")
           }
 )
