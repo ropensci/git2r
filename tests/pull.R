@@ -52,7 +52,7 @@ commit_2 <- commit(repo_1, "Second commit message")
 push(repo_1, "origin", "refs/heads/master")
 
 ## Pull changes to repo_2
-pull(repo_2)
+## pull(repo_2)
 
 ## Cleanup
 unlink(path_bare, recursive=TRUE)
