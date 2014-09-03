@@ -19,8 +19,9 @@
 ##' @rdname reflog-methods
 ##' @docType methods
 ##' @param repo S4 class git_repository \code{object}.
-##' @param refname The name of the reference to list. HEAD by
+##' @param refname The name of the reference to list. 'HEAD' by
 ##' default.
+##' @param verbose Display reflog. Default TRUE.
 ##' @return invisible list of S4 git_reflog_entry objects
 ##' @keywords methods
 ##' @examples
@@ -32,28 +33,21 @@
 ##' }
 ##'
 setGeneric("reflog",
-           signature = c("repo", "refname"),
-           function(repo, refname)
+           signature = c("repo"),
+           function(repo,
+                    refname = "HEAD",
+                    verbose = TRUE)
            standardGeneric("reflog"))
 
 ##' @rdname reflog-methods
 ##' @export
 setMethod("reflog",
-          signature(repo = "git_repository", refname="missing"),
-          function(repo)
-          {
-              reflog(repo, "HEAD")
-          }
-)
-
-##' @rdname reflog-methods
-##' @export
-setMethod("reflog",
-          signature(repo = "git_repository", refname="character"),
-          function(repo, refname)
+          signature(repo = "git_repository"),
+          function(repo, refname, verbose)
           {
               result <- .Call(git2r_reflog_list, repo, refname)
-              lapply(result, show)
+              if (verbose)
+                  lapply(result, show)
               invisible(result)
           }
 )
