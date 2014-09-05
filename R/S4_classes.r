@@ -804,7 +804,7 @@ setClass("git_fetch_head",
 ##'     Does the index contain entries representing file conflicts.
 ##'   }
 ##' }
-##' @rdname git_merge_result_head
+##' @rdname git_merge_result
 ##' @docType class
 ##' @keywords classes
 ##' @keywords methods
