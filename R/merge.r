@@ -73,3 +73,28 @@ setMethod("merge_base",
               .Call(git2r_merge_base, one, two)
           }
 )
+
+##' Merge a branch into HEAD
+##'
+##' @rdname merge-methods
+##' @docType methods
+##' @param object A \code{\linkS4class{git_branch}} object to merge
+##' into HEAD.
+##' @param ... Additional arguments affecting the merge
+##' @return A \code{\linkS4class{git_merge_result}} object.
+##' @keywords methods
+##' @include S4_classes.r
+setGeneric("merge",
+           signature = c("object"),
+           function(object, ...)
+           standardGeneric("merge"))
+
+##' @rdname merge-methods
+##' @export
+setMethod("merge",
+          signature(object = "git_branch"),
+          function(object)
+          {
+              .Call(git2r_merge_branch, object)
+          }
+)
