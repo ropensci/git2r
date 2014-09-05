@@ -191,6 +191,7 @@ cleanup:
  * @param name The name of the merge in the reflog
  * @param merger Who is performing the merge
  * @param commit_on_success Commit merge commit, if one was created
+ * @param merge_opts Merge options
  * @return 0 on success, or error code
  */
 static int git2r_normal_merge(
@@ -230,4 +231,119 @@ cleanup:
         git_index_free(index);
 
     return err;
+}
+
+/**
+ * @param merge_result S4 class git_merge_result
+ * @repository The repository
+ * @param merge_head The merge head to merge
+ * @param n The number of merge heads
+ * @param preference The merge preference option (None [0], No
+ * Fast-Forward [1] or Only Fast-Forward [2])
+ * @param name The name of the merge in the reflog
+ * @param merger Who is performing the merge
+ * @param commit_on_success Commit merge commit, if one was created
+ * during a normal merge
+ * @return 0 on success, or error code
+ */
+static int git2r_merge(
+    SEXP merge_result,
+    git_repository *repository,
+    const git_merge_head **merge_heads,
+    size_t n,
+    git_merge_preference_t preference,
+    const char *name,
+    git_signature *merger,
+    int commit_on_success)
+{
+    int err;
+    git_merge_analysis_t merge_analysis;
+    git_merge_preference_t merge_preference;
+    git_merge_options merge_opts = GIT_MERGE_OPTIONS_INIT;
+
+    merge_opts.rename_threshold = 50;
+    merge_opts.target_limit = 200;
+
+    err = git_merge_analysis(
+        &merge_analysis,
+        &merge_preference,
+        repository,
+        merge_heads,
+        n);
+    if (GIT_OK != err)
+        return err;
+
+    if (merge_analysis & GIT_MERGE_ANALYSIS_UP_TO_DATE) {
+        SET_SLOT(merge_result,
+                 Rf_install("status"),
+                 ScalarString(mkChar("Already up-to-date.")));
+        return GIT_OK;
+    }
+
+    if (GIT_MERGE_PREFERENCE_NONE == preference)
+        preference = merge_preference;
+
+    switch (preference) {
+    case GIT_MERGE_PREFERENCE_NONE:
+        if (merge_analysis & GIT_MERGE_ANALYSIS_FASTFORWARD) {
+            if (1 != n) {
+                giterr_set_str(
+                    GITERR_NONE,
+                    "Unable to perform Fast-Forward merge with mith multiple merge heads.");
+                return GIT_ERROR;
+            }
+
+            err = git2r_fast_forward_merge(
+                merge_heads[0],
+                repository,
+                name,
+                merger);
+        } else if (merge_analysis & GIT_MERGE_ANALYSIS_NORMAL) {
+            err = git2r_normal_merge(
+                merge_result,
+                merge_heads,
+                n,
+                repository,
+                merger,
+                commit_on_success,
+                &merge_opts);
+        }
+        break;
+    case GIT_MERGE_PREFERENCE_NO_FASTFORWARD:
+        if (merge_analysis & GIT_MERGE_ANALYSIS_NORMAL) {
+            err = git2r_normal_merge(
+                merge_result,
+                merge_heads,
+                n,
+                repository,
+                merger,
+                commit_on_success,
+                &merge_opts);
+        }
+        break;
+    case GIT_MERGE_PREFERENCE_FASTFORWARD_ONLY:
+        if (merge_analysis & GIT_MERGE_ANALYSIS_FASTFORWARD) {
+            if (1 != n) {
+                giterr_set_str(
+                    GITERR_NONE,
+                    "Unable to perform Fast-Forward merge with mith multiple merge heads.");
+                return GIT_ERROR;
+            }
+
+            err = git2r_fast_forward_merge(
+                merge_heads[0],
+                repository,
+                name,
+                merger);
+        } else {
+            giterr_set_str(GITERR_NONE, "Unable to perform Fast-Forward merge.");
+            return GIT_ERROR;
+        }
+        break;
+    default:
+        giterr_set_str(GITERR_NONE, "Unknown merge option");
+        return GIT_ERROR;
+    }
+
+    return GIT_OK;
 }
