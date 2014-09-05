@@ -180,3 +180,53 @@ cleanup:
 
     return err;
 }
+
+/**
+ * Perform a normal merge
+ *
+ * @param merge_result S4 class git_merge_result
+ * @param merge_heads The merge heads to merge
+ * @param n The number of merge heads
+ * @param repository The repository
+ * @param name The name of the merge in the reflog
+ * @param merger Who is performing the merge
+ * @param commit_on_success Commit merge commit, if one was created
+ * @return 0 on success, or error code
+ */
+static int git2r_normal_merge(
+    SEXP merge_result,
+    const git_merge_head **merge_heads,
+    size_t n,
+    git_repository *repository,
+    git_signature *merger,
+    int commit_on_success)
+{
+    int err;
+    git_index *index = NULL;
+    git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
+
+    err = git_merge(
+        repository,
+        merge_heads,
+        n,
+        &merge_opts,
+        &checkout_opts);
+    if (GIT_OK != err)
+        goto cleanup;
+
+    err = git_repository_index(&index, repository);
+    if (GIT_OK != err)
+        goto cleanup;
+
+    if (git_index_has_conflicts(index)) {
+        SET_SLOT(merge_result, Rf_install("conflicts"), ScalarLogical(1));
+    } else {
+        SET_SLOT(merge_result, Rf_install("conflicts"), ScalarLogical(0));
+    }
+
+cleanup:
+    if (index)
+        git_index_free(index);
+
+    return err;
+}
