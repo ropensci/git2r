@@ -199,7 +199,8 @@ static int git2r_normal_merge(
     size_t n,
     git_repository *repository,
     git_signature *merger,
-    int commit_on_success)
+    int commit_on_success,
+    const git_merge_options *merge_opts)
 {
     int err;
     git_index *index = NULL;
@@ -209,7 +210,7 @@ static int git2r_normal_merge(
         repository,
         merge_heads,
         n,
-        &merge_opts,
+        merge_opts,
         &checkout_opts);
     if (GIT_OK != err)
         goto cleanup;
