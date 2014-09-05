@@ -34,8 +34,8 @@
 ##' @keywords methods
 ##' @export
 setClass("git_repository",
-         slots=c(path = "character"),
-         validity=function(object) {
+         slots = c(path = "character"),
+         validity = function(object) {
              errors <- character()
 
              can_open <- .Call(git2r_repository_can_open, object@path)
@@ -71,9 +71,9 @@ setClass("git_repository",
 ##' @keywords methods
 ##' @export
 setClass("git_time",
-         slots=c(time="numeric",
-                 offset="numeric"),
-         validity=function(object)
+         slots = c(time   = "numeric",
+                   offset = "numeric"),
+         validity = function(object)
          {
              errors <- character()
 
@@ -107,10 +107,10 @@ setClass("git_time",
 ##' @keywords methods
 ##' @export
 setClass("git_signature",
-         slots=c(name="character",
-                 email="character",
-                 when="git_time"),
-         validity=function(object)
+         slots = c(name  = "character",
+                   email = "character",
+                   when  = "git_time"),
+         validity = function(object)
          {
              errors <- validObject(object@when)
 
@@ -145,8 +145,8 @@ setClass("git_signature",
 ##' @keywords methods
 ##' @export
 setClass("cred_user_pass",
-         slots=c(username = "character",
-                 password = "character")
+         slots = c(username = "character",
+                   password = "character")
 )
 
 ##' Class \code{"cred_ssh_key"}
@@ -171,9 +171,9 @@ setClass("cred_user_pass",
 ##' @keywords methods
 ##' @export
 setClass("cred_ssh_key",
-         slots=c(publickey  = "character",
-                 privatekey = "character",
-                 passphrase = "character")
+         slots = c(publickey  = "character",
+                   privatekey = "character",
+                   passphrase = "character")
 )
 
 ##' Class \code{"git_blame"}
@@ -204,10 +204,10 @@ setClass("cred_ssh_key",
 ##' blame(repo, ".gitignore")
 ##' }
 setClass("git_blame",
-         slots=c(path  = "character",
-                 hunks = "list",
-                 repo  = "git_repository"),
-         validity=function(object) {
+         slots = c(path  = "character",
+                   hunks = "list",
+                   repo  = "git_repository"),
+         validity = function(object) {
              errors <- character()
 
              if (length(errors) == 0) TRUE else errors
@@ -260,17 +260,17 @@ setClass("git_blame",
 ##' @keywords methods
 ##' @export
 setClass("git_blame_hunk",
-         slots=c(lines_in_hunk           = "integer",
-                 final_commit_id         = "character",
-                 final_start_line_number = "integer",
-                 final_signature         = "git_signature",
-                 orig_commit_id          = "character",
-                 orig_start_line_number  = "integer",
-                 orig_signature          = "git_signature",
-                 orig_path               = "character",
-                 boundary                = "logical",
-                 repo                    = "git_repository"),
-         validity=function(object) {
+         slots = c(lines_in_hunk           = "integer",
+                   final_commit_id         = "character",
+                   final_start_line_number = "integer",
+                   final_signature         = "git_signature",
+                   orig_commit_id          = "character",
+                   orig_start_line_number  = "integer",
+                   orig_signature          = "git_signature",
+                   orig_path               = "character",
+                   boundary                = "logical",
+                   repo                    = "git_repository"),
+         validity = function(object) {
              errors <- character()
 
              if (length(errors) == 0) TRUE else errors
@@ -295,9 +295,9 @@ setClass("git_blame_hunk",
 ##' @keywords methods
 ##' @export
 setClass("git_blob",
-         slots=c(hex  = "character",
-                 repo = "git_repository"),
-         validity=function(object) {
+         slots = c(hex  = "character",
+                   repo = "git_repository"),
+         validity = function(object) {
              errors <- character()
 
              if (length(errors) == 0) TRUE else errors
@@ -370,14 +370,14 @@ setClass("git_branch",
 ##' @keywords methods
 ##' @export
 setClass("git_commit",
-         slots=c(hex       = "character",
-                 author    = "git_signature",
-                 committer = "git_signature",
-                 summary   = "character",
-                 message   = "character",
-                 repo      = "git_repository"),
-         prototype=list(summary=NA_character_,
-                        message=NA_character_))
+         slots = c(hex       = "character",
+                   author    = "git_signature",
+                   committer = "git_signature",
+                   summary   = "character",
+                   message   = "character",
+                   repo      = "git_repository"),
+         prototype = list(summary=NA_character_,
+                          message=NA_character_))
 
 ##' Git diff
 ##'
@@ -398,11 +398,11 @@ setClass("git_commit",
 ##' @keywords classes
 ##' @export
 setClass("git_diff",
-         slots=c(old   = "ANY",
-                 new   = "ANY",
-                 files = "list"),
-         prototype=list(old=NA_character_,
-                        new=NA_character_))
+         slots = c(old   = "ANY",
+                   new   = "ANY",
+                   files = "list"),
+         prototype = list(old=NA_character_,
+                          new=NA_character_))
 
 ##' Git diff file
 ##'
@@ -423,9 +423,9 @@ setClass("git_diff",
 ##' @keywords classes
 ##' @export
 setClass("git_diff_file",
-         slots=c(old_file = "character",
-                 new_file = "character",
-                 hunks    = "list"))
+         slots = c(old_file = "character",
+                   new_file = "character",
+                   hunks    = "list"))
 
 ##' Git diff hunk
 ##'
@@ -455,12 +455,12 @@ setClass("git_diff_file",
 ##' @keywords classes
 ##' @export
 setClass("git_diff_hunk",
-         slots=c(old_start = "integer",
-                 old_lines = "integer",
-                 new_start = "integer",
-                 new_lines = "integer",
-                 header    = "character",
-                 lines     = "list"))
+         slots = c(old_start = "integer",
+                   old_lines = "integer",
+                   new_start = "integer",
+                   new_lines = "integer",
+                   header    = "character",
+                   lines     = "list"))
 
 ##' Git diff line
 ##'
@@ -487,11 +487,11 @@ setClass("git_diff_hunk",
 ##' @keywords classes
 ##' @export
 setClass("git_diff_line",
-         slots=c(origin      = "integer",
-                 old_lineno  = "integer",
-                 new_lineno  = "integer",
-                 num_lines   = "integer",
-                 content     = "character"))
+         slots = c(origin     = "integer",
+                   old_lineno = "integer",
+                   new_lineno = "integer",
+                   num_lines  = "integer",
+                   content    = "character"))
 
 ##' Class \code{git_note}
 ##'
@@ -558,13 +558,13 @@ setClass("git_note",
 ##' @keywords methods
 ##' @export
 setClass("git_reference",
-         slots=c(name="character",
-                 type="integer",
-                 hex="character",
-                 target="character",
-                 shorthand="character"),
-         prototype=list(hex=NA_character_,
-                        target=NA_character_))
+         slots = c(name      = "character",
+                   type      = "integer",
+                   hex       = "character",
+                   target    = "character",
+                   shorthand = "character"),
+         prototype = list(hex    = NA_character_,
+                          target = NA_character_))
 
 ##' Class \code{"git_reflog_entry"}
 ##'
@@ -596,12 +596,12 @@ setClass("git_reference",
 ##' @keywords methods
 ##' @export
 setClass("git_reflog_entry",
-         slots=c(hex       = "character",
-                 message   = "character",
-                 index     = "integer",
-                 committer = "git_signature",
-                 refname   = "character",
-                 repo      = "git_repository"))
+         slots = c(hex       = "character",
+                   message   = "character",
+                   index     = "integer",
+                   committer = "git_signature",
+                   refname   = "character",
+                   repo      = "git_repository"))
 
 ##' Class \code{"git_stash"}
 ##'
@@ -643,13 +643,13 @@ setClass("git_stash", contains = "git_commit")
 ##' @keywords methods
 ##' @export
 setClass("git_tag",
-         slots=c(hex     = "character",
-                 message = "character",
-                 name    = "character",
-                 tagger  = "git_signature",
-                 target  = "character",
-                 repo    = "git_repository"),
-         validity=function(object)
+         slots = c(hex     = "character",
+                   message = "character",
+                   name    = "character",
+                   tagger  = "git_signature",
+                   target  = "character",
+                   repo    = "git_repository"),
+         validity = function(object)
          {
              errors <- validObject(object@tagger)
 
@@ -699,13 +699,13 @@ setClass("git_tag",
 ##' @keywords methods
 ##' @export
 setClass("git_tree",
-         slots=c(hex      = "character",
-                 filemode = "integer",
-                 type     = "character",
-                 id       = "character",
-                 name     = "character",
-                 repo     = "git_repository"),
-         validity=function(object)
+         slots = c(hex      = "character",
+                   filemode = "integer",
+                   type     = "character",
+                   id       = "character",
+                   name     = "character",
+                   repo     = "git_repository"),
+         validity = function(object)
          {
              errors <- character(0)
 
@@ -750,13 +750,13 @@ setClass("git_tree",
 ##' @keywords methods
 ##' @export
 setClass("git_transfer_progress",
-         slots=c(total_objects    = "integer",
-                 indexed_objects  = "integer",
-                 received_objects = "integer",
-                 local_objects    = "integer",
-                 total_deltas     = "integer",
-                 indexed_deltas   = "integer",
-                 received_bytes   = "integer"))
+         slots = c(total_objects    = "integer",
+                   indexed_objects  = "integer",
+                   received_objects = "integer",
+                   local_objects    = "integer",
+                   total_deltas     = "integer",
+                   indexed_deltas   = "integer",
+                   received_bytes   = "integer"))
 
 ##' Class \code{"git_fetch_head"}
 ##'
@@ -785,9 +785,31 @@ setClass("git_transfer_progress",
 ##' @keywords methods
 ##' @export
 setClass("git_fetch_head",
-         slots=c(ref_name   = "character",
-                 remote_url = "character",
-                 sha        = "character",
-                 is_merge   = "logical",
-                 repo       = "git_repository")
+         slots = c(ref_name   = "character",
+                   remote_url = "character",
+                   sha        = "character",
+                   is_merge   = "logical",
+                   repo       = "git_repository")
+)
+
+##' Class \code{"git_merge_result"}
+##'
+##' @title S4 class to handle the merge result
+##' @section Slots:
+##' \describe{
+##'   \item{status}{
+##'     The status of the merge.
+##'   }
+##'   \item{conflicts}{
+##'     Does the index contain entries representing file conflicts.
+##'   }
+##' }
+##' @rdname git_merge_result_head
+##' @docType class
+##' @keywords classes
+##' @keywords methods
+##' @export
+setClass("git_merge_result",
+         slots = c(status    = "character",
+                   conflicts = "logical")
 )
