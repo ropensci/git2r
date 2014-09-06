@@ -99,6 +99,7 @@ cleanup:
 /**
  * Perform a fast-forward merge
  *
+ * @param merge_result S4 class git_merge_result
  * @param merge_head The merge head to fast-forward merge
  * @param repository The repository
  * @param name The name of the merge in the reflog
@@ -106,6 +107,7 @@ cleanup:
  * @return 0 on success, or error code
  */
 static int git2r_fast_forward_merge(
+    SEXP merge_result,
     const git_merge_head *merge_head,
     git_repository *repository,
     const char *name,
@@ -167,6 +169,16 @@ static int git2r_fast_forward_merge(
     }
 
     git_buf_free(&buf);
+
+    SET_SLOT(
+        merge_result,
+        Rf_install("status"),
+        ScalarString(mkChar("Fast-forward")));
+
+    SET_SLOT(
+        merge_result,
+        Rf_install("conflicts"),
+        ScalarLogical(0));
 
 cleanup:
     if (commit)
