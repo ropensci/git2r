@@ -525,3 +525,64 @@ cleanup:
 
     return err;
 }
+
+/**
+ * Merge the given fetch head data into HEAD
+ *
+ * @param fetch_heads List of S4 class git_fetch_head objects.
+ * @return List of git_merge_head objects.
+ */
+SEXP git2r_merge_fetch_heads(SEXP fetch_heads)
+{
+    int err;
+    size_t n;
+    SEXP result = R_NilValue;
+    git_buf buf = GIT_BUF_INIT;
+    git_merge_head **merge_heads = NULL;
+    git_repository *repository = NULL;
+    git_signature *merger = NULL;
+
+    n = LENGTH(fetch_heads);
+    if (n) {
+        SEXP repo = GET_SLOT(VECTOR_ELT(fetch_heads, 0), Rf_install("repo"));
+        repository = git2r_repository_open(repo);
+        if (!repository)
+            git2r_error(git2r_err_invalid_repository, __func__, NULL);
+    }
+
+    err = git2r_merge_heads_from_fetch_heads(
+        &merge_heads,
+        repository,
+        fetch_heads,
+        n);
+    if (GIT_OK != err)
+        goto cleanup;
+
+    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_merge_result")));
+    err = git2r_merge(
+        result,
+        repository,
+        (const git_merge_head **)merge_heads,
+        n,
+        GIT_MERGE_PREFERENCE_NONE,
+        "pull",
+        merger,
+        1); /* Commit on success */
+    if (GIT_OK != err)
+        goto cleanup;
+
+cleanup:
+    if (merge_heads)
+        git2r_merge_heads_free(merge_heads, n);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
+    if (GIT_OK != err)
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+
+    return result;
+}
