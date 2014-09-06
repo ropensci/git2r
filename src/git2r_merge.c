@@ -366,3 +366,25 @@ static int git2r_merge(
 
     return GIT_OK;
 }
+
+/**
+ * Free each git_merge_head in merge_heads and free memory of
+ * merge_heads.
+ *
+ * @param merge_heads The vector of git_merge_head.
+ * @param count The number of merge heads.
+ * @return void
+ */
+static void git2r_merge_heads_free(git_merge_head **merge_heads, size_t n)
+{
+    if (merge_heads) {
+        size_t i = 0;
+
+        for (; i < n; i++) {
+            if (merge_heads[i])
+                git_merge_head_free(merge_heads[i]);
+        }
+
+        free(merge_heads);
+    }
+}
