@@ -213,18 +213,18 @@ static int git2r_normal_merge(
     git_repository *repository,
     git_signature *merger,
     int commit_on_success,
+    const git_checkout_options *checkout_opts,
     const git_merge_options *merge_opts)
 {
     int err;
     git_index *index = NULL;
-    git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
 
     err = git_merge(
         repository,
         merge_heads,
         n,
         merge_opts,
-        &checkout_opts);
+        checkout_opts);
     if (GIT_OK != err)
         goto cleanup;
 
