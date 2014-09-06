@@ -271,10 +271,13 @@ static int git2r_merge(
     int err;
     git_merge_analysis_t merge_analysis;
     git_merge_preference_t merge_preference;
+    git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
     git_merge_options merge_opts = GIT_MERGE_OPTIONS_INIT;
 
     merge_opts.rename_threshold = 50;
     merge_opts.target_limit = 200;
+
+    checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE_CREATE;
 
     err = git_merge_analysis(
         &merge_analysis,
@@ -306,6 +309,7 @@ static int git2r_merge(
             }
 
             err = git2r_fast_forward_merge(
+                merge_result,
                 merge_heads[0],
                 repository,
                 name,
@@ -318,6 +322,7 @@ static int git2r_merge(
                 repository,
                 merger,
                 commit_on_success,
+                &checkout_opts,
                 &merge_opts);
         }
         break;
@@ -330,6 +335,7 @@ static int git2r_merge(
                 repository,
                 merger,
                 commit_on_success,
+                &checkout_opts,
                 &merge_opts);
         }
         break;
@@ -343,6 +349,7 @@ static int git2r_merge(
             }
 
             err = git2r_fast_forward_merge(
+                merge_result,
                 merge_heads[0],
                 repository,
                 name,
