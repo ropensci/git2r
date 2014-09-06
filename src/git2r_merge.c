@@ -464,3 +464,59 @@ cleanup:
 
     return result;
 }
+
+/**
+ * Create and populate a vector of git_merge_head objects from the
+ * given fetch head data.
+ *
+ * @param out Pointer the vector of git_merge_head objects.
+ * @param repository The repository.
+ * @param fetch_heads List of S4 class git_fetch_head objects.
+ * @param n Length of fetch_heads list.
+ * @return 0 on success, or error code
+ */
+static int git2r_merge_heads_from_fetch_heads(
+    git_merge_head ***merge_heads,
+    git_repository *repository,
+    SEXP fetch_heads,
+    size_t n)
+{
+    int err = GIT_OK;
+    size_t i;
+
+    *merge_heads = calloc(n, sizeof(git_merge_head*));
+    if (!(*merge_heads)) {
+        giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
+        return GIT_ERROR;
+    }
+
+    for (i = 0; i < n; i++) {
+        int err;
+        git_oid oid;
+        SEXP fh = VECTOR_ELT(fetch_heads, i);
+
+        err = git_oid_fromstr(
+            &oid,
+            CHAR(STRING_ELT(GET_SLOT(fh, Rf_install("sha")), 0)));
+        if (GIT_OK != err)
+            goto cleanup;
+
+        err = git_merge_head_from_fetchhead(
+            &((*merge_heads)[i]),
+            repository,
+            CHAR(STRING_ELT(GET_SLOT(fh, Rf_install("ref_name")), 0)),
+            CHAR(STRING_ELT(GET_SLOT(fh, Rf_install("remote_url")), 0)),
+            &oid);
+        if (GIT_OK != err)
+            goto cleanup;
+    }
+
+cleanup:
+    if (GIT_OK != err) {
+        if (*merge_heads)
+            git2r_merge_heads_free(*merge_heads, n);
+        *merge_heads = NULL;
+    }
+
+    return err;
+}
