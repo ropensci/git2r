@@ -97,6 +97,7 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_libgit2_features", (DL_FUNC)&git2r_libgit2_features, 0},
     {"git2r_libgit2_version", (DL_FUNC)&git2r_libgit2_version, 0},
     {"git2r_merge_base", (DL_FUNC)&git2r_merge_base, 2},
+    {"git2r_merge_branch", (DL_FUNC)&git2r_merge_branch, 2},
     {"git2r_note_create", (DL_FUNC)&git2r_note_create, 7},
     {"git2r_note_default_ref", (DL_FUNC)&git2r_note_default_ref, 1},
     {"git2r_note_list", (DL_FUNC)&git2r_note_list, 2},
