@@ -388,3 +388,77 @@ static void git2r_merge_heads_free(git_merge_head **merge_heads, size_t n)
         free(merge_heads);
     }
 }
+
+/**
+ * Merge branch into HEAD
+ *
+ * @param branch S4 class git_branch to merge into HEAD.
+ * @return S4 class git_merge_result
+ */
+SEXP git2r_merge_branch(SEXP branch, SEXP commit_on_success)
+{
+    int err;
+    SEXP result = R_NilValue;
+    const char *name;
+    git_branch_t type;
+    git_merge_head **merge_heads = NULL;
+    git_reference *reference = NULL;
+    git_repository *repository = NULL;
+    git_signature *merger = NULL;
+
+    if (GIT_OK != git2r_arg_check_branch(branch))
+        git2r_error(git2r_err_branch_arg, __func__, "branch");
+    if (GIT_OK != git2r_arg_check_logical(commit_on_success))
+        git2r_error(git2r_err_logical_arg, __func__, "commit_on_success");
+
+    repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
+    if (!repository)
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+
+    name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
+    type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
+    err = git_branch_lookup(&reference, repository, name, type);
+    if (GIT_OK != err)
+        goto cleanup;
+
+    merge_heads = calloc(1, sizeof(git_merge_head*));
+    if (NULL == merge_heads) {
+        giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
+        goto cleanup;
+    }
+
+    err = git_merge_head_from_ref(&(merge_heads[0]), repository, reference);
+    if (GIT_OK != err)
+        goto cleanup;
+
+    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_merge_result")));
+    err = git2r_merge(
+        result,
+        repository,
+        (const git_merge_head **)merge_heads,
+        1,
+        GIT_MERGE_PREFERENCE_NONE,
+        name,
+        merger,
+        LOGICAL(commit_on_success)[0]);
+    if (GIT_OK != err)
+        goto cleanup;
+
+cleanup:
+    if (merge_heads)
+        git2r_merge_heads_free(merge_heads, 1);
+
+    if (reference)
+        git_reference_free(reference);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
+    if (GIT_OK != err)
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+
+    return result;
+}
