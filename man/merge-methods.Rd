@@ -15,7 +15,7 @@ into HEAD.}
 
 \item{...}{Additional arguments affecting the merge}
 
-\item{commit_on_succes}{If there are no conflicts written to the
+\item{commit_on_success}{If there are no conflicts written to the
 index, the merge commit will be committed. Default is TRUE.}
 }
 \value{

@@ -90,7 +90,7 @@ setGeneric("merge",
            standardGeneric("merge"))
 
 ##' @rdname merge-methods
-##' @param commit_on_succes If there are no conflicts written to the
+##' @param commit_on_success If there are no conflicts written to the
 ##' index, the merge commit will be committed. Default is TRUE.
 ##' @export
 setMethod("merge",
