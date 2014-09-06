@@ -102,7 +102,7 @@ cleanup:
  * @param merge_result S4 class git_merge_result
  * @param merge_head The merge head to fast-forward merge
  * @param repository The repository
- * @param name The name of the merge in the reflog
+ * @param log_message First part of the one line long message in the reflog
  * @param merger Who is performing the merge
  * @return 0 on success, or error code
  */
@@ -110,7 +110,7 @@ static int git2r_fast_forward_merge(
     SEXP merge_result,
     const git_merge_head *merge_head,
     git_repository *repository,
-    const char *name,
+    const char *log_message,
     git_signature *merger)
 {
     int err;
@@ -141,7 +141,7 @@ static int git2r_fast_forward_merge(
             goto cleanup;
     }
 
-    err = git_buf_printf(&buf, "merge %s: Fast-forward", name);
+    err = git_buf_printf(&buf, "%s: Fast-forward", log_message);
     if (GIT_OK != err)
         goto cleanup;
 
@@ -168,8 +168,6 @@ static int git2r_fast_forward_merge(
             git_reference_free(target_ref);
     }
 
-    git_buf_free(&buf);
-
     SET_SLOT(
         merge_result,
         Rf_install("status"),
@@ -181,6 +179,8 @@ static int git2r_fast_forward_merge(
         ScalarLogical(0));
 
 cleanup:
+    git_buf_free(&buf);
+
     if (commit)
         git_commit_free(commit);
 
@@ -402,6 +402,7 @@ SEXP git2r_merge_branch(SEXP branch, SEXP commit_on_success)
     int err;
     SEXP result = R_NilValue;
     const char *name;
+    git_buf buf = GIT_BUF_INIT;
     git_branch_t type;
     git_merge_head **merge_heads = NULL;
     git_reference *reference = NULL;
@@ -433,6 +434,10 @@ SEXP git2r_merge_branch(SEXP branch, SEXP commit_on_success)
     if (GIT_OK != err)
         goto cleanup;
 
+    err = git_buf_printf(&buf, "merge %s", name);
+    if (GIT_OK != err)
+        goto cleanup;
+
     PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_merge_result")));
     err = git2r_merge(
         result,
@@ -440,13 +445,13 @@ SEXP git2r_merge_branch(SEXP branch, SEXP commit_on_success)
         (const git_merge_head **)merge_heads,
         1,
         GIT_MERGE_PREFERENCE_NONE,
-        name,
+        buf.ptr,
         merger,
         LOGICAL(commit_on_success)[0]);
-    if (GIT_OK != err)
-        goto cleanup;
 
 cleanup:
+    git_buf_free(&buf);
+
     if (merge_heads)
         git2r_merge_heads_free(merge_heads, 1);
 
