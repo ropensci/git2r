@@ -304,7 +304,8 @@ static int git2r_merge(
             if (1 != n) {
                 giterr_set_str(
                     GITERR_NONE,
-                    "Unable to perform Fast-Forward merge with mith multiple merge heads.");
+                    "Unable to perform Fast-Forward merge "
+                    "with mith multiple merge heads.");
                 return GIT_ERROR;
             }
 
@@ -344,7 +345,8 @@ static int git2r_merge(
             if (1 != n) {
                 giterr_set_str(
                     GITERR_NONE,
-                    "Unable to perform Fast-Forward merge with mith multiple merge heads.");
+                    "Unable to perform Fast-Forward merge "
+                    "with mith multiple merge heads.");
                 return GIT_ERROR;
             }
 
