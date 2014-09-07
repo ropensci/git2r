@@ -23,18 +23,18 @@
 #include "git2r_odb.h"
 
 /**
- * Determine the sha1 hex of character vectors without writing to the
+ * Determine the sha of character vectors without writing to the
  * object data base.
  *
  * @param data STRSXP with character vectors to hash
- * @return A STRSXP with character vector of sha1 hex values
+ * @return A STRSXP with character vector of sha values
  */
 SEXP git2r_odb_hash(SEXP data)
 {
     SEXP result;
     int err = GIT_OK;
     size_t len, i;
-    char hex[GIT_OID_HEXSZ + 1];
+    char sha[GIT_OID_HEXSZ + 1];
     git_oid oid;
 
     if (GIT_OK != git2r_arg_check_string_vec(data))
@@ -53,9 +53,9 @@ SEXP git2r_odb_hash(SEXP data)
             if (GIT_OK != err)
                 break;
 
-            git_oid_fmt(hex, &oid);
-            hex[GIT_OID_HEXSZ] = '\0';
-            SET_STRING_ELT(result, i, mkChar(hex));
+            git_oid_fmt(sha, &oid);
+            sha[GIT_OID_HEXSZ] = '\0';
+            SET_STRING_ELT(result, i, mkChar(sha));
         }
     }
 
@@ -68,18 +68,18 @@ SEXP git2r_odb_hash(SEXP data)
 }
 
 /**
- * Determine the sha1 hex of files without writing to the object data
+ * Determine the sha of files without writing to the object data
  * base.
  *
  * @param path STRSXP with file vectors to hash
- * @return A STRSXP with character vector of sha1 hex values
+ * @return A STRSXP with character vector of sha values
  */
 SEXP git2r_odb_hashfile(SEXP path)
 {
     SEXP result;
     int err = GIT_OK;
     size_t len, i;
-    char hex[GIT_OID_HEXSZ + 1];
+    char sha[GIT_OID_HEXSZ + 1];
     git_oid oid;
 
     if (GIT_OK != git2r_arg_check_string_vec(path))
@@ -97,9 +97,9 @@ SEXP git2r_odb_hashfile(SEXP path)
             if (GIT_OK != err)
                 break;
 
-            git_oid_fmt(hex, &oid);
-            hex[GIT_OID_HEXSZ] = '\0';
-            SET_STRING_ELT(result, i, mkChar(hex));
+            git_oid_fmt(sha, &oid);
+            sha[GIT_OID_HEXSZ] = '\0';
+            SET_STRING_ELT(result, i, mkChar(sha));
         }
     }
 

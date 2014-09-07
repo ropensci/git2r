@@ -45,8 +45,8 @@ const char git2r_err_diff_arg[] =
     "Error in '%s': Invalid diff parameters";
 const char git2r_err_filename_arg[] =
     "Error in '%s': '%s' must be either 1) NULL, or 2) a character vector of length 0 or 3) a character vector of length 1 and nchar > 0";
-const char git2r_err_hex_arg[] =
-    "Error in '%s': '%s' must be a sha1 hex value";
+const char git2r_err_sha_arg[] =
+    "Error in '%s': '%s' must be a sha value";
 const char git2r_err_integer_arg[] =
     "Error in '%s': '%s' must be an integer vector of length one with non NA value";
 const char git2r_err_integer_gte_zero_arg[] =

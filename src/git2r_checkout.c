@@ -124,7 +124,7 @@ SEXP git2r_checkout_commit(
     SEXP who)
 {
     int err;
-    SEXP hex;
+    SEXP sha;
     git_oid oid;
     git_signature *signature = NULL;
     git_commit *treeish = NULL;
@@ -144,8 +144,8 @@ SEXP git2r_checkout_commit(
     if (!repository)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
-    hex = GET_SLOT(commit, Rf_install("hex"));
-    err = git_oid_fromstr(&oid, CHAR(STRING_ELT(hex, 0)));
+    sha = GET_SLOT(commit, Rf_install("sha"));
+    err = git_oid_fromstr(&oid, CHAR(STRING_ELT(sha, 0)));
     if (GIT_OK != err)
         goto cleanup;
 
@@ -284,7 +284,7 @@ SEXP git2r_checkout_tree(
     SEXP who)
 {
     int err;
-    SEXP slot;
+    SEXP sha;
     git_oid oid;
     git_signature *signature = NULL;
     git_repository *repository = NULL;
@@ -302,8 +302,8 @@ SEXP git2r_checkout_tree(
     if (!repository)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
-    slot = GET_SLOT(tree, Rf_install("hex"));
-    err = git_oid_fromstr(&oid, CHAR(STRING_ELT(slot, 0)));
+    sha = GET_SLOT(tree, Rf_install("sha"));
+    err = git_oid_fromstr(&oid, CHAR(STRING_ELT(sha, 0)));
     if (GIT_OK != err)
         goto cleanup;
 

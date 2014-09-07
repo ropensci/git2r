@@ -50,7 +50,7 @@ void git2r_blame_init(git_blame *source, SEXP repo, SEXP path, SEXP dest)
             SEXP sexp_hunk;
             SEXP final_signature;
             SEXP orig_signature;
-            char hex[GIT_OID_HEXSZ + 1];
+            char sha[GIT_OID_HEXSZ + 1];
 
             PROTECT(sexp_hunk = NEW_OBJECT(MAKE_CLASS("git_blame_hunk")));
 
@@ -58,11 +58,11 @@ void git2r_blame_init(git_blame *source, SEXP repo, SEXP path, SEXP dest)
                      Rf_install("lines_in_hunk"),
                      ScalarInteger(hunk->lines_in_hunk));
 
-            git_oid_fmt(hex, &(hunk->final_commit_id));
-            hex[GIT_OID_HEXSZ] = '\0';
+            git_oid_fmt(sha, &(hunk->final_commit_id));
+            sha[GIT_OID_HEXSZ] = '\0';
             SET_SLOT(sexp_hunk,
                      Rf_install("final_commit_id"),
-                     ScalarString(mkChar(hex)));
+                     ScalarString(mkChar(sha)));
 
             SET_SLOT(sexp_hunk,
                      Rf_install("final_start_line_number"),
@@ -73,11 +73,11 @@ void git2r_blame_init(git_blame *source, SEXP repo, SEXP path, SEXP dest)
             SET_SLOT(sexp_hunk, Rf_install("final_signature"), final_signature);
             UNPROTECT(1);
 
-            git_oid_fmt(hex, &(hunk->orig_commit_id));
-            hex[GIT_OID_HEXSZ] = '\0';
+            git_oid_fmt(sha, &(hunk->orig_commit_id));
+            sha[GIT_OID_HEXSZ] = '\0';
             SET_SLOT(sexp_hunk,
                      Rf_install("orig_commit_id"),
-                     ScalarString(mkChar(hex)));
+                     ScalarString(mkChar(sha)));
 
             SET_SLOT(sexp_hunk,
                      Rf_install("orig_start_line_number"),

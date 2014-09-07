@@ -38,7 +38,7 @@ SEXP git2r_merge_base(SEXP one, SEXP two)
     int err;
     SEXP result = R_NilValue;
     SEXP repo;
-    SEXP hex;
+    SEXP sha;
     git_oid oid;
     git_oid oid_one;
     git_oid oid_two;
@@ -55,13 +55,13 @@ SEXP git2r_merge_base(SEXP one, SEXP two)
     if (!repository)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
-    hex = GET_SLOT(one, Rf_install("hex"));
-    err = git_oid_fromstr(&oid_one, CHAR(STRING_ELT(hex, 0)));
+    sha = GET_SLOT(one, Rf_install("sha"));
+    err = git_oid_fromstr(&oid_one, CHAR(STRING_ELT(sha, 0)));
     if (GIT_OK != err)
         goto cleanup;
 
-    hex = GET_SLOT(two, Rf_install("hex"));
-    err = git_oid_fromstr(&oid_two, CHAR(STRING_ELT(hex, 0)));
+    sha = GET_SLOT(two, Rf_install("sha"));
+    err = git_oid_fromstr(&oid_two, CHAR(STRING_ELT(sha, 0)));
     if (GIT_OK != err)
         goto cleanup;
 

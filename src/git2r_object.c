@@ -31,10 +31,10 @@
  * Lookup an object in a repository
  *
  * @param repo S4 class git_repository
- * @param hex 4 to 40 char hexadecimal string
+ * @param sha 4 to 40 char hexadecimal string
  * @return S4 object with lookup
  */
-SEXP git2r_object_lookup(SEXP repo, SEXP hex)
+SEXP git2r_object_lookup(SEXP repo, SEXP sha)
 {
     int err;
     size_t len;
@@ -43,21 +43,21 @@ SEXP git2r_object_lookup(SEXP repo, SEXP hex)
     git_oid oid;
     git_repository *repository = NULL;
 
-    if (GIT_OK != git2r_arg_check_hex(hex))
-        git2r_error(git2r_err_hex_arg, __func__, "hex");
+    if (GIT_OK != git2r_arg_check_sha(sha))
+        git2r_error(git2r_err_sha_arg, __func__, "sha");
 
     repository = git2r_repository_open(repo);
     if (!repository)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
-    len = LENGTH(STRING_ELT(hex, 0));
+    len = LENGTH(STRING_ELT(sha, 0));
     if (GIT_OID_HEXSZ == len) {
-        git_oid_fromstr(&oid, CHAR(STRING_ELT(hex, 0)));
+        git_oid_fromstr(&oid, CHAR(STRING_ELT(sha, 0)));
         err = git_object_lookup(&object, repository, &oid, GIT_OBJ_ANY);
         if (GIT_OK != err)
             goto cleanup;
     } else {
-        git_oid_fromstrn(&oid, CHAR(STRING_ELT(hex, 0)), len);
+        git_oid_fromstrn(&oid, CHAR(STRING_ELT(sha, 0)), len);
         err = git_object_lookup_prefix(&object, repository, &oid, len, GIT_OBJ_ANY);
         if (GIT_OK != err)
             goto cleanup;

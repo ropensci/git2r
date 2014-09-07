@@ -313,7 +313,7 @@ SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
     git_diff *diff = NULL;
     git_object *obj = NULL;
     git_tree *c_tree = NULL;
-    SEXP hex;
+    SEXP sha;
     SEXP result = R_NilValue;
     SEXP repo;
 
@@ -327,9 +327,9 @@ SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
     if (!repository)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
-    hex = GET_SLOT(tree, Rf_install("hex"));
+    sha = GET_SLOT(tree, Rf_install("sha"));
     err = git_revparse_single(&obj, repository,
-			      CHAR(STRING_ELT(hex, 0)));
+			      CHAR(STRING_ELT(sha, 0)));
 
     if (GIT_OK != err)
 	goto cleanup;
@@ -423,7 +423,7 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
     git_diff *diff = NULL;
     git_object *obj = NULL;
     git_tree *c_tree = NULL;
-    SEXP hex;
+    SEXP sha;
     SEXP result = R_NilValue;
     SEXP repo;
 
@@ -437,9 +437,9 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
     if (!repository)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
-    hex = GET_SLOT(tree, Rf_install("hex"));
+    sha = GET_SLOT(tree, Rf_install("sha"));
     err = git_revparse_single(&obj, repository,
-			      CHAR(STRING_ELT(hex, 0)));
+			      CHAR(STRING_ELT(sha, 0)));
 
     if (GIT_OK != err)
 	goto cleanup;
@@ -537,7 +537,7 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
     git_tree *c_tree1 = NULL, *c_tree2 = NULL;
     SEXP result = R_NilValue;
     SEXP repo;
-    SEXP hex1, hex2;
+    SEXP sha1, sha2;
 
     if (GIT_OK != git2r_arg_check_tree(tree1))
         git2r_error(git2r_err_tree_arg, __func__, "tree1");
@@ -552,16 +552,16 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
     if (!repository)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
-    hex1 = GET_SLOT(tree1, Rf_install("hex"));
+    sha1 = GET_SLOT(tree1, Rf_install("sha"));
     err = git_revparse_single(&obj1, repository,
-			      CHAR(STRING_ELT(hex1, 0)));
+			      CHAR(STRING_ELT(sha1, 0)));
 
     if (GIT_OK != err)
 	goto cleanup;
 
-    hex2 = GET_SLOT(tree2, Rf_install("hex"));
+    sha2 = GET_SLOT(tree2, Rf_install("sha"));
     err = git_revparse_single(&obj2, repository,
-			      CHAR(STRING_ELT(hex2, 0)));
+			      CHAR(STRING_ELT(sha2, 0)));
 
     if (GIT_OK != err)
 	goto cleanup;

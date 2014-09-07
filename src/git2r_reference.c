@@ -31,7 +31,7 @@
  */
 void git2r_reference_init(git_reference *source, SEXP dest)
 {
-    char hex[GIT_OID_HEXSZ + 1];
+    char sha[GIT_OID_HEXSZ + 1];
 
     SET_SLOT(dest,
              Rf_install("name"),
@@ -44,9 +44,9 @@ void git2r_reference_init(git_reference *source, SEXP dest)
     switch (git_reference_type(source)) {
     case GIT_REF_OID:
         SET_SLOT(dest, Rf_install("type"), ScalarInteger(GIT_REF_OID));
-        git_oid_fmt(hex, git_reference_target(source));
-        hex[GIT_OID_HEXSZ] = '\0';
-        SET_SLOT(dest, Rf_install("hex"), ScalarString(mkChar(hex)));
+        git_oid_fmt(sha, git_reference_target(source));
+        sha[GIT_OID_HEXSZ] = '\0';
+        SET_SLOT(dest, Rf_install("sha"), ScalarString(mkChar(sha)));
         break;
     case GIT_REF_SYMBOLIC:
         SET_SLOT(dest, Rf_install("type"), ScalarInteger(GIT_REF_SYMBOLIC));

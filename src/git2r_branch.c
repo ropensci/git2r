@@ -702,17 +702,17 @@ cleanup:
 }
 
 /**
- * Get hex pointed to by a branch
+ * Get sha pointed to by a branch
  *
  * @param branch S4 class git_branch
- * @return 40 character hex value if the reference is direct, else NA
+ * @return The 40 character sha if the reference is direct, else NA
  */
 SEXP git2r_branch_target(SEXP branch)
 {
     int err;
     SEXP result = R_NilValue;
     const char *name;
-    char hex[GIT_OID_HEXSZ + 1];
+    char sha[GIT_OID_HEXSZ + 1];
     git_branch_t type;
     git_reference *reference = NULL;
     git_repository *repository = NULL;
@@ -732,9 +732,9 @@ SEXP git2r_branch_target(SEXP branch)
 
     PROTECT(result = allocVector(STRSXP, 1));
     if (GIT_REF_OID == git_reference_type(reference)) {
-        git_oid_fmt(hex, git_reference_target(reference));
-        hex[GIT_OID_HEXSZ] = '\0';
-        SET_STRING_ELT(result, 0, mkChar(hex));
+        git_oid_fmt(sha, git_reference_target(reference));
+        sha[GIT_OID_HEXSZ] = '\0';
+        SET_STRING_ELT(result, 0, mkChar(sha));
     } else {
         SET_STRING_ELT(result, 0, NA_STRING);
     }
