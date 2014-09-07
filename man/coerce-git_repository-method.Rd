@@ -17,8 +17,8 @@ The commits in the repository are coerced to a \code{data.frame}
 The \code{data.frame} have the following columns:
 \describe{
 
-\item{hex}{
-    the SHA-1 hash as 40 characters of hexadecimal
+\item{sha}{
+    The 40 character hexadecimal string of the SHA-1
   }
 
 \item{summary}{

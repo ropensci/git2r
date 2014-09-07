@@ -5,14 +5,14 @@
 \alias{lookup,git_repository,character-method}
 \title{Lookup}
 \usage{
-lookup(repo, hex)
+lookup(repo, sha)
 
-\S4method{lookup}{git_repository,character}(repo, hex)
+\S4method{lookup}{git_repository,character}(repo, sha)
 }
 \arguments{
 \item{repo}{The repository.}
 
-\item{hex}{the identity of the object to lookup. Must be 4 to 40
+\item{sha}{The identity of the object to lookup. Must be 4 to 40
 characters long.}
 }
 \value{

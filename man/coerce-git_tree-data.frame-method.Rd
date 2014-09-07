@@ -26,7 +26,7 @@ The \code{data.frame} have the following columns:
   }
 
 \item{id}{
-    The hex id of a tree entry
+    The sha id of a tree entry
   }
 
 \item{name}{
