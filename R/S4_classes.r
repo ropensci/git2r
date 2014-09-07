@@ -295,7 +295,7 @@ setClass("git_blame_hunk",
 ##' @keywords methods
 ##' @export
 setClass("git_blob",
-         slots=c(hex  = "character",
+         slots=c(sha  = "character",
                  repo = "git_repository"),
          validity=function(object) {
              errors <- character()
@@ -370,7 +370,7 @@ setClass("git_branch",
 ##' @keywords methods
 ##' @export
 setClass("git_commit",
-         slots=c(hex       = "character",
+         slots=c(sha       = "character",
                  author    = "git_signature",
                  committer = "git_signature",
                  summary   = "character",
@@ -522,7 +522,7 @@ setClass("git_diff_line",
 ##' @keywords methods
 ##' @export
 setClass("git_note",
-         slots = c(hex       = "character",
+         slots = c(sha       = "character",
                    annotated = "character",
                    message   = "character",
                    refname   = "character",
@@ -562,10 +562,10 @@ setClass("git_note",
 setClass("git_reference",
          slots=c(name="character",
                  type="integer",
-                 hex="character",
+                 sha="character",
                  target="character",
                  shorthand="character"),
-         prototype=list(hex=NA_character_,
+         prototype=list(sha=NA_character_,
                         target=NA_character_))
 
 ##' Class \code{"git_reflog_entry"}
@@ -598,7 +598,7 @@ setClass("git_reference",
 ##' @keywords methods
 ##' @export
 setClass("git_reflog_entry",
-         slots=c(hex       = "character",
+         slots=c(sha       = "character",
                  message   = "character",
                  index     = "integer",
                  committer = "git_signature",
@@ -645,7 +645,7 @@ setClass("git_stash", contains = "git_commit")
 ##' @keywords methods
 ##' @export
 setClass("git_tag",
-         slots=c(hex     = "character",
+         slots=c(sha     = "character",
                  message = "character",
                  name    = "character",
                  tagger  = "git_signature",
@@ -658,8 +658,8 @@ setClass("git_tag",
              if (identical(errors, TRUE))
                errors <- character()
 
-             if (!identical(length(object@hex), 1L))
-                 errors <- c(errors, "hex must have length equal to one")
+             if (!identical(length(object@sha), 1L))
+                 errors <- c(errors, "sha must have length equal to one")
              if (!identical(length(object@message), 1L))
                  errors <- c(errors, "message must have length equal to one")
              if (!identical(length(object@name), 1L))
@@ -686,7 +686,7 @@ setClass("git_tag",
 ##'     String representation of the tree entry type
 ##'   }
 ##'   \item{id}{
-##'     The hex id of a tree entry
+##'     The sha id of a tree entry
 ##'   }
 ##'   \item{name}{
 ##'     The filename of a tree entry
@@ -701,7 +701,7 @@ setClass("git_tag",
 ##' @keywords methods
 ##' @export
 setClass("git_tree",
-         slots=c(hex      = "character",
+         slots=c(sha      = "character",
                  filemode = "integer",
                  type     = "character",
                  id       = "character",
@@ -711,8 +711,8 @@ setClass("git_tree",
          {
              errors <- character(0)
 
-             if (!identical(length(object@hex), 1L))
-                 errors <- c(errors, "hex must have length equal to one")
+             if (!identical(length(object@sha), 1L))
+                 errors <- c(errors, "sha must have length equal to one")
 
              if (length(errors) == 0) TRUE else errors
          }
