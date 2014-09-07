@@ -9,11 +9,13 @@ Class \code{git_note}
 \section{Slots}{
 
 \describe{
-  \item{hex}{
-    40 char hexadecimal string of blob containing the message
+  \item{sha}{
+    The 40 character hexadecimal string of the SHA-1 of the blob
+    containing the message
   }
   \item{annotated}{
-    40 char hexadecimal string of the git object being annotated
+    The 40 character hexadecimal string of the SHA-1 of the git
+    object being annotated
   }
   \item{message}{
     The note message

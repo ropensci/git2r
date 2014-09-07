@@ -13,7 +13,7 @@ Class \code{"git_blame_hunk"}
     The number of lines in this hunk
   }
   \item{final_commit_id}{
-    The hex of the commit where this line was last changed
+    The sha of the commit where this line was last changed
   }
   \item{final_start_line_number}{
     The 1-based line number where this hunk begins, in the final
@@ -23,7 +23,7 @@ Class \code{"git_blame_hunk"}
     Final committer
   }
   \item{orig_commit_id}{
-    The hex of the commit where this hunk was found. This will usually
+    The sha of the commit where this hunk was found. This will usually
     be the same as 'final_commit_id'.
   }
   \item{orig_start_line_number}{

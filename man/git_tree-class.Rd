@@ -9,8 +9,8 @@ Class \code{"git_tree"}
 \section{Slots}{
 
 \describe{
-  \item{hex}{
-    40 char hexadecimal string
+  \item{sha}{
+    The 40 character hexadecimal string of the SHA-1
   }
   \item{filemode}{
     The UNIX file attributes of a tree entry
@@ -19,7 +19,7 @@ Class \code{"git_tree"}
     String representation of the tree entry type
   }
   \item{id}{
-    The hex id of a tree entry
+    The sha id of a tree entry
   }
   \item{name}{
     The filename of a tree entry

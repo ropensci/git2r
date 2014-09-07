@@ -16,8 +16,8 @@ Class \code{"git_reference"}
     Type of the reference, either direct (GIT_REF_OID == 1) or
     symbolic (GIT_REF_SYMBOLIC == 2)
   }
-  \item{hex}{
-    40 char hexadecimal string
+  \item{sha}{
+    The 40 character hexadecimal string of the SHA-1
   }
   \item{target}{
     :TODO:DOCUMENTATION:
