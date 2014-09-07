@@ -16,49 +16,47 @@
 
 library(git2r)
 
-##
 ## Create a directory in tempdir
-##
 path <- tempfile(pattern="git2r-")
 dir.create(path)
 
-##
 ## Initialize a repository
-##
 repo <- init(path)
-config(repo, user.name="Repo", user.email="repo@example.org")
+config(repo, user.name="Developer", user.email="developer@example.org")
 
-##
 ## Create a file, add and commit
-##
-writeLines("Hello world!", file.path(path, "test.txt"))
+writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+           con = file.path(path, "test.txt"))
 add(repo, "test.txt")
-commit.1 <- commit(repo, "Commit message 1")
+commit_1 <- commit(repo, "Commit message 1")
 
-##
 ## Create first branch, checkout, add file and commit
-##
-b.1 <- branch_create(commit.1, "branch1")
-checkout(b.1)
+b_1 <- branch_create(commit_1, "branch1")
+checkout(b_1)
 writeLines("Branch 1", file.path(path, "branch-1.txt"))
 add(repo, "branch-1.txt")
-commit.2 <- commit(repo, "Commit message branch 1")
+commit_2 <- commit(repo, "Commit message branch 1")
 
-##
 ## Create second branch, checkout, add file and commit
-##
-b.2 <- branch_create(commit.1, "branch2")
-checkout(b.2)
+b_2 <- branch_create(commit_1, "branch2")
+checkout(b_2)
 writeLines("Branch 2", file.path(path, "branch-2.txt"))
 add(repo, "branch-2.txt")
-commit.3 <- commit(repo, "Commit message branch 2")
+commit_3 <- commit(repo, "Commit message branch 2")
+writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+             "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
+           con = file.path(path, "test.txt"))
+add(repo, "test.txt")
+commit_4 <- commit(repo, "Second commit message branch 2")
 
-##
 ## Check that merge base equals commit_1
-##
-stopifnot(identical(merge_base(commit.2, commit.3), commit.1))
+stopifnot(identical(merge_base(commit_2, commit_3), commit_1))
 
-##
+## Checkout master and merge
+b <- branches(repo)
+checkout(b[sapply(b, slot, "name") == "master"][[1]], force=TRUE)
+m_1 <- merge(b[sapply(b, slot, "name") == "branch1"][[1]])
+m_2 <- merge(b[sapply(b, slot, "name") == "branch2"][[1]])
+
 ## Cleanup
-##
 unlink(path, recursive=TRUE)
