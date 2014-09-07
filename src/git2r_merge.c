@@ -530,9 +530,11 @@ cleanup:
  * Merge the given fetch head data into HEAD
  *
  * @param fetch_heads List of S4 class git_fetch_head objects.
+ * @param merger Who made the merge, if the merge is non-fast forward
+ * merge that creates a merge commit.
  * @return List of git_merge_head objects.
  */
-SEXP git2r_merge_fetch_heads(SEXP fetch_heads)
+SEXP git2r_merge_fetch_heads(SEXP fetch_heads, SEXP merger)
 {
     int err;
     size_t n;
@@ -540,7 +542,14 @@ SEXP git2r_merge_fetch_heads(SEXP fetch_heads)
     git_buf buf = GIT_BUF_INIT;
     git_merge_head **merge_heads = NULL;
     git_repository *repository = NULL;
-    git_signature *merger = NULL;
+    git_signature *who = NULL;
+
+    if (GIT_OK != git2r_arg_check_signature(merger))
+        git2r_error(git2r_err_signature_arg, __func__, "merger");
+
+    err = git2r_signature_from_arg(&who, merger);
+    if (GIT_OK != err)
+        goto cleanup;
 
     n = LENGTH(fetch_heads);
     if (n) {
@@ -566,12 +575,15 @@ SEXP git2r_merge_fetch_heads(SEXP fetch_heads)
         n,
         GIT_MERGE_PREFERENCE_NONE,
         "pull",
-        merger,
+        who,
         1); /* Commit on success */
     if (GIT_OK != err)
         goto cleanup;
 
 cleanup:
+    if (who)
+        git_signature_free(who);
+
     if (merge_heads)
         git2r_merge_heads_free(merge_heads, n);
 

@@ -19,18 +19,23 @@
 ##' @rdname pull-methods
 ##' @docType methods
 ##' @param repo the repository
+##' @param merger Who made the merge, if the merge is non-fast forward
+##' merge that creates a merge commit.
 ##' @return invisible(NULL)
 ##' @keywords methods
 ##' @include S4_classes.r
 setGeneric("pull",
            signature = "repo",
-           function(repo) standardGeneric("pull"))
+           function(repo,
+                    merger = default_signature(repo))
+           standardGeneric("pull"))
 
 ##' @rdname pull-methods
 ##' @export
 setMethod("pull",
           signature(repo = "git_repository"),
-          function (repo)
+          function (repo,
+                    merger)
           {
               current_branch <- head(repo)
 
@@ -51,6 +56,6 @@ setMethod("pull",
               if (identical(length(fh), 0L))
                   stop("Remote ref was not feteched")
 
-              stop("'pull' isn't implemented. Sorry")
+              .Call(git2r_merge_fetch_heads, fh, merger)
           }
 )
