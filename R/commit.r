@@ -221,9 +221,9 @@ setMethod("parents",
 
 ##' Brief summary of commit
 ##'
-##' Displays the first seven characters of the hex, the date and the
+##' Displays the first seven characters of the sha, the date and the
 ##' summary of the commit message:
-##' \code{[shortened hex] yyyy-mm-dd: summary}
+##' \code{[shortened sha] yyyy-mm-dd: summary}
 ##' @aliases show,git_commit-methods
 ##' @docType methods
 ##' @param object The commit \code{object}
@@ -245,7 +245,7 @@ setMethod("show",
           function (object)
           {
               cat(sprintf("[%s] %s: %s\n",
-                          substring(object@hex, 1, 7),
+                          substring(object@sha, 1, 7),
                           substring(as(object@author@when, "character"), 1, 10),
                           object@summary))
           }
@@ -275,12 +275,12 @@ setMethod("summary",
               is_merge_commit <- is_merge(object)
               po <- parents(object)
 
-              cat(sprintf("Commit:  %s\n", object@hex))
+              cat(sprintf("Commit:  %s\n", object@sha))
 
               if (is_merge_commit) {
-                  hex <- sapply(po, slot, "hex")
-                  cat(sprintf("Merge:   %s\n", hex[1]))
-                  cat(paste0("         ", hex[-1]), sep="\n")
+                  sha <- sapply(po, slot, "sha")
+                  cat(sprintf("Merge:   %s\n", sha[1]))
+                  cat(paste0("         ", sha[-1]), sep="\n")
               }
 
               cat(sprintf(paste0("Author:  %s <%s>\n",

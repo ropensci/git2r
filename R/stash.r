@@ -75,7 +75,7 @@ setMethod("stash_drop",
           function (object)
           {
               ## Determine the index of the stash in the stash list
-              i <- match(object@hex, sapply(stashes(object@repo), slot, "hex"))
+              i <- match(object@sha, sapply(stashes(object@repo), slot, "sha"))
 
               ## The stash list is zero-based
               stash_drop(object@repo, i-1L);
@@ -207,11 +207,11 @@ setMethod("summary",
               cat(sprintf(paste0("message: %s\n",
                                  "stasher: %s <%s>\n",
                                  "when:    %s\n",
-                                 "hex:     %s\n\n"),
+                                 "sha:     %s\n\n"),
                           object@summary,
                           object@author@name,
                           object@author@email,
                           as(object@author@when, "character"),
-                          object@hex))
+                          object@sha))
           }
 )

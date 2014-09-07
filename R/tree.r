@@ -31,7 +31,7 @@
 ##'   }
 ##'
 ##'   \item{id}{
-##'     The hex id of a tree entry
+##'     The sha id of a tree entry
 ##'   }
 ##'
 ##'   \item{name}{
@@ -91,7 +91,7 @@ setAs(from = "git_tree",
       to = "list",
       def = function(from)
       {
-          lapply(from@id, function(hex) lookup(from@repo, hex))
+          lapply(from@id, function(sha) lookup(from@repo, sha))
       }
 )
 
@@ -144,12 +144,11 @@ setMethod("tree",
 ##' ## Brief summary of one tree in repository
 ##' tree(commits(repo)[[1]])
 ##' }
-##'
 setMethod("show",
           signature(object = "git_tree"),
-          function (object)
+          function(object)
           {
-              cat(sprintf("tree:  %s\n", object@hex))
+              cat(sprintf("tree:  %s\n", object@sha))
           }
 )
 

@@ -126,13 +126,13 @@ setMethod("content",
           }
 )
 
-##' Determine the sha1 hex of a blob from a string
+##' Determine the sha from a blob string
 ##'
 ##' The blob is not written to the object database.
 ##' @rdname hash-methods
 ##' @docType methods
 ##' @param data The string vector to hash.
-##' @return A string vector with the sha1 hex for each string in data.
+##' @return A string vector with the sha for each string in data.
 ##' @keywords methods
 ##' @examples
 ##' \dontrun{
@@ -156,13 +156,13 @@ setMethod("hash",
           }
 )
 
-##' Determine the sha1 hex of a blob from a file
+##' Determine the sha from a blob in a file
 ##'
 ##' The blob is not written to the object database.
 ##' @rdname hashfile-methods
 ##' @docType methods
 ##' @param path The path vector with files to hash.
-##' @return A path vector with the sha1 hex for each file in path.
+##' @return A vector with the sha for each file in path.
 ##' @keywords methods
 ##' @examples
 ##' \dontrun{
@@ -324,7 +324,7 @@ setMethod("show",
           signature(object = "git_blob"),
           function (object)
           {
-              cat(sprintf("blob:  %s\n", object@hex))
+              cat(sprintf("blob:  %s\n", object@sha))
           }
 )
 
@@ -340,7 +340,7 @@ setMethod("summary",
           function(object, ...)
           {
               cat(sprintf("blob:  %s\nsize:  %i bytes\n",
-                          object@hex,
+                          object@sha,
                           length(object)))
           }
 )

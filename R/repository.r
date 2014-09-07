@@ -22,8 +22,8 @@
 ##' The \code{data.frame} have the following columns:
 ##' \describe{
 ##'
-##'   \item{hex}{
-##'     the SHA-1 hash as 40 characters of hexadecimal
+##'   \item{sha}{
+##'     The 40 character hexadecimal string of the SHA-1
 ##'   }
 ##'
 ##'   \item{summary}{
@@ -68,7 +68,7 @@ setAs(from="git_repository",
       def=function(from)
       {
           do.call("rbind", lapply(commits(from), function(x) {
-              data.frame(hex              = x@hex,
+              data.frame(sha              = x@sha,
                          summary          = x@summary,
                          message          = x@message,
                          author           = x@author@name,
@@ -455,7 +455,7 @@ setMethod("is_shallow",
 ##' @rdname lookup-methods
 ##' @docType methods
 ##' @param repo The repository.
-##' @param hex the identity of the object to lookup. Must be 4 to 40
+##' @param sha The identity of the object to lookup. Must be 4 to 40
 ##' characters long.
 ##' @return a \code{git_blob} or \code{git_commit} or \code{git_tag}
 ##' or \code{git_tree} object
@@ -470,18 +470,18 @@ setMethod("is_shallow",
 ##' }
 ##'
 setGeneric("lookup",
-           signature = c("repo", "hex"),
-           function(repo, hex)
+           signature = c("repo", "sha"),
+           function(repo, sha)
            standardGeneric("lookup"))
 
 ##' @rdname lookup-methods
 ##' @export
 setMethod("lookup",
           signature(repo = "git_repository",
-                    hex  = "character"),
-          function (repo, hex)
+                    sha  = "character"),
+          function (repo, sha)
           {
-              .Call(git2r_object_lookup, repo, hex)
+              .Call(git2r_object_lookup, repo, sha)
           }
 )
 
@@ -563,7 +563,7 @@ setMethod("summary",
               cat("\n")
 
               n_branches <- sum(!is.na(unique(sapply(branches(object), branch_target))))
-              n_tags <- sum(!is.na(unique(sapply(tags(object), slot, "hex"))))
+              n_tags <- sum(!is.na(unique(sapply(tags(object), slot, "sha"))))
 
               work <- commits(object)
               n_commits <- length(work)
