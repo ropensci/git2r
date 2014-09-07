@@ -92,12 +92,12 @@ sync_libgit2:
 	-cp -f ../libgit2/src/xdiff/*.h src/libgit2/xdiff
 	-cp -f ../libgit2/AUTHORS inst/AUTHORS_libgit2
 	-cp -f ../libgit2/COPYING inst/NOTICE
-	cd src/libgit2 && patch -i ../../misc/cache-pass-R-CMD-check-git2r.patch
-	cd src/libgit2 && patch -p0 < ../../misc/diff_print-pass-R-CMD-check-git2r.patch
-	cd src/libgit2 && patch -i ../../misc/util-pass-R-CMD-check-git2r.patch
-	cd src/regex && patch -i ../../misc/regcomp-pass-R-CMD-check-git2r.patch
-	cd src/libgit2/win32 && patch -i ../../../misc/posix-pass-R-CMD-check-git2r.patch
-	cd src/libgit2/transports && patch -i ../../../misc/winhttp-build-with-mingw-w64.patch
+	cd src/libgit2 && patch -i ../../patches/cache-pass-R-CMD-check-git2r.patch
+	cd src/libgit2 && patch -p0 < ../../patches/diff_print-pass-R-CMD-check-git2r.patch
+	cd src/libgit2 && patch -i ../../patches/util-pass-R-CMD-check-git2r.patch
+	cd src/regex && patch -i ../../patches/regcomp-pass-R-CMD-check-git2r.patch
+	cd src/libgit2/win32 && patch -i ../../../patches/posix-pass-R-CMD-check-git2r.patch
+	cd src/libgit2/transports && patch -i ../../../patches/winhttp-build-with-mingw-w64.patch
 	Rscript misc/build_Makevars.r
 
 Makevars:
