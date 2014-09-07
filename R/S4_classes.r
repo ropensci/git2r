@@ -223,7 +223,7 @@ setClass("git_blame",
 ##'     The number of lines in this hunk
 ##'   }
 ##'   \item{final_commit_id}{
-##'     The hex of the commit where this line was last changed
+##'     The sha of the commit where this line was last changed
 ##'   }
 ##'   \item{final_start_line_number}{
 ##'     The 1-based line number where this hunk begins, in the final
@@ -233,7 +233,7 @@ setClass("git_blame",
 ##'     Final committer
 ##'   }
 ##'   \item{orig_commit_id}{
-##'     The hex of the commit where this hunk was found. This will usually
+##'     The sha of the commit where this hunk was found. This will usually
 ##'     be the same as 'final_commit_id'.
 ##'   }
 ##'   \item{orig_start_line_number}{
@@ -282,8 +282,8 @@ setClass("git_blame_hunk",
 ##' @title  S4 class to handle a git blob
 ##' @section Slots:
 ##' \describe{
-##'   \item{hex}{
-##'     40 char hexadecimal string
+##'   \item{sha}{
+##'     The 40 character hexadecimal string of the SHA-1
 ##'   }
 ##'   \item{repo}{
 ##'     The S4 class git_repository that contains the blob
@@ -340,8 +340,8 @@ setClass("git_branch",
 ##' @title S4 class to handle a git commit.
 ##' @section Slots:
 ##' \describe{
-##'   \item{hex}{
-##'     40 char hexadecimal string
+##'   \item{sha}{
+##'     The 40 character hexadecimal string of the SHA-1
 ##'   }
 ##'   \item{author}{
 ##'     An author signature
@@ -498,11 +498,13 @@ setClass("git_diff_line",
 ##' @title S4 class to handle a git note
 ##' @section Slots:
 ##' \describe{
-##'   \item{hex}{
-##'     40 char hexadecimal string of blob containing the message
+##'   \item{sha}{
+##'     The 40 character hexadecimal string of the SHA-1 of the blob
+##'     containing the message
 ##'   }
 ##'   \item{annotated}{
-##'     40 char hexadecimal string of the git object being annotated
+##'     The 40 character hexadecimal string of the SHA-1 of the git
+##'     object being annotated
 ##'   }
 ##'   \item{message}{
 ##'     The note message
@@ -538,8 +540,8 @@ setClass("git_note",
 ##'     Type of the reference, either direct (GIT_REF_OID == 1) or
 ##'     symbolic (GIT_REF_SYMBOLIC == 2)
 ##'   }
-##'   \item{hex}{
-##'     40 char hexadecimal string
+##'   \item{sha}{
+##'     The 40 character hexadecimal string of the SHA-1
 ##'   }
 ##'   \item{target}{
 ##'     :TODO:DOCUMENTATION:
@@ -571,8 +573,8 @@ setClass("git_reference",
 ##' @title S4 class to handle a git reflog entry.
 ##' @section Slots:
 ##' \describe{
-##'   \item{hex}{
-##'     40 char hexadecimal string
+##'   \item{sha}{
+##'     The 40 character hexadecimal string of the SHA-1
 ##'   }
 ##'   \item{message}{
 ##'     The log message of the entry
@@ -618,8 +620,8 @@ setClass("git_stash", contains = "git_commit")
 ##' @title S4 class to handle a git tag
 ##' @section Slots:
 ##' \describe{
-##'   \item{hex}{
-##'     40 char hexadecimal string
+##'   \item{sha}{
+##'     The 40 character hexadecimal string of the SHA-1
 ##'   }
 ##'   \item{message}{
 ##'     The message of the tag
@@ -674,8 +676,8 @@ setClass("git_tag",
 ##' @title S4 class to handle a git tree
 ##' @section Slots:
 ##' \describe{
-##'   \item{hex}{
-##'     40 char hexadecimal string
+##'   \item{sha}{
+##'     The 40 character hexadecimal string of the SHA-1
 ##'   }
 ##'   \item{filemode}{
 ##'     The UNIX file attributes of a tree entry
@@ -770,7 +772,8 @@ setClass("git_transfer_progress",
 ##'     The url of the remote.
 ##'   }
 ##'   \item{sha}{
-##'     The SHA of the remote head that were updated during the last fetch.
+##'     The SHA-1 of the remote head that were updated during the last
+##'     fetch.
 ##'   }
 ##'   \item{is_merge}{
 ##'     Is head for merge.
