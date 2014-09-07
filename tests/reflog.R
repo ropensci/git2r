@@ -49,7 +49,7 @@ commit.1 <- commit(repo, "Commit message")
 ##
 stopifnot(identical(length(reflog(repo)), 1L))
 reflog_entry <- reflog(repo)[[1]]
-stopifnot(identical(reflog_entry@hex, commit.1@hex))
+stopifnot(identical(reflog_entry@sha, commit.1@sha))
 stopifnot(identical(reflog_entry@refname, "HEAD"))
 stopifnot(identical(reflog_entry@index, 0L))
 stopifnot(identical(reflog_entry@committer@email, "repo@example.org"))

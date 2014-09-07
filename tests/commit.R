@@ -54,7 +54,7 @@ commit_1 <- commit(repo, "Commit message")
 ##
 stopifnot(identical(commit_1@author@name, "Repo"))
 stopifnot(identical(commit_1@author@email, "repo@example.org"))
-stopifnot(identical(lookup(repo, commit_1@hex), commit_1))
+stopifnot(identical(lookup(repo, commit_1@sha), commit_1))
 stopifnot(identical(length(commits(repo)), 1L))
 stopifnot(identical(commits(repo)[[1]]@author@name, "Repo"))
 stopifnot(identical(commits(repo)[[1]]@author@email, "repo@example.org"))
