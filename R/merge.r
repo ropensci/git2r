@@ -92,14 +92,17 @@ setGeneric("merge",
 ##' @rdname merge-methods
 ##' @param commit_on_success If there are no conflicts written to the
 ##' index, the merge commit will be committed. Default is TRUE.
+##' @param merger Who made the merge.
 ##' @export
 setMethod("merge",
           signature(object = "git_branch"),
           function(object,
-                   commit_on_success = TRUE)
+                   commit_on_success = TRUE,
+                   merger = default_signature(repo))
           {
               .Call(git2r_merge_branch,
                     object,
+                    merger,
                     commit_on_success)
           }
 )

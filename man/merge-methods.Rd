@@ -7,7 +7,8 @@
 \usage{
 merge(object, ...)
 
-\S4method{merge}{git_branch}(object, commit_on_success = TRUE)
+\S4method{merge}{git_branch}(object, commit_on_success = TRUE,
+  merger = default_signature(repo))
 }
 \arguments{
 \item{object}{A \code{\linkS4class{git_branch}} object to merge
@@ -17,6 +18,8 @@ into HEAD.}
 
 \item{commit_on_success}{If there are no conflicts written to the
 index, the merge commit will be committed. Default is TRUE.}
+
+\item{merger}{Who made the merge.}
 }
 \value{
 A \code{\linkS4class{git_merge_result}} object.

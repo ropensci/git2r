@@ -395,9 +395,12 @@ static void git2r_merge_heads_free(git_merge_head **merge_heads, size_t n)
  * Merge branch into HEAD
  *
  * @param branch S4 class git_branch to merge into HEAD.
+ * @param merger Who is performing the merge
+ * @param commit_on_success Commit merge commit, if one was created
+ * during a normal merge
  * @return S4 class git_merge_result
  */
-SEXP git2r_merge_branch(SEXP branch, SEXP commit_on_success)
+SEXP git2r_merge_branch(SEXP branch, SEXP merger, SEXP commit_on_success)
 {
     int err;
     SEXP result = R_NilValue;
@@ -407,12 +410,18 @@ SEXP git2r_merge_branch(SEXP branch, SEXP commit_on_success)
     git_merge_head **merge_heads = NULL;
     git_reference *reference = NULL;
     git_repository *repository = NULL;
-    git_signature *merger = NULL;
+    git_signature *who = NULL;
 
     if (GIT_OK != git2r_arg_check_branch(branch))
         git2r_error(git2r_err_branch_arg, __func__, "branch");
     if (GIT_OK != git2r_arg_check_logical(commit_on_success))
         git2r_error(git2r_err_logical_arg, __func__, "commit_on_success");
+    if (GIT_OK != git2r_arg_check_signature(merger))
+        git2r_error(git2r_err_signature_arg, __func__, "merger");
+
+    err = git2r_signature_from_arg(&who, merger);
+    if (GIT_OK != err)
+        goto cleanup;
 
     repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
     if (!repository)
@@ -446,11 +455,14 @@ SEXP git2r_merge_branch(SEXP branch, SEXP commit_on_success)
         1,
         GIT_MERGE_PREFERENCE_NONE,
         buf.ptr,
-        merger,
+        who,
         LOGICAL(commit_on_success)[0]);
 
 cleanup:
     git_buf_free(&buf);
+
+    if (who)
+        git_signature_free(who);
 
     if (merge_heads)
         git2r_merge_heads_free(merge_heads, 1);
