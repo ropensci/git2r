@@ -47,7 +47,7 @@ m <- merge(b[sapply(b, slot, "name") == "test"][[1]])
 
 # Check merge
 stopifnot(is(object = m, class2 = "git_merge_result"))
-stopifnot(identical(m@status, "Fast-forward"))
+stopifnot(identical(m@fast_forward, TRUE))
 stopifnot(identical(m@conflicts, FALSE))
 stopifnot(identical(length(commits(repo)), 2L))
 

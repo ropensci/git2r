@@ -52,11 +52,21 @@ commit_4 <- commit(repo, "Second commit message branch 2")
 ## Check that merge base equals commit_1
 stopifnot(identical(merge_base(commit_2, commit_3), commit_1))
 
-## Checkout master and merge
+## Checkout master
 b <- branches(repo)
 checkout(b[sapply(b, slot, "name") == "master"][[1]], force=TRUE)
+
+## Merge branch 1
 m_1 <- merge(b[sapply(b, slot, "name") == "branch1"][[1]])
+stopifnot(identical(m_1@fast_forward, TRUE))
+stopifnot(identical(m_1@conflicts, FALSE))
+stopifnot(identical(m_1@sha, character(0)))
+
+## Merge branch 2
 m_2 <- merge(b[sapply(b, slot, "name") == "branch2"][[1]])
+stopifnot(identical(m_2@fast_forward, FALSE))
+stopifnot(identical(m_2@conflicts, FALSE))
+stopifnot(identical(m_2@sha, commits(repo)[[1]]@hex))
 
 ## Cleanup
 unlink(path, recursive=TRUE)
