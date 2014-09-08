@@ -25,6 +25,7 @@
 #include "git2r_error.h"
 #include "git2r_merge.h"
 #include "git2r_repository.h"
+#include "git2r_signature.h"
 
 /**
  * Find a merge base between two commits
@@ -170,8 +171,8 @@ static int git2r_fast_forward_merge(
 
     SET_SLOT(
         merge_result,
-        Rf_install("status"),
-        ScalarString(mkChar("Fast-forward")));
+        Rf_install("fast_forward"),
+        ScalarLogical(1));
 
     SET_SLOT(
         merge_result,
@@ -200,7 +201,7 @@ cleanup:
  * @param merge_heads The merge heads to merge
  * @param n The number of merge heads
  * @param repository The repository
- * @param name The name of the merge in the reflog
+ * @param message The commit message of the merge
  * @param merger Who is performing the merge
  * @param commit_on_success Commit merge commit, if one was created
  * @param merge_opts Merge options
@@ -211,13 +212,19 @@ static int git2r_normal_merge(
     const git_merge_head **merge_heads,
     size_t n,
     git_repository *repository,
+    const char *message,
     git_signature *merger,
     int commit_on_success,
     const git_checkout_options *checkout_opts,
     const git_merge_options *merge_opts)
 {
     int err;
+    git_commit *commit = NULL;
     git_index *index = NULL;
+    git_commit *parents[1] = {NULL};
+    git_tree *tree = NULL;
+
+    SET_SLOT(merge_result, Rf_install("fast_forward"), ScalarLogical(0));
 
     err = git_merge(
         repository,
@@ -236,11 +243,62 @@ static int git2r_normal_merge(
         SET_SLOT(merge_result, Rf_install("conflicts"), ScalarLogical(1));
     } else {
         SET_SLOT(merge_result, Rf_install("conflicts"), ScalarLogical(0));
+
+        if (commit_on_success) {
+            char sha[GIT_OID_HEXSZ + 1];
+            const size_t number_of_parents = 1;
+            git_oid oid;
+
+            err = git_index_write_tree(&oid, index);
+            if (GIT_OK != err)
+                goto cleanup;
+
+            err = git_tree_lookup(&tree, repository, &oid);
+            if (GIT_OK != err)
+                goto cleanup;
+
+            err = git_reference_name_to_id(&oid, repository, "HEAD");
+            if (GIT_OK != err)
+                goto cleanup;
+
+            err = git_commit_lookup(&parents[0], repository, &oid);
+            if (GIT_OK != err)
+                goto cleanup;
+
+            err = git_commit_create(
+                &oid,
+                repository,
+                "HEAD",
+                merger,
+                merger,
+                NULL,
+                message,
+                tree,
+                number_of_parents,
+                (const git_commit**)parents);
+            if (GIT_OK != err)
+                goto cleanup;
+
+            git_oid_fmt(sha, &oid);
+            sha[GIT_OID_HEXSZ] = '\0';
+            SET_SLOT(merge_result,
+                     Rf_install("sha"),
+                     ScalarString(mkChar(sha)));
+        }
     }
 
 cleanup:
+    if (commit)
+        git_commit_free(commit);
+
     if (index)
         git_index_free(index);
+
+    if (parents[0])
+        git_commit_free(parents[0]);
+
+    if (tree)
+        git_tree_free(tree);
 
     return err;
 }
@@ -321,6 +379,7 @@ static int git2r_merge(
                 merge_heads,
                 n,
                 repository,
+                name,
                 merger,
                 commit_on_success,
                 &checkout_opts,
@@ -334,6 +393,7 @@ static int git2r_merge(
                 merge_heads,
                 n,
                 repository,
+                name,
                 merger,
                 commit_on_success,
                 &checkout_opts,
@@ -551,7 +611,6 @@ SEXP git2r_merge_fetch_heads(SEXP fetch_heads, SEXP merger)
     int err;
     size_t n;
     SEXP result = R_NilValue;
-    git_buf buf = GIT_BUF_INIT;
     git_merge_head **merge_heads = NULL;
     git_repository *repository = NULL;
     git_signature *who = NULL;
