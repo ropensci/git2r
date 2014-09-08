@@ -7,5 +7,7 @@
 ^configure\.ac$
 ^figure$
 ^misc$
+^patches$
+^scripts$
 ^CONTRIBUTING.md$
 appveyor.yml

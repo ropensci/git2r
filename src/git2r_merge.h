@@ -23,5 +23,7 @@
 #include <Rinternals.h>
 
 SEXP git2r_merge_base(SEXP one, SEXP two);
+SEXP git2r_merge_branch(SEXP branch, SEXP merger, SEXP commit_on_success);
+SEXP git2r_merge_fetch_heads(SEXP fetch_heads, SEXP merger);
 
 #endif

@@ -5,12 +5,15 @@
 \alias{pull,git_repository-method}
 \title{Pull}
 \usage{
-pull(repo)
+pull(repo, merger = default_signature(repo))
 
-\S4method{pull}{git_repository}(repo)
+\S4method{pull}{git_repository}(repo, merger = default_signature(repo))
 }
 \arguments{
 \item{repo}{the repository}
+
+\item{merger}{Who made the merge, if the merge is non-fast forward
+merge that creates a merge commit.}
 }
 \value{
 invisible(NULL)
