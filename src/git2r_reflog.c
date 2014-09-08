@@ -45,13 +45,13 @@ void git2r_reflog_entry_init(
     SEXP sexp_index;
     const char *message;
     const git_signature *committer;
-    char hex[GIT_OID_HEXSZ + 1];
+    char sha[GIT_OID_HEXSZ + 1];
 
-    git_oid_fmt(hex, git_reflog_entry_id_new(source));
-    hex[GIT_OID_HEXSZ] = '\0';
+    git_oid_fmt(sha, git_reflog_entry_id_new(source));
+    sha[GIT_OID_HEXSZ] = '\0';
     SET_SLOT(dest,
-             Rf_install("hex"),
-             ScalarString(mkChar(hex)));
+             Rf_install("sha"),
+             ScalarString(mkChar(sha)));
 
     PROTECT(sexp_index = allocVector(INTSXP, 1));
     INTEGER(sexp_index)[0] = index;

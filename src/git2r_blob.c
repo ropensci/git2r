@@ -33,7 +33,7 @@ SEXP git2r_blob_content(SEXP blob)
 {
     int err;
     SEXP result = R_NilValue;
-    SEXP hex;
+    SEXP sha;
     git_blob *blob_obj = NULL;
     git_oid oid;
     git_repository *repository = NULL;
@@ -45,8 +45,8 @@ SEXP git2r_blob_content(SEXP blob)
     if (!repository)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
-    hex = GET_SLOT(blob, Rf_install("hex"));
-    git_oid_fromstr(&oid, CHAR(STRING_ELT(hex, 0)));
+    sha = GET_SLOT(blob, Rf_install("sha"));
+    git_oid_fromstr(&oid, CHAR(STRING_ELT(sha, 0)));
 
     err = git_blob_lookup(&blob_obj, repository, &oid);
     if (GIT_OK != err)
@@ -206,13 +206,13 @@ cleanup:
 void git2r_blob_init(const git_blob *source, SEXP repo, SEXP dest)
 {
     const git_oid *oid;
-    char hex[GIT_OID_HEXSZ + 1];
+    char sha[GIT_OID_HEXSZ + 1];
 
     oid = git_blob_id(source);
-    git_oid_tostr(hex, sizeof(hex), oid);
+    git_oid_tostr(sha, sizeof(sha), oid);
     SET_SLOT(dest,
-             Rf_install("hex"),
-             ScalarString(mkChar(hex)));
+             Rf_install("sha"),
+             ScalarString(mkChar(sha)));
 
     SET_SLOT(dest, Rf_install("repo"), duplicate(repo));
 }
@@ -227,7 +227,7 @@ SEXP git2r_blob_is_binary(SEXP blob)
 {
     int err;
     SEXP result = R_NilValue;
-    SEXP hex;
+    SEXP sha;
     git_blob *blob_obj = NULL;
     git_oid oid;
     git_repository *repository = NULL;
@@ -239,8 +239,8 @@ SEXP git2r_blob_is_binary(SEXP blob)
     if (!repository)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
-    hex = GET_SLOT(blob, Rf_install("hex"));
-    git_oid_fromstr(&oid, CHAR(STRING_ELT(hex, 0)));
+    sha = GET_SLOT(blob, Rf_install("sha"));
+    git_oid_fromstr(&oid, CHAR(STRING_ELT(sha, 0)));
 
     err = git_blob_lookup(&blob_obj, repository, &oid);
     if (GIT_OK != err)
@@ -277,7 +277,7 @@ cleanup:
 SEXP git2r_blob_rawsize(SEXP blob)
 {
     int err;
-    SEXP hex;
+    SEXP sha;
     git_off_t size = 0;
     git_blob *blob_obj = NULL;
     git_oid oid;
@@ -290,8 +290,8 @@ SEXP git2r_blob_rawsize(SEXP blob)
     if (!repository)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
-    hex = GET_SLOT(blob, Rf_install("hex"));
-    git_oid_fromstr(&oid, CHAR(STRING_ELT(hex, 0)));
+    sha = GET_SLOT(blob, Rf_install("sha"));
+    git_oid_fromstr(&oid, CHAR(STRING_ELT(sha, 0)));
 
     err = git_blob_lookup(&blob_obj, repository, &oid);
     if (GIT_OK != err)

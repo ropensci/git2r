@@ -9,8 +9,8 @@ Class \code{"git_tag"}
 \section{Slots}{
 
 \describe{
-  \item{hex}{
-    40 char hexadecimal string
+  \item{sha}{
+    The 40 character hexadecimal string of the SHA-1
   }
   \item{message}{
     The message of the tag

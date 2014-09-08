@@ -61,7 +61,7 @@ stopifnot(identical(discover_repository(file.path(wd, 'doesntexist.txt')),
                     NULL))
 
 ##
-## Check that lookup with a hex of less than 4 characters or more than
+## Check that lookup with a sha of less than 4 characters or more than
 ## 40 characters fail.
 ##
 tools::assertError(lookup(repo, paste0(rep("a", 3), collapse="")))

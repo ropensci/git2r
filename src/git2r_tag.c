@@ -36,14 +36,14 @@ void git2r_tag_init(git_tag *source, SEXP repo, SEXP dest)
 {
     const git_signature *tagger;
     const git_oid *oid;
-    char hex[GIT_OID_HEXSZ + 1];
+    char sha[GIT_OID_HEXSZ + 1];
     char target[GIT_OID_HEXSZ + 1];
 
     oid = git_tag_id(source);
-    git_oid_tostr(hex, sizeof(hex), oid);
+    git_oid_tostr(sha, sizeof(sha), oid);
     SET_SLOT(dest,
-             Rf_install("hex"),
-             ScalarString(mkChar(hex)));
+             Rf_install("sha"),
+             ScalarString(mkChar(sha)));
 
     SET_SLOT(dest,
              Rf_install("message"),

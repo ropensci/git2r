@@ -193,12 +193,12 @@ setMethod("branch_rename",
           }
 )
 
-##' Get target (hex) pointed to by a branch
+##' Get target (sha) pointed to by a branch
 ##'
 ##' @rdname branch_target-methods
 ##' @docType methods
 ##' @param branch The branch
-##' @return hex or NA if not a direct reference
+##' @return sha or NA if not a direct reference
 ##' @keywords methods
 ##' @include S4_classes.r
 setGeneric("branch_target",
@@ -359,9 +359,9 @@ setMethod("show",
           signature(object = "git_branch"),
           function (object)
           {
-              hex <- branch_target(object)
-              if (!is.na(hex)) {
-                  cat(sprintf("[%s] ", substr(hex, 1 , 6)))
+              sha <- branch_target(object)
+              if (!is.na(sha)) {
+                  cat(sprintf("[%s] ", substr(sha, 1 , 6)))
               }
 
               if (is_local(object)) {

@@ -26,7 +26,7 @@ checkout_reflog_msg <- function(object, ref_log_target) {
     if (is.null(current))
         stop("Current head is NULL")
     if (is_commit(current)) {
-        current <- current@hex
+        current <- current@sha
     } else {
         current <- current@name
     }
@@ -81,7 +81,7 @@ setMethod("checkout",
                   git2r_checkout_commit,
                   object,
                   force,
-                  checkout_reflog_msg(object, object@hex),
+                  checkout_reflog_msg(object, object@sha),
                   default_signature(object@repo))
               invisible(ret)
           }

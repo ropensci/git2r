@@ -102,7 +102,7 @@ new_tag <- tag(repo, "Tagname", "Tag message")
 ##
 ## Check tag
 ##
-stopifnot(identical(lookup(repo, new_tag@hex), new_tag))
+stopifnot(identical(lookup(repo, new_tag@sha), new_tag))
 stopifnot(identical(new_tag@name, "Tagname"))
 stopifnot(identical(new_tag@message, "Tag message"))
 stopifnot(identical(new_tag@tagger@name, "Repo"))

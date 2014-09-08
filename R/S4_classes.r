@@ -223,7 +223,7 @@ setClass("git_blame",
 ##'     The number of lines in this hunk
 ##'   }
 ##'   \item{final_commit_id}{
-##'     The hex of the commit where this line was last changed
+##'     The sha of the commit where this line was last changed
 ##'   }
 ##'   \item{final_start_line_number}{
 ##'     The 1-based line number where this hunk begins, in the final
@@ -233,7 +233,7 @@ setClass("git_blame",
 ##'     Final committer
 ##'   }
 ##'   \item{orig_commit_id}{
-##'     The hex of the commit where this hunk was found. This will usually
+##'     The sha of the commit where this hunk was found. This will usually
 ##'     be the same as 'final_commit_id'.
 ##'   }
 ##'   \item{orig_start_line_number}{
@@ -282,8 +282,8 @@ setClass("git_blame_hunk",
 ##' @title  S4 class to handle a git blob
 ##' @section Slots:
 ##' \describe{
-##'   \item{hex}{
-##'     40 char hexadecimal string
+##'   \item{sha}{
+##'     The 40 character hexadecimal string of the SHA-1
 ##'   }
 ##'   \item{repo}{
 ##'     The S4 class git_repository that contains the blob
@@ -295,7 +295,7 @@ setClass("git_blame_hunk",
 ##' @keywords methods
 ##' @export
 setClass("git_blob",
-         slots = c(hex  = "character",
+         slots = c(sha  = "character",
                    repo = "git_repository"),
          validity = function(object) {
              errors <- character()
@@ -340,8 +340,8 @@ setClass("git_branch",
 ##' @title S4 class to handle a git commit.
 ##' @section Slots:
 ##' \describe{
-##'   \item{hex}{
-##'     40 char hexadecimal string
+##'   \item{sha}{
+##'     The 40 character hexadecimal string of the SHA-1
 ##'   }
 ##'   \item{author}{
 ##'     An author signature
@@ -370,14 +370,14 @@ setClass("git_branch",
 ##' @keywords methods
 ##' @export
 setClass("git_commit",
-         slots = c(hex       = "character",
+         slots = c(sha       = "character",
                    author    = "git_signature",
                    committer = "git_signature",
                    summary   = "character",
                    message   = "character",
                    repo      = "git_repository"),
-         prototype = list(summary=NA_character_,
-                          message=NA_character_))
+         prototype = list(summary = NA_character_,
+                          message = NA_character_))
 
 ##' Git diff
 ##'
@@ -498,11 +498,13 @@ setClass("git_diff_line",
 ##' @title S4 class to handle a git note
 ##' @section Slots:
 ##' \describe{
-##'   \item{hex}{
-##'     40 char hexadecimal string of blob containing the message
+##'   \item{sha}{
+##'     The 40 character hexadecimal string of the SHA-1 of the blob
+##'     containing the message
 ##'   }
 ##'   \item{annotated}{
-##'     40 char hexadecimal string of the git object being annotated
+##'     The 40 character hexadecimal string of the SHA-1 of the git
+##'     object being annotated
 ##'   }
 ##'   \item{message}{
 ##'     The note message
@@ -520,7 +522,7 @@ setClass("git_diff_line",
 ##' @keywords methods
 ##' @export
 setClass("git_note",
-         slots = c(hex       = "character",
+         slots = c(sha       = "character",
                    annotated = "character",
                    message   = "character",
                    refname   = "character",
@@ -538,8 +540,8 @@ setClass("git_note",
 ##'     Type of the reference, either direct (GIT_REF_OID == 1) or
 ##'     symbolic (GIT_REF_SYMBOLIC == 2)
 ##'   }
-##'   \item{hex}{
-##'     40 char hexadecimal string
+##'   \item{sha}{
+##'     The 40 character hexadecimal string of the SHA-1
 ##'   }
 ##'   \item{target}{
 ##'     :TODO:DOCUMENTATION:
@@ -560,19 +562,19 @@ setClass("git_note",
 setClass("git_reference",
          slots = c(name      = "character",
                    type      = "integer",
-                   hex       = "character",
+                   sha       = "character",
                    target    = "character",
                    shorthand = "character"),
-         prototype = list(hex    = NA_character_,
-                          target = NA_character_))
+         prototype=list(sha    = NA_character_,
+                        target = NA_character_))
 
 ##' Class \code{"git_reflog_entry"}
 ##'
 ##' @title S4 class to handle a git reflog entry.
 ##' @section Slots:
 ##' \describe{
-##'   \item{hex}{
-##'     40 char hexadecimal string
+##'   \item{sha}{
+##'     The 40 character hexadecimal string of the SHA-1
 ##'   }
 ##'   \item{message}{
 ##'     The log message of the entry
@@ -596,7 +598,7 @@ setClass("git_reference",
 ##' @keywords methods
 ##' @export
 setClass("git_reflog_entry",
-         slots = c(hex       = "character",
+         slots = c(sha       = "character",
                    message   = "character",
                    index     = "integer",
                    committer = "git_signature",
@@ -618,8 +620,8 @@ setClass("git_stash", contains = "git_commit")
 ##' @title S4 class to handle a git tag
 ##' @section Slots:
 ##' \describe{
-##'   \item{hex}{
-##'     40 char hexadecimal string
+##'   \item{sha}{
+##'     The 40 character hexadecimal string of the SHA-1
 ##'   }
 ##'   \item{message}{
 ##'     The message of the tag
@@ -643,21 +645,21 @@ setClass("git_stash", contains = "git_commit")
 ##' @keywords methods
 ##' @export
 setClass("git_tag",
-         slots = c(hex     = "character",
+         slots = c(sha     = "character",
                    message = "character",
                    name    = "character",
                    tagger  = "git_signature",
                    target  = "character",
                    repo    = "git_repository"),
-         validity = function(object)
+         validity=function(object)
          {
              errors <- validObject(object@tagger)
 
              if (identical(errors, TRUE))
                errors <- character()
 
-             if (!identical(length(object@hex), 1L))
-                 errors <- c(errors, "hex must have length equal to one")
+             if (!identical(length(object@sha), 1L))
+                 errors <- c(errors, "sha must have length equal to one")
              if (!identical(length(object@message), 1L))
                  errors <- c(errors, "message must have length equal to one")
              if (!identical(length(object@name), 1L))
@@ -674,8 +676,8 @@ setClass("git_tag",
 ##' @title S4 class to handle a git tree
 ##' @section Slots:
 ##' \describe{
-##'   \item{hex}{
-##'     40 char hexadecimal string
+##'   \item{sha}{
+##'     The 40 character hexadecimal string of the SHA-1
 ##'   }
 ##'   \item{filemode}{
 ##'     The UNIX file attributes of a tree entry
@@ -684,7 +686,7 @@ setClass("git_tag",
 ##'     String representation of the tree entry type
 ##'   }
 ##'   \item{id}{
-##'     The hex id of a tree entry
+##'     The sha id of a tree entry
 ##'   }
 ##'   \item{name}{
 ##'     The filename of a tree entry
@@ -699,18 +701,18 @@ setClass("git_tag",
 ##' @keywords methods
 ##' @export
 setClass("git_tree",
-         slots = c(hex      = "character",
+         slots = c(sha      = "character",
                    filemode = "integer",
                    type     = "character",
                    id       = "character",
                    name     = "character",
                    repo     = "git_repository"),
-         validity = function(object)
+         validity=function(object)
          {
              errors <- character(0)
 
-             if (!identical(length(object@hex), 1L))
-                 errors <- c(errors, "hex must have length equal to one")
+             if (!identical(length(object@sha), 1L))
+                 errors <- c(errors, "sha must have length equal to one")
 
              if (length(errors) == 0) TRUE else errors
          }
@@ -770,7 +772,8 @@ setClass("git_transfer_progress",
 ##'     The url of the remote.
 ##'   }
 ##'   \item{sha}{
-##'     The SHA of the remote head that were updated during the last fetch.
+##'     The SHA-1 of the remote head that were updated during the last
+##'     fetch.
 ##'   }
 ##'   \item{is_merge}{
 ##'     Is head for merge.

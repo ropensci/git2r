@@ -57,23 +57,23 @@ static int git2r_note_init(
 {
     int err;
     git_note *note = NULL;
-    char hex[GIT_OID_HEXSZ + 1];
+    char sha[GIT_OID_HEXSZ + 1];
 
     err = git_note_read(&note, repository, notes_ref, annotated_object_id);
     if (GIT_OK != err)
         return err;
 
-    git_oid_fmt(hex, blob_id);
-    hex[GIT_OID_HEXSZ] = '\0';
+    git_oid_fmt(sha, blob_id);
+    sha[GIT_OID_HEXSZ] = '\0';
     SET_SLOT(dest,
-             Rf_install("hex"),
-             ScalarString(mkChar(hex)));
+             Rf_install("sha"),
+             ScalarString(mkChar(sha)));
 
-    git_oid_fmt(hex, annotated_object_id);
-    hex[GIT_OID_HEXSZ] = '\0';
+    git_oid_fmt(sha, annotated_object_id);
+    sha[GIT_OID_HEXSZ] = '\0';
     SET_SLOT(dest,
              Rf_install("annotated"),
-             ScalarString(mkChar(hex)));
+             ScalarString(mkChar(sha)));
 
     SET_SLOT(dest,
              Rf_install("message"),
@@ -95,7 +95,7 @@ static int git2r_note_init(
  * Add a note for an object
  *
  * @param repo S4 class git_repository
- * @param hex hexadecimal string of object
+ * @param sha The sha string of object
  * @param commit S4 class git_commit
  * @param message Content of the note to add
  * @param ref Canonical name of the reference to use
@@ -106,7 +106,7 @@ static int git2r_note_init(
  */
 SEXP git2r_note_create(
     SEXP repo,
-    SEXP hex,
+    SEXP sha,
     SEXP message,
     SEXP ref,
     SEXP author,
@@ -122,8 +122,8 @@ SEXP git2r_note_create(
     git_signature *sig_committer = NULL;
     git_repository *repository = NULL;
 
-    if (GIT_OK != git2r_arg_check_hex(hex))
-        git2r_error(git2r_err_hex_arg, __func__, "hex");
+    if (GIT_OK != git2r_arg_check_sha(sha))
+        git2r_error(git2r_err_sha_arg, __func__, "sha");
     if (GIT_OK != git2r_arg_check_string(message))
         git2r_error(git2r_err_string_arg, __func__, "message");
     if (GIT_OK != git2r_arg_check_string(ref))
@@ -147,7 +147,7 @@ SEXP git2r_note_create(
     if (GIT_OK != err)
         goto cleanup;
 
-    err = git_oid_fromstr(&object_oid, CHAR(STRING_ELT(hex, 0)));
+    err = git_oid_fromstr(&object_oid, CHAR(STRING_ELT(sha, 0)));
     if (GIT_OK != err)
         goto cleanup;
 

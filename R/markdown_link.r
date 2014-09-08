@@ -29,7 +29,7 @@
 #'}
 markdown_link <- function(repo = ".") {
 repo <- repository(repo)
-commit <- git2r::head(repo)@hex
+commit <- git2r::head(repo)@sha
 short_hash <- substr(commit, 1, 6)
 remote_link <- paste0(remote_url(repo), "/commit/", commit)
 sprintf("[%s](%s)", short_hash, remote_link)

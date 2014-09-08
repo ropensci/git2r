@@ -20,7 +20,7 @@ library(git2r)
 ## Check when method
 ##
 stopifnot(identical(when(new("git_commit",
-                             hex = "166f3f779fd7e4165aaa43f2828050ce040052b0",
+                             sha = "166f3f779fd7e4165aaa43f2828050ce040052b0",
                              author = new("git_signature",
                                  name = "Repo",
                                  email = "repo@example.org",
@@ -40,7 +40,7 @@ stopifnot(identical(when(new("git_signature",
                     "2014-03-23 10:45:47"))
 
 stopifnot(identical(when(new("git_tag",
-                             hex = "166f3f779fd7e4165aaa43f2828050ce040052b0",
+                             sha = "166f3f779fd7e4165aaa43f2828050ce040052b0",
                              message = "A tag message",
                              name = "A tage name",
                              tagger = new("git_signature",

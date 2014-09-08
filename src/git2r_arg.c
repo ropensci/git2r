@@ -38,7 +38,7 @@ int git2r_arg_check_blob(SEXP arg)
     if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_blob"))
         return GIT_ERROR;
 
-    if (GIT_OK != git2r_arg_check_string(GET_SLOT(arg, Rf_install("hex"))))
+    if (GIT_OK != git2r_arg_check_string(GET_SLOT(arg, Rf_install("sha"))))
         return GIT_ERROR;
 
     return GIT_OK;
@@ -96,7 +96,7 @@ int git2r_arg_check_commit(SEXP arg)
     if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_commit"))
         return GIT_ERROR;
 
-    if (GIT_OK != git2r_arg_check_string(GET_SLOT(arg, Rf_install("hex"))))
+    if (GIT_OK != git2r_arg_check_string(GET_SLOT(arg, Rf_install("sha"))))
         return GIT_ERROR;
 
     return GIT_OK;
@@ -191,12 +191,12 @@ int git2r_arg_check_filename(SEXP arg)
 }
 
 /**
- * Check hex argument
+ * Check sha argument
  *
  * @param arg the arg to check
  * @return GIT_OK if OK, else GIT_ERROR
  */
-int git2r_arg_check_hex(SEXP arg)
+int git2r_arg_check_sha(SEXP arg)
 {
     size_t len;
 
@@ -288,7 +288,7 @@ int git2r_arg_check_note(SEXP arg)
     if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_note"))
         return GIT_ERROR;
 
-    if (GIT_OK != git2r_arg_check_string(GET_SLOT(arg, Rf_install("hex"))))
+    if (GIT_OK != git2r_arg_check_string(GET_SLOT(arg, Rf_install("sha"))))
         return GIT_ERROR;
 
     if (GIT_OK != git2r_arg_check_string(GET_SLOT(arg, Rf_install("refname"))))
@@ -417,7 +417,7 @@ int git2r_arg_check_tree(SEXP arg)
     if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_tree"))
         return GIT_ERROR;
 
-    if (GIT_OK != git2r_arg_check_string(GET_SLOT(arg, Rf_install("hex"))))
+    if (GIT_OK != git2r_arg_check_string(GET_SLOT(arg, Rf_install("sha"))))
         return GIT_ERROR;
 
     return GIT_OK;

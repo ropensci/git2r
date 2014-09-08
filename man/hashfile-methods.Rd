@@ -3,7 +3,7 @@
 \name{hashfile}
 \alias{hashfile}
 \alias{hashfile,character-method}
-\title{Determine the sha1 hex of a blob from a file}
+\title{Determine the sha from a blob in a file}
 \usage{
 hashfile(path)
 
@@ -13,7 +13,7 @@ hashfile(path)
 \item{path}{The path vector with files to hash.}
 }
 \value{
-A path vector with the sha1 hex for each file in path.
+A vector with the sha for each file in path.
 }
 \description{
 The blob is not written to the object database.

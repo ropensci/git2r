@@ -39,7 +39,7 @@ extern const char git2r_err_commit_arg[];
 extern const char git2r_err_credentials_arg[];
 extern const char git2r_err_diff_arg[];
 extern const char git2r_err_filename_arg[];
-extern const char git2r_err_hex_arg[];
+extern const char git2r_err_sha_arg[];
 extern const char git2r_err_integer_arg[];
 extern const char git2r_err_integer_gte_zero_arg[];
 extern const char git2r_err_list_arg[];

@@ -24,7 +24,7 @@
 
 SEXP git2r_note_create(
     SEXP repo,
-    SEXP hex,
+    SEXP sha,
     SEXP message,
     SEXP ref,
     SEXP author,

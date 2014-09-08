@@ -32,14 +32,14 @@ void git2r_tree_init(const git_tree *source, SEXP repo, SEXP dest)
     SEXP filemode, id, type, name;
     size_t i, n;
     const git_oid *oid;
-    char hex[GIT_OID_HEXSZ + 1];
+    char sha[GIT_OID_HEXSZ + 1];
     const git_tree_entry *entry;
 
     oid = git_tree_id(source);
-    git_oid_tostr(hex, sizeof(hex), oid);
+    git_oid_tostr(sha, sizeof(sha), oid);
     SET_SLOT(dest,
-             Rf_install("hex"),
-             ScalarString(mkChar(hex)));
+             Rf_install("sha"),
+             ScalarString(mkChar(sha)));
 
     n = git_tree_entrycount(source);
     PROTECT(filemode = allocVector(INTSXP, n));
@@ -55,9 +55,9 @@ void git2r_tree_init(const git_tree *source, SEXP repo, SEXP dest)
 
     for (i = 0; i < n; ++i) {
         entry = git_tree_entry_byindex(source, i);
-        git_oid_tostr(hex, sizeof(hex), git_tree_entry_id(entry));
+        git_oid_tostr(sha, sizeof(sha), git_tree_entry_id(entry));
         INTEGER(filemode)[i] = git_tree_entry_filemode(entry);
-        SET_STRING_ELT(id, i, mkChar(hex));
+        SET_STRING_ELT(id, i, mkChar(sha));
         SET_STRING_ELT(type, i, mkChar(git_object_type2string(git_tree_entry_type(entry))));
         SET_STRING_ELT(name, i, mkChar(git_tree_entry_name(entry)));
     }

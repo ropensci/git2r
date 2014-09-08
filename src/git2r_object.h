@@ -22,6 +22,6 @@
 #include <R.h>
 #include <Rinternals.h>
 
-SEXP git2r_object_lookup(SEXP repo, SEXP hex);
+SEXP git2r_object_lookup(SEXP repo, SEXP sha);
 
 #endif

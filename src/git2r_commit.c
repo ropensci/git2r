@@ -148,7 +148,7 @@ static void git2r_parents_free(git_commit **parents, size_t count)
  * @param message The message for the commit
  * @param author S4 class git_signature
  * @param committer S4 class git_signature
- * @param parent_list Character vector with hex (sha1) values of parents
+ * @param parent_list Character vector with sha values of parents
  * @return S4 class git_commit
  */
 SEXP git2r_commit_create(
@@ -283,11 +283,11 @@ int git2r_commit_lookup(
     git_repository *repository,
     SEXP commit)
 {
-    SEXP hex;
+    SEXP sha;
     git_oid oid;
 
-    hex = GET_SLOT(commit, Rf_install("hex"));
-    git_oid_fromstr(&oid, CHAR(STRING_ELT(hex, 0)));
+    sha = GET_SLOT(commit, Rf_install("sha"));
+    git_oid_fromstr(&oid, CHAR(STRING_ELT(sha, 0)));
     return git_commit_lookup(out, repository, &oid);
 }
 
@@ -358,13 +358,13 @@ void git2r_commit_init(git_commit *source, SEXP repo, SEXP dest)
     const char *summary;
     const git_signature *author;
     const git_signature *committer;
-    char hex[GIT_OID_HEXSZ + 1];
+    char sha[GIT_OID_HEXSZ + 1];
 
-    git_oid_fmt(hex, git_commit_id(source));
-    hex[GIT_OID_HEXSZ] = '\0';
+    git_oid_fmt(sha, git_commit_id(source));
+    sha[GIT_OID_HEXSZ] = '\0';
     SET_SLOT(dest,
-             Rf_install("hex"),
-             ScalarString(mkChar(hex)));
+             Rf_install("sha"),
+             ScalarString(mkChar(sha)));
 
     author = git_commit_author(source);
     if (author) {

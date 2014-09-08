@@ -14,9 +14,9 @@
 None (invisible 'NULL').
 }
 \description{
-Displays the first seven characters of the hex, the date and the
+Displays the first seven characters of the sha, the date and the
 summary of the commit message:
-\code{[shortened hex] yyyy-mm-dd: summary}
+\code{[shortened sha] yyyy-mm-dd: summary}
 }
 \examples{
 \dontrun{

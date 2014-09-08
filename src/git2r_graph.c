@@ -52,11 +52,11 @@ SEXP git2r_graph_ahead_behind(SEXP local, SEXP upstream)
     if (!repository)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
-    slot = GET_SLOT(local, Rf_install("hex"));
-    git2r_oid_from_hex_sexp(slot, &local_oid);
+    slot = GET_SLOT(local, Rf_install("sha"));
+    git2r_oid_from_sha_sexp(slot, &local_oid);
 
-    slot = GET_SLOT(upstream, Rf_install("hex"));
-    git2r_oid_from_hex_sexp(slot, &upstream_oid);
+    slot = GET_SLOT(upstream, Rf_install("sha"));
+    git2r_oid_from_sha_sexp(slot, &upstream_oid);
 
     err = git_graph_ahead_behind(&ahead, &behind, repository, &local_oid,
                                  &upstream_oid);
@@ -106,11 +106,11 @@ SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor)
     if (!repository)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
-    slot = GET_SLOT(commit, Rf_install("hex"));
-    git2r_oid_from_hex_sexp(slot, &commit_oid);
+    slot = GET_SLOT(commit, Rf_install("sha"));
+    git2r_oid_from_sha_sexp(slot, &commit_oid);
 
-    slot = GET_SLOT(ancestor, Rf_install("hex"));
-    git2r_oid_from_hex_sexp(slot, &ancestor_oid);
+    slot = GET_SLOT(ancestor, Rf_install("sha"));
+    git2r_oid_from_sha_sexp(slot, &ancestor_oid);
 
     err = git_graph_descendant_of(repository, &commit_oid, &ancestor_oid);
     if (0 > err || 1 < err)

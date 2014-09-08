@@ -16,7 +16,8 @@ Class \code{"git_fetch_head"}
     The url of the remote.
   }
   \item{sha}{
-    The SHA of the remote head that were updated during the last fetch.
+    The SHA-1 of the remote head that were updated during the last
+    fetch.
   }
   \item{is_merge}{
     Is head for merge.

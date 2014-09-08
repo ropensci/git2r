@@ -3,7 +3,7 @@
 \name{hash}
 \alias{hash}
 \alias{hash,character-method}
-\title{Determine the sha1 hex of a blob from a string}
+\title{Determine the sha from a blob string}
 \usage{
 hash(data)
 
@@ -13,7 +13,7 @@ hash(data)
 \item{data}{The string vector to hash.}
 }
 \value{
-A string vector with the sha1 hex for each string in data.
+A string vector with the sha for each string in data.
 }
 \description{
 The blob is not written to the object database.

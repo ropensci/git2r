@@ -19,20 +19,20 @@
 #include "git2r_oid.h"
 
 /**
- * Get oid from hex SEXP
+ * Get oid from sha SEXP
  *
- * @param hex A character vector with sha1 in hex format. The length
+ * @param sha A character vector with sha's. The length
  * can be less than 40 bytes.
  * @param oid result is written into the oid
  * @return void
  */
-void git2r_oid_from_hex_sexp(SEXP hex, git_oid *oid)
+void git2r_oid_from_sha_sexp(SEXP sha, git_oid *oid)
 {
     size_t len;
 
-    len = LENGTH(STRING_ELT(hex, 0));
+    len = LENGTH(STRING_ELT(sha, 0));
     if (GIT_OID_HEXSZ == len)
-        git_oid_fromstr(oid, CHAR(STRING_ELT(hex, 0)));
+        git_oid_fromstr(oid, CHAR(STRING_ELT(sha, 0)));
     else
-        git_oid_fromstrn(oid, CHAR(STRING_ELT(hex, 0)), len);
+        git_oid_fromstrn(oid, CHAR(STRING_ELT(sha, 0)), len);
 }

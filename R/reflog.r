@@ -74,7 +74,7 @@ setMethod("show",
           function (object)
           {
               cat(sprintf("[%s] %s@{%i}: %s\n",
-                          substring(object@hex, 1, 7),
+                          substring(object@sha, 1, 7),
                           object@refname,
                           object@index,
                           object@message))
