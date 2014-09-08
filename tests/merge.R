@@ -66,7 +66,7 @@ stopifnot(identical(m_1@sha, character(0)))
 m_2 <- merge(b[sapply(b, slot, "name") == "branch2"][[1]])
 stopifnot(identical(m_2@fast_forward, FALSE))
 stopifnot(identical(m_2@conflicts, FALSE))
-stopifnot(identical(m_2@sha, commits(repo)[[1]]@hex))
+stopifnot(identical(m_2@sha, commits(repo)[[1]]@sha))
 
 ## Cleanup
 unlink(path, recursive=TRUE)
