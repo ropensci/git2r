@@ -8,26 +8,21 @@ NEW FEATURES
 
   - Blob: content, blob_create, hash, hashfile, is_binary, is_blob,
           length, show, summary.
-
   - Branch: branch_create, branch_delete, branch_get_upstream,
             branch_remote_name, branch_remote_url, branch_rename,
             branch_set_upstream and branch_target.
-
   - Commit: is_commit and parents.
-
   - Diff: diff and diff_print.
-
   - Fetch: fetch and fetch_heads.
-
   - Libgit2: libgit2_features and libgit2_version.
-
+  - Merge: merge.
   - Note: note_create, note_default_ref, note_list and note_remove.
-
+  - Pull: pull.
+  - Push: push.
   - Remote: remote_add, remote_remove, remote_rename and remote_url.
-
   - Repository: discover_repository and is_shallow
-
-  - Stash: stash, stash_drop and stash_list.
+  - Reset: reset.
+  - Stash: stash, stash_drop, stash_list, show and summary.
 
 * Improved error messages to give more detailed information including
   which function raised the error.
@@ -45,6 +40,7 @@ NEW S4 CLASSES
   - git_diff_hunk
   - git_diff_line
   - git_fetch_head
+  - git_merge_result
   - git_note
   - git_reflog_entry
   - git_stash
@@ -58,6 +54,9 @@ CHANGES
   - is.empty to is_empty
   - is.head to is_head
   - is.local to is_local
+
+* Rename hex to sha for the 40-character SHA-1 hash in method
+  arguments and S4 class slots.
 
 git2r 0.0.8
 -----------
