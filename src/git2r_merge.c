@@ -348,9 +348,13 @@ static int git2r_merge(
 
     if (merge_analysis & GIT_MERGE_ANALYSIS_UP_TO_DATE) {
         SET_SLOT(merge_result,
-                 Rf_install("status"),
-                 ScalarString(mkChar("Already up-to-date.")));
+                 Rf_install("up_to_date"),
+                 ScalarLogical(1));
         return GIT_OK;
+    } else {
+        SET_SLOT(merge_result,
+                 Rf_install("up_to_date"),
+                 ScalarLogical(0));
     }
 
     if (GIT_MERGE_PREFERENCE_NONE == preference)

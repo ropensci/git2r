@@ -800,6 +800,9 @@ setClass("git_fetch_head",
 ##' @title S4 class to handle the merge result
 ##' @section Slots:
 ##' \describe{
+##'   \item{up_to_date}{
+##'     TRUE if the merge is already up-to-date, else FALSE.
+##'   }
 ##'   \item{fast_forward}{
 ##'     TRUE if a fast-forward merge, else FALSE.
 ##'   }
@@ -818,7 +821,8 @@ setClass("git_fetch_head",
 ##' @keywords methods
 ##' @export
 setClass("git_merge_result",
-         slots = c(fast_forward = "logical",
+         slots = c(up_to_date   = "logical",
+                   fast_forward = "logical",
                    conflicts    = "logical",
                    sha          = "character")
 )

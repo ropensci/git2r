@@ -9,6 +9,9 @@ Class \code{"git_merge_result"}
 \section{Slots}{
 
 \describe{
+  \item{up_to_date}{
+    TRUE if the merge is already up-to-date, else FALSE.
+  }
   \item{fast_forward}{
     TRUE if a fast-forward merge, else FALSE.
   }
