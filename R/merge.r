@@ -106,3 +106,21 @@ setMethod("merge",
                     commit_on_success)
           }
 )
+
+##' Brief summary of merge result
+##'
+##' @aliases show,git_merge_result-methods
+##' @docType methods
+##' @param object The \code{\linkS4class{git_merge_result}} \code{object}
+##' @return None (invisible 'NULL').
+##' @keywords methods
+##' @include S4_classes.r
+##' @export
+setMethod("show",
+          signature(object = "git_merge_result"),
+          function (object)
+          {
+              if (identical(object@up_to_date, TRUE))
+                  cat("Already up-to-date.\n")
+          }
+)
