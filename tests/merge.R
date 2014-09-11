@@ -68,5 +68,31 @@ stopifnot(identical(m_2@fast_forward, FALSE))
 stopifnot(identical(m_2@conflicts, FALSE))
 stopifnot(identical(m_2@sha, commits(repo)[[1]]@sha))
 
+## Create third branch, checkout, change file and commit
+b_3 <- branch_create(lookup(repo, m_2@sha), "branch3")
+checkout(b_3)
+writeLines(c("Lorem ipsum dolor amet sit, consectetur adipisicing elit, sed do",
+             "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
+           con = file.path(path, "test.txt"))
+add(repo, "test.txt")
+commit(repo, "Commit message branch 3")
+
+## Checkout master and create a change that creates a conflict on
+## merge
+b <- branches(repo)
+checkout(b[sapply(b, slot, "name") == "master"][[1]], force=TRUE)
+writeLines(c("Lorem ipsum dolor sit amet, adipisicing consectetur elit, sed do",
+             "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
+           con = file.path(path, "test.txt"))
+add(repo, "test.txt")
+commit(repo, "Some commit message branch 1")
+
+## Merge branch 3
+m_3 <- merge(b[sapply(b, slot, "name") == "branch3"][[1]])
+stopifnot(identical(m_3@up_to_date, FALSE))
+stopifnot(identical(m_3@fast_forward, FALSE))
+stopifnot(identical(m_3@conflicts, TRUE))
+stopifnot(identical(m_3@sha, character(0)))
+
 ## Cleanup
 unlink(path, recursive=TRUE)
