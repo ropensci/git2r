@@ -120,7 +120,16 @@ setMethod("show",
           signature(object = "git_merge_result"),
           function (object)
           {
-              if (identical(object@up_to_date, TRUE))
-                  cat("Already up-to-date.\n")
+              if (identical(object@up_to_date, TRUE)) {
+                  cat("Already up-to-date")
+              } else if (identical(object@conflicts, TRUE)) {
+                  cat("Merge: Conflicts")
+              } else if (identical(object@fast_forward, TRUE)) {
+                  cat("Merge: Fast-forward")
+              } else {
+                  cat("Merge")
+              }
+
+              cat("\n")
           }
 )
