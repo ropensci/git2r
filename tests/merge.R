@@ -94,5 +94,15 @@ stopifnot(identical(m_3@fast_forward, FALSE))
 stopifnot(identical(m_3@conflicts, TRUE))
 stopifnot(identical(m_3@sha, character(0)))
 
+## Check status; Expect to have one unstaged unmerged conflict.
+stopifnot(identical(status(repo, verbose = FALSE),
+                    structure(list(staged = structure(list(),
+                                       .Names = character(0)),
+                                   unstaged = structure(list(unmerged = "test.txt"),
+                                       .Names = "unmerged"),
+                                   untracked = structure(list(),
+                                       .Names = character(0))),
+                              .Names = c("staged", "unstaged", "untracked"))))
+
 ## Cleanup
 unlink(path, recursive=TRUE)
