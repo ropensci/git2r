@@ -166,7 +166,7 @@ SEXP git2r_commit_create(
     git_oid commit_id, tree_oid;
     git_repository *repository = NULL;
     git_tree *tree = NULL;
-    size_t count;
+    size_t count = 0;
     git_commit **parents = NULL;
     git_commit *commit = NULL;
 
