@@ -5,14 +5,14 @@
 \alias{plot,git_repository-method}
 \title{Plot contributions over time}
 \usage{
-\S4method{plot}{git_repository}(x, breaks = c("month", "week", "day"),
-  by = c("commits", "author"), title = "Commits")
+\S4method{plot}{git_repository}(x, breaks = c("month", "year", "quarter",
+  "week", "day"), by = c("commits", "author"), title = "Commits")
 }
 \arguments{
 \item{x}{The repository to plot}
 
-\item{breaks}{Default is \code{month}. Change to week or day as
-necessary.}
+\item{breaks}{Default is \code{month}. Change to year, quarter,
+week or day as necessary.}
 
 \item{by}{Contributions by "commits" or "author". Default is
 "commits".}

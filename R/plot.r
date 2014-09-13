@@ -21,8 +21,8 @@
 ##' @aliases plot-methods
 ##' @docType methods
 ##' @param x The repository to plot
-##' @param breaks Default is \code{month}. Change to week or day as
-##' necessary.
+##' @param breaks Default is \code{month}. Change to year, quarter,
+##' week or day as necessary.
 ##' @param by Contributions by "commits" or "author". Default is
 ##' "commits".
 ##' @param title Default title for the plot is "Commits on repo:" and
@@ -36,7 +36,7 @@
 setMethod("plot",
           signature(x = "git_repository"),
           function (x,
-                    breaks = c("month", "week", "day"),
+                    breaks = c("month", "year", "quarter", "week", "day"),
                     by = c("commits", "author"),
                     title = "Commits")
           {
