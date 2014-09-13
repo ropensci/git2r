@@ -126,6 +126,7 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_repository_is_shallow", (DL_FUNC)&git2r_repository_is_shallow, 1},
     {"git2r_repository_workdir", (DL_FUNC)&git2r_repository_workdir, 1},
     {"git2r_reset", (DL_FUNC)&git2r_reset, 4},
+    {"git2r_revwalk_contributions", (DL_FUNC)&git2r_revwalk_contributions, 4},
     {"git2r_revwalk_list", (DL_FUNC)&git2r_revwalk_list, 4},
     {"git2r_signature_default", (DL_FUNC)&git2r_signature_default, 1},
     {"git2r_stash_drop", (DL_FUNC)&git2r_stash_drop, 2},

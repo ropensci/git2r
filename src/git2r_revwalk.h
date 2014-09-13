@@ -22,6 +22,7 @@
 #include <R.h>
 #include <Rinternals.h>
 
+SEXP git2r_revwalk_contributions(SEXP repo, SEXP topological, SEXP time, SEXP reverse);
 SEXP git2r_revwalk_list(SEXP repo, SEXP topological, SEXP time, SEXP reverse);
 
 #endif
