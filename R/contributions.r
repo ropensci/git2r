@@ -20,7 +20,8 @@
 ##' @rdname contributions-methods
 ##' @docType methods
 ##' @param repo The repository.
-##' @param breaks Default is \code{month}. Change to week or day as necessary.
+##' @param breaks Default is \code{month}. Change to year, quarter,
+##' week or day as necessary.
 ##' @param by Contributions by "commits" or "author". Default is "commits".
 ##' @return A \code{data.frame} with contributions.
 ##' @keywords methods
@@ -39,7 +40,7 @@
 setGeneric("contributions",
            signature = "repo",
            function(repo,
-                    breaks = c("month", "week", "day"),
+                    breaks = c("month", "year", "quarter", "week", "day"),
                     by = c("commits", "author"))
            standardGeneric("contributions"))
 
@@ -73,28 +74,31 @@ setMethod("contributions",
               breaks <- match.arg(breaks)
               by <- match.arg(by)
 
-              df <- as(repo, "data.frame")
-              df$when <- as.POSIXct(cut(df$when, breaks = breaks))
+              ctbs <- .Call(
+                  git2r_revwalk_contributions, repo, TRUE, TRUE, FALSE)
+              ctbs$when <- as.POSIXct(ctbs$when, origin="1970-01-01", tz="GMT")
+              ctbs$when <- as.POSIXct(cut(ctbs$when, breaks = breaks))
 
               if (identical(by, "commits")) {
-                  df <- as.data.frame(table(df$when))
-                  names(df) <- c("when", "n")
-                  df$when <- as.Date(df$when)
-                  return(df)
+                  ctbs <- as.data.frame(table(ctbs$when))
+                  names(ctbs) <- c("when", "n")
+                  ctbs$when <- as.Date(ctbs$when)
+              } else {
+                  ## Create an index and tabulate
+                  ctbs$index <- paste0(ctbs$when, ctbs$author, ctbs$email)
+                  count <- as.data.frame(table(ctbs$index),
+                                         stringsAsFactors=FALSE)
+                  names(count) <- c("index", "n")
+
+                  ## Match counts and clean result
+                  ctbs <- as.data.frame(ctbs)
+                  ctbs$n <- count$n[match(ctbs$index, count$index)]
+                  ctbs <- unique(ctbs[, c("when", "author", "n")])
+                  ctbs$when <- as.Date(substr(as.character(ctbs$when), 1, 10))
+                  ctbs <- ctbs[order(ctbs$when, ctbs$author),]
+                  row.names(ctbs) <- NULL
               }
 
-              ## Create an index and tabulate
-              df$index <- paste0(df$when, df$author, df$email)
-              count <- as.data.frame(table(df$index),
-                                     stringsAsFactors=FALSE)
-              names(count) <- c("index", "n")
-
-              ## Match counts and clean result
-              df$n <- count$n[match(df$index, count$index)]
-              df <- unique(df[, c("when", "author", "n")])
-              df$when <- as.Date(substr(as.character(df$when), 1, 10))
-              df <- df[order(df$when, df$author),]
-              row.names(df) <- NULL
-              return(df)
+              ctbs
           }
 )
