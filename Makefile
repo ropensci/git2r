@@ -17,6 +17,10 @@ readme: $(patsubst %.Rmd, %.md, $(wildcard *.Rmd))
 	rm README.md
 	mv README2.md README.md
 
+# Install package
+install:
+	cd .. && R CMD INSTALL $(PKG_NAME)
+
 # Build documentation with roxygen
 # 1) Check version of roxygen2 before building documentation
 # 2) Remove old doc
@@ -127,4 +131,4 @@ clean:
 	-rm -f src/http-parser/*.o
 	-rm -f src/regex/*.o
 
-.PHONY: all readme doc sync_libgit2 Makevars check clean
+.PHONY: all readme install roxygen sync_libgit2 Makevars check clean
