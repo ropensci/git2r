@@ -25,8 +25,8 @@ The \code{data.frame} have the following columns:
     String representation of the tree entry type
   }
 
-\item{id}{
-    The sha id of a tree entry
+\item{sha}{
+    The sha of a tree entry
   }
 
 \item{name}{

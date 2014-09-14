@@ -30,8 +30,8 @@
 ##'     String representation of the tree entry type
 ##'   }
 ##'
-##'   \item{id}{
-##'     The sha id of a tree entry
+##'   \item{sha}{
+##'     The sha of a tree entry
 ##'   }
 ##'
 ##'   \item{name}{
@@ -61,7 +61,7 @@ setAs(from = "git_tree",
       {
           data.frame(mode = sprintf("%06o", from@filemode),
                      type = from@type,
-                     id   = from@id,
+                     sha  = from@id,
                      name = from@name,
                      stringsAsFactors = FALSE)
       }
