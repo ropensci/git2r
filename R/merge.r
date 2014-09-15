@@ -53,9 +53,6 @@
 ##'
 ##' ## Check that merge base equals commit_1
 ##' stopifnot(identical(merge_base(commit_2, commit_3), commit_1))
-##'
-##' ## Cleanup
-##' unlink(path, recursive=TRUE)
 ##' }
 setGeneric("merge_base",
            signature = c("one", "two"),

@@ -51,9 +51,6 @@ commit_3 <- commit(repo, "Commit message branch_2")
 
 ## Check that merge base equals commit_1
 stopifnot(identical(merge_base(commit_2, commit_3), commit_1))
-
-## Cleanup
-unlink(path, recursive=TRUE)
 }
 }
 \keyword{methods}
