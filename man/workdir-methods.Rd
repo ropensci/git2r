@@ -21,8 +21,12 @@ Workdir of repository
 }
 \examples{
 \dontrun{
-## Open an existing repository
-repo <- repository("path/to/git2r")
+## Create a directory in tempdir
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+
+## Initialize a repository
+repo <- init(path)
 
 ## Get the path of the workdir for repository
 workdir(repo)
