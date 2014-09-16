@@ -1,6 +1,15 @@
 Under development
 -----------------
 
+NEW FEATURES
+
+* Add method 'odb_list' to list all objects available in the database.
+
+NEW S4 CLASSES
+
+* git_object to hold data (sha, type and len) when listing objects in
+  the database.
+
 IMPROVMENTS
 
 * Better performance when summarizing contributions
