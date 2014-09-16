@@ -826,3 +826,33 @@ setClass("git_merge_result",
                    conflicts    = "logical",
                    sha          = "character")
 )
+
+##' Class \code{"git_object"}
+##'
+##' @title S4 class to handle the objects in the database
+##' @section Slots:
+##' \describe{
+##'   \item{sha}{
+##'     The 40 character hexadecimal string of the SHA-1
+##'   }
+##'   \item{type}{
+##'     The type of the object read from the header.
+##'   }
+##'   \item{len}{
+##'     The length of the object read from the header.
+##'   }
+##'   \item{repo}{
+##'     The S4 class git_repository that contains the blob
+##'   }
+##' }
+##' @rdname git_object
+##' @docType class
+##' @keywords classes
+##' @keywords methods
+##' @export
+setClass("git_object",
+         slots = c(sha  = "character",
+                   type = "character",
+                   len  = "integer",
+                   repo = "git_repository")
+)
