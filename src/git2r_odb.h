@@ -24,5 +24,6 @@
 
 SEXP git2r_odb_hash(SEXP data);
 SEXP git2r_odb_hashfile(SEXP path);
+SEXP git2r_odb_list(SEXP repo);
 
 #endif

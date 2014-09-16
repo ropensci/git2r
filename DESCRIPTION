@@ -54,6 +54,7 @@ Collate:
     'markdown_link.r'
     'merge.r'
     'note.r'
+    'odb.r'
     'plot.r'
     'pull.r'
     'punch_card.r'
