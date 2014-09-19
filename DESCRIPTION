@@ -33,9 +33,6 @@ LazyData: true
 Biarch: true
 NeedsCompilation: yes
 Date: 2014-09-09
-Imports:
-    ggplot2,
-    scales
 Collate:
     'S4_classes.r'
     'blame.r'
@@ -55,9 +52,7 @@ Collate:
     'merge.r'
     'note.r'
     'odb.r'
-    'plot.r'
     'pull.r'
-    'punch_card.r'
     'push.r'
     'reference.r'
     'reflog.r'
