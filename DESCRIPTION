@@ -2,8 +2,7 @@ Package: git2r
 Title: Programmatic access to Git repositories from R.
 Description: git2r is a package for accessing Git repositories from R
     using the libgit2 library. The package enables running some basic
-    git commands from R and to extract and visualize descriptive
-    statistics from a Git repository.
+    git commands from R and to extract data from a Git repository.
 Version: 0.1
 Authors@R: c(person("Stefan", "Widgren", role = c("aut", "cre"),
     email = "stefan.widgren@gmail.com"),

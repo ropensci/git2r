@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/ropensci/git2r.png)](https://travis-ci.org/ropensci/git2r)  
-[![Build status](https://ci.appveyor.com/api/projects/status/h2vunr0lfqt8b45g)](https://ci.appveyor.com/project/karthik/git2r)  
+[![Build Status](https://travis-ci.org/ropensci/git2r.png)](https://travis-ci.org/ropensci/git2r)
+[![Build status](https://ci.appveyor.com/api/projects/status/h2vunr0lfqt8b45g)](https://ci.appveyor.com/project/karthik/git2r)
 
 # Introduction
 
@@ -286,16 +286,6 @@ commit(repo, "Commit message")
 #> When:    2014-04-22 21:44:57
 #> Summary: Commit message
 ```
-
-### Descriptive statistics from repository data
-
-Contributions by author on a weekly timeline
-
-```coffee
-plot(repo, breaks="week", by = "author")
-```
-
-![plot of chunk contributions](figure/contributions.png)
 
 # Included software
 
