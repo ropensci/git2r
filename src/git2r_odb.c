@@ -310,12 +310,6 @@ static int git2r_odb_add_blob(
     sha[GIT_OID_HEXSZ] = '\0';
     SET_STRING_ELT(VECTOR_ELT(list, j++), i, mkChar(sha));
 
-    /* Author */
-    SET_STRING_ELT(VECTOR_ELT(list, j++), i, mkChar(author));
-
-    /* When */
-    REAL(VECTOR_ELT(list, j++))[i] = when;
-
     /* Path */
     SET_STRING_ELT(VECTOR_ELT(list, j++), i, mkChar(path));
 
@@ -330,6 +324,12 @@ static int git2r_odb_add_blob(
 
     /* Commit sha */
     SET_STRING_ELT(VECTOR_ELT(list, j++), i, mkChar(commit));
+
+    /* Author */
+    SET_STRING_ELT(VECTOR_ELT(list, j++), i, mkChar(author));
+
+    /* When */
+    REAL(VECTOR_ELT(list, j++))[i] = when;
 
     return GIT_OK;
 }
@@ -516,10 +516,6 @@ SEXP git2r_odb_blobs(SEXP repo)
     SET_VECTOR_ELT(result, i,   allocVector(STRSXP,  cb_data.n));
     SET_STRING_ELT(names,  i++, mkChar("sha"));
     SET_VECTOR_ELT(result, i,   allocVector(STRSXP,  cb_data.n));
-    SET_STRING_ELT(names,  i++, mkChar("author"));
-    SET_VECTOR_ELT(result, i,   allocVector(REALSXP, cb_data.n));
-    SET_STRING_ELT(names,  i++, mkChar("when"));
-    SET_VECTOR_ELT(result, i,   allocVector(STRSXP,  cb_data.n));
     SET_STRING_ELT(names,  i++, mkChar("path"));
     SET_VECTOR_ELT(result, i,   allocVector(STRSXP,  cb_data.n));
     SET_STRING_ELT(names,  i++, mkChar("name"));
@@ -527,6 +523,10 @@ SEXP git2r_odb_blobs(SEXP repo)
     SET_STRING_ELT(names,  i++, mkChar("len"));
     SET_VECTOR_ELT(result, i,   allocVector(STRSXP,  cb_data.n));
     SET_STRING_ELT(names,  i++, mkChar("commit"));
+    SET_VECTOR_ELT(result, i,   allocVector(STRSXP,  cb_data.n));
+    SET_STRING_ELT(names,  i++, mkChar("author"));
+    SET_VECTOR_ELT(result, i,   allocVector(REALSXP, cb_data.n));
+    SET_STRING_ELT(names,  i++, mkChar("when"));
     setAttrib(result, R_NamesSymbol, names);
     UNPROTECT(1);
 
