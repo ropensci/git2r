@@ -22,6 +22,7 @@
 #include <R.h>
 #include <Rinternals.h>
 
+SEXP git2r_odb_blobs(SEXP repo);
 SEXP git2r_odb_hash(SEXP data);
 SEXP git2r_odb_hashfile(SEXP path);
 SEXP git2r_odb_list(SEXP repo);
