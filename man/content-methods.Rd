@@ -15,7 +15,7 @@ content(blob, split = TRUE)
 \item{split}{Split blob content to text lines. Default TRUE.}
 }
 \value{
-The content of the blob
+The content of the blob. NA_character_ if the blob is binary.
 }
 \description{
 Content of blob

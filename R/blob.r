@@ -86,7 +86,7 @@ setMethod("blob_create",
 ##' @docType methods
 ##' @param blob The blob \code{object}.
 ##' @param split Split blob content to text lines. Default TRUE.
-##' @return The content of the blob
+##' @return The content of the blob. NA_character_ if the blob is binary.
 ##' @keywords methods
 ##' @examples
 ##' \dontrun{
@@ -117,7 +117,7 @@ setMethod("content",
           function (blob, split)
           {
               if (is_binary(blob))
-                  stop("Content of binary blob is not supported (yet)")
+                  return(NA_character_)
 
               ret <- .Call(git2r_blob_content, blob)
               if (identical(split, TRUE))
