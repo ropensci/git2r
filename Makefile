@@ -30,6 +30,12 @@ roxygen:
 	rm -f man/*.Rd
 	cd .. && Rscript -e "library(roxygen2); roxygenize('$(PKG_NAME)')"
 
+# Generate PDF output from the Rd sources
+# 1) Rebuild documentation with roxygen
+# 2) Generate pdf, overwrites output file if it exists
+pdf: roxygen
+	cd .. && R CMD Rd2pdf --force $(PKG_NAME)
+
 # Build and check package
 check: clean
 	cd .. && R CMD build --no-build-vignettes $(PKG_NAME)
