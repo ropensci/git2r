@@ -25,11 +25,17 @@ Init a repository
 }
 \examples{
 \dontrun{
-## Init a repository
-repo <- init("path/to/repository-1")
+## Initialize a repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+repo <- init(path)
+is_bare(repo)
 
-## Init a bare repository
-repo <- init("path/to/repository-2", bare = TRUE)
+## Initialize a bare repository
+path_bare <- tempfile(pattern="git2r-")
+dir.create(path_bare)
+repo_bare <- init(path_bare, bare = TRUE)
+is_bare(repo_bare)
 }
 }
 \seealso{
