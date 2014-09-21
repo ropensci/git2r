@@ -338,15 +338,21 @@ setMethod("head",
 ##' @param repo The repository to check if it's bare
 ##' @return TRUE if bare repository, else FALSE
 ##' @keywords methods
+##' @seealso \link{init}
 ##' @examples
 ##' \dontrun{
-##' ## Open an existing repository
-##' repo <- repository("path/to/git2r")
-##'
-##' ## Check if it's a bare repository
+##' ## Initialize a repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
 ##' is_bare(repo)
-##' }
 ##'
+##' ## Initialize a bare repository
+##' path_bare <- tempfile(pattern="git2r-")
+##' dir.create(path_bare)
+##' repo_bare <- init(path_bare, bare = TRUE)
+##' is_bare(repo_bare)
+##' }
 setGeneric("is_bare",
            signature = "repo",
            function(repo)

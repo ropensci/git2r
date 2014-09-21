@@ -20,12 +20,21 @@ Check if repository is bare
 }
 \examples{
 \dontrun{
-## Open an existing repository
-repo <- repository("path/to/git2r")
-
-## Check if it's a bare repository
+## Initialize a repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+repo <- init(path)
 is_bare(repo)
+
+## Initialize a bare repository
+path_bare <- tempfile(pattern="git2r-")
+dir.create(path_bare)
+repo_bare <- init(path_bare, bare = TRUE)
+is_bare(repo_bare)
 }
+}
+\seealso{
+\link{init}
 }
 \keyword{methods}
 
