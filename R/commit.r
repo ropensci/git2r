@@ -139,12 +139,30 @@ setMethod("commits",
 ##' @keywords methods
 ##' @examples
 ##' \dontrun{
-##' ## Open an existing repository
-##' repo <- repository("path/to/git2r")
+##' ## Create a directory in tempdir
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
 ##'
-##' descendant_of(commits(repo)[[1]], commits(repo)[[2]])
+##' ## Initialize a repository
+##' repo <- init(path)
+##' config(repo, user.name="Developer", user.email="developer@@example.org")
+##'
+##' ## Create a file, add and commit
+##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+##'            con = file.path(path, "test.txt"))
+##' add(repo, "test.txt")
+##' commit_1 <- commit(repo, "Commit message 1")
+##'
+##' # Change file and commit
+##' writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+##'              "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
+##'              con = file.path(path, "test.txt"))
+##' add(repo, "test.txt")
+##' commit_2 <- commit(repo, "Commit message 2")
+##'
+##' descendant_of(commit_1, commit_2)
+##' descendant_of(commit_2, commit_1)
 ##' }
-##'
 setGeneric("descendant_of",
            signature = c("commit", "ancestor"),
            function(commit, ancestor)
