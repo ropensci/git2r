@@ -24,10 +24,12 @@ install:
 # Build documentation with roxygen
 # 1) Check version of roxygen2 before building documentation
 # 2) Remove old doc
-# 3) Generate documentation
+# 3) Rebuild DESCRIPTION
+# 4) Generate documentation
 roxygen:
 	Rscript -e "library(roxygen2); stopifnot(packageVersion('roxygen2') == '$(ROXYGEN_VERSION)')"
 	rm -f man/*.Rd
+	Rscript scripts/build_DESCRIPTION.r
 	cd .. && Rscript -e "library(roxygen2); roxygenize('$(PKG_NAME)')"
 
 # Generate PDF output from the Rd sources
@@ -81,7 +83,7 @@ sync_libgit2:
 	-rm -f src/libgit2/win32/*.h
 	-rm -f src/libgit2/xdiff/*.c
 	-rm -f src/libgit2/xdiff/*.h
-	-rm -f inst/AUTHORS_libgit2
+	-rm -f scripts/AUTHORS_libgit2
 	-rm -f inst/NOTICE
 	-cp -f ../libgit2/deps/http-parser/* src/http-parser
 	-cp -f ../libgit2/deps/regex/* src/regex
@@ -100,7 +102,7 @@ sync_libgit2:
 	-cp -f ../libgit2/src/win32/*.h src/libgit2/win32
 	-cp -f ../libgit2/src/xdiff/*.c src/libgit2/xdiff
 	-cp -f ../libgit2/src/xdiff/*.h src/libgit2/xdiff
-	-cp -f ../libgit2/AUTHORS inst/AUTHORS_libgit2
+	-cp -f ../libgit2/AUTHORS scripts/AUTHORS_libgit2
 	-cp -f ../libgit2/COPYING inst/NOTICE
 	cd src/libgit2 && patch -i ../../patches/cache-pass-R-CMD-check-git2r.patch
 	cd src/libgit2 && patch -p0 < ../../patches/diff_print-pass-R-CMD-check-git2r.patch
