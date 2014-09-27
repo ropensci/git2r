@@ -28,11 +28,22 @@
 ##' @include S4_classes.r
 ##' @examples
 ##' \dontrun{
-##' ## Open an existing repository
-##' repo <- repository("path/to/git2r")
+##' ## Initialize a repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
 ##'
-##' ## Add file repository
-##' add(repo, "file-to-add")
+##' ## Create a user
+##' config(repo, user.name="Developer", user.email="developer@@example.org")
+##'
+##' ## Create a file
+##' writeLines("Hello world!", file.path(path, "file-to-add.txt"))
+##'
+##' ## Add file to repository
+##' add(repo, "file-to-add.txt")
+##'
+##' ## View status of repository
+##' status(repo)
 ##' }
 ##'
 setGeneric("add",
