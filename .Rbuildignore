@@ -9,5 +9,6 @@
 ^misc$
 ^patches$
 ^scripts$
+^.xapian$
 ^CONTRIBUTING.md$
 appveyor.yml
