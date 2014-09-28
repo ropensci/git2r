@@ -43,8 +43,9 @@ tools::assertError(repository(path))
 repo <- init(path)
 
 ##
-## Check that the state of the repository
+## Check the state of the repository
 ##
+stopifnot(validObject(repo))
 stopifnot(identical(is_bare(repo), FALSE))
 stopifnot(identical(is_empty(repo), TRUE))
 stopifnot(identical(is_shallow(repo), FALSE))
