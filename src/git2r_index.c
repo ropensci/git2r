@@ -24,50 +24,6 @@
 #include "git2r_repository.h"
 
 /**
- * Add files to a repository
- *
- * @param repo S4 class git_repository
- * @param path Character vector with filename to add. The file path
- * must be relative to the repository's working folder.
- * @return R_NilValue
- */
-SEXP git2r_index_add(SEXP repo, SEXP path)
-{
-    int err;
-    git_index *index = NULL;
-    git_repository *repository = NULL;
-
-    if (GIT_OK != git2r_arg_check_string(path))
-        git2r_error(git2r_err_string_arg, __func__, "path");
-
-    repository= git2r_repository_open(repo);
-    if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
-
-    err = git_repository_index(&index, repository);
-    if (GIT_OK != err)
-        goto cleanup;
-
-    err = git_index_add_bypath(index, CHAR(STRING_ELT(path, 0)));
-    if (GIT_OK != err)
-        goto cleanup;
-
-    err = git_index_write(index);
-
-cleanup:
-    if (index)
-        git_index_free(index);
-
-    if (repository)
-        git_repository_free(repository);
-
-    if (GIT_OK != err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
-
-    return R_NilValue;
-}
-
-/**
  * Add or update index entries matching files in the working
  * directory.
  *

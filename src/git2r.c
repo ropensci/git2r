@@ -92,7 +92,6 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_diff", (DL_FUNC)&git2r_diff, 5},
     {"git2r_graph_ahead_behind", (DL_FUNC)&git2r_graph_ahead_behind, 2},
     {"git2r_graph_descendant_of", (DL_FUNC)&git2r_graph_descendant_of, 2},
-    {"git2r_index_add", (DL_FUNC)&git2r_index_add, 2},
     {"git2r_index_add_all", (DL_FUNC)&git2r_index_add_all, 2},
     {"git2r_libgit2_features", (DL_FUNC)&git2r_libgit2_features, 0},
     {"git2r_libgit2_version", (DL_FUNC)&git2r_libgit2_version, 0},
