@@ -5,13 +5,13 @@
 \alias{merge,git_branch-method}
 \title{Merge a branch into HEAD}
 \usage{
-merge(object, ...)
+merge(branch, ...)
 
-\S4method{merge}{git_branch}(object, commit_on_success = TRUE,
+\S4method{merge}{git_branch}(branch, commit_on_success = TRUE,
   merger = default_signature(repo))
 }
 \arguments{
-\item{object}{A \code{\linkS4class{git_branch}} object to merge
+\item{branch}{A \code{\linkS4class{git_branch}} object to merge
 into HEAD.}
 
 \item{...}{Additional arguments affecting the merge}

@@ -75,15 +75,15 @@ setMethod("merge_base",
 ##'
 ##' @rdname merge-methods
 ##' @docType methods
-##' @param object A \code{\linkS4class{git_branch}} object to merge
+##' @param branch A \code{\linkS4class{git_branch}} object to merge
 ##' into HEAD.
 ##' @param ... Additional arguments affecting the merge
 ##' @return A \code{\linkS4class{git_merge_result}} object.
 ##' @keywords methods
 ##' @include S4_classes.r
 setGeneric("merge",
-           signature = c("object"),
-           function(object, ...)
+           signature = c("branch"),
+           function(branch, ...)
            standardGeneric("merge"))
 
 ##' @rdname merge-methods
@@ -92,13 +92,13 @@ setGeneric("merge",
 ##' @param merger Who made the merge.
 ##' @export
 setMethod("merge",
-          signature(object = "git_branch"),
-          function(object,
+          signature(branch = "git_branch"),
+          function(branch,
                    commit_on_success = TRUE,
                    merger = default_signature(repo))
           {
               .Call(git2r_merge_branch,
-                    object,
+                    branch,
                     merger,
                     commit_on_success)
           }
