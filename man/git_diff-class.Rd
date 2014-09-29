@@ -16,7 +16,7 @@ Git diff
     :TODO:DOCUMENTATION:
   }
   \item{files}{
-    :TODO:DOCUMENTATION:
+    List of \code{\linkS4class{git_diff_file}} objects.
   }
 }
 }

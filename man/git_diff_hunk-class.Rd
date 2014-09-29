@@ -22,7 +22,7 @@ Git diff hunk
     Number of lines in new_file.
   }
   \item{header}{
-    :TODO:DOCUMENTATION:
+    Header text.
   }
   \item{lines}{
     :TODO:DOCUMENTATION:

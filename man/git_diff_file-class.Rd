@@ -16,7 +16,7 @@ Git diff file
     :TODO:DOCUMENTATION:
   }
   \item{hunks}{
-    :TODO:DOCUMENTATION:
+    List of \code{\linkS4class{git_diff_hunk}} objects.
   }
 }
 }

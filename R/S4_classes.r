@@ -390,7 +390,7 @@ setClass("git_commit",
 ##'     :TODO:DOCUMENTATION:
 ##'   }
 ##'   \item{files}{
-##'     :TODO:DOCUMENTATION:
+##'     List of \code{\linkS4class{git_diff_file}} objects.
 ##'   }
 ##' }
 ##' @name git_diff-class
@@ -415,7 +415,7 @@ setClass("git_diff",
 ##'     :TODO:DOCUMENTATION:
 ##'   }
 ##'   \item{hunks}{
-##'     :TODO:DOCUMENTATION:
+##'     List of \code{\linkS4class{git_diff_hunk}} objects.
 ##'   }
 ##' }
 ##' @name git_diff_file-class
@@ -444,7 +444,7 @@ setClass("git_diff_file",
 ##'     Number of lines in new_file.
 ##'   }
 ##'   \item{header}{
-##'     :TODO:DOCUMENTATION:
+##'     Header text.
 ##'   }
 ##'   \item{lines}{
 ##'     :TODO:DOCUMENTATION:
@@ -467,7 +467,7 @@ setClass("git_diff_hunk",
 ##' @section Slots:
 ##' \describe{
 ##'   \item{origin}{
-##'     :TODO:DOCUMENTATION:
+##'     Line origin constants.
 ##'   }
 ##'   \item{old_lineno}{
 ##'     Line number in old file or -1 for added line.
@@ -479,7 +479,7 @@ setClass("git_diff_hunk",
 ##'     Number of newline characters in content.
 ##'   }
 ##'   \item{content}{
-##'     :TODO:DOCUMENTATION:
+##'     The diff text.
 ##'   }
 ##' }
 ##' @name git_diff_line-class

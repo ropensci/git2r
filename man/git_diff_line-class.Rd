@@ -10,7 +10,7 @@ Git diff line
 
 \describe{
   \item{origin}{
-    :TODO:DOCUMENTATION:
+    Line origin constants.
   }
   \item{old_lineno}{
     Line number in old file or -1 for added line.
@@ -22,7 +22,7 @@ Git diff line
     Number of newline characters in content.
   }
   \item{content}{
-    :TODO:DOCUMENTATION:
+    The diff text.
   }
 }
 }
