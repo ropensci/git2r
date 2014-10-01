@@ -55,6 +55,10 @@ push(repo_1, "origin", "refs/heads/master")
 pull(repo_2)
 stopifnot(identical(length(commits(repo_2)), 2L))
 
+## Check remote url of repo_2
+stopifnot(identical(branch_remote_url(branch_get_upstream(head(repo_2))),
+                    path_bare))
+
 ## Cleanup
 unlink(path_bare, recursive=TRUE)
 unlink(path_repo_1, recursive=TRUE)
