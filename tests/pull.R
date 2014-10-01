@@ -59,6 +59,30 @@ stopifnot(identical(length(commits(repo_2)), 2L))
 stopifnot(identical(branch_remote_url(branch_get_upstream(head(repo_2))),
                     path_bare))
 
+## Unset remote remote tracking branch
+branch_set_upstream(head(repo_2), NULL)
+stopifnot(is.null(branch_get_upstream(head(repo_2))))
+tools::assertError(pull(repo_2))
+tools::assertError(branch_set_upstream(head(repo_2), NULL))
+
+## Add more changes to repo 1 and push to bare
+writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+             "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad",
+             "minim veniam, quis nostrud exercitation ullamco laboris nisi ut"),
+           con = file.path(path_repo_1, "test-1.txt"))
+add(repo_1, "test-1.txt")
+commit(repo_1, "Third commit message")
+push(repo_1)
+
+## Set remote tracking branch
+branch_set_upstream(head(repo_2), "origin/master")
+stopifnot(identical(branch_remote_url(branch_get_upstream(head(repo_2))),
+                    path_bare))
+
+## Pull changes to repo_2
+pull(repo_2)
+stopifnot(identical(length(commits(repo_2)), 3L))
+
 ## Cleanup
 unlink(path_bare, recursive=TRUE)
 unlink(path_repo_1, recursive=TRUE)
