@@ -71,7 +71,7 @@ writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
              "minim veniam, quis nostrud exercitation ullamco laboris nisi ut"),
            con = file.path(path_repo_1, "test-1.txt"))
 add(repo_1, "test-1.txt")
-commit(repo_1, "Third commit message")
+commit_3 <- commit(repo_1, "Third commit message")
 push(repo_1)
 
 ## Set remote tracking branch
@@ -82,6 +82,24 @@ stopifnot(identical(branch_remote_url(branch_get_upstream(head(repo_2))),
 ## Pull changes to repo_2
 pull(repo_2)
 stopifnot(identical(length(commits(repo_2)), 3L))
+
+## Check references in repo_1 and repo_2
+stopifnot(identical(length(references(repo_1)), 2L))
+stopifnot(identical(references(repo_1), references(repo_2)))
+
+ref_1 <- references(repo_1)[["refs/heads/master"]]
+stopifnot(identical(ref_1@name, "refs/heads/master"))
+stopifnot(identical(ref_1@type, 1L))
+stopifnot(identical(ref_1@sha, commit_3@sha))
+stopifnot(identical(ref_1@target, NA_character_))
+stopifnot(identical(ref_1@shorthand, "master"))
+
+ref_2 <- references(repo_1)[["refs/remotes/origin/master"]]
+stopifnot(identical(ref_2@name, "refs/remotes/origin/master"))
+stopifnot(identical(ref_2@type, 1L))
+stopifnot(identical(ref_2@sha, commit_3@sha))
+stopifnot(identical(ref_2@target, NA_character_))
+stopifnot(identical(ref_2@shorthand, "origin/master"))
 
 ## Cleanup
 unlink(path_bare, recursive=TRUE)
