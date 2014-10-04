@@ -43,6 +43,8 @@ const char git2r_err_credentials_arg[] =
     "Error in '%s': '%s' must be a S4 class with credentials";
 const char git2r_err_diff_arg[] =
     "Error in '%s': Invalid diff parameters";
+const char git2r_err_fetch_heads_arg[] =
+    "Error in '%s': '%s' must be a list of S4 git_fetch_head objects";
 const char git2r_err_filename_arg[] =
     "Error in '%s': '%s' must be either 1) NULL, or 2) a character vector of length 0 or 3) a character vector of length 1 and nchar > 0";
 const char git2r_err_sha_arg[] =

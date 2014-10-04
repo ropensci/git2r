@@ -38,6 +38,7 @@ extern const char git2r_err_branch_arg[];
 extern const char git2r_err_commit_arg[];
 extern const char git2r_err_credentials_arg[];
 extern const char git2r_err_diff_arg[];
+extern const char git2r_err_fetch_heads_arg[];
 extern const char git2r_err_filename_arg[];
 extern const char git2r_err_sha_arg[];
 extern const char git2r_err_integer_arg[];

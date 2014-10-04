@@ -160,6 +160,49 @@ int git2r_arg_check_credentials(SEXP arg)
 }
 
 /**
+ * Check fetch_heads argument
+ *
+ * It's OK:
+ *  - A list with S4 class git_fetch_head objects
+ * @param arg the arg to check
+ * @return GIT_OK if OK, else GIT_ERROR
+ */
+int git2r_arg_check_fetch_heads(SEXP arg)
+{
+    const char *repo = NULL;
+    size_t i,n;
+
+    if (R_NilValue == arg || VECSXP != TYPEOF(arg))
+        return GIT_ERROR;
+
+    /* Check that the repository paths are identical for each item */
+    n = Rf_length(arg);
+    for (i = 0; i < n; i++) {
+        SEXP path;
+        SEXP class_name;
+        SEXP item = VECTOR_ELT(arg, i);
+
+        if (R_NilValue == item || S4SXP != TYPEOF(item))
+            return GIT_ERROR;
+
+        class_name = getAttrib(item, R_ClassSymbol);
+        if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_fetch_head"))
+            return GIT_ERROR;
+
+        path = GET_SLOT(GET_SLOT(item, Rf_install("repo")), Rf_install("path"));
+        if (GIT_OK != git2r_arg_check_string(path))
+            return GIT_ERROR;
+
+        if (0 == i)
+            repo = CHAR(STRING_ELT(path, 0));
+        else if (0 != strcmp(repo, CHAR(STRING_ELT(path, 0))))
+            return GIT_ERROR;
+    }
+
+    return GIT_OK;
+}
+
+/**
  * Check filename argument
  *
  * It's OK:

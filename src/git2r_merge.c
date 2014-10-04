@@ -619,6 +619,8 @@ SEXP git2r_merge_fetch_heads(SEXP fetch_heads, SEXP merger)
     git_repository *repository = NULL;
     git_signature *who = NULL;
 
+    if (GIT_OK != git2r_arg_check_fetch_heads(fetch_heads))
+        git2r_error(git2r_err_fetch_heads_arg, __func__, "fetch_heads");
     if (GIT_OK != git2r_arg_check_signature(merger))
         git2r_error(git2r_err_signature_arg, __func__, "merger");
 
