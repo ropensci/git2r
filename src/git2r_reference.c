@@ -70,10 +70,9 @@ SEXP git2r_reference_list(SEXP repo)
     int err;
     size_t i;
     git_strarray ref_list;
-    SEXP list = R_NilValue;
+    SEXP result = R_NilValue;
     SEXP names = R_NilValue;
-    git_reference *ref;
-    git_repository *repository;
+    git_repository *repository = NULL;
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -83,11 +82,14 @@ SEXP git2r_reference_list(SEXP repo)
     if (GIT_OK != err)
         goto cleanup;
 
-    PROTECT(list = allocVector(VECSXP, ref_list.count));
+    PROTECT(result = allocVector(VECSXP, ref_list.count));
     PROTECT(names = allocVector(STRSXP, ref_list.count));
+    setAttrib(result, R_NamesSymbol, names);
+    UNPROTECT(1);
 
     for (i = 0; i < ref_list.count; i++) {
         SEXP reference;
+        git_reference *ref = NULL;
 
         err = git_reference_lookup(&ref, repository, ref_list.strings[i]);
         if (GIT_OK != err)
@@ -96,8 +98,11 @@ SEXP git2r_reference_list(SEXP repo)
         PROTECT(reference = NEW_OBJECT(MAKE_CLASS("git_reference")));
         git2r_reference_init(ref, reference);
         SET_STRING_ELT(names, i, mkChar(ref_list.strings[i]));
-        SET_VECTOR_ELT(list, i, reference);
+        SET_VECTOR_ELT(result, i, reference);
         UNPROTECT(1);
+
+        if (ref)
+            git_reference_free(ref);
     }
 
 cleanup:
@@ -106,13 +111,11 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != list && R_NilValue != names) {
-        setAttrib(list, R_NamesSymbol, names);
-        UNPROTECT(2);
-    }
+    if (R_NilValue != result)
+        UNPROTECT(1);
 
     if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
-    return list;
+    return result;
 }
