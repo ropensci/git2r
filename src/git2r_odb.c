@@ -120,14 +120,13 @@ SEXP git2r_odb_hashfile(SEXP path)
 typedef struct {
     size_t n;
     SEXP list;
-    SEXP repo;
     git_odb *odb;
-} git2r_odb_list_cb_data;
+} git2r_odb_objects_cb_data;
 
 /**
  * Add object
  *
- * @param id Oid of the object
+ * @param oid Oid of the object
  * @param list The list to hold the S4 class git_object
  * @param i The index to the list item
  * @param type The type of the object
@@ -136,72 +135,61 @@ typedef struct {
  * @return void
  */
 static void git2r_add_object(
-    const git_oid *id,
+    const git_oid *oid,
     SEXP list,
     size_t i,
     const char *type,
-    size_t len,
-    SEXP repo)
+    size_t len)
 {
+    int j = 0;
     char sha[GIT_OID_HEXSZ + 1];
-    SEXP object;
 
-    PROTECT(object = NEW_OBJECT(MAKE_CLASS("git_object")));
-
-    git_oid_fmt(sha, id);
+    /* Sha */
+    git_oid_fmt(sha, oid);
     sha[GIT_OID_HEXSZ] = '\0';
-    SET_SLOT(object,
-             Rf_install("sha"),
-             ScalarString(mkChar(sha)));
+    SET_STRING_ELT(VECTOR_ELT(list, j++), i, mkChar(sha));
 
-    SET_SLOT(object,
-             Rf_install("type"),
-             ScalarString(mkChar(type)));
+    /* Type */
+    SET_STRING_ELT(VECTOR_ELT(list, j++), i, mkChar(type));
 
-    SET_SLOT(object,
-             Rf_install("len"),
-             ScalarInteger(len));
-
-    SET_SLOT(object, Rf_install("repo"), duplicate(repo));
-
-    SET_VECTOR_ELT(list, i, object);
-    UNPROTECT(1);
+    /* Length */
+    INTEGER(VECTOR_ELT(list, j++))[i] = len;
 }
 
 /**
  * Callback when iterating over objects
  *
- * @param id Oid of the object
+ * @param oid Oid of the object
  * @param payload Payload data
  * @return int 0 or error code
  */
-static int git2r_odb_list_cb(const git_oid *id, void *payload)
+static int git2r_odb_objects_cb(const git_oid *oid, void *payload)
 {
     int err;
     size_t len;
     git_otype type;
-    git2r_odb_list_cb_data *p = (git2r_odb_list_cb_data*)payload;
+    git2r_odb_objects_cb_data *p = (git2r_odb_objects_cb_data*)payload;
 
-    err = git_odb_read_header(&len, &type, p->odb, id);
+    err = git_odb_read_header(&len, &type, p->odb, oid);
     if (GIT_OK != err)
         return err;
 
     switch(type) {
     case GIT_OBJ_COMMIT:
         if (R_NilValue != p->list)
-            git2r_add_object(id, p->list, p->n, "commit", len, p->repo);
+            git2r_add_object(oid, p->list, p->n, "commit", len);
         break;
     case GIT_OBJ_TREE:
         if (R_NilValue != p->list)
-            git2r_add_object(id, p->list, p->n, "tree", len, p->repo);
+            git2r_add_object(oid, p->list, p->n, "tree", len);
         break;
     case GIT_OBJ_BLOB:
         if (R_NilValue != p->list)
-            git2r_add_object(id, p->list, p->n, "blob", len, p->repo);
+            git2r_add_object(oid, p->list, p->n, "blob", len);
         break;
     case GIT_OBJ_TAG:
         if (R_NilValue != p->list)
-            git2r_add_object(id, p->list, p->n, "blob", len, p->repo);
+            git2r_add_object(oid, p->list, p->n, "tag", len);
         break;
     default:
         return 0;
@@ -218,11 +206,12 @@ static int git2r_odb_list_cb(const git_oid *id, void *payload)
  * @param repo S4 class git_repository
  * @return list with sha's for commit's, tree's, blob's and tag's
  */
-SEXP git2r_odb_list(SEXP repo)
+SEXP git2r_odb_objects(SEXP repo)
 {
-    int err;
+    int i, err;
     SEXP result = R_NilValue;
-    git2r_odb_list_cb_data cb_data = {0, R_NilValue, R_NilValue, NULL};
+    SEXP names = R_NilValue;
+    git2r_odb_objects_cb_data cb_data = {0, R_NilValue, NULL};
     git_odb *odb = NULL;
     git_repository *repository = NULL;
 
@@ -236,19 +225,25 @@ SEXP git2r_odb_list(SEXP repo)
     cb_data.odb = odb;
 
     /* Count number of objects before creating the list */
-    err = git_odb_foreach(odb, &git2r_odb_list_cb, &cb_data);
+    err = git_odb_foreach(odb, &git2r_odb_objects_cb, &cb_data);
     if (GIT_OK != err)
         goto cleanup;
 
-    PROTECT(result = allocVector(VECSXP, cb_data.n));
+    PROTECT(result = allocVector(VECSXP, 3));
+    PROTECT(names = allocVector(STRSXP, 3));
+    i = 0;
+    SET_VECTOR_ELT(result, i,   allocVector(STRSXP,  cb_data.n));
+    SET_STRING_ELT(names,  i++, mkChar("sha"));
+    SET_VECTOR_ELT(result, i,   allocVector(STRSXP,  cb_data.n));
+    SET_STRING_ELT(names,  i++, mkChar("type"));
+    SET_VECTOR_ELT(result, i,   allocVector(INTSXP,  cb_data.n));
+    SET_STRING_ELT(names,  i++, mkChar("len"));
+    setAttrib(result, R_NamesSymbol, names);
+    UNPROTECT(1);
+
     cb_data.list = result;
-    cb_data.repo = repo;
     cb_data.n = 0;
-    err = git_odb_foreach(odb, &git2r_odb_list_cb, &cb_data);
-    if (GIT_OK != err) {
-        UNPROTECT(4);
-        goto cleanup;
-    }
+    err = git_odb_foreach(odb, &git2r_odb_objects_cb, &cb_data);
 
 cleanup:
     if (repository)

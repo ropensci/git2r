@@ -89,22 +89,50 @@ setMethod("odb_blobs",
 
 ##' List all objects available in the database
 ##'
-##' @rdname odb_list-methods
+##' @rdname odb_objects-methods
 ##' @docType methods
 ##' @param repo The repository
-##' @return list of S4 class git_object \code{objects}
+##' @return A data.frame with the following columns:
+##' \describe{
+##'   \item{sha}{The sha of the object}
+##'   \item{type}{The type of the object}
+##'   \item{len}{The length of the object}
+##' }
 ##' @keywords methods
-setGeneric("odb_list",
+##' @examples \dontrun{
+##' ## Create a directory in tempdir
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##'
+##' ## Initialize a repository
+##' repo <- init(path)
+##' config(repo, user.name="Developer", user.email="developer@@example.org")
+##'
+##' ## Create a file, add and commit
+##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+##'            con = file.path(path, "test.txt"))
+##' add(repo, "test.txt")
+##' commit(repo, "Commit message 1")
+##'
+##' ## Create tag
+##' tag(repo, "Tagname", "Tag message")
+##'
+##' ## List objects in repository
+##' odb_objects(repo)
+##' }
+setGeneric("odb_objects",
            signature = "repo",
            function(repo)
-           standardGeneric("odb_list"))
+           standardGeneric("odb_objects"))
 
-##' @rdname odb_list-methods
+##' @rdname odb_objects-methods
 ##' @export
-setMethod("odb_list",
+setMethod("odb_objects",
           signature(repo = "git_repository"),
           function(repo)
           {
-              .Call(git2r_odb_list, repo)
+              data.frame(.Call(git2r_odb_objects, repo),
+                         stringsAsFactors = FALSE)
+
           }
 )
