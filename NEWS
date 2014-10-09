@@ -3,12 +3,13 @@ Under development
 
 NEW FEATURES
 
-* Add method 'odb_list' to list all objects available in the database.
+* Add method 'odb_objects' to list all objects available in the
+  database as a data.frame
 
-NEW S4 CLASSES
+CHANGES
 
-* git_object to hold data (sha, type and len) when listing objects in
-  the database.
+* Remove ggplot2 dependency. Moved plot functionality to the ggit
+  package (https://github.com/ropensci/ggit).
 
 IMPROVMENTS
 
