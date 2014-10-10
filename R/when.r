@@ -25,12 +25,25 @@
 ##' @return A \code{character} vector of length one.
 ##' @keywords methods
 ##' @include S4_classes.r
-##' @examples \dontrun{
-##' ## Open an existing repository
-##' repo <- repository("path/to/git2r")
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a first user and commit a file
+##' config(repo, user.name="Author", user.email="author@@example.org")
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit(repo, "First commit message")
+##'
+##' ## Create tag
+##' tag(repo, "Tagname", "Tag message")
 ##'
 ##' when(commits(repo)[[1]])
-##'}
+##' when(tags(repo)[[1]])
+##' }
 setGeneric("when",
            signature = "object",
            function(object)
