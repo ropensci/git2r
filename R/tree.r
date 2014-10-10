@@ -104,6 +104,22 @@ setAs(from = "git_tree",
 ##' @return A S4 class git_tree object
 ##' @keywords methods
 ##' @include S4_classes.r
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a first user and commit a file
+##' config(repo, user.name="Author", user.email="author@@example.org")
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit(repo, "First commit message")
+##'
+##' tree(commits(repo)[[1]])
+##' summary(tree(commits(repo)[[1]]))
+##' }
 setGeneric("tree",
            signature = "object",
            function(object) standardGeneric("tree"))
