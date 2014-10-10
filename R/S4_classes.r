@@ -544,7 +544,8 @@ setClass("git_note",
 ##'     The 40 character hexadecimal string of the SHA-1
 ##'   }
 ##'   \item{target}{
-##'     :TODO:DOCUMENTATION:
+##'     The full name to the reference pointed to by a
+##'     symbolic reference.
 ##'   }
 ##'   \item{shorthand}{
 ##'     The reference's short name
