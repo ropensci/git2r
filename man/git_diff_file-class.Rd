@@ -10,10 +10,10 @@ Git diff file
 
 \describe{
   \item{old_file}{
-    :TODO:DOCUMENTATION:
+    Filename for old side of diff.
   }
   \item{new_file}{
-    :TODO:DOCUMENTATION:
+    Filename for new side of diff.
   }
   \item{hunks}{
     List of \code{\linkS4class{git_diff_hunk}} objects.

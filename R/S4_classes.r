@@ -409,10 +409,10 @@ setClass("git_diff",
 ##' @section Slots:
 ##' \describe{
 ##'   \item{old_file}{
-##'     :TODO:DOCUMENTATION:
+##'     Filename for old side of diff.
 ##'   }
 ##'   \item{new_file}{
-##'     :TODO:DOCUMENTATION:
+##'     Filename for new side of diff.
 ##'   }
 ##'   \item{hunks}{
 ##'     List of \code{\linkS4class{git_diff_hunk}} objects.
@@ -447,7 +447,7 @@ setClass("git_diff_file",
 ##'     Header text.
 ##'   }
 ##'   \item{lines}{
-##'     :TODO:DOCUMENTATION:
+##'     List with \code{\linkS4class{git_diff_line}} objects.
 ##'   }
 ##' }
 ##' @name git_diff_hunk-class

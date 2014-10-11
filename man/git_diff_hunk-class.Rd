@@ -25,7 +25,7 @@ Git diff hunk
     Header text.
   }
   \item{lines}{
-    :TODO:DOCUMENTATION:
+    List with \code{\linkS4class{git_diff_line}} objects.
   }
 }
 }
