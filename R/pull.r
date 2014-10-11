@@ -24,6 +24,67 @@
 ##' @return invisible(NULL)
 ##' @keywords methods
 ##' @include S4_classes.r
+##' @examples
+##' \dontrun{
+##' ## Initialize repositories
+##' path_bare <- tempfile(pattern="git2r-")
+##' path_repo_1 <- tempfile(pattern="git2r-")
+##' path_repo_2 <- tempfile(pattern="git2r-")
+##' dir.create(path_bare)
+##' dir.create(path_repo_1)
+##' dir.create(path_repo_2)
+##' repo_bare <- init(path_bare, bare = TRUE)
+##' repo_1 <- clone(path_bare, path_repo_1)
+##'
+##' ## Config first user and commit a file
+##' config(repo_1, user.name="Author One", user.email="author.one@@example.org")
+##'
+##' ## Write to a file and commit
+##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+##'            file.path(path_repo_1, "example.txt"))
+##' add(repo_1, "example.txt")
+##' commit(repo_1, "First commit message")
+##'
+##' ## Push commits from first repository to bare repository
+##' ## Adds an upstream tracking branch to branch 'master'
+##' push(repo_1, "origin", "refs/heads/master")
+##'
+##' ## Clone to second repository
+##' repo_2 <- clone(path_bare, path_repo_2)
+##' config(repo_2, user.name="Author Two", user.email="author.two@@example.org")
+##'
+##' ## Change file and commit
+##' writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+##'              "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
+##'            file.path(path_repo_1, "example.txt"))
+##' add(repo_1, "example.txt")
+##' commit(repo_1, "Second commit message")
+##'
+##' ## Push commits from first repository to bare repository
+##' push(repo_1)
+##'
+##' ## Pull changes to repo_2
+##' pull(repo_2)
+##'
+##' ## Change file again and commit. This time in repository 2
+##' writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+##'              "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad",
+##'              "minim veniam, quis nostrud exercitation ullamco laboris nisi ut"),
+##'            file.path(path_repo_2, "example.txt"))
+##' add(repo_2, "example.txt")
+##' commit(repo_2, "Third commit message")
+##'
+##' ## Push commits from second repository to bare repository
+##' push(repo_2)
+##'
+##' ## Pull changes to repo_1
+##' pull(repo_1)
+##'
+##' ## List commits in repositories
+##' commits(repo_1)
+##' commits(repo_2)
+##' commits(repo_bare)
+##' }
 setGeneric("pull",
            signature = "repo",
            function(repo,
