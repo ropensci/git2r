@@ -35,14 +35,37 @@ Commits
 }
 \examples{
 \dontrun{
-## Open an existing repository
-repo <- repository("path/to/git2r")
+## Initialize a repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+repo <- init(path)
+
+## Config user
+config(repo, user.name="Author", user.email="author@example.org")
+
+## Write to a file and commit
+writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+           file.path(path, "example.txt"))
+add(repo, "example.txt")
+commit(repo, "First commit message")
+
+## Change file and commit
+writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+             "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
+           file.path(path, "example.txt"))
+add(repo, "example.txt")
+commit(repo, "Second commit message")
+
+## Change file again and commit
+writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+             "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad",
+             "minim veniam, quis nostrud exercitation ullamco laboris nisi ut"),
+           file.path(path, "example.txt"))
+add(repo, "example.txt")
+commit(repo, "Third commit message")
 
 ## List commits in repository
 commits(repo)
-
-## List commits direct from path
-commits("path/to/git2r")
 }
 }
 \keyword{methods}
