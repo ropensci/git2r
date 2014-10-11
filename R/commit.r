@@ -64,6 +64,74 @@ setMethod("ahead_behind",
           }
 )
 
+##' Commit
+##'
+##' @rdname commit-methods
+##' @docType methods
+##' @param repo The repository \code{object}.
+##' @param message The commit message.
+##' @param reference Name of the reference that will be updated to
+##' point to this commit.
+##' @param author Signature with author and author time of commit.
+##' @param committer Signature with committer and commit time of commit.
+##' @return \code{\linkS4class{git_commit}} object
+##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Initialize a repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Config user
+##' config(repo, user.name="User", user.email="user@@example.org")
+##'
+##' ## Write to a file and commit
+##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+##'            file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit(repo, "First commit message")
+##' }
+setGeneric("commit",
+           signature = "repo",
+           function(repo,
+                    message = NULL,
+                    reference = "HEAD",
+                    author = default_signature(repo),
+                    committer = default_signature(repo))
+           standardGeneric("commit"))
+
+##' @rdname commit-methods
+##' @export
+setMethod("commit",
+          signature(repo = "git_repository"),
+          function (repo,
+                    message,
+                    reference,
+                    author,
+                    committer)
+          {
+              ## Argument checking
+              stopifnot(is.character(message),
+                        identical(length(message), 1L),
+                        nchar(message[1]) > 0,
+                        is(author, "git_signature"),
+                        is(committer, "git_signature"))
+
+              parents <- character(0)
+              if (!is_empty(repo)) {
+                  parents <- c(parents, branch_target(head(repo)))
+              }
+
+              .Call(git2r_commit_create,
+                    repo,
+                    message,
+                    author,
+                    committer,
+                    parents)
+          }
+)
+
 ##' Commits
 ##'
 ##' @rdname commits-methods
@@ -289,13 +357,23 @@ setMethod("parents",
 ##' @export
 ##' @examples
 ##' \dontrun{
-##' ## Open an existing repository
-##' repo <- repository("path/to/git2r")
+##' ## Initialize a repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
 ##'
-##' ## Brief summary of commits in repository
-##' invisible(lapply(commits(repo), show))
+##' ## Config user
+##' config(repo, user.name="User", user.email="user@@example.org")
+##'
+##' ## Write to a file and commit
+##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+##'            file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit(repo, "First commit message")
+##'
+##' ## Brief summary of commit in repository
+##' show(commits(repo)[[1]])
 ##' }
-##'
 setMethod("show",
           signature(object = "git_commit"),
           function (object)
@@ -317,13 +395,23 @@ setMethod("show",
 ##' @export
 ##' @examples
 ##' \dontrun{
-##' ## Open an existing repository
-##' repo <- repository("path/to/git2r")
+##' ## Initialize a repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Config user
+##' config(repo, user.name="User", user.email="user@@example.org")
+##'
+##' ## Write to a file and commit
+##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+##'            file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit(repo, "First commit message")
 ##'
 ##' ## Summary of commit in repository
 ##' summary(commits(repo)[[1]])
 ##' }
-##'
 setMethod("summary",
           signature(object = "git_commit"),
           function(object, ...)

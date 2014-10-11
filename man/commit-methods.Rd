@@ -29,5 +29,22 @@ point to this commit.}
 \description{
 Commit
 }
+\examples{
+\dontrun{
+## Initialize a repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+repo <- init(path)
+
+## Config user
+config(repo, user.name="User", user.email="user@example.org")
+
+## Write to a file and commit
+writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+           file.path(path, "example.txt"))
+add(repo, "example.txt")
+commit(repo, "First commit message")
+}
+}
 \keyword{methods}
 

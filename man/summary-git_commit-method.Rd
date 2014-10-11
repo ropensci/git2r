@@ -20,8 +20,19 @@ Summary of commit
 }
 \examples{
 \dontrun{
-## Open an existing repository
-repo <- repository("path/to/git2r")
+## Initialize a repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+repo <- init(path)
+
+## Config user
+config(repo, user.name="User", user.email="user@example.org")
+
+## Write to a file and commit
+writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+           file.path(path, "example.txt"))
+add(repo, "example.txt")
+commit(repo, "First commit message")
 
 ## Summary of commit in repository
 summary(commits(repo)[[1]])
