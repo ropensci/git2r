@@ -20,8 +20,21 @@ Check if repository is empty
 }
 \examples{
 \dontrun{
-## Open an existing repository
-repo <- repository("path/to/git2r")
+## Initialize a temporary repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+repo <- init(path)
+
+## Create a user
+config(repo, user.name="User", user.email="user@example.org")
+
+## Check if it's an empty repository
+is_empty(repo)
+
+## Commit a file
+writeLines("Hello world!", file.path(path, "example.txt"))
+add(repo, "example.txt")
+commit(repo, "First commit message")
 
 ## Check if it's an empty repository
 is_empty(repo)
