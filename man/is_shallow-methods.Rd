@@ -20,11 +20,42 @@ Determine if the repository was a shallow clone
 }
 \examples{
 \dontrun{
-## Open an existing repository
-repo <- repository("path/to/git2r")
+## Initialize repository
+path_repo_1 <- tempfile(pattern="git2r-")
+path_repo_2 <- tempfile(pattern="git2r-")
+dir.create(path_repo_1)
+dir.create(path_repo_2)
+repo_1 <- init(path_repo_1)
+
+## Config user and commit a file
+config(repo_1, user.name="User One", user.email="user.one@example.org")
+
+## Write to a file and commit
+writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+           file.path(path_repo_1, "example.txt"))
+add(repo_1, "example.txt")
+commit(repo_1, "First commit message")
+
+## Change file and commit
+writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+             "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
+           file.path(path_repo_1, "example.txt"))
+add(repo_1, "example.txt")
+commit(repo_1, "Second commit message")
+
+## Change file again and commit.
+writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+             "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad",
+             "minim veniam, quis nostrud exercitation ullamco laboris nisi ut"),
+           file.path(path_repo_1, "example.txt"))
+add(repo_1, "example.txt")
+commit(repo_1, "Third commit message")
+
+## Clone to second repository
+repo_2 <- clone(path_repo_1, path_repo_2)
 
 ## Check if it's a shallow clone
-is_shallow(repo)
+is_shallow(repo_2)
 }
 }
 \keyword{methods}
