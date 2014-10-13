@@ -146,11 +146,24 @@ setMethod("show",
 ##' @export
 ##' @examples
 ##' \dontrun{
-##' ## Open an existing repository
-##' repo <- repository("path/to/git2r")
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
 ##'
-##' ## Apply summary to each tag in the repository
-##' invisible(lapply(tags(repo), summary))
+##' ## Create a user
+##' config(repo, user.name="User", user.email="user@@example.org")
+##'
+##' ## Commit a text file
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit(repo, "First commit message")
+##'
+##' ## Create tag
+##' tag(repo, "Tagname", "Tag message")
+##'
+##' ## Summary of tag
+##' summary(tags(repo)[[1]])
 ##' }
 setMethod("summary",
           signature(object = "git_tag"),
