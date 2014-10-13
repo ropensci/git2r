@@ -5,7 +5,6 @@
 \alias{checkout,git_branch-method}
 \alias{checkout,git_commit-method}
 \alias{checkout,git_tag-method}
-\alias{checkout,git_tree-method}
 \title{Checkout}
 \usage{
 checkout(object, force = FALSE)
@@ -15,8 +14,6 @@ checkout(object, force = FALSE)
 \S4method{checkout}{git_commit}(object, force = FALSE)
 
 \S4method{checkout}{git_tag}(object, force = FALSE)
-
-\S4method{checkout}{git_tree}(object, force = FALSE)
 }
 \arguments{
 \item{object}{a commit, tag or tree which content will be used to

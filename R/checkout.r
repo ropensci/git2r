@@ -102,15 +102,3 @@ setMethod("checkout",
               invisible(ret)
           }
 )
-
-##' @rdname checkout-methods
-##' @export
-setMethod("checkout",
-          signature(object = "git_tree"),
-          function (object, force)
-          {
-              stop("Checkout of S4 class git_tree isn't implemented. Sorry")
-              ## ret <- .Call(git2r_checkout_tree, object, force)
-              ## invisible(ret)
-          }
-)

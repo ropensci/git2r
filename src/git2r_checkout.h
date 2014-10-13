@@ -25,6 +25,5 @@
 SEXP git2r_checkout_branch(SEXP branch, SEXP force, SEXP msg, SEXP who);
 SEXP git2r_checkout_commit(SEXP commit, SEXP force, SEXP msg, SEXP who);
 SEXP git2r_checkout_tag(SEXP tag, SEXP force, SEXP msg, SEXP who);
-SEXP git2r_checkout_tree(SEXP tree, SEXP force, SEXP msg, SEXP who);
 
 #endif
