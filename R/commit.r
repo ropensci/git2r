@@ -275,6 +275,24 @@ setMethod("descendant_of",
 ##' @return TRUE if object is S4 class git_commit, else FALSE
 ##' @keywords methods
 ##' @export
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a user
+##' config(repo, user.name="User", user.email="user@@example.org")
+##'
+##' ## Commit a text file
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit_1 <- commit(repo, "First commit message")
+##'
+##' ## Check if commit
+##' is_commit(commit_1)
+##' }
 is_commit <- function(object) {
     is(object = object, class2 = "git_commit")
 }
