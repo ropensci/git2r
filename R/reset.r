@@ -32,6 +32,43 @@
 ##' @return invisible NULL
 ##' @keywords methods
 ##' @include S4_classes.r
+##' @examples \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' # Configure a user
+##' config(repo, user.name="User", user.email="user@@example.org")
+##'
+##' ## Create a file, add and commit
+##' writeLines("Hello world!", file.path(path, "test-1.txt"))
+##' add(repo, 'test-1.txt')
+##' commit_1 <- commit(repo, "Commit message")
+##'
+##' ## Make one more commit
+##' writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test-1.txt"))
+##' add(repo, 'test-1.txt')
+##' commit(repo, "Next commit message")
+##'
+##' ## Create one more file
+##' writeLines("Hello world!", file.path(path, "test-2.txt"))
+##'
+##' ## 'soft' reset to first commit and check status
+##' reset(commit_1)
+##' status(repo)
+##'
+##' ## 'mixed' reset to first commit and check status
+##' commit(repo, "Next commit message")
+##' reset(commit_1, "mixed")
+##' status(repo)
+##'
+##' ## 'hard' reset to first commit and check status
+##' add(repo, 'test-1.txt')
+##' commit(repo, "Next commit message")
+##' reset(commit_1, "hard")
+##' status(repo)
+##' }
 setGeneric("reset",
            signature = c("commit"),
            function(commit,
