@@ -27,11 +27,13 @@
 ##' @keywords methods
 ##' @include S4_classes.r
 ##' @examples \dontrun{
-##' ## Open an existing repository
-##' repo <- repository("path/to/git2r")
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
 ##'
 ##' ## Set user name and email. The configuration is returned
-##' cfg <-config(repo, user.name="Repo", user.email="repo@@example.org")
+##' cfg <-config(repo, user.name="Random Developer", user.email="random.developer@@example.org")
 ##'
 ##' ## View configuration list
 ##' cfg
