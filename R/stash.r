@@ -267,6 +267,29 @@ setMethod("show",
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
 ##' @export
+##' @examples \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' # Configure a user
+##' config(repo, user.name="User", user.email="user@@example.org")
+##'
+##' # Create a file, add and commit
+##' writeLines("Hello world!", file.path(path, "test.txt"))
+##' add(repo, 'test.txt')
+##' commit(repo, "Commit message")
+##'
+##' # Change file
+##' writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test.txt"))
+##'
+##' # Create stash in repository
+##' stash(repo, "Stash message")
+##'
+##' # View summary of stash
+##' summary(stash_list(repo)[[1]])
+##' }
 ##' @examples
 ##' \dontrun{
 ##' ## Open an existing repository
