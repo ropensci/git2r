@@ -29,16 +29,42 @@ Drop stash
 }
 \examples{
 \dontrun{
-## Open an existing repository
-repo <- repository("path/to/git2r")
+## Initialize a temporary repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+repo <- init(path)
 
-## Assuming there are stashes in the repository.
-## Drop a stash in repository.
-stash_drop(stashes(repo)[[1]])
+# Configure a user
+config(repo, user.name="User", user.email="user@example.org")
 
-## Assuming there are stashes in the repository.
-## Drop last stash in repository.
+# Create a file, add and commit
+writeLines("Hello world!", file.path(path, "test.txt"))
+add(repo, 'test.txt')
+commit(repo, "Commit message")
+
+# Change file
+writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test.txt"))
+
+# Create stash in repository
+stash(repo)
+
+# Change file
+writeLines(c("Hello world!", "HeLlO wOrLd!"), file.path(path, "test.txt"))
+
+# Create stash in repository
+stash(repo)
+
+# View stashes
+stash_list(repo)
+
+# Drop git_stash object in repository
+stash_drop(stash_list(repo)[[1]])
+
+## Drop stash using an index to stash
 stash_drop(repo, 0)
+
+# View stashes
+stash_list(repo)
 }
 }
 \keyword{methods}

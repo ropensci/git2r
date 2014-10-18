@@ -31,7 +31,7 @@ config(repo, user.name="User", user.email="user@example.org")
 # Create a file, add and commit
 writeLines("Hello world!", file.path(path, "test-1.txt"))
 add(repo, 'test-1.txt')
-commit_1 <- commit(repo, "Commit message")
+commit(repo, "Commit message")
 
 # Make one more commit
 writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test-1.txt"))
