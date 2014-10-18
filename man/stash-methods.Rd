@@ -36,11 +36,33 @@ Stash
 }
 \examples{
 \dontrun{
-## Open an existing repository
-repo <- repository("path/to/git2r")
+## Initialize a temporary repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+repo <- init(path)
 
-## Create stash in repository
-stash(repo, "Stash message")
+# Configure a user
+config(repo, user.name="User", user.email="user@example.org")
+
+# Create a file, add and commit
+writeLines("Hello world!", file.path(path, "test.txt"))
+add(repo, 'test.txt')
+commit(repo, "Commit message")
+
+# Change file
+writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test.txt"))
+
+# Check status of repository
+status(repo)
+
+# Create stash in repository
+stash(repo)
+
+# Check status of repository
+status(repo)
+
+# View stash
+stash_list(repo)
 }
 }
 \keyword{methods}
