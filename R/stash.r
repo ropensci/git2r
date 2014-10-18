@@ -144,12 +144,41 @@ setMethod("stash",
 ##' @param repo The repository.
 ##' @return list of stashes in repository
 ##' @keywords methods
-##' @examples
-##' \dontrun{
-##' ## Open an existing repository
-##' repo <- repository("path/to/git2r")
+##' @examples \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
 ##'
-##' ## List stashes in repository
+##' # Configure a user
+##' config(repo, user.name="User", user.email="user@@example.org")
+##'
+##' # Create a file, add and commit
+##' writeLines("Hello world!", file.path(path, "test-1.txt"))
+##' add(repo, 'test-1.txt')
+##' commit_1 <- commit(repo, "Commit message")
+##'
+##' # Make one more commit
+##' writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test-1.txt"))
+##' add(repo, 'test-1.txt')
+##' commit(repo, "Next commit message")
+##'
+##' # Create one more file
+##' writeLines("Hello world!", file.path(path, "test-2.txt"))
+##'
+##' # Check that there are no stashes
+##' stash_list(repo)
+##'
+##' # Stash
+##' stash(repo)
+##'
+##' # Only untracked changes, therefore no stashes
+##' stash_list(repo)
+##'
+##' # Stash and include untracked changes
+##' stash(repo, "Stash message", untracked=TRUE)
+##'
+##' # View stash
 ##' stash_list(repo)
 ##' }
 setGeneric("stash_list",
