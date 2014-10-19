@@ -335,6 +335,25 @@ setMethod("show",
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
 ##' @export
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a user
+##' config(repo, user.name="Developer", user.email="developer@@example.org")
+##'
+##' ## Commit a text file
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit_1 <- commit(repo, "First commit message")
+##' blob_1 <- tree(commit_1)["example.txt"]
+##'
+##' ## Get summary of the blob
+##' summary(blob_1)
+##' }
 setMethod("summary",
           signature(object = "git_blob"),
           function(object, ...)
