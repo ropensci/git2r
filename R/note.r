@@ -53,46 +53,37 @@ setMethod("note_default_ref",
 ##' @keywords methods
 ##' @examples
 ##' \dontrun{
-##' ## Create a directory in tempdir
+##' ## Create and initialize a repository in a temporary directory
 ##' path <- tempfile(pattern="git2r-")
 ##' dir.create(path)
-##'
-##' ## Initialize a repository
 ##' repo <- init(path)
+##' config(repo, user.name="User", user.email="user@@example.org")
 ##'
 ##' ## Create a file, add and commit
-##' writeLines("Hello world!", file.path(path, "test.txt"))
-##' add(repo, "test.txt")
-##' commit.1 <- commit(repo, "Commit message 1")
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit_1 <- commit(repo, "Commit message 1")
 ##'
 ##' ## Create another commit
 ##' writeLines(c("Hello world!",
 ##'              "HELLO WORLD!"),
-##'            file.path(path, "test.txt"))
-##' add(repo, "test.txt")
-##' commit.2 <- commit(repo, "Commit message 2")
+##'            file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit_2 <- commit(repo, "Commit message 2")
 ##'
 ##' ## Check that note_list is an empty list
-##' stopifnot(identical(note_list(repo), list()))
+##' note_list(repo)
 ##'
 ##' ## Create note in default namespace
-##' note.1 <- note_create(commit.1, "Note-1")
-##' note.2 <- note_create(commit.1, "Note-2", force = TRUE)
+##' note_create(commit_1, "Note-1")
 ##'
 ##' ## Create note in named (review) namespace
-##' note.3 <- note_create(commit.1, "Note-3", ref="refs/notes/review")
-##' note.4 <- note_create(commit.2, "Note-4", ref="refs/notes/review")
-##' note_remove(note.3)
-##' note_remove(note.4)
-##' note.5 <- note_create(commit.1, "Note-5", ref="review")
-##' note.6 <- note_create(commit.2, "Note-6", ref="review")
+##' note_create(commit_1, "Note-2", ref="refs/notes/review")
+##' note_create(commit_2, "Note-3", ref="review")
 ##'
 ##' ## Create note on blob and tree
-##' note.7 <- note_create(tree(commit.1), "Note-7")
-##' note.8 <- note_create(tree(commit.1)["test.txt"], "Note-8")
-##'
-##' ## Cleanup
-##' unlink(path, recursive=TRUE)
+##' note_create(tree(commit_1), "Note-4")
+##' note_create(tree(commit_1)["example.txt"], "Note-5")
 ##' }
 setGeneric("note_create",
            signature = "object",
