@@ -24,5 +24,42 @@ invisible NULL
 \description{
 Remove the note for an object
 }
+\examples{
+\dontrun{
+## Create and initialize a repository in a temporary directory
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+repo <- init(path)
+config(repo, user.name="User", user.email="user@example.org")
+
+## Create a file, add and commit
+writeLines("Hello world!", file.path(path, "example.txt"))
+add(repo, "example.txt")
+commit_1 <- commit(repo, "Commit message 1")
+
+
+## Create note in default namespace
+note_1 <- note_create(commit_1, "Note-1")
+
+## Create note in named (review) namespace
+note_2 <- note_create(commit_1, "Note-2", ref="refs/notes/review")
+
+## List notes in default namespace
+note_list(repo)
+
+## List notes in 'review' namespace
+note_list(repo, "review")
+
+## Remove notes
+note_remove(note_1)
+note_remove(note_2)
+
+## List notes in default namespace
+note_list(repo)
+
+## List notes in 'review' namespace
+note_list(repo, "review")
+}
+}
 \keyword{methods}
 
