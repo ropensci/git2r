@@ -23,6 +23,17 @@
 ##' @return Character vector of length one with name of default notes
 ##' reference
 ##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Create and initialize a repository in a temporary directory
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##' config(repo, user.name="User", user.email="user@@example.org")
+##'
+##' ## View default notes reference
+##' note_default_ref(repo)
+##' }
 setGeneric("note_default_ref",
            signature = "repo",
            function(repo)
