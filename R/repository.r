@@ -394,13 +394,34 @@ setMethod("is_bare",
 ##' @keywords methods
 ##' @examples
 ##' \dontrun{
-##' ## Open an existing repository
-##' repo <- repository("path/to/git2r")
+##' ## Create and initialize a repository in a temporary directory
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##' config(repo, user.name="User", user.email="user@@example.org")
 ##'
-##' ## Check if repository HEAD is detached
+##' ## Create a file, add and commit
+##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+##'            file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit_1 <- commit(repo, "Commit message 1")
+##'
+##' ## Change file, add and commit
+##' writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+##'              "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
+##'              file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit(repo, "Commit message 2")
+##'
+##' ## HEAD of repository is not detached
+##' is_detached(repo)
+##'
+##' ## Checkout first commit
+##' checkout(commit_1)
+##'
+##' ## HEAD of repository is detached
 ##' is_detached(repo)
 ##' }
-##'
 setGeneric("is_detached",
            signature = "repo",
            function(repo)
