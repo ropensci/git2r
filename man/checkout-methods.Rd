@@ -4,10 +4,14 @@
 \alias{checkout}
 \alias{checkout,git_branch-method}
 \alias{checkout,git_commit-method}
+\alias{checkout,git_repository-method}
 \alias{checkout,git_tag-method}
 \title{Checkout}
 \usage{
-checkout(object, force = FALSE)
+checkout(object, ...)
+
+\S4method{checkout}{git_repository}(object, branch, create = FALSE,
+  force = FALSE)
 
 \S4method{checkout}{git_branch}(object, force = FALSE)
 
@@ -16,8 +20,16 @@ checkout(object, force = FALSE)
 \S4method{checkout}{git_tag}(object, force = FALSE)
 }
 \arguments{
-\item{object}{a commit, tag or tree which content will be used to
-update the working directory.}
+\item{object}{a repository, commit, tag or tree which content will
+be used to update the working directory.}
+
+\item{...}{Additional arguments affecting the checkout}
+
+\item{branch}{If object is a repository, the name of the branch to
+check out.}
+
+\item{create}{If object is a repository, then branch is created if
+doesn't exist.}
 
 \item{force}{If TRUE, then make working directory match
 target. This will throw away local changes. Default is FALSE.}
