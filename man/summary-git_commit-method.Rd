@@ -9,6 +9,8 @@
 }
 \arguments{
 \item{object}{The commit \code{object}}
+
+\item{...}{Additional arguments affecting the summary produced.}
 }
 \value{
 None (invisible 'NULL').

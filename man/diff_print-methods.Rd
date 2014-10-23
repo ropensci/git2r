@@ -41,11 +41,15 @@ overwritten if it exists). Default is NULL.}
 \item{new_tree}{The new git_tree object to compare, or NULL.
 If NULL, then we use the working directory or the index (see
 the \code{index} argument).}
+
+\item{...}{Additional arguments affecting the summary produced.}
 }
 \value{
 A character vector if filename equals \code{NULL},
 \code{character(0)}, \code{NA_character_} or \code{""}. Oterwise
 NULL.
+
+None (invisible 'NULL').
 }
 \description{
 Print changes between commits, trees, working tree, etc.
