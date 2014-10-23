@@ -92,7 +92,7 @@ setMethod("checkout",
                       ## Create branch and track remote
                       commit <- lookup(object, branch_target(rb[[i]]))
                       branch <- branch_create(commit, branch)
-                      branch_set_upstream(branch, rb[[1]]@name)
+                      branch_set_upstream(branch, rb[[i]]@name)
                       checkout(branch, force = TRUE)
                   } else {
                       if (!identical(create, TRUE))
