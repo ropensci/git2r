@@ -9,6 +9,8 @@
 }
 \arguments{
 \item{object}{The diff \code{object}.}
+
+\item{...}{Additional arguments affecting the summary produced.}
 }
 \description{
 Show the summary of a diff
