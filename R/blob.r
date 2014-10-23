@@ -332,6 +332,7 @@ setMethod("show",
 ##'
 ##' @docType methods
 ##' @param object The blob \code{object}
+##' @param ... Additional arguments affecting the summary produced.
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
 ##' @export

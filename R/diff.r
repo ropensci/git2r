@@ -228,6 +228,8 @@ setMethod("diff_print",
 #' @param new_tree The new git_tree object to compare, or NULL.
 #'        If NULL, then we use the working directory or the index (see
 #'        the \code{index} argument).
+#' @param ... Additional arguments affecting the summary produced.
+#' @return None (invisible 'NULL').
 #' @export
 setMethod("diff_print",
           signature(object = "git_tree"),

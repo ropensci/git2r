@@ -141,6 +141,7 @@ setMethod("show",
 ##' @aliases summary,git_tag-methods
 ##' @docType methods
 ##' @param object The tag \code{object}
+##' @param ... Additional arguments affecting the summary produced.
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
 ##' @export

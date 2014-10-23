@@ -408,6 +408,7 @@ setMethod("show",
 ##' @aliases summary,git_commit-methods
 ##' @docType methods
 ##' @param object The commit \code{object}
+##' @param ... Additional arguments affecting the summary produced.
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
 ##' @export

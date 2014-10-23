@@ -264,6 +264,7 @@ setMethod("show",
 ##' @aliases summary,git_stash-methods
 ##' @docType methods
 ##' @param object The stash \code{object}
+##' @param ... Additional arguments affecting the summary produced.
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
 ##' @export
@@ -289,14 +290,6 @@ setMethod("show",
 ##'
 ##' # View summary of stash
 ##' summary(stash_list(repo)[[1]])
-##' }
-##' @examples
-##' \dontrun{
-##' ## Open an existing repository
-##' repo <- repository("path/to/git2r")
-##'
-##' ## Apply summary to each stash in the repository
-##' invisible(lapply(stashes(repo), summary))
 ##' }
 setMethod("summary",
           signature(object = "git_stash"),
