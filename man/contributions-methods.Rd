@@ -35,19 +35,59 @@ See contributions to a Git repo
 }
 \examples{
 \dontrun{
-## If current working dir is a git repo
-contributions()
-contributions(breaks = "week")
-contributions(breaks = "day")
+## Create directories and initialize repositories
+path_bare <- tempfile(pattern="git2r-")
+path_repo_1 <- tempfile(pattern="git2r-")
+path_repo_2 <- tempfile(pattern="git2r-")
+dir.create(path_bare)
+dir.create(path_repo_1)
+dir.create(path_repo_2)
+repo_bare <- init(path_bare, bare = TRUE)
 
-## If the path is somewhere else
-contributions("/path/to/repo")
-}
-}
-\author{
-Karthik Ram \email{karthik.ram@gmail.com}
+## Clone to repo 1 and config user
+repo_1 <- clone(path_bare, path_repo_1)
+config(repo_1, user.name="Author One", user.email="author.one@example.org")
 
-Stefan Widgren \email{stefan.widgren@gmail.com}
+## Add changes to repo 1 and push to bare
+writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+           con = file.path(path_repo_1, "test.txt"))
+add(repo_1, "test.txt")
+commit(repo_1, "First commit message")
+
+## Add more changes to repo 1
+writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+             "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
+           con = file.path(path_repo_1, "test.txt"))
+add(repo_1, "test.txt")
+commit(repo_1, "Second commit message")
+
+## Push to bare
+push(repo_1, "origin", "refs/heads/master")
+
+## Clone to repo 2
+repo_2 <- clone(path_bare, path_repo_2)
+config(repo_2, user.name="Author Two", user.email="author.two@example.org")
+
+## Add changes to repo 2
+writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+             "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad",
+             "minim veniam, quis nostrud exercitation ullamco laboris nisi ut"),
+           con = file.path(path_repo_2, "test.txt"))
+add(repo_2, "test.txt")
+commit(repo_2, "Third commit message")
+
+## Push to bare
+push(repo_2, "origin", "refs/heads/master")
+
+## Pull changes to repo 1
+pull(repo_1)
+
+## View contributions by day
+contributions(repo_1)
+
+## View contributions by author and day
+contributions(repo_1, by = "author")
+}
 }
 \keyword{methods}
 
