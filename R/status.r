@@ -44,10 +44,46 @@ display_status <- function(title, section) {
 ##' @return invisible(list) with repository status
 ##' @keywords methods
 ##' @include S4_classes.r
-##' @examples \dontrun{
-##' ## Open an existing repository
-##' repo <- repository("path/to/git2r")
+##' @examples
+##' \dontrun{
+##' ## Initialize a repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
 ##'
+##' ## Config user
+##' config(repo, user.name="User", user.email="user@@example.org")
+##'
+##' ## Create a file
+##' writeLines("Hello world!", file.path(path, "test.txt"))
+##'
+##' ## Check status; untracked file
+##' status(repo)
+##'
+##' ## Add file
+##' add(repo, "test.txt")
+##'
+##' ## Check status; staged file
+##' status(repo)
+##'
+##' ## Commit
+##' commit(repo, "First commit message")
+##'
+##' ## Check status; clean
+##' status(repo)
+##'
+##' ## Change the file
+##' writeLines(c("Hello again!", "Here is a second line", "And a third"),
+##'            file.path(path, "test.txt"))
+##'
+##' ## Check status; unstaged file
+##' status(repo)
+##'
+##' ## Add file and commit
+##' add(repo, "test.txt")
+##' commit(repo, "Second commit message")
+##'
+##' ## Check status; clean
 ##' status(repo)
 ##'}
 setGeneric("status",
