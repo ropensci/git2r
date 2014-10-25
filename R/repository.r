@@ -691,6 +691,38 @@ setMethod("show",
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
 ##' @export
+##' @examples
+##' \dontrun{
+##' ## Initialize a repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Config user
+##' config(repo, user.name="User", user.email="user@@example.org")
+##'
+##' ## Create a file
+##' writeLines("Hello world!", file.path(path, "test.txt"))
+##' summary(repo)
+##'
+##' ## Add file
+##' add(repo, "test.txt")
+##' summary(repo)
+##'
+##' ## Commit
+##' commit(repo, "First commit message")
+##' summary(repo)
+##'
+##' ## Change the file
+##' writeLines(c("Hello again!", "Here is a second line", "And a third"),
+##'            file.path(path, "test.txt"))
+##' summary(repo)
+##'
+##' ## Add file and commit
+##' add(repo, "test.txt")
+##' commit(repo, "Second commit message")
+##' summary(repo)
+##'}
 setMethod("summary",
           signature(object = "git_repository"),
           function(object, ...)
