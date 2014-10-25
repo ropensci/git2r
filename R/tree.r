@@ -154,10 +154,18 @@ setMethod("tree",
 ##' @export
 ##' @examples
 ##' \dontrun{
-##' ## Open an existing repository
-##' repo <- repository("path/to/git2r")
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
 ##'
-##' ## Brief summary of one tree in repository
+##' ## Create a user and commit a file
+##' config(repo, user.name="Author", user.email="author@@example.org")
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit(repo, "First commit message")
+##'
+##' ## Brief summary of the tree in the repository
 ##' tree(commits(repo)[[1]])
 ##' }
 setMethod("show",
@@ -177,6 +185,21 @@ setMethod("show",
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
 ##' @export
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a user and commit a file
+##' config(repo, user.name="User", user.email="user@@example.org")
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit(repo, "First commit message")
+##'
+##' summary(tree(commits(repo)[[1]]))
+##' }
 setMethod("summary",
           signature(object = "git_tree"),
           function(object, ...)

@@ -18,5 +18,21 @@ None (invisible 'NULL').
 \description{
 Summary of tree
 }
+\examples{
+\dontrun{
+## Initialize a temporary repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+repo <- init(path)
+
+## Create a user and commit a file
+config(repo, user.name="User", user.email="user@example.org")
+writeLines("Hello world!", file.path(path, "example.txt"))
+add(repo, "example.txt")
+commit(repo, "First commit message")
+
+summary(tree(commits(repo)[[1]]))
+}
+}
 \keyword{methods}
 
