@@ -310,6 +310,54 @@ setMethod("diff",
 #' \code{character(0)}, \code{NA_character_} or \code{""}. Oterwise
 #' NULL.
 #' @keywords methods
+#' @examples
+#' \dontrun{
+#' ## Initialize a repository
+#' path <- tempfile(pattern="git2r-")
+#' dir.create(path)
+#' repo <- init(path)
+#'
+#' ## Config user
+#' config(repo, user.name="User", user.email="user@@example.org")
+#'
+#' ## Create a file, add, commit
+#' writeLines("Hello world!", file.path(path, "test.txt"))
+#' add(repo, "test.txt")
+#' commit(repo, "Commit message")
+#'
+#' ## Change the file
+#' writeLines(c("Hello again!", "Here is a second line", "And a third"),
+#'            file.path(path, "test.txt"))
+#'
+#' ## diff between index and workdir
+#' cat(diff_print(repo))
+#'
+#' ## Diff between index and HEAD is empty
+#' cat(diff_print(repo, index=TRUE))
+#'
+#' ## Diff between tree and working dir, same as diff_1
+#' cat(diff_print(tree(commits(repo)[[1]])))
+#'
+#' ## Add changes, diff between index and HEAD is the same as diff_1
+#' add(repo, "test.txt")
+#' cat(diff_print(repo, index=TRUE))
+#'
+#' ## Diff between tree and index
+#' cat(diff_print(tree(commits(repo)[[1]]), index=TRUE))
+#'
+#' ## Diff between two trees
+#' commit(repo, "Second commit")
+#' tree_1 <- tree(commits(repo)[[2]])
+#' tree_2 <- tree(commits(repo)[[1]])
+#' cat(diff_print(tree_1, tree_2))
+#'
+#' ## Binary files
+#' set.seed(42)
+#' writeBin(as.raw((sample(0:255, 1000, replace=TRUE))),
+#'          con=file.path(path, "test.bin"))
+#' add(repo, "test.bin")
+#' cat(diff_print(repo, index=TRUE))
+#' }
 setGeneric("diff_print",
            signature = c("object"),
            function(object, ...)
