@@ -12,6 +12,9 @@
 
 \item{...}{Additional arguments affecting the summary produced.}
 }
+\value{
+None (invisible 'NULL').
+}
 \description{
 Show the summary of a diff
 }

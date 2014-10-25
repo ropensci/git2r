@@ -39,5 +39,61 @@ A \code{\linkS4class{git_diff}} object.
 \description{
 Changes between commits, trees, working tree, etc.
 }
+\examples{
+\dontrun{
+## Initialize a repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+repo <- init(path)
+
+## Config user
+config(repo, user.name="User", user.email="user@example.org")
+
+## Create a file, add, commit
+writeLines("Hello world!", file.path(path, "test.txt"))
+add(repo, "test.txt")
+commit(repo, "Commit message")
+
+## Change the file
+writeLines(c("Hello again!", "Here is a second line", "And a third"),
+           file.path(path, "test.txt"))
+
+## diff between index and workdir
+diff_1 <- diff(repo)
+summary(diff_1)
+
+## Diff between index and HEAD is empty
+diff_2 <- diff(repo, index=TRUE)
+summary(diff_2)
+
+## Diff between tree and working dir, same as diff_1
+diff_3 <- diff(tree(commits(repo)[[1]]))
+summary(diff_3)
+
+## Add changes, diff between index and HEAD is the same as diff_1
+add(repo, "test.txt")
+diff_4 <- diff(repo, index=TRUE)
+summary(diff_4)
+
+## Diff between tree and index
+diff_5 <- diff(tree(commits(repo)[[1]]), index=TRUE)
+summary(diff_5)
+
+## Diff between two trees
+commit(repo, "Second commit")
+tree_1 <- tree(commits(repo)[[2]])
+tree_2 <- tree(commits(repo)[[1]])
+diff_6 <- diff(tree_1, tree_2)
+summary(diff_6)
+
+## Binary files
+set.seed(42)
+writeBin(as.raw((sample(0:255, 1000, replace=TRUE))),
+         con=file.path(path, "test.bin"))
+add(repo, "test.bin")
+diff_7 <- diff(repo, index=TRUE)
+summary(diff_7)
+}
+}
 \keyword{methods}
 
