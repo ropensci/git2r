@@ -22,10 +22,26 @@ libgit's git_discover_repository is used to identify the location of the
 }
 \examples{
 \dontrun{
-path='/path/to/my/new/repo'
-init(path)
-discover_repository(path)
-# /path/to/my/new/repo/.git/
+## Initialize a temporary repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+repo <- init(path)
+
+## Create a user and commit a file
+config(repo, user.name="User", user.email="user@example.org")
+writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+           file.path(path, "example-1.txt"))
+add(repo, "example-1.txt")
+commit(repo, "First commit message")
+
+## Create a second file. The file is not added for version control
+## in the repository.
+dir.create(file.path(path, "example"))
+file_2 <- file.path(path, "example/example-2.txt")
+writeLines("Not under version control", file_2)
+
+## Find the path to the repository using the path to the second file
+discover_repository(file_2)
 }
 }
 \keyword{methods}
