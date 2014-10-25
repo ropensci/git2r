@@ -587,8 +587,19 @@ setMethod("lookup",
 ##' @keywords methods
 ##' @examples
 ##' \dontrun{
-##' ## Open an existing repository
-##' repo <- repository("path/to/git2r")
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a user
+##' config(repo, user.name="User One", user.email="user.one@@example.org")
+##'
+##' ## Get the default signature
+##' default_signature(repo)
+##'
+##' ## Change user
+##' config(repo, user.name="User Two", user.email="user.two@@example.org")
 ##'
 ##' ## Get the default signature
 ##' default_signature(repo)
