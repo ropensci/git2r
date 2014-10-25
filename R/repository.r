@@ -554,13 +554,45 @@ setMethod("is_shallow",
 ##' @keywords methods
 ##' @examples
 ##' \dontrun{
-##' ## Open an existing repository
-##' repo <- repository("path/to/git2r")
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
 ##'
-##' ## Lookup commit in repository
-##' lookup(repo, "6fd0b22")
+##' ## Create a user and commit a file
+##' config(repo, user.name="User", user.email="user@@example.org")
+##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+##'            file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit_1 <- commit(repo, "First commit message")
+##'
+##' ## Create tag
+##' tag(repo, "Tagname", "Tag message")
+##'
+##' ## First, get SHAs to lookup in the repository
+##' sha_commit <- commit_1@@sha
+##' sha_tree <- tree(commit_1)@@sha
+##' sha_blob <- tree(commit_1)["example.txt"]@@sha
+##' sha_tag <- tags(repo)[[1]]@@sha
+##'
+##' ## SHAs
+##' sha_commit
+##' sha_tree
+##' sha_blob
+##' sha_tag
+##'
+##' ## Lookup objects
+##' lookup(repo, sha_commit)
+##' lookup(repo, sha_tree)
+##' lookup(repo, sha_blob)
+##' lookup(repo, sha_tag)
+##'
+##' ## Lookup objects, using only the first seven characters
+##' lookup(repo, substr(sha_commit, 1, 7))
+##' lookup(repo, substr(sha_tree, 1, 7))
+##' lookup(repo, substr(sha_blob, 1, 7))
+##' lookup(repo, substr(sha_tag, 1, 7))
 ##' }
-##'
 setGeneric("lookup",
            signature = c("repo", "sha"),
            function(repo, sha)
