@@ -41,7 +41,7 @@ build_DESCRIPTION <- function() {
 
     lines <- c(
         "Package: git2r",
-        "Title: Programmatic access to Git repositories from R.",
+        "Title: Programmatic Access to Git Repositories from R",
         "Description: git2r is a package for accessing Git repositories from R",
         "    using the libgit2 library. The package enables running some basic",
         "    git commands from R and to extract data from a Git repository.")
