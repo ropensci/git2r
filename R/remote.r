@@ -234,15 +234,32 @@ setMethod("remote_remove",
 ##' from. Default is the remotes of the repository.
 ##' @return Character vector with remote_url for each of the remote
 ##' @keywords methods
-##' @examples \dontrun{
-##' ## Open an existing repository
-##' repo <- repository("path/to/git2r")
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
 ##'
-##' ## Get the url's for the remotes of the repository
-##' remote_url(repo)
+##' ## Create a user and commit a file
+##' config(repo, user.name="User", user.email="user@@example.org")
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit(repo, "First commit message")
 ##'
-##' ## Get the url for a specific remote of the repository
-##' remote_url(repo, "origin")
+##' ## Add a remote
+##' remote_add(repo, "playground", "https://example.org/git2r/playground")
+##' remotes(repo)
+##' remote_url(repo, "playground")
+##'
+##' ## Rename a remote
+##' remote_rename(repo, "playground", "foobar")
+##' remotes(repo)
+##' remote_url(repo, "foobar")
+##'
+##' ## Remove a remote
+##' remote_remove(repo, "foobar")
+##' remotes(repo)
 ##' }
 setGeneric("remote_url",
            signature = "repo",
