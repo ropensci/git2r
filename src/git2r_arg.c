@@ -226,6 +226,7 @@ int git2r_arg_check_filename(SEXP arg)
             return GIT_ERROR;
         if (0 == strlen(CHAR(STRING_ELT(arg, 0))))
             return GIT_ERROR;
+        break;
     default:
         return GIT_ERROR;
     }
