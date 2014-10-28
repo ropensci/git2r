@@ -384,10 +384,10 @@ setClass("git_commit",
 ##' @section Slots:
 ##' \describe{
 ##'   \item{old}{
-##'     :TODO:DOCUMENTATION:
+##'     Represents the 'from' side of the diff.
 ##'   }
 ##'   \item{new}{
-##'     :TODO:DOCUMENTATION:
+##'     Represents the 'to' side of the diff.
 ##'   }
 ##'   \item{files}{
 ##'     List of \code{\linkS4class{git_diff_file}} objects.
