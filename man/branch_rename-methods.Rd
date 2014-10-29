@@ -29,5 +29,25 @@ invisible renamed S4 class git_branch
 \description{
 Rename a branch
 }
+\examples{
+\dontrun{
+## Initialize a temporary repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+repo <- init(path)
+
+## Config user and commit a file
+config(repo, user.name="Author", user.email="author@example.org")
+writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+           file.path(path, "example.txt"))
+add(repo, "example.txt")
+commit(repo, "First commit message")
+
+## Rename 'master' branch to 'dev'
+branches(repo)
+branch_rename(head(repo), "dev")
+branches(repo)
+}
+}
 \keyword{methods}
 
