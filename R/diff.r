@@ -188,8 +188,15 @@ setMethod("summary",
 #'     (if set to TRUE) in the comparison to \code{object}.
 #'   }
 #' }
+#' @param asChar logical: should the result be converted to a
+#' character string?. Default is FALSE.
+#' @param filename If asChar is TRUE, then the diff can be written to
+#' a file with name filename (the file is overwritten if it
+#' exists). Default is NULL.
 #' @param ... Additional arguments affecting the diff produced
-#' @return A \code{\linkS4class{git_diff}} object.
+#' @return A \code{\linkS4class{git_diff}} object if asChar is
+#' FALSE. If asChar is TRUE and filename is NULL, a character string,
+#' else NULL.
 #' @keywords methods
 #' @examples
 #' \dontrun{
@@ -213,23 +220,28 @@ setMethod("summary",
 #' ## diff between index and workdir
 #' diff_1 <- diff(repo)
 #' summary(diff_1)
+#' cat(diff(repo, asChar=TRUE))
 #'
 #' ## Diff between index and HEAD is empty
 #' diff_2 <- diff(repo, index=TRUE)
 #' summary(diff_2)
+#' cat(diff(repo, index=TRUE, asChar=TRUE))
 #'
 #' ## Diff between tree and working dir, same as diff_1
 #' diff_3 <- diff(tree(commits(repo)[[1]]))
 #' summary(diff_3)
+#' cat(diff(tree(commits(repo)[[1]]), asChar=TRUE))
 #'
 #' ## Add changes, diff between index and HEAD is the same as diff_1
 #' add(repo, "test.txt")
 #' diff_4 <- diff(repo, index=TRUE)
 #' summary(diff_4)
+#' cat(diff(repo, index=TRUE, asChar=TRUE))
 #'
 #' ## Diff between tree and index
 #' diff_5 <- diff(tree(commits(repo)[[1]]), index=TRUE)
 #' summary(diff_5)
+#' cat(diff(tree(commits(repo)[[1]]), index=TRUE, asChar=TRUE))
 #'
 #' ## Diff between two trees
 #' commit(repo, "Second commit")
@@ -237,6 +249,7 @@ setMethod("summary",
 #' tree_2 <- tree(commits(repo)[[1]])
 #' diff_6 <- diff(tree_1, tree_2)
 #' summary(diff_6)
+#' cat(diff(tree_1, tree_2, asChar=TRUE))
 #'
 #' ## Binary files
 #' set.seed(42)
@@ -245,6 +258,7 @@ setMethod("summary",
 #' add(repo, "test.bin")
 #' diff_7 <- diff(repo, index=TRUE)
 #' summary(diff_7)
+#' cat(diff(repo, index=TRUE, asChar=TRUE))
 #' }
 setGeneric("diff",
            signature = c("object"),
@@ -255,9 +269,28 @@ setGeneric("diff",
 #' @export
 setMethod("diff",
           signature(object = "git_repository"),
-          function(object, index = FALSE)
+          function(object,
+                   index    = FALSE,
+                   asChar   = FALSE,
+                   filename = NULL)
           {
-              .Call(git2r_diff, object, NULL, NULL, index, NULL)
+              if (asChar) {
+                  ## Make sure filename is character(0) to write to a
+                  ## character vector or a character vector with path in
+                  ## order to write to a file.
+                  filename <- as.character(filename)
+                  if (any(identical(filename, NA_character_),
+                          identical(nchar(filename), 0L))) {
+                      filename <- character(0)
+                  } else if (length(filename)) {
+                      filename <- normalizePath(filename, mustWork = FALSE)
+                  }
+              } else {
+                  ## Make sure filename is NULL
+                  filename <- NULL
+              }
+
+              .Call(git2r_diff, object, NULL, NULL, index, filename)
           }
 )
 
@@ -268,8 +301,28 @@ setMethod("diff",
 #' @export
 setMethod("diff",
           signature(object = "git_tree"),
-          function(object, new_tree = NULL, index = FALSE)
+          function(object,
+                   new_tree = NULL,
+                   index    = FALSE,
+                   asChar   = FALSE,
+                   filename = NULL)
           {
+              if (asChar) {
+                  ## Make sure filename is character(0) to write to a
+                  ## character vector or a character vector with path in
+                  ## order to write to a file.
+                  filename <- as.character(filename)
+                  if (any(identical(filename, NA_character_),
+                          identical(nchar(filename), 0L))) {
+                      filename <- character(0)
+                  } else if (length(filename)) {
+                      filename <- normalizePath(filename, mustWork = FALSE)
+                  }
+              } else {
+                  ## Make sure filename is NULL
+                  filename <- NULL
+              }
+
               if (!is.null(new_tree)) {
                   if (! is(new_tree, "git_tree")) {
                       stop("Not a git tree")
@@ -279,6 +332,6 @@ setMethod("diff",
                   }
               }
 
-              .Call(git2r_diff, NULL, object, new_tree, index, NULL)
+              .Call(git2r_diff, NULL, object, new_tree, index, filename)
           }
 )
