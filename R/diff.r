@@ -188,14 +188,14 @@ setMethod("summary",
 #'     (if set to TRUE) in the comparison to \code{object}.
 #'   }
 #' }
-#' @param asChar logical: should the result be converted to a
+#' @param as_char logical: should the result be converted to a
 #' character string?. Default is FALSE.
-#' @param filename If asChar is TRUE, then the diff can be written to
+#' @param filename If as_char is TRUE, then the diff can be written to
 #' a file with name filename (the file is overwritten if it
 #' exists). Default is NULL.
 #' @param ... Additional arguments affecting the diff produced
-#' @return A \code{\linkS4class{git_diff}} object if asChar is
-#' FALSE. If asChar is TRUE and filename is NULL, a character string,
+#' @return A \code{\linkS4class{git_diff}} object if as_char is
+#' FALSE. If as_char is TRUE and filename is NULL, a character string,
 #' else NULL.
 #' @keywords methods
 #' @examples
@@ -220,28 +220,28 @@ setMethod("summary",
 #' ## diff between index and workdir
 #' diff_1 <- diff(repo)
 #' summary(diff_1)
-#' cat(diff(repo, asChar=TRUE))
+#' cat(diff(repo, as_char=TRUE))
 #'
 #' ## Diff between index and HEAD is empty
 #' diff_2 <- diff(repo, index=TRUE)
 #' summary(diff_2)
-#' cat(diff(repo, index=TRUE, asChar=TRUE))
+#' cat(diff(repo, index=TRUE, as_char=TRUE))
 #'
 #' ## Diff between tree and working dir, same as diff_1
 #' diff_3 <- diff(tree(commits(repo)[[1]]))
 #' summary(diff_3)
-#' cat(diff(tree(commits(repo)[[1]]), asChar=TRUE))
+#' cat(diff(tree(commits(repo)[[1]]), as_char=TRUE))
 #'
 #' ## Add changes, diff between index and HEAD is the same as diff_1
 #' add(repo, "test.txt")
 #' diff_4 <- diff(repo, index=TRUE)
 #' summary(diff_4)
-#' cat(diff(repo, index=TRUE, asChar=TRUE))
+#' cat(diff(repo, index=TRUE, as_char=TRUE))
 #'
 #' ## Diff between tree and index
 #' diff_5 <- diff(tree(commits(repo)[[1]]), index=TRUE)
 #' summary(diff_5)
-#' cat(diff(tree(commits(repo)[[1]]), index=TRUE, asChar=TRUE))
+#' cat(diff(tree(commits(repo)[[1]]), index=TRUE, as_char=TRUE))
 #'
 #' ## Diff between two trees
 #' commit(repo, "Second commit")
@@ -249,7 +249,7 @@ setMethod("summary",
 #' tree_2 <- tree(commits(repo)[[1]])
 #' diff_6 <- diff(tree_1, tree_2)
 #' summary(diff_6)
-#' cat(diff(tree_1, tree_2, asChar=TRUE))
+#' cat(diff(tree_1, tree_2, as_char=TRUE))
 #'
 #' ## Binary files
 #' set.seed(42)
@@ -258,7 +258,7 @@ setMethod("summary",
 #' add(repo, "test.bin")
 #' diff_7 <- diff(repo, index=TRUE)
 #' summary(diff_7)
-#' cat(diff(repo, index=TRUE, asChar=TRUE))
+#' cat(diff(repo, index=TRUE, as_char=TRUE))
 #' }
 setGeneric("diff",
            signature = c("object"),
@@ -271,10 +271,10 @@ setMethod("diff",
           signature(object = "git_repository"),
           function(object,
                    index    = FALSE,
-                   asChar   = FALSE,
+                   as_char  = FALSE,
                    filename = NULL)
           {
-              if (asChar) {
+              if (as_char) {
                   ## Make sure filename is character(0) to write to a
                   ## character vector or a character vector with path in
                   ## order to write to a file.
@@ -304,10 +304,10 @@ setMethod("diff",
           function(object,
                    new_tree = NULL,
                    index    = FALSE,
-                   asChar   = FALSE,
+                   as_char  = FALSE,
                    filename = NULL)
           {
-              if (asChar) {
+              if (as_char) {
                   ## Make sure filename is character(0) to write to a
                   ## character vector or a character vector with path in
                   ## order to write to a file.

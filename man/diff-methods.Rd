@@ -8,11 +8,11 @@
 \usage{
 diff(object, ...)
 
-\S4method{diff}{git_repository}(object, index = FALSE, asChar = FALSE,
+\S4method{diff}{git_repository}(object, index = FALSE, as_char = FALSE,
   filename = NULL)
 
 \S4method{diff}{git_tree}(object, new_tree = NULL, index = FALSE,
-  asChar = FALSE, filename = NULL)
+  as_char = FALSE, filename = NULL)
 }
 \arguments{
 \item{object}{A \code{git_repository} object or the old
@@ -31,10 +31,10 @@ diff(object, ...)
   }
 }}
 
-\item{asChar}{logical: should the result be converted to a
+\item{as_char}{logical: should the result be converted to a
 character string?. Default is FALSE.}
 
-\item{filename}{If asChar is TRUE, then the diff can be written to
+\item{filename}{If as_char is TRUE, then the diff can be written to
 a file with name filename (the file is overwritten if it
 exists). Default is NULL.}
 
@@ -43,8 +43,8 @@ If NULL, then we use the working directory or the index (see
 the \code{index} argument).}
 }
 \value{
-A \code{\linkS4class{git_diff}} object if asChar is
-FALSE. If asChar is TRUE and filename is NULL, a character string,
+A \code{\linkS4class{git_diff}} object if as_char is
+FALSE. If as_char is TRUE and filename is NULL, a character string,
 else NULL.
 }
 \description{
@@ -72,28 +72,28 @@ writeLines(c("Hello again!", "Here is a second line", "And a third"),
 ## diff between index and workdir
 diff_1 <- diff(repo)
 summary(diff_1)
-cat(diff(repo, asChar=TRUE))
+cat(diff(repo, as_char=TRUE))
 
 ## Diff between index and HEAD is empty
 diff_2 <- diff(repo, index=TRUE)
 summary(diff_2)
-cat(diff(repo, index=TRUE, asChar=TRUE))
+cat(diff(repo, index=TRUE, as_char=TRUE))
 
 ## Diff between tree and working dir, same as diff_1
 diff_3 <- diff(tree(commits(repo)[[1]]))
 summary(diff_3)
-cat(diff(tree(commits(repo)[[1]]), asChar=TRUE))
+cat(diff(tree(commits(repo)[[1]]), as_char=TRUE))
 
 ## Add changes, diff between index and HEAD is the same as diff_1
 add(repo, "test.txt")
 diff_4 <- diff(repo, index=TRUE)
 summary(diff_4)
-cat(diff(repo, index=TRUE, asChar=TRUE))
+cat(diff(repo, index=TRUE, as_char=TRUE))
 
 ## Diff between tree and index
 diff_5 <- diff(tree(commits(repo)[[1]]), index=TRUE)
 summary(diff_5)
-cat(diff(tree(commits(repo)[[1]]), index=TRUE, asChar=TRUE))
+cat(diff(tree(commits(repo)[[1]]), index=TRUE, as_char=TRUE))
 
 ## Diff between two trees
 commit(repo, "Second commit")
@@ -101,7 +101,7 @@ tree_1 <- tree(commits(repo)[[2]])
 tree_2 <- tree(commits(repo)[[1]])
 diff_6 <- diff(tree_1, tree_2)
 summary(diff_6)
-cat(diff(tree_1, tree_2, asChar=TRUE))
+cat(diff(tree_1, tree_2, as_char=TRUE))
 
 ## Binary files
 set.seed(42)
@@ -110,7 +110,7 @@ writeBin(as.raw((sample(0:255, 1000, replace=TRUE))),
 add(repo, "test.bin")
 diff_7 <- diff(repo, index=TRUE)
 summary(diff_7)
-cat(diff(repo, index=TRUE, asChar=TRUE))
+cat(diff(repo, index=TRUE, as_char=TRUE))
 }
 }
 \keyword{methods}
