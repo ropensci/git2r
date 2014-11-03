@@ -3,7 +3,7 @@
 \name{tag}
 \alias{tag}
 \alias{tag,git_repository-method}
-\title{Tag}
+\title{Create tag targeting HEAD commit in repository}
 \usage{
 tag(object, name, message, tagger = default_signature(object))
 
@@ -23,7 +23,7 @@ tag(object, name, message, tagger = default_signature(object))
 invisible(\code{git_tag}) object
 }
 \description{
-Tag
+Create tag targeting HEAD commit in repository
 }
 \examples{
 \dontrun{
