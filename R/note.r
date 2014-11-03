@@ -325,3 +325,35 @@ setMethod("note_remove",
               invisible(.Call(git2r_note_remove, note, author, committer))
           }
 )
+
+##' Brief summary of note
+##'
+##' @aliases show,git_note-methods
+##' @docType methods
+##' @param object The \linkS4class{git_note} \code{object}
+##' @return None (invisible 'NULL').
+##' @keywords methods
+##' @export
+##' @examples
+##' \dontrun{
+##' ## Create and initialize a repository in a temporary directory
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##' config(repo, user.name="User", user.email="user@@example.org")
+##'
+##' ## Create a file, add and commit
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit(repo, "First commit message")
+##'
+##' ## Create note
+##' note_create(commits(repo)[[1]], "My note")
+##' }
+setMethod("show",
+          signature(object = "git_note"),
+          function (object)
+          {
+              cat(sprintf("note:  %s\n", object@sha))
+          }
+)
