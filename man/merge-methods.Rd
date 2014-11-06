@@ -3,18 +3,25 @@
 \name{merge}
 \alias{merge}
 \alias{merge,git_branch-method}
+\alias{merge,git_repository-method}
 \title{Merge a branch into HEAD}
 \usage{
-merge(branch, ...)
+merge(object, ...)
 
-\S4method{merge}{git_branch}(branch, commit_on_success = TRUE,
-  merger = default_signature(repo))
+\S4method{merge}{git_repository}(object, branch, commit_on_success = TRUE,
+  merger = default_signature(object))
+
+\S4method{merge}{git_branch}(object, commit_on_success = TRUE,
+  merger = default_signature(object@repo))
 }
 \arguments{
-\item{branch}{A \code{\linkS4class{git_branch}} object to merge
-into HEAD.}
+\item{object}{A \code{\linkS4class{git_branch}} or
+\code{\linkS4class{git_repository}} object.}
 
 \item{...}{Additional arguments affecting the merge}
+
+\item{branch}{Name of branch if \code{object} is a
+\code{\linkS4class{git_repository}}}
 
 \item{commit_on_success}{If there are no conflicts written to the
 index, the merge commit will be committed. Default is TRUE.}
@@ -26,6 +33,72 @@ A \code{\linkS4class{git_merge_result}} object.
 }
 \description{
 Merge a branch into HEAD
+}
+\examples{
+\dontrun{
+## Create a temporary repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+repo <- init(path)
+config(repo, user.name = "User", user.email = "user@example.org")
+
+## Create a file, add and commit
+writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+           con = file.path(path, "test.txt"))
+add(repo, "test.txt")
+commit_1 <- commit(repo, "Commit message 1")
+
+## Create first branch, checkout, add file and commit
+checkout(repo, "branch1", create = TRUE)
+writeLines("Branch 1", file.path(path, "branch-1.txt"))
+add(repo, "branch-1.txt")
+commit(repo, "Commit message branch 1")
+
+## Create second branch, checkout, add file and commit
+b_2 <- branch_create(commit_1, "branch2")
+checkout(b_2)
+writeLines("Branch 2", file.path(path, "branch-2.txt"))
+add(repo, "branch-2.txt")
+commit(repo, "Commit message branch 2")
+
+## Make a change to 'test.txt'
+writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+             "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
+           con = file.path(path, "test.txt"))
+add(repo, "test.txt")
+commit(repo, "Second commit message branch 2")
+
+## Checkout master
+checkout(repo, "master", force = TRUE)
+
+## Merge branch 1
+merge(repo, "branch1")
+
+## Merge branch 2
+merge(repo, "branch2")
+
+## Create third branch, checkout, change file and commit
+checkout(repo, "branch3", create=TRUE)
+writeLines(c("Lorem ipsum dolor amet sit, consectetur adipisicing elit, sed do",
+             "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
+           con = file.path(path, "test.txt"))
+add(repo, "test.txt")
+commit(repo, "Commit message branch 3")
+
+## Checkout master and create a change that creates a merge conflict
+checkout(repo, "master", force=TRUE)
+writeLines(c("Lorem ipsum dolor sit amet, adipisicing consectetur elit, sed do",
+             "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
+           con = file.path(path, "test.txt"))
+add(repo, "test.txt")
+commit(repo, "Some commit message branch 1")
+
+## Merge branch 3
+merge(repo, "branch3")
+
+## Check status; Expect to have one unstaged unmerged conflict.
+status(repo)
+}
 }
 \keyword{methods}
 
