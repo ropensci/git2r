@@ -13,5 +13,28 @@
 \description{
 Show a diff
 }
+\examples{
+\dontrun{
+## Initialize a repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+repo <- init(path)
+
+## Config user
+config(repo, user.name="User", user.email="user@example.org")
+
+## Create a file, add, commit
+writeLines("Hello world!", file.path(path, "test.txt"))
+add(repo, "test.txt")
+commit(repo, "Commit message")
+
+## Change the file
+writeLines(c("Hello again!", "Here is a second line", "And a third"),
+           file.path(path, "test.txt"))
+
+## Brief summary of diff between index and workdir
+diff(repo)
+}
+}
 \keyword{methods}
 
