@@ -16,5 +16,22 @@ None (invisible 'NULL').
 \description{
 Brief summary of branch
 }
+\examples{
+\dontrun{
+## Initialize a temporary repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+repo <- init(path)
+
+## Create a user and commit a file
+config(repo, user.name="Author", user.email="author@example.org")
+writeLines("Hello world!", file.path(path, "example.txt"))
+add(repo, "example.txt")
+commit(repo, "First commit message")
+
+## Brief summary of the branch in the repository
+branches(repo)[[1]]
+}
+}
 \keyword{methods}
 
