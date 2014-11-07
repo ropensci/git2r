@@ -16,5 +16,27 @@ None (invisible 'NULL').
 \description{
 Brief summary of a tag
 }
+\examples{
+\dontrun{
+## Initialize a temporary repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+repo <- init(path)
+
+## Create a user
+config(repo, user.name="User", user.email="user@example.org")
+
+## Commit a text file
+writeLines("Hello world!", file.path(path, "example.txt"))
+add(repo, "example.txt")
+commit(repo, "First commit message")
+
+## Create tag
+tag(repo, "Tagname", "Tag message")
+
+## View brief summary of tag
+tags(repo)[[1]]
+}
+}
 \keyword{methods}
 
