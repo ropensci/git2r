@@ -42,7 +42,7 @@ checkout_reflog_msg <- function(object, ref_log_target) {
 ##' (force = FALSE) or GIT_CHECKOUT_FORCE (force = TRUE).
 ##' @rdname checkout-methods
 ##' @docType methods
-##' @param object a repository, commit, tag or tree which content will
+##' @param object A repository, commit, tag or tree which content will
 ##' be used to update the working directory.
 ##' @param ... Additional arguments affecting the checkout
 ##' @param branch If object is a repository, the name of the branch to

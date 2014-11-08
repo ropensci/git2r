@@ -20,7 +20,7 @@ checkout(object, ...)
 \S4method{checkout}{git_tag}(object, force = FALSE)
 }
 \arguments{
-\item{object}{a repository, commit, tag or tree which content will
+\item{object}{A repository, commit, tag or tree which content will
 be used to update the working directory.}
 
 \item{...}{Additional arguments affecting the checkout}
