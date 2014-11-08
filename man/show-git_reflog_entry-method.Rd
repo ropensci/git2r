@@ -18,8 +18,16 @@ Brief summary of a reflog entry
 }
 \examples{
 \dontrun{
-## Open an existing repository
-repo <- repository("path/to/git2r")
+## Initialize a temporary repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+repo <- init(path)
+
+## Create a user and commit a file
+config(repo, user.name="Author", user.email="author@example.org")
+writeLines("Hello world!", file.path(path, "example.txt"))
+add(repo, "example.txt")
+commit(repo, "First commit message")
 
 ## View repository HEAD reflog
 reflog(repo)
