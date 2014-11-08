@@ -13,7 +13,6 @@
 typedef struct {
 	git_error *last_error;
 	git_error error_t;
-	char oid_fmt[41];
 } git_global_st;
 
 #ifdef GIT_SSL
