@@ -128,6 +128,14 @@ GIT_INLINE(int) git_path_is_relative(const char *p)
 	return (p[0] == '.' && (p[1] == '/' || (p[1] == '.' && p[2] == '/')));
 }
 
+/**
+ * Check if string is at end of path segment (i.e. looking at '/' or '\0')
+ */
+GIT_INLINE(int) git_path_at_end_of_segment(const char *p)
+{
+	return !*p || *p == '/';
+}
+
 extern int git__percent_decode(git_buf *decoded_out, const char *input);
 
 /**
@@ -187,6 +195,17 @@ extern bool git_path_contains(git_buf *dir, const char *item);
  * @return true if subdirectory exists, false otherwise.
  */
 extern bool git_path_contains_dir(git_buf *parent, const char *subdir);
+
+/**
+ * Make the path relative to the given parent path.
+ *
+ * @param path The path to make relative
+ * @param parent The parent path to make path relative to
+ * @return 0 if path was made relative, GIT_ENOTFOUND
+ *         if there was not common root between the paths,
+ *         or <0.
+ */
+extern int git_path_make_relative(git_buf *path, const char *parent);
 
 /**
  * Check if the given path contains the given file.

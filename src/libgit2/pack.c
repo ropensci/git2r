@@ -648,9 +648,6 @@ int git_packfile_unpack(
 		base_type = elem->type;
 	}
 
-	if (error < 0)
-		goto cleanup;
-
 	switch (base_type) {
 	case GIT_OBJ_COMMIT:
 	case GIT_OBJ_TREE:
@@ -744,7 +741,7 @@ cleanup:
 		git__free(obj->data);
 
 	if (elem)
-		*obj_offset = elem->offset;
+		*obj_offset = curpos;
 
 	git_array_clear(chain);
 	return error;

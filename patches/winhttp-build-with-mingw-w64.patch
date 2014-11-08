@@ -1,11 +1,11 @@
-*** winhttp.c	2014-08-27 06:30:54.645355955 +0200
---- winhttp-build-with-mingw-w64.c	2014-08-27 06:30:59.545356080 +0200
+*** winhttp.c	2014-11-08 15:59:43.496688973 +0100
+--- winhttp-build-with-mingw-w64.c	2014-11-08 15:58:26.436686910 +0100
 ***************
 *** 5,10 ****
 --- 5,29 ----
    * a Linking Exception. For full terms see the included COPYING file.
    */
-  
+
 + /**
 +  * Changes to build and fix compiler warnings with mingw-w64:
 +  *  - Define __CRT_STRSAFE_IMPL to fix duplicate extern error from strsafe.h
@@ -24,74 +24,74 @@
 +  *
 +  * 2014-08-27: Stefan Widgren <stefan.widgren@gmail.com>
 +  */
-+ 
++
   #ifdef GIT_WINHTTP
-  
+
   #include "git2.h"
 ***************
 *** 17,32 ****
   #include "repository.h"
-  
+
   #include <winhttp.h>
 - #pragma comment(lib, "winhttp")
-  
+
   #include <strsafe.h>
-  
+
   /* For IInternetSecurityManager zone check */
   #include <objbase.h>
   #include <urlmon.h>
-  
+
 ! /* For UuidCreate */
 ! #pragma comment(lib, "rpcrt4")
-  
+
   #define WIDEN2(s) L ## s
   #define WIDEN(s) WIDEN2(s)
 --- 36,51 ----
   #include "repository.h"
-  
+
   #include <winhttp.h>
-  
+
 + #define __CRT_STRSAFE_IMPL
   #include <strsafe.h>
-  
+
   /* For IInternetSecurityManager zone check */
   #include <objbase.h>
   #include <urlmon.h>
-  
+
 ! const IID CLSID_InternetSecurityManager = {0x7b8a2d94,0x0ac9,0x11d1,{0x89,0x6c,0x00,0xc0,0x4f,0xb6,0xbf,0xc4}};
 ! const IID IID_IInternetSecurityManager  = {0x79EAC9EE,0xBAF9,0x11CE,{0x8C,0x82,0x00,0xAA,0x00,0x4B,0xA9,0x0B}};
-  
+
   #define WIDEN2(s) L ## s
   #define WIDEN(s) WIDEN2(s)
 ***************
-*** 40,46 ****
+*** 41,47 ****
   #define WINHTTP_IGNORE_REQUEST_TOTAL_LENGTH 0
   #endif
-  
+
 - static const char *prefix_http = "http://";
   static const char *prefix_https = "https://";
   static const char *upload_pack_service = "upload-pack";
   static const char *upload_pack_ls_service_url = "/info/refs?service=git-upload-pack";
---- 59,64 ----
+--- 60,65 ----
 ***************
-*** 95,101 ****
+*** 96,102 ****
   	git_cred_userpass_plaintext *c = (git_cred_userpass_plaintext *)cred;
   	git_buf buf = GIT_BUF_INIT, raw = GIT_BUF_INIT;
   	wchar_t *wide = NULL;
 ! 	int error = -1, wide_len;
-  
+
   	git_buf_printf(&raw, "%s:%s", c->username, c->password);
-  
---- 113,119 ----
+
+--- 114,120 ----
   	git_cred_userpass_plaintext *c = (git_cred_userpass_plaintext *)cred;
   	git_buf buf = GIT_BUF_INIT, raw = GIT_BUF_INIT;
   	wchar_t *wide = NULL;
 ! 	int error = -1, wide_len = 0;
-  
+
   	git_buf_printf(&raw, "%s:%s", c->username, c->password);
-  
+
 ***************
-*** 208,214 ****
+*** 209,215 ****
   	git_buf buf = GIT_BUF_INIT;
   	char *proxy_url = NULL;
   	wchar_t ct[MAX_CONTENT_TYPE_LEN];
@@ -99,7 +99,7 @@
   	BOOL peerdist = FALSE;
   	int error = -1;
   	unsigned long disable_redirects = WINHTTP_DISABLE_REDIRECTS;
---- 226,232 ----
+--- 227,233 ----
   	git_buf buf = GIT_BUF_INIT;
   	char *proxy_url = NULL;
   	wchar_t ct[MAX_CONTENT_TYPE_LEN];
@@ -108,59 +108,59 @@
   	int error = -1;
   	unsigned long disable_redirects = WINHTTP_DISABLE_REDIRECTS;
 ***************
-*** 424,430 ****
+*** 432,438 ****
   	git_buf buf = GIT_BUF_INIT;
-  
+
   	/* Chunk header */
 ! 	git_buf_printf(&buf, "%X\r\n", len);
-  
+
   	if (git_buf_oom(&buf))
   		return -1;
---- 442,448 ----
+--- 450,456 ----
   	git_buf buf = GIT_BUF_INIT;
-  
+
   	/* Chunk header */
 ! 	git_buf_printf(&buf, "%" PRIxZ "\r\n", len);
-  
+
   	if (git_buf_oom(&buf))
   		return -1;
 ***************
-*** 465,471 ****
+*** 473,479 ****
   	wchar_t *ua = L"git/1.0 (libgit2 " WIDEN(LIBGIT2_VERSION) L")";
   	wchar_t *wide_host;
   	int32_t port;
 - 	const char *default_port = "80";
   	int error = -1;
-  
-  	/* Prepare port */
---- 483,488 ----
+  	int default_timeout = TIMEOUT_INFINITE;
+  	int default_connect_timeout = DEFAULT_CONNECT_TIMEOUT;
+--- 491,496 ----
 ***************
-*** 797,803 ****
+*** 813,819 ****
   	size_t len)
   {
   	winhttp_stream *s = (winhttp_stream *)stream;
 - 	winhttp_subtransport *t = OWNING_SUBTRANSPORT(s);
   	DWORD bytes_written;
-  
+
   	if (!s->request && winhttp_stream_connect(s) < 0)
---- 814,819 ----
+--- 830,835 ----
 ***************
-*** 891,897 ****
+*** 907,913 ****
   	size_t len)
   {
   	winhttp_stream *s = (winhttp_stream *)stream;
 - 	winhttp_subtransport *t = OWNING_SUBTRANSPORT(s);
   	DWORD bytes_written;
-  
+
   	if (!s->request && winhttp_stream_connect(s) < 0)
---- 907,912 ----
+--- 923,928 ----
 ***************
-*** 937,943 ****
+*** 953,959 ****
   	size_t len)
   {
   	winhttp_stream *s = (winhttp_stream *)stream;
 - 	winhttp_subtransport *t = OWNING_SUBTRANSPORT(s);
-  
+
   	if (!s->request && winhttp_stream_connect(s) < 0)
   		return -1;
---- 952,957 ----
+--- 968,973 ----
