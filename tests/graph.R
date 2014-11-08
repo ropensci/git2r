@@ -36,7 +36,7 @@ add(repo, "test.txt")
 commit_2 <- commit(repo, "Second commit message")
 
 ## Check ahead behind
-stopifnot(identical(ahead_behind(commit_1, commit_2), c(1L, 0L)))
+stopifnot(identical(ahead_behind(commit_1, commit_2), c(0L, 1L)))
 
 ## Cleanup
 unlink(path, recursive=TRUE)
