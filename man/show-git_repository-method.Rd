@@ -16,5 +16,25 @@ None (invisible 'NULL').
 \description{
 Brief summary of repository
 }
+\examples{
+\dontrun{
+## Initialize a temporary repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+repo <- init(path)
+config(repo, user.name="Author", user.email="author@example.org")
+
+## Brief summary of the repository
+repo
+
+## Create and commit a file
+writeLines("Hello world!", file.path(path, "example.txt"))
+add(repo, "example.txt")
+commit(repo, "First commit message")
+
+## Brief summary of the repository
+repo
+}
+}
 \keyword{methods}
 

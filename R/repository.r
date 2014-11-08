@@ -659,6 +659,25 @@ setMethod("default_signature",
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
 ##' @export
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##' config(repo, user.name="Author", user.email="author@@example.org")
+##'
+##' ## Brief summary of the repository
+##' repo
+##'
+##' ## Create and commit a file
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit(repo, "First commit message")
+##'
+##' ## Brief summary of the repository
+##' repo
+##' }
 setMethod("show",
           signature(object = "git_repository"),
           function(object)
@@ -678,6 +697,12 @@ setMethod("show",
                   cat(sprintf("Local:    %s %s\n",
                               head(object)@name,
                               workdir(object)))
+
+                  commit <- lookup(object, branch_target(head(object)))
+                  cat(sprintf("Head:     [%s] %s: %s\n",
+                              substring(commit@sha, 1, 7),
+                              substring(as(commit@author@when, "character"), 1, 10),
+                              commit@summary))
               }
           }
 )
