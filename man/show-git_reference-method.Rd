@@ -16,5 +16,22 @@ None (invisible 'NULL').
 \description{
 Brief summary of reference
 }
+\examples{
+\dontrun{
+## Create and initialize a repository in a temporary directory
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+repo <- init(path)
+config(repo, user.name="User", user.email="user@example.org")
+
+## Create a file, add and commit
+writeLines("Hello world!", file.path(path, "example.txt"))
+add(repo, "example.txt")
+commit(repo, "First commit message")
+
+## Brief summary of reference
+references(repo)[[1]]
+}
+}
 \keyword{methods}
 

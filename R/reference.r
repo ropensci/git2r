@@ -78,6 +78,22 @@ setMethod("references",
 ##' @keywords methods
 ##' @include S4_classes.r
 ##' @export
+##' @examples
+##' \dontrun{
+##' ## Create and initialize a repository in a temporary directory
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##' config(repo, user.name="User", user.email="user@@example.org")
+##'
+##' ## Create a file, add and commit
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit(repo, "First commit message")
+##'
+##' ## Brief summary of reference
+##' references(repo)[[1]]
+##' }
 setMethod("show",
           signature(object = "git_reference"),
           function (object)
