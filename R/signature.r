@@ -22,6 +22,19 @@
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
 ##' @export
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a user
+##' config(repo, user.name="Author", user.email="author@@example.org")
+##'
+##' ## Brief summary of default signature
+##' default_signature(repo)
+##' }
 setMethod("show",
           signature(object = "git_signature"),
           function(object)
