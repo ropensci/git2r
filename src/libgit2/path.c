@@ -417,7 +417,7 @@ int git_path_fromurl(git_buf *local_path_out, const char *file_url)
 int git_path_walk_up(
 	git_buf *path,
 	const char *ceiling,
-	int (*cb)(void *data, git_buf *),
+	int (*cb)(void *data, const char *),
 	void *data)
 {
 	int error = 0;
@@ -435,12 +435,20 @@ int git_path_walk_up(
 	}
 	scan = git_buf_len(path);
 
+	/* empty path: yield only once */
+	if (!scan) {
+		error = cb(data, "");
+		if (error)
+			giterr_set_after_callback(error);
+		return error;
+	}
+
 	iter.ptr = path->ptr;
 	iter.size = git_buf_len(path);
 	iter.asize = path->asize;
 
 	while (scan >= stop) {
-		error = cb(data, &iter);
+		error = cb(data, iter.ptr);
 		iter.ptr[scan] = oldc;
 
 		if (error) {
@@ -459,6 +467,13 @@ int git_path_walk_up(
 
 	if (scan >= 0)
 		iter.ptr[scan] = oldc;
+
+	/* relative path: yield for the last component */
+	if (!error && stop == 0 && iter.ptr[0] != '/') {
+		error = cb(data, "");
+		if (error)
+			giterr_set_after_callback(error);
+	}
 
 	return error;
 }
@@ -753,7 +768,7 @@ int git_path_cmp(
 int git_path_make_relative(git_buf *path, const char *parent)
 {
 	const char *p, *q, *p_dirsep, *q_dirsep;
-	size_t plen = path->size, newlen, depth = 1, i;
+	size_t plen = path->size, newlen, depth = 1, i, offset;
 
 	for (p_dirsep = p = path->ptr, q_dirsep = q = parent; *p && *q; p++, q++) {
 		if (*p == '/' && *q == '/') {
@@ -793,8 +808,11 @@ int git_path_make_relative(git_buf *path, const char *parent)
 
 	newlen = (depth * 3) + plen;
 
+	/* save the offset as we might realllocate the pointer */
+	offset = p - path->ptr;
 	if (git_buf_try_grow(path, newlen + 1, 1, 0) < 0)
 		return -1;
+	p = path->ptr + offset;
 
 	memmove(path->ptr + (depth * 3), p, plen + 1);
 
@@ -965,7 +983,7 @@ int git_path_direach(
 	path_dirent_data de_data;
 	struct dirent *de, *de_buf = (struct dirent *)&de_data;
 
-	(void)flags;
+	GIT_UNUSED(flags);
 
 #ifdef GIT_USE_ICONV
 	git_path_iconv_t ic = GIT_PATH_ICONV_INIT;
@@ -1036,7 +1054,7 @@ int git_path_dirload(
 	path_dirent_data de_data;
 	struct dirent *de, *de_buf = (struct dirent *)&de_data;
 
-	(void)flags;
+	GIT_UNUSED(flags);
 
 #ifdef GIT_USE_ICONV
 	git_path_iconv_t ic = GIT_PATH_ICONV_INIT;
