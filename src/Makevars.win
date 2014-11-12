@@ -37,9 +37,9 @@ OBJECTS.libgit2 = libgit2/attr.o libgit2/attrcache.o libgit2/attr_file.o \
     libgit2/signature.o libgit2/sortedcache.o libgit2/stash.o \
     libgit2/status.o libgit2/strmap.o libgit2/submodule.o \
     libgit2/sysdir.o libgit2/tag.o libgit2/thread-utils.o \
-    libgit2/trace.o libgit2/transport.o libgit2/tree.o \
-    libgit2/tree-cache.o libgit2/tsort.o libgit2/util.o \
-    libgit2/vector.o libgit2/zstream.o
+    libgit2/trace.o libgit2/transaction.o libgit2/transport.o \
+    libgit2/tree.o libgit2/tree-cache.o libgit2/tsort.o \
+    libgit2/util.o libgit2/vector.o libgit2/zstream.o
 
 OBJECTS.libgit2.hash = libgit2/hash/hash_generic.o
 
