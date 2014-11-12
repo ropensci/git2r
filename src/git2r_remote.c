@@ -123,7 +123,7 @@ SEXP git2r_remote_fetch(
     if (GIT_OK != err)
         goto cleanup;
 
-    err = git_remote_fetch(remote, signature, CHAR(STRING_ELT(msg, 0)));
+    err = git_remote_fetch(remote, NULL, signature, CHAR(STRING_ELT(msg, 0)));
     if (GIT_OK != err)
         goto cleanup;
 
