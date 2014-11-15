@@ -207,7 +207,6 @@ SEXP git2r_remote_remove(SEXP repo, SEXP name)
 {
     int err;
     git_repository *repository = NULL;
-    git_remote *remote = NULL;
 
     if (GIT_OK != git2r_arg_check_string(name))
         git2r_error(git2r_err_string_arg, __func__, "name");
@@ -216,18 +215,7 @@ SEXP git2r_remote_remove(SEXP repo, SEXP name)
     if (!repository)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
-    err = git_remote_load(&remote,
-			  repository,
-			  CHAR(STRING_ELT(name, 0)));
-
-    if (GIT_OK != err)
-	goto cleanup;
-
-    err = git_remote_delete(remote);
-
-cleanup:
-    if (remote)
-	git_remote_free(remote);
+    err = git_remote_delete(repository, CHAR(STRING_ELT(name, 0)));
 
     if (repository)
 	git_repository_free(repository);
@@ -249,31 +237,21 @@ cleanup:
 SEXP git2r_remote_rename(SEXP repo, SEXP oldname, SEXP newname)
 {
     int err;
-    git_strarray problems;
+    git_strarray problems = {0};
     git_repository *repository = NULL;
-    git_remote *remote = NULL;
 
     if (GIT_OK != git2r_arg_check_string(oldname))
         git2r_error(git2r_err_string_arg, __func__, "oldname");
     if (GIT_OK != git2r_arg_check_string(newname))
         git2r_error(git2r_err_string_arg, __func__, "newname");
 
-    if (!git_remote_is_valid_name(CHAR(STRING_ELT(newname, 0))))
-	git2r_error("Error in '%s': Invalid new remote name", __func__, NULL);
-
     repository = git2r_repository_open(repo);
     if (!repository)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
-    err = git_remote_load(&remote,
-			  repository,
-			  CHAR(STRING_ELT(oldname, 0)));
-
-    if (GIT_OK != err)
-	goto cleanup;
-
     err = git_remote_rename(&problems,
-                            remote,
+                            repository,
+                            CHAR(STRING_ELT(oldname, 0)),
 			    CHAR(STRING_ELT(newname, 0)));
 
     if (GIT_OK != err)
@@ -282,9 +260,6 @@ SEXP git2r_remote_rename(SEXP repo, SEXP oldname, SEXP newname)
     git_strarray_free(&problems);
 
 cleanup:
-    if (remote)
-	git_remote_free(remote);
-
     if (repository)
 	git_repository_free(repository);
 
