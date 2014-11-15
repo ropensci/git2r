@@ -698,7 +698,6 @@ int git_config_file__ondisk(git_config_backend **out, const char *path)
 	backend->header.parent.del = config_delete;
 	backend->header.parent.del_multivar = config_delete_multivar;
 	backend->header.parent.iterator = config_iterator_new;
-	backend->header.parent.refresh = config_refresh;
 	backend->header.parent.snapshot = config_snapshot;
 	backend->header.parent.free = backend_free;
 
@@ -744,13 +743,6 @@ static int config_delete_readonly(git_config_backend *cfg, const char *name)
 	return config_error_readonly();
 }
 
-static int config_refresh_readonly(git_config_backend *cfg)
-{
-	GIT_UNUSED(cfg);
-
-	return config_error_readonly();
-}
-
 static void backend_readonly_free(git_config_backend *_backend)
 {
 	diskfile_backend *backend = (diskfile_backend *)_backend;
@@ -767,12 +759,17 @@ static int config_readonly_open(git_config_backend *cfg, git_config_level_t leve
 {
 	diskfile_readonly_backend *b = (diskfile_readonly_backend *) cfg;
 	diskfile_backend *src = b->snapshot_from;
+	diskfile_header *src_header = &src->header;
 	refcounted_strmap *src_map;
+	int error;
+
+	if (!src_header->readonly && (error = config_refresh(&src_header->parent)) < 0)
+		return error;
 
 	/* We're just copying data, don't care about the level */
 	GIT_UNUSED(level);
 
-	src_map = refcounted_strmap_take(&src->header);
+	src_map = refcounted_strmap_take(src_header);
 	b->header.values = src_map;
 
 	return 0;
@@ -799,7 +796,6 @@ int git_config_file__snapshot(git_config_backend **out, diskfile_backend *in)
 	backend->header.parent.del = config_delete_readonly;
 	backend->header.parent.del_multivar = config_delete_multivar_readonly;
 	backend->header.parent.iterator = config_iterator_new;
-	backend->header.parent.refresh = config_refresh_readonly;
 	backend->header.parent.free = backend_readonly_free;
 
 	*out = (git_config_backend *)backend;

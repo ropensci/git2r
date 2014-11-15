@@ -390,19 +390,6 @@ GIT_EXTERN(int) git_remote_fetch(
 		const char *reflog_message);
 
 /**
- *
- * Return whether the library supports a particular URL scheme
- *
- * Both the built-in and externally-registered transport lists are
- * searched for a transport which supports the scheme of the given
- * URL.
- *
- * @param url the url to check
- * @return 1 if the url is supported, 0 otherwise
-*/
-GIT_EXTERN(int) git_remote_supported_url(const char* url);
-
-/**
  * Get a list of the configured remotes for a repo
  *
  * The string array must be freed by the user.
@@ -557,18 +544,21 @@ GIT_EXTERN(void) git_remote_set_autotag(
  * The new name will be checked for validity.
  * See `git_tag_create()` for rules about valid names.
  *
- * A temporary in-memory remote cannot be given a name with this method.
+ * No loaded instances of a the remote with the old name will change
+ * their name or their list of refspecs.
  *
  * @param problems non-default refspecs cannot be renamed and will be
  * stored here for further processing by the caller. Always free this
  * strarray on succesful return.
- * @param remote the remote to rename
+ * @param repo the repository in which to rename
+ * @param name the current name of the reamote
  * @param new_name the new name the remote should bear
  * @return 0, GIT_EINVALIDSPEC, GIT_EEXISTS or an error code
  */
 GIT_EXTERN(int) git_remote_rename(
 	git_strarray *problems,
-	git_remote *remote,
+	git_repository *repo,
+	const char *name,
 	const char *new_name);
 
 /**
@@ -602,10 +592,11 @@ GIT_EXTERN(int) git_remote_is_valid_name(const char *remote_name);
 * All remote-tracking branches and configuration settings
 * for the remote will be removed.
 *
-* @param remote A valid remote
+* @param repo the repository in which to act
+* @param name the name of the remove to delete
 * @return 0 on success, or an error code.
 */
-GIT_EXTERN(int) git_remote_delete(git_remote *remote);
+GIT_EXTERN(int) git_remote_delete(git_repository *repo, const char *name);
 
 /**
  * Retrieve the name of the remote's default branch
