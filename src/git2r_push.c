@@ -124,7 +124,7 @@ SEXP git2r_push(
     if (GIT_OK != err)
         goto cleanup;
 
-    err = git_remote_load(&remote, repository, CHAR(STRING_ELT(name, 0)));
+    err = git_remote_lookup(&remote, repository, CHAR(STRING_ELT(name, 0)));
     if (GIT_OK != err)
         goto cleanup;
 

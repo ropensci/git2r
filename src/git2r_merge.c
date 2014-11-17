@@ -109,7 +109,7 @@ cleanup:
  */
 static int git2r_fast_forward_merge(
     SEXP merge_result,
-    const git_merge_head *merge_head,
+    const git_annotated_commit *merge_head,
     git_repository *repository,
     const char *log_message,
     git_signature *merger)
@@ -122,7 +122,7 @@ static int git2r_fast_forward_merge(
     git_reference *reference = NULL;
     git_checkout_options opts = GIT_CHECKOUT_OPTIONS_INIT;
 
-    oid = git_merge_head_id(merge_head);
+    oid = git_annotated_commit_id(merge_head);
     err = git_commit_lookup(&commit, repository, oid);
     if (GIT_OK != err)
         goto cleanup;
@@ -209,7 +209,7 @@ cleanup:
  */
 static int git2r_normal_merge(
     SEXP merge_result,
-    const git_merge_head **merge_heads,
+    const git_annotated_commit **merge_heads,
     size_t n,
     git_repository *repository,
     const char *message,
@@ -319,7 +319,7 @@ cleanup:
 static int git2r_merge(
     SEXP merge_result,
     git_repository *repository,
-    const git_merge_head **merge_heads,
+    const git_annotated_commit **merge_heads,
     size_t n,
     git_merge_preference_t preference,
     const char *name,
@@ -434,21 +434,21 @@ static int git2r_merge(
 }
 
 /**
- * Free each git_merge_head in merge_heads and free memory of
+ * Free each git_annotated_commit in merge_heads and free memory of
  * merge_heads.
  *
  * @param merge_heads The vector of git_merge_head.
  * @param count The number of merge heads.
  * @return void
  */
-static void git2r_merge_heads_free(git_merge_head **merge_heads, size_t n)
+static void git2r_merge_heads_free(git_annotated_commit **merge_heads, size_t n)
 {
     if (merge_heads) {
         size_t i = 0;
 
         for (; i < n; i++) {
             if (merge_heads[i])
-                git_merge_head_free(merge_heads[i]);
+                git_annotated_commit_free(merge_heads[i]);
         }
 
         free(merge_heads);
@@ -471,7 +471,7 @@ SEXP git2r_merge_branch(SEXP branch, SEXP merger, SEXP commit_on_success)
     const char *name;
     git_buf buf = GIT_BUF_INIT;
     git_branch_t type;
-    git_merge_head **merge_heads = NULL;
+    git_annotated_commit **merge_heads = NULL;
     git_reference *reference = NULL;
     git_repository *repository = NULL;
     git_signature *who = NULL;
@@ -497,13 +497,16 @@ SEXP git2r_merge_branch(SEXP branch, SEXP merger, SEXP commit_on_success)
     if (GIT_OK != err)
         goto cleanup;
 
-    merge_heads = calloc(1, sizeof(git_merge_head*));
+    merge_heads = calloc(1, sizeof(git_annotated_commit*));
     if (NULL == merge_heads) {
         giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
         goto cleanup;
     }
 
-    err = git_merge_head_from_ref(&(merge_heads[0]), repository, reference);
+    err = git_annotated_commit_from_ref(
+        &(merge_heads[0]),
+        repository,
+        reference);
     if (GIT_OK != err)
         goto cleanup;
 
@@ -515,7 +518,7 @@ SEXP git2r_merge_branch(SEXP branch, SEXP merger, SEXP commit_on_success)
     err = git2r_merge(
         result,
         repository,
-        (const git_merge_head **)merge_heads,
+        (const git_annotated_commit **)merge_heads,
         1,
         GIT_MERGE_PREFERENCE_NONE,
         buf.ptr,
@@ -547,17 +550,17 @@ cleanup:
 }
 
 /**
- * Create and populate a vector of git_merge_head objects from the
- * given fetch head data.
+ * Create and populate a vector of git_annotated_commit objects from
+ * the given fetch head data.
  *
- * @param out Pointer the vector of git_merge_head objects.
+ * @param out Pointer the vector of git_annotated_commit objects.
  * @param repository The repository.
  * @param fetch_heads List of S4 class git_fetch_head objects.
  * @param n Length of fetch_heads list.
  * @return 0 on success, or error code
  */
 static int git2r_merge_heads_from_fetch_heads(
-    git_merge_head ***merge_heads,
+    git_annotated_commit ***merge_heads,
     git_repository *repository,
     SEXP fetch_heads,
     size_t n)
@@ -565,7 +568,7 @@ static int git2r_merge_heads_from_fetch_heads(
     int err = GIT_OK;
     size_t i;
 
-    *merge_heads = calloc(n, sizeof(git_merge_head*));
+    *merge_heads = calloc(n, sizeof(git_annotated_commit*));
     if (!(*merge_heads)) {
         giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
         return GIT_ERROR;
@@ -582,7 +585,7 @@ static int git2r_merge_heads_from_fetch_heads(
         if (GIT_OK != err)
             goto cleanup;
 
-        err = git_merge_head_from_fetchhead(
+        err = git_annotated_commit_from_fetchhead(
             &((*merge_heads)[i]),
             repository,
             CHAR(STRING_ELT(GET_SLOT(fh, Rf_install("ref_name")), 0)),
@@ -608,14 +611,14 @@ cleanup:
  * @param fetch_heads List of S4 class git_fetch_head objects.
  * @param merger Who made the merge, if the merge is non-fast forward
  * merge that creates a merge commit.
- * @return List of git_merge_head objects.
+ * @return List of git_annotated_commit objects.
  */
 SEXP git2r_merge_fetch_heads(SEXP fetch_heads, SEXP merger)
 {
     int err;
     size_t n;
     SEXP result = R_NilValue;
-    git_merge_head **merge_heads = NULL;
+    git_annotated_commit **merge_heads = NULL;
     git_repository *repository = NULL;
     git_signature *who = NULL;
 
@@ -648,7 +651,7 @@ SEXP git2r_merge_fetch_heads(SEXP fetch_heads, SEXP merger)
     err = git2r_merge(
         result,
         repository,
-        (const git_merge_head **)merge_heads,
+        (const git_annotated_commit **)merge_heads,
         n,
         GIT_MERGE_PREFERENCE_NONE,
         "pull",

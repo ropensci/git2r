@@ -151,9 +151,7 @@ R_init_git2r(DllInfo *info)
     R_registerRoutines(info, NULL, callMethods, NULL, NULL);
 
     /**
-     * Note: libgit2 is not built with threads. However, to initialize
-     * ssl 'git_threads_init' in 'src/libgit2/global.c' must be
-     * called.
+     * Initialize ssl.
      */
-    git_threads_init();
+    git_libgit2_init();
 }

@@ -572,7 +572,7 @@ SEXP git2r_branch_remote_url(SEXP branch)
     if (GIT_OK != err)
         goto cleanup;
 
-    err = git_remote_load(&remote, repository, buf.ptr);
+    err = git_remote_lookup(&remote, repository, buf.ptr);
     if (GIT_OK != err) {
         err = git_remote_create_anonymous(&remote, repository, buf.ptr, NULL);
         if (GIT_OK != err) {

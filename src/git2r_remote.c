@@ -113,7 +113,7 @@ SEXP git2r_remote_fetch(
     if (GIT_OK != err)
         goto cleanup;
 
-    err = git_remote_load(&remote, repository, CHAR(STRING_ELT(name, 0)));
+    err = git_remote_lookup(&remote, repository, CHAR(STRING_ELT(name, 0)));
     if (GIT_OK != err)
         goto cleanup;
 
@@ -249,11 +249,11 @@ SEXP git2r_remote_rename(SEXP repo, SEXP oldname, SEXP newname)
     if (!repository)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
-    err = git_remote_rename(&problems,
-                            repository,
-                            CHAR(STRING_ELT(oldname, 0)),
-			    CHAR(STRING_ELT(newname, 0)));
-
+    err = git_remote_rename(
+        &problems,
+        repository,
+        CHAR(STRING_ELT(oldname, 0)),
+        CHAR(STRING_ELT(newname, 0)));
     if (GIT_OK != err)
 	goto cleanup;
 
@@ -301,9 +301,10 @@ SEXP git2r_remote_url(SEXP repo, SEXP remote)
         if (NA_STRING == STRING_ELT(remote, i)) {
             SET_STRING_ELT(url, i, NA_STRING);
         } else {
-            err = git_remote_load(&tmp_remote,
-                                  repository,
-                                  CHAR(STRING_ELT(remote, i)));
+            err = git_remote_lookup(
+                &tmp_remote,
+                repository,
+                CHAR(STRING_ELT(remote, i)));
             if (GIT_OK != err)
                 goto cleanup;
 
