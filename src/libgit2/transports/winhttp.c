@@ -12,7 +12,6 @@
  *  - Add IID_IInternetSecurityManager
  *  - Remove #pragma comment(lib, "winhttp")
  *  - Remove #pragma comment(lib, "rpcrt4")
- *  - Remove unused variable 'default_port' in function 'winhttp_connect'
  *  - Remove unused variable 't' in function 'winhttp_stream_write_single'
  *  - Remove unused variable 't' in function 'winhttp_stream_write_buffered'
  *  - Remove unused variable 't' in function 'winhttp_stream_write_chunked'
@@ -177,6 +176,9 @@ static int fallback_cred_acquire_cb(
 	void *payload)
 {
 	int error = 1;
+
+	GIT_UNUSED(username_from_url);
+	GIT_UNUSED(payload);
 
 	/* If the target URI supports integrated Windows authentication
 	 * as an authentication mechanism */
@@ -522,6 +524,8 @@ static int winhttp_connect(
 	int default_timeout = TIMEOUT_INFINITE;
 	int default_connect_timeout = DEFAULT_CONNECT_TIMEOUT;
 
+	GIT_UNUSED(url);
+
 	/* Prepare port */
 	if (git__strtol32(&port, t->connection_data.port, NULL, 10) < 0)
 		return -1;
@@ -573,8 +577,6 @@ on_error:
 
 static int do_send_request(winhttp_stream *s, size_t len, int ignore_length)
 {
-	int request_failed = 0, cert_valid = 1, error = 0;
-
 	if (ignore_length) {
 		if (!WinHttpSendRequest(s->request,
 			WINHTTP_NO_ADDITIONAL_HEADERS, 0,
@@ -623,10 +625,7 @@ static int send_request(winhttp_stream *s, size_t len, int ignore_length)
 	if (!request_failed)
 		return 0;
 
-	ignore_flags =
-		SECURITY_FLAG_IGNORE_CERT_CN_INVALID |
-		SECURITY_FLAG_IGNORE_CERT_DATE_INVALID |
-		SECURITY_FLAG_IGNORE_UNKNOWN_CA;
+	ignore_flags = no_check_cert_flags;
 	
 	if (!WinHttpSetOption(s->request, WINHTTP_OPTION_SECURITY_FLAGS, &ignore_flags, sizeof(ignore_flags))) {
 		giterr_set(GITERR_OS, "failed to set security options");
@@ -666,7 +665,6 @@ replay:
 		DWORD status_code, status_code_length, content_type_length, bytes_written;
 		char expected_content_type_8[MAX_CONTENT_TYPE_LEN];
 		wchar_t expected_content_type[MAX_CONTENT_TYPE_LEN], content_type[MAX_CONTENT_TYPE_LEN];
-		int request_failed = 0, cert_valid = 1;
 
 		if (!s->sent_request) {
 
