@@ -1,8 +1,8 @@
-*** winhttp.c	2014-11-11 20:04:36.860873774 +0100
---- winhttp-build-with-mingw-w64.c	2014-11-11 19:59:46.560866001 +0100
+*** winhttp.c	2014-11-17 18:42:27.367011049 +0100
+--- winhttp-build-with-mingw-w64.c	2014-11-17 18:41:06.079008873 +0100
 ***************
 *** 5,10 ****
---- 5,29 ----
+--- 5,28 ----
    * a Linking Exception. For full terms see the included COPYING file.
    */
   
@@ -13,7 +13,6 @@
 +  *  - Add IID_IInternetSecurityManager
 +  *  - Remove #pragma comment(lib, "winhttp")
 +  *  - Remove #pragma comment(lib, "rpcrt4")
-+  *  - Remove unused variable 'default_port' in function 'winhttp_connect'
 +  *  - Remove unused variable 't' in function 'winhttp_stream_write_single'
 +  *  - Remove unused variable 't' in function 'winhttp_stream_write_buffered'
 +  *  - Remove unused variable 't' in function 'winhttp_stream_write_chunked'
@@ -48,7 +47,7 @@
   
   #define WIDEN2(s) L ## s
   #define WIDEN(s) WIDEN2(s)
---- 36,52 ----
+--- 35,51 ----
   #include "repository.h"
   
   #include <wincrypt.h>
@@ -75,7 +74,7 @@
   static const char *prefix_https = "https://";
   static const char *upload_pack_service = "upload-pack";
   static const char *upload_pack_ls_service_url = "/info/refs?service=git-upload-pack";
---- 61,66 ----
+--- 60,65 ----
 ***************
 *** 98,104 ****
   	git_cred_userpass_plaintext *c = (git_cred_userpass_plaintext *)cred;
@@ -85,7 +84,7 @@
   
   	git_buf_printf(&raw, "%s:%s", c->username, c->password);
   
---- 115,121 ----
+--- 114,120 ----
   	git_cred_userpass_plaintext *c = (git_cred_userpass_plaintext *)cred;
   	git_buf buf = GIT_BUF_INIT, raw = GIT_BUF_INIT;
   	wchar_t *wide = NULL;
@@ -94,7 +93,7 @@
   	git_buf_printf(&raw, "%s:%s", c->username, c->password);
   
 ***************
-*** 244,250 ****
+*** 247,253 ****
   	git_buf buf = GIT_BUF_INIT;
   	char *proxy_url = NULL;
   	wchar_t ct[MAX_CONTENT_TYPE_LEN];
@@ -102,7 +101,7 @@
   	BOOL peerdist = FALSE;
   	int error = -1;
   	unsigned long disable_redirects = WINHTTP_DISABLE_REDIRECTS;
---- 261,267 ----
+--- 263,269 ----
   	git_buf buf = GIT_BUF_INIT;
   	char *proxy_url = NULL;
   	wchar_t ct[MAX_CONTENT_TYPE_LEN];
@@ -111,7 +110,7 @@
   	int error = -1;
   	unsigned long disable_redirects = WINHTTP_DISABLE_REDIRECTS;
 ***************
-*** 460,466 ****
+*** 463,469 ****
   	git_buf buf = GIT_BUF_INIT;
   
   	/* Chunk header */
@@ -119,7 +118,7 @@
   
   	if (git_buf_oom(&buf))
   		return -1;
---- 477,483 ----
+--- 479,485 ----
   	git_buf buf = GIT_BUF_INIT;
   
   	/* Chunk header */
@@ -128,17 +127,7 @@
   	if (git_buf_oom(&buf))
   		return -1;
 ***************
-*** 501,507 ****
-  	wchar_t *ua = L"git/1.0 (libgit2 " WIDEN(LIBGIT2_VERSION) L")";
-  	wchar_t *wide_host;
-  	int32_t port;
-- 	const char *default_port = "80";
-  	int error = -1;
-  	int default_timeout = TIMEOUT_INFINITE;
-  	int default_connect_timeout = DEFAULT_CONNECT_TIMEOUT;
---- 518,523 ----
-***************
-*** 907,913 ****
+*** 905,911 ****
   	size_t len)
   {
   	winhttp_stream *s = (winhttp_stream *)stream;
@@ -146,9 +135,9 @@
   	DWORD bytes_written;
   	int error;
   
---- 923,928 ----
+--- 921,926 ----
 ***************
-*** 997,1003 ****
+*** 995,1001 ****
   	size_t len)
   {
   	winhttp_stream *s = (winhttp_stream *)stream;
@@ -156,9 +145,9 @@
   	DWORD bytes_written;
   
   	if (!s->request && winhttp_stream_connect(s) < 0)
---- 1012,1017 ----
+--- 1010,1015 ----
 ***************
-*** 1043,1049 ****
+*** 1041,1047 ****
   	size_t len)
   {
   	winhttp_stream *s = (winhttp_stream *)stream;
@@ -166,4 +155,4 @@
   	int error;
   
   	if (!s->request && winhttp_stream_connect(s) < 0)
---- 1057,1062 ----
+--- 1055,1060 ----
