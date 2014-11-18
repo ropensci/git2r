@@ -106,6 +106,8 @@ sync_libgit2:
 	-cp -f ../libgit2/COPYING inst/NOTICE
 	cd src/libgit2 && patch -i ../../patches/cache-pass-R-CMD-check-git2r.patch
 	cd src/libgit2 && patch -p0 < ../../patches/diff_print-pass-R-CMD-check-git2r.patch
+	cd src/libgit2 && patch -i ../../patches/rebase-pass-R-CMD-check-git2r.patch
+	cd src/libgit2 && patch -i ../../patches/transaction-pass-R-CMD-check-git2r.patch
 	cd src/libgit2 && patch -i ../../patches/util-pass-R-CMD-check-git2r.patch
 	cd src/regex && patch -i ../../patches/regcomp-pass-R-CMD-check-git2r.patch
 	cd src/libgit2/win32 && patch -i ../../../patches/posix-pass-R-CMD-check-git2r.patch

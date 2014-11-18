@@ -1,0 +1,93 @@
+*** rebase.c	2014-11-18 22:02:41.625634466 +0100
+--- rebase-pass-R-CMD-check-git2r.c	2014-11-18 22:02:52.593634760 +0100
+***************
+*** 5,10 ****
+--- 5,16 ----
+   * a Linking Exception. For full terms see the included COPYING file.
+   */
+  
++ /**
++  * Changed all 'abort' to 'Rf_error' to pass 'R CMD check git2r'
++  * 2014-11-18: Stefan Widgren <stefan.widgren@gmail.com>
++  */
++ void Rf_error(const char*, ...);
++ 
+  #include "common.h"
+  #include "buffer.h"
+  #include "repository.h"
+***************
+*** 311,317 ****
+  		error = -1;
+  		break;
+  	default:
+! 		abort();
+  	}
+  
+  done:
+--- 317,325 ----
+  		error = -1;
+  		break;
+  	default:
+!             Rf_error(
+!                 "Error in 'git_rebase_open': Unexpected error. Please report at"
+!                 " https://github.com/ropensci/git2r/issues");
+  	}
+  
+  done:
+***************
+*** 697,703 ****
+  		if (!checkout_opts->their_label)
+  			checkout_opts->their_label = git_commit_summary(current_commit);
+  	} else {
+! 		abort();
+  	}
+  }
+  
+--- 705,713 ----
+  		if (!checkout_opts->their_label)
+  			checkout_opts->their_label = git_commit_summary(current_commit);
+  	} else {
+!             Rf_error(
+!                 "Error in 'normalize_checkout_opts': Unexpected error. Please report at"
+!                 " https://github.com/ropensci/git2r/issues");
+  	}
+  }
+  
+***************
+*** 792,798 ****
+  		error = rebase_next_merge(out, rebase, checkout_opts);
+  		break;
+  	default:
+! 		abort();
+  	}
+  
+  	return error;
+--- 802,810 ----
+  		error = rebase_next_merge(out, rebase, checkout_opts);
+  		break;
+  	default:
+!             Rf_error(
+!                 "Error in 'git_rebase_next': Unexpected error. Please report at"
+!                 " https://github.com/ropensci/git2r/issues");
+  	}
+  
+  	return error;
+***************
+*** 900,906 ****
+  			id, rebase, author, committer, message_encoding, message);
+  		break;
+  	default:
+! 		abort();
+  	}
+  
+  	return error;
+--- 912,920 ----
+  			id, rebase, author, committer, message_encoding, message);
+  		break;
+  	default:
+!             Rf_error(
+!                 "Error in 'git_rebase_commit': Unexpected error. Please report at"
+!                 " https://github.com/ropensci/git2r/issues");
+  	}
+  
+  	return error;

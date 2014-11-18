@@ -5,6 +5,12 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
+/**
+ * Changed all 'abort' to 'Rf_error' to pass 'R CMD check git2r'
+ * 2014-11-18: Stefan Widgren <stefan.widgren@gmail.com>
+ */
+void Rf_error(const char*, ...);
+
 #include "common.h"
 #include "buffer.h"
 #include "repository.h"
@@ -311,7 +317,9 @@ int git_rebase_open(git_rebase **out, git_repository *repo)
 		error = -1;
 		break;
 	default:
-		abort();
+            Rf_error(
+                "Error in 'git_rebase_open': Unexpected error. Please report at"
+                " https://github.com/ropensci/git2r/issues");
 	}
 
 done:
@@ -697,7 +705,9 @@ static void normalize_checkout_opts(
 		if (!checkout_opts->their_label)
 			checkout_opts->their_label = git_commit_summary(current_commit);
 	} else {
-		abort();
+            Rf_error(
+                "Error in 'normalize_checkout_opts': Unexpected error. Please report at"
+                " https://github.com/ropensci/git2r/issues");
 	}
 }
 
@@ -792,7 +802,9 @@ int git_rebase_next(
 		error = rebase_next_merge(out, rebase, checkout_opts);
 		break;
 	default:
-		abort();
+            Rf_error(
+                "Error in 'git_rebase_next': Unexpected error. Please report at"
+                " https://github.com/ropensci/git2r/issues");
 	}
 
 	return error;
@@ -900,7 +912,9 @@ int git_rebase_commit(
 			id, rebase, author, committer, message_encoding, message);
 		break;
 	default:
-		abort();
+            Rf_error(
+                "Error in 'git_rebase_commit': Unexpected error. Please report at"
+                " https://github.com/ropensci/git2r/issues");
 	}
 
 	return error;
