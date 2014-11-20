@@ -3,7 +3,7 @@
 \name{show,git_time-method}
 \alias{show,git_time-method}
 \alias{show,git_time-methods}
-\title{Brief summary of branch}
+\title{Brief summary of \code{git_time}}
 \usage{
 \S4method{show}{git_time}(object)
 }
@@ -14,7 +14,21 @@
 None (invisible 'NULL').
 }
 \description{
-Brief summary of branch
+Brief summary of \code{git_time}
+}
+\examples{
+\dontrun{
+## Initialize a temporary repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+repo <- init(path)
+
+## Create a user
+config(repo, user.name="Author", user.email="author@example.org")
+
+## Brief summary of git_time from the default signature
+default_signature(repo)@when
+}
 }
 \keyword{methods}
 

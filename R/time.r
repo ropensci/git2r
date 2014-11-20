@@ -32,7 +32,7 @@ setAs(from="git_time",
       }
 )
 
-##' Brief summary of branch
+##' Brief summary of \code{git_time}
 ##'
 ##' @aliases show,git_time-methods
 ##' @docType methods
@@ -40,6 +40,19 @@ setAs(from="git_time",
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
 ##' @export
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a user
+##' config(repo, user.name="Author", user.email="author@@example.org")
+##'
+##' ## Brief summary of git_time from the default signature
+##' default_signature(repo)@@when
+##' }
 setMethod("show",
           signature(object = "git_time"),
           function(object)
