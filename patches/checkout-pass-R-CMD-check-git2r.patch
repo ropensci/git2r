@@ -1,0 +1,36 @@
+*** checkout.c	2014-11-20 18:35:48.665520343 +0100
+--- checkout-pass-R-CMD-check-git2r.c	2014-11-20 18:35:56.993520654 +0100
+***************
+*** 5,10 ****
+--- 5,16 ----
+   * a Linking Exception. For full terms see the included COPYING file.
+   */
+  
++ /**
++  * Changed 'abort' to 'Rf_error' to pass 'R CMD check git2r'
++  * 2014-11-20: Stefan Widgren <stefan.widgren@gmail.com>
++  */
++ void Rf_error(const char*, ...);
++ 
+  #include <assert.h>
+  
+  #include "checkout.h"
+***************
+*** 1154,1160 ****
+  	else if (theirs)
+  		name = git__strdup(theirs->path);
+  	else
+! 		abort();
+  
+  	GITERR_CHECK_ALLOC(name);
+  
+--- 1160,1168 ----
+  	else if (theirs)
+  		name = git__strdup(theirs->path);
+  	else
+!                 Rf_error("Error in 'normalize_checkout_opts': Unexpected error."
+!                          " Please report at"
+!                          " https://github.com/ropensci/git2r/issues");
+  
+  	GITERR_CHECK_ALLOC(name);
+  

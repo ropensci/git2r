@@ -105,6 +105,7 @@ sync_libgit2:
 	-cp -f ../libgit2/AUTHORS scripts/AUTHORS_libgit2
 	-cp -f ../libgit2/COPYING inst/NOTICE
 	cd src/libgit2 && patch -i ../../patches/cache-pass-R-CMD-check-git2r.patch
+	cd src/libgit2 && patch -i ../../patches/checkout-pass-R-CMD-check-git2r.patch
 	cd src/libgit2 && patch -p0 < ../../patches/diff_print-pass-R-CMD-check-git2r.patch
 	cd src/libgit2 && patch -i ../../patches/rebase-pass-R-CMD-check-git2r.patch
 	cd src/libgit2 && patch -i ../../patches/transaction-pass-R-CMD-check-git2r.patch
@@ -113,6 +114,8 @@ sync_libgit2:
 	cd src/libgit2/win32 && patch -i ../../../patches/posix-pass-R-CMD-check-git2r.patch
 	cd src/libgit2/transports && patch -i ../../../patches/winhttp-build-with-mingw-w64.patch
 	Rscript scripts/build_Makevars.r
+
+
 
 Makevars:
 	Rscript scripts/build_Makevars.r
