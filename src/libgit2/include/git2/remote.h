@@ -14,6 +14,7 @@
 #include "indexer.h"
 #include "strarray.h"
 #include "transport.h"
+#include "push.h"
 
 /**
  * @file git2/remote.h
@@ -280,14 +281,19 @@ GIT_EXTERN(const git_refspec *)git_remote_get_refspec(const git_remote *remote, 
 GIT_EXTERN(int) git_remote_connect(git_remote *remote, git_direction direction);
 
 /**
- * Get a list of refs at the remote
+ * Get the remote repository's reference advertisement list
  *
- * The remote (or more exactly its transport) must be connected. The
- * memory belongs to the remote.
+ * Get the list of references with which the server responds to a new
+ * connection.
  *
- * The array will stay valid as long as the remote object exists and
- * its transport isn't changed, but a copy is recommended for usage of
- * the data.
+ * The remote (or more exactly its transport) must have connected to
+ * the remote repository. This list is available as soon as the
+ * connection to the remote is initiated and it remains available
+ * after disconnecting.
+ *
+ * The memory belongs to the remote. The pointer will be valid as long
+ * as a new connection is not initiated, but it is recommended that
+ * you make a copy in order to make use of the data.
  *
  * @param out pointer to the array
  * @param size the number of remote heads
@@ -337,8 +343,7 @@ GIT_EXTERN(void) git_remote_stop(git_remote *remote);
 /**
  * Disconnect from the remote
  *
- * Close the connection to the remote and free the underlying
- * transport.
+ * Close the connection to the remote.
  *
  * @param remote the remote to disconnect from
  */
@@ -388,6 +393,23 @@ GIT_EXTERN(int) git_remote_fetch(
 		const git_strarray *refspecs,
 		const git_signature *signature,
 		const char *reflog_message);
+
+/**
+ * Perform a push
+ *
+ * Peform all the steps from a push.
+ *
+ * @param remote the remote to push to
+ * @param refspecs the refspecs to use for pushing. If none are
+ * passed, the configured refspecs will be used
+ * @param opts the options
+ * @param signature signature to use for the reflog of updated references
+ * @param reflog_message message to use for the reflog of upated references
+ */
+GIT_EXTERN(int) git_remote_push(git_remote *remote,
+				git_strarray *refspecs,
+				const git_push_options *opts,
+				const git_signature *signature, const char *reflog_message);
 
 /**
  * Get a list of the configured remotes for a repo
@@ -460,6 +482,28 @@ struct git_remote_callbacks {
 	 * will be called with information about it.
 	 */
 	int (*update_tips)(const char *refname, const git_oid *a, const git_oid *b, void *data);
+
+	/**
+	 * Function to call with progress information during pack
+	 * building. Be aware that this is called inline with pack
+	 * building operations, so performance may be affected.
+	 */
+	git_packbuilder_progress pack_progress;
+
+	/**
+	 * Function to call with progress information during the
+	 * upload portion of a push. Be aware that this is called
+	 * inline with pack building operations, so performance may be
+	 * affected.
+	 */
+	git_push_transfer_progress push_transfer_progress;
+
+	/**
+	 * Called for each updated reference on push. If `status` is
+	 * not `NULL`, the update was rejected by the remote server
+	 * and `status` contains the reason given.
+	 */
+	int (*push_update_reference)(const char *refname, const char *status, void *data);
 
 	/**
 	 * This will be passed to each of the callbacks in this struct
