@@ -1,5 +1,5 @@
-*** checkout.c	2014-11-20 18:35:48.665520343 +0100
---- checkout-pass-R-CMD-check-git2r.c	2014-11-20 18:35:56.993520654 +0100
+*** checkout.c	2014-11-20 19:52:11.593691499 +0100
+--- checkout-pass-R-CMD-check-git2r.c	2014-11-20 19:52:20.029691815 +0100
 ***************
 *** 5,10 ****
 --- 5,16 ----
@@ -28,7 +28,7 @@
   	else if (theirs)
   		name = git__strdup(theirs->path);
   	else
-!                 Rf_error("Error in 'normalize_checkout_opts': Unexpected error."
+!                 Rf_error("Unexpected error in 'checkout_conflict_append_remove'."
 !                          " Please report at"
 !                          " https://github.com/ropensci/git2r/issues");
   

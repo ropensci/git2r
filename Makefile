@@ -115,8 +115,6 @@ sync_libgit2:
 	cd src/libgit2/transports && patch -i ../../../patches/winhttp-build-with-mingw-w64.patch
 	Rscript scripts/build_Makevars.r
 
-
-
 Makevars:
 	Rscript scripts/build_Makevars.r
 

@@ -1160,7 +1160,7 @@ static int checkout_conflict_append_remove(
 	else if (theirs)
 		name = git__strdup(theirs->path);
 	else
-                Rf_error("Error in 'normalize_checkout_opts': Unexpected error."
+                Rf_error("Unexpected error in 'checkout_conflict_append_remove'."
                          " Please report at"
                          " https://github.com/ropensci/git2r/issues");
 
