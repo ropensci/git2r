@@ -20,10 +20,29 @@ Get parents of a commit.
 }
 \examples{
 \dontrun{
-## Open an existing repository
-repo <- repository("path/to/git2r")
+## Initialize a temporary repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+repo <- init(path)
 
-parents(commits(repo)[[1]])
+## Create a user and commit a file
+config(repo, user.name="Author", user.email="author@example.org")
+writeLines("First line.",
+           file.path(path, "example.txt"))
+add(repo, "example.txt")
+commit_1 <- commit(repo, "First commit message")
+
+## commit_1 has no parents
+parents(commit_1)
+
+## Update 'example.txt' and commit
+writeLines(c("First line.", "Second line."),
+           file.path(path, "example.txt"))
+add(repo, "example.txt")
+commit_2 <- commit(repo, "Second commit message")
+
+## commit_2 has commit_1 as parent
+parents(commit_2)
 }
 }
 \keyword{methods}
