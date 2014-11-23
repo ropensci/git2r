@@ -16,5 +16,39 @@ None (invisible 'NULL').
 \description{
 Brief summary of merge result
 }
+\examples{
+\dontrun{
+## Initialize a temporary repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+repo <- init(path)
+
+## Create a user and commit a file
+config(repo, user.name="Author", user.email="author@example.org")
+writeLines("First line.",
+           file.path(path, "example.txt"))
+add(repo, "example.txt")
+commit(repo, "First commit message")
+
+## Create and checkout a new branch. Update 'example.txt' and commit
+checkout(repo, "new_branch", create=TRUE)
+writeLines(c("First line.", "Second line."),
+           file.path(path, "example.txt"))
+add(repo, "example.txt")
+commit(repo, "Second commit message")
+
+## Checkout 'master' branch
+checkout(repo, "master", force = TRUE)
+
+## Display 'example.txt'
+readLines(file.path(path, "example.txt"))
+
+## Merge and display brief summary of the fast-forward merge
+merge(repo, "new_branch")
+
+## Display 'example.txt'
+readLines(file.path(path, "example.txt"))
+}
+}
 \keyword{methods}
 
