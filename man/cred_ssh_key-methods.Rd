@@ -27,5 +27,12 @@ A S4 \code{cred_ssh_key} object
 \description{
 Create a new passphrase-protected ssh key credential object
 }
+\examples{
+\dontrun{
+## Create a ssh key credential object. It can optionally be
+## passphrase-protected
+cred_ssh_key("~/.ssh/id_rsa.pub", "~/.ssh/id_rsa")
+}
+}
 \keyword{methods}
 

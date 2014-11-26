@@ -52,6 +52,12 @@ setMethod("cred_user_pass",
 ##' @param passphrase The passphrase of the credential
 ##' @return A S4 \code{cred_ssh_key} object
 ##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Create a ssh key credential object. It can optionally be
+##' ## passphrase-protected
+##' cred_ssh_key("~/.ssh/id_rsa.pub", "~/.ssh/id_rsa")
+##' }
 setGeneric("cred_ssh_key",
            signature = c("publickey", "privatekey", "passphrase"),
            function(publickey, privatekey, passphrase)
