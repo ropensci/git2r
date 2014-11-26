@@ -21,6 +21,11 @@
 ##' @param password The password of the credential
 ##' @return A S4 \code{cred_user_pass} object
 ##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Create a plain-text username and password credential object
+##' cred_user_pass("Random Developer", "SecretPassword")
+##' }
 setGeneric("cred_user_pass",
            signature = c("username", "password"),
            function(username, password)

@@ -20,5 +20,11 @@ A S4 \code{cred_user_pass} object
 \description{
 Create a new plain-text username and password credential object
 }
+\examples{
+\dontrun{
+## Create a plain-text username and password credential object
+cred_user_pass("Random Developer", "SecretPassword")
+}
+}
 \keyword{methods}
 
