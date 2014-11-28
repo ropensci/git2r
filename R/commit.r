@@ -308,13 +308,50 @@ is_commit <- function(object) {
 ##' @keywords methods
 ##' @examples
 ##' \dontrun{
-##' ## Open an existing repository
-##' repo <- repository("path/to/git2r")
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
 ##'
-##' ## Display list of merge commits in repository
-##' invisible(lapply(commits(repo)[sapply(commits(repo), is_merge)], show))
+##' ## Create a user and commit a file
+##' config(repo, user.name="Author", user.email="author@@example.org")
+##' writeLines(c("First line in file 1.", "Second line in file 1."),
+##'            file.path(path, "example-1.txt"))
+##' add(repo, "example-1.txt")
+##' commit(repo, "First commit message")
+##'
+##' ## Create and add one more file
+##' writeLines(c("First line in file 2.", "Second line in file 2."),
+##'            file.path(path, "example-2.txt"))
+##' add(repo, "example-2.txt")
+##' commit(repo, "Second commit message")
+##'
+##' ## Create a new branch 'fix'
+##' checkout(repo, "fix", create = TRUE)
+##'
+##' ## Update 'example-1.txt' (swap words in first line) and commit
+##' writeLines(c("line First in file 1.", "Second line in file 1."),
+##'            file.path(path, "example-1.txt"))
+##' add(repo, "example-1.txt")
+##' commit(repo, "Third commit message")
+##'
+##' checkout(repo, "master")
+##'
+##' ## Update 'example-2.txt' (swap words in second line) and commit
+##' writeLines(c("First line in file 2.", "line Second in file 2."),
+##'            file.path(path, "example-2.txt"))
+##' add(repo, "example-2.txt")
+##' commit(repo, "Fourth commit message")
+##'
+##' ## Merge 'fix'
+##' merge(repo, "fix")
+##'
+##' ## Display parents of last commit
+##' parents(lookup(repo, branch_target(head(repo))))
+##'
+##' ## Check that last commit is a merge
+##' is_merge(lookup(repo, branch_target(head(repo))))
 ##' }
-##'
 setGeneric("is_merge",
            signature = c("commit"),
            function(commit)
