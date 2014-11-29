@@ -377,6 +377,10 @@ static int git2r_normal_merge(
             if (GIT_OK != err)
                 goto cleanup;
 
+            err = git_repository_state_cleanup(repository);
+            if (GIT_OK != err)
+                goto cleanup;
+
             git_oid_fmt(sha, &oid);
             sha[GIT_OID_HEXSZ] = '\0';
             SET_SLOT(merge_result,
