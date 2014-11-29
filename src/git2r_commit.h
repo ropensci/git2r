@@ -24,7 +24,7 @@
 
 #include "git2.h"
 
-SEXP git2r_commit_create(
+SEXP git2r_commit(
     SEXP repo,
     SEXP message,
     SEXP author,

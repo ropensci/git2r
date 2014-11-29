@@ -123,12 +123,7 @@ setMethod("commit",
                   parents <- c(parents, branch_target(head(repo)))
               }
 
-              .Call(git2r_commit_create,
-                    repo,
-                    message,
-                    author,
-                    committer,
-                    parents)
+              .Call(git2r_commit, repo, message, author, committer, parents)
           }
 )
 

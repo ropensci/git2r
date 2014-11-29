@@ -151,7 +151,7 @@ static void git2r_parents_free(git_commit **parents, size_t count)
  * @param parent_list Character vector with sha values of parents
  * @return S4 class git_commit
  */
-SEXP git2r_commit_create(
+SEXP git2r_commit(
     SEXP repo,
     SEXP message,
     SEXP author,
