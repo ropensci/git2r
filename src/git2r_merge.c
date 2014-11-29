@@ -244,7 +244,6 @@ static int git2r_retrieve_parents(
     git_repository *repository)
 {
     int err;
-    char sha[GIT_OID_HEXSZ + 1];
     git_oid oid;
     git2r_merge_head_cb_data cb_data = {0, NULL, NULL};
     git_repository_state_t state = git_repository_state(repository);
