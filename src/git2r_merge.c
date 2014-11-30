@@ -254,13 +254,15 @@ static int git2r_normal_merge(
             char sha[GIT_OID_HEXSZ + 1];
             git_oid oid;
 
-            git2r_commit_create(
+            err = git2r_commit_create(
                 &oid,
                 repository,
                 index,
                 message,
                 merger,
                 merger);
+            if (GIT_OK != err)
+                goto cleanup;
 
             git_oid_fmt(sha, &oid);
             sha[GIT_OID_HEXSZ] = '\0';
