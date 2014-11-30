@@ -282,15 +282,13 @@ cleanup:
  * @param message The message for the commit
  * @param author S4 class git_signature
  * @param committer S4 class git_signature
- * @param parent_list Character vector with sha values of parents
  * @return S4 class git_commit
  */
 SEXP git2r_commit(
     SEXP repo,
     SEXP message,
     SEXP author,
-    SEXP committer,
-    SEXP parent_list)
+    SEXP committer)
 {
     int err;
     SEXP result = R_NilValue;
@@ -307,8 +305,6 @@ SEXP git2r_commit(
         git2r_error(git2r_err_signature_arg, __func__, "author");
     if (GIT_OK != git2r_arg_check_signature(committer))
         git2r_error(git2r_err_signature_arg, __func__, "committer");
-    if (GIT_OK != git2r_arg_check_string_vec(parent_list))
-        git2r_error(git2r_err_string_vec_arg, __func__, "parent_list");
 
     repository = git2r_repository_open(repo);
     if (!repository)

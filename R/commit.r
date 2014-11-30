@@ -118,12 +118,7 @@ setMethod("commit",
                         is(author, "git_signature"),
                         is(committer, "git_signature"))
 
-              parents <- character(0)
-              if (!is_empty(repo)) {
-                  parents <- c(parents, branch_target(head(repo)))
-              }
-
-              .Call(git2r_commit, repo, message, author, committer, parents)
+              .Call(git2r_commit, repo, message, author, committer)
           }
 )
 

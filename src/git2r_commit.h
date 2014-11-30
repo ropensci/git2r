@@ -28,8 +28,7 @@ SEXP git2r_commit(
     SEXP repo,
     SEXP message,
     SEXP author,
-    SEXP committer,
-    SEXP parent_list);
+    SEXP committer);
 int git2r_commit_lookup(
     git_commit **out,
     git_repository *repository,
