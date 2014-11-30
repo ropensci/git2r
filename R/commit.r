@@ -113,10 +113,10 @@ setMethod("commit",
           {
               ## Argument checking
               stopifnot(is.character(message),
-                        identical(length(message), 1L),
-                        nchar(message[1]) > 0,
-                        is(author, "git_signature"),
-                        is(committer, "git_signature"))
+                        identical(length(message), 1L))
+
+              if (!nchar(message[1]))
+                  stop("Aborting commit due to empty commit message.")
 
               .Call(git2r_commit, repo, message, author, committer)
           }
