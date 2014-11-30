@@ -17,6 +17,9 @@
  */
 
 #include <Rdefines.h>
+#include "git2.h"
+#include "buffer.h"
+#include "commit.h"
 
 #include "git2r_arg.h"
 #include "git2r_commit.h"
@@ -124,21 +127,184 @@ static int git2r_parents_lookup(
  * Close the commits in parents and free memory of parents.
  *
  * @param parents The parent vector of commits.
- * @param count The number of parents.
+ * @param n_parents The number of parents.
  * @return void
  */
-static void git2r_parents_free(git_commit **parents, size_t count)
+static void git2r_parents_free(git_commit **parents, size_t n_parents)
 {
     if (parents) {
         size_t i;
 
-        for (i = 0; i < count; i++) {
+        for (i = 0; i < n_parents; i++) {
             if (parents[i])
                 git_commit_free(parents[i]);
         }
 
         free(parents);
     }
+}
+
+/**
+ * Data structure to hold information when iterating over MERGE_HEAD
+ * entries.
+ */
+typedef struct {
+    size_t n;
+    git_repository *repository;
+    git_commit **parents;
+} git2r_merge_head_cb_data;
+
+/**
+ * Invoked 'callback' for each ID in the MERGE_HEAD file.
+ *
+ * @param oid The id of the merge head
+ * @param payload Payload data passed to 'git_repository_mergehead_foreach'
+ * @return 0
+ */
+static int git2r_repository_mergehead_foreach_cb(
+    const git_oid *oid,
+    void *payload)
+{
+    int err = 0;
+    git2r_merge_head_cb_data *cb_data = (git2r_merge_head_cb_data*)payload;
+
+    if (cb_data->parents)
+        err = git_commit_lookup(
+            &(cb_data->parents[cb_data->n]),
+            cb_data->repository,
+            oid);
+
+    cb_data->n += 1;
+
+    return err;
+}
+
+/**
+ * Retrieve parents of the commit under construction
+ *
+ * @param parents The vector of parents to create and populate.
+ * @param n_parents The length of parents vector
+ * @param repository The repository
+ * @return 0 on succes, or error code
+ */
+static int git2r_retrieve_parents(
+    git_commit ***parents,
+    size_t *n_parents,
+    git_repository *repository)
+{
+    int err;
+    git_oid oid;
+    git2r_merge_head_cb_data cb_data = {0, NULL, NULL};
+    git_repository_state_t state = git_repository_state(repository);
+
+    if (state == GIT_REPOSITORY_STATE_MERGE) {
+        /* Count number of merge heads */
+        err = git_repository_mergehead_foreach(
+            repository,
+            git2r_repository_mergehead_foreach_cb,
+            &cb_data);
+        if (GIT_OK != err)
+            return err;
+    }
+
+    *n_parents = cb_data.n + 1;
+    *parents = calloc(*n_parents, sizeof(git_commit*));
+    if (!parents) {
+        giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
+        return GIT_ERROR;
+    }
+
+    err = git_reference_name_to_id(&oid, repository, "HEAD");
+    if (GIT_OK != err)
+        return err;
+
+    **parents = malloc(sizeof(git_commit));
+    if (!(**parents)) {
+        giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
+        return GIT_ERROR;
+    }
+
+    err = git_commit_lookup(&**parents, repository, &oid);
+    if (GIT_OK != err)
+        return err;
+
+    if (state == GIT_REPOSITORY_STATE_MERGE) {
+        /* Append merge heads to parents */
+        cb_data.n = 0;
+        cb_data.repository = repository;
+        cb_data.parents = *parents + 1;
+        err = git_repository_mergehead_foreach(
+            repository,
+            git2r_repository_mergehead_foreach_cb,
+            &cb_data);
+        if (GIT_OK != err)
+            return err;
+    }
+
+    return 0;
+}
+
+/**
+ * Create a commit
+ *
+ * @param out The oid of the newly created commit
+ * @param repository The repository
+ * @param index The index
+ * @param message The commit message
+ * @param author Who is the author of the commit
+ * @param committer Who is the committer
+ * @return 0 on success, or error code
+ */
+int git2r_commit_create(
+    git_oid *out,
+    git_repository *repository,
+    git_index *index,
+    const char *message,
+    git_signature *author,
+    git_signature *committer)
+{
+    int err;
+    git_oid oid;
+    git_tree *tree = NULL;
+    git_commit **parents = NULL;
+    size_t n_parents = 0;
+
+    err = git_index_write_tree(&oid, index);
+    if (GIT_OK != err)
+        goto cleanup;
+
+    err = git_tree_lookup(&tree, repository, &oid);
+    if (GIT_OK != err)
+        goto cleanup;
+
+    err = git2r_retrieve_parents(&parents, &n_parents, repository);
+    if (GIT_OK != err)
+        goto cleanup;
+
+    err = git_commit_create(
+        out,
+        repository,
+        "HEAD",
+        author,
+        committer,
+        NULL,
+        message,
+        tree,
+        n_parents,
+        (const git_commit**)parents);
+    if (GIT_OK != err)
+        goto cleanup;
+
+    err = git_repository_state_cleanup(repository);
+
+cleanup:
+    if (parents)
+        git2r_parents_free(parents, n_parents);
+
+    if (tree)
+        git_tree_free(tree);
+
+    return err;
 }
 
 /**
