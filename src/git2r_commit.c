@@ -83,47 +83,6 @@ cleanup:
 }
 
 /**
- * Create and populate vector of commits.
- *
- * @param out The vector of parents to create and populate.
- * @param repository
- * @param parents The parents as character vector of sha's.
- * @param count The length of parents.
- * @return 0 if ok, else error code.
- */
-static int git2r_parents_lookup(
-    git_commit ***out,
-    git_repository *repository,
-    SEXP parents,
-    size_t count)
-{
-    if (count) {
-        size_t i = 0;
-
-        *out = calloc(count, sizeof(git_commit*));
-        if (NULL == out) {
-            giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
-            return GIT_ERROR;
-        }
-
-        for (; i < count; i++) {
-            int err;
-            git_oid oid;
-
-            err = git_oid_fromstr(&oid, CHAR(STRING_ELT(parents, 0)));
-            if (GIT_OK != err)
-                return err;
-
-            err = git_commit_lookup((&(*out))[i], repository, &oid);
-            if (GIT_OK != err)
-                return err;
-        }
-    }
-
-    return GIT_OK;
-}
-
-/**
  * Close the commits in parents and free memory of parents.
  *
  * @param parents The parent vector of commits.
@@ -195,8 +154,17 @@ static int git2r_retrieve_parents(
     int err;
     git_oid oid;
     git2r_merge_head_cb_data cb_data = {0, NULL, NULL};
-    git_repository_state_t state = git_repository_state(repository);
+    git_repository_state_t state;
 
+    err = git_repository_head_unborn(repository);
+    if (1 == err) {
+        *n_parents = 0;
+        return GIT_OK;
+    } else if (0 != err) {
+        return err;
+    }
+
+    state = git_repository_state(repository);
     if (state == GIT_REPOSITORY_STATE_MERGE) {
         /* Count number of merge heads */
         err = git_repository_mergehead_foreach(
@@ -207,12 +175,12 @@ static int git2r_retrieve_parents(
             return err;
     }
 
-    *n_parents = cb_data.n + 1;
-    *parents = calloc(*n_parents, sizeof(git_commit*));
+    *parents = calloc(cb_data.n + 1, sizeof(git_commit*));
     if (!parents) {
         giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
         return GIT_ERROR;
     }
+    *n_parents = cb_data.n + 1;
 
     err = git_reference_name_to_id(&oid, repository, "HEAD");
     if (GIT_OK != err)
@@ -241,7 +209,7 @@ static int git2r_retrieve_parents(
             return err;
     }
 
-    return 0;
+    return GIT_OK;
 }
 
 /**
@@ -329,11 +297,8 @@ SEXP git2r_commit(
     git_signature *c_author = NULL;
     git_signature *c_committer = NULL;
     git_index *index = NULL;
-    git_oid commit_id, tree_oid;
+    git_oid oid;
     git_repository *repository = NULL;
-    git_tree *tree = NULL;
-    size_t count = 0;
-    git_commit **parents = NULL;
     git_commit *commit = NULL;
 
     if (GIT_OK != git2r_arg_check_string(message))
@@ -371,34 +336,17 @@ SEXP git2r_commit(
         goto cleanup;
     }
 
-    err = git_index_write_tree(&tree_oid, index);
-    if (GIT_OK != err)
-        goto cleanup;
-
-    err = git_tree_lookup(&tree, repository, &tree_oid);
-    if (GIT_OK != err)
-        goto cleanup;
-
-    count = LENGTH(parent_list);
-    err = git2r_parents_lookup(&parents, repository, parent_list, count);
-    if (GIT_OK != err)
-        goto cleanup;
-
-    err = git_commit_create(
-        &commit_id,
+    err = git2r_commit_create(
+        &oid,
         repository,
-        "HEAD",
-        c_author,
-        c_committer,
-        NULL,
+        index,
         CHAR(STRING_ELT(message, 0)),
-        tree,
-        count,
-        (const git_commit**)parents);
+        c_author,
+        c_committer);
     if (GIT_OK != err)
         goto cleanup;
 
-    err = git_commit_lookup(&commit, repository, &commit_id);
+    err = git_commit_lookup(&commit, repository, &oid);
     if (GIT_OK != err)
         goto cleanup;
 
@@ -415,14 +363,8 @@ cleanup:
     if (index)
         git_index_free(index);
 
-    if (tree)
-        git_tree_free(tree);
-
     if (repository)
         git_repository_free(repository);
-
-    if (parents)
-        git2r_parents_free(parents, count);
 
     if (commit)
         git_commit_free(commit);
