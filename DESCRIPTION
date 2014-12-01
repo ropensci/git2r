@@ -114,7 +114,6 @@ Collate:
     'git2r.r'
     'index.r'
     'libgit2.r'
-    'markdown_link.r'
     'merge.r'
     'note.r'
     'odb.r'
