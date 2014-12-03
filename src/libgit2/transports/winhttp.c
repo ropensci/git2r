@@ -1273,6 +1273,7 @@ static int winhttp_close(git_smart_subtransport *subtransport)
 	int ret = 0;
 
 	gitno_connection_data_free_ptrs(&t->connection_data);
+	memset(&t->connection_data, 0x0, sizeof(gitno_connection_data));
 
 	if (t->cred) {
 		t->cred->free(t->cred);
