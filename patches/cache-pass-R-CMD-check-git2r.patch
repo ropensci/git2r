@@ -1,8 +1,8 @@
-*** cache.c	2014-08-28 18:56:09.548400523 +0200
---- cache-pass-R-CMD-check-git2r.c	2014-08-28 18:56:25.188400944 +0200
+*** cache.c	2014-12-06 09:20:12.456982948 +0100
+--- cache-pass-R-CMD-check-git2r.c	2014-12-06 09:20:40.948983714 +0100
 ***************
 *** 15,20 ****
---- 15,33 ----
+--- 15,35 ----
   #include "object.h"
   #include "git2/oid.h"
   
@@ -16,8 +16,10 @@
 +  * instead of to the console, nor the C RNG".
 +  * 2014-08-28: Stefan Widgren <stefan.widgren@gmail.com>
 +  */
-+ #include <R.h>
-+ #include <Rmath.h>
++ void Rprintf(const char*, ...);
++ void GetRNGstate(void);
++ void PutRNGstate(void);
++ double runif(double, double);
 + 
   GIT__USE_OIDMAP
   
@@ -36,7 +38,7 @@
   			git_object_type2string(object->type),
   			object->flags == GIT_CACHE_STORE_PARSED ? '*' : ' ',
   			git_oid_tostr(oid_str, sizeof(oid_str), &object->oid),
---- 63,74 ----
+--- 65,76 ----
   	if (kh_size(cache->map) == 0)
   		return;
   
@@ -61,7 +63,7 @@
   	/* do not infinite loop if there's not enough entries to evict  */
   	if (evict_count > kh_size(cache->map)) {
   		clear_cache(cache);
---- 126,140 ----
+--- 128,142 ----
   /* Called with lock */
   static void cache_evict_entries(git_cache *cache)
   {
