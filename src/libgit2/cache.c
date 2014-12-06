@@ -25,10 +25,10 @@
  * instead of to the console, nor the C RNG".
  * 2014-08-28: Stefan Widgren <stefan.widgren@gmail.com>
  */
+#include <Rmath.h>
 void Rprintf(const char*, ...);
 void GetRNGstate(void);
 void PutRNGstate(void);
-double runif(double, double);
 
 GIT__USE_OIDMAP
 

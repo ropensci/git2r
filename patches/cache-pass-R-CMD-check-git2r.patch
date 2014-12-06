@@ -1,5 +1,5 @@
-*** cache.c	2014-12-06 09:20:12.456982948 +0100
---- cache-pass-R-CMD-check-git2r.c	2014-12-06 09:20:40.948983714 +0100
+*** cache.c	2014-12-06 09:42:38.381018993 +0100
+--- cache-pass-R-CMD-check-git2r.c	2014-12-06 09:42:47.553019239 +0100
 ***************
 *** 15,20 ****
 --- 15,35 ----
@@ -16,10 +16,10 @@
 +  * instead of to the console, nor the C RNG".
 +  * 2014-08-28: Stefan Widgren <stefan.widgren@gmail.com>
 +  */
++ #include <Rmath.h>
 + void Rprintf(const char*, ...);
 + void GetRNGstate(void);
 + void PutRNGstate(void);
-+ double runif(double, double);
 + 
   GIT__USE_OIDMAP
   
