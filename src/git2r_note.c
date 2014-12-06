@@ -157,9 +157,9 @@ SEXP git2r_note_create(
     err = git_note_create(
         &note_oid,
         repository,
+        CHAR(STRING_ELT(ref, 0)),
         sig_author,
         sig_committer,
-        CHAR(STRING_ELT(ref, 0)),
         &object_oid,
         CHAR(STRING_ELT(message, 0)),
         overwrite);
