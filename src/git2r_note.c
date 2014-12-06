@@ -35,7 +35,7 @@ typedef struct {
     SEXP repo;
     git_repository *repository;
     const char *notes_ref;
-} git2r_note_list_cb_data;
+} git2r_note_foreach_cb_data;
 
 /**
  * Init slots in S4 class git_note
@@ -240,14 +240,14 @@ cleanup:
  * @param payload Payload data passed to `git_note_foreach`
  * @return int 0 or error code
  */
-static int git2r_note_list_cb(
+static int git2r_note_foreach_cb(
     const git_oid *blob_id,
     const git_oid *annotated_object_id,
     void *payload)
 {
     int err;
     SEXP note;
-    git2r_note_list_cb_data *cb_data = (git2r_note_list_cb_data*)payload;
+    git2r_note_foreach_cb_data *cb_data = (git2r_note_foreach_cb_data*)payload;
 
     /* Check if we have a list to populate */
     if (R_NilValue != cb_data->list) {
@@ -278,12 +278,12 @@ static int git2r_note_list_cb(
  * @param ref Optional reference to read from.
  * @return VECXSP with S4 objects of class git_note
  */
-SEXP git2r_note_list(SEXP repo, SEXP ref)
+SEXP git2r_notes(SEXP repo, SEXP ref)
 {
     int err;
     SEXP result = R_NilValue;
     const char *notes_ref = NULL;
-    git2r_note_list_cb_data cb_data = {0, R_NilValue, R_NilValue, NULL, NULL};
+    git2r_note_foreach_cb_data cb_data = {0, R_NilValue, R_NilValue, NULL, NULL};
     git_repository *repository = NULL;
 
     if (R_NilValue != ref) {
@@ -303,7 +303,7 @@ SEXP git2r_note_list(SEXP repo, SEXP ref)
     }
 
     /* Count number of notes before creating the list */
-    err = git_note_foreach(repository, notes_ref, &git2r_note_list_cb, &cb_data);
+    err = git_note_foreach(repository, notes_ref, &git2r_note_foreach_cb, &cb_data);
     if (GIT_OK != err) {
         if (GIT_ENOTFOUND == err) {
             err = GIT_OK;
@@ -319,7 +319,7 @@ SEXP git2r_note_list(SEXP repo, SEXP ref)
     cb_data.repo = repo;
     cb_data.repository = repository;
     cb_data.notes_ref = notes_ref;
-    err = git_note_foreach(repository, notes_ref, &git2r_note_list_cb, &cb_data);
+    err = git_note_foreach(repository, notes_ref, &git2r_note_foreach_cb, &cb_data);
 
 cleanup:
     if (repository)

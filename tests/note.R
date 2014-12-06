@@ -51,44 +51,44 @@ stopifnot(identical(note_default_ref(repo),
                     "refs/notes/commits"))
 
 ##
-## Check that note_list is an empty list
+## Check that notes is an empty list
 ##
-stopifnot(identical(note_list(repo), list()))
+stopifnot(identical(notes(repo), list()))
 
 ##
 ## Create note in default namespace
 ##
 note.1 <- note_create(commit.1, "Note-1")
-stopifnot(identical(length(note_list(repo)), 1L))
+stopifnot(identical(length(notes(repo)), 1L))
 tools::assertError(note_create(commit.1, "Note-2"))
 note.2 <- note_create(commit.1, "Note-2", force = TRUE)
-stopifnot(identical(length(note_list(repo)), 1L))
+stopifnot(identical(length(notes(repo)), 1L))
 
 ##
 ## Create note in named (review) namespace
 ##
 note.3 <- note_create(commit.1, "Note-3", ref="refs/notes/review")
 note.4 <- note_create(commit.2, "Note-4", ref="refs/notes/review")
-stopifnot(identical(length(note_list(repo, ref="refs/notes/review")), 2L))
+stopifnot(identical(length(notes(repo, ref="refs/notes/review")), 2L))
 note_remove(note.3)
 note_remove(note.4)
-stopifnot(identical(note_list(repo, ref="refs/notes/review"), list()))
+stopifnot(identical(notes(repo, ref="refs/notes/review"), list()))
 note.5 <- note_create(commit.1, "Note-5", ref="review")
 note.6 <- note_create(commit.2, "Note-6", ref="review")
-stopifnot(identical(length(note_list(repo, ref="review")), 2L))
+stopifnot(identical(length(notes(repo, ref="review")), 2L))
 note_remove(note.5)
 note_remove(note.6)
-stopifnot(identical(length(note_list(repo, ref="review")), 0L))
+stopifnot(identical(length(notes(repo, ref="review")), 0L))
 
 ##
 ## Create note on blob and tree
 ##
 note.7 <- note_create(tree(commit.1), "Note-7")
 stopifnot(is(object = lookup(repo, note.7@annotated), class2 = "git_tree"))
-stopifnot(identical(length(note_list(repo)), 2L))
+stopifnot(identical(length(notes(repo)), 2L))
 note.8 <- note_create(tree(commit.1)["test.txt"], "Note-8")
 stopifnot(is(object = lookup(repo, note.8@annotated), class2 = "git_blob"))
-stopifnot(identical(length(note_list(repo)), 3L))
+stopifnot(identical(length(notes(repo)), 3L))
 
 ##
 ## Cleanup

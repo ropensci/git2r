@@ -45,20 +45,20 @@ note_1 <- note_create(commit_1, "Note-1")
 note_2 <- note_create(commit_1, "Note-2", ref="refs/notes/review")
 
 ## List notes in default namespace
-note_list(repo)
+notes(repo)
 
 ## List notes in 'review' namespace
-note_list(repo, "review")
+notes(repo, "review")
 
 ## Remove notes
 note_remove(note_1)
 note_remove(note_2)
 
 ## List notes in default namespace
-note_list(repo)
+notes(repo)
 
 ## List notes in 'review' namespace
-note_list(repo, "review")
+notes(repo, "review")
 }
 }
 \keyword{methods}

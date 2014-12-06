@@ -66,8 +66,8 @@ writeLines(c("Hello world!",
 add(repo, "example.txt")
 commit_2 <- commit(repo, "Commit message 2")
 
-## Check that note_list is an empty list
-note_list(repo)
+## Check that notes is an empty list
+notes(repo)
 
 ## Create note in default namespace
 note_create(commit_1, "Note-1")

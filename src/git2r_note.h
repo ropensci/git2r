@@ -31,7 +31,7 @@ SEXP git2r_note_create(
     SEXP committer,
     SEXP force);
 SEXP git2r_note_default_ref(SEXP repo);
-SEXP git2r_note_list(SEXP repo, SEXP ref);
+SEXP git2r_notes(SEXP repo, SEXP ref);
 SEXP git2r_note_remove(
     SEXP note,
     SEXP author,

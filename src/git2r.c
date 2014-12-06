@@ -99,7 +99,7 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_merge_fetch_heads", (DL_FUNC)&git2r_merge_fetch_heads, 2},
     {"git2r_note_create", (DL_FUNC)&git2r_note_create, 7},
     {"git2r_note_default_ref", (DL_FUNC)&git2r_note_default_ref, 1},
-    {"git2r_note_list", (DL_FUNC)&git2r_note_list, 2},
+    {"git2r_notes", (DL_FUNC)&git2r_notes, 2},
     {"git2r_note_remove", (DL_FUNC)&git2r_note_remove, 3},
     {"git2r_object_lookup", (DL_FUNC)&git2r_object_lookup, 2},
     {"git2r_odb_blobs", (DL_FUNC)&git2r_odb_blobs, 1},

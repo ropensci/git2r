@@ -82,8 +82,8 @@ setMethod("note_default_ref",
 ##' add(repo, "example.txt")
 ##' commit_2 <- commit(repo, "Commit message 2")
 ##'
-##' ## Check that note_list is an empty list
-##' note_list(repo)
+##' ## Check that notes is an empty list
+##' notes(repo)
 ##'
 ##' ## Create note in default namespace
 ##' note_create(commit_1, "Note-1")
@@ -187,7 +187,7 @@ setMethod("note_create",
 ##' List notes
 ##'
 ##' List all the notes within a specified namespace.
-##' @rdname note_list-methods
+##' @rdname notes-methods
 ##' @docType methods
 ##' @param repo The repository
 ##' @param ref Reference to read from. Default is
@@ -227,30 +227,30 @@ setMethod("note_create",
 ##' note_create(tree(commit_1)["example.txt"], "Note-6")
 ##'
 ##' ## List notes in default namespace
-##' note_list(repo)
+##' notes(repo)
 ##'
 ##' ## List notes in 'review' namespace
-##' note_list(repo, "review")
+##' notes(repo, "review")
 ##' }
-setGeneric("note_list",
+setGeneric("notes",
            signature = c("repo", "ref"),
            function(repo, ref)
-           standardGeneric("note_list"))
+           standardGeneric("notes"))
 
-##' @rdname note_list-methods
+##' @rdname notes-methods
 ##' @export
-setMethod("note_list",
+setMethod("notes",
           signature(repo = "git_repository",
                     ref  = "missing"),
           function(repo)
           {
-              note_list(repo = repo, ref = note_default_ref(repo))
+              notes(repo = repo, ref = note_default_ref(repo))
           }
 )
 
-##' @rdname note_list-methods
+##' @rdname notes-methods
 ##' @export
-setMethod("note_list",
+setMethod("notes",
           signature(repo = "git_repository",
                     ref  = "character"),
           function(repo, ref)
@@ -258,7 +258,7 @@ setMethod("note_list",
               stopifnot(identical(length(ref), 1L))
               if (!length(grep("^refs/notes/", ref)))
                   ref <- paste0("refs/notes/", ref)
-              .Call(git2r_note_list, repo, ref)
+              .Call(git2r_notes, repo, ref)
           }
 )
 
@@ -292,20 +292,20 @@ setMethod("note_list",
 ##' note_2 <- note_create(commit_1, "Note-2", ref="refs/notes/review")
 ##'
 ##' ## List notes in default namespace
-##' note_list(repo)
+##' notes(repo)
 ##'
 ##' ## List notes in 'review' namespace
-##' note_list(repo, "review")
+##' notes(repo, "review")
 ##'
 ##' ## Remove notes
 ##' note_remove(note_1)
 ##' note_remove(note_2)
 ##'
 ##' ## List notes in default namespace
-##' note_list(repo)
+##' notes(repo)
 ##'
 ##' ## List notes in 'review' namespace
-##' note_list(repo, "review")
+##' notes(repo, "review")
 ##' }
 setGeneric("note_remove",
            signature = "note",
