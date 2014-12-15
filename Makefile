@@ -68,6 +68,7 @@ valgrind:
 sync_libgit2:
 	-rm -f src/http-parser/*
 	-rm -f src/regex/*
+	-rm -f src/zlib/*
 	-rm -f src/libgit2/include/*.h
 	-rm -f src/libgit2/include/git2/*.h
 	-rm -f src/libgit2/include/git2/sys/*.h
@@ -87,6 +88,7 @@ sync_libgit2:
 	-rm -f inst/NOTICE
 	-cp -f ../libgit2/deps/http-parser/* src/http-parser
 	-cp -f ../libgit2/deps/regex/* src/regex
+	-cp -f ../libgit2/deps/zlib/* src/zlib
 	-cp -f ../libgit2/include/*.h src/libgit2/include
 	-cp -f ../libgit2/include/git2/*.h src/libgit2/include/git2
 	-cp -f ../libgit2/include/git2/sys/*.h src/libgit2/include/git2/sys
