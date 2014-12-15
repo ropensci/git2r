@@ -68,7 +68,6 @@ valgrind:
 sync_libgit2:
 	-rm -f src/http-parser/*
 	-rm -f src/regex/*
-	-rm -f src/zlib/*
 	-rm -f src/libgit2/include/*.h
 	-rm -f src/libgit2/include/git2/*.h
 	-rm -f src/libgit2/include/git2/sys/*.h
@@ -88,7 +87,6 @@ sync_libgit2:
 	-rm -f inst/NOTICE
 	-cp -f ../libgit2/deps/http-parser/* src/http-parser
 	-cp -f ../libgit2/deps/regex/* src/regex
-	-cp -f ../libgit2/deps/zlib/* src/zlib
 	-cp -f ../libgit2/include/*.h src/libgit2/include
 	-cp -f ../libgit2/include/git2/*.h src/libgit2/include/git2
 	-cp -f ../libgit2/include/git2/sys/*.h src/libgit2/include/git2/sys
@@ -113,7 +111,6 @@ sync_libgit2:
 	cd src/libgit2 && patch -i ../../patches/transaction-pass-R-CMD-check-git2r.patch
 	cd src/libgit2 && patch -i ../../patches/util-pass-R-CMD-check-git2r.patch
 	cd src/regex && patch -i ../../patches/regcomp-pass-R-CMD-check-git2r.patch
-	cd src/zlib && patch -i ../../patches/zconf-fix-include-path.patch
 	cd src/libgit2/win32 && patch -i ../../../patches/posix-pass-R-CMD-check-git2r.patch
 	cd src/libgit2/transports && patch -i ../../../patches/winhttp-build-with-mingw-w64.patch
 	Rscript scripts/build_Makevars.r
@@ -144,5 +141,6 @@ clean:
 	-rm -f src/libgit2/xdiff/*.o
 	-rm -f src/http-parser/*.o
 	-rm -f src/regex/*.o
+	-rm -f src/zlib/*.o
 
 .PHONY: all readme install roxygen sync_libgit2 Makevars check clean
