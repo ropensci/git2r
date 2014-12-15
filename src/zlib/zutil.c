@@ -7,7 +7,8 @@
 
 #include "zutil.h"
 #ifndef Z_SOLO
-#  include "gzguts.h"
+/* git2r change 2014-12-15: Stefan Widgren stefan.widgren@gmail.com */
+/*#  include "gzguts.h" */
 #endif
 
 #ifndef NO_DUMMY_DECL
