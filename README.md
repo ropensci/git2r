@@ -26,6 +26,14 @@ library(devtools)
 install_github("git2r", "ropensci")
 ```
 
+Another alternative is to use `git` and `make`
+
+```coffee
+$ git clone https://github.com/ropensci/git2r.git
+$ cd git2r
+$ make install
+```
+
 ## Usage
 
 ### Repository
