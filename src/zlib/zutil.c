@@ -6,6 +6,9 @@
 /* @(#) $Id$ */
 
 #include "zutil.h"
+#ifndef Z_SOLO
+#  include "gzguts.h"
+#endif
 
 #ifndef NO_DUMMY_DECL
 struct internal_state      {int dummy;}; /* for buggy compilers */
