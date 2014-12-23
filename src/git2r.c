@@ -155,3 +155,14 @@ R_init_git2r(DllInfo *info)
      */
     git_libgit2_init();
 }
+
+/**
+ * Unload 'git2r'
+ *
+ * @param info Information about the DLL being unloaded
+ */
+void
+R_unload_git2r(DllInfo *info)
+{
+    git_libgit2_shutdown();
+}

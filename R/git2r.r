@@ -21,3 +21,13 @@
 ##' @import methods
 ##' @useDynLib git2r, .registration=TRUE
 NULL
+
+##' Unload hook function
+##'
+##' @param libpath A character string giving the complete path to the
+##' package.
+##' @keywords internal
+.onUnload <- function (libpath)
+{
+    library.dynam.unload("git2r", libpath)
+}
