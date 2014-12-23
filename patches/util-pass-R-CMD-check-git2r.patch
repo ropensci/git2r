@@ -1,5 +1,5 @@
-*** util.c	2014-08-19 21:29:20.585207372 +0200
---- util-pass-R-CMD-check-git2r.c	2014-08-19 21:29:48.153208109 +0200
+*** util.c	2014-12-22 11:03:39.698026231 +0100
+--- util-pass-R-CMD-check-git2r.c	2014-12-22 11:03:43.978026345 +0100
 ***************
 *** 14,19 ****
 --- 14,23 ----
@@ -14,7 +14,7 @@
   {
   	size_t i;
 ***************
-*** 315,350 ****
+*** 330,365 ****
   	for (i = 0; i < line_count; ++i) {
   		line = buffer + (i * LINE_WIDTH);
   		for (j = 0; j < LINE_WIDTH; ++j, ++line)
@@ -51,7 +51,7 @@
   }
   
   #ifdef GIT_LEGACY_HASH
---- 319,354 ----
+--- 334,369 ----
   	for (i = 0; i < line_count; ++i) {
   		line = buffer + (i * LINE_WIDTH);
   		for (j = 0; j < LINE_WIDTH; ++j, ++line)

@@ -1,5 +1,5 @@
-*** winhttp.c	2014-11-17 18:42:27.367011049 +0100
---- winhttp-build-with-mingw-w64.c	2014-11-17 18:41:06.079008873 +0100
+*** winhttp.c	2014-12-23 12:27:19.841515801 +0100
+--- winhttp-build-with-mingw-w64.c	2014-12-23 12:27:24.669515928 +0100
 ***************
 *** 5,10 ****
 --- 5,28 ----
@@ -93,7 +93,7 @@
   	git_buf_printf(&raw, "%s:%s", c->username, c->password);
   
 ***************
-*** 247,253 ****
+*** 272,278 ****
   	git_buf buf = GIT_BUF_INIT;
   	char *proxy_url = NULL;
   	wchar_t ct[MAX_CONTENT_TYPE_LEN];
@@ -101,7 +101,7 @@
   	BOOL peerdist = FALSE;
   	int error = -1;
   	unsigned long disable_redirects = WINHTTP_DISABLE_REDIRECTS;
---- 263,269 ----
+--- 288,294 ----
   	git_buf buf = GIT_BUF_INIT;
   	char *proxy_url = NULL;
   	wchar_t ct[MAX_CONTENT_TYPE_LEN];
@@ -110,7 +110,7 @@
   	int error = -1;
   	unsigned long disable_redirects = WINHTTP_DISABLE_REDIRECTS;
 ***************
-*** 463,469 ****
+*** 491,497 ****
   	git_buf buf = GIT_BUF_INIT;
   
   	/* Chunk header */
@@ -118,7 +118,7 @@
   
   	if (git_buf_oom(&buf))
   		return -1;
---- 479,485 ----
+--- 507,513 ----
   	git_buf buf = GIT_BUF_INIT;
   
   	/* Chunk header */
@@ -127,7 +127,7 @@
   	if (git_buf_oom(&buf))
   		return -1;
 ***************
-*** 905,911 ****
+*** 963,969 ****
   	size_t len)
   {
   	winhttp_stream *s = (winhttp_stream *)stream;
@@ -135,9 +135,9 @@
   	DWORD bytes_written;
   	int error;
   
---- 921,926 ----
+--- 979,984 ----
 ***************
-*** 995,1001 ****
+*** 1053,1059 ****
   	size_t len)
   {
   	winhttp_stream *s = (winhttp_stream *)stream;
@@ -145,9 +145,9 @@
   	DWORD bytes_written;
   
   	if (!s->request && winhttp_stream_connect(s) < 0)
---- 1010,1015 ----
+--- 1068,1073 ----
 ***************
-*** 1041,1047 ****
+*** 1099,1105 ****
   	size_t len)
   {
   	winhttp_stream *s = (winhttp_stream *)stream;
@@ -155,4 +155,4 @@
   	int error;
   
   	if (!s->request && winhttp_stream_connect(s) < 0)
---- 1055,1060 ----
+--- 1113,1118 ----
