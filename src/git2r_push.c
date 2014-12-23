@@ -155,13 +155,6 @@ SEXP git2r_push(
     if (GIT_OK != err)
         goto cleanup;
 
-    if (1 != git_push_unpack_ok(push)) {
-        giterr_set_str(
-            GITERR_NONE,
-            "Push failed - remote did not successfully unpack objects.");
-        err = GIT_ERROR;
-    }
-
     err = git_push_status_foreach(push, git2r_push_status_foreach_cb, &err_msg);
     if (GIT_OK != err)
         goto cleanup;
