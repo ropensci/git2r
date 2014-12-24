@@ -25,7 +25,7 @@ AC_CANONICAL_HOST
 AC_PROG_CC
 
 # Handle optional include and library paths
-GIT2R_CPPFLAGS="-I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser"
+GIT2R_CPPFLAGS="-D_GNU_SOURCE -I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser"
 
 # Include and use regex on solaris
 case "${host_os}" in
