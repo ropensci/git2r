@@ -185,6 +185,16 @@ case "${host_os}" in
     ;;
 esac
 
+# Determine architecture of the machine
+AC_CHECK_SIZEOF([void*])
+if test "x$ac_cv_sizeof_voidp" == "x8"; then
+        CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_64"
+elif test "x$ac_cv_sizeof_voidp" == "x4"; then
+        CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_32"
+else
+        AC_MSG_FAILURE([Unsupported architecture])
+fi
+
 # Checks for header files.
 AC_FUNC_ALLOCA
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h langinfo.h libintl.h limits.h locale.h malloc.h netdb.h netinet/in.h stddef.h stdint.h stdlib.h string.h sys/param.h sys/socket.h sys/time.h unistd.h wchar.h wctype.h])
