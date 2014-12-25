@@ -2,11 +2,13 @@
 
 ifeq "$(WIN)" "64"
 PKG_LIBS = -L./winhttp -lws2_32 -lwinhttp-x64 -lrpcrt4 -lole32 -lcrypt32
+PKG_CFLAGS = -I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser -Iwin32 -Iregex -Izlib \
+    -DWIN32 -D_WIN32_WINNT=0x0501 -D__USE_MINGW_ANSI_STDIO=1 -DGIT_WINHTTP -DGIT_ARCH_64
 else
 PKG_LIBS = -L./winhttp -lws2_32 -lwinhttp -lrpcrt4 -lole32 -lcrypt32
-endif
 PKG_CFLAGS = -I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser -Iwin32 -Iregex -Izlib \
-    -DWIN32 -D_WIN32_WINNT=0x0501 -D__USE_MINGW_ANSI_STDIO=1 -DGIT_WINHTTP
+    -DWIN32 -D_WIN32_WINNT=0x0501 -D__USE_MINGW_ANSI_STDIO=1 -DGIT_WINHTTP -DGIT_ARCH_32
+endif
 
 OBJECTS.libgit2 = libgit2/annotated_commit.o libgit2/attr.o libgit2/attrcache.o \
     libgit2/attr_file.o libgit2/blame.o libgit2/blame_git.o \
