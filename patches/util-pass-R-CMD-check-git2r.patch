@@ -1,5 +1,5 @@
-*** util.c	2014-12-26 16:00:29.847457300 +0100
---- util-pass-R-CMD-check-git2r.c	2014-12-26 16:00:34.359457420 +0100
+*** util.c	2014-12-26 16:31:41.679507427 +0100
+--- util-pass-R-CMD-check-git2r.c	2014-12-26 16:31:53.923507754 +0100
 ***************
 *** 14,19 ****
 --- 14,28 ----
@@ -7,11 +7,11 @@
   #endif
   
 + /**
-+  * Changed all printf to Rprintf to pass 'R CMD check git2r'*/
-+  * 2014-08-19: Stefan Widgren <stefan.widgren@gmail.com>*/
++  * Changed all printf to Rprintf to pass 'R CMD check git2r'
++  * 2014-08-19: Stefan Widgren <stefan.widgren@gmail.com>
 +  *
 +  * Removed unused function git__qsort_r_glue_cmp
-+  * 2014-12-26: Stefan Widgren <stefan.widgren@gmail.com>*/
++  * 2014-12-26: Stefan Widgren <stefan.widgren@gmail.com>
 +  */
 + void Rprintf(const char*, ...);
 + 

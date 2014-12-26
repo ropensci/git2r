@@ -15,11 +15,11 @@
 #endif
 
 /**
- * Changed all printf to Rprintf to pass 'R CMD check git2r'*/
- * 2014-08-19: Stefan Widgren <stefan.widgren@gmail.com>*/
+ * Changed all printf to Rprintf to pass 'R CMD check git2r'
+ * 2014-08-19: Stefan Widgren <stefan.widgren@gmail.com>
  *
  * Removed unused function git__qsort_r_glue_cmp
- * 2014-12-26: Stefan Widgren <stefan.widgren@gmail.com>*/
+ * 2014-12-26: Stefan Widgren <stefan.widgren@gmail.com>
  */
 void Rprintf(const char*, ...);
 
