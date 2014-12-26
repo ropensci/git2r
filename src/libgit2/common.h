@@ -7,6 +7,14 @@
 #ifndef INCLUDE_common_h__
 #define INCLUDE_common_h__
 
+/**
+ * Removed unused include directives
+ *  - # include "win32/msvc-compat.h"
+ *  - # include "win32/mingw-compat.h"
+ *
+ * 2014-12-26: Stefan Widgren <stefan.widgren@gmail.com>
+ */
+
 #include "git2/common.h"
 #include "cc-compat.h"
 
@@ -33,8 +41,6 @@
 # include <direct.h>
 # include <winsock2.h>
 # include <windows.h>
-# include "win32/msvc-compat.h"
-# include "win32/mingw-compat.h"
 # include "win32/error.h"
 # include "win32/version.h"
 # ifdef GIT_THREADS

@@ -100,12 +100,15 @@ sync_libgit2:
 	-cp -f ../libgit2/src/unix/*.h src/libgit2/unix
 	-cp -f ../libgit2/src/win32/*.c src/libgit2/win32
 	-cp -f ../libgit2/src/win32/*.h src/libgit2/win32
+	-rm -f src/libgit2/win32/mingw-compat.h
+	-rm -f src/libgit2/win32/msvc-compat.h
 	-cp -f ../libgit2/src/xdiff/*.c src/libgit2/xdiff
 	-cp -f ../libgit2/src/xdiff/*.h src/libgit2/xdiff
 	-cp -f ../libgit2/AUTHORS scripts/AUTHORS_libgit2
 	-cp -f ../libgit2/COPYING inst/NOTICE
 	cd src/libgit2 && patch -i ../../patches/cache-pass-R-CMD-check-git2r.patch
 	cd src/libgit2 && patch -i ../../patches/checkout-pass-R-CMD-check-git2r.patch
+	cd src/libgit2 && patch -i ../../patches/common-remove-includes.patch
 	cd src/libgit2 && patch -p0 < ../../patches/diff_print-pass-R-CMD-check-git2r.patch
 	cd src/libgit2 && patch -i ../../patches/rebase-pass-R-CMD-check-git2r.patch
 	cd src/libgit2 && patch -i ../../patches/transaction-pass-R-CMD-check-git2r.patch
