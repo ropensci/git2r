@@ -73,7 +73,12 @@ build_DESCRIPTION <- function() {
         "Encoding: UTF-8",
         "LazyData: true",
         "Biarch: true",
-        "NeedsCompilation: yes")
+        "NeedsCompilation: yes",
+        "SystemRequirements: While the package provides git functionality without the",
+        "    need for dependencies, it can make use of a few libraries to add to it:",
+        "     - OpenSSL (non-Windows) to talk over HTTPS and provide the SHA-1 functions",
+        "     - LibSSH2 to enable the SSH transport",
+        "     - iconv (OSX) to handle the HFS+ path encoding peculiarities")
 
     writeLines(lines, "DESCRIPTION")
 
