@@ -8,15 +8,6 @@ ROXYGEN_VERSION=4.1.0
 # Name of built package
 PKG_TAR=$(PKG_NAME)_$(PKG_VERSION).tar.gz
 
-all: readme
-readme: $(patsubst %.Rmd, %.md, $(wildcard *.Rmd))
-
-%md: %Rmd
-	Rscript -e "library(knitr); knit('README.Rmd', quiet = TRUE)"
-	sed   's/```r/```coffee/' README.md > README2.md
-	rm README.md
-	mv README2.md README.md
-
 # Install package
 install:
 	cd .. && R CMD INSTALL $(PKG_NAME)
@@ -83,8 +74,6 @@ sync_libgit2:
 	-rm -f src/libgit2/win32/*.h
 	-rm -f src/libgit2/xdiff/*.c
 	-rm -f src/libgit2/xdiff/*.h
-	-rm -f scripts/AUTHORS_libgit2
-	-rm -f inst/NOTICE
 	-cp -f ../libgit2/deps/http-parser/* src/http-parser
 	-cp -f ../libgit2/deps/regex/* src/regex
 	-cp -f ../libgit2/include/*.h src/libgit2/include
@@ -104,12 +93,10 @@ sync_libgit2:
 	-rm -f src/libgit2/win32/msvc-compat.h
 	-cp -f ../libgit2/src/xdiff/*.c src/libgit2/xdiff
 	-cp -f ../libgit2/src/xdiff/*.h src/libgit2/xdiff
-	-cp -f ../libgit2/AUTHORS scripts/AUTHORS_libgit2
-	-cp -f ../libgit2/COPYING inst/NOTICE
 	cd src/libgit2 && patch -i ../../patches/cache-pass-R-CMD-check-git2r.patch
 	cd src/libgit2 && patch -i ../../patches/checkout-pass-R-CMD-check-git2r.patch
 	cd src/libgit2 && patch -i ../../patches/common-remove-includes.patch
-	cd src/libgit2 && patch -p0 < ../../patches/diff_print-pass-R-CMD-check-git2r.patch
+	cd src/libgit2 && patch -i ../../patches/diff_print-pass-R-CMD-check-git2r.patch
 	cd src/libgit2 && patch -i ../../patches/rebase-pass-R-CMD-check-git2r.patch
 	cd src/libgit2 && patch -i ../../patches/transaction-pass-R-CMD-check-git2r.patch
 	cd src/libgit2 && patch -i ../../patches/util-pass-R-CMD-check-git2r.patch
