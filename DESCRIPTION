@@ -6,91 +6,15 @@ Description: git2r is a package for accessing Git repositories from R
 Version: 0.1
 Date: 2014-09-09
 License: GPL-2
-Copyright: The package includes the source code of libgit2,
-    (https://github.com/libgit2/libgit2) See the included NOTICE file
-    for the libgit2 license text. The libgit2 printf calls in cache.c
-    and util.c have been changed to use the R printing routine
-    Rprintf.
+Copyright: The package includes the source code of libgit2
+    (https://github.com/libgit2/libgit2) (License: GPL2 with linking
+    exception). See the included COPYING file for the libgit2 license
+    text. The libgit2 library have been modified to use R printing and
+    error routines, and to use 'runif' instead of 'rand'.
 URL: https://github.com/ropensci/git2r
 BugReports: https://github.com/ropensci/git2r/issues
 Maintainer: Stefan Widgren <stefan.widgren@gmail.com>
-Author: Stefan Widgren (git2r contributor)
-    Karthik Ram (git2r contributor)
-    Gabor Csardi (git2r contributor)
-    Gregory Jefferis (git2r contributor)
-    Thomas Rosendal (git2r contributor)
-    Alex Budovski (libgit2 contributor)
-    Alexei Sholik (libgit2 contributor)
-    Andreas Ericsson (libgit2 contributor)
-    Anton "antong" Gyllenberg (libgit2 contributor)
-    Ankur Sethi (libgit2 contributor)
-    Arthur Schreiber (libgit2 contributor)
-    Ben Noordhuis (libgit2 contributor)
-    Ben Straub (libgit2 contributor)
-    Benjamin C Meyer (libgit2 contributor)
-    Brian Downing (libgit2 contributor)
-    Brian Lopez (libgit2 contributor)
-    Carlos Martín Nieto (libgit2 contributor)
-    Colin Timmermans (libgit2 contributor)
-    Daniel Huckstep (libgit2 contributor)
-    Dave Borowitz (libgit2 contributor)
-    David Boyce (libgit2 contributor)
-    David Glesser (libgit2 contributor)
-    Dmitry Kakurin (libgit2 contributor)
-    Dmitry Kovega (libgit2 contributor)
-    Emeric Fermas (libgit2 contributor)
-    Emmanuel Rodriguez (libgit2 contributor)
-    Florian Forster (libgit2 contributor)
-    Holger Weiss (libgit2 contributor)
-    Ingmar Vanhassel (libgit2 contributor)
-    J. David Ibáñez (libgit2 contributor)
-    Jacques Germishuys (libgit2 contributor)
-    Jakob Pfender (libgit2 contributor)
-    Jason Penny (libgit2 contributor)
-    Jason R. McNeil (libgit2 contributor)
-    Jerome Lambourg (libgit2 contributor)
-    Johan 't Hart (libgit2 contributor)
-    John Wiegley (libgit2 contributor)
-    Jonathan "Duke" Leto (libgit2 contributor)
-    Julien Miotte (libgit2 contributor)
-    Julio Espinoza-Sokal (libgit2 contributor)
-    Justin Love (libgit2 contributor)
-    Kelly "kelly.leahy" Leahy (libgit2 contributor)
-    Kirill A. Shutemov (libgit2 contributor)
-    Lambert CLARA (libgit2 contributor)
-    Luc Bertrand (libgit2 contributor)
-    Marc Pegon (libgit2 contributor)
-    Marcel Groothuis (libgit2 contributor)
-    Marco Villegas (libgit2 contributor)
-    Michael "schu" Schubert (libgit2 contributor)
-    Microsoft Corporation (libgit2 contributor)
-    Olivier Ramonat (libgit2 contributor)
-    Peter Drahoš (libgit2 contributor)
-    Pierre Habouzit (libgit2 contributor)
-    Przemyslaw Pawelczyk (libgit2 contributor)
-    Ramsay Jones (libgit2 contributor)
-    Robert G. Jakabosky (libgit2 contributor)
-    Romain Geissler (libgit2 contributor)
-    Romain Muller (libgit2 contributor)
-    Russell Belfer (libgit2 contributor)
-    Sakari Jokinen (libgit2 contributor)
-    Samuel Charles "Sam" Day (libgit2 contributor)
-    Sarath Lakshman (libgit2 contributor)
-    Sascha Cunz (libgit2 contributor)
-    Sascha Peilicke (libgit2 contributor)
-    Scott Chacon (libgit2 contributor)
-    Sebastian Schuberth (libgit2 contributor)
-    Sergey Nikishin (libgit2 contributor)
-    Shawn O. Pearce (libgit2 contributor)
-    Shuhei Tanuma (libgit2 contributor)
-    Steve Frécinaux (libgit2 contributor)
-    Sven Strickroth (libgit2 contributor)
-    Tim Branyen (libgit2 contributor)
-    Tim Clem (libgit2 contributor)
-    Tim Harder (libgit2 contributor)
-    Torsten Bögershausen (libgit2 contributor)
-    Trent Mick (libgit2 contributor)
-    Vicent Marti (libgit2 contributor)
+Author: See AUTHORS file.
 Depends:
     R (>= 3.0.2),
     methods

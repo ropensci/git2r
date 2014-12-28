@@ -1,3 +1,24 @@
+git2r authors, in alphabetical order:
+-------------------------------------
+
+Gabor Csardi            Diff support
+                        Better remotes support
+Gregory Jefferis        Discover repository
+Karthik Ram             Summarize contributions to a repository
+                        Various fixes of code and documentation
+Stefan Widgren          Most of the git2r bindings to libgit2
+
+
+Other contributors to git2r
+---------------------------
+
+Scott Chamberlain       Fixes to run CI with Travis and AppVeyor
+Thomas Rosendal         Better check of package with valgrind
+
+
+libgit2 authors (https://github.com/libgit2/libgit2/blob/master/AUTHORS)
+------------------------------------------------------------------------
+
 The following people contribute or have contributed
 to the libgit2 project (sorted alphabetically):
 

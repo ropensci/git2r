@@ -298,10 +298,10 @@ commit(repo, "Commit message")
 # Included software
 
 - The C library [libgit2](https://github.com/libgit2/libgit2). See
-  `inst/AUTHORS_libgit2` for the authors of libgit2.
+  `inst/AUTHORS` for the authors of libgit2.
 
-- The libgit2 printf calls in cache.c and util.c have been modified to
-  use the R printing routine Rprintf.
+- The libgit2 library have been modified to use R printing and error
+  routines, and to use `runif` instead of `rand`.
 
 # License
 
