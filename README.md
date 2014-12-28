@@ -307,8 +307,8 @@ commit(repo, "Commit message")
 
 The `git2r` package is licensed under the GPLv2. See these files for additional details:
 
-- LICENSE     - `git2r` package license (GPLv2)
-- inst/NOTICE - Copyright notices for additional included software
+- LICENSE      - `git2r` package license (GPLv2)
+- inst/COPYING - Copyright notices for additional included software
 
 ---
 
