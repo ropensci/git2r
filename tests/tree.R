@@ -25,10 +25,12 @@ repo <- init(path)
 config(repo, user.name="Repo", user.email="repo@example.org")
 
 ## Create a file
-writeLines("Hello world!", file.path(path, "test.txt"))
+f <- file(file.path(path, "test.txt"), "wb")
+writeChar("Hello world!\n", f, eos = NULL)
+close(f)
 
 ## add and commit
-add(repo, 'test.txt')
+add(repo, "test.txt")
 commit(repo, "Commit message")
 
 ## Check tree
