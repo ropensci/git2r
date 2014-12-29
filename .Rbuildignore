@@ -11,4 +11,6 @@
 ^scripts$
 ^.xapian$
 ^CONTRIBUTING.md$
-appveyor.yml
+^appveyor\.yml
+src/README\.md
+tools/README\.md
