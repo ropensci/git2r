@@ -4031,6 +4031,13 @@ fi
     ;;
 esac
 
+# Configuration specific for OSX
+case "${host_os}" in
+  darwin*)
+    CPPFLAGS="${CPPFLAGS} -DGIT_COMMON_CRYPTO"
+    ;;
+esac
+
 # Determine architecture of the machine
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
