@@ -16,32 +16,24 @@
 
 library(git2r)
 
-##
 ## Create a directory in tempdir
-##
 path <- tempfile(pattern="git2r-")
 dir.create(path)
 
-##
 ## Initialize a repository
-##
 repo <- init(path)
 config(repo, user.name="Repo", user.email="repo@example.org")
 
-##
 ## Create a file
-##
-writeLines("Hello world!", file.path(path, "test.txt"))
+f <- file(file.path(path, "test.txt"), "wb")
+writeChar("Hello world!\n", f, eos = NULL)
+close(f)
 
-##
 ## add and commit
-##
 add(repo, "test.txt")
 new_commit <- commit(repo, "Commit message")
 
-##
 ## Lookup blob
-##
 blob <- lookup(repo, "cd0875583aabe89ee197ea133980a9085d08e497")
 stopifnot(is(blob, "git_blob"))
 stopifnot(identical(is_blob(blob), TRUE))
@@ -50,19 +42,16 @@ stopifnot(identical(blob, lookup(repo, "cd0875")))
 stopifnot(identical(length(blob), 13L))
 stopifnot(identical(content(blob), "Hello world!"))
 
-##
 ## Add one more commit
-##
-writeLines(c("Hello world!", "HELLO WORLD!", "HeLlO wOrLd!"),
-           file.path(path, "test.txt"))
+f <- file(file.path(path, "test.txt"), "wb")
+writeChar("Hello world!\nHELLO WORLD!\nHeLlO wOrLd!\n", f, eos = NULL)
+close(f)
 add(repo, "test.txt")
 blob <- tree(commit(repo, "New commit message"))[1]
 stopifnot(identical(content(blob),
                     c("Hello world!", "HELLO WORLD!", "HeLlO wOrLd!")))
 
-##
 ## Hash
-##
 stopifnot(identical(hash("Hello, world!\n"),
                     "af5626b4a114abcb82d63db7c8082c3c4756e51b"))
 stopifnot(identical(hash("test content\n"),
@@ -79,9 +68,7 @@ stopifnot(identical(hash(c("Hello, world!\n",
                       "d670460b4b4aece5915caf5c68d12f560a9fe3e4")))
 stopifnot(identical(hash(character(0)), character(0)))
 
-##
 ## Hash file
-##
 test_1_txt <- file(file.path(path, "test-1.txt"), "wb")
 writeChar("Hello, world!\n", test_1_txt, eos = NULL)
 close(test_1_txt)
@@ -101,13 +88,15 @@ tools::assertError(hashfile(c(file.path(path, "test-1.txt"),
                               file.path(path, "test-2.txt"))))
 stopifnot(identical(hashfile(character(0)), character(0)))
 
-##
 ## Create blob from disk
-##
 tmp_file_1 <- tempfile()
 tmp_file_2 <- tempfile()
-writeLines("Hello, world!", tmp_file_1)
-writeLines("test content", tmp_file_2)
+f1 <- file(tmp_file_1, "wb")
+writeChar("Hello, world!\n", f1, eos = NULL)
+close(f1)
+f2 <- file(tmp_file_2, "wb")
+writeChar("test content\n", f2, eos = NULL)
+close(f2)
 blob_list_1 <- blob_create(repo, c(tmp_file_1, tmp_file_2), relative = FALSE)
 unlink(tmp_file_1)
 unlink(tmp_file_2)
@@ -115,18 +104,20 @@ stopifnot(identical(sapply(blob_list_1, slot, "sha"),
                     c("af5626b4a114abcb82d63db7c8082c3c4756e51b",
                       "d670460b4b4aece5915caf5c68d12f560a9fe3e4")))
 
-##
 ## Create blob from workdir
-##
-writeLines("Hello, world!", file.path(path, "test-workdir-1.txt"))
-writeLines("test content", file.path(path, "test-workdir-2.txt"))
+tmp_file_3 <- file.path(path, "test-workdir-1.txt")
+tmp_file_4 <- file.path(path, "test-workdir-2.txt")
+f3 <- file(tmp_file_3, "wb")
+writeChar("Hello, world!\n", f3, eos = NULL)
+close(f3)
+f4 <- file(tmp_file_4, "wb")
+writeChar("test content\n", f4, eos = NULL)
+close(f4)
 blob_list_2 <- blob_create(repo, c("test-workdir-1.txt",
                                    "test-workdir-2.txt"))
 stopifnot(identical(sapply(blob_list_2, slot, "sha"),
                     c("af5626b4a114abcb82d63db7c8082c3c4756e51b",
                       "d670460b4b4aece5915caf5c68d12f560a9fe3e4")))
 
-##
 ## Cleanup
-##
 unlink(path, recursive=TRUE)
