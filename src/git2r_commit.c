@@ -186,12 +186,6 @@ static int git2r_retrieve_parents(
     if (GIT_OK != err)
         return err;
 
-    **parents = malloc(sizeof(git_commit));
-    if (!(**parents)) {
-        giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
-        return GIT_ERROR;
-    }
-
     err = git_commit_lookup(&**parents, repository, &oid);
     if (GIT_OK != err)
         return err;
