@@ -320,6 +320,19 @@ GIT_EXTERN(int) git_remote_ls(const git_remote_head ***out,  size_t *size, git_r
 GIT_EXTERN(int) git_remote_download(git_remote *remote, const git_strarray *refspecs);
 
 /**
+ * Create a packfile and send it to the server
+ *
+ * Connect to the remote if it hasn't been done yet, negotiate with
+ * the remote git which objects are missing, create a packfile with the missing objects and send it.
+ *
+ * @param remote the remote
+ * @param refspecs the refspecs to use for this negotiation and
+ * upload. Use NULL or an empty array to use the base refspecs
+ * @return 0 or an error code
+ */
+GIT_EXTERN(int) git_remote_upload(git_remote *remote, const git_strarray *refspecs, const git_push_options *opts);
+
+/**
  * Check whether the remote is connected
  *
  * Check whether the remote's underlying transport is connected to the
@@ -375,6 +388,14 @@ GIT_EXTERN(int) git_remote_update_tips(
 		const char *reflog_message);
 
 /**
+ * Prune tracking refs that are no longer present on remote
+ *
+ * @param remote the remote to prune
+ * @return 0 or an error code
+ */
+GIT_EXTERN(int) git_remote_prune(git_remote *remote);
+
+/**
  * Download new data and update tips
  *
  * Convenience function to connect to a remote, download the data,
@@ -407,7 +428,7 @@ GIT_EXTERN(int) git_remote_fetch(
  * @param reflog_message message to use for the reflog of upated references
  */
 GIT_EXTERN(int) git_remote_push(git_remote *remote,
-				git_strarray *refspecs,
+				const git_strarray *refspecs,
 				const git_push_options *opts,
 				const git_signature *signature, const char *reflog_message);
 
@@ -583,6 +604,14 @@ GIT_EXTERN(git_remote_autotag_option_t) git_remote_autotag(const git_remote *rem
 GIT_EXTERN(void) git_remote_set_autotag(
 	git_remote *remote,
 	git_remote_autotag_option_t value);
+
+/**
+ * Retrieve the ref-prune setting
+ *
+ * @param remote the remote to query
+ * @return the ref-prune setting
+ */
+GIT_EXTERN(int) git_remote_prune_refs(const git_remote *remote);
 
 /**
  * Give the remote a new name

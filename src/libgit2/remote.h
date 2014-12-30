@@ -28,11 +28,13 @@ struct git_remote {
 	void *transport_cb_payload;
 	git_transport *transport;
 	git_repository *repo;
+	git_push *push;
 	git_remote_callbacks callbacks;
 	git_transfer_progress stats;
 	unsigned int need_pack;
 	git_remote_autotag_option_t download_tags;
 	int update_fetchhead;
+	int prune_refs;
 	int passed_refspecs;
 };
 
