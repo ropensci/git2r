@@ -131,6 +131,5 @@ clean:
 	-rm -f src/libgit2/xdiff/*.o
 	-rm -f src/http-parser/*.o
 	-rm -f src/regex/*.o
-	-rm -f src/zlib/*.o
 
 .PHONY: all readme install roxygen sync_libgit2 Makevars check clean
