@@ -1,5 +1,5 @@
-*** rebase.c	2014-11-18 22:02:41.625634466 +0100
---- rebase-pass-R-CMD-check-git2r.c	2014-11-18 22:02:52.593634760 +0100
+*** rebase.c	2014-12-30 20:44:00.855696836 +0100
+--- rebase-pass-R-CMD-check-git2r.c	2014-12-30 20:44:16.499697254 +0100
 ***************
 *** 5,10 ****
 --- 5,16 ----
@@ -16,7 +16,7 @@
   #include "buffer.h"
   #include "repository.h"
 ***************
-*** 311,317 ****
+*** 312,318 ****
   		error = -1;
   		break;
   	default:
@@ -24,7 +24,7 @@
   	}
   
   done:
---- 317,325 ----
+--- 318,326 ----
   		error = -1;
   		break;
   	default:
@@ -35,7 +35,7 @@
   
   done:
 ***************
-*** 697,703 ****
+*** 699,705 ****
   		if (!checkout_opts->their_label)
   			checkout_opts->their_label = git_commit_summary(current_commit);
   	} else {
@@ -43,7 +43,7 @@
   	}
   }
   
---- 705,713 ----
+--- 707,715 ----
   		if (!checkout_opts->their_label)
   			checkout_opts->their_label = git_commit_summary(current_commit);
   	} else {
@@ -54,7 +54,7 @@
   }
   
 ***************
-*** 792,798 ****
+*** 794,800 ****
   		error = rebase_next_merge(out, rebase, checkout_opts);
   		break;
   	default:
@@ -62,7 +62,7 @@
   	}
   
   	return error;
---- 802,810 ----
+--- 804,812 ----
   		error = rebase_next_merge(out, rebase, checkout_opts);
   		break;
   	default:
@@ -73,7 +73,7 @@
   
   	return error;
 ***************
-*** 900,906 ****
+*** 902,908 ****
   			id, rebase, author, committer, message_encoding, message);
   		break;
   	default:
@@ -81,7 +81,7 @@
   	}
   
   	return error;
---- 912,920 ----
+--- 914,922 ----
   			id, rebase, author, committer, message_encoding, message);
   		break;
   	default:
