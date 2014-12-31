@@ -18,6 +18,7 @@
 
 #include <Rdefines.h>
 #include "git2.h"
+#include "push.h"
 
 #include "git2r_arg.h"
 #include "git2r_cred.h"
