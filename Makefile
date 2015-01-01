@@ -34,6 +34,11 @@ check: clean
 	cd .. && R CMD build --no-build-vignettes $(PKG_NAME)
 	cd .. && R CMD check --no-manual --no-vignettes --no-build-vignettes $(PKG_TAR)
 
+# Build and check package with gctorture
+check_gctorture: clean
+	cd .. && R CMD build --no-build-vignettes $(PKG_NAME)
+	cd .. && R CMD check --no-manual --no-vignettes --no-build-vignettes --use-gct $(PKG_TAR)
+
 # Build and check package with valgrind
 check_valgrind: clean
 	cd .. && R CMD build --no-build-vignettes $(PKG_NAME)
@@ -132,4 +137,4 @@ clean:
 	-rm -f src/http-parser/*.o
 	-rm -f src/regex/*.o
 
-.PHONY: all readme install roxygen sync_libgit2 Makevars check clean
+.PHONY: all readme install roxygen sync_libgit2 Makevars check check_gctorture check_valgrind valgrind clean
