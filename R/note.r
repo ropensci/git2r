@@ -234,28 +234,17 @@ setMethod("note_create",
 ##' }
 setGeneric("notes",
            signature = c("repo", "ref"),
-           function(repo, ref)
+           function(repo,
+                    ref = note_default_ref(repo))
            standardGeneric("notes"))
 
 ##' @rdname notes-methods
 ##' @export
 setMethod("notes",
-          signature(repo = "git_repository",
-                    ref  = "missing"),
-          function(repo)
-          {
-              notes(repo = repo, ref = note_default_ref(repo))
-          }
-)
-
-##' @rdname notes-methods
-##' @export
-setMethod("notes",
-          signature(repo = "git_repository",
-                    ref  = "character"),
+          signature = "git_repository",
           function(repo, ref)
           {
-              stopifnot(identical(length(ref), 1L))
+              stopifnot(is.character(ref), identical(length(ref), 1L))
               if (!length(grep("^refs/notes/", ref)))
                   ref <- paste0("refs/notes/", ref)
               .Call(git2r_notes, repo, ref)
