@@ -3,15 +3,12 @@
 \docType{methods}
 \name{notes}
 \alias{notes}
-\alias{notes,git_repository,character-method}
-\alias{notes,git_repository,missing-method}
+\alias{notes,git_repository-method}
 \title{List notes}
 \usage{
-notes(repo, ref)
+notes(repo, ref = note_default_ref(repo))
 
-\S4method{notes}{git_repository,missing}(repo)
-
-\S4method{notes}{git_repository,character}(repo, ref)
+\S4method{notes}{git_repository}(repo, ref = note_default_ref(repo))
 }
 \arguments{
 \item{repo}{The repository}

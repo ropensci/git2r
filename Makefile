@@ -20,7 +20,6 @@ install:
 roxygen:
 	Rscript -e "library(roxygen2); stopifnot(packageVersion('roxygen2') == '$(ROXYGEN_VERSION)')"
 	rm -f man/*.Rd
-	Rscript scripts/build_DESCRIPTION.r
 	cd .. && Rscript -e "library(roxygen2); roxygenize('$(PKG_NAME)')"
 
 # Generate PDF output from the Rd sources
@@ -42,7 +41,7 @@ check_gctorture: clean
 # Build and check package with valgrind
 check_valgrind: clean
 	cd .. && R CMD build --no-build-vignettes $(PKG_NAME)
-	cd .. && R CMD check --as-cran --no-manual --no-vignettes --no-build-vignettes --use-valgrind $(PKG_TAR)
+	cd .. && R CMD check --as-cran --no-manual --no-vignettes --no-build-vignettes --use-valgrind --use-gct $(PKG_TAR)
 
 # Run all tests with valgrind
 test_objects = $(wildcard tests/*.R)
