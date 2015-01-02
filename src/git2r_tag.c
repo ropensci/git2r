@@ -83,12 +83,12 @@ void git2r_tag_init(git_tag *source, SEXP repo, SEXP dest)
  */
 SEXP git2r_tag_create(SEXP repo, SEXP name, SEXP message, SEXP tagger)
 {
-    SEXP sexp_tag = R_NilValue;
+    SEXP result = R_NilValue;
     int err;
     git_oid oid;
     git_repository *repository = NULL;
     git_signature *sig_tagger = NULL;
-    git_tag *new_tag = NULL;
+    git_tag *tag = NULL;
     git_object *target = NULL;
 
     if (GIT_OK != git2r_arg_check_string(name))
@@ -110,26 +110,27 @@ SEXP git2r_tag_create(SEXP repo, SEXP name, SEXP message, SEXP tagger)
     if (GIT_OK != err)
         goto cleanup;
 
-    err = git_tag_create(&oid,
-                         repository,
-                         CHAR(STRING_ELT(name, 0)),
-                         target,
-                         sig_tagger,
-                         CHAR(STRING_ELT(message, 0)),
-                         0);
+    err = git_tag_create(
+        &oid,
+        repository,
+        CHAR(STRING_ELT(name, 0)),
+        target,
+        sig_tagger,
+        CHAR(STRING_ELT(message, 0)),
+        0);
     if (GIT_OK != err)
         goto cleanup;
 
-    err = git_tag_lookup(&new_tag, repository, &oid);
+    err = git_tag_lookup(&tag, repository, &oid);
     if (GIT_OK != err)
         goto cleanup;
 
-    PROTECT(sexp_tag = NEW_OBJECT(MAKE_CLASS("git_tag")));
-    git2r_tag_init(new_tag, repo, sexp_tag);
+    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_tag")));
+    git2r_tag_init(tag, repo, result);
 
 cleanup:
-    if (new_tag)
-        git_tag_free(new_tag);
+    if (tag)
+        git_tag_free(tag);
 
     if (sig_tagger)
         git_signature_free(sig_tagger);
@@ -140,13 +141,13 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != sexp_tag)
+    if (R_NilValue != result)
         UNPROTECT(1);
 
     if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
-    return sexp_tag;
+    return result;
 }
 
 /**
