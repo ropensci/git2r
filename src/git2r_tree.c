@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2014 The git2r contributors
+ *  Copyright (C) 2013-2015 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -37,30 +37,22 @@ void git2r_tree_init(const git_tree *source, SEXP repo, SEXP dest)
 
     oid = git_tree_id(source);
     git_oid_tostr(sha, sizeof(sha), oid);
-    SET_SLOT(dest,
-             Rf_install("sha"),
-             ScalarString(mkChar(sha)));
+    SET_SLOT(dest, Rf_install("sha"), ScalarString(mkChar(sha)));
 
     n = git_tree_entrycount(source);
-    PROTECT(filemode = allocVector(INTSXP, n));
-    PROTECT(id = allocVector(STRSXP, n));
-    PROTECT(type = allocVector(STRSXP, n));
-    PROTECT(name = allocVector(STRSXP, n));
-
-    SET_SLOT(dest, Rf_install("filemode"), filemode);
-    SET_SLOT(dest, Rf_install("id"), id);
-    SET_SLOT(dest, Rf_install("type"), type);
-    SET_SLOT(dest, Rf_install("name"), name);
-    UNPROTECT(4);
+    SET_SLOT(dest, Rf_install("filemode"), filemode = allocVector(INTSXP, n));
+    SET_SLOT(dest, Rf_install("id"), id = allocVector(STRSXP, n));
+    SET_SLOT(dest, Rf_install("type"), type = allocVector(STRSXP, n));
+    SET_SLOT(dest, Rf_install("name"), name = allocVector(STRSXP, n));
 
     for (i = 0; i < n; ++i) {
         entry = git_tree_entry_byindex(source, i);
         git_oid_tostr(sha, sizeof(sha), git_tree_entry_id(entry));
         INTEGER(filemode)[i] = git_tree_entry_filemode(entry);
-        SET_STRING_ELT(id, i, mkChar(sha));
+        SET_STRING_ELT(id,   i, mkChar(sha));
         SET_STRING_ELT(type, i, mkChar(git_object_type2string(git_tree_entry_type(entry))));
         SET_STRING_ELT(name, i, mkChar(git_tree_entry_name(entry)));
     }
 
-    SET_SLOT(dest, Rf_install("repo"), duplicate(repo));
+    SET_SLOT(dest, Rf_install("repo"), repo);
 }

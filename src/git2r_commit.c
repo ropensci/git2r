@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2014 The git2r contributors
+ *  Copyright (C) 2013-2015 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -460,45 +460,25 @@ void git2r_commit_init(git_commit *source, SEXP repo, SEXP dest)
 
     git_oid_fmt(sha, git_commit_id(source));
     sha[GIT_OID_HEXSZ] = '\0';
-    SET_SLOT(dest,
-             Rf_install("sha"),
-             ScalarString(mkChar(sha)));
+    SET_SLOT(dest, Rf_install("sha"), ScalarString(mkChar(sha)));
 
     author = git_commit_author(source);
-    if (author) {
-        SEXP sexp_author;
-
-        PROTECT(sexp_author = NEW_OBJECT(MAKE_CLASS("git_signature")));
-        git2r_signature_init(author, sexp_author);
-        SET_SLOT(dest, Rf_install("author"), sexp_author);
-        UNPROTECT(1);
-    }
+    if (author)
+        git2r_signature_init(author, GET_SLOT(dest, Rf_install("author")));
 
     committer = git_commit_committer(source);
-    if (committer) {
-        SEXP sexp_committer;
-
-        PROTECT(sexp_committer = NEW_OBJECT(MAKE_CLASS("git_signature")));
-        git2r_signature_init(committer, sexp_committer);
-        SET_SLOT(dest, Rf_install("committer"), sexp_committer);
-        UNPROTECT(1);
-    }
+    if (committer)
+        git2r_signature_init(committer, GET_SLOT(dest, Rf_install("committer")));
 
     summary = git_commit_summary(source);
-    if (summary) {
-        SET_SLOT(dest,
-                 Rf_install("summary"),
-                 ScalarString(mkChar(summary)));
-    }
+    if (summary)
+        SET_SLOT(dest, Rf_install("summary"), ScalarString(mkChar(summary)));
 
     message = git_commit_message(source);
-    if (message) {
-        SET_SLOT(dest,
-                 Rf_install("message"),
-                 ScalarString(mkChar(message)));
-    }
+    if (message)
+        SET_SLOT(dest, Rf_install("message"), ScalarString(mkChar(message)));
 
-    SET_SLOT(dest, Rf_install("repo"), duplicate(repo));
+    SET_SLOT(dest, Rf_install("repo"), repo);
 }
 
 /**
@@ -533,16 +513,14 @@ SEXP git2r_commit_parent_list(SEXP commit)
 
     for (i = 0; i < n; i++) {
         git_commit *parent = NULL;
-        SEXP tmp;
+        SEXP item;
 
         err = git_commit_parent(&parent, commit_obj, i);
         if (GIT_OK != err)
             goto cleanup;
 
-        PROTECT(tmp = NEW_OBJECT(MAKE_CLASS("git_commit")));
-        git2r_commit_init(parent, repo, tmp);
-        SET_VECTOR_ELT(list, i, tmp);
-        UNPROTECT(1);
+        SET_VECTOR_ELT(list, i, item = NEW_OBJECT(MAKE_CLASS("git_commit")));
+        git2r_commit_init(parent, repo, item);
         git_commit_free(parent);
     }
 
