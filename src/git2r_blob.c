@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2014 The git2r contributors
+ *  Copyright (C) 2013-2015 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -82,7 +82,6 @@ cleanup:
 SEXP git2r_blob_create_fromdisk(SEXP repo, SEXP path)
 {
     SEXP result = R_NilValue;
-    SEXP sexp_blob;
     int err = GIT_OK;
     size_t len, i;
     git_oid oid;
@@ -100,9 +99,12 @@ SEXP git2r_blob_create_fromdisk(SEXP repo, SEXP path)
     PROTECT(result = allocVector(VECSXP, len));
     for (i = 0; i < len; i++) {
         if (NA_STRING != STRING_ELT(path, i)) {
-            err = git_blob_create_fromdisk(&oid,
-                                           repository,
-                                           CHAR(STRING_ELT(path, i)));
+            SEXP item;
+
+            err = git_blob_create_fromdisk(
+                &oid,
+                repository,
+                CHAR(STRING_ELT(path, i)));
             if (GIT_OK != err)
                 goto cleanup;
 
@@ -110,10 +112,8 @@ SEXP git2r_blob_create_fromdisk(SEXP repo, SEXP path)
             if (GIT_OK != err)
                 goto cleanup;
 
-            PROTECT(sexp_blob = NEW_OBJECT(MAKE_CLASS("git_blob")));
-            git2r_blob_init(blob, repo, sexp_blob);
-            SET_VECTOR_ELT(result, i, sexp_blob);
-            UNPROTECT(1);
+            SET_VECTOR_ELT(result, i, item = NEW_OBJECT(MAKE_CLASS("git_blob")));
+            git2r_blob_init(blob, repo, item);
             git_blob_free(blob);
         }
     }
@@ -146,7 +146,6 @@ cleanup:
 SEXP git2r_blob_create_fromworkdir(SEXP repo, SEXP relative_path)
 {
     SEXP result = R_NilValue;
-    SEXP sexp_blob;
     int err = GIT_OK;
     size_t len, i;
     git_oid oid;
@@ -164,9 +163,12 @@ SEXP git2r_blob_create_fromworkdir(SEXP repo, SEXP relative_path)
     PROTECT(result = allocVector(VECSXP, len));
     for (i = 0; i < len; i++) {
         if (NA_STRING != STRING_ELT(relative_path, i)) {
-            err = git_blob_create_fromworkdir(&oid,
-                                              repository,
-                                              CHAR(STRING_ELT(relative_path, i)));
+            SEXP item;
+
+            err = git_blob_create_fromworkdir(
+                &oid,
+                repository,
+                CHAR(STRING_ELT(relative_path, i)));
             if (GIT_OK != err)
                 goto cleanup;
 
@@ -174,10 +176,8 @@ SEXP git2r_blob_create_fromworkdir(SEXP repo, SEXP relative_path)
             if (GIT_OK != err)
                 goto cleanup;
 
-            PROTECT(sexp_blob = NEW_OBJECT(MAKE_CLASS("git_blob")));
-            git2r_blob_init(blob, repo, sexp_blob);
-            SET_VECTOR_ELT(result, i, sexp_blob);
-            UNPROTECT(1);
+            SET_VECTOR_ELT(result, i, item = NEW_OBJECT(MAKE_CLASS("git_blob")));
+            git2r_blob_init(blob, repo, item);
             git_blob_free(blob);
         }
     }
@@ -210,11 +210,8 @@ void git2r_blob_init(const git_blob *source, SEXP repo, SEXP dest)
 
     oid = git_blob_id(source);
     git_oid_tostr(sha, sizeof(sha), oid);
-    SET_SLOT(dest,
-             Rf_install("sha"),
-             ScalarString(mkChar(sha)));
-
-    SET_SLOT(dest, Rf_install("repo"), duplicate(repo));
+    SET_SLOT(dest, Rf_install("sha"), ScalarString(mkChar(sha)));
+    SET_SLOT(dest, Rf_install("repo"), repo);
 }
 
 /**

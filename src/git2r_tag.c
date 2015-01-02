@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2014 The git2r contributors
+ *  Copyright (C) 2013-2015 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -41,35 +41,27 @@ void git2r_tag_init(git_tag *source, SEXP repo, SEXP dest)
 
     oid = git_tag_id(source);
     git_oid_tostr(sha, sizeof(sha), oid);
-    SET_SLOT(dest,
-             Rf_install("sha"),
-             ScalarString(mkChar(sha)));
+    SET_SLOT(dest, Rf_install("sha"), ScalarString(mkChar(sha)));
 
-    SET_SLOT(dest,
-             Rf_install("message"),
-             ScalarString(mkChar(git_tag_message(source))));
+    SET_SLOT(
+        dest,
+        Rf_install("message"),
+        ScalarString(mkChar(git_tag_message(source))));
 
-    SET_SLOT(dest,
-             Rf_install("name"),
-             ScalarString(mkChar(git_tag_name(source))));
+    SET_SLOT(
+        dest,
+        Rf_install("name"),
+        ScalarString(mkChar(git_tag_name(source))));
 
     tagger = git_tag_tagger(source);
-    if (tagger) {
-        SEXP sexp_tagger;
-
-        PROTECT(sexp_tagger = NEW_OBJECT(MAKE_CLASS("git_signature")));
-        git2r_signature_init(tagger, sexp_tagger);
-        SET_SLOT(dest, Rf_install("tagger"), sexp_tagger);
-        UNPROTECT(1);
-    }
+    if (tagger)
+        git2r_signature_init(tagger, GET_SLOT(dest, Rf_install("tagger")));
 
     oid = git_tag_target_id(source);
     git_oid_tostr(target, sizeof(target), oid);;
-    SET_SLOT(dest,
-             Rf_install("target"),
-             ScalarString(mkChar(target)));
+    SET_SLOT(dest, Rf_install("target"), ScalarString(mkChar(target)));
 
-    SET_SLOT(dest, Rf_install("repo"), duplicate(repo));
+    SET_SLOT(dest, Rf_install("repo"), repo);
 }
 
 /**
@@ -189,10 +181,8 @@ SEXP git2r_tag_list(SEXP repo)
         if (GIT_OK != err)
             goto cleanup;
 
-        PROTECT(sexp_tag = NEW_OBJECT(MAKE_CLASS("git_tag")));
+        SET_VECTOR_ELT(list, i, sexp_tag = NEW_OBJECT(MAKE_CLASS("git_tag")));
         git2r_tag_init(tag, repo, sexp_tag);
-        SET_VECTOR_ELT(list, i, sexp_tag);
-        UNPROTECT(1);
 
         git_tag_free(tag);
         tag = NULL;

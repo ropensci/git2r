@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2014 The git2r contributors
+ *  Copyright (C) 2013-2015 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -296,10 +296,10 @@ cleanup:
  */
 SEXP git2r_branch_list(SEXP repo, SEXP flags)
 {
-    SEXP list = R_NilValue;
+    SEXP result = R_NilValue;
     int err;
     git_branch_iterator *iter = NULL;
-    size_t i = 0, n = 0;
+    size_t i, n = 0;
     git_repository *repository = NULL;
     git_reference *reference = NULL;
     git_branch_t type;
@@ -315,13 +315,13 @@ SEXP git2r_branch_list(SEXP repo, SEXP flags)
     err = git2r_branch_count(repository, INTEGER(flags)[0], &n);
     if (GIT_OK != err)
         goto cleanup;
-    PROTECT(list = allocVector(VECSXP, n));
+    PROTECT(result = allocVector(VECSXP, n));
 
     err = git_branch_iterator_new(&iter, repository,  INTEGER(flags)[0]);
     if (GIT_OK != err)
         goto cleanup;
 
-    for (;;) {
+    for (i = 0; i < n; i++) {
         SEXP branch;
 
         err = git_branch_next(&reference, &type, iter);
@@ -331,18 +331,13 @@ SEXP git2r_branch_list(SEXP repo, SEXP flags)
             goto cleanup;
         }
 
-        PROTECT(branch = NEW_OBJECT(MAKE_CLASS("git_branch")));
+        SET_VECTOR_ELT(result, i, branch = NEW_OBJECT(MAKE_CLASS("git_branch")));
         err = git2r_branch_init(reference, type, repo, branch);
-        if (GIT_OK != err) {
-            UNPROTECT(1);
+        if (GIT_OK != err)
             goto cleanup;
-        }
-        SET_VECTOR_ELT(list, i, branch);
-        UNPROTECT(1);
         if (reference)
             git_reference_free(reference);
         reference = NULL;
-        i++;
     }
 
 cleanup:
@@ -355,13 +350,13 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != list)
+    if (R_NilValue != result)
         UNPROTECT(1);
 
     if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
-    return list;
+    return result;
 }
 
 /**
