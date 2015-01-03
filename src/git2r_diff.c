@@ -687,13 +687,16 @@ int git2r_diff_get_file_cb(const git_diff_delta *delta,
     /* Save the previous file's hunks from the hunk_tmp
        temporary storage. */
     if (p->file_ptr != 0) {
-	SEXP hunks =  allocVector(VECSXP, p->hunk_ptr);
+        SEXP hunks;
 	size_t len=p->hunk_ptr, i;
+
+	SET_SLOT(
+            VECTOR_ELT(p->result, p->file_ptr-1),
+            Rf_install("hunks"),
+            hunks = allocVector(VECSXP, p->hunk_ptr));
 	for (i = 0; i < len ; i++) {
 	    SET_VECTOR_ELT(hunks, i, VECTOR_ELT(p->hunk_tmp, i));
 	}
-	SET_SLOT(VECTOR_ELT(p->result, p->file_ptr-1), Rf_install("hunks"),
-		 hunks);
     }
 
     /* OK, ready for next file, if any */
@@ -739,13 +742,16 @@ int git2r_diff_get_hunk_cb(const git_diff_delta *delta,
     /* Save previous hunk's lines in hunk_tmp, from the line_tmp
        temporary storage. */
     if (p->hunk_ptr != 0) {
-	SEXP lines = allocVector(VECSXP, p->line_ptr);
+	SEXP lines;
 	size_t len=p->line_ptr, i;
+
+	SET_SLOT(
+            VECTOR_ELT(p->hunk_tmp, p->hunk_ptr-1),
+            Rf_install("lines"),
+            lines = allocVector(VECSXP, p->line_ptr));
 	for (i = 0; i < len; i++) {
 	    SET_VECTOR_ELT(lines, i, VECTOR_ELT(p->line_tmp, i));
 	}
-	SET_SLOT(VECTOR_ELT(p->hunk_tmp, p->hunk_ptr-1),
-		 Rf_install("lines"), lines);
     }
 
     /* OK, ready for the next hunk, if any */
