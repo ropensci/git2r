@@ -20,7 +20,9 @@
 ##' @docType methods
 ##' @param object The stash \code{object} to drop or a zero-based
 ##' integer to the stash to drop. The last stash has index 0.
-##' @param index Zero based index to the stash to drop.
+##' @param ... Additional arguments affecting the stash_drop
+##' @param index Zero based index to the stash to drop. Only used when
+##' \code{object} is a \code{git_repository}.
 ##' @return invisible NULL
 ##' @keywords methods
 ##' @examples \dontrun{
@@ -62,48 +64,39 @@
 ##' stash_list(repo)
 ##' }
 setGeneric("stash_drop",
-           signature = c("object", "index"),
-           function(object, index)
+           signature = "object",
+           function(object, ...)
            standardGeneric("stash_drop"))
 
 ##' @rdname stash_drop-methods
 ##' @include S4_classes.r
 ##' @export
 setMethod("stash_drop",
-          signature(object = "git_repository",
-                    index  = "integer"),
+          signature(object = "git_repository"),
           function (object, index)
           {
-              invisible(.Call(git2r_stash_drop, object, index))
-          }
-)
-
-##' @rdname stash_drop-methods
-##' @include S4_classes.r
-##' @export
-setMethod("stash_drop",
-          signature(object = "git_repository",
-                    index  = "numeric"),
-          function (object, index)
-          {
+              if (missing(index))
+                  stop("missing argument 'index'")
               if (abs(index - round(index)) >= .Machine$double.eps^0.5)
                   stop("'index' must be an integer")
-              stash_drop(object, as.integer(index));
+              index <- as.integer(index)
+              .Call(git2r_stash_drop, object, index)
+              invisible(NULL)
           }
 )
 
 ##' @rdname stash_drop-methods
 ##' @export
 setMethod("stash_drop",
-          signature(object = "git_stash",
-                    index  = "missing"),
+          signature(object = "git_stash"),
           function (object)
           {
               ## Determine the index of the stash in the stash list
               i <- match(object@sha, sapply(stash_list(object@repo), slot, "sha"))
 
               ## The stash list is zero-based
-              stash_drop(object@repo, i-1L);
+              .Call(git2r_stash_drop, object@repo, i - 1L)
+              invisible(NULL)
           }
 )
 

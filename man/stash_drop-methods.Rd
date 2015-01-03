@@ -3,24 +3,24 @@
 \docType{methods}
 \name{stash_drop}
 \alias{stash_drop}
-\alias{stash_drop,git_repository,integer-method}
-\alias{stash_drop,git_repository,numeric-method}
-\alias{stash_drop,git_stash,missing-method}
+\alias{stash_drop,git_repository-method}
+\alias{stash_drop,git_stash-method}
 \title{Drop stash}
 \usage{
-stash_drop(object, index)
+stash_drop(object, ...)
 
-\S4method{stash_drop}{git_repository,integer}(object, index)
+\S4method{stash_drop}{git_repository}(object, index)
 
-\S4method{stash_drop}{git_repository,numeric}(object, index)
-
-\S4method{stash_drop}{git_stash,missing}(object)
+\S4method{stash_drop}{git_stash}(object)
 }
 \arguments{
 \item{object}{The stash \code{object} to drop or a zero-based
 integer to the stash to drop. The last stash has index 0.}
 
-\item{index}{Zero based index to the stash to drop.}
+\item{...}{Additional arguments affecting the stash_drop}
+
+\item{index}{Zero based index to the stash to drop. Only used when
+\code{object} is a \code{git_repository}.}
 }
 \value{
 invisible NULL
