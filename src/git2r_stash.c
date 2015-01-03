@@ -118,17 +118,17 @@ static int git2r_stash_list_cb(
         int err;
         SEXP stash;
 
-        PROTECT(stash = NEW_OBJECT(MAKE_CLASS("git_stash")));
-        err = git2r_stash_init(stash_id,
-                               cb_data->repository,
-                               cb_data->repo,
-                               stash);
-        if (GIT_OK != err) {
-            UNPROTECT(1);
+        SET_VECTOR_ELT(
+            cb_data->list,
+            cb_data->n,
+            stash = NEW_OBJECT(MAKE_CLASS("git_stash")));
+        err = git2r_stash_init(
+            stash_id,
+            cb_data->repository,
+            cb_data->repo,
+            stash);
+        if (GIT_OK != err)
             return err;
-        }
-        SET_VECTOR_ELT(cb_data->list, cb_data->n, stash);
-        UNPROTECT(1);
     }
 
     cb_data->n += 1;
@@ -232,11 +232,12 @@ SEXP git2r_stash_save(
     if (GIT_OK != err)
         goto cleanup;
 
-    err = git_stash_save(&oid,
-                         repository,
-                         c_stasher,
-                         CHAR(STRING_ELT(message, 0)),
-                         flags);
+    err = git_stash_save(
+        &oid,
+        repository,
+        c_stasher,
+        CHAR(STRING_ELT(message, 0)),
+        flags);
     if (GIT_OK != err) {
         if (GIT_ENOTFOUND == err)
             err = GIT_OK;

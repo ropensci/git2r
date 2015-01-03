@@ -230,7 +230,8 @@ SEXP git2r_odb_objects(SEXP repo)
         goto cleanup;
 
     PROTECT(result = allocVector(VECSXP, 3));
-    PROTECT(names = allocVector(STRSXP, 3));
+    setAttrib(result, R_NamesSymbol, names = allocVector(STRSXP, 3));
+
     i = 0;
     SET_VECTOR_ELT(result, i,   allocVector(STRSXP,  cb_data.n));
     SET_STRING_ELT(names,  i++, mkChar("sha"));
@@ -238,8 +239,6 @@ SEXP git2r_odb_objects(SEXP repo)
     SET_STRING_ELT(names,  i++, mkChar("type"));
     SET_VECTOR_ELT(result, i,   allocVector(INTSXP,  cb_data.n));
     SET_STRING_ELT(names,  i++, mkChar("len"));
-    setAttrib(result, R_NamesSymbol, names);
-    UNPROTECT(1);
 
     cb_data.list = result;
     cb_data.n = 0;
@@ -506,7 +505,8 @@ SEXP git2r_odb_blobs(SEXP repo)
         goto cleanup;
 
     PROTECT(result = allocVector(VECSXP, 7));
-    PROTECT(names = allocVector(STRSXP, 7));
+    setAttrib(result, R_NamesSymbol, names = allocVector(STRSXP, 7));
+
     i = 0;
     SET_VECTOR_ELT(result, i,   allocVector(STRSXP,  cb_data.n));
     SET_STRING_ELT(names,  i++, mkChar("sha"));
@@ -522,8 +522,6 @@ SEXP git2r_odb_blobs(SEXP repo)
     SET_STRING_ELT(names,  i++, mkChar("author"));
     SET_VECTOR_ELT(result, i,   allocVector(REALSXP, cb_data.n));
     SET_STRING_ELT(names,  i++, mkChar("when"));
-    setAttrib(result, R_NamesSymbol, names);
-    UNPROTECT(1);
 
     cb_data.list = result;
     cb_data.n = 0;

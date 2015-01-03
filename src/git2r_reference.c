@@ -83,9 +83,10 @@ SEXP git2r_reference_list(SEXP repo)
         goto cleanup;
 
     PROTECT(result = allocVector(VECSXP, ref_list.count));
-    PROTECT(names = allocVector(STRSXP, ref_list.count));
-    setAttrib(result, R_NamesSymbol, names);
-    UNPROTECT(1);
+    setAttrib(
+        result,
+        R_NamesSymbol,
+        names = allocVector(STRSXP, ref_list.count));
 
     for (i = 0; i < ref_list.count; i++) {
         SEXP reference;
@@ -95,11 +96,12 @@ SEXP git2r_reference_list(SEXP repo)
         if (GIT_OK != err)
             goto cleanup;
 
-        PROTECT(reference = NEW_OBJECT(MAKE_CLASS("git_reference")));
+        SET_VECTOR_ELT(
+            result,
+            i,
+            reference = NEW_OBJECT(MAKE_CLASS("git_reference")));
         git2r_reference_init(ref, reference);
         SET_STRING_ELT(names, i, mkChar(ref_list.strings[i]));
-        SET_VECTOR_ELT(result, i, reference);
-        UNPROTECT(1);
 
         if (ref)
             git_reference_free(ref);
