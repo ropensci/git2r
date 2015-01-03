@@ -47,7 +47,7 @@ f <- file(file.path(path, "test.txt"), "wb")
 writeChar("Hello world!\nHELLO WORLD!\nHeLlO wOrLd!\n", f, eos = NULL)
 close(f)
 add(repo, "test.txt")
-blob <- tree(commit(repo, "New commit message"))[1]
+blob <- lookup(repo, tree(commit(repo, "New commit message"))@id[1])
 stopifnot(identical(content(blob),
                     c("Hello world!", "HELLO WORLD!", "HeLlO wOrLd!")))
 
