@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2014 The git2r contributors
+ *  Copyright (C) 2013-2015 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -93,26 +93,22 @@ static int git2r_repository_fetchhead_foreach_cb(
 
         PROTECT(fetch_head = NEW_OBJECT(MAKE_CLASS("git_fetch_head")));
 
-        SET_SLOT(fetch_head,
-             Rf_install("ref_name"),
-             ScalarString(mkChar(ref_name)));
+        SET_SLOT(
+            fetch_head,
+            Rf_install("ref_name"),
+            ScalarString(mkChar(ref_name)));
 
-        SET_SLOT(fetch_head,
-             Rf_install("remote_url"),
-             ScalarString(mkChar(remote_url)));
+        SET_SLOT(
+            fetch_head,
+            Rf_install("remote_url"),
+            ScalarString(mkChar(remote_url)));
 
         git_oid_tostr(sha, sizeof(sha), oid);
-        SET_SLOT(fetch_head,
-             Rf_install("sha"),
-             ScalarString(mkChar(sha)));
+        SET_SLOT(fetch_head, Rf_install("sha"), ScalarString(mkChar(sha)));
 
-        SET_SLOT(fetch_head,
-                 Rf_install("is_merge"),
-                 ScalarLogical(is_merge));
+        SET_SLOT(fetch_head, Rf_install("is_merge"), ScalarLogical(is_merge));
 
-        SET_SLOT(fetch_head,
-                 Rf_install("repo"),
-                 duplicate(cb_data->repo));
+        SET_SLOT(fetch_head, Rf_install("repo"), cb_data->repo);
 
         SET_VECTOR_ELT(cb_data->list, cb_data->n, fetch_head);
         UNPROTECT(1);

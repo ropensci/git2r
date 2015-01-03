@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2014 The git2r contributors
+ *  Copyright (C) 2013-2015 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -65,25 +65,20 @@ static int git2r_note_init(
 
     git_oid_fmt(sha, blob_id);
     sha[GIT_OID_HEXSZ] = '\0';
-    SET_SLOT(dest,
-             Rf_install("sha"),
-             ScalarString(mkChar(sha)));
+    SET_SLOT(dest, Rf_install("sha"), ScalarString(mkChar(sha)));
 
     git_oid_fmt(sha, annotated_object_id);
     sha[GIT_OID_HEXSZ] = '\0';
-    SET_SLOT(dest,
-             Rf_install("annotated"),
-             ScalarString(mkChar(sha)));
+    SET_SLOT(dest, Rf_install("annotated"), ScalarString(mkChar(sha)));
 
-    SET_SLOT(dest,
-             Rf_install("message"),
-             ScalarString(mkChar(git_note_message(note))));
+    SET_SLOT(
+        dest,
+        Rf_install("message"),
+        ScalarString(mkChar(git_note_message(note))));
 
-    SET_SLOT(dest,
-             Rf_install("refname"),
-             ScalarString(mkChar(notes_ref)));
+    SET_SLOT(dest, Rf_install("refname"), ScalarString(mkChar(notes_ref)));
 
-    SET_SLOT(dest, Rf_install("repo"), duplicate(repo));
+    SET_SLOT(dest, Rf_install("repo"), repo);
 
     if (note)
         git_note_free(note);

@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2014 The git2r contributors
+ *  Copyright (C) 2013-2015 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -69,19 +69,13 @@ void git2r_reflog_entry_init(
     }
 
     message = git_reflog_entry_message(source);
-    if (message) {
-        SET_SLOT(dest,
-                 Rf_install("message"),
-                 ScalarString(mkChar(message)));
-    } else {
-        SET_SLOT(dest,
-                 Rf_install("message"),
-                 ScalarString(NA_STRING));
-    }
+    if (message)
+        SET_SLOT(dest, Rf_install("message"), ScalarString(mkChar(message)));
+    else
+        SET_SLOT(dest, Rf_install("message"), ScalarString(NA_STRING));
 
-
-    SET_SLOT(dest, Rf_install("refname"), duplicate(ref));
-    SET_SLOT(dest, Rf_install("repo"), duplicate(repo));
+    SET_SLOT(dest, Rf_install("refname"), ref);
+    SET_SLOT(dest, Rf_install("repo"), repo);
 }
 
 /**

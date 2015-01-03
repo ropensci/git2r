@@ -91,7 +91,7 @@ int git2r_branch_init(
              ScalarString(mkChar(name)));
 
     SET_SLOT(dest, Rf_install("type"), ScalarInteger(type));
-    SET_SLOT(dest, Rf_install("repo"), duplicate(repo));
+    SET_SLOT(dest, Rf_install("repo"), repo);
 
 cleanup:
     return err;
