@@ -197,8 +197,9 @@ setMethod("summary",
 #' Changes between commits, trees, working tree, etc.
 #'
 #' @rdname diff-methods
+#' @export
 #' @docType methods
-#' @param object A \code{git_repository} object or the old
+#' @param x A \code{git_repository} object or the old
 #' \code{git_tree} object to compare to.
 #' @param index \describe{
 #'   \item{\emph{When object equals a git_repository}}{
@@ -282,19 +283,13 @@ setMethod("summary",
 #' summary(diff_7)
 #' cat(diff(repo, index=TRUE, as_char=TRUE))
 #' }
-setGeneric("diff",
-           signature = c("object"),
-           function(object, ...)
-           standardGeneric("diff"))
-
-#' @rdname diff-methods
-#' @export
 setMethod("diff",
-          signature(object = "git_repository"),
-          function(object,
+          signature(x = "git_repository"),
+          function(x,
                    index    = FALSE,
                    as_char  = FALSE,
-                   filename = NULL)
+                   filename = NULL,
+                   ...)
           {
               if (as_char) {
                   ## Make sure filename is character(0) to write to a
@@ -312,7 +307,7 @@ setMethod("diff",
                   filename <- NULL
               }
 
-              .Call(git2r_diff, object, NULL, NULL, index, filename)
+              .Call(git2r_diff, x, NULL, NULL, index, filename)
           }
 )
 
@@ -322,12 +317,13 @@ setMethod("diff",
 #'        the \code{index} argument).
 #' @export
 setMethod("diff",
-          signature(object = "git_tree"),
-          function(object,
+          signature(x = "git_tree"),
+          function(x,
                    new_tree = NULL,
                    index    = FALSE,
                    as_char  = FALSE,
-                   filename = NULL)
+                   filename = NULL,
+                   ...)
           {
               if (as_char) {
                   ## Make sure filename is character(0) to write to a
@@ -349,11 +345,11 @@ setMethod("diff",
                   if (! is(new_tree, "git_tree")) {
                       stop("Not a git tree")
                   }
-                  if (object@repo@path != new_tree@repo@path) {
+                  if (x@repo@path != new_tree@repo@path) {
                       stop("Cannot compare trees in different repositories")
                   }
               }
 
-              .Call(git2r_diff, NULL, object, new_tree, index, filename)
+              .Call(git2r_diff, NULL, x, new_tree, index, filename)
           }
 )
