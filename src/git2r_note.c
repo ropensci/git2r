@@ -240,25 +240,27 @@ static int git2r_note_foreach_cb(
     const git_oid *annotated_object_id,
     void *payload)
 {
-    int err;
-    SEXP note;
     git2r_note_foreach_cb_data *cb_data = (git2r_note_foreach_cb_data*)payload;
 
     /* Check if we have a list to populate */
     if (R_NilValue != cb_data->list) {
-        PROTECT(note = NEW_OBJECT(MAKE_CLASS("git_note")));
-        err = git2r_note_init(blob_id,
-                              annotated_object_id,
-                              cb_data->repository,
-                              cb_data->notes_ref,
-                              cb_data->repo,
-                              note);
-        if (GIT_OK != err) {
-            UNPROTECT(1);
+        int err;
+        SEXP note;
+
+        SET_VECTOR_ELT(
+            cb_data->list,
+            cb_data->n,
+            note = NEW_OBJECT(MAKE_CLASS("git_note")));
+
+        err = git2r_note_init(
+            blob_id,
+            annotated_object_id,
+            cb_data->repository,
+            cb_data->notes_ref,
+            cb_data->repo,
+            note);
+        if (GIT_OK != err)
             return err;
-        }
-        SET_VECTOR_ELT(cb_data->list, cb_data->n, note);
-        UNPROTECT(1);
     }
 
     cb_data->n += 1;

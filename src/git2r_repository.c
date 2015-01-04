@@ -91,7 +91,10 @@ static int git2r_repository_fetchhead_foreach_cb(
         char sha[GIT_OID_HEXSZ + 1];
         SEXP fetch_head;
 
-        PROTECT(fetch_head = NEW_OBJECT(MAKE_CLASS("git_fetch_head")));
+        SET_VECTOR_ELT(
+            cb_data->list,
+            cb_data->n,
+            fetch_head = NEW_OBJECT(MAKE_CLASS("git_fetch_head")));
 
         SET_SLOT(
             fetch_head,
@@ -109,9 +112,6 @@ static int git2r_repository_fetchhead_foreach_cb(
         SET_SLOT(fetch_head, Rf_install("is_merge"), ScalarLogical(is_merge));
 
         SET_SLOT(fetch_head, Rf_install("repo"), cb_data->repo);
-
-        SET_VECTOR_ELT(cb_data->list, cb_data->n, fetch_head);
-        UNPROTECT(1);
     }
 
     cb_data->n += 1;

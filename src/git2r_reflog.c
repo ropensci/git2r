@@ -42,7 +42,7 @@ void git2r_reflog_entry_init(
     SEXP ref,
     SEXP dest)
 {
-    SEXP sexp_index;
+    SEXP i;
     const char *message;
     const git_signature *committer;
     char sha[GIT_OID_HEXSZ + 1];
@@ -53,20 +53,12 @@ void git2r_reflog_entry_init(
              Rf_install("sha"),
              ScalarString(mkChar(sha)));
 
-    PROTECT(sexp_index = allocVector(INTSXP, 1));
-    INTEGER(sexp_index)[0] = index;
-    SET_SLOT(dest, Rf_install("index"), sexp_index);
-    UNPROTECT(1);
+    SET_SLOT(dest, Rf_install("index"), i = allocVector(INTSXP, 1));
+    INTEGER(i)[0] = index;
 
     committer = git_reflog_entry_committer(source);
-    if (committer) {
-        SEXP sexp_committer;
-
-        PROTECT(sexp_committer = NEW_OBJECT(MAKE_CLASS("git_signature")));
-        git2r_signature_init(committer, sexp_committer);
-        SET_SLOT(dest, Rf_install("committer"), sexp_committer);
-        UNPROTECT(1);
-    }
+    if (committer)
+        git2r_signature_init(committer, GET_SLOT(dest, Rf_install("committer")));
 
     message = git_reflog_entry_message(source);
     if (message)
@@ -107,15 +99,15 @@ SEXP git2r_reflog_list(SEXP repo, SEXP ref)
     n = git_reflog_entrycount(reflog);
     PROTECT(result = allocVector(VECSXP, n));
     for (i = 0; i < n; i++) {
-        const git_reflog_entry *reflog_entry = git_reflog_entry_byindex(reflog, i);
+        const git_reflog_entry *entry = git_reflog_entry_byindex(reflog, i);
 
-        if (reflog_entry) {
-            SEXP entry;
+        if (entry) {
+            SEXP item;
 
-            PROTECT(entry = NEW_OBJECT(MAKE_CLASS("git_reflog_entry")));
-            git2r_reflog_entry_init(reflog_entry, i, repo, ref, entry);
-            SET_VECTOR_ELT(result, i, entry);
-            UNPROTECT(1);
+            SET_VECTOR_ELT(result,
+                           i,
+                           item = NEW_OBJECT(MAKE_CLASS("git_reflog_entry")));
+            git2r_reflog_entry_init(entry, i, repo, ref, item);
         }
     }
 
