@@ -193,21 +193,19 @@ SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_revparse_single(&obj, repository, "HEAD^{tree}");
-
     if (GIT_OK != err)
 	goto cleanup;
 
     err = git_tree_lookup(&head, repository, git_object_id(obj));
-
     if (GIT_OK != err)
 	goto cleanup;
 
-    err = git_diff_tree_to_index(&diff,
-				 repository,
-				 head,
-				 /* index= */ NULL,
-				 /* opts = */ NULL);
-
+    err = git_diff_tree_to_index(
+        &diff,
+        repository,
+        head,
+        /* index= */ NULL,
+        /* opts = */ NULL);
     if (GIT_OK != err)
 	goto cleanup;
 
@@ -278,22 +276,15 @@ SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     sha = GET_SLOT(tree, Rf_install("sha"));
-    err = git_revparse_single(&obj, repository,
-			      CHAR(STRING_ELT(sha, 0)));
-
+    err = git_revparse_single(&obj, repository, CHAR(STRING_ELT(sha, 0)));
     if (GIT_OK != err)
 	goto cleanup;
 
     err = git_tree_lookup(&c_tree, repository, git_object_id(obj));
-
     if (GIT_OK != err)
 	goto cleanup;
 
-    err = git_diff_tree_to_workdir(&diff,
-				   repository,
-				   c_tree,
-				   /* opts = */ NULL);
-
+    err = git_diff_tree_to_workdir(&diff, repository, c_tree, /* opts = */ NULL);
     if (GIT_OK != err)
 	goto cleanup;
 
@@ -363,23 +354,20 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     sha = GET_SLOT(tree, Rf_install("sha"));
-    err = git_revparse_single(&obj, repository,
-			      CHAR(STRING_ELT(sha, 0)));
-
+    err = git_revparse_single(&obj, repository, CHAR(STRING_ELT(sha, 0)));
     if (GIT_OK != err)
 	goto cleanup;
 
     err = git_tree_lookup(&c_tree, repository, git_object_id(obj));
-
     if (GIT_OK != err)
 	goto cleanup;
 
-    err = git_diff_tree_to_index(&diff,
-				 repository,
-				 c_tree,
-				 /* index= */ NULL,
-				 /* opts= */ NULL);
-
+    err = git_diff_tree_to_index(
+        &diff,
+        repository,
+        c_tree,
+        /* index= */ NULL,
+        /* opts= */ NULL);
     if (GIT_OK != err)
 	goto cleanup;
 
@@ -453,35 +441,29 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     sha1 = GET_SLOT(tree1, Rf_install("sha"));
-    err = git_revparse_single(&obj1, repository,
-			      CHAR(STRING_ELT(sha1, 0)));
-
+    err = git_revparse_single(&obj1, repository, CHAR(STRING_ELT(sha1, 0)));
     if (GIT_OK != err)
 	goto cleanup;
 
     sha2 = GET_SLOT(tree2, Rf_install("sha"));
-    err = git_revparse_single(&obj2, repository,
-			      CHAR(STRING_ELT(sha2, 0)));
-
+    err = git_revparse_single(&obj2, repository, CHAR(STRING_ELT(sha2, 0)));
     if (GIT_OK != err)
 	goto cleanup;
 
     err = git_tree_lookup(&c_tree1, repository, git_object_id(obj1));
-
     if (GIT_OK != err)
 	goto cleanup;
 
     err = git_tree_lookup(&c_tree2, repository, git_object_id(obj2));
-
     if (GIT_OK != err)
 	goto cleanup;
 
-    err = git_diff_tree_to_tree(&diff,
-				repository,
-				c_tree1,
-				c_tree2,
-				/* opts= */ NULL);
-
+    err = git_diff_tree_to_tree(
+        &diff,
+        repository,
+        c_tree1,
+        c_tree2,
+        /* opts= */ NULL);
     if (GIT_OK != err)
 	goto cleanup;
 
@@ -688,9 +670,8 @@ int git2r_diff_get_file_cb(const git_diff_delta *delta,
             VECTOR_ELT(p->result, p->file_ptr-1),
             Rf_install("hunks"),
             hunks = allocVector(VECSXP, p->hunk_ptr));
-	for (i = 0; i < len ; i++) {
+	for (i = 0; i < len ; i++)
 	    SET_VECTOR_ELT(hunks, i, VECTOR_ELT(p->hunk_tmp, i));
-	}
     }
 
     /* OK, ready for next file, if any */
@@ -743,9 +724,8 @@ int git2r_diff_get_hunk_cb(const git_diff_delta *delta,
             VECTOR_ELT(p->hunk_tmp, p->hunk_ptr-1),
             Rf_install("lines"),
             lines = allocVector(VECSXP, p->line_ptr));
-	for (i = 0; i < len; i++) {
+	for (i = 0; i < len; i++)
 	    SET_VECTOR_ELT(lines, i, VECTOR_ELT(p->line_tmp, i));
-	}
     }
 
     /* OK, ready for the next hunk, if any */
@@ -845,45 +825,45 @@ int git2r_diff_get_line_cb(const git_diff_delta *delta,
  */
 int git2r_diff_format_to_r(git_diff *diff, SEXP dest)
 {
-  int err;
-  git2r_diff_payload payload = { /* result=   */ R_NilValue,
-				 /* hunk_tmp= */ R_NilValue,
-				 /* line_tmp= */ R_NilValue,
-				 /* file_ptr= */ 0,
-				 /* hunk_ptr= */ 0,
-				 /* line_ptr= */ 0 };
+    int err;
+    git2r_diff_payload payload = { /* result=   */ R_NilValue,
+                                   /* hunk_tmp= */ R_NilValue,
+                                   /* line_tmp= */ R_NilValue,
+                                   /* file_ptr= */ 0,
+                                   /* hunk_ptr= */ 0,
+                                   /* line_ptr= */ 0 };
 
-  size_t num_files, max_hunks, max_lines;
+    size_t num_files, max_hunks, max_lines;
 
-  err = git2r_diff_count(diff, &num_files, &max_hunks, &max_lines);
+    err = git2r_diff_count(diff, &num_files, &max_hunks, &max_lines);
 
-  if (GIT_OK != err)
-      return err;
+    if (GIT_OK != err)
+        return err;
 
-  SET_SLOT(
-      dest,
-      Rf_install("files"),
-      payload.result = allocVector(VECSXP, num_files));
-  PROTECT(payload.hunk_tmp = allocVector(VECSXP, max_hunks));
-  PROTECT(payload.line_tmp = allocVector(VECSXP, max_lines));
+    SET_SLOT(
+        dest,
+        Rf_install("files"),
+        payload.result = allocVector(VECSXP, num_files));
+    PROTECT(payload.hunk_tmp = allocVector(VECSXP, max_hunks));
+    PROTECT(payload.line_tmp = allocVector(VECSXP, max_lines));
 
-  err = git_diff_foreach(
-      diff,
-      git2r_diff_get_file_cb,
-      git2r_diff_get_hunk_cb,
-      git2r_diff_get_line_cb,
-      &payload);
-  if (GIT_OK == err) {
-      /* Need to call them once more, to put in the last lines/hunks/files. */
-      err = git2r_diff_get_file_cb(
-          /* delta=    */ NULL,
-          /* progress= */ 100,
-          &payload);
-  }
+    err = git_diff_foreach(
+        diff,
+        git2r_diff_get_file_cb,
+        git2r_diff_get_hunk_cb,
+        git2r_diff_get_line_cb,
+        &payload);
+    if (GIT_OK == err) {
+        /* Need to call them once more, to put in the last lines/hunks/files. */
+        err = git2r_diff_get_file_cb(
+            /* delta=    */ NULL,
+            /* progress= */ 100,
+            &payload);
+    }
 
-  UNPROTECT(2);
+    UNPROTECT(2);
 
-  return err;
+    return err;
 }
 
 /**
@@ -901,33 +881,32 @@ int git2r_diff_format_to_r(git_diff *diff, SEXP dest)
  */
 int git2r_diff_print(git_diff *diff, SEXP filename, SEXP* r_buf)
 {
-  int err;
+    int err;
 
-  if (0 == length(filename)) {
-      git_buf buf = GIT_BUF_INIT;
+    if (0 == length(filename)) {
+        git_buf buf = GIT_BUF_INIT;
 
-      err = git_diff_print(
-          diff,
-          GIT_DIFF_FORMAT_PATCH,
-          git_diff_print_callback__to_buf,
-          &buf);
+        err = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_buf,
+            &buf);
+        if (0 == err)
+            PROTECT(*r_buf = mkString(buf.ptr));
 
-      if (0 == err)
-          PROTECT(*r_buf = mkString(buf.ptr));
+        git_buf_free(&buf);
+    } else {
+        FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
 
-      git_buf_free(&buf);
-  } else {
-      FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
+        err = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_file_handle,
+            fp);
 
-      err = git_diff_print(
-          diff,
-          GIT_DIFF_FORMAT_PATCH,
-          git_diff_print_callback__to_file_handle,
-          fp);
+        if (fp)
+            fclose(fp);
+    }
 
-      if (fp)
-          fclose(fp);
-  }
-
-  return err;
+    return err;
 }
