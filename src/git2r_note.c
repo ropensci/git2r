@@ -65,19 +65,12 @@ static int git2r_note_init(
 
     git_oid_fmt(sha, blob_id);
     sha[GIT_OID_HEXSZ] = '\0';
-    SET_SLOT(dest, Rf_install("sha"), ScalarString(mkChar(sha)));
-
+    SET_SLOT(dest, Rf_install("sha"), mkString(sha));
     git_oid_fmt(sha, annotated_object_id);
     sha[GIT_OID_HEXSZ] = '\0';
-    SET_SLOT(dest, Rf_install("annotated"), ScalarString(mkChar(sha)));
-
-    SET_SLOT(
-        dest,
-        Rf_install("message"),
-        ScalarString(mkChar(git_note_message(note))));
-
-    SET_SLOT(dest, Rf_install("refname"), ScalarString(mkChar(notes_ref)));
-
+    SET_SLOT(dest, Rf_install("annotated"), mkString(sha));
+    SET_SLOT(dest, Rf_install("message"), mkString(git_note_message(note)));
+    SET_SLOT(dest, Rf_install("refname"), mkString(notes_ref));
     SET_SLOT(dest, Rf_install("repo"), repo);
 
     if (note)

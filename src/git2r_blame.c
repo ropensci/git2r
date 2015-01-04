@@ -62,10 +62,7 @@ void git2r_blame_init(git_blame *source, SEXP repo, SEXP path, SEXP dest)
 
             git_oid_fmt(sha, &(hunk->final_commit_id));
             sha[GIT_OID_HEXSZ] = '\0';
-            SET_SLOT(
-                item,
-                Rf_install("final_commit_id"),
-                ScalarString(mkChar(sha)));
+            SET_SLOT(item, Rf_install("final_commit_id"), mkString(sha));
 
             SET_SLOT(
                 item,
@@ -78,10 +75,7 @@ void git2r_blame_init(git_blame *source, SEXP repo, SEXP path, SEXP dest)
 
             git_oid_fmt(sha, &(hunk->orig_commit_id));
             sha[GIT_OID_HEXSZ] = '\0';
-            SET_SLOT(
-                item,
-                Rf_install("orig_commit_id"),
-                ScalarString(mkChar(sha)));
+            SET_SLOT(item, Rf_install("orig_commit_id"), mkString(sha));
 
             SET_SLOT(
                 item,
@@ -92,10 +86,7 @@ void git2r_blame_init(git_blame *source, SEXP repo, SEXP path, SEXP dest)
                 hunk->orig_signature,
                 GET_SLOT(item, Rf_install("orig_signature")));
 
-            SET_SLOT(
-                item,
-                Rf_install("orig_path"),
-                ScalarString(mkChar(hunk->orig_path)));
+            SET_SLOT(item, Rf_install("orig_path"), mkString(hunk->orig_path));
 
             if (hunk->boundary)
                 SET_SLOT(item, Rf_install("boundary"), ScalarLogical(1));

@@ -37,7 +37,7 @@ void git2r_tree_init(const git_tree *source, SEXP repo, SEXP dest)
 
     oid = git_tree_id(source);
     git_oid_tostr(sha, sizeof(sha), oid);
-    SET_SLOT(dest, Rf_install("sha"), ScalarString(mkChar(sha)));
+    SET_SLOT(dest, Rf_install("sha"), mkString(sha));
 
     n = git_tree_entrycount(source);
     SET_SLOT(dest, Rf_install("filemode"), filemode = allocVector(INTSXP, n));

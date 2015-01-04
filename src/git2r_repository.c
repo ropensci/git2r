@@ -96,21 +96,11 @@ static int git2r_repository_fetchhead_foreach_cb(
             cb_data->n,
             fetch_head = NEW_OBJECT(MAKE_CLASS("git_fetch_head")));
 
-        SET_SLOT(
-            fetch_head,
-            Rf_install("ref_name"),
-            ScalarString(mkChar(ref_name)));
-
-        SET_SLOT(
-            fetch_head,
-            Rf_install("remote_url"),
-            ScalarString(mkChar(remote_url)));
-
+        SET_SLOT(fetch_head, Rf_install("ref_name"), mkString(ref_name));
+        SET_SLOT(fetch_head, Rf_install("remote_url"), mkString(remote_url));
         git_oid_tostr(sha, sizeof(sha), oid);
-        SET_SLOT(fetch_head, Rf_install("sha"), ScalarString(mkChar(sha)));
-
+        SET_SLOT(fetch_head, Rf_install("sha"), mkString(sha));
         SET_SLOT(fetch_head, Rf_install("is_merge"), ScalarLogical(is_merge));
-
         SET_SLOT(fetch_head, Rf_install("repo"), cb_data->repo);
     }
 

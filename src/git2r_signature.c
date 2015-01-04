@@ -95,13 +95,8 @@ void git2r_signature_init(const git_signature *source, SEXP dest)
 {
     SEXP when;
 
-    SET_SLOT(dest,
-             Rf_install("name"),
-             ScalarString(mkChar(source->name)));
-
-    SET_SLOT(dest,
-             Rf_install("email"),
-             ScalarString(mkChar(source->email)));
+    SET_SLOT(dest, Rf_install("name"), mkString(source->name));
+    SET_SLOT(dest, Rf_install("email"), mkString(source->email));
 
     when = GET_SLOT(dest, Rf_install("when"));
 

@@ -86,10 +86,7 @@ int git2r_branch_init(
     err = git_branch_name(&name, source);
     if (GIT_OK != err)
         goto cleanup;
-    SET_SLOT(dest,
-             Rf_install("name"),
-             ScalarString(mkChar(name)));
-
+    SET_SLOT(dest, Rf_install("name"), mkString(name));
     SET_SLOT(dest, Rf_install("type"), ScalarInteger(type));
     SET_SLOT(dest, Rf_install("repo"), repo);
 

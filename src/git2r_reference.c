@@ -33,26 +33,25 @@ void git2r_reference_init(git_reference *source, SEXP dest)
 {
     char sha[GIT_OID_HEXSZ + 1];
 
-    SET_SLOT(dest,
-             Rf_install("name"),
-             ScalarString(mkChar(git_reference_name(source))));
-
-    SET_SLOT(dest,
-             Rf_install("shorthand"),
-             ScalarString(mkChar(git_reference_shorthand(source))));
+    SET_SLOT(dest, Rf_install("name"), mkString(git_reference_name(source)));
+    SET_SLOT(
+        dest,
+        Rf_install("shorthand"),
+        mkString(git_reference_shorthand(source)));
 
     switch (git_reference_type(source)) {
     case GIT_REF_OID:
         SET_SLOT(dest, Rf_install("type"), ScalarInteger(GIT_REF_OID));
         git_oid_fmt(sha, git_reference_target(source));
         sha[GIT_OID_HEXSZ] = '\0';
-        SET_SLOT(dest, Rf_install("sha"), ScalarString(mkChar(sha)));
+        SET_SLOT(dest, Rf_install("sha"), mkString(sha));
         break;
     case GIT_REF_SYMBOLIC:
         SET_SLOT(dest, Rf_install("type"), ScalarInteger(GIT_REF_SYMBOLIC));
-        SET_SLOT(dest,
-                 Rf_install("target"),
-                 ScalarString(mkChar(git_reference_symbolic_target(source))));
+        SET_SLOT(
+            dest,
+            Rf_install("target"),
+            mkString(git_reference_symbolic_target(source)));
         break;
     default:
         git2r_error("Error in '%s': Unexpected reference type", __func__, NULL);
