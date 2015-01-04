@@ -104,15 +104,17 @@ static size_t git2r_config_list_init(
     const char *name)
 {
     if (n_level[level]) {
-        SEXP tmp, names;
+        SEXP item;
 
-        PROTECT(tmp = allocVector(VECSXP, n_level[level]));
-        setAttrib(tmp, R_NamesSymbol, allocVector(STRSXP, n_level[level]));
         i_list[level] = i++;
-        names = getAttrib(list, R_NamesSymbol);
-        SET_STRING_ELT(names, i_list[level] , mkChar(name));
-        SET_VECTOR_ELT(list, i_list[level], tmp);
-        UNPROTECT(1);
+        SET_VECTOR_ELT(
+            list,
+            i_list[level],
+            item = allocVector(VECSXP, n_level[level]));
+        setAttrib(item, R_NamesSymbol, allocVector(STRSXP, n_level[level]));
+        SET_STRING_ELT(getAttrib(list, R_NamesSymbol),
+                       i_list[level] ,
+                       mkChar(name));
     }
 
     return i;
@@ -235,7 +237,7 @@ cleanup:
 SEXP git2r_config_get(SEXP repo)
 {
     int err;
-    SEXP list = R_NilValue;
+    SEXP result = R_NilValue;
     size_t i = 0, n = 0, n_level[GIT2R_N_CONFIG_LEVELS] = {0};
     git_config *cfg = NULL;
     git_repository *repository = NULL;
@@ -258,10 +260,10 @@ SEXP git2r_config_get(SEXP repo)
             n++;
     }
 
-    PROTECT(list = allocVector(VECSXP, n));
-    setAttrib(list, R_NamesSymbol, allocVector(STRSXP, n));
+    PROTECT(result = allocVector(VECSXP, n));
+    setAttrib(result, R_NamesSymbol, allocVector(STRSXP, n));
 
-    if (git2r_config_list_variables(cfg, list, n_level))
+    if (git2r_config_list_variables(cfg, result, n_level))
         goto cleanup;
 
 cleanup:
@@ -271,13 +273,13 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != list)
+    if (R_NilValue != result)
         UNPROTECT(1);
 
     if (GIT_OK != err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
-    return list;
+    return result;
 }
 
 /**
