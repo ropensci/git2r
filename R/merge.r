@@ -74,12 +74,14 @@ setMethod("merge_base",
 ##' Merge a branch into HEAD
 ##'
 ##' @rdname merge-methods
+##' @export
 ##' @docType methods
-##' @param object A \code{\linkS4class{git_branch}} or
+##' @param x A \code{\linkS4class{git_branch}} or
 ##' \code{\linkS4class{git_repository}} object.
+##' @param y If \code{x} is a \code{\linkS4class{git_repository}}, the
+##' name of the branch to merge into HEAD. Not used if \code{x} is a
+##' \code{\linkS4class{git_branch}}.
 ##' @param ... Additional arguments affecting the merge
-##' @param branch Name of branch if \code{object} is a
-##' \code{\linkS4class{git_repository}}
 ##' @param commit_on_success If there are no conflicts written to the
 ##' index, the merge commit will be committed. Default is TRUE.
 ##' @param merger Who made the merge.
@@ -150,48 +152,36 @@ setMethod("merge_base",
 ##' ## Check status; Expect to have one unstaged unmerged conflict.
 ##' status(repo)
 ##' }
-setGeneric("merge",
-           signature = c("object"),
-           function(object, ...)
-           standardGeneric("merge"))
-
-##' @rdname merge-methods
-##' @export
 setMethod("merge",
-          signature(object = "git_repository"),
-          function(object,
-                   branch,
+          signature(x = "git_repository", y = "character"),
+          function(x,
+                   y,
+                   ...,
                    commit_on_success = TRUE,
-                   merger = default_signature(object))
+                   merger = default_signature(x))
           {
               ## Check branch argument
-              if (missing(branch))
-                  stop("missing 'branch' argument")
-              if (any(!is.character(branch), !identical(length(branch), 1L)))
+              if (!identical(length(y), 1L))
                   stop("'branch' must be a character vector of length one")
 
-              b <- branches(object)
-              b <- b[sapply(b, slot, "name") == branch][[1]]
+              b <- branches(x)
+              b <- b[sapply(b, slot, "name") == y][[1]]
 
-              .Call(git2r_merge_branch,
-                    b,
-                    merger,
-                    commit_on_success)
+              .Call(git2r_merge_branch, b, merger, commit_on_success)
           }
 )
 
 ##' @rdname merge-methods
 ##' @export
 setMethod("merge",
-          signature(object = "git_branch"),
-          function(object,
+          signature(x = "git_branch", y = "missing"),
+          function(x,
+                   y,
+                   ...,
                    commit_on_success = TRUE,
-                   merger = default_signature(object@repo))
+                   merger = default_signature(x@repo))
           {
-              .Call(git2r_merge_branch,
-                    object,
-                    merger,
-                    commit_on_success)
+              .Call(git2r_merge_branch, x, merger, commit_on_success)
           }
 )
 
