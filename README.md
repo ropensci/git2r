@@ -9,16 +9,13 @@ pure C implementation of the Git core methods. For more information
 about libgit2, check out libgit2's website
 [(http://libgit2.github.com)](http://libgit2.github.com).
 
-**Note:** The `git2r` package is in an early and active development
-phase. Functions and documentation may be incomplete and subject to
-change. Suggestions, bugs, forks and pull requests are
-appreciated. Get in touch.
+Suggestions, bugs, forks and pull requests are appreciated. Get in
+touch.
 
 ## Installation
 
 To install the development version of `git2r`, it's easiest to use the
 devtools package:
-
 
 ```coffee
 # install.packages("devtools")
@@ -45,7 +42,6 @@ repository; `init`, `repository` and `clone`.
 #### Create a new repository
 
 Create a new repository in a temporary directory using `init`
-
 
 ```coffee
 library(git2r)
@@ -300,8 +296,8 @@ commit(repo, "Commit message")
 - The C library [libgit2](https://github.com/libgit2/libgit2). See
   `inst/AUTHORS` for the authors of libgit2.
 
-- The libgit2 library have been modified to use R printing and error
-  routines, and to use `runif` instead of `rand`.
+- The libgit2 library has been modified, e.g. to use the R printing
+  and error routines, and to use `runif` instead of `rand`.
 
 # License
 
