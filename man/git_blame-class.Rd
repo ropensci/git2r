@@ -21,15 +21,6 @@ Class \code{"git_blame"}
   }
 }
 }
-\examples{
-\dontrun{
-## Open an existing repository
-repo <- repository("path/to/git2r")
-
-## Get blame for file in repository
-blame(repo, ".gitignore")
-}
-}
 \keyword{classes}
 \keyword{methods}
 

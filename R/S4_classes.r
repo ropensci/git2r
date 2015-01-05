@@ -196,13 +196,6 @@ setClass("cred_ssh_key",
 ##' @keywords classes
 ##' @keywords methods
 ##' @export
-##' @examples \dontrun{
-##' ## Open an existing repository
-##' repo <- repository("path/to/git2r")
-##'
-##' ## Get blame for file in repository
-##' blame(repo, ".gitignore")
-##' }
 setClass("git_blame",
          slots = c(path  = "character",
                    hunks = "list",

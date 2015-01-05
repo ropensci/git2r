@@ -55,13 +55,28 @@
 ##' @keywords methods
 ##' @examples
 ##' \dontrun{
-##' ## Open an existing repository
-##' repo <- repository("path/to/git2r")
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a user
+##' config(repo, user.name="Author", user.email="author@@example.org")
+##'
+##' ## Create three files and commit
+##' writeLines("First file",  file.path(path, "example-1.txt"))
+##' writeLines("Second file", file.path(path, "example-2.txt"))
+##' writeLines("Third file",  file.path(path, "example-3.txt"))
+##' add(repo, "example-1.txt")
+##' commit(repo, "Commit first file")
+##' add(repo, "example-2.txt")
+##' commit(repo, "Commit second file")
+##' add(repo, "example-3.txt")
+##' commit(repo, "Commit third file")
 ##'
 ##' ## Coerce commits to a data.frame
 ##' df <- as(repo, "data.frame")
-##'
-##' str(df)
+##' df
 ##' }
 setAs(from="git_repository",
       to="data.frame",

@@ -38,13 +38,25 @@ The \code{data.frame} have the following columns:
 }
 \examples{
 \dontrun{
-## Open an existing repository
-repo <- repository("path/to/git2r")
+## Initialize a temporary repository
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+dir.create(file.path(path, "subfolder"))
+repo <- init(path)
+
+## Create a user
+config(repo, user.name="Author", user.email="author@example.org")
+
+## Create three files and commit
+writeLines("First file",  file.path(path, "example-1.txt"))
+writeLines("Second file", file.path(path, "subfolder/example-2.txt"))
+writeLines("Third file",  file.path(path, "example-3.txt"))
+add(repo, c("example-1.txt", "subfolder/example-2.txt", "example-3.txt"))
+new_commit <- commit(repo, "Commit message")
 
 ## Coerce tree to a data.frame
-df <- as(tree(commits(repo)[[1]]), "data.frame")
-
-str(df)
+df <- as(tree(new_commit), "data.frame")
+df
 }
 }
 \keyword{methods}
