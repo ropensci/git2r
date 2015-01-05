@@ -1,5 +1,8 @@
-git2r authors, in alphabetical order:
--------------------------------------
+git2r authors
+-------------
+
+The following people contribute or have contributed
+to the git2r project (sorted alphabetically):
 
 Gabor Csardi            Diff support
                         Better remotes support
