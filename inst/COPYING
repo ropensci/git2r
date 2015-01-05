@@ -1,5 +1,5 @@
 The git2r (GPLv2) R package includes the source code of the libgit2
-library (src/libgit2). Note that the libgit2 library have been
+library (src/libgit2). Note that the libgit2 library has been
 modified to build as an R package. The license for the libgit2 library
 is as follows:
 
