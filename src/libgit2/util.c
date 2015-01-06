@@ -17,9 +17,6 @@
 /**
  * Changed all printf to Rprintf to pass 'R CMD check git2r'
  * 2014-08-19: Stefan Widgren <stefan.widgren@gmail.com>
- *
- * Removed unused function git__qsort_r_glue_cmp
- * 2014-12-26: Stefan Widgren <stefan.widgren@gmail.com>
  */
 void Rprintf(const char*, ...);
 
@@ -615,6 +612,20 @@ size_t git__unescape(char *str)
 
 	return (pos - str);
 }
+
+#if defined(GIT_WIN32) || defined(BSD)
+typedef struct {
+	git__sort_r_cmp cmp;
+	void *payload;
+} git__qsort_r_glue;
+
+static int GIT_STDLIB_CALL git__qsort_r_glue_cmp(
+	void *payload, const void *a, const void *b)
+{
+	git__qsort_r_glue *glue = payload;
+	return glue->cmp(a, b, glue->payload);
+}
+#endif
 
 void git__qsort_r(
 	void *els, size_t nel, size_t elsize, git__sort_r_cmp cmp, void *payload)
