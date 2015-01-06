@@ -185,13 +185,6 @@ case "${host_os}" in
     ;;
 esac
 
-# Configuration specific for OSX
-case "${host_os}" in
-  darwin*)
-    CPPFLAGS="${CPPFLAGS} -DGIT_COMMON_CRYPTO"
-    ;;
-esac
-
 # Determine architecture of the machine
 AC_CHECK_SIZEOF([void*])
 if test "x$ac_cv_sizeof_voidp" == "x8"; then
