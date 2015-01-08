@@ -41,7 +41,7 @@ check_gctorture: clean
 # Build and check package with valgrind
 check_valgrind: clean
 	cd .. && R CMD build --no-build-vignettes $(PKG_NAME)
-	cd .. && R CMD check --as-cran --no-manual --no-vignettes --no-build-vignettes --use-valgrind --use-gct $(PKG_TAR)
+	cd .. && R CMD check --as-cran --no-manual --no-vignettes --no-build-vignettes --use-valgrind $(PKG_TAR)
 
 # Run all tests with valgrind
 test_objects = $(wildcard tests/*.R)
