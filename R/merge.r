@@ -71,6 +71,42 @@ setMethod("merge_base",
           }
 )
 
+##' Merge branch into HEAD
+##'
+##' @param branch The branch
+##' @param commit_on_success If there are no conflicts written to the
+##' index, the merge commit will be committed.
+##' @param merger Who made the merge.
+##' @return A \code{\linkS4class{git_merge_result}} object.
+##' @keywords internal
+merge_branch <- function(branch, commit_on_success, merger)
+{
+    .Call(git2r_merge_branch, branch, merger, commit_on_success)
+}
+
+##' Merge named branch into HEAD
+##'
+##' @param repo The repository
+##' @param branch Name of branch
+##' @param commit_on_success If there are no conflicts written to the
+##' index, the merge commit will be committed.
+##' @param merger Who made the merge.
+##' @return A \code{\linkS4class{git_merge_result}} object.
+##' @keywords internal
+merge_named_branch <- function(repo, branch, commit_on_success, merger)
+{
+    ## Check branch argument
+    if (missing(branch))
+        stop("missing 'branch' argument")
+    if (any(!is.character(branch), !identical(length(branch), 1L)))
+        stop("'branch' must be a character vector of length one")
+
+    b <- branches(repo)
+    b <- b[sapply(b, slot, "name") == branch][[1]]
+
+    merge_branch(b, commit_on_success, merger)
+}
+
 ##' Merge a branch into HEAD
 ##'
 ##' @rdname merge-methods
@@ -160,14 +196,7 @@ setMethod("merge",
                    commit_on_success = TRUE,
                    merger = default_signature(x))
           {
-              ## Check branch argument
-              if (!identical(length(y), 1L))
-                  stop("'branch' must be a character vector of length one")
-
-              b <- branches(x)
-              b <- b[sapply(b, slot, "name") == y][[1]]
-
-              .Call(git2r_merge_branch, b, merger, commit_on_success)
+              merge_named_branch(x, y, commit_on_success, merger)
           }
 )
 
@@ -181,7 +210,7 @@ setMethod("merge",
                    commit_on_success = TRUE,
                    merger = default_signature(x@repo))
           {
-              .Call(git2r_merge_branch, x, merger, commit_on_success)
+              merge_branch(x, commit_on_success, merger)
           }
 )
 
