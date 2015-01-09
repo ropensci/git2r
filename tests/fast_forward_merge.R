@@ -43,7 +43,10 @@ commit_2 <- commit(repo, "Second commit message")
 # Checkout master and merge
 b <- branches(repo)
 checkout(b[sapply(b, slot, "name") == "master"][[1]], force=TRUE)
-m <- merge(b[sapply(b, slot, "name") == "test"][[1]])
+m <- git2r:::merge_branch(
+    branch = b[sapply(b, slot, "name") == "test"][[1]],
+    commit_on_success = TRUE,
+    merger = default_signature(repo))
 
 # Check merge
 stopifnot(is(object = m, class2 = "git_merge_result"))

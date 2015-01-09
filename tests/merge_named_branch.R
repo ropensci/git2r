@@ -56,13 +56,13 @@ b <- branches(repo)
 checkout(b[sapply(b, slot, "name") == "master"][[1]], force=TRUE)
 
 ## Merge branch 1
-m_1 <- merge(repo, "branch1")
+m_1 <- git2r:::merge_named_branch(repo, "branch1", TRUE, default_signature(repo))
 stopifnot(identical(m_1@fast_forward, TRUE))
 stopifnot(identical(m_1@conflicts, FALSE))
 stopifnot(identical(m_1@sha, character(0)))
 
 ## Merge branch 2
-m_2 <- merge(repo, "branch2")
+m_2 <- git2r:::merge_named_branch(repo, "branch2", TRUE, default_signature(repo))
 stopifnot(identical(m_2@fast_forward, FALSE))
 stopifnot(identical(m_2@conflicts, FALSE))
 stopifnot(identical(m_2@sha, commits(repo)[[1]]@sha))
@@ -84,7 +84,7 @@ add(repo, "test.txt")
 commit(repo, "Some commit message branch 1")
 
 ## Merge branch 3
-m_3 <- merge(repo, "branch3")
+m_3 <- git2r:::merge_named_branch(repo, "branch3", TRUE, default_signature(repo))
 stopifnot(identical(m_3@up_to_date, FALSE))
 stopifnot(identical(m_3@fast_forward, FALSE))
 stopifnot(identical(m_3@conflicts, TRUE))

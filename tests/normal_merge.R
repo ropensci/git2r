@@ -52,7 +52,7 @@ add(repo, "example-2.txt")
 commit(repo, "Fourth commit message")
 
 ## Merge 'fix'
-merge(repo, "fix")
+git2r:::merge_named_branch(repo, "fix", TRUE, default_signature(repo))
 
 ## Check number of parents of each commit
 stopifnot(identical(sapply(commits(repo), function(x) length(parents(x))),
