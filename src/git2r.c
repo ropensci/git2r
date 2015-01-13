@@ -141,7 +141,7 @@ static const R_CallMethodDef callMethods[] =
 /**
  * Load 'git2r'
  *  - Register routines to R.
- *  - Initialize SSL
+ *  - Initialize libgit2
  *
  * @param info Information about the DLL being loaded
  */
@@ -149,10 +149,6 @@ void
 R_init_git2r(DllInfo *info)
 {
     R_registerRoutines(info, NULL, callMethods, NULL, NULL);
-
-    /**
-     * Initialize ssl.
-     */
     git_libgit2_init();
 }
 
