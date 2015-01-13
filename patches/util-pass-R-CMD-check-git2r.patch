@@ -1,14 +1,19 @@
-*** util.c	2015-01-06 20:17:14.699987072 +0100
---- util-pass-R-CMD-check-git2r.c	2015-01-06 20:17:32.336801734 +0100
+*** util.c	2015-01-13 22:07:47.468530388 +0100
+--- util-pass-R-CMD-check-git2r.c	2015-01-13 22:07:52.668530527 +0100
 ***************
 *** 14,19 ****
---- 14,25 ----
+--- 14,30 ----
   # include <Shlwapi.h>
   #endif
   
 + /**
 +  * Changed all printf to Rprintf to pass 'R CMD check git2r'
 +  * 2014-08-19: Stefan Widgren <stefan.widgren@gmail.com>
++  *
++  * Remove 'defined(GIT_WIN32)' from 'defined(GIT_WIN32) || defined(BSD)'
++  * to skip function git_qsort_r_glue_cmp and typedef git_qsort_r_glue
++  * on Windows.
++  * 2015-01-13: Stefan Widgren <stefan.widgren@gmail.com>
 +  */
 + void Rprintf(const char*, ...);
 + 
@@ -53,7 +58,7 @@
   }
   
   #ifdef GIT_LEGACY_HASH
---- 336,371 ----
+--- 341,376 ----
   	for (i = 0; i < line_count; ++i) {
   		line = buffer + (i * LINE_WIDTH);
   		for (j = 0; j < LINE_WIDTH; ++j, ++line)
@@ -90,3 +95,20 @@
   }
   
   #ifdef GIT_LEGACY_HASH
+***************
+*** 607,613 ****
+  	return (pos - str);
+  }
+  
+! #if defined(GIT_WIN32) || defined(BSD)
+  typedef struct {
+  	git__sort_r_cmp cmp;
+  	void *payload;
+--- 618,624 ----
+  	return (pos - str);
+  }
+  
+! #if defined(BSD)
+  typedef struct {
+  	git__sort_r_cmp cmp;
+  	void *payload;

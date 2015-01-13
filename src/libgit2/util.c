@@ -17,6 +17,11 @@
 /**
  * Changed all printf to Rprintf to pass 'R CMD check git2r'
  * 2014-08-19: Stefan Widgren <stefan.widgren@gmail.com>
+ *
+ * Remove 'defined(GIT_WIN32)' from 'defined(GIT_WIN32) || defined(BSD)'
+ * to skip function git_qsort_r_glue_cmp and typedef git_qsort_r_glue
+ * on Windows.
+ * 2015-01-13: Stefan Widgren <stefan.widgren@gmail.com>
  */
 void Rprintf(const char*, ...);
 
@@ -613,7 +618,7 @@ size_t git__unescape(char *str)
 	return (pos - str);
 }
 
-#if defined(GIT_WIN32) || defined(BSD)
+#if defined(BSD)
 typedef struct {
 	git__sort_r_cmp cmp;
 	void *payload;
