@@ -1,3 +1,16 @@
+git2r 0.3
+---------
+
+CHANGES
+
+* Internal refactoring of merge method and merge tests.
+
+* Update libgit2 source code to version v0.22.0
+
+BUG FIXES
+
+* Fix build on OSX.
+
 git2r 0.2
 ---------
 
