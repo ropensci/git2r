@@ -15,8 +15,7 @@ install:
 # Build documentation with roxygen
 # 1) Check version of roxygen2 before building documentation
 # 2) Remove old doc
-# 3) Rebuild DESCRIPTION
-# 4) Generate documentation
+# 3) Generate documentation
 roxygen:
 	Rscript -e "library(roxygen2); stopifnot(packageVersion('roxygen2') == '$(ROXYGEN_VERSION)')"
 	rm -f man/*.Rd
@@ -82,6 +81,8 @@ sync_libgit2:
 	-cp -f ../libgit2/deps/regex/* src/regex
 	-cp -f ../libgit2/include/*.h src/libgit2/include
 	-cp -f ../libgit2/include/git2/*.h src/libgit2/include/git2
+	-rm -f src/libgit2/include/git2/inttypes.h
+	-rm -f src/libgit2/include/git2/stdint.h
 	-cp -f ../libgit2/include/git2/sys/*.h src/libgit2/include/git2/sys
 	-cp -f ../libgit2/src/*.c src/libgit2
 	-cp -f ../libgit2/src/*.h src/libgit2
