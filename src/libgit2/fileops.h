@@ -70,6 +70,8 @@ extern int git_futils_mkdir_r(const char *path, const char *base, const mode_t m
  * * GIT_MKDIR_SKIP_LAST says to leave off the last element of the path
  * * GIT_MKDIR_SKIP_LAST2 says to leave off the last 2 elements of the path
  * * GIT_MKDIR_VERIFY_DIR says confirm final item is a dir, not just EEXIST
+ * * GIT_MKDIR_REMOVE_FILES says to remove files and recreate dirs
+ * * GIT_MKDIR_REMOVE_SYMLINKS says to remove symlinks and recreate dirs
  *
  * Note that the chmod options will be executed even if the directory already
  * exists, unless GIT_MKDIR_EXCL is given.
@@ -82,7 +84,16 @@ typedef enum {
 	GIT_MKDIR_SKIP_LAST = 16,
 	GIT_MKDIR_SKIP_LAST2 = 32,
 	GIT_MKDIR_VERIFY_DIR = 64,
+	GIT_MKDIR_REMOVE_FILES = 128,
+	GIT_MKDIR_REMOVE_SYMLINKS = 256,
 } git_futils_mkdir_flags;
+
+struct git_futils_mkdir_perfdata
+{
+	size_t stat_calls;
+	size_t mkdir_calls;
+	size_t chmod_calls;
+};
 
 /**
  * Create a directory or entire path.
@@ -95,7 +106,14 @@ typedef enum {
  * @param base Root for relative path.  These directories will never be made.
  * @param mode The mode to use for created directories.
  * @param flags Combination of the mkdir flags above.
+ * @param perfdata Performance data, use `git_futils_mkdir` if you don't want this data.
  * @return 0 on success, else error code
+ */
+extern int git_futils_mkdir_withperf(const char *path, const char *base, mode_t mode, uint32_t flags, struct git_futils_mkdir_perfdata *perfdata);
+
+/**
+ * Create a directory or entire path.  Similar to `git_futils_mkdir_withperf`
+ * without performance data.
  */
 extern int git_futils_mkdir(const char *path, const char *base, mode_t mode, uint32_t flags);
 

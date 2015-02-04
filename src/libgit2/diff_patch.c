@@ -284,11 +284,12 @@ int git_diff_foreach(
 		if (git_diff_delta__should_skip(&diff->opts, patch.delta))
 			continue;
 
-		if ((error = diff_patch_init_from_diff(&patch, diff, idx)) < 0)
-			break;
-
-		if (!(error = diff_patch_invoke_file_callback(&patch, &xo.output)))
-			error = diff_patch_generate(&patch, &xo.output);
+		if ((error = diff_patch_invoke_file_callback(&patch, &xo.output)) == 0) {
+			if (hunk_cb || data_cb) {
+				if ((error = diff_patch_init_from_diff(&patch, diff, idx)) == 0)
+					error = diff_patch_generate(&patch, &xo.output);
+			}
+		}
 
 		git_patch_free(&patch);
 
@@ -822,7 +823,8 @@ int git_patch__invoke_callbacks(
 	for (i = 0; !error && i < git_array_size(patch->hunks); ++i) {
 		diff_patch_hunk *h = git_array_get(patch->hunks, i);
 
-		error = hunk_cb(patch->delta, &h->hunk, payload);
+		if (hunk_cb)
+			error = hunk_cb(patch->delta, &h->hunk, payload);
 
 		if (!line_cb)
 			continue;

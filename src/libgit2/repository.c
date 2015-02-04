@@ -776,7 +776,7 @@ int git_repository_index(git_index **out, git_repository *repo)
 
 void git_repository_set_index(git_repository *repo, git_index *index)
 {
-	assert(repo && index);
+	assert(repo);
 	set_index(repo, index);
 }
 
@@ -1723,7 +1723,7 @@ int git_repository_set_bare(git_repository *repo)
 	if ((error = git_repository_config__weakptr(&config, repo)) < 0)
 		return error;
 
-	if ((error = git_config_set_bool(config, "core.bare", false)) < 0)
+	if ((error = git_config_set_bool(config, "core.bare", true)) < 0)
 		return error;
 
 	if ((error = git_config__update_entry(config, "core.worktree", NULL, true, true)) < 0)
@@ -1836,7 +1836,7 @@ int git_repository_hashfile(
 	 */
 
 	error = git_path_join_unrooted(
-		&full_path, path, repo ? git_repository_workdir(repo) : NULL, NULL);
+		&full_path, path, git_repository_workdir(repo), NULL);
 	if (error < 0)
 		return error;
 
