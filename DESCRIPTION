@@ -6,7 +6,7 @@ Description: git2r is a package for accessing Git repositories from R
 Version: 0.4
 Date: 2015-01-13
 License: GPL-2
-Copyright: See COPYING file.
+Copyright: See COPYRIGHTS file.
 URL: https://github.com/ropensci/git2r
 BugReports: https://github.com/ropensci/git2r/issues
 Maintainer: Stefan Widgren <stefan.widgren@gmail.com>
