@@ -1,5 +1,5 @@
-*** checkout.c	2015-02-04 21:35:13.646854104 +0100
---- checkout-pass-R-CMD-check-git2r.c	2015-02-04 21:34:48.886853704 +0100
+*** checkout.c	2015-02-13 16:53:08.485992595 +0100
+--- checkout-pass-R-CMD-check-git2r.c	2015-02-13 16:52:45.625991983 +0100
 ***************
 *** 5,10 ****
 --- 5,16 ----
@@ -16,7 +16,7 @@
   
   #include "checkout.h"
 ***************
-*** 1156,1162 ****
+*** 1162,1168 ****
   	else if (theirs)
   		name = git__strdup(theirs->path);
   	else
@@ -24,7 +24,7 @@
   
   	GITERR_CHECK_ALLOC(name);
   
---- 1162,1170 ----
+--- 1168,1176 ----
   	else if (theirs)
   		name = git__strdup(theirs->path);
   	else
