@@ -1,5 +1,5 @@
-*** common.h	2014-12-26 15:31:41.855411025 +0100
---- common-remove-includes.h	2014-12-26 15:31:52.807411318 +0100
+*** common.h	2015-02-15 17:34:31.948145463 +0100
+--- common-remove-includes.h	2015-02-15 17:34:07.496144809 +0100
 ***************
 *** 7,12 ****
 --- 7,20 ----
@@ -18,7 +18,7 @@
   #include "cc-compat.h"
   
 ***************
-*** 33,40 ****
+*** 38,45 ****
   # include <direct.h>
   # include <winsock2.h>
   # include <windows.h>
@@ -27,4 +27,4 @@
   # include "win32/error.h"
   # include "win32/version.h"
   # ifdef GIT_THREADS
---- 41,46 ----
+--- 46,51 ----
