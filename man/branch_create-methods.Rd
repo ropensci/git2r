@@ -38,7 +38,7 @@ dir.create(path)
 repo <- init(path)
 
 ## Create a user and commit a file
-config(repo, user.name="Developer", user.email="developer@example.org")
+config(repo, user.name="Alice", user.email="alice@example.org")
 writeLines("Hello world!", file.path(path, "example.txt"))
 add(repo, "example.txt")
 commit_1 <- commit(repo, "First commit message")
@@ -52,7 +52,7 @@ add(repo, "example.txt")
 commit_2 <- commit(repo, "Another commit message")
 
 ## Create a branch with the same name should fail
-branch_create(commit_2, name = "test-branch")
+try(branch_create(commit_2, name = "test-branch"), TRUE)
 
 ## Force it
 branch_2 <- branch_create(commit_2, name = "test-branch", force = TRUE)

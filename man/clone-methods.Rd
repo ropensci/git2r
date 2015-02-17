@@ -37,7 +37,7 @@ dir.create(path_repo_2)
 repo_1 <- init(path_repo_1)
 
 ## Config user and commit a file
-config(repo_1, user.name="User One", user.email="user.one@example.org")
+config(repo_1, user.name="Alice", user.email="alice@example.org")
 
 ## Write to a file and commit
 writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",

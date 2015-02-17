@@ -32,7 +32,7 @@ dir.create(path)
 repo <- init(path)
 
 ## Set user name and email. The configuration is returned
-cfg <-config(repo, user.name="Random Developer", user.email="random.developer@example.org")
+cfg <-config(repo, user.name="Alice", user.email="alice@example.org")
 
 ## View configuration list
 cfg

@@ -39,7 +39,7 @@ Merge a branch into HEAD
 path <- tempfile(pattern="git2r-")
 dir.create(path)
 repo <- init(path)
-config(repo, user.name = "User", user.email = "user@example.org")
+config(repo, user.name="Alice", user.email = "alice@example.org")
 
 ## Create a file, add and commit
 writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",

@@ -57,7 +57,7 @@ repo_bare <- init(path_bare, bare = TRUE)
 
 ## Clone to repo 1 and config user
 repo_1 <- clone(path_bare, path_repo_1)
-config(repo_1, user.name="Author One", user.email="author.one@example.org")
+config(repo_1, user.name="Alice", user.email="alice@example.org")
 
 ## Add changes to repo 1 and push to bare
 writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -79,7 +79,7 @@ push(repo_1, "origin", "refs/heads/dev")
 
 ## Clone to repo 2
 repo_2 <- clone(path_bare, path_repo_2)
-config(repo_2, user.name="Author Two", user.email="author.two@example.org")
+config(repo_2, user.name="Bob", user.email="bob@example.org")
 
 ## Read content of 'test.txt'
 readLines(file.path(path_repo_2, "test.txt"))

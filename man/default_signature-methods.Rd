@@ -27,13 +27,13 @@ dir.create(path)
 repo <- init(path)
 
 ## Create a user
-config(repo, user.name="User One", user.email="user.one@example.org")
+config(repo, user.name="Alice", user.email="alice@example.org")
 
 ## Get the default signature
 default_signature(repo)
 
 ## Change user
-config(repo, user.name="User Two", user.email="user.two@example.org")
+config(repo, user.name="Bob", user.email="bob@example.org")
 
 ## Get the default signature
 default_signature(repo)

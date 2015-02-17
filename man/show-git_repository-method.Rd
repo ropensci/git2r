@@ -23,7 +23,7 @@ Brief summary of repository
 path <- tempfile(pattern="git2r-")
 dir.create(path)
 repo <- init(path)
-config(repo, user.name="Author", user.email="author@example.org")
+config(repo, user.name="Alice", user.email="alice@example.org")
 
 ## Brief summary of the repository
 repo

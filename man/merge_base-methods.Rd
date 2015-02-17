@@ -29,7 +29,7 @@ dir.create(path)
 
 ## Initialize a repository
 repo <- init(path)
-config(repo, user.name="Repo", user.email="repo@example.org")
+config(repo, user.name="Alice", user.email="alice@example.org")
 
 ## Create a file, add and commit
 writeLines("Master branch", file.path(path, "master_branch.txt"))

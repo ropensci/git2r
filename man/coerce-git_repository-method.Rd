@@ -52,7 +52,7 @@ dir.create(path)
 repo <- init(path)
 
 ## Create a user
-config(repo, user.name="Author", user.email="author@example.org")
+config(repo, user.name="Alice", user.email="alice@example.org")
 
 ## Create three files and commit
 writeLines("First file",  file.path(path, "example-1.txt"))

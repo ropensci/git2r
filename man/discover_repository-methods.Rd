@@ -29,7 +29,7 @@ dir.create(path)
 repo <- init(path)
 
 ## Create a user and commit a file
-config(repo, user.name="User", user.email="user@example.org")
+config(repo, user.name="Alice", user.email="alice@example.org")
 writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
            file.path(path, "example-1.txt"))
 add(repo, "example-1.txt")

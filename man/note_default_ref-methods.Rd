@@ -26,7 +26,7 @@ Get the default notes reference for a repository
 path <- tempfile(pattern="git2r-")
 dir.create(path)
 repo <- init(path)
-config(repo, user.name="User", user.email="user@example.org")
+config(repo, user.name="Alice", user.email="alice@example.org")
 
 ## View default notes reference
 note_default_ref(repo)
