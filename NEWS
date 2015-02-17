@@ -1,3 +1,17 @@
+git2r 0.5
+---------
+
+CHANGES
+
+* Update libgit2 source code to commit (a291790)
+
+* Use Alice and Bob as placeholder names in examples.
+
+* Add COPYRIGHTS file to list all copyright holders.
+
+* Fix significant compiler warnings from R CMD check with pedantic
+  flag.
+
 git2r 0.4
 ---------
 
