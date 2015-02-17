@@ -31,7 +31,7 @@
 ##'
 ##' ## Initialize a repository
 ##' repo <- init(path)
-##' config(repo, user.name="Developer", user.email="developer@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Create a file, add and commit
 ##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -84,7 +84,7 @@ setMethod("ahead_behind",
 ##' repo <- init(path)
 ##'
 ##' ## Config user
-##' config(repo, user.name="User", user.email="user@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Write to a file and commit
 ##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -144,7 +144,7 @@ setMethod("commit",
 ##' repo <- init(path)
 ##'
 ##' ## Config user
-##' config(repo, user.name="Author", user.email="author@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Write to a file and commit
 ##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -225,7 +225,7 @@ setMethod("commits",
 ##'
 ##' ## Initialize a repository
 ##' repo <- init(path)
-##' config(repo, user.name="Developer", user.email="developer@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Create a file, add and commit
 ##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -273,7 +273,7 @@ setMethod("descendant_of",
 ##' repo <- init(path)
 ##'
 ##' ## Create a user
-##' config(repo, user.name="User", user.email="user@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Commit a text file
 ##' writeLines("Hello world!", file.path(path, "example.txt"))
@@ -304,7 +304,7 @@ is_commit <- function(object) {
 ##' repo <- init(path)
 ##'
 ##' ## Create a user and commit a file
-##' config(repo, user.name="Author", user.email="author@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##' writeLines(c("First line in file 1.", "Second line in file 1."),
 ##'            file.path(path, "example-1.txt"))
 ##' add(repo, "example-1.txt")
@@ -373,7 +373,7 @@ setMethod("is_merge",
 ##' repo <- init(path)
 ##'
 ##' ## Create a user and commit a file
-##' config(repo, user.name="Author", user.email="author@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##' writeLines("First line.",
 ##'            file.path(path, "example.txt"))
 ##' add(repo, "example.txt")
@@ -426,7 +426,7 @@ setMethod("parents",
 ##' repo <- init(path)
 ##'
 ##' ## Config user
-##' config(repo, user.name="User", user.email="user@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Write to a file and commit
 ##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -465,7 +465,7 @@ setMethod("show",
 ##' repo <- init(path)
 ##'
 ##' ## Config user
-##' config(repo, user.name="User", user.email="user@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Write to a file and commit
 ##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",

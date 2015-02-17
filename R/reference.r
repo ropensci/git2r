@@ -32,7 +32,7 @@
 ##' repo <- clone(path_bare, path_repo)
 ##'
 ##' ## Config user and commit a file
-##' config(repo, user.name="Author", user.email="author@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Write to a file and commit
 ##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -84,7 +84,7 @@ setMethod("references",
 ##' path <- tempfile(pattern="git2r-")
 ##' dir.create(path)
 ##' repo <- init(path)
-##' config(repo, user.name="User", user.email="user@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Create a file, add and commit
 ##' writeLines("Hello world!", file.path(path, "example.txt"))

@@ -96,7 +96,7 @@ setMethod("blob_create",
 ##' repo <- init(path)
 ##'
 ##' ## Create a user and commit a file
-##' config(repo, user.name="Developer", user.email="developer@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##' writeLines("Hello world!", file.path(path, "example.txt"))
 ##' add(repo, "example.txt")
 ##' commit(repo, "First commit message")
@@ -209,7 +209,7 @@ setMethod("hashfile",
 ##' repo <- init(path)
 ##'
 ##' ## Create a user
-##' config(repo, user.name="Developer", user.email="developer@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Commit a text file
 ##' writeLines("Hello world!", file.path(path, "example.txt"))
@@ -262,7 +262,7 @@ setMethod("is_binary",
 ##' repo <- init(path)
 ##'
 ##' ## Create a user
-##' config(repo, user.name="Developer", user.email="developer@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Commit a text file
 ##' writeLines("Hello world!", file.path(path, "example.txt"))
@@ -293,7 +293,7 @@ is_blob <- function(object) {
 ##' repo <- init(path)
 ##'
 ##' ## Create a user
-##' config(repo, user.name="Developer", user.email="developer@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Commit a text file
 ##' writeLines("Hello world!", file.path(path, "example.txt"))
@@ -328,7 +328,7 @@ setMethod("length",
 ##' repo <- init(path)
 ##'
 ##' ## Create a user and commit a file
-##' config(repo, user.name="Author", user.email="author@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##' writeLines("Hello world!", file.path(path, "example.txt"))
 ##' add(repo, "example.txt")
 ##' commit(repo, "First commit message")
@@ -360,7 +360,7 @@ setMethod("show",
 ##' repo <- init(path)
 ##'
 ##' ## Create a user
-##' config(repo, user.name="Developer", user.email="developer@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Commit a text file
 ##' writeLines("Hello world!", file.path(path, "example.txt"))

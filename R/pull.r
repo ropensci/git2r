@@ -37,7 +37,7 @@
 ##' repo_1 <- clone(path_bare, path_repo_1)
 ##'
 ##' ## Config first user and commit a file
-##' config(repo_1, user.name="Author One", user.email="author.one@@example.org")
+##' config(repo_1, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Write to a file and commit
 ##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -51,7 +51,7 @@
 ##'
 ##' ## Clone to second repository
 ##' repo_2 <- clone(path_bare, path_repo_2)
-##' config(repo_2, user.name="Author Two", user.email="author.two@@example.org")
+##' config(repo_2, user.name="Bob", user.email="bob@@example.org")
 ##'
 ##' ## Change file and commit
 ##' writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",

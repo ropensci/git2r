@@ -32,7 +32,7 @@
 ##' repo <- init(path)
 ##'
 ##' ## Config user
-##' config(repo, user.name="Author", user.email="author@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Write to a file and commit
 ##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -94,7 +94,7 @@ setMethod("reflog",
 ##' repo <- init(path)
 ##'
 ##' ## Create a user and commit a file
-##' config(repo, user.name="Author", user.email="author@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##' writeLines("Hello world!", file.path(path, "example.txt"))
 ##' add(repo, "example.txt")
 ##' commit(repo, "First commit message")

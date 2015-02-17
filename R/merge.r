@@ -30,7 +30,7 @@
 ##'
 ##' ## Initialize a repository
 ##' repo <- init(path)
-##' config(repo, user.name="Repo", user.email="repo@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Create a file, add and commit
 ##' writeLines("Master branch", file.path(path, "master_branch.txt"))
@@ -129,7 +129,7 @@ merge_named_branch <- function(repo, branch, commit_on_success, merger)
 ##' path <- tempfile(pattern="git2r-")
 ##' dir.create(path)
 ##' repo <- init(path)
-##' config(repo, user.name = "User", user.email = "user@@example.org")
+##' config(repo, user.name="Alice", user.email = "alice@@example.org")
 ##'
 ##' ## Create a file, add and commit
 ##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -231,7 +231,7 @@ setMethod("merge",
 ##' repo <- init(path)
 ##'
 ##' ## Create a user and commit a file
-##' config(repo, user.name="Author", user.email="author@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##' writeLines("First line.",
 ##'            file.path(path, "example.txt"))
 ##' add(repo, "example.txt")

@@ -30,13 +30,13 @@
 ##' repo <- init(path)
 ##'
 ##' ## Create a first user and commit a file
-##' config(repo, user.name="User One", user.email="user.one@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##' writeLines("Hello world!", file.path(path, "example.txt"))
 ##' add(repo, "example.txt")
 ##' commit(repo, "First commit message")
 ##'
 ##' ## Create a second user and change the file
-##' config(repo, user.name="User Two", user.email="user.two@@example.org")
+##' config(repo, user.name="Bob", user.email="bob@@example.org")
 ##' writeLines(c("Hello world!", "HELLO WORLD!", "HOLA"),
 ##'            file.path(path, "example.txt"))
 ##' add(repo, "example.txt")

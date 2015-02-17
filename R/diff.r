@@ -44,7 +44,7 @@ setMethod("length",
 ##' repo <- init(path)
 ##'
 ##' ## Config user
-##' config(repo, user.name="User", user.email="user@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Create a file, add, commit
 ##' writeLines("Hello world!", file.path(path, "test.txt"))
@@ -128,7 +128,7 @@ hunks_per_file <- function(diff) {
 ##' repo <- init(path)
 ##'
 ##' ## Config user
-##' config(repo, user.name="User", user.email="user@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Create a file, add, commit
 ##' writeLines("Hello world!", file.path(path, "test.txt"))
@@ -229,7 +229,7 @@ setMethod("summary",
 #' repo <- init(path)
 #'
 #' ## Config user
-#' config(repo, user.name="User", user.email="user@@example.org")
+#' config(repo, user.name="Alice", user.email="alice@@example.org")
 #'
 #' ## Create a file, add, commit
 #' writeLines("Hello world!", file.path(path, "test.txt"))

@@ -48,7 +48,7 @@ setAs(from="git_time",
 ##' repo <- init(path)
 ##'
 ##' ## Create a user
-##' config(repo, user.name="Author", user.email="author@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Brief summary of git_time from the default signature
 ##' default_signature(repo)@@when

@@ -35,7 +35,7 @@
 ##' repo <- init(path)
 ##'
 ##' ## Create a user and commit a file
-##' config(repo, user.name="Developer", user.email="developer@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##' writeLines("Hello world!", file.path(path, "example.txt"))
 ##' add(repo, "example.txt")
 ##' commit_1 <- commit(repo, "First commit message")
@@ -49,7 +49,7 @@
 ##' commit_2 <- commit(repo, "Another commit message")
 ##'
 ##' ## Create a branch with the same name should fail
-##' branch_create(commit_2, name = "test-branch")
+##' try(branch_create(commit_2, name = "test-branch"), TRUE)
 ##'
 ##' ## Force it
 ##' branch_2 <- branch_create(commit_2, name = "test-branch", force = TRUE)
@@ -97,7 +97,7 @@ setMethod("branch_create",
 ##' repo <- init(path)
 ##'
 ##' ## Create a user and commit a file
-##' config(repo, user.name="Developer", user.email="developer@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##' writeLines("Hello world!", file.path(path, "example.txt"))
 ##' add(repo, "example.txt")
 ##' commit_1 <- commit(repo, "First commit message")
@@ -145,7 +145,7 @@ setMethod("branch_delete",
 ##' repo <- clone(path_bare, path_repo)
 ##'
 ##' ## Config user and commit a file
-##' config(repo, user.name="Author", user.email="author@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Write to a file and commit
 ##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -194,7 +194,7 @@ setMethod("branch_remote_name",
 ##' repo <- clone(path_bare, path_repo)
 ##'
 ##' ## Config user and commit a file
-##' config(repo, user.name="Author", user.email="author@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Write to a file and commit
 ##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -246,7 +246,7 @@ setMethod("branch_remote_url",
 ##' repo <- init(path)
 ##'
 ##' ## Config user and commit a file
-##' config(repo, user.name="Author", user.email="author@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
 ##'            file.path(path, "example.txt"))
 ##' add(repo, "example.txt")
@@ -301,7 +301,7 @@ setMethod("branch_rename",
 ##' repo <- init(path)
 ##'
 ##' ## Config user and commit a file
-##' config(repo, user.name="Author", user.email="author@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
 ##'            file.path(path, "example.txt"))
 ##' add(repo, "example.txt")
@@ -345,7 +345,7 @@ setMethod("branch_target",
 ##' repo <- clone(path_bare, path_repo)
 ##'
 ##' ## Config user and commit a file
-##' config(repo, user.name="Author", user.email="author@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Write to a file and commit
 ##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -397,7 +397,7 @@ setMethod("branch_get_upstream",
 ##' repo <- clone(path_bare, path_repo)
 ##'
 ##' ## Config user and commit a file
-##' config(repo, user.name="Author", user.email="author@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Write to a file and commit
 ##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -458,7 +458,7 @@ setMethod("branch_set_upstream",
 ##' repo <- clone(path_bare, path_repo)
 ##'
 ##' ## Config first user and commit a file
-##' config(repo, user.name="User", user.email="user@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Write to a file and commit
 ##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -509,7 +509,7 @@ setMethod("branches",
 ##' repo <- init(path)
 ##'
 ##' ## Create a user and commit a file
-##' config(repo, user.name="Developer", user.email="developer@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##' writeLines("Hello world!", file.path(path, "example.txt"))
 ##' add(repo, "example.txt")
 ##' commit(repo, "First commit message")
@@ -564,7 +564,7 @@ setMethod("is_head",
 ##' repo <- clone(path_bare, path_repo)
 ##'
 ##' ## Config first user and commit a file
-##' config(repo, user.name="User", user.email="user@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Write to a file and commit
 ##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -617,7 +617,7 @@ setMethod("is_local",
 ##' repo <- init(path)
 ##'
 ##' ## Create a user and commit a file
-##' config(repo, user.name="Author", user.email="author@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##' writeLines("Hello world!", file.path(path, "example.txt"))
 ##' add(repo, "example.txt")
 ##' commit(repo, "First commit message")

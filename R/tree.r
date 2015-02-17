@@ -54,7 +54,7 @@
 ##' repo <- init(path)
 ##'
 ##' ## Create a user
-##' config(repo, user.name="Author", user.email="author@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Create three files and commit
 ##' writeLines("First file",  file.path(path, "example-1.txt"))
@@ -95,7 +95,7 @@ setAs(from = "git_tree",
 ##' repo <- init(path)
 ##'
 ##' ## Create a user
-##' config(repo, user.name="Author", user.email="author@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Create three files and commit
 ##' writeLines("First file",  file.path(path, "example-1.txt"))
@@ -137,7 +137,7 @@ setAs(from = "git_tree",
 ##' repo <- init(path)
 ##'
 ##' ## Create a first user and commit a file
-##' config(repo, user.name="Author", user.email="author@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##' writeLines("Hello world!", file.path(path, "example.txt"))
 ##' add(repo, "example.txt")
 ##' commit(repo, "First commit message")
@@ -185,7 +185,7 @@ setMethod("tree",
 ##' repo <- init(path)
 ##'
 ##' ## Create a user and commit a file
-##' config(repo, user.name="Author", user.email="author@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##' writeLines("Hello world!", file.path(path, "example.txt"))
 ##' add(repo, "example.txt")
 ##' commit(repo, "First commit message")
@@ -218,7 +218,7 @@ setMethod("show",
 ##' repo <- init(path)
 ##'
 ##' ## Create a user and commit a file
-##' config(repo, user.name="User", user.email="user@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##' writeLines("Hello world!", file.path(path, "example.txt"))
 ##' add(repo, "example.txt")
 ##' commit(repo, "First commit message")
@@ -255,7 +255,7 @@ setMethod("summary",
 ##' repo <- init(path)
 ##'
 ##' ## Create a user
-##' config(repo, user.name="Author", user.email="author@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Create three files and commit
 ##' writeLines("First file",  file.path(path, "example-1.txt"))

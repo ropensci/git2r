@@ -61,7 +61,7 @@
 ##' repo <- init(path)
 ##'
 ##' ## Create a user
-##' config(repo, user.name="Author", user.email="author@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Create three files and commit
 ##' writeLines("First file",  file.path(path, "example-1.txt"))
@@ -110,7 +110,7 @@ setAs(from="git_repository",
 ##' repo <- init(path)
 ##'
 ##' # Configure a user
-##' config(repo, user.name="User", user.email="user@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Create a file, add and commit
 ##' writeLines("Hello world!", file.path(path, "test-1.txt"))
@@ -268,7 +268,7 @@ setMethod("init",
 ##' repo_1 <- init(path_repo_1)
 ##'
 ##' ## Config user and commit a file
-##' config(repo_1, user.name="User One", user.email="user.one@@example.org")
+##' config(repo_1, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Write to a file and commit
 ##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -345,7 +345,7 @@ setMethod("clone",
 ##' path <- tempfile(pattern="git2r-")
 ##' dir.create(path)
 ##' repo <- init(path)
-##' config(repo, user.name="User", user.email="user@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Create a file, add and commit
 ##' writeLines("Hello world!", file.path(path, "example.txt"))
@@ -413,7 +413,7 @@ setMethod("is_bare",
 ##' path <- tempfile(pattern="git2r-")
 ##' dir.create(path)
 ##' repo <- init(path)
-##' config(repo, user.name="User", user.email="user@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Create a file, add and commit
 ##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -467,7 +467,7 @@ setMethod("is_detached",
 ##' repo <- init(path)
 ##'
 ##' ## Create a user
-##' config(repo, user.name="User", user.email="user@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Check if it's an empty repository
 ##' is_empty(repo)
@@ -512,7 +512,7 @@ setMethod("is_empty",
 ##' repo_1 <- init(path_repo_1)
 ##'
 ##' ## Config user and commit a file
-##' config(repo_1, user.name="User One", user.email="user.one@@example.org")
+##' config(repo_1, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Write to a file and commit
 ##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -575,7 +575,7 @@ setMethod("is_shallow",
 ##' repo <- init(path)
 ##'
 ##' ## Create a user and commit a file
-##' config(repo, user.name="User", user.email="user@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
 ##'            file.path(path, "example.txt"))
 ##' add(repo, "example.txt")
@@ -640,13 +640,13 @@ setMethod("lookup",
 ##' repo <- init(path)
 ##'
 ##' ## Create a user
-##' config(repo, user.name="User One", user.email="user.one@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Get the default signature
 ##' default_signature(repo)
 ##'
 ##' ## Change user
-##' config(repo, user.name="User Two", user.email="user.two@@example.org")
+##' config(repo, user.name="Bob", user.email="bob@@example.org")
 ##'
 ##' ## Get the default signature
 ##' default_signature(repo)
@@ -680,7 +680,7 @@ setMethod("default_signature",
 ##' path <- tempfile(pattern="git2r-")
 ##' dir.create(path)
 ##' repo <- init(path)
-##' config(repo, user.name="Author", user.email="author@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Brief summary of the repository
 ##' repo
@@ -739,7 +739,7 @@ setMethod("show",
 ##' repo <- init(path)
 ##'
 ##' ## Config user
-##' config(repo, user.name="User", user.email="user@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Create a file
 ##' writeLines("Hello world!", file.path(path, "test.txt"))
@@ -854,7 +854,7 @@ setMethod("workdir",
 ##' repo <- init(path)
 ##'
 ##' ## Create a user and commit a file
-##' config(repo, user.name="User", user.email="user@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
 ##'            file.path(path, "example-1.txt"))
 ##' add(repo, "example-1.txt")

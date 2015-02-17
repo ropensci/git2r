@@ -32,7 +32,7 @@
 ##' repo <- init(path)
 ##'
 ##' # Configure a user
-##' config(repo, user.name="User", user.email="user@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' # Create a file, add and commit
 ##' writeLines("Hello world!", file.path(path, "test.txt"))
@@ -122,7 +122,7 @@ setMethod("stash_drop",
 ##' repo <- init(path)
 ##'
 ##' # Configure a user
-##' config(repo, user.name="User", user.email="user@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' # Create a file, add and commit
 ##' writeLines("Hello world!", file.path(path, "test.txt"))
@@ -190,7 +190,7 @@ setMethod("stash",
 ##' repo <- init(path)
 ##'
 ##' # Configure a user
-##' config(repo, user.name="User", user.email="user@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' # Create a file, add and commit
 ##' writeLines("Hello world!", file.path(path, "test-1.txt"))
@@ -251,7 +251,7 @@ setMethod("stash_list",
 ##' repo <- init(path)
 ##'
 ##' # Configure a user
-##' config(repo, user.name="User", user.email="user@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' # Create a file, add and commit
 ##' writeLines("Hello world!", file.path(path, "test.txt"))
@@ -291,7 +291,7 @@ setMethod("show",
 ##' repo <- init(path)
 ##'
 ##' # Configure a user
-##' config(repo, user.name="User", user.email="user@@example.org")
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' # Create a file, add and commit
 ##' writeLines("Hello world!", file.path(path, "test.txt"))
