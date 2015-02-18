@@ -20,7 +20,7 @@ devtools package:
 ```coffee
 # install.packages("devtools")
 library(devtools)
-install_github("git2r", "ropensci")
+install_github("ropensci/git2r")
 ```
 
 Another alternative is to use `git` and `make`
