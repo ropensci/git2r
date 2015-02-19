@@ -14,6 +14,12 @@ touch.
 
 ## Installation
 
+To install the version available on CRAN:
+
+```coffee
+install.packages("git2r")
+```
+
 To install the development version of `git2r`, it's easiest to use the
 devtools package:
 
