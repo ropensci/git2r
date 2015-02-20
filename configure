@@ -3745,7 +3745,11 @@ fi
 fi
 
 if test "x${have_crypto}" = xyes; then
-        CPPFLAGS="${CPPFLAGS} -DGIT_SSL"
+        if test "x${OPENSSL_INCLUDES}" = x; then
+                CPPFLAGS="${CPPFLAGS} -DGIT_SSL"
+        else
+                CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES} -DGIT_SSL"
+        fi
 else
         LIBS=${OLD_LIBS}
         { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING:

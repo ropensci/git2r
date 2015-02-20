@@ -134,7 +134,11 @@ if test "x${have_ssl}" = xyes; then
 fi
 
 if test "x${have_crypto}" = xyes; then
-        CPPFLAGS="${CPPFLAGS} -DGIT_SSL"
+        if test "x${OPENSSL_INCLUDES}" = x; then
+                CPPFLAGS="${CPPFLAGS} -DGIT_SSL"
+        else
+                CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES} -DGIT_SSL"
+        fi
 else
         LIBS=${OLD_LIBS}
         AC_MSG_WARN([
