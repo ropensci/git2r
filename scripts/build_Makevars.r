@@ -70,8 +70,6 @@ build_Makevars.in <- function() {
     on.exit(close(Makevars))
 
     files <- list(libgit2            = o_files("src/libgit2"),
-                  libgit2.hash       = o_files("src/libgit2/hash",
-                      "libgit2/hash/hash_win32.o"),
                   libgit2.transports = o_files("src/libgit2/transports",
                       c("libgit2/transports/auth_negotiate.o",
                         "libgit2/transports/winhttp.o")),
@@ -86,7 +84,7 @@ build_Makevars.in <- function() {
     cat("PKG_LIBS = @LIBS@\n", file = Makevars)
     cat("\n", file = Makevars)
 
-    build_objects(files, " @GIT2R_SRC_REGEX@", Makevars)
+    build_objects(files, " @GIT2R_SRC_HASH_GENERIC@ @GIT2R_SRC_REGEX@", Makevars)
 
     invisible(NULL)
 }

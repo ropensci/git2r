@@ -64,6 +64,5 @@ OBJECTS.root = git2r_arg.o git2r_blame.o git2r_blob.o \
     git2r_signature.o git2r_stash.o git2r_status.o \
     git2r_tag.o git2r_transfer.o git2r_tree.o
 
-OBJECTS = $(OBJECTS.libgit2) $(OBJECTS.libgit2.hash) $(OBJECTS.libgit2.transports) \
-    $(OBJECTS.libgit2.unix) $(OBJECTS.libgit2.xdiff) $(OBJECTS.http_parser) \
-    $(OBJECTS.root) @GIT2R_SRC_HASH_GENERIC@ @GIT2R_SRC_REGEX@
+OBJECTS = $(OBJECTS.libgit2) $(OBJECTS.libgit2.transports) $(OBJECTS.libgit2.unix) \
+    $(OBJECTS.libgit2.xdiff) $(OBJECTS.http_parser) $(OBJECTS.root) @GIT2R_SRC_HASH_GENERIC@ @GIT2R_SRC_REGEX@
