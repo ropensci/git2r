@@ -39,8 +39,6 @@ OBJECTS.libgit2 = libgit2/annotated_commit.o libgit2/attr.o libgit2/attrcache.o 
     libgit2/tree-cache.o libgit2/tsort.o libgit2/util.o \
     libgit2/vector.o libgit2/zstream.o
 
-OBJECTS.libgit2.hash = libgit2/hash/hash_generic.o
-
 OBJECTS.libgit2.transports = libgit2/transports/auth.o libgit2/transports/cred.o libgit2/transports/cred_helpers.o \
     libgit2/transports/git.o libgit2/transports/http.o libgit2/transports/local.o \
     libgit2/transports/smart.o libgit2/transports/smart_pkt.o libgit2/transports/smart_protocol.o \
@@ -68,4 +66,4 @@ OBJECTS.root = git2r_arg.o git2r_blame.o git2r_blob.o \
 
 OBJECTS = $(OBJECTS.libgit2) $(OBJECTS.libgit2.hash) $(OBJECTS.libgit2.transports) \
     $(OBJECTS.libgit2.unix) $(OBJECTS.libgit2.xdiff) $(OBJECTS.http_parser) \
-    $(OBJECTS.root) @GIT2R_SRC_REGEX@
+    $(OBJECTS.root) @GIT2R_SRC_HASH_GENERIC@ @GIT2R_SRC_REGEX@
