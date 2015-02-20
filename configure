@@ -3746,9 +3746,9 @@ fi
 
 if test "x${have_crypto}" = xyes; then
         if test "x${OPENSSL_INCLUDES}" = x; then
-                CPPFLAGS="${CPPFLAGS} -DGIT_SSL"
+                CPPFLAGS="${CPPFLAGS} -DGIT_SSL -DOPENSSL_SHA1"
         else
-                CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES} -DGIT_SSL"
+                CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES} -DGIT_SSL -DOPENSSL_SHA1"
         fi
 else
         LIBS=${OLD_LIBS}
