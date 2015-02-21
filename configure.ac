@@ -135,11 +135,11 @@ fi
 
 # Specify sha1 implementation
 if test "x${have_crypto}" = xyes; then
-        if test "x${OPENSSL_INCLUDES}" = x; then
-                CPPFLAGS="${CPPFLAGS} -DGIT_SSL"
-        else
-                CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES} -DGIT_SSL"
+        if test "x${OPENSSL_INCLUDES}" != x; then
+                CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
         fi
+
+        CPPFLAGS="${CPPFLAGS} -DGIT_SSL"
 
         case "${host_os}" in
           darwin*)
