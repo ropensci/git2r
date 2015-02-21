@@ -133,12 +133,22 @@ if test "x${have_ssl}" = xyes; then
         AC_SEARCH_LIBS([EVP_EncryptInit], [crypto], [have_crypto=yes])
 fi
 
+# Specify sha1 implementation
 if test "x${have_crypto}" = xyes; then
         if test "x${OPENSSL_INCLUDES}" = x; then
-                CPPFLAGS="${CPPFLAGS} -DGIT_SSL -DOPENSSL_SHA1"
+                CPPFLAGS="${CPPFLAGS} -DGIT_SSL"
         else
-                CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES} -DGIT_SSL -DOPENSSL_SHA1"
+                CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES} -DGIT_SSL"
         fi
+
+        case "${host_os}" in
+          darwin*)
+                CPPFLAGS="${CPPFLAGS} -DGIT_COMMON_CRYPTO"
+          ;;
+          *)
+                CPPFLAGS="${CPPFLAGS} -DOPENSSL_SHA1"
+          ;;
+        esac
 else
         LIBS=${OLD_LIBS}
         GIT2R_SRC_HASH_GENERIC=libgit2/hash/hash_generic.o
