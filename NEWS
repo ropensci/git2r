@@ -1,3 +1,13 @@
+git2r 0.7
+---------
+
+CHANGES
+
+* Update libgit2 source code to commit (366e53d)
+
+* Fix configuration of compiler options when the OpenSSL library is
+  found on non-Windows platforms
+
 git2r 0.6
 ---------
 
