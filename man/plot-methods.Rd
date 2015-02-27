@@ -17,6 +17,8 @@ week or day as necessary.}
 
 \item{main}{Default title for the plot is "Commits on repo:" and
 repository workdir basename. Supply a new title if you desire one.}
+
+\item{...}{Additional arguments affecting the plot}
 }
 \description{
 Plot commits over time
