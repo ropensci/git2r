@@ -42,6 +42,7 @@ Collate:
     'merge.r'
     'note.r'
     'odb.r'
+    'plot.r'
     'pull.r'
     'push.r'
     'reference.r'
