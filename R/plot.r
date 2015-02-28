@@ -59,9 +59,14 @@ setMethod("plot",
 
               xlab <- sprintf("Time [%s]", breaks)
               ylab <- "Number of commits"
-              if (is.null(main))
-                  main <- sprintf("Commits on repository: %s",
-                                  basename(workdir(x)))
+              if (is.null(main)) {
+                  if (is_bare(repo)) {
+                      main <- "Commits"
+                  } else {
+                      main <- sprintf("Commits on repository: %s",
+                                      basename(workdir(x)))
+                  }
+              }
 
               mp <- barplot(df$n, xlab = xlab, ylab = ylab, main = main, ...)
               axis(1, at = mp, labels = seq(min(df$when), max(df$when), breaks))
