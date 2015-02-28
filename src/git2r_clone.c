@@ -103,11 +103,17 @@ int git2r_clone_cred_acquire(
  *
  * @param url the remote repository to clone
  * @param local_path local directory to clone to
+ * @param bare Create a bare repository.
  * @param credentials The credentials for remote repository access.
  * @param progress show progress
  * @return R_NilValue
  */
-SEXP git2r_clone(SEXP url, SEXP local_path, SEXP credentials, SEXP progress)
+SEXP git2r_clone(
+    SEXP url,
+    SEXP local_path,
+    SEXP bare,
+    SEXP credentials,
+    SEXP progress)
 {
     int err;
     git_repository *repository = NULL;
@@ -119,6 +125,8 @@ SEXP git2r_clone(SEXP url, SEXP local_path, SEXP credentials, SEXP progress)
         git2r_error(git2r_err_string_arg, __func__, "url");
     if (GIT_OK != git2r_arg_check_string(local_path))
         git2r_error(git2r_err_string_arg, __func__, "local_path");
+    if (GIT_OK != git2r_arg_check_logical(bare))
+        git2r_error(git2r_err_logical_arg, __func__, "bare");
     if (GIT_OK != git2r_arg_check_credentials(credentials))
         git2r_error(git2r_err_credentials_arg, __func__, "credentials");
     if (GIT_OK != git2r_arg_check_logical(progress))
@@ -129,6 +137,9 @@ SEXP git2r_clone(SEXP url, SEXP local_path, SEXP credentials, SEXP progress)
     payload.credentials = credentials;
     clone_opts.remote_callbacks.payload = &payload;
     clone_opts.remote_callbacks.credentials = &git2r_clone_cred_acquire;
+
+    if (LOGICAL(bare)[0])
+        clone_opts.bare = 1;
 
     if (LOGICAL(progress)[0]) {
         clone_opts.remote_callbacks.transfer_progress = &git2r_clone_progress;
