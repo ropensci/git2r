@@ -30,8 +30,8 @@
  * Checkout branch
  *
  * @param branch S4 class git_branch
- * @param force Using checkout strategy GIT_CHECKOUT_SAFE_CREATE (force = TRUE)
- *        or GIT_CHECKOUT_FORCE (force = FALSE).
+ * @param force Using checkout strategy GIT_CHECKOUT_SAFE (force =
+ *        FALSE) or GIT_CHECKOUT_FORCE (force = FALSE).
  * @param msg The one line long message to be appended to the reflog
  * @param who The identity that will used to populate the reflog entry
  * @return R_NilValue
@@ -48,6 +48,7 @@ SEXP git2r_checkout_branch(
     git_signature *signature = NULL;
     git_reference *reference = NULL;
     git_repository *repository = NULL;
+    git_object *target = NULL;
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
 
     if (GIT_OK != git2r_arg_check_branch(branch))
@@ -71,7 +72,19 @@ SEXP git2r_checkout_branch(
     if (GIT_OK != err)
         goto cleanup;
 
+    err = git_revparse_single(&target, repository, ref_name.ptr);
+    if (GIT_OK != err)
+        goto cleanup;
+
     err = git2r_signature_from_arg(&signature, who);
+    if (GIT_OK != err)
+        goto cleanup;
+
+    if (LOGICAL(force)[0])
+        checkout_opts.checkout_strategy = GIT_CHECKOUT_FORCE;
+    else
+        checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE;
+    err = git_checkout_tree(repository, target, &checkout_opts);
     if (GIT_OK != err)
         goto cleanup;
 
@@ -80,14 +93,6 @@ SEXP git2r_checkout_branch(
         ref_name.ptr,
         signature,
         CHAR(STRING_ELT(msg, 0)));
-    if (GIT_OK != err)
-        goto cleanup;
-
-    if (LOGICAL(force)[0])
-        checkout_opts.checkout_strategy = GIT_CHECKOUT_FORCE;
-    else
-        checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE_CREATE;
-    err = git_checkout_head(repository, &checkout_opts);
 
 cleanup:
     git_buf_free(&ref_name);
@@ -97,6 +102,9 @@ cleanup:
 
     if (reference)
         git_reference_free(reference);
+
+    if (target)
+        git_object_free(target);
 
     if (repository)
         git_repository_free(repository);
