@@ -192,12 +192,11 @@ setMethod("checkout",
           signature(object = "git_tag"),
           function (object, force = FALSE)
           {
-              ret <- .Call(
-                  git2r_checkout_tag,
-                  object,
-                  force,
-                  checkout_reflog_msg(object, object@name),
-                  default_signature(object@repo))
-              invisible(ret)
+              .Call(git2r_checkout_tree, object@repo, object@target, force)
+              .Call(git2r_repository_set_head_detached,
+                    lookup(repo, object@target),
+                    checkout_reflog_msg(object, object@name),
+                    default_signature(object@repo))
+              invisible(NULL)
           }
 )
