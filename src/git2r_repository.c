@@ -49,7 +49,7 @@ git_repository* git2r_repository_open(SEXP repo)
         return NULL;
 
     path = GET_SLOT(repo, Rf_install("path"));
-    if (GIT_OK != git2r_arg_check_string(path))
+    if (git2r_arg_check_string(path))
         return NULL;
 
     if (git_repository_open(&repository, CHAR(STRING_ELT(path, 0))) < 0)
@@ -240,9 +240,9 @@ SEXP git2r_repository_init(SEXP path, SEXP bare)
     int err;
     git_repository *repository = NULL;
 
-    if (GIT_OK != git2r_arg_check_string(path))
+    if (git2r_arg_check_string(path))
         git2r_error(git2r_err_string_arg, __func__, "path");
-    if (GIT_OK != git2r_arg_check_logical(bare))
+    if (git2r_arg_check_logical(bare))
         git2r_error(git2r_err_logical_arg, __func__, "bare");
 
     err = git_repository_init(&repository,
@@ -391,7 +391,7 @@ SEXP git2r_repository_can_open(SEXP path)
     int can_open;
     git_repository *repository = NULL;
 
-    if (GIT_OK != git2r_arg_check_string(path))
+    if (git2r_arg_check_string(path))
         git2r_error(git2r_err_string_arg, __func__, "path");
 
     can_open = git_repository_open(&repository, CHAR(STRING_ELT(path, 0)));
@@ -423,11 +423,11 @@ SEXP git2r_repository_set_head(SEXP repo, SEXP ref_name, SEXP msg, SEXP who)
     git_signature *signature = NULL;
     git_repository *repository = NULL;
 
-    if (GIT_OK != git2r_arg_check_string(ref_name))
+    if (git2r_arg_check_string(ref_name))
         git2r_error(git2r_err_string_arg, __func__, "ref_name");
-    if (GIT_OK != git2r_arg_check_string(msg))
+    if (git2r_arg_check_string(msg))
         git2r_error(git2r_err_string_arg, __func__, "msg");
-    if (GIT_OK != git2r_arg_check_signature(who))
+    if (git2r_arg_check_signature(who))
         git2r_error(git2r_err_signature_arg, __func__, "who");
 
     repository = git2r_repository_open(repo);
@@ -474,11 +474,11 @@ SEXP git2r_repository_set_head_detached(SEXP commit, SEXP msg, SEXP who)
     git_commit *treeish = NULL;
     git_repository *repository = NULL;
 
-    if (GIT_OK != git2r_arg_check_commit(commit))
+    if (git2r_arg_check_commit(commit))
         git2r_error(git2r_err_commit_arg, __func__, "commit");
-    if (GIT_OK != git2r_arg_check_string(msg))
+    if (git2r_arg_check_string(msg))
         git2r_error(git2r_err_string_arg, __func__, "msg");
-    if (GIT_OK != git2r_arg_check_signature(who))
+    if (git2r_arg_check_signature(who))
         git2r_error(git2r_err_signature_arg, __func__, "who");
 
     repository = git2r_repository_open(GET_SLOT(commit, Rf_install("repo")));
@@ -562,7 +562,7 @@ SEXP git2r_repository_discover(SEXP path)
     SEXP result = R_NilValue;
     git_buf buf = GIT_BUF_INIT;
 
-    if (GIT_OK != git2r_arg_check_string(path))
+    if (git2r_arg_check_string(path))
         git2r_error(git2r_err_string_arg, __func__, "path");
 
     /* note that across_fs (arg #3) is set to 0 so this will stop when

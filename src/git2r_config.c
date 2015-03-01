@@ -295,7 +295,7 @@ SEXP git2r_config_set(SEXP repo, SEXP variables)
     git_config *cfg = NULL;
     git_repository *repository = NULL;
 
-    if (GIT_OK != git2r_arg_check_list(variables))
+    if (git2r_arg_check_list(variables))
         git2r_error(git2r_err_list_arg, __func__, "variables");
 
     n = length(variables);

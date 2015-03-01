@@ -103,15 +103,15 @@ SEXP git2r_push(
     git_repository *repository = NULL;
     git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
 
-    if (GIT_OK != git2r_arg_check_string(name))
+    if (git2r_arg_check_string(name))
         git2r_error(git2r_err_string_arg, __func__, "name");
-    if (GIT_OK != git2r_arg_check_string_vec(refspec))
+    if (git2r_arg_check_string_vec(refspec))
         git2r_error(git2r_err_string_vec_arg, __func__, "refspec");
-    if (GIT_OK != git2r_arg_check_credentials(credentials))
+    if (git2r_arg_check_credentials(credentials))
         git2r_error(git2r_err_credentials_arg, __func__, "credentials");
-    if (GIT_OK != git2r_arg_check_string(msg))
+    if (git2r_arg_check_string(msg))
         git2r_error(git2r_err_string_arg, __func__, "msg");
-    if (GIT_OK != git2r_arg_check_signature(who))
+    if (git2r_arg_check_signature(who))
         git2r_error(git2r_err_signature_arg, __func__, "who");
 
     if (git2r_nothing_to_push(refspec))

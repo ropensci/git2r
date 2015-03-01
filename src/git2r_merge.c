@@ -55,9 +55,9 @@ SEXP git2r_merge_base(SEXP one, SEXP two)
     git_commit *commit = NULL;
     git_repository *repository = NULL;
 
-    if (GIT_OK != git2r_arg_check_commit(one))
+    if (git2r_arg_check_commit(one))
         git2r_error(git2r_err_commit_arg, __func__, "one");
-    if (GIT_OK != git2r_arg_check_commit(two))
+    if (git2r_arg_check_commit(two))
         git2r_error(git2r_err_commit_arg, __func__, "two");
 
     repo = GET_SLOT(one, Rf_install("repo"));
@@ -453,11 +453,11 @@ SEXP git2r_merge_branch(SEXP branch, SEXP merger, SEXP commit_on_success)
     git_repository *repository = NULL;
     git_signature *who = NULL;
 
-    if (GIT_OK != git2r_arg_check_branch(branch))
+    if (git2r_arg_check_branch(branch))
         git2r_error(git2r_err_branch_arg, __func__, "branch");
-    if (GIT_OK != git2r_arg_check_logical(commit_on_success))
+    if (git2r_arg_check_logical(commit_on_success))
         git2r_error(git2r_err_logical_arg, __func__, "commit_on_success");
-    if (GIT_OK != git2r_arg_check_signature(merger))
+    if (git2r_arg_check_signature(merger))
         git2r_error(git2r_err_signature_arg, __func__, "merger");
 
     err = git2r_signature_from_arg(&who, merger);
@@ -599,9 +599,9 @@ SEXP git2r_merge_fetch_heads(SEXP fetch_heads, SEXP merger)
     git_repository *repository = NULL;
     git_signature *who = NULL;
 
-    if (GIT_OK != git2r_arg_check_fetch_heads(fetch_heads))
+    if (git2r_arg_check_fetch_heads(fetch_heads))
         git2r_error(git2r_err_fetch_heads_arg, __func__, "fetch_heads");
-    if (GIT_OK != git2r_arg_check_signature(merger))
+    if (git2r_arg_check_signature(merger))
         git2r_error(git2r_err_signature_arg, __func__, "merger");
 
     err = git2r_signature_from_arg(&who, merger);

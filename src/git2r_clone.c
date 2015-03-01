@@ -121,15 +121,15 @@ SEXP git2r_clone(
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
     git2r_clone_data payload = {0, 0, R_NilValue};
 
-    if (GIT_OK != git2r_arg_check_string(url))
+    if (git2r_arg_check_string(url))
         git2r_error(git2r_err_string_arg, __func__, "url");
-    if (GIT_OK != git2r_arg_check_string(local_path))
+    if (git2r_arg_check_string(local_path))
         git2r_error(git2r_err_string_arg, __func__, "local_path");
-    if (GIT_OK != git2r_arg_check_logical(bare))
+    if (git2r_arg_check_logical(bare))
         git2r_error(git2r_err_logical_arg, __func__, "bare");
-    if (GIT_OK != git2r_arg_check_credentials(credentials))
+    if (git2r_arg_check_credentials(credentials))
         git2r_error(git2r_err_credentials_arg, __func__, "credentials");
-    if (GIT_OK != git2r_arg_check_logical(progress))
+    if (git2r_arg_check_logical(progress))
         git2r_error(git2r_err_logical_arg, __func__, "progress");
 
     checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE_CREATE;

@@ -42,9 +42,9 @@ SEXP git2r_graph_ahead_behind(SEXP local, SEXP upstream)
     git_oid upstream_oid;
     git_repository *repository = NULL;
 
-    if (GIT_OK != git2r_arg_check_commit(local))
+    if (git2r_arg_check_commit(local))
         git2r_error(git2r_err_commit_arg, __func__, "local");
-    if (GIT_OK != git2r_arg_check_commit(upstream))
+    if (git2r_arg_check_commit(upstream))
         git2r_error(git2r_err_commit_arg, __func__, "upstream");
 
     slot = GET_SLOT(local, Rf_install("repo"));
@@ -96,9 +96,9 @@ SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor)
     git_oid ancestor_oid;
     git_repository *repository = NULL;
 
-    if (GIT_OK != git2r_arg_check_commit(commit))
+    if (git2r_arg_check_commit(commit))
         git2r_error(git2r_err_commit_arg, __func__, "commit");
-    if (GIT_OK != git2r_arg_check_commit(ancestor))
+    if (git2r_arg_check_commit(ancestor))
         git2r_error(git2r_err_commit_arg, __func__, "ancestor");
 
     slot = GET_SLOT(commit, Rf_install("repo"));

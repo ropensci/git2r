@@ -40,7 +40,7 @@ SEXP git2r_odb_hash(SEXP data)
     char sha[GIT_OID_HEXSZ + 1];
     git_oid oid;
 
-    if (GIT_OK != git2r_arg_check_string_vec(data))
+    if (git2r_arg_check_string_vec(data))
         git2r_error(git2r_err_string_vec_arg, __func__, "data");
 
     len = length(data);
@@ -85,7 +85,7 @@ SEXP git2r_odb_hashfile(SEXP path)
     char sha[GIT_OID_HEXSZ + 1];
     git_oid oid;
 
-    if (GIT_OK != git2r_arg_check_string_vec(path))
+    if (git2r_arg_check_string_vec(path))
         git2r_error(git2r_err_string_vec_arg, __func__, "path");
 
     len = length(path);

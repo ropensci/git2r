@@ -76,11 +76,11 @@ SEXP git2r_tag_create(SEXP repo, SEXP name, SEXP message, SEXP tagger)
     git_tag *tag = NULL;
     git_object *target = NULL;
 
-    if (GIT_OK != git2r_arg_check_string(name))
+    if (git2r_arg_check_string(name))
         git2r_error(git2r_err_string_arg, __func__, "name");
-    if (GIT_OK != git2r_arg_check_string(message))
+    if (git2r_arg_check_string(message))
         git2r_error(git2r_err_string_arg, __func__, "message");
-    if (GIT_OK != git2r_arg_check_signature(tagger))
+    if (git2r_arg_check_signature(tagger))
         git2r_error(git2r_err_signature_arg, __func__, "tagger");
 
     repository = git2r_repository_open(repo);
