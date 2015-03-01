@@ -24,6 +24,7 @@
 #include "git2r_commit.h"
 #include "git2r_error.h"
 #include "git2r_repository.h"
+#include "git2r_signature.h"
 #include "git2r_tag.h"
 #include "git2r_tree.h"
 #include "buffer.h"
