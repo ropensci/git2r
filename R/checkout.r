@@ -177,13 +177,12 @@ setMethod("checkout",
           signature(object = "git_commit"),
           function (object, force = FALSE)
           {
-              ret <- .Call(
-                  git2r_checkout_commit,
-                  object,
-                  force,
-                  checkout_reflog_msg(object, object@sha),
-                  default_signature(object@repo))
-              invisible(ret)
+              .Call(git2r_checkout_tree, object@repo, object@sha, force)
+              .Call(git2r_repository_set_head_detached,
+                    object,
+                    checkout_reflog_msg(object, object@sha),
+                    default_signature(object@repo))
+              invisible(NULL)
           }
 )
 
