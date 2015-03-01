@@ -34,6 +34,7 @@ SEXP git2r_repository_init(SEXP path, SEXP bare);
 SEXP git2r_repository_is_bare(SEXP repo);
 SEXP git2r_repository_is_empty(SEXP repo);
 SEXP git2r_repository_is_shallow(SEXP repo);
+SEXP git2r_repository_set_head_detached(SEXP commit, SEXP msg, SEXP who);
 SEXP git2r_repository_workdir(SEXP repo);
 
 #endif
