@@ -408,6 +408,55 @@ SEXP git2r_repository_can_open(SEXP path)
 }
 
 /**
+ * Make the repository HEAD point to the specified reference.
+ *
+ * @param repo S4 class git_repository
+ * @param ref_name Canonical name of the reference the HEAD should point at
+ * @param msg The one line long message to be appended to the reflog
+ * @param who The identity that will used to populate the reflog entry
+ * @return R_NilValue
+ */
+SEXP git2r_repository_set_head(SEXP repo, SEXP ref_name, SEXP msg, SEXP who)
+{
+    int err;
+    git_signature *signature = NULL;
+    git_repository *repository = NULL;
+
+    if (GIT_OK != git2r_arg_check_string(ref_name))
+        git2r_error(git2r_err_string_arg, __func__, "ref_name");
+    if (GIT_OK != git2r_arg_check_string(msg))
+        git2r_error(git2r_err_string_arg, __func__, "msg");
+    if (GIT_OK != git2r_arg_check_signature(who))
+        git2r_error(git2r_err_signature_arg, __func__, "who");
+
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+
+    err = git2r_signature_from_arg(&signature, who);
+    if (GIT_OK != err)
+        goto cleanup;
+
+    err = git_repository_set_head(
+        repository,
+        CHAR(STRING_ELT(ref_name, 0)),
+        signature,
+        CHAR(STRING_ELT(msg, 0)));
+
+cleanup:
+    if (signature)
+        git_signature_free(signature);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (GIT_OK != err)
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+
+    return R_NilValue;
+}
+
+/**
  * Make the repository HEAD directly point to the commit.
  *
  * @param commit S4 class git_commit
