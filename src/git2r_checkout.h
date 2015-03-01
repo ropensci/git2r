@@ -22,7 +22,6 @@
 #include <R.h>
 #include <Rinternals.h>
 
-SEXP git2r_checkout_tag(SEXP tag, SEXP force, SEXP msg, SEXP who);
 SEXP git2r_checkout_tree(SEXP repo, SEXP revision, SEXP force);
 
 #endif
