@@ -160,13 +160,14 @@ setMethod("checkout",
           signature(object = "git_branch"),
           function (object, force = FALSE)
           {
-              ret <- .Call(
-                  git2r_checkout_branch,
-                  object,
-                  force,
-                  checkout_reflog_msg(object, object@name),
-                  default_signature(object@repo))
-              invisible(ret)
+              ref_name <- paste0("refs/heads/", object@name)
+              .Call(git2r_checkout_tree, object@repo, ref_name, force)
+              .Call(git2r_repository_set_head,
+                    object@repo,
+                    ref_name,
+                    checkout_reflog_msg(object, object@name),
+                    default_signature(object@repo))
+              invisible(NULL)
           }
 )
 
