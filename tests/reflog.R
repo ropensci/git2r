@@ -26,7 +26,7 @@ dir.create(path)
 ## Initialize a repository
 ##
 repo <- init(path)
-config(repo, user.name="Repo", user.email="repo@example.org")
+config(repo, user.name="Alice", user.email="alice@example.org")
 
 ##
 ## Check that reflog is empty
@@ -52,7 +52,7 @@ reflog_entry <- reflog(repo)[[1]]
 stopifnot(identical(reflog_entry@sha, commit.1@sha))
 stopifnot(identical(reflog_entry@refname, "HEAD"))
 stopifnot(identical(reflog_entry@index, 0L))
-stopifnot(identical(reflog_entry@committer@email, "repo@example.org"))
+stopifnot(identical(reflog_entry@committer@email, "alice@example.org"))
 stopifnot(identical(reflog_entry@message, "commit (initial): Commit message"))
 
 ##

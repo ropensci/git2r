@@ -22,7 +22,7 @@ dir.create(path)
 
 ## Initialize a repository
 repo <- init(path)
-config(repo, user.name="Developer", user.email="developer@@example.org")
+config(repo, user.name="Alice", user.email="alice@@example.org")
 
 ## Create a file, add and commit
 writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -55,7 +55,7 @@ stopifnot(identical(colnames(b),
                     c("sha", "path", "name", "len", "commit", "author", "when")))
 stopifnot(identical(b$path, c("sub-directory", "", "")))
 stopifnot(identical(b$name, c("copy.txt", "test.txt", "test.txt")))
-stopifnot(identical(b$author, c("Developer", "Developer", "Developer")))
+stopifnot(identical(b$author, c("Alice", "Alice", "Alice")))
 
 ## Cleanup
 unlink(path, recursive=TRUE)

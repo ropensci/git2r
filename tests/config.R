@@ -30,15 +30,15 @@ repo <- init(path)
 ##
 ## Config repository
 ##
-cfg <- config(repo, user.name="Repo", user.email="repo@example.org")
+cfg <- config(repo, user.name="Alice", user.email="alice@example.org")
 
 ##
 ## Check configuration
 ##
 stopifnot("local" %in% names(cfg))
 stopifnot("user.name" %in% names(cfg$local))
-stopifnot(identical(cfg$local$user.name, "Repo"))
-stopifnot(identical(cfg$local$user.email, "repo@example.org"))
+stopifnot(identical(cfg$local$user.name, "Alice"))
+stopifnot(identical(cfg$local$user.email, "alice@example.org"))
 
 ##
 ## Delete entries

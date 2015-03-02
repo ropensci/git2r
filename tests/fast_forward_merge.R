@@ -22,7 +22,7 @@ dir.create(path)
 
 ## Create repository
 repo <- init(path)
-config(repo, user.name="Repo", user.email="repo@example.org")
+config(repo, user.name="Alice", user.email="alice@example.org")
 
 ## Add changes to repo
 writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",

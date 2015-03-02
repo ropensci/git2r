@@ -20,8 +20,8 @@ library(git2r)
 ## Each slot must have length equal to one
 when <- new("git_time", time = 1395567947, offset = 60)
 tagger <- new("git_signature",
-              name = "Repo",
-              email = "repo@example.org",
+              name = "Alice",
+              email = "alice@example.org",
               when = when)
 
 tools::assertError(validObject(new("git_tag",
@@ -66,7 +66,7 @@ dir.create(path)
 
 ## Initialize a repository
 repo <- init(path)
-config(repo, user.name="Repo", user.email="repo@example.org")
+config(repo, user.name="Alice", user.email="alice@example.org")
 
 ## Create a file
 writeLines("Hello world!", file.path(path, "test.txt"))
@@ -85,13 +85,13 @@ new_tag <- tag(repo, "Tagname", "Tag message")
 stopifnot(identical(lookup(repo, new_tag@sha), new_tag))
 stopifnot(identical(new_tag@name, "Tagname"))
 stopifnot(identical(new_tag@message, "Tag message"))
-stopifnot(identical(new_tag@tagger@name, "Repo"))
-stopifnot(identical(new_tag@tagger@email, "repo@example.org"))
+stopifnot(identical(new_tag@tagger@name, "Alice"))
+stopifnot(identical(new_tag@tagger@email, "alice@example.org"))
 stopifnot(identical(length(tags(repo)), 1L))
 stopifnot(identical(tags(repo)[[1]]@name, "Tagname"))
 stopifnot(identical(tags(repo)[[1]]@message, "Tag message"))
-stopifnot(identical(tags(repo)[[1]]@tagger@name, "Repo"))
-stopifnot(identical(tags(repo)[[1]]@tagger@email, "repo@example.org"))
+stopifnot(identical(tags(repo)[[1]]@tagger@name, "Alice"))
+stopifnot(identical(tags(repo)[[1]]@tagger@email, "alice@example.org"))
 
 ## Check objects in object database
 stopifnot(identical(table(odb_objects(repo)$type),

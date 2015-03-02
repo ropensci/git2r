@@ -26,7 +26,7 @@ dir.create(path)
 ## Initialize a repository
 ##
 repo <- init(path)
-config(repo, user.name="User One", user.email="user.one@example.org")
+config(repo, user.name="Alice", user.email="alice@example.org")
 
 ##
 ## Create a file and commit
@@ -38,7 +38,7 @@ commit.1 <- commit(repo, "First commit message")
 ##
 ## Create new user and change file
 ##
-config(repo, user.name="User Two", user.email="user.two@example.org")
+config(repo, user.name="Bob", user.email="bob@example.org")
 writeLines(c("Hello world!", "HELLO WORLD!", "HOLA"),
            file.path(path, "test.txt"))
 add(repo, "test.txt")
@@ -54,12 +54,12 @@ stopifnot(identical(length(b@hunks), 2L))
 stopifnot(identical(b@hunks[[1]]@lines_in_hunk, 1L))
 stopifnot(identical(b@hunks[[1]]@final_commit_id, commit.1@sha))
 stopifnot(identical(b@hunks[[1]]@final_start_line_number, 1L))
-stopifnot(identical(b@hunks[[1]]@final_signature@name, "User One"))
-stopifnot(identical(b@hunks[[1]]@final_signature@email, "user.one@example.org"))
+stopifnot(identical(b@hunks[[1]]@final_signature@name, "Alice"))
+stopifnot(identical(b@hunks[[1]]@final_signature@email, "alice@example.org"))
 stopifnot(identical(b@hunks[[1]]@orig_commit_id, commit.1@sha))
 stopifnot(identical(b@hunks[[1]]@orig_start_line_number, 1L))
-stopifnot(identical(b@hunks[[1]]@orig_signature@name, "User One"))
-stopifnot(identical(b@hunks[[1]]@orig_signature@email, "user.one@example.org"))
+stopifnot(identical(b@hunks[[1]]@orig_signature@name, "Alice"))
+stopifnot(identical(b@hunks[[1]]@orig_signature@email, "alice@example.org"))
 stopifnot(identical(b@hunks[[1]]@orig_path, "test.txt"))
 stopifnot(identical(b@hunks[[1]]@boundary, TRUE))
 
@@ -67,12 +67,12 @@ stopifnot(identical(b@hunks[[1]]@boundary, TRUE))
 stopifnot(identical(b@hunks[[2]]@lines_in_hunk, 2L))
 stopifnot(identical(b@hunks[[2]]@final_commit_id, commit.2@sha))
 stopifnot(identical(b@hunks[[2]]@final_start_line_number, 2L))
-stopifnot(identical(b@hunks[[2]]@final_signature@name, "User Two"))
-stopifnot(identical(b@hunks[[2]]@final_signature@email, "user.two@example.org"))
+stopifnot(identical(b@hunks[[2]]@final_signature@name, "Bob"))
+stopifnot(identical(b@hunks[[2]]@final_signature@email, "bob@example.org"))
 stopifnot(identical(b@hunks[[2]]@orig_commit_id, commit.2@sha))
 stopifnot(identical(b@hunks[[2]]@orig_start_line_number, 2L))
-stopifnot(identical(b@hunks[[2]]@orig_signature@name, "User Two"))
-stopifnot(identical(b@hunks[[2]]@orig_signature@email, "user.two@example.org"))
+stopifnot(identical(b@hunks[[2]]@orig_signature@name, "Bob"))
+stopifnot(identical(b@hunks[[2]]@orig_signature@email, "bob@example.org"))
 stopifnot(identical(b@hunks[[2]]@orig_path, "test.txt"))
 stopifnot(identical(b@hunks[[2]]@boundary, FALSE))
 

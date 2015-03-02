@@ -40,7 +40,7 @@ stopifnot(identical(is_bare(repo), FALSE))
 ##
 ## Config repositories
 ##
-config(repo, user.name="Repo One", user.email="repo.one@example.org")
+config(repo, user.name="Alice", user.email="alice@example.org")
 
 ##
 ## Add changes to repo
@@ -52,11 +52,11 @@ commit_1 <- commit(repo, "Commit message")
 ##
 ## Check commit
 ##
-stopifnot(identical(commit_1@author@name, "Repo One"))
-stopifnot(identical(commit_1@author@email, "repo.one@example.org"))
+stopifnot(identical(commit_1@author@name, "Alice"))
+stopifnot(identical(commit_1@author@email, "alice@example.org"))
 stopifnot(identical(length(commits(repo)), 1L))
-stopifnot(identical(commits(repo)[[1]]@author@name, "Repo One"))
-stopifnot(identical(commits(repo)[[1]]@author@email, "repo.one@example.org"))
+stopifnot(identical(commits(repo)[[1]]@author@name, "Alice"))
+stopifnot(identical(commits(repo)[[1]]@author@email, "alice@example.org"))
 
 ##
 ## Check push arguments
@@ -87,8 +87,8 @@ r <- r[[1]]
 stopifnot(identical(r@sha, commit_1@sha))
 stopifnot(identical(r@message, "update by push"))
 stopifnot(identical(r@index, 0L))
-stopifnot(identical(r@committer@name, "Repo One"))
-stopifnot(identical(r@committer@email, "repo.one@example.org"))
+stopifnot(identical(r@committer@name, "Alice"))
+stopifnot(identical(r@committer@email, "alice@example.org"))
 stopifnot(identical(r@refname, "refs/remotes/origin/master"))
 stopifnot(identical(r@repo@path, repo@path))
 

@@ -22,7 +22,7 @@ dir.create(path)
 
 ## Initialize a repository
 repo <- init(path)
-config(repo, user.name="Repo", user.email="repo@example.org")
+config(repo, user.name="Alice", user.email="alice@example.org")
 
 ## Commit without adding changes should produce an error
 tools::assertError(commit(repo, "Test to commit"))
@@ -38,12 +38,12 @@ add(repo, "test.txt")
 commit_1 <- commit(repo, "Commit message")
 
 ## Check commit
-stopifnot(identical(commit_1@author@name, "Repo"))
-stopifnot(identical(commit_1@author@email, "repo@example.org"))
+stopifnot(identical(commit_1@author@name, "Alice"))
+stopifnot(identical(commit_1@author@email, "alice@example.org"))
 stopifnot(identical(lookup(repo, commit_1@sha), commit_1))
 stopifnot(identical(length(commits(repo)), 1L))
-stopifnot(identical(commits(repo)[[1]]@author@name, "Repo"))
-stopifnot(identical(commits(repo)[[1]]@author@email, "repo@example.org"))
+stopifnot(identical(commits(repo)[[1]]@author@name, "Alice"))
+stopifnot(identical(commits(repo)[[1]]@author@email, "alice@example.org"))
 stopifnot(identical(parents(commit_1), list()))
 
 ## Commit without adding changes should produce an error

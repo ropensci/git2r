@@ -30,7 +30,7 @@ bare_repo <- init(path_bare, bare = TRUE)
 
 ## Clone to repo 1
 repo_1 <- clone(path_bare, path_repo_1)
-config(repo_1, user.name="Repo One", user.email="repo.one@example.org")
+config(repo_1, user.name="Alice", user.email="alice@example.org")
 
 ## Add changes to repo 1 and push to bare
 writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -41,7 +41,7 @@ push(repo_1, "origin", "refs/heads/master")
 
 ## Clone to repo 2
 repo_2 <- clone(path_bare, path_repo_2)
-config(repo_2, user.name="Repo Two", user.email="repo.two@example.org")
+config(repo_2, user.name="Bob", user.email="bob@example.org")
 
 ## Add more changes to repo 1 and push to bare
 writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
