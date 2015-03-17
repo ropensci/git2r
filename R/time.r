@@ -32,6 +32,16 @@ setAs(from="git_time",
       }
 )
 
+setAs(from="POSIXlt",
+      to="git_time",
+      def=function(from)
+      {
+          new("git_time",
+              time   = as.numeric(from),
+              offset = ifelse(is.na(from$gmtoff), 0, from$gmtoff / 60))
+      }
+)
+
 ##' Brief summary of \code{git_time}
 ##'
 ##' @aliases show,git_time-methods
