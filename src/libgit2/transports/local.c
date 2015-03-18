@@ -348,7 +348,7 @@ static int local_push_update_remote_ref(
 	if (lref[0] != '\0') {
 		/* Create or update a ref */
 		error = git_reference_create(NULL, remote_repo, rref, loid,
-					     !git_oid_iszero(roid), NULL, NULL);
+					     !git_oid_iszero(roid), NULL);
 	} else {
 		/* Delete a ref */
 		if ((error = git_reference_lookup(&remote_ref, remote_repo, rref)) < 0) {
@@ -608,6 +608,9 @@ static int local_download_pack(
 		data.progress_cb = progress_cb;
 		data.progress_payload = progress_payload;
 		data.writepack = writepack;
+
+		/* autodetect */
+		git_packbuilder_set_threads(pack, 0);
 
 		if ((error = git_packbuilder_foreach(pack, foreach_cb, &data)) != 0)
 			goto cleanup;

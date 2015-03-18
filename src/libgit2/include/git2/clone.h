@@ -106,9 +106,7 @@ typedef struct git_clone_options {
 	/**
 	 * These options are passed to the checkout step. To disable
 	 * checkout, set the `checkout_strategy` to
-	 * `GIT_CHECKOUT_NONE`. Generally you will want the use
-	 * GIT_CHECKOUT_SAFE_CREATE to create all files in the working
-	 * directory for the newly cloned repository.
+	 * `GIT_CHECKOUT_NONE`.
 	 */
 	git_checkout_options checkout_opts;
 
@@ -139,12 +137,6 @@ typedef struct git_clone_options {
 	const char* checkout_branch;
 
 	/**
-	 * The identity used when updating the reflog. NULL means to
-	 * use the default signature using the config.
-	 */
-	git_signature *signature;
-
-	/**
 	 * A callback used to create the new repository into which to
 	 * clone. If NULL, the 'bare' field will be used to determine
 	 * whether to create a bare repository.
@@ -173,7 +165,9 @@ typedef struct git_clone_options {
 } git_clone_options;
 
 #define GIT_CLONE_OPTIONS_VERSION 1
-#define GIT_CLONE_OPTIONS_INIT {GIT_CLONE_OPTIONS_VERSION, {GIT_CHECKOUT_OPTIONS_VERSION, GIT_CHECKOUT_SAFE_CREATE}, GIT_REMOTE_CALLBACKS_INIT}
+#define GIT_CLONE_OPTIONS_INIT { GIT_CLONE_OPTIONS_VERSION, \
+	{ GIT_CHECKOUT_OPTIONS_VERSION, GIT_CHECKOUT_SAFE }, \
+	GIT_REMOTE_CALLBACKS_INIT }
 
 /**
  * Initializes a `git_clone_options` with default values. Equivalent to

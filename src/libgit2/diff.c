@@ -461,12 +461,13 @@ static int diff_list_apply_options(
 
 	/* if ignore_submodules not explicitly set, check diff config */
 	if (diff->opts.ignore_submodules <= 0) {
-		const git_config_entry *entry;
+		 git_config_entry *entry;
 		git_config__lookup_entry(&entry, cfg, "diff.ignoresubmodules", true);
 
 		if (entry && git_submodule_parse_ignore(
 				&diff->opts.ignore_submodules, entry->value) < 0)
 			giterr_clear();
+		git_config_entry_free(entry);
 	}
 
 	/* if either prefix is not set, figure out appropriate value */
@@ -619,10 +620,9 @@ int git_diff__oid_for_entry(
 	if (!error && update_match && git_oid_equal(out, update_match)) {
 		git_index *idx;
 
-		if (!(error = git_repository_index(&idx, diff->repo))) {
+		if (!(error = git_repository_index__weakptr(&idx, diff->repo))) {
 			memcpy(&entry.id, out, sizeof(entry.id));
 			error = git_index_add(idx, &entry);
-			git_index_free(idx);
 		}
  	}
 

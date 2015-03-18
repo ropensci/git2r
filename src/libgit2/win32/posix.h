@@ -39,8 +39,6 @@ extern int p_recv(GIT_SOCKET socket, void *buffer, size_t length, int flags);
 extern int p_send(GIT_SOCKET socket, const void *buffer, size_t length, int flags);
 extern int p_inet_pton(int af, const char* src, void* dst);
 
-#define strcasecmp(s1, s2) _stricmp(s1, s2)
-#define strncasecmp(s1, s2, c) _strnicmp(s1, s2, c)
 extern int p_vsnprintf(char *buffer, size_t count, const char *format, va_list argptr);
 extern int p_snprintf(char *buffer, size_t count, const char *format, ...) __attribute__((__format__ (gnu_printf, 3, 4)));
 extern int p_mkstemp(char *tmp_path);
@@ -48,7 +46,7 @@ extern int p_chdir(const char* path);
 extern int p_chmod(const char* path, mode_t mode);
 extern int p_rmdir(const char* path);
 extern int p_access(const char* path, mode_t mode);
-extern int p_ftruncate(int fd, long size);
+extern int p_ftruncate(int fd, git_off_t size);
 
 /* p_lstat is almost but not quite POSIX correct.  Specifically, the use of
  * ENOTDIR is wrong, in that it does not mean precisely that a non-directory

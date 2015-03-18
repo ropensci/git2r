@@ -287,10 +287,18 @@ static int store_object(git_indexer *idx)
 	pentry->offset = entry_start;
 
 	k = kh_put(oid, idx->pack->idx_cache, &pentry->sha1, &error);
-	if (!error) {
+	if (error == -1) {
+		git__free(pentry);
+		giterr_set_oom();
+		goto on_error;
+	}
+
+	if (error == 0) {
+		giterr_set(GITERR_INDEXER, "duplicate object %s found in pack", git_oid_tostr_s(&pentry->sha1));
 		git__free(pentry);
 		goto on_error;
 	}
+
 
 	kh_value(idx->pack->idx_cache, k) = pentry;
 

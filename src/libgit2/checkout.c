@@ -261,13 +261,13 @@ static int checkout_action_no_wd(
 		error = checkout_notify(data, GIT_CHECKOUT_NOTIFY_DIRTY, delta, NULL);
 		if (error)
 			return error;
-		*action = CHECKOUT_ACTION_IF(SAFE_CREATE, UPDATE_BLOB, NONE);
+		*action = CHECKOUT_ACTION_IF(RECREATE_MISSING, UPDATE_BLOB, NONE);
 		break;
 	case GIT_DELTA_ADDED:    /* case 2 or 28 (and 5 but not really) */
 		*action = CHECKOUT_ACTION_IF(SAFE, UPDATE_BLOB, NONE);
 		break;
 	case GIT_DELTA_MODIFIED: /* case 13 (and 35 but not really) */
-		*action = CHECKOUT_ACTION_IF(SAFE_CREATE, UPDATE_BLOB, CONFLICT);
+		*action = CHECKOUT_ACTION_IF(RECREATE_MISSING, UPDATE_BLOB, CONFLICT);
 		break;
 	case GIT_DELTA_TYPECHANGE: /* case 21 (B->T) and 28 (T->B)*/
 		if (delta->new_file.mode == GIT_FILEMODE_TREE)
@@ -2354,11 +2354,17 @@ static int checkout_data_init(
 		}
 	}
 
-	/* if you are forcing, definitely allow safe updates */
+	/* if you are forcing, allow all safe updates, plus recreate missing */
 	if ((data->opts.checkout_strategy & GIT_CHECKOUT_FORCE) != 0)
-		data->opts.checkout_strategy |= GIT_CHECKOUT_SAFE_CREATE;
-	if ((data->opts.checkout_strategy & GIT_CHECKOUT_SAFE_CREATE) != 0)
-		data->opts.checkout_strategy |= GIT_CHECKOUT_SAFE;
+		data->opts.checkout_strategy |= GIT_CHECKOUT_SAFE |
+			GIT_CHECKOUT_RECREATE_MISSING;
+
+	/* if the repository does not actually have an index file, then this
+	 * is an initial checkout (perhaps from clone), so we allow safe updates
+	 */
+	if (!data->index->on_disk &&
+		(data->opts.checkout_strategy & GIT_CHECKOUT_SAFE) != 0)
+		data->opts.checkout_strategy |= GIT_CHECKOUT_RECREATE_MISSING;
 
 	data->strategy = data->opts.checkout_strategy;
 
@@ -2392,25 +2398,27 @@ static int checkout_data_init(
 
 	if ((data->opts.checkout_strategy &
 		(GIT_CHECKOUT_CONFLICT_STYLE_MERGE | GIT_CHECKOUT_CONFLICT_STYLE_DIFF3)) == 0) {
-		const char *conflict_style;
+		git_config_entry *conflict_style = NULL;
 		git_config *cfg = NULL;
 
 		if ((error = git_repository_config__weakptr(&cfg, repo)) < 0 ||
-			(error = git_config_get_string(&conflict_style, cfg, "merge.conflictstyle")) < 0 ||
+			(error = git_config_get_entry(&conflict_style, cfg, "merge.conflictstyle")) < 0 ||
 			error == GIT_ENOTFOUND)
 			;
 		else if (error)
 			goto cleanup;
-		else if (strcmp(conflict_style, "merge") == 0)
+		else if (strcmp(conflict_style->value, "merge") == 0)
 			data->opts.checkout_strategy |= GIT_CHECKOUT_CONFLICT_STYLE_MERGE;
-		else if (strcmp(conflict_style, "diff3") == 0)
+		else if (strcmp(conflict_style->value, "diff3") == 0)
 			data->opts.checkout_strategy |= GIT_CHECKOUT_CONFLICT_STYLE_DIFF3;
 		else {
 			giterr_set(GITERR_CHECKOUT, "unknown style '%s' given for 'merge.conflictstyle'",
 				conflict_style);
 			error = -1;
+			git_config_entry_free(conflict_style);
 			goto cleanup;
 		}
+		git_config_entry_free(conflict_style);
 	}
 
 	if ((error = git_vector_init(&data->removes, 0, git__strcmp_cb)) < 0 ||
