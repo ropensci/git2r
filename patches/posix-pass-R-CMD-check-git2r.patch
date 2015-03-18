@@ -1,5 +1,5 @@
-*** posix.h	2014-12-22 10:41:18.729990321 +0100
---- posix-pass-R-CMD-check-git2r.h	2014-12-22 10:41:25.777990510 +0100
+*** posix.h	2015-03-16 17:47:07.060421410 +0100
+--- posix-pass-R-CMD-check-git2r.h	2015-03-16 17:46:57.736421160 +0100
 ***************
 *** 7,12 ****
 --- 7,19 ----
@@ -17,17 +17,17 @@
   #include "../posix.h"
   #include "path_w32.h"
 ***************
-*** 35,41 ****
-  #define strcasecmp(s1, s2) _stricmp(s1, s2)
-  #define strncasecmp(s1, s2, c) _strnicmp(s1, s2, c)
+*** 33,39 ****
+  extern int p_inet_pton(int af, const char* src, void* dst);
+  
   extern int p_vsnprintf(char *buffer, size_t count, const char *format, va_list argptr);
 ! extern int p_snprintf(char *buffer, size_t count, const char *format, ...) GIT_FORMAT_PRINTF(3, 4);
   extern int p_mkstemp(char *tmp_path);
   extern int p_chdir(const char* path);
   extern int p_chmod(const char* path, mode_t mode);
---- 42,48 ----
-  #define strcasecmp(s1, s2) _stricmp(s1, s2)
-  #define strncasecmp(s1, s2, c) _strnicmp(s1, s2, c)
+--- 40,46 ----
+  extern int p_inet_pton(int af, const char* src, void* dst);
+  
   extern int p_vsnprintf(char *buffer, size_t count, const char *format, va_list argptr);
 ! extern int p_snprintf(char *buffer, size_t count, const char *format, ...) __attribute__((__format__ (gnu_printf, 3, 4)));
   extern int p_mkstemp(char *tmp_path);

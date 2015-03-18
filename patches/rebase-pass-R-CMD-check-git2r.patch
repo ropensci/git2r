@@ -1,5 +1,5 @@
-*** rebase.c	2015-02-15 17:38:21.124151597 +0100
---- rebase-pass-R-CMD-check-git2r.c	2015-02-15 17:38:00.412151043 +0100
+*** rebase.c	2015-03-16 17:41:44.456412770 +0100
+--- rebase-pass-R-CMD-check-git2r.c	2015-03-16 17:41:15.964412008 +0100
 ***************
 *** 5,10 ****
 --- 5,16 ----
@@ -35,7 +35,7 @@
   
   done:
 ***************
-*** 737,743 ****
+*** 739,745 ****
   		if (!checkout_opts->their_label)
   			checkout_opts->their_label = git_commit_summary(current_commit);
   	} else {
@@ -43,7 +43,7 @@
   	}
   }
   
---- 745,753 ----
+--- 747,755 ----
   		if (!checkout_opts->their_label)
   			checkout_opts->their_label = git_commit_summary(current_commit);
   	} else {
@@ -54,7 +54,7 @@
   }
   
 ***************
-*** 834,840 ****
+*** 836,842 ****
   		error = rebase_next_merge(out, rebase, checkout_opts);
   		break;
   	default:
@@ -62,7 +62,7 @@
   	}
   
   	return error;
---- 844,852 ----
+--- 846,854 ----
   		error = rebase_next_merge(out, rebase, checkout_opts);
   		break;
   	default:
@@ -73,7 +73,7 @@
   
   	return error;
 ***************
-*** 942,948 ****
+*** 944,950 ****
   			id, rebase, author, committer, message_encoding, message);
   		break;
   	default:
@@ -81,7 +81,7 @@
   	}
   
   	return error;
---- 954,962 ----
+--- 956,964 ----
   			id, rebase, author, committer, message_encoding, message);
   		break;
   	default:
