@@ -22,12 +22,6 @@
 #include <R.h>
 #include <Rinternals.h>
 
-SEXP git2r_push(
-    SEXP repo,
-    SEXP name,
-    SEXP refspec,
-    SEXP credentials,
-    SEXP msg,
-    SEXP who);
+SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP credentials);
 
 #endif

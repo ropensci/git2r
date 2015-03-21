@@ -119,14 +119,7 @@ setMethod("push",
                   stop("Both 'name' and 'refspec' must be 'character' or 'NULL'")
               }
 
-              result <- .Call(
-                  git2r_push,
-                  object,
-                  name,
-                  refspec,
-                  credentials,
-                  "update by push",
-                  default_signature(object))
+              result <- .Call(git2r_push, object, name, refspec, credentials)
 
               invisible(result)
           }

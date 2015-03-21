@@ -18,7 +18,6 @@
 
 #include <Rdefines.h>
 #include "git2.h"
-#include "push.h"
 
 #include "git2r_arg.h"
 #include "git2r_cred.h"
@@ -82,25 +81,16 @@ static int git2r_nothing_to_push(SEXP refspec)
  * @param name The remote to push to
  * @param refspec The string vector of refspec to push
  * @param credentials The credentials for remote repository access.
- * @param msg The one line long message to be appended to the reflog
- * @param who The identity that will used to populate the reflog entry
  * @return R_NilValue
  */
-SEXP git2r_push(
-    SEXP repo,
-    SEXP name,
-    SEXP refspec,
-    SEXP credentials,
-    SEXP msg,
-    SEXP who)
+SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP credentials)
 {
     int err;
-    size_t i, n;
-    const char *err_msg = NULL;
-    git_signature *signature = NULL;
-    git_push *push = NULL;
+    size_t i;
     git_remote *remote = NULL;
     git_repository *repository = NULL;
+    git_strarray c_refspecs = {0};
+    git_push_options opts = GIT_PUSH_OPTIONS_INIT;
     git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
 
     if (git2r_arg_check_string(name))
@@ -109,10 +99,6 @@ SEXP git2r_push(
         git2r_error(git2r_err_string_vec_arg, __func__, "refspec");
     if (git2r_arg_check_credentials(credentials))
         git2r_error(git2r_err_credentials_arg, __func__, "credentials");
-    if (git2r_arg_check_string(msg))
-        git2r_error(git2r_err_string_arg, __func__, "msg");
-    if (git2r_arg_check_signature(who))
-        git2r_error(git2r_err_signature_arg, __func__, "who");
 
     if (git2r_nothing_to_push(refspec))
         return R_NilValue;
@@ -120,10 +106,6 @@ SEXP git2r_push(
     repository = git2r_repository_open(repo);
     if (!repository)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
-
-    err = git2r_signature_from_arg(&signature, who);
-    if (GIT_OK != err)
-        goto cleanup;
 
     err = git_remote_lookup(&remote, repository, CHAR(STRING_ELT(name, 0)));
     if (GIT_OK != err)
@@ -135,44 +117,25 @@ SEXP git2r_push(
     if (GIT_OK != err)
         goto cleanup;
 
-    err = git_remote_connect(remote, GIT_DIRECTION_PUSH);
-    if (GIT_OK != err)
-        goto cleanup;
-
-    err = git_push_new(&push, remote);
-    if (GIT_OK != err)
-        goto cleanup;
-
-    n = length(refspec);
-    for (i = 0; i < n; i++) {
-        if (NA_STRING != STRING_ELT(refspec, i)) {
-            err = git_push_add_refspec(push, CHAR(STRING_ELT(refspec, i)));
-            if (GIT_OK != err)
-                goto cleanup;
+    c_refspecs.count = length(refspec);
+    if (c_refspecs.count) {
+        c_refspecs.strings = calloc(c_refspecs.count, sizeof(char*));
+        if (!c_refspecs.strings) {
+            giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
+            err = GIT_ERROR;
+            goto cleanup;
+        }
+        for (i = 0; i < c_refspecs.count; i++) {
+            if (NA_STRING != STRING_ELT(refspec, i))
+                c_refspecs.strings[i] = (char*)CHAR(STRING_ELT(refspec, i));
         }
     }
 
-    err = git_push_finish(push);
-    if (GIT_OK != err)
-        goto cleanup;
-
-    err = git_push_status_foreach(push, git2r_push_status_foreach_cb, &err_msg);
-    if (GIT_OK != err)
-        goto cleanup;
-    if (err_msg != NULL) {
-        giterr_set_str(GITERR_NONE, err_msg);
-        err = GIT_ERROR;
-        goto cleanup;
-    }
-
-    err = git_push_update_tips(push, signature, CHAR(STRING_ELT(msg, 0)));
+    err = git_remote_push(remote, &c_refspecs, &opts);
 
 cleanup:
-    if (signature)
-        git_signature_free(signature);
-
-    if (push)
-        git_push_free(push);
+    if (c_refspecs.strings)
+        free(c_refspecs.strings);
 
     if (remote) {
         if (git_remote_connected(remote))
