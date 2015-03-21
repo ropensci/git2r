@@ -112,15 +112,13 @@ cleanup:
  * @param merge_head The merge head to fast-forward merge
  * @param repository The repository
  * @param log_message First part of the one line long message in the reflog
- * @param merger Who is performing the merge
  * @return 0 on success, or error code
  */
 static int git2r_fast_forward_merge(
     SEXP merge_result,
     const git_annotated_commit *merge_head,
     git_repository *repository,
-    const char *log_message,
-    git_signature *merger)
+    const char *log_message)
 {
     int err;
     const git_oid *oid;
@@ -161,7 +159,6 @@ static int git2r_fast_forward_merge(
             "HEAD",
             git_commit_id(commit),
             0, /* force */
-            merger,
             buf.ptr);
     } else {
         git_reference *target_ref = NULL;
@@ -170,7 +167,6 @@ static int git2r_fast_forward_merge(
             &target_ref,
             reference,
             git_commit_id(commit),
-            merger,
             buf.ptr);
 
         if (target_ref)
@@ -312,7 +308,7 @@ static int git2r_merge(
     merge_opts.rename_threshold = 50;
     merge_opts.target_limit = 200;
 
-    checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE_CREATE;
+    checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE;
 
     err = git_merge_analysis(
         &merge_analysis,
@@ -352,8 +348,7 @@ static int git2r_merge(
                 merge_result,
                 merge_heads[0],
                 repository,
-                name,
-                merger);
+                name);
         } else if (merge_analysis & GIT_MERGE_ANALYSIS_NORMAL) {
             err = git2r_normal_merge(
                 merge_result,
@@ -395,8 +390,7 @@ static int git2r_merge(
                 merge_result,
                 merge_heads[0],
                 repository,
-                name,
-                merger);
+                name);
         } else {
             giterr_set_str(GITERR_NONE, "Unable to perform Fast-Forward merge.");
             return GIT_ERROR;

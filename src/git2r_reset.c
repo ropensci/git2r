@@ -35,17 +35,12 @@
  * 'soft' reset, plus the index will be replaced with the content of
  * the commit tree. 'hard' reset will trigger a 'mixed' reset and the
  * working directory will be replaced with the content of the index.
- * @param msg The one line long message to the reflog. The default
- * value is "reset: moving".
- * @param who The identity that will be used to populate the
- * reflog entry. Default is the default signature.
  * @return R_NilValue
  */
-SEXP git2r_reset(SEXP commit, SEXP reset_type, SEXP msg, SEXP who)
+SEXP git2r_reset(SEXP commit, SEXP reset_type)
 {
     int err;
     SEXP repo;
-    git_signature *signature = NULL;
     git_commit *target = NULL;
     git_repository *repository = NULL;
 
@@ -53,14 +48,6 @@ SEXP git2r_reset(SEXP commit, SEXP reset_type, SEXP msg, SEXP who)
         git2r_error(git2r_err_commit_arg, __func__, "commit");
     if (git2r_arg_check_integer(reset_type))
         git2r_error(git2r_err_integer_arg, __func__, "reset_type");
-    if (git2r_arg_check_string(msg))
-        git2r_error(git2r_err_string_arg, __func__, "msg");
-    if (git2r_arg_check_signature(who))
-        git2r_error(git2r_err_signature_arg, __func__, "who");
-
-    err = git2r_signature_from_arg(&signature, who);
-    if (GIT_OK != err)
-        goto cleanup;
 
     repo = GET_SLOT(commit, Rf_install("repo"));
     repository = git2r_repository_open(repo);
@@ -71,17 +58,13 @@ SEXP git2r_reset(SEXP commit, SEXP reset_type, SEXP msg, SEXP who)
     if (GIT_OK != err)
         goto cleanup;
 
-    err = git_reset(repository,
-                    (git_object*)target,
-                    INTEGER(reset_type)[0],
-                    NULL,
-                    signature,
-                    CHAR(STRING_ELT(msg, 0)));
+    err = git_reset(
+        repository,
+        (git_object*)target,
+        INTEGER(reset_type)[0],
+        NULL);
 
 cleanup:
-    if (signature)
-        git_signature_free(signature);
-
     if (target)
         git_commit_free(target);
 

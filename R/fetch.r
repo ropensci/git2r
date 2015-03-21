@@ -60,25 +60,21 @@
 ##' }
 setGeneric("fetch",
            signature = "repo",
-           function(repo,
-                    name,
-                    credentials = NULL) standardGeneric("fetch"))
+           function(repo, name, credentials = NULL)
+           standardGeneric("fetch"))
 
 ##' @rdname fetch-methods
 ##' @export
 setMethod("fetch",
           signature(repo = "git_repository"),
-          function (repo,
-                    name,
-                    credentials)
+          function (repo, name, credentials)
           {
               result <- .Call(
                   git2r_remote_fetch,
                   repo,
                   name,
                   credentials,
-                  "fetch",
-                  default_signature(repo))
+                  "fetch")
 
               invisible(result)
           }

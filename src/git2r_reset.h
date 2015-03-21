@@ -22,6 +22,6 @@
 #include <R.h>
 #include <Rinternals.h>
 
-SEXP git2r_reset(SEXP commit, SEXP reset_type, SEXP msg, SEXP who);
+SEXP git2r_reset(SEXP commit, SEXP reset_type);
 
 #endif

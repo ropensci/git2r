@@ -24,12 +24,7 @@
 #include "git2.h"
 
 SEXP git2r_branch_canonical_name(SEXP branch);
-SEXP git2r_branch_create(
-    SEXP branch_name,
-    SEXP commit,
-    SEXP force,
-    SEXP signature,
-    SEXP message);
+SEXP git2r_branch_create(SEXP branch_name, SEXP commit, SEXP force);
 SEXP git2r_branch_delete(SEXP branch);
 int git2r_branch_init(
     const git_reference *source,
@@ -40,12 +35,7 @@ SEXP git2r_branch_is_head(SEXP branch);
 SEXP git2r_branch_list(SEXP repo, SEXP flags);
 SEXP git2r_branch_remote_name(SEXP branch);
 SEXP git2r_branch_remote_url(SEXP branch);
-SEXP git2r_branch_rename(
-    SEXP branch,
-    SEXP new_branch_name,
-    SEXP force,
-    SEXP signature,
-    SEXP message);
+SEXP git2r_branch_rename(SEXP branch, SEXP new_branch_name, SEXP force);
 SEXP git2r_branch_target(SEXP branch);
 SEXP git2r_branch_get_upstream(SEXP branch);
 SEXP git2r_branch_set_upstream(SEXP branch, SEXP upstream_name);

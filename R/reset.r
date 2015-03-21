@@ -25,10 +25,6 @@
 ##' 'soft' reset, plus the index will be replaced with the content of
 ##' the commit tree. 'hard' reset will trigger a 'mixed' reset and the
 ##' working directory will be replaced with the content of the index.
-##' @param msg The one line long message to the reflog. The default
-##' value is "reset: moving".
-##' @param who The identity that will be used to populate the
-##' reflog entry. Default is the default signature.
 ##' @return invisible NULL
 ##' @keywords methods
 ##' @include S4_classes.r
@@ -71,31 +67,20 @@
 ##' }
 setGeneric("reset",
            signature = c("commit"),
-           function(commit,
-                    reset_type = c("soft", "mixed", "hard"),
-                    msg        = "reset: moving",
-                    who        = default_signature(commit@repo))
+           function(commit, reset_type = c("soft", "mixed", "hard"))
            standardGeneric("reset"))
 
 ##' @rdname reset-methods
 ##' @export
 setMethod("reset",
           signature(commit = "git_commit"),
-          function (commit,
-                    reset_type,
-                    msg,
-                    who)
+          function (commit, reset_type)
           {
               reset_type <- switch(match.arg(reset_type),
                                    soft  = 1L,
                                    mixed = 2L,
                                    hard  = 3L)
 
-              invisible(.Call(git2r_reset,
-                              commit,
-                              reset_type,
-                              msg,
-                              who))
-
+              invisible(.Call(git2r_reset, commit, reset_type))
           }
 )

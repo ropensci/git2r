@@ -100,25 +100,18 @@ cleanup:
  * @param branch_name Name for the branch
  * @param commit Commit to which branch should point.
  * @param force Overwrite existing branch
- * @param signature The identity that will be used to populate the reflog entry
- * @param message The one line long message to the reflog. If NULL, default is
- *        "Branch: created"
  * @return S4 class git_branch
  */
 SEXP git2r_branch_create(
     SEXP branch_name,
     SEXP commit,
-    SEXP force,
-    SEXP signature,
-    SEXP message)
+    SEXP force)
 {
     SEXP repo;
     SEXP result = R_NilValue;
     int err;
     int overwrite = 0;
-    const char *log = NULL;
     git_commit *target = NULL;
-    git_signature *who = NULL;
     git_reference *reference = NULL;
     git_repository *repository = NULL;
 
@@ -128,13 +121,6 @@ SEXP git2r_branch_create(
         git2r_error(git2r_err_commit_arg, __func__, "commit");
     if (git2r_arg_check_logical(force))
         git2r_error(git2r_err_logical_arg, __func__, "force");
-    if (git2r_arg_check_signature(signature))
-        git2r_error(git2r_err_signature_arg, __func__, "signature");
-    if (R_NilValue != message) {
-        if (git2r_arg_check_string(message))
-            git2r_error(git2r_err_string_arg, __func__, "message");
-        log = CHAR(STRING_ELT(message, 0));
-    }
 
     repo = GET_SLOT(commit, Rf_install("repo"));
     repository = git2r_repository_open(repo);
@@ -148,18 +134,12 @@ SEXP git2r_branch_create(
     if (LOGICAL(force)[0])
         overwrite = 1;
 
-    err = git2r_signature_from_arg(&who, signature);
-    if (GIT_OK != err)
-        goto cleanup;
-
     err = git_branch_create(
         &reference,
         repository,
         CHAR(STRING_ELT(branch_name, 0)),
         target,
-        overwrite,
-        who,
-        log);
+        overwrite);
     if (GIT_OK != err)
         goto cleanup;
 
@@ -172,9 +152,6 @@ cleanup:
 
     if (target)
         git_commit_free(target);
-
-    if (who)
-        git_signature_free(who);
 
     if (repository)
         git_repository_free(repository);
@@ -433,7 +410,7 @@ SEXP git2r_branch_upstream_canonical_name(SEXP branch)
     if (!repository)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
-    err = git_repository_config(&cfg, repository);
+    err = git_repository_config_snapshot(&cfg, repository);
     if (GIT_OK != err)
         goto cleanup;
 
@@ -602,26 +579,19 @@ cleanup:
  * @param branch Branch to rename
  * @param new_branch_name The new name for the branch
  * @param force Overwrite existing branch
- * @param signature The identity that will be used to populate the reflog entry
- * @param message The one line long message to the reflog. If NULL, the default
- *        value is appended
  * @return The renamed S4 class git_branch
  */
 SEXP git2r_branch_rename(
     SEXP branch,
     SEXP new_branch_name,
-    SEXP force,
-    SEXP signature,
-    SEXP message)
+    SEXP force)
 {
     SEXP repo;
     SEXP result = R_NilValue;
     int err;
     int overwrite = 0;
-    const char *log = NULL;
     const char *name = NULL;
     git_branch_t type;
-    git_signature *who = NULL;
     git_reference *reference = NULL;
     git_reference *new_reference = NULL;
     git_repository *repository = NULL;
@@ -632,13 +602,6 @@ SEXP git2r_branch_rename(
         git2r_error(git2r_err_string_arg, __func__, "new_branch_name");
     if (git2r_arg_check_logical(force))
         git2r_error(git2r_err_logical_arg, __func__, "force");
-    if (git2r_arg_check_signature(signature))
-        git2r_error(git2r_err_signature_arg, __func__, "signature");
-    if (R_NilValue != message) {
-        if (git2r_arg_check_string(message))
-            git2r_error(git2r_err_string_arg, __func__, "message");
-        log = CHAR(STRING_ELT(message, 0));
-    }
 
     repo = GET_SLOT(branch, Rf_install("repo"));
     repository = git2r_repository_open(repo);
@@ -654,17 +617,11 @@ SEXP git2r_branch_rename(
     if (LOGICAL(force)[0])
         overwrite = 1;
 
-    err = git2r_signature_from_arg(&who, signature);
-    if (GIT_OK != err)
-        goto cleanup;
-
     err = git_branch_move(
         &new_reference,
         reference,
         CHAR(STRING_ELT(new_branch_name, 0)),
-        overwrite,
-        who,
-        log);
+        overwrite);
     if (GIT_OK != err)
         goto cleanup;
 
@@ -677,9 +634,6 @@ cleanup:
 
     if (new_reference)
         git_reference_free(new_reference);
-
-    if (who)
-        git_signature_free(who);
 
     if (repository)
         git_repository_free(repository);

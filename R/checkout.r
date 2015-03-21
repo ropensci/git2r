@@ -14,26 +14,6 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-##' Internal function to generate checkout reflog message
-##'
-##' @param object The object to checkout
-##' @param ref_log_target The target in the reflog message
-##' in the reflog
-##' @keywords internal
-checkout_reflog_msg <- function(object, ref_log_target) {
-    ## Determine the one line long message to be appended to the reflog
-    current <- head(object@repo)
-    if (is.null(current))
-        stop("Current head is NULL")
-    if (is_commit(current)) {
-        current <- current@sha
-    } else {
-        current <- current@name
-    }
-
-    sprintf("checkout: moving from %s to %s", current, ref_log_target)
-}
-
 ##' Checkout
 ##'
 ##' Update files in the index and working tree to match the content of
@@ -162,11 +142,7 @@ setMethod("checkout",
           {
               ref_name <- paste0("refs/heads/", object@name)
               .Call(git2r_checkout_tree, object@repo, ref_name, force)
-              .Call(git2r_repository_set_head,
-                    object@repo,
-                    ref_name,
-                    checkout_reflog_msg(object, object@name),
-                    default_signature(object@repo))
+              .Call(git2r_repository_set_head, object@repo, ref_name)
               invisible(NULL)
           }
 )
@@ -178,10 +154,7 @@ setMethod("checkout",
           function (object, force = FALSE)
           {
               .Call(git2r_checkout_tree, object@repo, object@sha, force)
-              .Call(git2r_repository_set_head_detached,
-                    object,
-                    checkout_reflog_msg(object, object@sha),
-                    default_signature(object@repo))
+              .Call(git2r_repository_set_head_detached, object)
               invisible(NULL)
           }
 )
@@ -194,9 +167,7 @@ setMethod("checkout",
           {
               .Call(git2r_checkout_tree, object@repo, object@target, force)
               .Call(git2r_repository_set_head_detached,
-                    lookup(repo, object@target),
-                    checkout_reflog_msg(object, object@name),
-                    default_signature(object@repo))
+                    lookup(repo, object@target))
               invisible(NULL)
           }
 )

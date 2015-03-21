@@ -21,10 +21,6 @@
 ##' @param commit Commit to which branch should point.
 ##' @param name Name for the branch
 ##' @param force Overwrite existing branch. Default = FALSE
-##' @param message The one line long message to the reflog. Default is
-##' NULL, which gives the log message "Branch: created"
-##' @param who The identity that will be used to populate the
-##' reflog entry. Default is NULL, which gives the default signature.
 ##' @return invisible S4 class git_branch object
 ##' @keywords methods
 ##' @examples
@@ -56,29 +52,16 @@
 ##' }
 setGeneric("branch_create",
            signature = "commit",
-           function(commit,
-                    name,
-                    force = FALSE,
-                    message = NULL,
-                    who = NULL)
+           function(commit, name, force = FALSE)
            standardGeneric("branch_create"))
 
 ##' @rdname branch_create-methods
 ##' @export
 setMethod("branch_create",
           signature = "git_commit",
-          function(commit,
-                   name,
-                   force,
-                   message,
-                   who)
+          function(commit, name, force)
           {
-              if (is.null(who)) {
-                  who = default_signature(commit@repo)
-              }
-
-              invisible(.Call(git2r_branch_create, name, commit, force,
-                              who, message))
+              invisible(.Call(git2r_branch_create, name, commit, force))
           }
 )
 
@@ -231,10 +214,6 @@ setMethod("branch_remote_url",
 ##' @param branch Branch to rename
 ##' @param name The new name for the branch
 ##' @param force Overwrite existing branch. Default is FALSE
-##' @param message The one line long message to the reflog. If NULL,
-##' the default value is appended
-##' @param who The identity that will be used to populate the
-##' reflog entry. Default is NULL, which gives the default signature.
 ##' @return invisible renamed S4 class git_branch
 ##' @keywords methods
 ##' @include S4_classes.r
@@ -259,29 +238,16 @@ setMethod("branch_remote_url",
 ##' }
 setGeneric("branch_rename",
            signature = "branch",
-           function(branch,
-                    name,
-                    force = FALSE,
-                    message = NULL,
-                    who = NULL)
+           function(branch, name, force = FALSE)
            standardGeneric("branch_rename"))
 
 ##' @rdname branch_rename-methods
 ##' @export
 setMethod("branch_rename",
           signature = "git_branch",
-          function(branch,
-                   name,
-                   force,
-                   message,
-                   who)
+          function(branch, name, force)
           {
-              if (is.null(who)) {
-                  who = default_signature(branch@repo)
-              }
-
-              invisible(.Call(git2r_branch_rename, branch, name, force,
-                              who, message))
+              invisible(.Call(git2r_branch_rename, branch, name, force))
           }
 )
 
