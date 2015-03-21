@@ -61,6 +61,11 @@ struct merge_diff_df_data {
 	git_merge_diff *prev_conflict;
 };
 
+GIT_INLINE(int) merge_diff_detect_binary(
+	bool *binary_out,
+	git_repository *repo,
+	const git_merge_diff *conflict);
+
 
 /* Merge base computation */
 
@@ -653,7 +658,8 @@ static int merge_conflict_resolve_automerge(
 	int *resolved,
 	git_merge_diff_list *diff_list,
 	const git_merge_diff *conflict,
-	unsigned int merge_file_favor)
+	unsigned int merge_file_favor,
+	unsigned int file_flags)
 {
 	const git_index_entry *ancestor = NULL, *ours = NULL, *theirs = NULL;
 	git_merge_file_options opts = GIT_MERGE_FILE_OPTIONS_INIT;
@@ -662,6 +668,7 @@ static int merge_conflict_resolve_automerge(
 	git_odb *odb = NULL;
 	git_oid automerge_oid;
 	int error = 0;
+	bool binary = false;
 
 	assert(resolved && diff_list && conflict);
 
@@ -697,7 +704,9 @@ static int merge_conflict_resolve_automerge(
 		return 0;
 
 	/* Reject binary conflicts */
-	if (conflict->binary)
+	if ((error = merge_diff_detect_binary(&binary, diff_list->repo, conflict)) < 0)
+		return error;
+	if (binary)
 		return 0;
 
 	ancestor = GIT_MERGE_INDEX_ENTRY_EXISTS(conflict->ancestor_entry) ?
@@ -708,6 +717,7 @@ static int merge_conflict_resolve_automerge(
 		&conflict->their_entry : NULL;
 
 	opts.favor = merge_file_favor;
+	opts.flags = file_flags;
 
 	if ((error = git_repository_odb(&odb, diff_list->repo)) < 0 ||
 		(error = git_merge_file_from_index(&result, diff_list->repo, ancestor, ours, theirs, &opts)) < 0 ||
@@ -741,7 +751,8 @@ static int merge_conflict_resolve(
 	int *out,
 	git_merge_diff_list *diff_list,
 	const git_merge_diff *conflict,
-	unsigned int merge_file_favor)
+	unsigned int merge_file_favor,
+	unsigned int file_flags)
 {
 	int resolved = 0;
 	int error = 0;
@@ -757,7 +768,8 @@ static int merge_conflict_resolve(
 	if (!resolved && (error = merge_conflict_resolve_one_renamed(&resolved, diff_list, conflict)) < 0)
 		goto done;
 
-	if (!resolved && (error = merge_conflict_resolve_automerge(&resolved, diff_list, conflict, merge_file_favor)) < 0)
+	if (!resolved && (error = merge_conflict_resolve_automerge(&resolved, diff_list, conflict,
+		merge_file_favor, file_flags)) < 0)
 		goto done;
 
 	*out = resolved;
@@ -1150,7 +1162,7 @@ int git_merge_diff_list__find_renames(
 
 	assert(diff_list && opts);
 
-	if ((opts->flags & GIT_MERGE_TREE_FIND_RENAMES) == 0)
+	if ((opts->tree_flags & GIT_MERGE_TREE_FIND_RENAMES) == 0)
 		return 0;
 
 	similarity_ours = git__calloc(diff_list->conflicts.length,
@@ -1303,34 +1315,38 @@ GIT_INLINE(int) merge_diff_detect_type(
 }
 
 GIT_INLINE(int) merge_diff_detect_binary(
+	bool *binary_out,
 	git_repository *repo,
-	git_merge_diff *conflict)
+	const git_merge_diff *conflict)
 {
 	git_blob *ancestor_blob = NULL, *our_blob = NULL, *their_blob = NULL;
 	int error = 0;
+	bool binary = false;
 
 	if (GIT_MERGE_INDEX_ENTRY_ISFILE(conflict->ancestor_entry)) {
 		if ((error = git_blob_lookup(&ancestor_blob, repo, &conflict->ancestor_entry.id)) < 0)
 			goto done;
 
-		conflict->binary = git_blob_is_binary(ancestor_blob);
+		binary = git_blob_is_binary(ancestor_blob);
 	}
 
-	if (!conflict->binary &&
+	if (!binary &&
 		GIT_MERGE_INDEX_ENTRY_ISFILE(conflict->our_entry)) {
 		if ((error = git_blob_lookup(&our_blob, repo, &conflict->our_entry.id)) < 0)
 			goto done;
 
-		conflict->binary = git_blob_is_binary(our_blob);
+		binary = git_blob_is_binary(our_blob);
 	}
 
-	if (!conflict->binary &&
+	if (!binary &&
 		GIT_MERGE_INDEX_ENTRY_ISFILE(conflict->their_entry)) {
 		if ((error = git_blob_lookup(&their_blob, repo, &conflict->their_entry.id)) < 0)
 			goto done;
 
-		conflict->binary = git_blob_is_binary(their_blob);
+		binary = git_blob_is_binary(their_blob);
 	}
+
+	*binary_out = binary;
 
 done:
 	git_blob_free(ancestor_blob);
@@ -1411,7 +1427,6 @@ static int merge_diff_list_insert_conflict(
 	if ((conflict = merge_diff_from_index_entries(diff_list, tree_items)) == NULL ||
 		merge_diff_detect_type(conflict) < 0 ||
 		merge_diff_detect_df_conflict(merge_df_data, conflict) < 0 ||
-		merge_diff_detect_binary(diff_list->repo, conflict) < 0 ||
 		git_vector_insert(&diff_list->conflicts, conflict) < 0)
 		return -1;
 
@@ -1589,7 +1604,7 @@ static int merge_normalize_opts(
 		git_merge_options init = GIT_MERGE_OPTIONS_INIT;
 		memcpy(opts, &init, sizeof(init));
 
-		opts->flags = GIT_MERGE_TREE_FIND_RENAMES;
+		opts->tree_flags = GIT_MERGE_TREE_FIND_RENAMES;
 		opts->rename_threshold = GIT_MERGE_TREE_RENAME_THRESHOLD;
 	}
 
@@ -1779,7 +1794,7 @@ int git_merge_trees(
 	git_vector_foreach(&changes, i, conflict) {
 		int resolved = 0;
 
-		if ((error = merge_conflict_resolve(&resolved, diff_list, conflict, opts.file_favor)) < 0)
+		if ((error = merge_conflict_resolve(&resolved, diff_list, conflict, opts.file_favor, opts.file_flags)) < 0)
 			goto done;
 
 		if (!resolved)
