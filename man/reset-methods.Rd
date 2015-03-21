@@ -6,11 +6,9 @@
 \alias{reset,git_commit-method}
 \title{Reset current HEAD to the specified state}
 \usage{
-reset(commit, reset_type = c("soft", "mixed", "hard"),
-  msg = "reset: moving", who = default_signature(commit@repo))
+reset(commit, reset_type = c("soft", "mixed", "hard"))
 
-\S4method{reset}{git_commit}(commit, reset_type = c("soft", "mixed", "hard"),
-  msg = "reset: moving", who = default_signature(commit@repo))
+\S4method{reset}{git_commit}(commit, reset_type = c("soft", "mixed", "hard"))
 }
 \arguments{
 \item{commit}{The \code{\linkS4class{git_commit}} to which the
@@ -21,12 +19,6 @@ the Head will be moved to the commit. 'mixed' reset will trigger a
 'soft' reset, plus the index will be replaced with the content of
 the commit tree. 'hard' reset will trigger a 'mixed' reset and the
 working directory will be replaced with the content of the index.}
-
-\item{msg}{The one line long message to the reflog. The default
-value is "reset: moving".}
-
-\item{who}{The identity that will be used to populate the
-reflog entry. Default is the default signature.}
 }
 \value{
 invisible NULL

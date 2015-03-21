@@ -6,10 +6,9 @@
 \alias{branch_rename,git_branch-method}
 \title{Rename a branch}
 \usage{
-branch_rename(branch, name, force = FALSE, message = NULL, who = NULL)
+branch_rename(branch, name, force = FALSE)
 
-\S4method{branch_rename}{git_branch}(branch, name, force = FALSE,
-  message = NULL, who = NULL)
+\S4method{branch_rename}{git_branch}(branch, name, force = FALSE)
 }
 \arguments{
 \item{branch}{Branch to rename}
@@ -17,12 +16,6 @@ branch_rename(branch, name, force = FALSE, message = NULL, who = NULL)
 \item{name}{The new name for the branch}
 
 \item{force}{Overwrite existing branch. Default is FALSE}
-
-\item{message}{The one line long message to the reflog. If NULL,
-the default value is appended}
-
-\item{who}{The identity that will be used to populate the
-reflog entry. Default is NULL, which gives the default signature.}
 }
 \value{
 invisible renamed S4 class git_branch

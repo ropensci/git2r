@@ -6,10 +6,9 @@
 \alias{branch_create,git_commit-method}
 \title{Create a branch}
 \usage{
-branch_create(commit, name, force = FALSE, message = NULL, who = NULL)
+branch_create(commit, name, force = FALSE)
 
-\S4method{branch_create}{git_commit}(commit, name, force = FALSE,
-  message = NULL, who = NULL)
+\S4method{branch_create}{git_commit}(commit, name, force = FALSE)
 }
 \arguments{
 \item{commit}{Commit to which branch should point.}
@@ -17,12 +16,6 @@ branch_create(commit, name, force = FALSE, message = NULL, who = NULL)
 \item{name}{Name for the branch}
 
 \item{force}{Overwrite existing branch. Default = FALSE}
-
-\item{message}{The one line long message to the reflog. Default is
-NULL, which gives the log message "Branch: created"}
-
-\item{who}{The identity that will be used to populate the
-reflog entry. Default is NULL, which gives the default signature.}
 }
 \value{
 invisible S4 class git_branch object
