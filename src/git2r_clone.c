@@ -132,7 +132,7 @@ SEXP git2r_clone(
     if (git2r_arg_check_logical(progress))
         git2r_error(git2r_err_logical_arg, __func__, "progress");
 
-    checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE_CREATE;
+    checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE;
     clone_opts.checkout_opts = checkout_opts;
     payload.credentials = credentials;
     clone_opts.remote_callbacks.payload = &payload;
