@@ -70,6 +70,10 @@ stopifnot(identical(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit,
                       "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
                     readLines(file.path(path_repo_2, "test.txt"))))
 
+## Checkout previous branch
+checkout(repo_2, "-")
+stopifnot(identical(head(repo_2)@name, "master"))
+
 ## Cleanup
 unlink(path_bare, recursive=TRUE)
 unlink(path_repo_1, recursive=TRUE)

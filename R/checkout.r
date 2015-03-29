@@ -98,6 +98,21 @@ setMethod("checkout",
               if (any(!is.character(branch), !identical(length(branch), 1L)))
                   stop("'branch' must be a character vector of length one")
 
+              if (identical(branch, "-")) {
+                  ## Determine previous branch name
+                  branch <- revparse_single(object, "@{-1}")@sha
+                  branch <- sapply(references(object), function(x) {
+                      ifelse(x@sha == branch, x@shorthand, NA_character_)
+                  })
+                  branch <- branch[!sapply(branch, is.na)]
+                  branch <- sapply(branches(object, "local"), function(x) {
+                      ifelse(x@name %in% branch, x@name, NA_character_)
+                  })
+                  branch <- branch[!sapply(branch, is.na)]
+                  if (any(!is.character(branch), !identical(length(branch), 1L)))
+                      stop("'branch' must be a character vector of length one")
+              }
+
               ## Check if branch exists in a local branch
               lb <- branches(object, "local")
               lb <- lb[sapply(lb, slot, "name") == branch]
