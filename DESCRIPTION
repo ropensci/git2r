@@ -51,6 +51,7 @@ Collate:
     'remote.r'
     'repository.r'
     'reset.r'
+    'revparse.r'
     'signature.r'
     'stash.r'
     'status.r'
