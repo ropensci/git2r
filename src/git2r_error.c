@@ -27,6 +27,7 @@ const char git2r_err_checkout_tree[] = "Expected commit, tag or tree";
 const char git2r_err_from_libgit2[] = "Error in '%s': %s\n";
 const char git2r_err_invalid_repository[] = "Invalid repository";
 const char git2r_err_nothing_added_to_commit[] = "Nothing added to commit";
+const char git2r_err_revparse_single[] = "Expected commit, tag or tree";
 const char git2r_err_unexpected_config_level[] = "Unexpected config level";
 const char git2r_err_unexpected_type_of_branch[] = "Unexpected type of branch";
 const char git2r_err_unexpected_head_of_branch[] = "Unexpected head of branch";
