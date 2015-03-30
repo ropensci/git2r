@@ -134,7 +134,7 @@ setMethod("checkout",
                       commit <- lookup(object, branch_target(rb[[i]]))
                       branch <- branch_create(commit, branch)
                       branch_set_upstream(branch, rb[[i]]@name)
-                      checkout(branch, force = TRUE)
+                      checkout(branch, force = force)
                   } else {
                       if (!identical(create, TRUE))
                           stop(sprintf("'%s' did not match any branch", branch))
