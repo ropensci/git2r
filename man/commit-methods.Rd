@@ -6,16 +6,20 @@
 \alias{commit,git_repository-method}
 \title{Commit}
 \usage{
-commit(repo, message = NULL, reference = "HEAD",
+commit(repo, message = NULL, all = FALSE, reference = "HEAD",
   author = default_signature(repo), committer = default_signature(repo))
 
-\S4method{commit}{git_repository}(repo, message = NULL, reference = "HEAD",
-  author = default_signature(repo), committer = default_signature(repo))
+\S4method{commit}{git_repository}(repo, message = NULL, all = FALSE,
+  reference = "HEAD", author = default_signature(repo),
+  committer = default_signature(repo))
 }
 \arguments{
 \item{repo}{The repository \code{object}.}
 
 \item{message}{The commit message.}
+
+\item{all}{Stage modified and deleted files. Files not added to
+Git are not affected.}
 
 \item{reference}{Name of the reference that will be updated to
 point to this commit.}

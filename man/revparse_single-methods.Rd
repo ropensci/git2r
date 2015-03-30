@@ -46,9 +46,7 @@ writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
 add(repo, "test.txt")
 commit(repo, "Second commit message")
 
-# Lookup first commit
 revparse_single(repo, "HEAD^")
-revparse_single(repo, "@{-1}")
 }
 }
 \keyword{methods}
