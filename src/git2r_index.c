@@ -94,3 +94,53 @@ cleanup:
 
     return R_NilValue;
 }
+
+/**
+ * Remove an index entry corresponding to a file relative to the
+ * repository's working folder.
+ *
+ * @param repo S4 class git_repository
+ * @param path array of path patterns
+ * @return R_NilValue
+ */
+SEXP git2r_index_remove_bypath(SEXP repo, SEXP path)
+{
+    int err;
+    size_t i, len;
+    git_index *index = NULL;
+    git_repository *repository = NULL;
+
+    if (git2r_arg_check_string_vec(path))
+        git2r_error(git2r_err_string_vec_arg, __func__, "path");
+
+    repository= git2r_repository_open(repo);
+    if (!repository)
+        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+
+    err = git_repository_index(&index, repository);
+    if (GIT_OK != err)
+        goto cleanup;
+
+    len = length(path);
+    for (i = 0; i < len; i++) {
+        if (NA_STRING != STRING_ELT(path, i)) {
+            err = git_index_remove_bypath(index, CHAR(STRING_ELT(path, i)));
+            if (GIT_OK != err)
+                goto cleanup;
+        }
+    }
+
+    err = git_index_write(index);
+
+cleanup:
+    if (index)
+        git_index_free(index);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (GIT_OK != err)
+        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+
+    return R_NilValue;
+}
