@@ -320,12 +320,6 @@ SEXP git2r_commit(
     if (GIT_OK != err)
         goto cleanup;
 
-    if (!git_index_entrycount(index)) {
-        giterr_set_str(GITERR_NONE, git2r_err_nothing_added_to_commit);
-        err = GIT_ERROR;
-        goto cleanup;
-    }
-
     err = git2r_commit_create(
         &oid,
         repository,

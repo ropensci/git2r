@@ -69,5 +69,28 @@ stopifnot(identical(nrow(contributions(repo)), 1L))
 stopifnot(identical(contributions(repo)$n, 2L))
 stopifnot(identical(contributions(repo, by="author", breaks="day")$n, 2L))
 
+## Add another commit with 'all' argument
+writeLines(c("Hello world!", "HELLO WORLD!", "HeLlO wOrLd!"),
+           file.path(path, "test.txt"))
+commit(repo, "Commit message 3", all = TRUE)
+
+stopifnot(identical(status(repo),
+                    structure(list(
+                        staged = structure(list(), .Names = character(0)),
+                        unstaged = structure(list(), .Names = character(0)),
+                        untracked = structure(list(), .Names = character(0))),
+                              .Names = c("staged", "unstaged", "untracked"))))
+
+## Delete file and commit with 'all' argument
+file.remove(file.path(path, "test.txt"))
+commit(repo, "Commit message 4", all = TRUE)
+
+stopifnot(identical(status(repo),
+                    structure(list(
+                        staged = structure(list(), .Names = character(0)),
+                        unstaged = structure(list(), .Names = character(0)),
+                        untracked = structure(list(), .Names = character(0))),
+                              .Names = c("staged", "unstaged", "untracked"))))
+
 ## Cleanup
 unlink(path, recursive=TRUE)

@@ -70,6 +70,8 @@ setMethod("ahead_behind",
 ##' @docType methods
 ##' @param repo The repository \code{object}.
 ##' @param message The commit message.
+##' @param all Stage modified and deleted files. Files not added to
+##' Git are not affected.
 ##' @param reference Name of the reference that will be updated to
 ##' point to this commit.
 ##' @param author Signature with author and author time of commit.
@@ -95,9 +97,10 @@ setMethod("ahead_behind",
 setGeneric("commit",
            signature = "repo",
            function(repo,
-                    message = NULL,
+                    message   = NULL,
+                    all       = FALSE,
                     reference = "HEAD",
-                    author = default_signature(repo),
+                    author    = default_signature(repo),
                     committer = default_signature(repo))
            standardGeneric("commit"))
 
@@ -107,16 +110,39 @@ setMethod("commit",
           signature(repo = "git_repository"),
           function (repo,
                     message,
+                    all,
                     reference,
                     author,
                     committer)
           {
               ## Argument checking
               stopifnot(is.character(message),
-                        identical(length(message), 1L))
+                        identical(length(message), 1L),
+                        is.logical(all),
+                        identical(length(all), 1L))
 
               if (!nchar(message[1]))
                   stop("Aborting commit due to empty commit message.")
+
+              if (all) {
+                  s <- status(repo,
+                              unstaged  = TRUE,
+                              staged    = FALSE,
+                              untracked = FALSE,
+                              ignored   = FALSE,
+                              verbose   = FALSE)
+
+                  ## Stage modified files
+                  lapply(s$unstaged$modified, function(x) {
+                      add(repo, x)
+                  })
+
+                  ## Stage deleted files
+                  lapply(s$unstaged$deleted, function(x) {
+                      .Call(git2r_index_remove_bypath, repo, x)
+                  })
+
+              }
 
               .Call(git2r_commit, repo, message, author, committer)
           }
