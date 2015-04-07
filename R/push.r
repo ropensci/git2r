@@ -20,6 +20,8 @@
 ##' @docType methods
 ##' @param object S4 class \code{git_repository} or \code{git_branch}.
 ##' @param ... Additional arguments affecting the push.
+##' @param force Force your local revision to the remote repo. Use it
+##' with care. Default is FALSE.
 ##' @param credentials The credentials for remote repository
 ##' access. Default is NULL.
 ##' @return invisible(NULL)
@@ -74,6 +76,7 @@ setGeneric("push",
 setMethod("push",
           signature(object = "git_branch"),
           function (object,
+                    force       = FALSE,
                     credentials = NULL)
           {
               upstream <- branch_get_upstream(object)
@@ -88,6 +91,7 @@ setMethod("push",
               push(object      = object@repo,
                    name        = branch_remote_name(upstream),
                    refspec     = paste0(src, ":", dst),
+                   force       = force,
                    credentials = credentials)
           }
 )
@@ -101,6 +105,7 @@ setMethod("push",
           function (object,
                     name        = NULL,
                     refspec     = NULL,
+                    force       = FALSE,
                     credentials = NULL)
           {
               if (all(is.null(name), is.null(refspec))) {
@@ -118,6 +123,9 @@ setMethod("push",
               } else if (any(is.null(name), is.null(refspec))) {
                   stop("Both 'name' and 'refspec' must be 'character' or 'NULL'")
               }
+
+              if (identical(force, TRUE))
+                  refspec <- paste0("+", refspec)
 
               result <- .Call(git2r_push, object, name, refspec, credentials)
 

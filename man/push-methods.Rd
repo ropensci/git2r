@@ -9,15 +9,18 @@
 \usage{
 push(object, ...)
 
-\S4method{push}{git_branch}(object, credentials = NULL)
+\S4method{push}{git_branch}(object, force = FALSE, credentials = NULL)
 
 \S4method{push}{git_repository}(object, name = NULL, refspec = NULL,
-  credentials = NULL)
+  force = FALSE, credentials = NULL)
 }
 \arguments{
 \item{object}{S4 class \code{git_repository} or \code{git_branch}.}
 
 \item{...}{Additional arguments affecting the push.}
+
+\item{force}{Force your local revision to the remote repo. Use it
+with care. Default is FALSE.}
 
 \item{credentials}{The credentials for remote repository
 access. Default is NULL.}
