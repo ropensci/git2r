@@ -16,36 +16,26 @@
 
 library(git2r)
 
-##
 ## Create a directory in tempdir
-##
 path <- tempfile(pattern="git2r-")
 dir.create(path)
 
-##
 ## Initialize a repository
-##
 repo <- init(path)
 config(repo, user.name="Alice", user.email="alice@example.org")
 
-##
 ## Create directories
-##
 dir.create(file.path(path, "sub-folder"));
 dir.create(file.path(path, "sub-folder", "sub-sub-folder"));
 
-##
 ## Create files
-##
 writeLines("Hello world!", file.path(path, "file-1.txt"))
 writeLines("Hello world!", file.path(path, "sub-folder", "file-2.txt"))
 writeLines("Hello world!", file.path(path, "sub-folder", "file-3.txt"))
 writeLines("Hello world!", file.path(path, "sub-folder", "sub-sub-folder", "file-4.txt"))
 writeLines("Hello world!", file.path(path, "sub-folder", "sub-sub-folder", "file-5.txt"))
 
-##
 ## Add
-##
 add(repo, "sub-folder")
 status_exp <- structure(list(staged = structure(list(
                                  new = "sub-folder/file-2.txt",
@@ -56,6 +46,40 @@ status_exp <- structure(list(staged = structure(list(
                              unstaged = structure(list(), .Names = character(0)),
                              untracked = structure(list(untracked = "file-1.txt"),
                                  .Names = "untracked")),
+                        .Names = c("staged", "unstaged", "untracked"))
+status_obs <- status(repo)
+stopifnot(identical(status_obs, status_exp))
+
+## Commit
+commit(repo, "First commit message")
+
+## It should fail to remove non-existing, untracked and ignored files
+tools::assertError(rm_file(repo, c("file-1.txt", "file-2.txt")))
+tools::assertError(rm_file(repo, c("file-1.txt", "")))
+tools::assertError(rm_file(repo, c("file-1.txt")))
+writeLines("/file-1.txt", file.path(path, ".gitignore"))
+tools::assertError(rm_file(repo, "file-1.txt"))
+
+## It should fail to remove files with staged changes
+file.remove(file.path(path, ".gitignore"))
+add(repo, "file-1.txt")
+tools::assertError(rm_file(repo, "file-1.txt"))
+
+## It should fail to remove files with unstaged changes
+commit(repo, "Second commit message")
+writeLines(c("Hello world!", "Hello world!"), file.path(path, "file-1.txt"))
+tools::assertError(rm_file(repo, "file-1.txt"))
+
+## Remove file
+add(repo, "file-1.txt")
+commit(repo, "Third commit message")
+rm_file(repo, "file-1.txt")
+status_exp <- structure(list(staged = structure(list(deleted = "file-1.txt"),
+                                 .Names = "deleted"),
+                             unstaged = structure(list(),
+                                 .Names = character(0)),
+                             untracked = structure(list(),
+                                 .Names = character(0))),
                         .Names = c("staged", "unstaged", "untracked"))
 status_obs <- status(repo)
 stopifnot(identical(status_obs, status_exp))
