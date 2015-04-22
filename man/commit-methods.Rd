@@ -6,11 +6,12 @@
 \alias{commit,git_repository-method}
 \title{Commit}
 \usage{
-commit(repo, message = NULL, all = FALSE, reference = "HEAD",
-  author = default_signature(repo), committer = default_signature(repo))
+commit(repo, message = NULL, all = FALSE, session = FALSE,
+  reference = "HEAD", author = default_signature(repo),
+  committer = default_signature(repo))
 
 \S4method{commit}{git_repository}(repo, message = NULL, all = FALSE,
-  reference = "HEAD", author = default_signature(repo),
+  session = FALSE, reference = "HEAD", author = default_signature(repo),
   committer = default_signature(repo))
 }
 \arguments{
@@ -20,6 +21,9 @@ commit(repo, message = NULL, all = FALSE, reference = "HEAD",
 
 \item{all}{Stage modified and deleted files. Files not added to
 Git are not affected.}
+
+\item{session}{Add sessionInfo to commit message. Default is
+FALSE.}
 
 \item{reference}{Name of the reference that will be updated to
 point to this commit.}

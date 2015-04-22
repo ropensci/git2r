@@ -72,6 +72,8 @@ setMethod("ahead_behind",
 ##' @param message The commit message.
 ##' @param all Stage modified and deleted files. Files not added to
 ##' Git are not affected.
+##' @param session Add sessionInfo to commit message. Default is
+##' FALSE.
 ##' @param reference Name of the reference that will be updated to
 ##' point to this commit.
 ##' @param author Signature with author and author time of commit.
@@ -99,6 +101,7 @@ setGeneric("commit",
            function(repo,
                     message   = NULL,
                     all       = FALSE,
+                    session   = FALSE,
                     reference = "HEAD",
                     author    = default_signature(repo),
                     committer = default_signature(repo))
@@ -111,6 +114,7 @@ setMethod("commit",
           function (repo,
                     message,
                     all,
+                    session,
                     reference,
                     author,
                     committer)
@@ -119,7 +123,9 @@ setMethod("commit",
               stopifnot(is.character(message),
                         identical(length(message), 1L),
                         is.logical(all),
-                        identical(length(all), 1L))
+                        identical(length(all), 1L),
+                        is.logical(session),
+                        identical(length(session), 1L))
 
               if (!nchar(message[1]))
                   stop("Aborting commit due to empty commit message.")
@@ -141,7 +147,12 @@ setMethod("commit",
                   lapply(s$unstaged$deleted, function(x) {
                       .Call(git2r_index_remove_bypath, repo, x)
                   })
+              }
 
+              if (session) {
+                  message <- paste0(message, "\n\nsessionInfo:\n",
+                                    paste0(capture.output(sessionInfo()),
+                                           collapse="\n"))
               }
 
               .Call(git2r_commit, repo, message, author, committer)
