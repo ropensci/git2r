@@ -21,6 +21,7 @@
 ##' @param object The repository \code{object}.
 ##' @param name Name for the tag.
 ##' @param message The tag message.
+##' @param session Add sessionInfo to tag message. Default is FALSE.
 ##' @param tagger The tagger (author) of the tag
 ##' @return invisible(\code{git_tag}) object
 ##' @keywords methods
@@ -50,7 +51,8 @@ setGeneric("tag",
            function(object,
                     name,
                     message,
-                    tagger = default_signature(object))
+                    session = FALSE,
+                    tagger  = default_signature(object))
            standardGeneric("tag"))
 
 ##' @rdname tag-methods
@@ -60,6 +62,7 @@ setMethod("tag",
           function (object,
                     name,
                     message,
+                    session,
                     tagger)
           {
               ## Argument checking
@@ -69,7 +72,15 @@ setMethod("tag",
                         is.character(message),
                         identical(length(message), 1L),
                         nchar(message[1]) > 0,
+                        is.logical(session),
+                        identical(length(session), 1L),
                         is(tagger, "git_signature"))
+
+              if (session) {
+                  message <- paste0(message, "\n\nsessionInfo:\n",
+                                    paste0(capture.output(sessionInfo()),
+                                           collapse="\n"))
+              }
 
               invisible(.Call(git2r_tag_create, object, name, message, tagger))
           }

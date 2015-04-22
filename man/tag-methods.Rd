@@ -6,9 +6,10 @@
 \alias{tag,git_repository-method}
 \title{Create tag targeting HEAD commit in repository}
 \usage{
-tag(object, name, message, tagger = default_signature(object))
+tag(object, name, message, session = FALSE,
+  tagger = default_signature(object))
 
-\S4method{tag}{git_repository}(object, name, message,
+\S4method{tag}{git_repository}(object, name, message, session = FALSE,
   tagger = default_signature(object))
 }
 \arguments{
@@ -17,6 +18,8 @@ tag(object, name, message, tagger = default_signature(object))
 \item{name}{Name for the tag.}
 
 \item{message}{The tag message.}
+
+\item{session}{Add sessionInfo to tag message. Default is FALSE.}
 
 \item{tagger}{The tagger (author) of the tag}
 }
