@@ -1,4 +1,40 @@
-git2r 0.7
+git2 0.7.99
+-----------
+
+CHANGES
+
+* Added bare argument to clone method to create a bare repository
+
+* Added force argument to push to force local revision to the remote
+  repo
+
+* Updated libgit2 source code (2a0f67f)
+
+* Internal refactoring of push
+
+NEW FEATURES
+
+* Added method rm_file to remove files
+
+* Added 'all' argument to commit method to stage modified and deleted
+  files
+
+* Added shortcut to checkout previous branch with "-" which is
+  synonymous with "@{-1}"
+
+* Added session argument to commit method to add sessionInfo to commit
+  message
+
+* Added session argument to tag method to add sessionInfo to tag
+  message
+
+* Added  method to coerce POSIXlt to S4 class git_time
+
+* Added method 'revparse_single' to find object specified by revision
+
+* Added plot method
+
+git2 0.7
 ---------
 
 CHANGES
