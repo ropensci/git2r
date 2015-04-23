@@ -4,11 +4,14 @@
 \name{is_bare}
 \alias{is_bare}
 \alias{is_bare,git_repository-method}
+\alias{is_bare,missing-method}
 \title{Check if repository is bare}
 \usage{
 is_bare(repo)
 
 \S4method{is_bare}{git_repository}(repo)
+
+\S4method{is_bare}{missing}(repo)
 }
 \arguments{
 \item{repo}{The repository to check if it's bare}

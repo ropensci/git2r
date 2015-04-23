@@ -16,29 +16,23 @@
 
 library(git2r)
 
-##
 ## Create a directory in tempdir
-##
 path <- tempfile(pattern="git2r-")
 dir.create(path)
 
-##
 ## Initialize a bare repository
-##
 repo <- init(path, bare=TRUE)
 
-##
 ## Check that the state of the repository
-##
 stopifnot(identical(is_bare(repo), TRUE))
 stopifnot(identical(is_empty(repo), TRUE))
 
-##
 ## Check that workdir is NULL for a bare repository
-##
 stopifnot(is.null(workdir(repo)))
 
-##
+## Check with missing repo argument
+setwd(path)
+stopifnot(identical(is_bare(), TRUE))
+
 ## Cleanup
-##
 unlink(path, recursive=TRUE)

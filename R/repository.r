@@ -395,6 +395,16 @@ setMethod("is_bare",
           }
 )
 
+##' @rdname is_bare-methods
+##' @export
+setMethod("is_bare",
+          signature(repo = "missing"),
+          function (repo)
+          {
+              is_bare(repository(getwd(), discover = TRUE))
+          }
+)
+
 ##' Check if HEAD of repository is detached
 ##'
 ##' @rdname is_detached-methods
