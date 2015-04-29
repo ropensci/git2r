@@ -61,8 +61,9 @@ soft_exp <- structure(list(staged = structure(list(modified = "test-1.txt"),
                                .Names = character(0)),
                            untracked = structure(list(untracked = "test-2.txt"),
                                .Names = "untracked")),
-                      .Names = c("staged", "unstaged", "untracked"))
-soft_obs <- status(repo, verbose = FALSE)
+                      .Names = c("staged", "unstaged", "untracked"),
+                      class = "git_status")
+soft_obs <- status(repo)
 stopifnot(identical(soft_obs, soft_exp))
 stopifnot(identical(length(commits(repo)), 1L))
 stopifnot(identical(commits(repo)[[1]], commit_1))
@@ -78,8 +79,9 @@ mixed_exp <- structure(list(staged = structure(list(),
                                 .Names = "modified"),
                             untracked = structure(list(untracked = "test-2.txt"),
                                 .Names = "untracked")),
-                       .Names = c("staged", "unstaged", "untracked"))
-mixed_obs <- status(repo, verbose = FALSE)
+                       .Names = c("staged", "unstaged", "untracked"),
+                       class = "git_status")
+mixed_obs <- status(repo)
 stopifnot(identical(mixed_obs, mixed_exp))
 stopifnot(identical(length(commits(repo)), 1L))
 stopifnot(identical(commits(repo)[[1]], commit_1))
@@ -96,8 +98,9 @@ hard_exp <- structure(list(staged = structure(list(),
                                .Names = character(0)),
                            untracked = structure(list(untracked = "test-2.txt"),
                                .Names = "untracked")),
-                      .Names = c("staged", "unstaged", "untracked"))
-hard_obs <- status(repo, verbose = FALSE)
+                      .Names = c("staged", "unstaged", "untracked"),
+                      class = "git_status")
+hard_obs <- status(repo)
 stopifnot(identical(hard_obs, hard_exp))
 stopifnot(identical(length(commits(repo)), 1L))
 stopifnot(identical(commits(repo)[[1]], commit_1))

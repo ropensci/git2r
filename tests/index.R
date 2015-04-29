@@ -46,7 +46,8 @@ status_exp <- structure(list(staged = structure(list(
                              unstaged = structure(list(), .Names = character(0)),
                              untracked = structure(list(untracked = "file-1.txt"),
                                  .Names = "untracked")),
-                        .Names = c("staged", "unstaged", "untracked"))
+                        .Names = c("staged", "unstaged", "untracked"),
+                        class = "git_status")
 status_obs <- status(repo)
 stopifnot(identical(status_obs, status_exp))
 
@@ -80,7 +81,8 @@ status_exp <- structure(list(staged = structure(list(deleted = "file-1.txt"),
                                  .Names = character(0)),
                              untracked = structure(list(),
                                  .Names = character(0))),
-                        .Names = c("staged", "unstaged", "untracked"))
+                        .Names = c("staged", "unstaged", "untracked"),
+                        class = "git_status")
 status_obs <- status(repo)
 stopifnot(identical(status_obs, status_exp))
 

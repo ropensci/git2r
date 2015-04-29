@@ -79,7 +79,8 @@ stopifnot(identical(status(repo),
                         staged = structure(list(), .Names = character(0)),
                         unstaged = structure(list(), .Names = character(0)),
                         untracked = structure(list(), .Names = character(0))),
-                              .Names = c("staged", "unstaged", "untracked"))))
+                              .Names = c("staged", "unstaged", "untracked"),
+                              class = "git_status")))
 
 ## Delete file and commit with 'all' argument
 file.remove(file.path(path, "test.txt"))
@@ -90,7 +91,8 @@ stopifnot(identical(status(repo),
                         staged = structure(list(), .Names = character(0)),
                         unstaged = structure(list(), .Names = character(0)),
                         untracked = structure(list(), .Names = character(0))),
-                              .Names = c("staged", "unstaged", "untracked"))))
+                              .Names = c("staged", "unstaged", "untracked"),
+                              class = "git_status")))
 
 ## Cleanup
 unlink(path, recursive=TRUE)

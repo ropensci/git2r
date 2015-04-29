@@ -135,8 +135,7 @@ setMethod("commit",
                               unstaged  = TRUE,
                               staged    = FALSE,
                               untracked = FALSE,
-                              ignored   = FALSE,
-                              verbose   = FALSE)
+                              ignored   = FALSE)
 
                   ## Stage modified files
                   lapply(s$unstaged$modified, function(x) {

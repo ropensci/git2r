@@ -123,8 +123,7 @@ setMethod("rm_file",
                   }
 
                   s <- status(repo, staged = TRUE, unstaged = TRUE,
-                              untracked = TRUE, ignored = TRUE,
-                              verbose = FALSE)
+                              untracked = TRUE, ignored = TRUE)
                   if (any(path %in% c(s$ignored, s$untracked))) {
                       stop(sprintf("pathspec '%s' did not match any files. ",
                                    path[path %in% c(s$ignored, s$untracked)]))
