@@ -82,8 +82,22 @@ setGeneric("status",
 ##' @rdname status-methods
 ##' @export
 setMethod("status",
+          signature(repo = "missing"),
+          function(repo, staged, unstaged, untracked, ignored)
+          {
+              status(repo      = repository(getwd(), discover = TRUE),
+                     staged    = staged,
+                     unstaged  = unstaged,
+                     untracked = untracked,
+                     ignored   = ignored)
+          }
+)
+
+##' @rdname status-methods
+##' @export
+setMethod("status",
           signature(repo = "git_repository"),
-          function (repo, staged, unstaged, untracked, ignored)
+          function(repo, staged, unstaged, untracked, ignored)
           {
               structure(.Call(git2r_status_list, repo, staged,
                               unstaged, untracked, ignored),
