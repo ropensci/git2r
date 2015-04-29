@@ -23,7 +23,7 @@
 ##' @param repo the \code{repo} to configure
 ##' @param user.name the user name. Use NULL to delete the entry
 ##' @param user.email the e-mail address. Use NULL to delete the entry
-##' @return An invisible \code{list} with the configuration
+##' @return S3 class \code{git_config} with the configuration
 ##' @keywords methods
 ##' @include S4_classes.r
 ##' @examples \dontrun{
@@ -77,19 +77,7 @@ setMethod("config",
               cfg <- .Call(git2r_config_get, repo)
 
               ## Sort the variables within levels by name
-              cfg <- lapply(cfg, function(x) x[order(names(x))])
-
-              if (!length(variables)) {
-                  lapply(names(cfg), function(level) {
-                      cat(sprintf("%s:\n", level))
-                      lapply(names(cfg[[level]]), function(entry) {
-                          cat(sprintf("        %s=%s\n",
-                                      entry,
-                                      cfg[[level]][[entry]][1]))
-                      })
-                  })
-              }
-
-              invisible(cfg)
+              structure(lapply(cfg, function(x) x[order(names(x))]),
+                        class = "git_config")
           }
 )
