@@ -90,3 +90,42 @@ setMethod("status",
                         class = "git_status")
           }
 )
+
+##' @export
+print.git_status <- function(x, ...)
+{
+    display_status <- function(title, section) {
+        cat(sprintf("%s:\n", title))
+
+        for(i in seq_len(length(section))) {
+            label <- names(section)[i]
+            label <- paste0(toupper(substr(label, 1, 1)),
+                            substr(label, 2, nchar(label)))
+            cat(sprintf("\t%-12s%s\n", paste0(label, ":"), section[[i]]))
+        }
+
+        invisible(NULL)
+    }
+
+    if (length(x$ignored)) {
+        display_status("Ignored files", x$ignored)
+        cat("\n")
+    }
+
+    if (length(x$untracked)) {
+        display_status("Untracked files", x$untracked)
+        cat("\n")
+    }
+
+    if (length(x$unstaged)) {
+        display_status("Unstaged changes", x$unstaged)
+        cat("\n")
+    }
+
+    if (length(x$staged)) {
+        display_status("Staged changes", x$staged)
+        cat("\n")
+    }
+
+    invisible(NULL)
+}
