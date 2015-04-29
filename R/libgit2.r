@@ -20,24 +20,31 @@
 ##' @keywords methods
 ##' @export
 ##' @examples
-##' \dontrun{
 ##' libgit2_features()
-##' }
-##'
 libgit2_features <- function() {
     .Call(git2r_libgit2_features)
 }
 
-##' Version of the libgit2 library being currently used
+##' Version of the libgit2 library
 ##'
+##' Version of the libgit2 library that the bundled source code is
+##' based on
 ##' @return A list with major, minor and rev
 ##' @keywords methods
 ##' @export
 ##' @examples
-##' \dontrun{
 ##' libgit2_version()
-##' }
-##'
 libgit2_version <- function() {
     .Call(git2r_libgit2_version)
 }
+
+##' SHA of the libgit2 library
+##'
+##' SHA of the libgit2 library that the bundled source code is based
+##' on
+##' @return The 40 character hexadecimal string of the SHA-1
+##' @keywords methods
+##' @export
+##' @examples
+##' libgit2_sha()
+libgit2_sha <- function() "2a0f67f04cb717a7e57192696d69f91a3d208705"

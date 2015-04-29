@@ -13,9 +13,7 @@ A list with threads, https and ssh set to TRUE/FALSE.
 Compile time options for libgit2.
 }
 \examples{
-\dontrun{
 libgit2_features()
-}
 }
 \keyword{methods}
 

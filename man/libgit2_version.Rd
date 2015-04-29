@@ -2,7 +2,7 @@
 % Please edit documentation in R/libgit2.r
 \name{libgit2_version}
 \alias{libgit2_version}
-\title{Version of the libgit2 library being currently used}
+\title{Version of the libgit2 library}
 \usage{
 libgit2_version()
 }
@@ -10,12 +10,11 @@ libgit2_version()
 A list with major, minor and rev
 }
 \description{
-Version of the libgit2 library being currently used
+Version of the libgit2 library that the bundled source code is
+based on
 }
 \examples{
-\dontrun{
 libgit2_version()
-}
 }
 \keyword{methods}
 

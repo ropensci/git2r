@@ -21,3 +21,6 @@ stopifnot(identical(names(libgit2_features()),
 
 stopifnot(identical(names(libgit2_version()),
                     c("major", "minor", "rev")))
+
+stopifnot(identical(length(libgit2_sha()), 1L))
+stopifnot(identical(nchar(libgit2_sha()[1]), 40L))
