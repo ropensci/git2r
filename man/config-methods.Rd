@@ -18,7 +18,7 @@ config(repo, user.name, user.email)
 \item{user.email}{the e-mail address. Use NULL to delete the entry}
 }
 \value{
-An invisible \code{list} with the configuration
+S3 class \code{git_config} with the configuration
 }
 \description{
 Config file management. To display the configuration variables,

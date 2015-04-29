@@ -81,3 +81,13 @@ setMethod("config",
                         class = "git_config")
           }
 )
+
+##' @export
+print.git_config <- function(x, ...) {
+    lapply(names(x), function(level) {
+        cat(sprintf("%s:\n", level))
+        lapply(names(x[[level]]), function(entry) {
+            cat(sprintf("        %s=%s\n", entry, x[[level]][[entry]][1]))
+        })
+    })
+}
