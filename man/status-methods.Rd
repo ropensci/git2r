@@ -4,13 +4,17 @@
 \name{status}
 \alias{status}
 \alias{status,git_repository-method}
+\alias{status,missing-method}
 \title{Status}
 \usage{
 status(repo, staged = TRUE, unstaged = TRUE, untracked = TRUE,
-  ignored = FALSE, verbose = TRUE)
+  ignored = FALSE)
+
+\S4method{status}{missing}(repo, staged = TRUE, unstaged = TRUE,
+  untracked = TRUE, ignored = FALSE)
 
 \S4method{status}{git_repository}(repo, staged = TRUE, unstaged = TRUE,
-  untracked = TRUE, ignored = FALSE, verbose = TRUE)
+  untracked = TRUE, ignored = FALSE)
 }
 \arguments{
 \item{repo}{The \code{git_repository} to get status from.}
@@ -22,11 +26,9 @@ status(repo, staged = TRUE, unstaged = TRUE, untracked = TRUE,
 \item{untracked}{Include untracked files. Default TRUE.}
 
 \item{ignored}{Include ignored files. Default FALSE.}
-
-\item{verbose}{Display status. Default TRUE.}
 }
 \value{
-invisible(list) with repository status
+S3 class \code{git_status} with repository status
 }
 \description{
 Display state of the repository working directory and the staging
