@@ -3,21 +3,22 @@
 \docType{methods}
 \name{commits}
 \alias{commits}
-\alias{commits,character-method}
 \alias{commits,git_repository-method}
+\alias{commits,missing-method}
 \title{Commits}
 \usage{
-commits(repo, topological = TRUE, time = TRUE, reverse = FALSE,
-  n = NULL)
+commits(repo, ...)
 
-\S4method{commits}{character}(repo, topological = TRUE, time = TRUE,
-  reverse = FALSE, n = NULL)
+\S4method{commits}{missing}(repo, topological = TRUE, time = TRUE,
+  reverse = FALSE, n = NULL, ...)
 
 \S4method{commits}{git_repository}(repo, topological = TRUE, time = TRUE,
-  reverse = FALSE, n = NULL)
+  reverse = FALSE, n = NULL, ...)
 }
 \arguments{
 \item{repo}{The repository \code{object}.}
+
+\item{...}{Additional arguments to commits.}
 
 \item{topological}{Sort the commits in topological order (parents
 before children); can be combined with time sorting. Default is

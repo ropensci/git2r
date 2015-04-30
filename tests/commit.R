@@ -101,5 +101,13 @@ stopifnot(identical(length(commits(repo, n = 2)), 2L))
 tools::assertError(commits(repo, n = 2.2))
 tools::assertError(commits(repo, n = "2"))
 
+## Set working directory to path and check commits
+setwd(path)
+stopifnot(identical(length(commits()), 4L))
+stopifnot(identical(length(commits(n = -1)), 4L))
+stopifnot(identical(length(commits(n = 2)), 2L))
+tools::assertError(commits(n = 2.2))
+tools::assertError(commits(n = "2"))
+
 ## Cleanup
 unlink(path, recursive=TRUE)

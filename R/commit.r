@@ -163,6 +163,7 @@ setMethod("commit",
 ##' @rdname commits-methods
 ##' @docType methods
 ##' @param repo The repository \code{object}.
+##' @param ... Additional arguments to commits.
 ##' @param topological Sort the commits in topological order (parents
 ##' before children); can be combined with time sorting. Default is
 ##' TRUE.
@@ -210,24 +211,26 @@ setMethod("commit",
 ##' }
 setGeneric("commits",
            signature = "repo",
-           function(repo,
-                    topological = TRUE,
-                    time        = TRUE,
-                    reverse     = FALSE,
-                    n           = NULL)
+           function(repo, ...)
            standardGeneric("commits"))
 
 ##' @rdname commits-methods
 ##' @export
 setMethod("commits",
-          signature(repo = "character"),
-          function(repo, topological, time, reverse, n)
+          signature(repo = "missing"),
+          function(repo,
+                   topological = TRUE,
+                   time        = TRUE,
+                   reverse     = FALSE,
+                   n           = NULL,
+                   ...)
           {
-              commits(repository(repo),
+              commits(repository(getwd(), discover = TRUE),
                       topological = topological,
                       time        = time,
                       reverse     = reverse,
-                      n           = n)
+                      n           = n,
+                      ...)
           }
 )
 
@@ -236,7 +239,12 @@ setMethod("commits",
 ##' @export
 setMethod("commits",
           signature(repo = "git_repository"),
-          function(repo, topological, time, reverse, n)
+          function(repo,
+                   topological = TRUE,
+                   time        = TRUE,
+                   reverse     = FALSE,
+                   n           = NULL,
+                   ...)
           {
               ## Check limit in number of commits
               if (is.null(n)) {
