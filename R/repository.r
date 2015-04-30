@@ -827,12 +827,14 @@ setMethod("summary",
               show(object)
               cat("\n")
 
-              n_branches <- sum(!is.na(unique(sapply(branches(object), branch_target))))
+              n_branches <- sum(!is.na(unique(sapply(branches(object),
+                                                     branch_target))))
               n_tags <- sum(!is.na(unique(sapply(tags(object), slot, "sha"))))
 
               work <- commits(object)
               n_commits <- length(work)
-              n_authors <- length(unique(sapply(lapply(work, slot, "author"), slot, "name")))
+              n_authors <- length(unique(sapply(lapply(work, slot, "author"),
+                                                slot, "name")))
 
               s <- .Call(git2r_status_list, object, TRUE, TRUE, TRUE, TRUE)
               n_ignored <- length(s$ignored)
@@ -855,6 +857,11 @@ setMethod("summary",
                             "Staged files:    %", n, "i\n")
               cat(sprintf(fmt, n_branches, n_tags, n_commits, n_authors,
                           n_ignored, n_untracked, n_unstaged, n_staged))
+
+              cat("\nLatest commits:\n")
+              lapply(commits(object, n = 5), show)
+
+              invisible(NULL)
           }
 )
 
