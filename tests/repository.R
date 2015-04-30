@@ -16,35 +16,23 @@
 
 library(git2r)
 
-##
 ## Create a directory in tempdir
-##
 path <- tempfile(pattern="git2r-")
 dir.create(path)
 
-##
 ## is_bare: "Invalid repository"
-##
 tools::assertError(is_bare(new("git_repository")))
 
-##
 ## is_empty: "Invalid repository"
-##
 tools::assertError(is_empty(new("git_repository")))
 
-##
 ## Check that open an invalid repository fails
-##
 tools::assertError(repository(path))
 
-##
 ## Initialize a repository
-##
 repo <- init(path)
 
-##
 ## Check the state of the repository
-##
 stopifnot(validObject(repo))
 stopifnot(identical(is_bare(repo), FALSE))
 stopifnot(identical(is_empty(repo), TRUE))
@@ -61,14 +49,15 @@ stopifnot(identical(discover_repository(file.path(wd, 'myfile.txt')),
 stopifnot(identical(discover_repository(file.path(wd, 'doesntexist.txt')),
                     NULL))
 
-##
 ## Check that lookup with a sha of less than 4 characters or more than
 ## 40 characters fail.
-##
 tools::assertError(lookup(repo, paste0(rep("a", 3), collapse="")))
 tools::assertError(lookup(repo, paste0(rep("a", 41), collapse="")))
 
-##
+## Check in_repository
+stopifnot(identical(in_repository(path), TRUE))
+setwd(path)
+stopifnot(identical(in_repository(), TRUE))
+
 ## Cleanup
-##
 unlink(path, recursive=TRUE)

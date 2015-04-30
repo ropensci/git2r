@@ -500,6 +500,58 @@ setMethod("is_empty",
           }
 )
 
+##' Determine if a directory is in a git repository
+##'
+##' The lookup start from path and walk across parent directories if
+##' nothing has been found.
+##' @rdname in_repository-methods
+##' @docType methods
+##' @param path The path to the directory. The working directory is
+##' used if path is missing.
+##' @return TRUE if directory is in a git repository else FALSE
+##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a user
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##'
+##' ## Check if path is in a git repository
+##' in_repository(path)
+##'
+##' ## Check if working directory is in a git repository
+##' setwd(path)
+##' in_repository()
+##' }
+setGeneric("in_repository",
+           signature = "path",
+           function(path)
+           standardGeneric("in_repository"))
+
+##' @rdname in_repository-methods
+##' @export
+setMethod("in_repository",
+          signature(path = "missing"),
+          function (path)
+          {
+              !is.null(discover_repository(getwd()))
+          }
+)
+
+##' @rdname in_repository-methods
+##' @export
+setMethod("in_repository",
+          signature(path = "character"),
+          function (path)
+          {
+              !is.null(discover_repository(path))
+          }
+)
+
 ##' Determine if the repository was a shallow clone
 ##'
 ##' @rdname is_shallow-methods
