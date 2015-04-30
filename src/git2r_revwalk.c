@@ -28,15 +28,22 @@
  * Count number of revisions.
  *
  * @param walker The walker to pop the commit from.
+ * @param max_n n The upper limit of the number of commits to
+ * output. Use max_n < 0 for unlimited number of commits.
  * @return The number of revisions
  */
-static size_t git2r_revwalk_count(git_revwalk *walker)
+static int git2r_revwalk_count(git_revwalk *walker, int max_n)
 {
-    size_t n = 0;
+    int n = 0;
     git_oid oid;
 
-    while (!git_revwalk_next(&oid, walker))
-        n++;
+    while (!git_revwalk_next(&oid, walker)) {
+        if (max_n < 0 || n < max_n)
+            n++;
+        else
+            break;
+    }
+
     return n;
 }
 
@@ -49,17 +56,20 @@ static size_t git2r_revwalk_count(git_revwalk *walker)
  * @param time Sort the commits by commit time; can be combined with
  * topological.
  * @param reverse Sort the commits in reverse order
+ * @param max_n n The upper limit of the number of commits to
+ * output. Use max_n < 0 for unlimited number of commits.
  * @return list with S4 class git_commit objects
  */
 SEXP git2r_revwalk_list(
     SEXP repo,
     SEXP topological,
     SEXP time,
-    SEXP reverse)
+    SEXP reverse,
+    SEXP max_n)
 {
     int err = GIT_OK;
     SEXP result = R_NilValue;
-    size_t i, n = 0;
+    int i, n;
     unsigned int sort_mode = GIT_SORT_NONE;
     git_revwalk *walker = NULL;
     git_repository *repository = NULL;
@@ -70,6 +80,8 @@ SEXP git2r_revwalk_list(
         git2r_error(git2r_err_logical_arg, __func__, "time");
     if (git2r_arg_check_logical(reverse))
         git2r_error(git2r_err_logical_arg, __func__, "reverse");
+    if (git2r_arg_check_integer(max_n))
+        git2r_error(git2r_err_integer_arg, __func__, "max_n");
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -98,7 +110,7 @@ SEXP git2r_revwalk_list(
     git_revwalk_sorting(walker, sort_mode);
 
     /* Count number of revisions before creating the list */
-    n = git2r_revwalk_count(walker);
+    n = git2r_revwalk_count(walker, INTEGER(max_n)[0]);
 
     /* Create list to store result */
     PROTECT(result = allocVector(VECSXP, n));
@@ -205,7 +217,7 @@ SEXP git2r_revwalk_contributions(
     git_revwalk_sorting(walker, sort_mode);
 
     /* Count number of revisions before creating the list */
-    n = git2r_revwalk_count(walker);
+    n = git2r_revwalk_count(walker, -1);
 
     /* Create vectors to store result */
     PROTECT(result = allocVector(VECSXP, 3));

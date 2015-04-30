@@ -94,5 +94,12 @@ stopifnot(identical(status(repo),
                               .Names = c("staged", "unstaged", "untracked"),
                               class = "git_status")))
 
+## Check max number of commits in output
+stopifnot(identical(length(commits(repo)), 4L))
+stopifnot(identical(length(commits(repo, n = -1)), 4L))
+stopifnot(identical(length(commits(repo, n = 2)), 2L))
+tools::assertError(commits(repo, n = 2.2))
+tools::assertError(commits(repo, n = "2"))
+
 ## Cleanup
 unlink(path, recursive=TRUE)

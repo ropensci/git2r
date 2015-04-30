@@ -7,13 +7,14 @@
 \alias{commits,git_repository-method}
 \title{Commits}
 \usage{
-commits(repo, topological = TRUE, time = TRUE, reverse = FALSE)
+commits(repo, topological = TRUE, time = TRUE, reverse = FALSE,
+  n = NULL)
 
 \S4method{commits}{character}(repo, topological = TRUE, time = TRUE,
-  reverse = FALSE)
+  reverse = FALSE, n = NULL)
 
 \S4method{commits}{git_repository}(repo, topological = TRUE, time = TRUE,
-  reverse = FALSE)
+  reverse = FALSE, n = NULL)
 }
 \arguments{
 \item{repo}{The repository \code{object}.}
@@ -27,6 +28,9 @@ topological sorting. Default is TRUE.}
 
 \item{reverse}{Sort the commits in reverse order; can be combined
 with topological and/or time sorting. Default is FALSE.}
+
+\item{n}{The upper limit of the number of commits to output. The
+defualt is NULL for unlimited number of commits.}
 }
 \value{
 list of commits in repository

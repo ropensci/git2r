@@ -170,6 +170,8 @@ setMethod("commit",
 ##' topological sorting. Default is TRUE.
 ##' @param reverse Sort the commits in reverse order; can be combined
 ##' with topological and/or time sorting. Default is FALSE.
+##' @param n The upper limit of the number of commits to output. The
+##' defualt is NULL for unlimited number of commits.
 ##' @return list of commits in repository
 ##' @keywords methods
 ##' @examples
@@ -211,19 +213,21 @@ setGeneric("commits",
            function(repo,
                     topological = TRUE,
                     time        = TRUE,
-                    reverse     = FALSE)
+                    reverse     = FALSE,
+                    n           = NULL)
            standardGeneric("commits"))
 
 ##' @rdname commits-methods
 ##' @export
 setMethod("commits",
           signature(repo = "character"),
-          function(repo, topological, time, reverse)
+          function(repo, topological, time, reverse, n)
           {
               commits(repository(repo),
                       topological = topological,
-                      time = time,
-                      reverse = reverse)
+                      time        = time,
+                      reverse     = reverse,
+                      n           = n)
           }
 )
 
@@ -232,13 +236,22 @@ setMethod("commits",
 ##' @export
 setMethod("commits",
           signature(repo = "git_repository"),
-          function(repo, topological, time, reverse)
+          function(repo, topological, time, reverse, n)
           {
-              .Call(git2r_revwalk_list,
-                    repo,
-                    topological,
-                    time,
-                    reverse)
+              ## Check limit in number of commits
+              if (is.null(n)) {
+                  n <- -1L
+              } else if (is.numeric(n)) {
+                  if (!identical(length(n), 1L))
+                      stop("'n' must be integer")
+                  if (abs(n - round(n)) >= .Machine$double.eps^0.5)
+                      stop("'n' must be integer")
+                  n <- as.integer(n)
+              } else {
+                  stop("'n' must be integer")
+              }
+
+              .Call(git2r_revwalk_list, repo, topological, time, reverse, n)
           }
 )
 
