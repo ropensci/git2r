@@ -409,7 +409,7 @@ setMethod("is_bare",
 ##' @export
 setMethod("is_bare",
           signature(repo = "missing"),
-          function (repo)
+          function ()
           {
               is_bare(repository(getwd(), discover = TRUE))
           }
