@@ -61,10 +61,12 @@ stopifnot(identical(in_repository(path), TRUE))
 ## - in_repository method with missing path argument
 ## - repository method with missing path argument
 ## - is_empty method with missing repo argument
+## - is_shallow method with missing repo argument
 wd <- setwd(path)
 stopifnot(identical(in_repository(), TRUE))
 stopifnot(identical(workdir(repository(path)), workdir(repository())))
 stopifnot(identical(is_empty(), TRUE))
+stopifnot(identical(is_shallow(), FALSE))
 if (!is.null(wd))
     setwd(wd)
 

@@ -635,6 +635,17 @@ setGeneric("is_shallow",
            function(repo)
            standardGeneric("is_shallow"))
 
+
+##' @rdname is_shallow-methods
+##' @export
+setMethod("is_shallow",
+          signature(repo = "missing"),
+          function ()
+          {
+              is_shallow(repository(getwd(), discover = TRUE))
+          }
+)
+
 ##' @rdname is_shallow-methods
 ##' @export
 setMethod("is_shallow",
