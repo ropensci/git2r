@@ -511,6 +511,17 @@ setGeneric("is_empty",
            function(repo)
            standardGeneric("is_empty"))
 
+
+##' @rdname is_empty-methods
+##' @export
+setMethod("is_empty",
+          signature(repo = "missing"),
+          function ()
+          {
+              is_empty(repository(getwd(), discover = TRUE))
+          }
+)
+
 ##' @rdname is_empty-methods
 ##' @export
 setMethod("is_empty",
