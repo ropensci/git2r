@@ -99,6 +99,7 @@ setAs(from="git_repository",
 ##' @rdname repository-methods
 ##' @docType methods
 ##' @param path A path to an existing local git repository
+##' @param ... Additional arguments to \code{repository} method.
 ##' @param discover Discover repository from path. Default is FALSE.
 ##' @return A S4 \code{\linkS4class{git_repository}} object
 ##' @keywords methods
@@ -163,15 +164,24 @@ setAs(from="git_repository",
 ##' }
 setGeneric("repository",
            signature = "path",
-           function(path,
-                    discover = FALSE)
+           function(path, ...)
            standardGeneric("repository"))
 
 ##' @rdname repository-methods
 ##' @export
 setMethod("repository",
+          signature(path = "missing"),
+          function()
+          {
+              repository(getwd(), discover = TRUE)
+          }
+)
+
+##' @rdname repository-methods
+##' @export
+setMethod("repository",
           signature(path = "character"),
-          function(path, discover)
+          function(path, discover = FALSE, ...)
           {
               ## Argument checking
               stopifnot(identical(length(path), 1L),

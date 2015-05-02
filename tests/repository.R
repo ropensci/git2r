@@ -42,7 +42,7 @@ stopifnot(identical(commits(repo), list()))
 stopifnot(identical(head(repo), NULL))
 
 # check that we can find repository from a path
-wd=workdir(repo)
+wd <- workdir(repo)
 writeLines('test file', con=file.path(wd, 'myfile.txt'))
 stopifnot(identical(discover_repository(file.path(wd, 'myfile.txt')),
                     paste0(wd, '.git', .Platform$file.sep)))
@@ -51,13 +51,21 @@ stopifnot(identical(discover_repository(file.path(wd, 'doesntexist.txt')),
 
 ## Check that lookup with a sha of less than 4 characters or more than
 ## 40 characters fail.
-tools::assertError(lookup(repo, paste0(rep("a", 3), collapse="")))
-tools::assertError(lookup(repo, paste0(rep("a", 41), collapse="")))
+tools::assertError(lookup(repo, paste0(rep("a", 3), collapse = "")))
+tools::assertError(lookup(repo, paste0(rep("a", 41), collapse = "")))
 
 ## Check in_repository
 stopifnot(identical(in_repository(path), TRUE))
-setwd(path)
+wd <- setwd(path)
 stopifnot(identical(in_repository(), TRUE))
+if (!is.null(wd))
+    setwd(wd)
+
+## Check repository method with missing path argument
+wd <- setwd(path)
+stopifnot(identical(workdir(repository(path)), workdir(repository())))
+if (!is.null(wd))
+    setwd(wd)
 
 ## Cleanup
 unlink(path, recursive=TRUE)
