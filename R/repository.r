@@ -457,6 +457,17 @@ setGeneric("is_detached",
            function(repo)
            standardGeneric("is_detached"))
 
+
+##' @rdname is_detached-methods
+##' @export
+setMethod("is_detached",
+          signature(repo = "missing"),
+          function ()
+          {
+              is_detached(repository(getwd(), discover = TRUE))
+          }
+)
+
 ##' @rdname is_detached-methods
 ##' @export
 setMethod("is_detached",

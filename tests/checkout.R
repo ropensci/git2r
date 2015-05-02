@@ -16,64 +16,52 @@
 
 library(git2r)
 
-##
 ## Create a directory in tempdir
-##
 path <- tempfile(pattern="git2r-")
 dir.create(path)
 
-##
 ## Initialize a repository
-##
 repo <- init(path)
 config(repo, user.name="Alice", user.email="alice@example.org")
 
-##
 ## Create first commit
-##
 writeLines("Hello world!", file.path(path, "test.txt"))
 add(repo, 'test.txt')
 commit.1 <- commit(repo, "First commit message")
 
-##
 ## Create second commit
-##
 writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test.txt"))
 add(repo, 'test.txt')
 commit.2 <- commit(repo, "Second commit message")
 tag(repo, "commit.2", "Tag message")
 
-##
 ## Create third commit
-##
 writeLines(c("Hello world!", "HELLO WORLD!", "HeLlO wOrLd!"),
            file.path(path, "test.txt"))
 add(repo, 'test.txt')
 commit.3 <- commit(repo, "Third commit message")
 
-##
 ## Check HEAD
-##
 stopifnot(identical(is_detached(repo), FALSE))
 stopifnot(identical(head(repo)@name, "master"))
 
-##
 ## Checkout first commit
-##
 checkout(commit.1, TRUE)
 stopifnot(identical(is_detached(repo), TRUE))
 stopifnot(identical(head(repo), commit.1))
 stopifnot(identical(readLines(file.path(path, "test.txt")), "Hello world!"))
 
-##
 ## Checkout tag
-##
 checkout(tags(repo)[[1]], TRUE)
 stopifnot(identical(is_detached(repo), TRUE))
 stopifnot(identical(readLines(file.path(path, "test.txt")),
                     c("Hello world!", "HELLO WORLD!")))
 
-##
+## Check is_detached with missing repo argument
+wd <- setwd(path)
+stopifnot(identical(is_detached(), TRUE))
+if (!is.null(wd))
+    setwd(wd)
+
 ## Cleanup
-##
 unlink(path, recursive=TRUE)
