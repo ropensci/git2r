@@ -546,7 +546,7 @@ setGeneric("in_repository",
 ##' @export
 setMethod("in_repository",
           signature(path = "missing"),
-          function (path)
+          function ()
           {
               !is.null(discover_repository(getwd()))
           }
