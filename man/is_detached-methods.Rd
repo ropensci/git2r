@@ -4,9 +4,12 @@
 \name{is_detached}
 \alias{is_detached}
 \alias{is_detached,git_repository-method}
+\alias{is_detached,missing-method}
 \title{Check if HEAD of repository is detached}
 \usage{
 is_detached(repo)
+
+\S4method{is_detached}{missing}()
 
 \S4method{is_detached}{git_repository}(repo)
 }

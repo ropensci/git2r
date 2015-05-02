@@ -4,9 +4,12 @@
 \name{is_empty}
 \alias{is_empty}
 \alias{is_empty,git_repository-method}
+\alias{is_empty,missing-method}
 \title{Check if repository is empty}
 \usage{
 is_empty(repo)
+
+\S4method{is_empty}{missing}()
 
 \S4method{is_empty}{git_repository}(repo)
 }

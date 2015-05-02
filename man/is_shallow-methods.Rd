@@ -4,9 +4,12 @@
 \name{is_shallow}
 \alias{is_shallow}
 \alias{is_shallow,git_repository-method}
+\alias{is_shallow,missing-method}
 \title{Determine if the repository was a shallow clone}
 \usage{
 is_shallow(repo)
+
+\S4method{is_shallow}{missing}()
 
 \S4method{is_shallow}{git_repository}(repo)
 }

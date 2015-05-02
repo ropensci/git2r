@@ -4,14 +4,19 @@
 \name{repository}
 \alias{repository}
 \alias{repository,character-method}
+\alias{repository,missing-method}
 \title{Open a repository}
 \usage{
-repository(path, discover = FALSE)
+repository(path, ...)
 
-\S4method{repository}{character}(path, discover = FALSE)
+\S4method{repository}{missing}()
+
+\S4method{repository}{character}(path, discover = FALSE, ...)
 }
 \arguments{
 \item{path}{A path to an existing local git repository}
+
+\item{...}{Additional arguments to \code{repository} method.}
 
 \item{discover}{Discover repository from path. Default is FALSE.}
 }

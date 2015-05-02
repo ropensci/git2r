@@ -9,7 +9,7 @@
 \usage{
 in_repository(path)
 
-\S4method{in_repository}{missing}(path)
+\S4method{in_repository}{missing}()
 
 \S4method{in_repository}{character}(path)
 }

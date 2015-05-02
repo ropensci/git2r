@@ -11,7 +11,7 @@ is_bare(repo)
 
 \S4method{is_bare}{git_repository}(repo)
 
-\S4method{is_bare}{missing}(repo)
+\S4method{is_bare}{missing}()
 }
 \arguments{
 \item{repo}{The repository to check if it's bare}
