@@ -3628,6 +3628,10 @@ fi
 # Check for OpenSSL
 have_ssl=no
 OLD_LIBS=${LIBS}
+OLD_CPPFLAGS=${CPPFLAGS}
+if test "x${OPENSSL_INCLUDES}" = x; then :; else
+        CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
+fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing SSL_library_init" >&5
 $as_echo_n "checking for library containing SSL_library_init... " >&6; }
 if ${ac_cv_search_SSL_library_init+:} false; then :
@@ -3747,10 +3751,6 @@ fi
 
 # Specify sha1 implementation
 if test "x${have_crypto}" = xyes; then
-        if test "x${OPENSSL_INCLUDES}" != x; then
-                CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
-        fi
-
         CPPFLAGS="${CPPFLAGS} -DGIT_SSL"
 
         case "${host_os}" in
@@ -3763,6 +3763,7 @@ if test "x${have_crypto}" = xyes; then
         esac
 else
         LIBS=${OLD_LIBS}
+        CPPFLAGS=${OLD_CPPFLAGS}
         GIT2R_SRC_HASH_GENERIC=libgit2/hash/hash_generic.o
         { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING:
   -----------------------------------------------

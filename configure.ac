@@ -126,6 +126,10 @@ fi
 # Check for OpenSSL
 have_ssl=no
 OLD_LIBS=${LIBS}
+OLD_CPPFLAGS=${CPPFLAGS}
+if test "x${OPENSSL_INCLUDES}" = x; then :; else
+        CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
+fi
 AC_SEARCH_LIBS([SSL_library_init], [ssl], [have_ssl=yes])
 
 have_crypto=no
@@ -135,10 +139,6 @@ fi
 
 # Specify sha1 implementation
 if test "x${have_crypto}" = xyes; then
-        if test "x${OPENSSL_INCLUDES}" != x; then
-                CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
-        fi
-
         CPPFLAGS="${CPPFLAGS} -DGIT_SSL"
 
         case "${host_os}" in
@@ -151,6 +151,7 @@ if test "x${have_crypto}" = xyes; then
         esac
 else
         LIBS=${OLD_LIBS}
+        CPPFLAGS=${OLD_CPPFLAGS}
         GIT2R_SRC_HASH_GENERIC=libgit2/hash/hash_generic.o
         AC_MSG_WARN([
   -----------------------------------------------
