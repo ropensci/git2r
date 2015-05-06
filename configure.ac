@@ -174,11 +174,7 @@ case "${host_os}" in
         if test "x${have_iconv}" = xyes; then
                 CPPFLAGS="${CPPFLAGS} -DGIT_USE_ICONV"
         else
-                AC_MSG_WARN([
-  ---------------------------------------------
-   Unable to find iconv on this system.
-   Building a version without support for iconv.
-  ---------------------------------------------])
+                AC_MSG_FAILURE([iconv library required])
         fi
     ;;
 esac
