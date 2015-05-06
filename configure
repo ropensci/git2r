@@ -3627,8 +3627,6 @@ fi
 
 # Check for OpenSSL
 have_ssl=no
-OLD_LIBS=${LIBS}
-OLD_CPPFLAGS=${CPPFLAGS}
 if test "x${OPENSSL_INCLUDES}" = x; then :; else
         CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
 fi
@@ -3762,19 +3760,10 @@ if test "x${have_crypto}" = xyes; then
           ;;
         esac
 else
-        LIBS=${OLD_LIBS}
-        CPPFLAGS=${OLD_CPPFLAGS}
-        GIT2R_SRC_HASH_GENERIC=libgit2/hash/hash_generic.o
-        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING:
-  -----------------------------------------------
-   Unable to find OpenSSL on this system.
-   Building a version without support for HTTPS.
-  -----------------------------------------------" >&5
-$as_echo "$as_me: WARNING:
-  -----------------------------------------------
-   Unable to find OpenSSL on this system.
-   Building a version without support for HTTPS.
-  -----------------------------------------------" >&2;}
+        { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "OpenSSL library required
+See \`config.log' for more details" "$LINENO" 5; }
 fi
 
 # Check for LibSSH2

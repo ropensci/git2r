@@ -125,8 +125,6 @@ fi
 
 # Check for OpenSSL
 have_ssl=no
-OLD_LIBS=${LIBS}
-OLD_CPPFLAGS=${CPPFLAGS}
 if test "x${OPENSSL_INCLUDES}" = x; then :; else
         CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
 fi
@@ -150,14 +148,7 @@ if test "x${have_crypto}" = xyes; then
           ;;
         esac
 else
-        LIBS=${OLD_LIBS}
-        CPPFLAGS=${OLD_CPPFLAGS}
-        GIT2R_SRC_HASH_GENERIC=libgit2/hash/hash_generic.o
-        AC_MSG_WARN([
-  -----------------------------------------------
-   Unable to find OpenSSL on this system.
-   Building a version without support for HTTPS.
-  -----------------------------------------------])
+        AC_MSG_FAILURE([OpenSSL library required])
 fi
 
 # Check for LibSSH2
