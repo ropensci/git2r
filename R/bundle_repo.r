@@ -18,7 +18,7 @@
 ##'
 ##' Clone the package git repository as a bare repository to
 ##' \code{pkg/inst/pkg.git}
-##' @rdname bundle_repo-methods
+##' @rdname bundle_r_package-methods
 ##' @docType methods
 ##' @param repo The repository with package to bundle.
 ##' @return Invisible bundled S4 \code{\linkS4class{git_repository}}
@@ -33,7 +33,7 @@
 ##' repo <- clone("https://github.com/ropensci/git2r.git", path)
 ##'
 ##' ## Bundle bare repository in package
-##' bundle_repo(repo)
+##' bundle_r_package(repo)
 ##'
 ##' ## Build and install bundled package
 ##' wd <- setwd(dirname(path))
@@ -48,19 +48,19 @@
 ##'
 ##' ## Summarize last five commits of bundled repo
 ##' repo <- repository(system.file("git2r.git", package = "git2r"))
-##' invisible(lapply(commits(repo)[1:5], summary))
+##' invisible(lapply(commits(repo, n = 5), summary))
 ##'
 ##' ## Plot content of bundled repo
 ##' plot(repo)
 ##' }
-setGeneric("bundle_repo",
+setGeneric("bundle_r_package",
            signature = "repo",
            function(repo)
-           standardGeneric("bundle_repo"))
+           standardGeneric("bundle_r_package"))
 
-##' @rdname bundle_repo-methods
+##' @rdname bundle_r_package-methods
 ##' @export
-setMethod("bundle_repo",
+setMethod("bundle_r_package",
           signature(repo = "git_repository"),
           function (repo)
           {
