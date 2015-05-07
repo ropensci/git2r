@@ -27,7 +27,7 @@ Collate:
     'blame.r'
     'blob.r'
     'branch.r'
-    'bundle_repo.r'
+    'bundle_r_package.r'
     'checkout.r'
     'commit.r'
     'config.r'
