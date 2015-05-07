@@ -1,3 +1,10 @@
+git2r 0.10.1
+------------
+
+CHANGES
+
+* Rename 'bundle_repo' method to 'bundle_r_package'
+
 git2r 0.10.0
 ------------
 
