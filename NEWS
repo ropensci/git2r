@@ -1,3 +1,45 @@
+git2r under development
+-----------------------
+
+NEW FEATURES
+
+* Added method libgit2_sha that returns the commit id of the libgit2
+  library that the bundled source code is based on.
+
+* Added the method in_repository to determine if a directory is in a
+  git repository.
+
+CHANGES
+
+* Add brief summary of the five latest commits when summarizing a
+  git_respository.
+
+* Added argument 'n' to the commits method to limit the number of
+  commits in the output.
+
+* Added the following methods with missing repository signature;
+  commits, is_shallow, is_empty, is_detached, repository and
+  status. Internally, these methods use getwd and discover_repository
+  to open a repository.
+
+* Changed configuration to raise error if the OpenSSL library is not
+  found on non-Windows systems.
+
+* Changed configuration to raise error if the iconv library is not
+  found on OSX.
+
+* Removed print of the configuration in the config method. Changed to
+  return S3 class git_config.
+
+* Removed print of the status in the status method. Changed to return
+  S3 class git_status.
+
+BUG FIXES
+
+* Use OPENSSL_INCLUDES variable to build on Solaris.
+
+* Use bundled regex library on Solaris.
+
 git2 0.9
 --------
 
