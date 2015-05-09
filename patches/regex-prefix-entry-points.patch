@@ -1,0 +1,22 @@
+*** regex.h	2015-05-09 13:32:19.650179845 +0200
+--- regex-prefix-entry-points.h	2015-05-09 16:16:17.266170772 +0200
+***************
+*** 37,42 ****
+--- 37,53 ----
+  #define __USE_GNU	1
+  #endif
+  
++ /**
++  * Remapped the POSIX entry points with a 'gnu_' prefix to use the
++  * bundled regex library on Solaris.
++  * 2015-05-03: Stefan Widgren <stefan.widgren@gmail.com>
++  */
++ # define regfree(preg) gnu_regfree (preg)
++ # define regexec(pr, st, nm, pm, ef) gnu_regexec (pr, st, nm, pm, ef)
++ # define regcomp(preg, pattern, cflags) gnu_regcomp (preg, pattern, cflags)
++ # define regerror(errcode, preg, errbuf, errbuf_size) \
++ 	gnu_regerror(errcode, preg, errbuf, errbuf_size)
++ 
+  /* Allow the use in C++ code.  */
+  #ifdef __cplusplus
+  extern "C" {
