@@ -128,15 +128,13 @@ have_ssl=no
 if test "x${OPENSSL_INCLUDES}" = x; then :; else
         CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
 fi
-AC_SEARCH_LIBS([SSL_library_init], [ssl], [have_ssl=yes])
-
-have_crypto=no
-if test "x${have_ssl}" = xyes; then
-        AC_SEARCH_LIBS([EVP_EncryptInit], [crypto], [have_crypto=yes])
-fi
+AC_SEARCH_LIBS([EVP_EncryptInit], [crypto],
+    [
+        AC_SEARCH_LIBS([SSL_library_init], [ssl], [have_ssl=yes])
+    ])
 
 # Specify sha1 implementation
-if test "x${have_crypto}" = xyes; then
+if test "x${have_ssl}" = xyes; then
         CPPFLAGS="${CPPFLAGS} -DGIT_SSL"
 
         case "${host_os}" in
