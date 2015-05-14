@@ -60,7 +60,7 @@ setMethod("plot",
               xlab <- sprintf("Time [%s]", breaks)
               ylab <- "Number of commits"
               if (is.null(main)) {
-                  if (is_bare(repo)) {
+                  if (is_bare(x)) {
                       main <- "Commits"
                   } else {
                       main <- sprintf("Commits on repository: %s",

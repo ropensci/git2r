@@ -1,3 +1,10 @@
+git2r 0.10.1.9000
+-----------------
+
+BUG FIXES
+
+* Fix plot function to use the repository argument 'x'
+
 git2r 0.10.1
 ------------
 
