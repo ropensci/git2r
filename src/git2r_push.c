@@ -27,31 +27,6 @@
 #include "git2r_signature.h"
 
 /**
- * The invoked callback on each status entry
- *
- * @param ref The reference name pointer
- * @param msg Status report for each of the updated references.
- * @param payload A pointer to the payload data structure
- * @return 0
- */
-static int git2r_push_status_foreach_cb(
-    const char *ref,
-    const char *msg,
-    void *payload)
-{
-    const char **msg_dst = (const char **)payload;
-
-    /* The reference name pointer should never be NULL */
-    if (!ref)
-        return -1;
-
-    if (msg != NULL && *msg_dst == NULL)
-        *msg_dst = msg;
-
-    return 0;
-}
-
-/**
  * Check if any non NA refspec
  *
  * @param refspec The string vector of refspec to push
