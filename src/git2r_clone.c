@@ -135,14 +135,14 @@ SEXP git2r_clone(
     checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE;
     clone_opts.checkout_opts = checkout_opts;
     payload.credentials = credentials;
-    clone_opts.remote_callbacks.payload = &payload;
-    clone_opts.remote_callbacks.credentials = &git2r_clone_cred_acquire;
+    clone_opts.fetch_opts.callbacks.payload = &payload;
+    clone_opts.fetch_opts.callbacks.credentials = &git2r_clone_cred_acquire;
 
     if (LOGICAL(bare)[0])
         clone_opts.bare = 1;
 
     if (LOGICAL(progress)[0]) {
-        clone_opts.remote_callbacks.transfer_progress = &git2r_clone_progress;
+        clone_opts.fetch_opts.callbacks.transfer_progress = &git2r_clone_progress;
         Rprintf("cloning into '%s'...\n", CHAR(STRING_ELT(local_path, 0)));
     }
 
