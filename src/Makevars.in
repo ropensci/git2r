@@ -33,11 +33,12 @@ OBJECTS.libgit2 = libgit2/annotated_commit.o libgit2/attr.o libgit2/attrcache.o 
     libgit2/revparse.o libgit2/revwalk.o libgit2/settings.o \
     libgit2/sha1_lookup.o libgit2/signature.o libgit2/socket_stream.o \
     libgit2/sortedcache.o libgit2/stash.o libgit2/status.o \
-    libgit2/strmap.o libgit2/submodule.o libgit2/sysdir.o \
-    libgit2/tag.o libgit2/thread-utils.o libgit2/trace.o \
-    libgit2/transaction.o libgit2/transport.o libgit2/tree.o \
-    libgit2/tree-cache.o libgit2/tsort.o libgit2/util.o \
-    libgit2/vector.o libgit2/zstream.o
+    libgit2/stransport_stream.o libgit2/strmap.o libgit2/submodule.o \
+    libgit2/sysdir.o libgit2/tag.o libgit2/thread-utils.o \
+    libgit2/tls_stream.o libgit2/trace.o libgit2/transaction.o \
+    libgit2/transport.o libgit2/tree.o libgit2/tree-cache.o \
+    libgit2/tsort.o libgit2/util.o libgit2/vector.o \
+    libgit2/zstream.o
 
 OBJECTS.libgit2.transports = libgit2/transports/auth.o libgit2/transports/cred.o libgit2/transports/cred_helpers.o \
     libgit2/transports/git.o libgit2/transports/http.o libgit2/transports/local.o \
