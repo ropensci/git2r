@@ -30,8 +30,6 @@ typedef enum {
 	GIT_TRANSPORTFLAGS_NONE = 0,
 } git_transport_flags_t;
 
-typedef struct git_transport git_transport;
-
 struct git_transport {
 	unsigned int version;
 	/* Set progress and error callbacks */
@@ -61,7 +59,7 @@ struct git_transport {
 		git_transport *transport);
 
 	/* Executes the push whose context is in the git_push object. */
-	int (*push)(git_transport *transport, git_push *push);
+	int (*push)(git_transport *transport, git_push *push, const git_remote_callbacks *callbacks);
 
 	/* This function may be called after a successful call to connect(), when
 	 * the direction is FETCH. The function performs a negotiation to calculate
@@ -141,9 +139,6 @@ GIT_EXTERN(int) git_transport_new(git_transport **out, git_remote *owner, const 
  * @return 0 or an error code
  */
 GIT_EXTERN(int) git_transport_ssh_with_paths(git_transport **out, git_remote *owner, void *payload);
-
-/* Signature of a function which creates a transport */
-typedef int (*git_transport_cb)(git_transport **out, git_remote *owner, void *param);
 
 /**
  * Add a custom transport definition, to be used in addition to the built-in
@@ -289,7 +284,8 @@ struct git_smart_subtransport {
 /* A function which creates a new subtransport for the smart transport */
 typedef int (*git_smart_subtransport_cb)(
 	git_smart_subtransport **out,
-	git_transport* owner);
+	git_transport* owner,
+	void* param);
 
 /**
  * Definition for a "subtransport"
@@ -306,6 +302,10 @@ typedef struct git_smart_subtransport_definition {
 	 * http:// is stateless, but git:// is not.
 	 */
 	unsigned rpc;
+
+	/** Param of the callback
+	 */
+	void* param;
 } git_smart_subtransport_definition;
 
 /* Smart transport subtransports that come with libgit2 */
@@ -321,7 +321,8 @@ typedef struct git_smart_subtransport_definition {
  */
 GIT_EXTERN(int) git_smart_subtransport_http(
 	git_smart_subtransport **out,
-	git_transport* owner);
+	git_transport* owner,
+	void *param);
 
 /**
  * Create an instance of the git subtransport.
@@ -332,7 +333,8 @@ GIT_EXTERN(int) git_smart_subtransport_http(
  */
 GIT_EXTERN(int) git_smart_subtransport_git(
 	git_smart_subtransport **out,
-	git_transport* owner);
+	git_transport* owner,
+	void *param);
 
 /**
  * Create an instance of the ssh subtransport.
@@ -343,22 +345,8 @@ GIT_EXTERN(int) git_smart_subtransport_git(
  */
 GIT_EXTERN(int) git_smart_subtransport_ssh(
 	git_smart_subtransport **out,
-	git_transport* owner);
-
-/**
- * Sets a custom transport factory for the remote. The caller can use this
- * function to override the transport used for this remote when performing
- * network operations.
- *
- * @param remote the remote to configure
- * @param transport_cb the function to use to create a transport
- * @param payload opaque parameter passed to transport_cb
- * @return 0 or an error code
- */
-GIT_EXTERN(int) git_remote_set_transport(
-	git_remote *remote,
-	git_transport_cb transport_cb,
-	void *payload);
+	git_transport* owner,
+	void *param);
 
 /** @} */
 GIT_END_DECL

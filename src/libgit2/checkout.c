@@ -415,6 +415,14 @@ static bool submodule_is_config_only(
 	return rval;
 }
 
+static bool checkout_is_empty_dir(checkout_data *data, const char *path)
+{
+	git_buf_truncate(&data->path, data->workdir_len);
+	if (git_buf_puts(&data->path, path) < 0)
+		return false;
+	return git_path_is_empty_dir(data->path.ptr);
+}
+
 static int checkout_action_with_wd(
 	int *action,
 	checkout_data *data,
@@ -532,6 +540,7 @@ static int checkout_action_with_wd_dir(
 			checkout_notify(data, GIT_CHECKOUT_NOTIFY_DIRTY, delta, NULL));
 		GITERR_CHECK_ERROR(
 			checkout_notify(data, GIT_CHECKOUT_NOTIFY_UNTRACKED, NULL, wd));
+		*action = CHECKOUT_ACTION_IF(FORCE, REMOVE_AND_UPDATE, NONE);
 		break;
 	case GIT_DELTA_ADDED:/* case 4 (and 7 for dir) */
 	case GIT_DELTA_MODIFIED: /* case 20 (or 37 but not really) */
@@ -556,8 +565,6 @@ static int checkout_action_with_wd_dir(
 			 * dir and it will succeed if no children are left.
 			 */
 			*action = CHECKOUT_ACTION_IF(SAFE, UPDATE_BLOB, NONE);
-			if (*action != CHECKOUT_ACTION__NONE)
-				*action |= CHECKOUT_ACTION__DEFER_REMOVE;
 		}
 		else if (delta->new_file.mode != GIT_FILEMODE_TREE)
 			/* For typechange to dir, dir is already created so no action */
@@ -568,6 +575,20 @@ static int checkout_action_with_wd_dir(
 	}
 
 	return checkout_action_common(action, data, delta, wd);
+}
+
+static int checkout_action_with_wd_dir_empty(
+	int *action,
+	checkout_data *data,
+	const git_diff_delta *delta)
+{
+	int error = checkout_action_no_wd(action, data, delta);
+
+	/* We can always safely remove an empty directory. */
+	if (error == 0 && *action != CHECKOUT_ACTION__NONE)
+		*action |= CHECKOUT_ACTION__REMOVE;
+
+	return error;
 }
 
 static int checkout_action(
@@ -659,7 +680,9 @@ static int checkout_action(
 				}
 			}
 
-			return checkout_action_with_wd_dir(action, data, delta, workdir, wd);
+			return checkout_is_empty_dir(data, wd->path) ?
+				checkout_action_with_wd_dir_empty(action, data, delta) :
+				checkout_action_with_wd_dir(action, data, delta, workdir, wd);
 		}
 
 		/* case 6 - wd is after delta */
@@ -1205,7 +1228,7 @@ static int checkout_verify_paths(
 
 	if (action & ~CHECKOUT_ACTION__REMOVE) {
 		if (!git_path_isvalid(repo, delta->new_file.path, flags)) {
-			giterr_set(GITERR_CHECKOUT, "Cannot checkout to invalid path '%s'", delta->old_file.path);
+			giterr_set(GITERR_CHECKOUT, "Cannot checkout to invalid path '%s'", delta->new_file.path);
 			return -1;
 		}
 	}
@@ -1465,7 +1488,7 @@ static int blob_content_to_file(
 	writer.fd = fd;
 	writer.open = 1;
 
-	error = git_filter_list_stream_blob(fl, blob, (git_writestream *)&writer);
+	error = git_filter_list_stream_blob(fl, blob, &writer.base);
 
 	assert(writer.open == 0);
 
@@ -2382,7 +2405,7 @@ static int checkout_data_init(
 			 &data->can_symlink, repo, GIT_CVAR_SYMLINKS)) < 0)
 		goto cleanup;
 
-	if (!data->opts.baseline) {
+	if (!data->opts.baseline && !data->opts.baseline_index) {
 		data->opts_free_baseline = true;
 
 		error = checkout_lookup_head_tree(&data->opts.baseline, repo);
@@ -2470,7 +2493,8 @@ int git_checkout_iterator(
 		GIT_DIFF_INCLUDE_IGNORED |
 		GIT_DIFF_INCLUDE_TYPECHANGE |
 		GIT_DIFF_INCLUDE_TYPECHANGE_TREES |
-		GIT_DIFF_SKIP_BINARY_CHECK;
+		GIT_DIFF_SKIP_BINARY_CHECK |
+		GIT_DIFF_INCLUDE_CASECHANGE;
 	if (data.opts.checkout_strategy & GIT_CHECKOUT_DISABLE_PATHSPEC_MATCH)
 		diff_opts.flags |= GIT_DIFF_DISABLE_PATHSPEC_MATCH;
 	if (data.opts.paths.count > 0)
@@ -2485,11 +2509,20 @@ int git_checkout_iterator(
 		(error = git_iterator_for_workdir_ext(
 			&workdir, data.repo, data.opts.target_directory, index, NULL,
 			iterflags | GIT_ITERATOR_DONT_AUTOEXPAND,
-			data.pfx, data.pfx)) < 0 ||
-		(error = git_iterator_for_tree(
-			&baseline, data.opts.baseline,
-			iterflags, data.pfx, data.pfx)) < 0)
+			data.pfx, data.pfx)) < 0)
 		goto cleanup;
+
+	if (data.opts.baseline_index) {
+		if ((error = git_iterator_for_index(
+				&baseline, data.opts.baseline_index,
+				iterflags, data.pfx, data.pfx)) < 0)
+			goto cleanup;
+	} else {
+		if ((error = git_iterator_for_tree(
+				&baseline, data.opts.baseline,
+				iterflags, data.pfx, data.pfx)) < 0)
+			goto cleanup;
+	}
 
 	/* Should not have case insensitivity mismatch */
 	assert(git_iterator_ignore_case(workdir) == git_iterator_ignore_case(baseline));
@@ -2651,7 +2684,7 @@ int git_checkout_tree(
 	if ((error = git_repository_index(&index, repo)) < 0)
 		return error;
 
-	if (!(error = git_iterator_for_tree(&tree_i, tree, GIT_ITERATOR_DONT_IGNORE_CASE, NULL, NULL)))
+	if (!(error = git_iterator_for_tree(&tree_i, tree, 0, NULL, NULL)))
 		error = git_checkout_iterator(tree_i, index, opts);
 
 	git_iterator_free(tree_i);

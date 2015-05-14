@@ -41,7 +41,7 @@ struct pack_write_context {
 	git_transfer_progress *stats;
 };
 
-GIT__USE_OIDMAP
+GIT__USE_OIDMAP;
 
 #ifdef GIT_THREADS
 
@@ -893,6 +893,29 @@ static unsigned long free_unpacked(struct unpacked *n)
 	return freed_mem;
 }
 
+static int report_delta_progress(git_packbuilder *pb, uint32_t count, bool force)
+{
+	int ret;
+
+	if (pb->progress_cb) {
+		double current_time = git__timer();
+		double elapsed = current_time - pb->last_progress_report_time;
+
+		if (force || elapsed >= MIN_PROGRESS_UPDATE_INTERVAL) {
+			pb->last_progress_report_time = current_time;
+
+			ret = pb->progress_cb(
+				GIT_PACKBUILDER_DELTAFICATION,
+				count, pb->nr_objects, pb->progress_cb_payload);
+
+			if (ret)
+				return giterr_set_after_callback(ret);
+		}
+	}
+
+	return 0;
+}
+
 static int find_deltas(git_packbuilder *pb, git_pobject **list,
 		       unsigned int *list_size, unsigned int window,
 		       int depth)
@@ -917,6 +940,9 @@ static int find_deltas(git_packbuilder *pb, git_pobject **list,
 			git_packbuilder__progress_unlock(pb);
 			break;
 		}
+
+		pb->nr_deltified += 1;
+		report_delta_progress(pb, pb->nr_deltified, false);
 
 		po = *list++;
 		(*list_size)--;
@@ -1290,6 +1316,8 @@ static int prepare_pack(git_packbuilder *pb)
 		}
 	}
 
+	report_delta_progress(pb, pb->nr_objects, true);
+
 	pb->done = true;
 	git__free(delta_list);
 	return 0;
@@ -1401,6 +1429,42 @@ int git_packbuilder_insert_tree(git_packbuilder *pb, const git_oid *oid)
 
 	git_tree_free(tree);
 	git_buf_free(&context.buf);
+	return error;
+}
+
+int git_packbuilder_insert_recur(git_packbuilder *pb, const git_oid *id, const char *name)
+{
+	git_object *obj;
+	int error;
+
+	assert(pb && id);
+
+	if ((error = git_object_lookup(&obj, pb->repo, id, GIT_OBJ_ANY)) < 0)
+		return error;
+
+	switch (git_object_type(obj)) {
+	case GIT_OBJ_BLOB:
+		error = git_packbuilder_insert(pb, id, name);
+		break;
+	case GIT_OBJ_TREE:
+		error = git_packbuilder_insert_tree(pb, id);
+		break;
+	case GIT_OBJ_COMMIT:
+		error = git_packbuilder_insert_commit(pb, id);
+		break;
+	case GIT_OBJ_TAG:
+		if ((error = git_packbuilder_insert(pb, id, name)) < 0)
+			goto cleanup;
+		error = git_packbuilder_insert_recur(pb, git_tag_target_id((git_tag *) obj), NULL);
+		break;
+
+	default:
+		giterr_set(GITERR_INVALID, "unknown object type");
+		error = -1;
+	}
+
+cleanup:
+	git_object_free(obj);
 	return error;
 }
 

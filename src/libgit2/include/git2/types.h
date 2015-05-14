@@ -224,6 +224,12 @@ typedef struct git_refspec git_refspec;
 typedef struct git_remote git_remote;
 
 /**
+ * Interface which represents a transport to communicate with a
+ * remote.
+ */
+typedef struct git_transport git_transport;
+
+/**
  * Preparation for a push operation. Can be used to configure what to
  * push and the level of parallelism of the packfile builder.
  */
@@ -272,6 +278,7 @@ typedef int (*git_transfer_progress_cb)(const git_transfer_progress *stats, void
  * @param payload Payload provided by the caller
  */
 typedef int (*git_transport_message_cb)(const char *str, int len, void *payload);
+
 
 /**
  * Type of host certificate structure that is passed to the check callback

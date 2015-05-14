@@ -671,7 +671,7 @@ int git_filter_list_apply_to_data(
 	buf_stream_init(&writer, tgt);
 
 	if ((error = git_filter_list_stream_data(filters, src,
-		(git_writestream *)&writer)) < 0)
+		&writer.parent)) < 0)
 			return error;
 
 	assert(writer.complete);
@@ -690,7 +690,7 @@ int git_filter_list_apply_to_file(
 	buf_stream_init(&writer, out);
 
 	if ((error = git_filter_list_stream_file(
-		filters, repo, path, (git_writestream *)&writer)) < 0)
+		filters, repo, path, &writer.parent)) < 0)
 			return error;
 
 	assert(writer.complete);
@@ -721,7 +721,7 @@ int git_filter_list_apply_to_blob(
 	buf_stream_init(&writer, out);
 
 	if ((error = git_filter_list_stream_blob(
-		filters, blob, (git_writestream *)&writer)) < 0)
+		filters, blob, &writer.parent)) < 0)
 			return error;
 
 	assert(writer.complete);
@@ -809,6 +809,9 @@ static int proxy_stream_init(
 	proxy_stream->target = target;
 	proxy_stream->output = temp_buf ? temp_buf : &proxy_stream->temp_buf;
 
+	if (temp_buf)
+		git_buf_clear(temp_buf);
+
 	*out = (git_writestream *)proxy_stream;
 	return 0;
 }
@@ -872,15 +875,13 @@ void stream_list_free(git_vector *streams)
 	git_vector_free(streams);
 }
 
-#define STREAM_BUFSIZE 10240
-
 int git_filter_list_stream_file(
 	git_filter_list *filters,
 	git_repository *repo,
 	const char *path,
 	git_writestream *target)
 {
-	char buf[STREAM_BUFSIZE];
+	char buf[FILTERIO_BUFSIZE];
 	git_buf abspath = GIT_BUF_INIT;
 	const char *base = repo ? git_repository_workdir(repo) : NULL;
 	git_vector filter_streams = GIT_VECTOR_INIT;
@@ -898,7 +899,7 @@ int git_filter_list_stream_file(
 		goto done;
 	}
 
-	while ((readlen = p_read(fd, buf, STREAM_BUFSIZE)) > 0) {
+	while ((readlen = p_read(fd, buf, sizeof(buf))) > 0) {
 		if ((error = stream_start->write(stream_start, buf, readlen)) < 0)
 			goto done;
 	}
