@@ -91,7 +91,6 @@ SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP credentials)
     git_repository *repository = NULL;
     git_strarray c_refspecs = {0};
     git_push_options opts = GIT_PUSH_OPTIONS_INIT;
-    git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
 
     if (git2r_arg_check_string(name))
         git2r_error(git2r_err_string_arg, __func__, "name");
@@ -111,11 +110,8 @@ SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP credentials)
     if (GIT_OK != err)
         goto cleanup;
 
-    callbacks.credentials = &git2r_cred_acquire_cb;
-    callbacks.payload = credentials;
-    err = git_remote_set_callbacks(remote, &callbacks);
-    if (GIT_OK != err)
-        goto cleanup;
+    opts.callbacks.credentials = &git2r_cred_acquire_cb;
+    opts.callbacks.payload = credentials;
 
     c_refspecs.count = length(refspec);
     if (c_refspecs.count) {
