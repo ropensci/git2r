@@ -91,7 +91,7 @@ SEXP git2r_remote_fetch(
     const git_transfer_progress *stats;
     git_remote *remote = NULL;
     git_repository *repository = NULL;
-    git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
+    git_fetch_options fetch_opts = GIT_FETCH_OPTIONS_INIT;
 
     if (git2r_arg_check_string(name))
         git2r_error(git2r_err_string_arg, __func__, "name");
@@ -108,13 +108,9 @@ SEXP git2r_remote_fetch(
     if (GIT_OK != err)
         goto cleanup;
 
-    callbacks.credentials = &git2r_cred_acquire_cb;
-    callbacks.payload = credentials;
-    err = git_remote_set_callbacks(remote, &callbacks);
-    if (GIT_OK != err)
-        goto cleanup;
-
-    err = git_remote_fetch(remote, NULL,  CHAR(STRING_ELT(msg, 0)));
+    fetch_opts.callbacks.credentials = &git2r_cred_acquire_cb;
+    fetch_opts.callbacks.payload = credentials;
+    err = git_remote_fetch(remote, NULL, &fetch_opts, CHAR(STRING_ELT(msg, 0)));
     if (GIT_OK != err)
         goto cleanup;
 
