@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/ropensci/git2r.png)](https://travis-ci.org/ropensci/git2r)
 [![Build status](https://ci.appveyor.com/api/projects/status/h2vunr0lfqt8b45g)](https://ci.appveyor.com/project/karthik/git2r)
 [![CRAN status](http://www.r-pkg.org/badges/version/git2r)](http://cran.r-project.org/web/packages/git2r)
+[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/git2r)](http://cran.r-project.org/web/packages/git2r/index.html)
 
 # Introduction
 
