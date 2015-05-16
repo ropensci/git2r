@@ -43,6 +43,7 @@ Collate:
     'odb.r'
     'plot.r'
     'pull.r'
+    'punch_card.r'
     'push.r'
     'reference.r'
     'reflog.r'
