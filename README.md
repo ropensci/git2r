@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/ropensci/git2r.png)](https://travis-ci.org/ropensci/git2r)
-[![Build status](https://ci.appveyor.com/api/projects/status/h2vunr0lfqt8b45g)](https://ci.appveyor.com/project/karthik/git2r)
+[![Build Status](https://travis-ci.org/ropensci/git2r.svg)](https://travis-ci.org/ropensci/git2r)
+[![Build status](https://ci.appveyor.com/api/projects/status/h2vunr0lfqt8b45g?svg=true)](https://ci.appveyor.com/project/karthik/git2r)
 [![CRAN status](http://www.r-pkg.org/badges/version/git2r)](http://cran.r-project.org/web/packages/git2r/index.html)
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/last-month/git2r)](http://cran.r-project.org/web/packages/git2r/index.html)
 
