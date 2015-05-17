@@ -628,8 +628,17 @@ int git_submodule_save(git_submodule *submodule)
 		(error = git_config_file_set_string(mods, key.ptr, submodule->url)) < 0)
 		goto cleanup;
 
-	if ((error = submodule_config_key_trunc_puts(&key, "branch")) < 0 ||
-		(error = git_config_file_set_string(mods, key.ptr, submodule->branch)) < 0)
+	if ((error = submodule_config_key_trunc_puts(&key, "branch")) < 0)
+		goto cleanup;
+	if (submodule->branch == NULL)
+		error = git_config_file_delete(mods, key.ptr);
+	else
+		error = git_config_file_set_string(mods, key.ptr, submodule->branch);
+	if (error == GIT_ENOTFOUND) {
+		error = 0;
+		giterr_clear();
+	}
+	if (error < 0)
 		goto cleanup;
 
 	if (!(error = submodule_config_key_trunc_puts(&key, "update")) &&
@@ -713,6 +722,21 @@ const char *git_submodule_branch(git_submodule *submodule)
 {
 	assert(submodule);
 	return submodule->branch;
+}
+
+int git_submodule_set_branch(git_submodule *submodule, const char *branch)
+{
+	assert(submodule);
+
+	git__free(submodule->branch);
+	submodule->branch = NULL;
+
+	if (branch != NULL) {
+		submodule->branch = git__strdup(branch);
+		GITERR_CHECK_ALLOC(submodule->branch);
+	}
+
+	return 0;
 }
 
 int git_submodule_set_url(git_submodule *submodule, const char *url)
@@ -926,7 +950,7 @@ int git_submodule_update(git_submodule *sm, int init, git_submodule_update_optio
 	GITERR_CHECK_VERSION(&update_options, GIT_SUBMODULE_UPDATE_OPTIONS_VERSION, "git_submodule_update_options");
 
 	/* Copy over the remote callbacks */
-	clone_options.remote_callbacks = update_options.remote_callbacks;
+	memcpy(&clone_options.fetch_opts, &update_options.fetch_opts, sizeof(git_fetch_options));
 
 	/* Get the status of the submodule to determine if it is already initialized  */
 	if ((error = git_submodule_status(&submodule_status, sm)) < 0)

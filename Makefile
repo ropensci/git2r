@@ -109,7 +109,6 @@ sync_libgit2:
 	cd src/regex && patch -i ../../patches/regcomp-pass-R-CMD-check-git2r.patch
 	cd src/regex && patch -i ../../patches/regex-prefix-entry-points.patch
 	cd src/libgit2/win32 && patch -i ../../../patches/posix-pass-R-CMD-check-git2r.patch
-	cd src/libgit2/transports && patch -i ../../../patches/winhttp-build-with-mingw-w64.patch
 	Rscript scripts/build_Makevars.r
 	Rscript scripts/libgit2_sha.r
 

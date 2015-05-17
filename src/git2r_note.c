@@ -18,6 +18,7 @@
 
 #include <Rdefines.h>
 #include "git2.h"
+#include "buffer.h"
 
 #include "git2r_arg.h"
 #include "git2r_error.h"
@@ -193,21 +194,23 @@ SEXP git2r_note_default_ref(SEXP repo)
 {
     int err;
     SEXP result = R_NilValue;
-    const char *ref;
+    git_buf buf = GIT_BUF_INIT;
     git_repository *repository = NULL;
 
     repository = git2r_repository_open(repo);
     if (!repository)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
-    err = git_note_default_ref(&ref, repository);
+    err = git_note_default_ref(&buf, repository);
     if (GIT_OK != err)
         goto cleanup;
 
     PROTECT(result = allocVector(STRSXP, 1));
-    SET_STRING_ELT(result, 0, mkChar(ref));
+    SET_STRING_ELT(result, 0, mkChar(buf.ptr));
 
 cleanup:
+    git_buf_free(&buf);
+
     if (repository)
         git_repository_free(repository);
 
@@ -272,28 +275,33 @@ SEXP git2r_notes(SEXP repo, SEXP ref)
 {
     int err;
     SEXP result = R_NilValue;
-    const char *notes_ref = NULL;
+    git_buf buf = GIT_BUF_INIT;
     git2r_note_foreach_cb_data cb_data = {0, R_NilValue, R_NilValue, NULL, NULL};
     git_repository *repository = NULL;
 
     if (R_NilValue != ref) {
         if (git2r_arg_check_string(ref))
             git2r_error(git2r_err_string_arg, __func__, "ref");
-        notes_ref = CHAR(STRING_ELT(ref, 0));
     }
 
     repository = git2r_repository_open(repo);
     if (!repository)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
-    if (NULL == notes_ref) {
-        err = git_note_default_ref(&notes_ref, repository);
+    if (R_NilValue != ref) {
+        git_buf_sets(&buf, CHAR(STRING_ELT(ref, 0)));
+    } else {
+        err = git_note_default_ref(&buf, repository);
         if (GIT_OK != err)
             goto cleanup;
     }
 
     /* Count number of notes before creating the list */
-    err = git_note_foreach(repository, notes_ref, &git2r_note_foreach_cb, &cb_data);
+    err = git_note_foreach(
+        repository,
+        git_buf_cstr(&buf),
+        &git2r_note_foreach_cb,
+        &cb_data);
     if (GIT_OK != err) {
         if (GIT_ENOTFOUND == err) {
             err = GIT_OK;
@@ -308,10 +316,13 @@ SEXP git2r_notes(SEXP repo, SEXP ref)
     cb_data.list = result;
     cb_data.repo = repo;
     cb_data.repository = repository;
-    cb_data.notes_ref = notes_ref;
-    err = git_note_foreach(repository, notes_ref, &git2r_note_foreach_cb, &cb_data);
+    cb_data.notes_ref = git_buf_cstr(&buf);
+    err = git_note_foreach(repository, git_buf_cstr(&buf),
+                           &git2r_note_foreach_cb, &cb_data);
 
 cleanup:
+    git_buf_free(&buf);
+
     if (repository)
         git_repository_free(repository);
 

@@ -135,7 +135,7 @@ AC_SEARCH_LIBS([EVP_EncryptInit], [crypto],
 
 # Specify sha1 implementation
 if test "x${have_ssl}" = xyes; then
-        CPPFLAGS="${CPPFLAGS} -DGIT_SSL"
+        CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL"
 
         case "${host_os}" in
           darwin*)

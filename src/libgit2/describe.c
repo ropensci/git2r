@@ -19,7 +19,7 @@
 #include "vector.h"
 #include "repository.h"
 
-GIT__USE_OIDMAP
+GIT__USE_OIDMAP;
 
 /* Ported from https://github.com/git/git/blob/89dde7882f71f846ccd0359756d27bebc31108de/builtin/describe.c */
 
@@ -693,7 +693,7 @@ int git_describe_commit(
 			get_name, &data)) < 0)
 				goto cleanup;
 
-	if (git_oidmap_size(data.names) == 0) {
+	if (git_oidmap_size(data.names) == 0 && !opts->show_commit_oid_as_fallback) {
 		giterr_set(GITERR_DESCRIBE, "Cannot describe - "
 			"No reference found, cannot describe anything.");
 		error = -1;

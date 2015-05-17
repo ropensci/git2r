@@ -27,31 +27,6 @@
 #include "git2r_signature.h"
 
 /**
- * The invoked callback on each status entry
- *
- * @param ref The reference name pointer
- * @param msg Status report for each of the updated references.
- * @param payload A pointer to the payload data structure
- * @return 0
- */
-static int git2r_push_status_foreach_cb(
-    const char *ref,
-    const char *msg,
-    void *payload)
-{
-    const char **msg_dst = (const char **)payload;
-
-    /* The reference name pointer should never be NULL */
-    if (!ref)
-        return -1;
-
-    if (msg != NULL && *msg_dst == NULL)
-        *msg_dst = msg;
-
-    return 0;
-}
-
-/**
  * Check if any non NA refspec
  *
  * @param refspec The string vector of refspec to push
@@ -91,7 +66,6 @@ SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP credentials)
     git_repository *repository = NULL;
     git_strarray c_refspecs = {0};
     git_push_options opts = GIT_PUSH_OPTIONS_INIT;
-    git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
 
     if (git2r_arg_check_string(name))
         git2r_error(git2r_err_string_arg, __func__, "name");
@@ -111,11 +85,8 @@ SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP credentials)
     if (GIT_OK != err)
         goto cleanup;
 
-    callbacks.credentials = &git2r_cred_acquire_cb;
-    callbacks.payload = credentials;
-    err = git_remote_set_callbacks(remote, &callbacks);
-    if (GIT_OK != err)
-        goto cleanup;
+    opts.callbacks.credentials = &git2r_cred_acquire_cb;
+    opts.callbacks.payload = credentials;
 
     c_refspecs.count = length(refspec);
     if (c_refspecs.count) {

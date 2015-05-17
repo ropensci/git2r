@@ -130,10 +130,12 @@ typedef struct git_submodule_update_options {
 	git_checkout_options checkout_opts;
 
 	/**
-	 * Callbacks to use for reporting fetch progress, and for acquiring
+	 * Options which control the fetch, including callbacks.
+	 *
+	 * The callbacks to use for reporting fetch progress, and for acquiring
 	 * credentials in the event they are needed.
 	 */
-	git_remote_callbacks remote_callbacks;
+	git_fetch_options fetch_opts;
 
 	/**
 	 * The checkout strategy to use when the sub repository needs to
@@ -147,7 +149,7 @@ typedef struct git_submodule_update_options {
 #define GIT_SUBMODULE_UPDATE_OPTIONS_INIT \
 	{ GIT_CHECKOUT_OPTIONS_VERSION, \
 		{ GIT_CHECKOUT_OPTIONS_VERSION, GIT_CHECKOUT_SAFE }, \
-	GIT_REMOTE_CALLBACKS_INIT, GIT_CHECKOUT_SAFE }
+	GIT_FETCH_OPTIONS_INIT, GIT_CHECKOUT_SAFE }
 
 /**
  * Initializes a `git_submodule_update_options` with default values.
@@ -369,6 +371,22 @@ GIT_EXTERN(int) git_submodule_resolve_url(git_buf *out, git_repository *repo, co
 * @return Pointer to the submodule branch
 */
 GIT_EXTERN(const char *) git_submodule_branch(git_submodule *submodule);
+
+/**
+ * Set the branch for the submodule.
+ *
+ * This sets the branch in memory for the submodule. This will be used for
+ * any following submodule actions while this submodule data is in memory.
+ *
+ * After calling this, you may wish to call `git_submodule_save()` to write
+ * the changes back to the ".gitmodules" file and `git_submodule_sync()` to
+ * write the changes to the checked out submodule repository.
+ *
+ * @param submodule Pointer to the submodule object
+ * @param branch Branch that should be used for the submodule
+ * @return 0 on success, <0 on failure
+ */
+GIT_EXTERN(int) git_submodule_set_branch(git_submodule *submodule, const char *branch);
 
 /**
  * Set the URL for the submodule.
