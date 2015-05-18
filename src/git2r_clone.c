@@ -104,6 +104,8 @@ int git2r_clone_cred_acquire(
  * @param url the remote repository to clone
  * @param local_path local directory to clone to
  * @param bare Create a bare repository.
+ * @param branch The name of the branch to checkout. Default is NULL
+ *        which means to use the remote's default branch.
  * @param credentials The credentials for remote repository access.
  * @param progress show progress
  * @return R_NilValue
@@ -112,6 +114,7 @@ SEXP git2r_clone(
     SEXP url,
     SEXP local_path,
     SEXP bare,
+    SEXP branch,
     SEXP credentials,
     SEXP progress)
 {
@@ -127,6 +130,8 @@ SEXP git2r_clone(
         git2r_error(git2r_err_string_arg, __func__, "local_path");
     if (git2r_arg_check_logical(bare))
         git2r_error(git2r_err_logical_arg, __func__, "bare");
+    if (branch != R_NilValue && git2r_arg_check_string(branch))
+        git2r_error(git2r_err_string_arg, __func__, "branch");
     if (git2r_arg_check_credentials(credentials))
         git2r_error(git2r_err_credentials_arg, __func__, "credentials");
     if (git2r_arg_check_logical(progress))
@@ -140,6 +145,9 @@ SEXP git2r_clone(
 
     if (LOGICAL(bare)[0])
         clone_opts.bare = 1;
+
+    if (branch != R_NilValue)
+        clone_opts.checkout_branch = CHAR(STRING_ELT(branch, 0));
 
     if (LOGICAL(progress)[0]) {
         clone_opts.fetch_opts.callbacks.transfer_progress = &git2r_clone_progress;

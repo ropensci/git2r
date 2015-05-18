@@ -26,6 +26,7 @@ SEXP git2r_clone(
     SEXP url,
     SEXP local_path,
     SEXP bare,
+    SEXP branch,
     SEXP credentials,
     SEXP progress);
 

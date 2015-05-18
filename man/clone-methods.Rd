@@ -6,10 +6,11 @@
 \alias{clone,character,character-method}
 \title{Clone a remote repository}
 \usage{
-clone(url, local_path, bare = FALSE, credentials = NULL, progress = TRUE)
+clone(url, local_path, bare = FALSE, branch = NULL, credentials = NULL,
+  progress = TRUE)
 
 \S4method{clone}{character,character}(url, local_path, bare = FALSE,
-  credentials = NULL, progress = TRUE)
+  branch = NULL, credentials = NULL, progress = TRUE)
 }
 \arguments{
 \item{url}{The remote repository to clone}
@@ -17,6 +18,9 @@ clone(url, local_path, bare = FALSE, credentials = NULL, progress = TRUE)
 \item{local_path}{Local directory to clone to.}
 
 \item{bare}{Create a bare repository. Default is FALSE.}
+
+\item{branch}{The name of the branch to checkout. Default is NULL
+which means to use the remote's default branch.}
 
 \item{credentials}{The credentials for remote repository access. Default
 is NULL.}

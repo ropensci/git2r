@@ -81,7 +81,7 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_branch_target", (DL_FUNC)&git2r_branch_target, 1},
     {"git2r_branch_upstream_canonical_name", (DL_FUNC)&git2r_branch_upstream_canonical_name, 1},
     {"git2r_checkout_tree", (DL_FUNC)&git2r_checkout_tree, 3},
-    {"git2r_clone", (DL_FUNC)&git2r_clone, 5},
+    {"git2r_clone", (DL_FUNC)&git2r_clone, 6},
     {"git2r_commit", (DL_FUNC)&git2r_commit, 4},
     {"git2r_commit_parent_list", (DL_FUNC)&git2r_commit_parent_list, 1},
     {"git2r_commit_tree", (DL_FUNC)&git2r_commit_tree, 1},

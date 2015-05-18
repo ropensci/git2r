@@ -262,6 +262,8 @@ setMethod("init",
 ##' @param url The remote repository to clone
 ##' @param local_path Local directory to clone to.
 ##' @param bare Create a bare repository. Default is FALSE.
+##' @param branch The name of the branch to checkout. Default is NULL
+##' which means to use the remote's default branch.
 ##' @param credentials The credentials for remote repository access. Default
 ##' is NULL.
 ##' @param progress Show progress. Default is TRUE.
@@ -314,6 +316,7 @@ setGeneric("clone",
            function(url,
                     local_path,
                     bare        = FALSE,
+                    branch      = NULL,
                     credentials = NULL,
                     progress    = TRUE)
            standardGeneric("clone"))
@@ -326,10 +329,12 @@ setMethod("clone",
           function(url,
                    local_path,
                    bare,
+                   branch,
                    credentials,
                    progress)
           {
-              .Call(git2r_clone, url, local_path, bare, credentials, progress)
+              .Call(git2r_clone, url, local_path, bare,
+                    branch, credentials, progress)
 
               repository(local_path)
           }
