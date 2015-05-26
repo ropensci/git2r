@@ -29,18 +29,22 @@
  *
  * @param repo S4 class git_repository
  * @param path array of path patterns
+ * @param force if TRUE, add ignored files.
  * @return R_NilValue
  */
-SEXP git2r_index_add_all(SEXP repo, SEXP path)
+SEXP git2r_index_add_all(SEXP repo, SEXP path, SEXP force)
 {
     int err = GIT_OK;
     size_t i, len;
+    unsigned int flags = 0;
     git_strarray pathspec = {0};
     git_index *index = NULL;
     git_repository *repository = NULL;
 
     if (git2r_arg_check_string_vec(path))
         git2r_error(git2r_err_string_vec_arg, __func__, "path");
+    if (git2r_arg_check_logical(force))
+        git2r_error(git2r_err_logical_arg, __func__, "force");
 
     repository= git2r_repository_open(repo);
     if (!repository)
@@ -73,7 +77,10 @@ SEXP git2r_index_add_all(SEXP repo, SEXP path)
     if (GIT_OK != err)
         goto cleanup;
 
-    err = git_index_add_all(index, &pathspec, 0, NULL, NULL);
+    if (LOGICAL(force)[0])
+        flags |= GIT_INDEX_ADD_FORCE;
+
+    err = git_index_add_all(index, &pathspec, flags, NULL, NULL);
     if (GIT_OK != err)
         goto cleanup;
 

@@ -6,9 +6,9 @@
 \alias{add,git_repository,character-method}
 \title{Add file(s) to index}
 \usage{
-add(repo, path)
+add(repo, path, ...)
 
-\S4method{add}{git_repository,character}(repo, path)
+\S4method{add}{git_repository,character}(repo, path, force = FALSE)
 }
 \arguments{
 \item{repo}{The repository \code{object}.}
@@ -17,6 +17,10 @@ add(repo, path)
 be relative to the repository's working folder. Only non-ignored
 files are added. If path is a directory, files in sub-folders are
 added (if non-ignored)}
+
+\item{...}{Additional arguments to the method}
+
+\item{force}{Add ignored files. Default is FALSE.}
 }
 \value{
 invisible(NULL)
