@@ -46,3 +46,29 @@ stopifnot(identical(list.files(path), "test-1.txt"))
 
 ## Cleanup
 unlink(path, recursive=TRUE)
+
+##
+## Checkout branch in empty repository
+##
+
+## Create a directory in tempdir
+path <- tempfile(pattern="git2r-")
+dir.create(path)
+
+## Initialize a repository
+repo <- init(path)
+config(repo, user.name="Alice", user.email="alice@example.org")
+
+## Create and checkout dev branch in repo
+checkout(repo, "dev", create = TRUE)
+
+## Create first commit
+writeLines("Hello world!", file.path(path, "test-1.txt"))
+add(repo, 'test-1.txt')
+commit(repo, "First commit message")
+
+stopifnot(identical(length(branches(repo)), 1L))
+stopifnot(identical(branches(repo)[[1]]@name, "dev"))
+
+## Cleanup
+unlink(path, recursive=TRUE)
