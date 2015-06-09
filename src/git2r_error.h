@@ -25,6 +25,7 @@
 extern const char git2r_err_alloc_memory_buffer[];
 extern const char git2r_err_checkout_tree[];
 extern const char git2r_err_from_libgit2[];
+extern const char git2r_err_invalid_refname[];
 extern const char git2r_err_invalid_repository[];
 extern const char git2r_err_nothing_added_to_commit[];
 extern const char git2r_err_revparse_single[];

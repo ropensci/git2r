@@ -422,6 +422,8 @@ SEXP git2r_repository_set_head(SEXP repo, SEXP ref_name)
 
     if (git2r_arg_check_string(ref_name))
         git2r_error(git2r_err_string_arg, __func__, "ref_name");
+    if (!git_reference_is_valid_name(CHAR(STRING_ELT(ref_name, 0))))
+        git2r_error(git2r_err_invalid_refname, __func__, NULL);
 
     repository = git2r_repository_open(repo);
     if (!repository)

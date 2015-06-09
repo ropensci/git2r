@@ -25,6 +25,7 @@
 const char git2r_err_alloc_memory_buffer[] = "Unable to allocate memory buffer";
 const char git2r_err_checkout_tree[] = "Expected commit, tag or tree";
 const char git2r_err_from_libgit2[] = "Error in '%s': %s\n";
+const char git2r_err_invalid_refname[] = "Error in '%s': Invalid reference name";
 const char git2r_err_invalid_repository[] = "Invalid repository";
 const char git2r_err_nothing_added_to_commit[] = "Nothing added to commit";
 const char git2r_err_revparse_single[] = "Expected commit, tag or tree";
