@@ -143,7 +143,7 @@ setMethod("rm_file",
 
                   ## Remove and stage files
                   lapply(path, function(x) {
-                      file.remove(paste0(workdir(repo), path))
+                      file.remove(paste0(workdir(repo), x))
                       .Call(git2r_index_remove_bypath, repo, x)
                   })
               }
