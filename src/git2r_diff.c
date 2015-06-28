@@ -606,6 +606,7 @@ int git2r_diff_count(git_diff *diff,
 
     err = git_diff_foreach(diff,
 			   git2r_diff_count_file_cb,
+                           /* binary_cb */ NULL,
 			   git2r_diff_count_hunk_cb,
 			   git2r_diff_count_line_cb,
 			   /* payload= */ (void*) &n);
@@ -850,6 +851,7 @@ int git2r_diff_format_to_r(git_diff *diff, SEXP dest)
     err = git_diff_foreach(
         diff,
         git2r_diff_get_file_cb,
+        /* binary_cb */ NULL,
         git2r_diff_get_hunk_cb,
         git2r_diff_get_line_cb,
         &payload);

@@ -104,6 +104,8 @@ static size_t git2r_status_count_unstaged(git_status_list *status_list)
             changes++;
         else if (s->status == (GIT_STATUS_INDEX_DELETED | GIT_STATUS_WT_NEW))
             changes++;
+        else if (s->status & GIT_STATUS_CONFLICTED)
+            changes++;
     }
 
     return changes;
@@ -273,6 +275,8 @@ static void git2r_status_list_unstaged(
             wstatus = "typechange";
         else if (s->status == (GIT_STATUS_INDEX_DELETED | GIT_STATUS_WT_NEW))
             wstatus = "unmerged";
+        else if (s->status & GIT_STATUS_CONFLICTED)
+            wstatus = "conflicted";
 
         if (!wstatus)
             continue;
