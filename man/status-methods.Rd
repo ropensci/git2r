@@ -10,8 +10,7 @@
 status(repo, staged = TRUE, unstaged = TRUE, untracked = TRUE,
   ignored = FALSE)
 
-\S4method{status}{missing}(repo, staged = TRUE, unstaged = TRUE,
-  untracked = TRUE, ignored = FALSE)
+\S4method{status}{missing}(staged, unstaged, untracked, ignored)
 
 \S4method{status}{git_repository}(repo, staged = TRUE, unstaged = TRUE,
   untracked = TRUE, ignored = FALSE)

@@ -83,7 +83,7 @@ setGeneric("status",
 ##' @export
 setMethod("status",
           signature(repo = "missing"),
-          function(repo, staged, unstaged, untracked, ignored)
+          function(staged, unstaged, untracked, ignored)
           {
               status(repo      = repository(getwd(), discover = TRUE),
                      staged    = staged,
