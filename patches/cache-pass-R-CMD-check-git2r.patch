@@ -1,5 +1,5 @@
-*** cache.c	2014-12-06 09:42:38.381018993 +0100
---- cache-pass-R-CMD-check-git2r.c	2014-12-06 09:42:47.553019239 +0100
+*** cache.c	2015-06-28 11:37:30.025256868 +0200
+--- cache-pass-R-CMD-check-git2r.c	2015-06-28 11:37:11.701256714 +0200
 ***************
 *** 15,20 ****
 --- 15,35 ----
@@ -52,7 +52,7 @@
   			object->flags == GIT_CACHE_STORE_PARSED ? '*' : ' ',
   			git_oid_tostr(oid_str, sizeof(oid_str), &object->oid),
 ***************
-*** 113,122 ****
+*** 114,123 ****
   /* Called with lock */
   static void cache_evict_entries(git_cache *cache)
   {
@@ -63,7 +63,7 @@
   	/* do not infinite loop if there's not enough entries to evict  */
   	if (evict_count > kh_size(cache->map)) {
   		clear_cache(cache);
---- 128,142 ----
+--- 129,143 ----
   /* Called with lock */
   static void cache_evict_entries(git_cache *cache)
   {

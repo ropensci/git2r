@@ -1,5 +1,5 @@
-*** posix.h	2015-03-16 17:47:07.060421410 +0100
---- posix-pass-R-CMD-check-git2r.h	2015-03-16 17:46:57.736421160 +0100
+*** posix.h	2015-06-28 11:34:36.901255415 +0200
+--- posix-pass-R-CMD-check-git2r.h	2015-06-28 11:34:36.953255416 +0200
 ***************
 *** 7,12 ****
 --- 7,19 ----
@@ -17,7 +17,7 @@
   #include "../posix.h"
   #include "path_w32.h"
 ***************
-*** 33,39 ****
+*** 36,42 ****
   extern int p_inet_pton(int af, const char* src, void* dst);
   
   extern int p_vsnprintf(char *buffer, size_t count, const char *format, va_list argptr);
@@ -25,7 +25,7 @@
   extern int p_mkstemp(char *tmp_path);
   extern int p_chdir(const char* path);
   extern int p_chmod(const char* path, mode_t mode);
---- 40,46 ----
+--- 43,49 ----
   extern int p_inet_pton(int af, const char* src, void* dst);
   
   extern int p_vsnprintf(char *buffer, size_t count, const char *format, va_list argptr);

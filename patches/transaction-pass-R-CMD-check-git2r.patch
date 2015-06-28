@@ -1,5 +1,5 @@
-*** transaction.c	2014-11-17 18:59:21.295038201 +0100
---- transaction-pass-R-CMD-check-git2r.c	2014-11-18 21:48:15.237611264 +0100
+*** transaction.c	2015-06-28 11:34:36.857255415 +0200
+--- transaction-pass-R-CMD-check-git2r.c	2015-06-28 11:34:36.937255416 +0200
 ***************
 *** 5,10 ****
 --- 5,16 ----
@@ -16,7 +16,7 @@
   #include "repository.h"
   #include "strmap.h"
 ***************
-*** 274,280 ****
+*** 275,281 ****
   	} else if (node->ref_type == GIT_REF_SYMBOLIC) {
   		ref = git_reference__alloc_symbolic(node->name, node->target.symbolic);
   	} else {
@@ -24,7 +24,7 @@
   	}
   
   	GITERR_CHECK_ALLOC(ref);
---- 280,288 ----
+--- 281,289 ----
   	} else if (node->ref_type == GIT_REF_SYMBOLIC) {
   		ref = git_reference__alloc_symbolic(node->name, node->target.symbolic);
   	} else {
@@ -35,7 +35,7 @@
   
   	GITERR_CHECK_ALLOC(ref);
 ***************
-*** 287,293 ****
+*** 288,294 ****
   	} else if (node->ref_type == GIT_REF_SYMBOLIC) {
   		error = git_refdb_unlock(db, node->payload, true, update_reflog, ref, node->sig, node->message);
   	} else {
@@ -43,7 +43,7 @@
   	}
   
   	git_reference_free(ref);
---- 295,303 ----
+--- 296,304 ----
   	} else if (node->ref_type == GIT_REF_SYMBOLIC) {
   		error = git_refdb_unlock(db, node->payload, true, update_reflog, ref, node->sig, node->message);
   	} else {

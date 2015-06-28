@@ -1,5 +1,5 @@
-*** diff_print.c	2014-12-27 15:25:55.706063208 +0100
---- diff_print-pass-R-CMD-check-git2r.c	2014-12-27 15:26:02.486063390 +0100
+*** diff_print.c	2015-06-28 11:34:36.849255415 +0200
+--- diff_print-pass-R-CMD-check-git2r.c	2015-06-28 11:34:36.929255416 +0200
 ***************
 *** 13,18 ****
 --- 13,27 ----
@@ -19,7 +19,7 @@
   	git_diff *diff;
   	git_diff_format_t format;
 ***************
-*** 613,619 ****
+*** 643,649 ****
   	const git_diff_line *line,
   	void *payload)
   {
@@ -27,7 +27,7 @@
   
   	GIT_UNUSED(delta); GIT_UNUSED(hunk);
   
---- 622,631 ----
+--- 652,661 ----
   	const git_diff_line *line,
   	void *payload)
   {
