@@ -27,6 +27,7 @@ struct git_filter_source {
 };
 
 typedef struct {
+	const char *filter_name;
 	git_filter *filter;
 	void *payload;
 } git_filter_entry;
@@ -526,7 +527,9 @@ int git_filter_list__load_ext(
 
 			fe = git_array_alloc(fl->filters);
 			GITERR_CHECK_ALLOC(fe);
-			fe->filter  = fdef->filter;
+
+			fe->filter = fdef->filter;
+			fe->filter_name = fdef->filter_name;
 			fe->payload = payload;
 		}
 	}
@@ -572,6 +575,25 @@ void git_filter_list_free(git_filter_list *fl)
 
 	git_array_clear(fl->filters);
 	git__free(fl);
+}
+
+int git_filter_list_contains(
+	git_filter_list *fl,
+	const char *name)
+{
+	size_t i;
+
+	assert(name);
+
+	if (!fl)
+		return 0;
+
+	for (i = 0; i < fl->filters.size; i++) {
+		if (strcmp(fl->filters.ptr[i].filter_name, name) == 0)
+			return 1;
+	}
+
+	return 0;
 }
 
 int git_filter_list_push(
@@ -887,7 +909,7 @@ int git_filter_list_stream_file(
 	git_vector filter_streams = GIT_VECTOR_INIT;
 	git_writestream *stream_start;
 	ssize_t readlen;
-	int fd, error;
+	int fd = -1, error;
 
 	if ((error = stream_list_init(
 			&stream_start, &filter_streams, filters, target)) < 0 ||
@@ -909,9 +931,10 @@ int git_filter_list_stream_file(
 	else if (readlen < 0)
 		error = readlen;
 
-	p_close(fd);
 
 done:
+	if (fd >= 0)
+		p_close(fd);
 	stream_list_free(&filter_streams);
 	git_buf_free(&abspath);
 	return error;

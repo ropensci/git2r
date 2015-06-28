@@ -11,6 +11,7 @@
 #include "git2/index.h"
 #include "vector.h"
 #include "buffer.h"
+#include "ignore.h"
 
 typedef struct git_iterator git_iterator;
 
@@ -33,6 +34,8 @@ typedef enum {
 	GIT_ITERATOR_DONT_AUTOEXPAND  = (1u << 3),
 	/** convert precomposed unicode to decomposed unicode */
 	GIT_ITERATOR_PRECOMPOSE_UNICODE = (1u << 4),
+	/** include conflicts */
+	GIT_ITERATOR_INCLUDE_CONFLICTS = (1u << 5),
 } git_iterator_flag_t;
 
 typedef struct {
@@ -283,5 +286,27 @@ typedef enum {
  */
 extern int git_iterator_advance_over_with_status(
 	const git_index_entry **entry, git_iterator_status_t *status, git_iterator *iter);
+
+/**
+ * Retrieve the index stored in the iterator.
+ *
+ * Only implemented for the workdir iterator
+ */
+extern int git_iterator_index(git_index **out, git_iterator *iter);
+
+typedef int (*git_iterator_walk_cb)(
+	const git_index_entry **entries,
+	void *data);
+
+/**
+ * Walk the given iterators in lock-step.  The given callback will be
+ * called for each unique path, with the index entry in each iterator
+ * (or NULL if the given iterator does not contain that path).
+ */
+extern int git_iterator_walk(
+	git_iterator **iterators,
+	size_t cnt,
+	git_iterator_walk_cb cb,
+	void *data);
 
 #endif

@@ -640,7 +640,7 @@ static bool _check_dir_contents(
 	/* leave base valid even if we could not make space for subdir */
 	if (GIT_ADD_SIZET_OVERFLOW(&alloc_size, dir_size, sub_size) ||
 		GIT_ADD_SIZET_OVERFLOW(&alloc_size, alloc_size, 2) ||
-		git_buf_try_grow(dir, alloc_size, false, false) < 0)
+		git_buf_try_grow(dir, alloc_size, false) < 0)
 		return false;
 
 	/* save excursion */
@@ -847,7 +847,7 @@ int git_path_make_relative(git_buf *path, const char *parent)
 
 	/* save the offset as we might realllocate the pointer */
 	offset = p - path->ptr;
-	if (git_buf_try_grow(path, alloclen, 1, 0) < 0)
+	if (git_buf_try_grow(path, alloclen, 1) < 0)
 		return -1;
 	p = path->ptr + offset;
 
@@ -889,9 +889,9 @@ void git_path_iconv_clear(git_path_iconv_t *ic)
 	}
 }
 
-int git_path_iconv(git_path_iconv_t *ic, char **in, size_t *inlen)
+int git_path_iconv(git_path_iconv_t *ic, const char **in, size_t *inlen)
 {
-	char *nfd = *in, *nfc;
+	char *nfd = (char*)*in, *nfc;
 	size_t nfdlen = *inlen, nfclen, wantlen = nfdlen, alloclen, rv;
 	int retry = 1;
 
@@ -1018,8 +1018,7 @@ int git_path_direach(
 	int error = 0;
 	ssize_t wd_len;
 	DIR *dir;
-	path_dirent_data de_data;
-	struct dirent *de, *de_buf = (struct dirent *)&de_data;
+	struct dirent *de;
 
 #ifdef GIT_USE_ICONV
 	git_path_iconv_t ic = GIT_PATH_ICONV_INIT;
@@ -1045,8 +1044,8 @@ int git_path_direach(
 		(void)git_path_iconv_init_precompose(&ic);
 #endif
 
-	while (p_readdir_r(dir, de_buf, &de) == 0 && de != NULL) {
-		char *de_path = de->d_name;
+	while ((de = readdir(dir)) != NULL) {
+		const char *de_path = de->d_name;
 		size_t de_len = strlen(de_path);
 
 		if (git_path_is_dot_or_dotdot(de_path))
@@ -1060,12 +1059,16 @@ int git_path_direach(
 		if ((error = git_buf_put(path, de_path, de_len)) < 0)
 			break;
 
+		giterr_clear();
 		error = fn(arg, path);
 
 		git_buf_truncate(path, wd_len); /* restore path */
 
+		/* Only set our own error if the callback did not set one already */
 		if (error != 0) {
-			giterr_set_after_callback(error);
+			if (!giterr_last())
+				giterr_set_after_callback(error);
+
 			break;
 		}
 	}
@@ -1227,6 +1230,8 @@ void git_path_diriter_free(git_path_diriter *diriter)
 	if (diriter == NULL)
 		return;
 
+	git_buf_free(&diriter->path_utf8);
+
 	if (diriter->handle != INVALID_HANDLE_VALUE) {
 		FindClose(diriter->handle);
 		diriter->handle = INVALID_HANDLE_VALUE;
@@ -1300,7 +1305,7 @@ int git_path_diriter_next(git_path_diriter *diriter)
 
 #ifdef GIT_USE_ICONV
 	if ((diriter->flags & GIT_PATH_DIR_PRECOMPOSE_UNICODE) != 0 &&
-		(error = git_path_iconv(&diriter->ic, (char **)&filename, &filename_len)) < 0)
+		(error = git_path_iconv(&diriter->ic, &filename, &filename_len)) < 0)
 		return error;
 #endif
 
@@ -1469,7 +1474,7 @@ static int32_t next_hfs_char(const char **in, size_t *len)
 		 * the ASCII range, which is perfectly fine, because the
 		 * git folder name can only be composed of ascii characters
 		 */
-		return tolower(codepoint);
+		return git__tolower(codepoint);
 	}
 	return 0; /* NULL byte -- end of string */
 }

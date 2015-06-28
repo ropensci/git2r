@@ -19,6 +19,7 @@ void Rf_error(const char*, ...);
 #include "reflog.h"
 #include "signature.h"
 
+#include "git2/transaction.h"
 #include "git2/signature.h"
 #include "git2/sys/refs.h"
 #include "git2/sys/refdb_backend.h"

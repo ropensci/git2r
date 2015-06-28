@@ -28,6 +28,7 @@
 
 static int dwim_refspecs(git_vector *out, git_vector *refspecs, git_vector *refs);
 static int lookup_remote_prune_config(git_remote *remote, git_config *config, const char *name);
+char *apply_insteadof(git_config *config, const char *url, int direction);
 
 static int add_refspec_to(git_vector *vector, const char *string, bool is_fetch)
 {
@@ -97,6 +98,7 @@ static int write_add_refspec(git_repository *repo, const char *name, const char 
 {
 	git_config *cfg;
 	git_buf var = GIT_BUF_INIT;
+	git_refspec spec;
 	const char *fmt;
 	int error;
 
@@ -107,6 +109,15 @@ static int write_add_refspec(git_repository *repo, const char *name, const char 
 
 	if ((error = ensure_remote_name_is_valid(name)) < 0)
 		return error;
+
+	if ((error = git_refspec__parse(&spec, refspec, fetch)) < 0) {
+		if (giterr_last()->klass != GITERR_NOMEMORY)
+			error = GIT_EINVALIDSPEC;
+
+		return error;
+	}
+
+	git_refspec__free(&spec);
 
 	if ((error = git_buf_printf(&var, fmt, name)) < 0)
 		return error;
@@ -156,14 +167,18 @@ static int get_check_cert(int *out, git_repository *repo)
 
 static int canonicalize_url(git_buf *out, const char *in)
 {
-#ifdef GIT_WIN32
-	const char *c;
+	if (in == NULL || strlen(in) == 0) {
+		giterr_set(GITERR_INVALID, "cannot set empty URL");
+		return GIT_EINVALIDSPEC;
+	}
 
+#ifdef GIT_WIN32
 	/* Given a UNC path like \\server\path, we need to convert this
 	 * to //server/path for compatibility with core git.
 	 */
 	if (in[0] == '\\' && in[1] == '\\' &&
 		(git__isalpha(in[2]) || git__isdigit(in[2]))) {
+		const char *c;
 		for (c = in; *c; c++)
 			git_buf_putc(out, *c == '\\' ? '/' : *c);
 
@@ -197,7 +212,7 @@ static int create_internal(git_remote **out, git_repository *repo, const char *n
 		canonicalize_url(&canonical_url, url) < 0)
 		goto on_error;
 
-	remote->url = git_buf_detach(&canonical_url);
+	remote->url = apply_insteadof(repo->_config, canonical_url.ptr, GIT_DIRECTION_FETCH);
 
 	if (name != NULL) {
 		remote->name = git__strdup(name);
@@ -206,7 +221,7 @@ static int create_internal(git_remote **out, git_repository *repo, const char *n
 		if ((error = git_buf_printf(&var, CONFIG_URL_FMT, name)) < 0)
 			goto on_error;
 
-		if ((error = git_config_set_string(config, var.ptr, remote->url)) < 0)
+		if ((error = git_config_set_string(config, var.ptr, canonical_url.ptr)) < 0)
 			goto on_error;
 	}
 
@@ -311,15 +326,16 @@ on_error:
 	return -1;
 }
 
-int git_remote_create_anonymous(git_remote **out, git_repository *repo, const char *url, const char *fetch)
+int git_remote_create_anonymous(git_remote **out, git_repository *repo, const char *url)
 {
-	return create_internal(out, repo, NULL, url, fetch);
+	return create_internal(out, repo, NULL, url, NULL);
 }
 
 int git_remote_dup(git_remote **dest, git_remote *source)
 {
+	size_t i;
 	int error = 0;
-	git_strarray refspecs = { 0 };
+	git_refspec *spec;
 	git_remote *remote = git__calloc(1, sizeof(git_remote));
 	GITERR_CHECK_ALLOC(remote);
 
@@ -330,7 +346,7 @@ int git_remote_dup(git_remote **dest, git_remote *source)
 
 	if (source->url != NULL) {
 		remote->url = git__strdup(source->url);
-		GITERR_CHECK_ALLOC(remote->url);		
+		GITERR_CHECK_ALLOC(remote->url);
 	}
 
 	if (source->pushurl != NULL) {
@@ -349,21 +365,14 @@ int git_remote_dup(git_remote **dest, git_remote *source)
 		goto cleanup;
 	}
 
-	if ((error = git_remote_get_fetch_refspecs(&refspecs, source)) < 0 ||
-	    (error = git_remote_set_fetch_refspecs(remote, &refspecs)) < 0)
-		goto cleanup;
-
-	git_strarray_free(&refspecs);
-
-	if ((error = git_remote_get_push_refspecs(&refspecs, source)) < 0 ||
-	    (error = git_remote_set_push_refspecs(remote, &refspecs)) < 0)
-		goto cleanup;
+	git_vector_foreach(&source->refspecs, i, spec) {
+		if ((error = add_refspec(remote, spec->string, !spec->push)) < 0)
+			goto cleanup;
+	}
 
 	*dest = remote;
 
 cleanup:
-
-	git_strarray_free(&refspecs);
 
 	if (error < 0)
 		git__free(remote);
@@ -452,7 +461,7 @@ int git_remote_lookup(git_remote **out, git_repository *repo, const char *name)
 	remote->download_tags = GIT_REMOTE_DOWNLOAD_TAGS_AUTO;
 
 	if (found && strlen(val) > 0) {
-		remote->url = git__strdup(val);
+		remote->url = apply_insteadof(config, val, GIT_DIRECTION_FETCH);
 		GITERR_CHECK_ALLOC(remote->url);
 	}
 
@@ -472,7 +481,7 @@ int git_remote_lookup(git_remote **out, git_repository *repo, const char *name)
 	}
 
 	if (found && strlen(val) > 0) {
-		remote->pushurl = git__strdup(val);
+		remote->pushurl = apply_insteadof(config, val, GIT_DIRECTION_PUSH);
 		GITERR_CHECK_ALLOC(remote->pushurl);
 	}
 
@@ -864,7 +873,7 @@ int git_remote_download(git_remote *remote, const git_strarray *refspecs, const 
 {
 	int error = -1;
 	size_t i;
-	git_vector refs, specs, *to_active;
+	git_vector *to_active, specs = GIT_VECTOR_INIT, refs = GIT_VECTOR_INIT;
 	const git_remote_callbacks *cbs = NULL;
 
 	assert(remote);
@@ -976,7 +985,7 @@ int git_remote_fetch(
 
 	if (opts && opts->prune == GIT_FETCH_PRUNE)
 		prune = true;
-	else if (opts && opts->prune == GIT_FETCH_PRUNE_FALLBACK && remote->prune_refs)
+	else if (opts && opts->prune == GIT_FETCH_PRUNE_UNSPECIFIED && remote->prune_refs)
 		prune = true;
 	else if (opts && opts->prune == GIT_FETCH_NO_PRUNE)
 		prune = false;
@@ -1333,9 +1342,20 @@ static int update_tips_for_spec(
 			} else {
 				continue;
 			}
-		} else if (git_refspec_src_matches(spec, head->name) && spec->dst) {
-			if (git_refspec_transform(&refname, spec, head->name) < 0)
-				goto on_error;
+		} else if (git_refspec_src_matches(spec, head->name)) {
+			if (spec->dst) {
+				if (git_refspec_transform(&refname, spec, head->name) < 0)
+					goto on_error;
+			} else {
+				/*
+				 * no rhs mans store it in FETCH_HEAD, even if we don't
+				 update anything else.
+				 */
+				if ((error = git_vector_insert(&update_heads, head)) < 0)
+					goto on_error;
+
+				continue;
+			}
 		} else {
 			continue;
 		}
@@ -1449,18 +1469,20 @@ static int next_head(const git_remote *remote, git_vector *refs,
 	return GIT_ITEROVER;
 }
 
-static int opportunistic_updates(const git_remote *remote, git_vector *refs, const char *msg)
+static int opportunistic_updates(const git_remote *remote, const git_remote_callbacks *callbacks,
+				 git_vector *refs, const char *msg)
 {
 	size_t i, j, k;
 	git_refspec *spec;
 	git_remote_head *head;
 	git_reference *ref;
 	git_buf refname = GIT_BUF_INIT;
-	int error;
+	int error = 0;
 
 	i = j = k = 0;
 
 	while ((error = next_head(remote, refs, &spec, &head, &i, &j, &k)) == 0) {
+		git_oid old = {{ 0 }};
 		/*
 		 * If we got here, there is a refspec which was used
 		 * for fetching which matches the source of one of the
@@ -1469,18 +1491,38 @@ static int opportunistic_updates(const git_remote *remote, git_vector *refs, con
 		 * FETCH_HEAD
 		 */
 
+		git_buf_clear(&refname);
 		if ((error = git_refspec_transform(&refname, spec, head->name)) < 0)
-			return error;
+			goto cleanup;
 
-		error = git_reference_create(&ref, remote->repo, refname.ptr, &head->oid, true, msg);
-		git_buf_free(&refname);
+		error = git_reference_name_to_id(&old, remote->repo, refname.ptr);
+		if (error < 0 && error != GIT_ENOTFOUND)
+			goto cleanup;
+
+		if (!git_oid_cmp(&old, &head->oid))
+			continue;
+
+		/* If we did find a current reference, make sure we haven't lost a race */
+		if (error)
+			error = git_reference_create(&ref, remote->repo, refname.ptr, &head->oid, true, msg);
+		else
+			error = git_reference_create_matching(&ref, remote->repo, refname.ptr, &head->oid, true, &old, msg);
 		git_reference_free(ref);
-
 		if (error < 0)
-			return error;
+			goto cleanup;
+
+		if (callbacks && callbacks->update_tips != NULL) {
+			if (callbacks->update_tips(refname.ptr, &old, &head->oid, callbacks->payload) < 0)
+				goto cleanup;
+		}
 	}
 
-	return 0;
+	if (error == GIT_ITEROVER)
+		error = 0;
+
+cleanup:
+	git_buf_free(&refname);
+	return error;
 }
 
 int git_remote_update_tips(
@@ -1508,7 +1550,7 @@ int git_remote_update_tips(
 	if ((error = ls_to_vector(&refs, remote)) < 0)
 		goto out;
 
-	if (download_tags == GIT_REMOTE_DOWNLOAD_TAGS_FALLBACK)
+	if (download_tags == GIT_REMOTE_DOWNLOAD_TAGS_UNSPECIFIED)
 		tagopt = remote->download_tags;
 	else
 		tagopt = download_tags;
@@ -1528,7 +1570,7 @@ int git_remote_update_tips(
 
 	/* only try to do opportunisitic updates if the refpec lists differ */
 	if (remote->passed_refspecs)
-		error = opportunistic_updates(remote, &refs, reflog_message);
+		error = opportunistic_updates(remote, callbacks, &refs, reflog_message);
 
 out:
 	git_vector_free(&refs);
@@ -2046,16 +2088,6 @@ static int set_refspecs(git_remote *remote, git_strarray *array, int push)
 	return 0;
 }
 
-int git_remote_set_fetch_refspecs(git_remote *remote, git_strarray *array)
-{
-	return set_refspecs(remote, array, false);
-}
-
-int git_remote_set_push_refspecs(git_remote *remote, git_strarray *array)
-{
-	return set_refspecs(remote, array, true);
-}
-
 static int copy_refspecs(git_strarray *array, const git_remote *remote, unsigned int push)
 {
 	size_t i;
@@ -2404,4 +2436,69 @@ int git_remote_push(git_remote *remote, const git_strarray *refspecs, const git_
 
 	git_remote_disconnect(remote);
 	return error;
+}
+
+#define PREFIX "url"
+#define SUFFIX_FETCH "insteadof"
+#define SUFFIX_PUSH "pushinsteadof"
+
+char *apply_insteadof(git_config *config, const char *url, int direction)
+{
+	size_t match_length, prefix_length, suffix_length;
+	char *replacement = NULL;
+	const char *regexp;
+
+	git_buf result = GIT_BUF_INIT;
+	git_config_entry *entry;
+	git_config_iterator *iter;
+
+	assert(config);
+	assert(url);
+	assert(direction == GIT_DIRECTION_FETCH || direction == GIT_DIRECTION_PUSH);
+
+	/* Add 1 to prefix/suffix length due to the additional escaped dot */
+	prefix_length = strlen(PREFIX) + 1;
+	if (direction == GIT_DIRECTION_FETCH) {
+		regexp = PREFIX "\\..*\\." SUFFIX_FETCH;
+		suffix_length = strlen(SUFFIX_FETCH) + 1;
+	} else {
+		regexp = PREFIX "\\..*\\." SUFFIX_PUSH;
+		suffix_length = strlen(SUFFIX_PUSH) + 1;
+	}
+
+	if (git_config_iterator_glob_new(&iter, config, regexp) < 0)
+		return NULL;
+
+	match_length = 0;
+	while (git_config_next(&entry, iter) == 0) {
+		size_t n, replacement_length;
+
+		/* Check if entry value is a prefix of URL */
+		if (git__prefixcmp(url, entry->value))
+			continue;
+		/* Check if entry value is longer than previous
+		 * prefixes */
+		if ((n = strlen(entry->value)) <= match_length)
+			continue;
+
+		git__free(replacement);
+		match_length = n;
+
+		/* Cut off prefix and suffix of the value */
+		replacement_length =
+		    strlen(entry->name) - (prefix_length + suffix_length);
+		replacement = git__strndup(entry->name + prefix_length,
+				replacement_length);
+	}
+
+	git_config_iterator_free(iter);
+
+	if (match_length == 0)
+		return git__strdup(url);
+
+	git_buf_printf(&result, "%s%s", replacement, url + match_length);
+
+	git__free(replacement);
+
+	return result.ptr;
 }
