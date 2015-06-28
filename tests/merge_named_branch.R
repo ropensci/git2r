@@ -93,9 +93,9 @@ stopifnot(identical(m_3@sha, character(0)))
 ## Check status; Expect to have one unstaged unmerged conflict.
 stopifnot(identical(status(repo),
                     structure(list(staged = structure(list(),
-                                       .Names = character(0)),
-                                   unstaged = structure(list(unmerged = "test.txt"),
-                                       .Names = "unmerged"),
+                                       .Names = character(0)), 
+                                   unstaged = structure(list(conflicted = "test.txt"),
+                                       .Names = "conflicted"), 
                                    untracked = structure(list(),
                                        .Names = character(0))),
                               .Names = c("staged", "unstaged", "untracked"),
