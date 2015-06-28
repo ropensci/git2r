@@ -447,6 +447,17 @@ setGeneric("branches",
 ##' @rdname branches-methods
 ##' @export
 setMethod("branches",
+          signature(repo = "missing"),
+          function (flags)
+          {
+              branches(repo  = repository(getwd(), discover = TRUE),
+                       flags = flags)
+          }
+)
+
+##' @rdname branches-methods
+##' @export
+setMethod("branches",
           signature(repo = "git_repository"),
           function (repo, flags)
           {

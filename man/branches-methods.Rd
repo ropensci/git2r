@@ -4,9 +4,12 @@
 \name{branches}
 \alias{branches}
 \alias{branches,git_repository-method}
+\alias{branches,missing-method}
 \title{Branches}
 \usage{
 branches(repo, flags = c("all", "local", "remote"))
+
+\S4method{branches}{missing}(flags)
 
 \S4method{branches}{git_repository}(repo, flags = c("all", "local", "remote"))
 }
