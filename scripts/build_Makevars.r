@@ -69,7 +69,8 @@ build_Makevars.in <- function() {
     Makevars <- file("src/Makevars.in", "w")
     on.exit(close(Makevars))
 
-    files <- list(libgit2            = o_files("src/libgit2"),
+    files <- list(libgit2            = o_files("src/libgit2",
+                      "libgit2/stransport_stream.o"),
                   libgit2.transports = o_files("src/libgit2/transports",
                       c("libgit2/transports/auth_negotiate.o",
                         "libgit2/transports/winhttp.o")),
@@ -96,7 +97,8 @@ build_Makevars.win <- function() {
     Makevars <- file("src/Makevars.win", "w")
     on.exit(close(Makevars))
 
-    files <- list(libgit2            = o_files("src/libgit2"),
+    files <- list(libgit2            = o_files("src/libgit2",
+                      "libgit2/stransport_stream.o"),
                   libgit2.hash       = o_files("src/libgit2/hash",
                       "libgit2/hash/hash_win32.o"),
                   libgit2.transports = o_files("src/libgit2/transports",
