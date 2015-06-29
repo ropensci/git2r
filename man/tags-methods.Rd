@@ -4,9 +4,12 @@
 \name{tags}
 \alias{tags}
 \alias{tags,git_repository-method}
+\alias{tags,missing-method}
 \title{Tags}
 \usage{
 tags(repo)
+
+\S4method{tags}{missing}()
 
 \S4method{tags}{git_repository}(repo)
 }

@@ -102,5 +102,11 @@ stopifnot(identical(table(odb_objects(repo)$type),
                                   .Names = ""),
                               class = "table")))
 
+## Check tags method with missing repo argument
+wd <- setwd(path)
+stopifnot(identical(length(tags()), 1L))
+if (!is.null(wd))
+    setwd(wd)
+
 ## Cleanup
 unlink(path, recursive=TRUE)

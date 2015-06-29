@@ -122,6 +122,16 @@ setGeneric("tags",
 ##' @rdname tags-methods
 ##' @export
 setMethod("tags",
+          signature(repo = "missing"),
+          function ()
+          {
+              tags(repo = repository(getwd(), discover = TRUE))
+          }
+)
+
+##' @rdname tags-methods
+##' @export
+setMethod("tags",
           signature(repo = "git_repository"),
           function (repo)
           {
