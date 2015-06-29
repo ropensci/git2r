@@ -941,6 +941,16 @@ setGeneric("workdir",
 ##' @rdname workdir-methods
 ##' @export
 setMethod("workdir",
+          signature(repo = "missing"),
+          function ()
+          {
+              workdir(repo = repository(getwd(), discover = TRUE))
+          }
+)
+
+##' @rdname workdir-methods
+##' @export
+setMethod("workdir",
           signature(repo = "git_repository"),
           function (repo)
           {

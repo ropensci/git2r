@@ -4,9 +4,12 @@
 \name{workdir}
 \alias{workdir}
 \alias{workdir,git_repository-method}
+\alias{workdir,missing-method}
 \title{Workdir of repository}
 \usage{
 workdir(repo)
+
+\S4method{workdir}{missing}()
 
 \S4method{workdir}{git_repository}(repo)
 }
