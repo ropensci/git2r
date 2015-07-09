@@ -271,6 +271,7 @@ cleanup:
 SEXP git2r_branch_list(SEXP repo, SEXP flags)
 {
     SEXP result = R_NilValue;
+    SEXP names;
     int err;
     git_branch_iterator *iter = NULL;
     size_t i, n = 0;
@@ -290,6 +291,7 @@ SEXP git2r_branch_list(SEXP repo, SEXP flags)
     if (GIT_OK != err)
         goto cleanup;
     PROTECT(result = allocVector(VECSXP, n));
+    setAttrib(result, R_NamesSymbol, names = allocVector(STRSXP, n));
 
     err = git_branch_iterator_new(&iter, repository,  INTEGER(flags)[0]);
     if (GIT_OK != err)
@@ -309,6 +311,10 @@ SEXP git2r_branch_list(SEXP repo, SEXP flags)
         err = git2r_branch_init(reference, type, repo, branch);
         if (GIT_OK != err)
             goto cleanup;
+        SET_STRING_ELT(
+            names,
+            i,
+            STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
         if (reference)
             git_reference_free(reference);
         reference = NULL;
