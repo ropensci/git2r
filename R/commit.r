@@ -555,18 +555,31 @@ setMethod("summary",
                           as(object@author@when, "character")))
 
               msg <- paste0("    ", readLines(textConnection(object@message)))
-              cat(" ", sprintf("%s\n", msg))
+              cat("", sprintf("%s\n", msg))
 
               if (is_merge_commit) {
+                  cat("\n")
                   lapply(po, function(parent) {
-                      msg <- paste0("    ", readLines(textConnection(parent@message)))
-                      cat(" ", sprintf("%s\n", msg), "\n")
+                      cat("Commit message: ", parent@sha, "\n")
+                      msg <- paste0("    ",
+                                    readLines(textConnection(parent@message)))
+                      cat("", sprintf("%s\n", msg), "\n")
                   })
               }
 
               if (identical(length(po), 1L)) {
                   df <- diff(tree(po[[1]]), tree(object))
                   if (length(df) > 0) {
+                      if (length(df) > 1) {
+                          cat(sprintf("%i files changed, ", length(df)))
+                      } else {
+                          cat("1 file changed, ")
+                      }
+
+                      cat(sprintf("%i insertions, %i deletions\n",
+                                  sum(sapply(lines_per_file(df), "[[", "add")),
+                                  sum(sapply(lines_per_file(df), "[[", "del"))))
+
                       plpf <- print_lines_per_file(df)
                       hpf <- hunks_per_file(df)
                       hunk_txt <- ifelse(hpf > 1, " hunks",
