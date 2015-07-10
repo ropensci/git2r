@@ -86,7 +86,10 @@ SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP credentials)
         goto cleanup;
 
     opts.callbacks.credentials = &git2r_cred_acquire_cb;
-    opts.callbacks.payload = credentials;
+    if (credentials == R_NilValue)
+        opts.callbacks.payload = NULL;
+    else
+        opts.callbacks.payload = credentials;
 
     c_refspecs.count = length(refspec);
     if (c_refspecs.count) {

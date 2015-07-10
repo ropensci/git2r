@@ -44,9 +44,12 @@ int git2r_cred_acquire_cb(
     void *payload)
 {
     int err = -1;
-    SEXP credentials = (SEXP)payload;
+    SEXP credentials = R_NilValue;
 
     GIT_UNUSED(url);
+
+    if (payload)
+        credentials = (SEXP)payload;
 
     if (R_NilValue != credentials) {
         SEXP class_name;
