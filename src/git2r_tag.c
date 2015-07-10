@@ -145,6 +145,7 @@ SEXP git2r_tag_list(SEXP repo)
 {
     int err;
     SEXP list = R_NilValue;
+    SEXP names;
     git_repository *repository;
     git_reference* reference = NULL;
     git_tag *tag = NULL;
@@ -160,6 +161,7 @@ SEXP git2r_tag_list(SEXP repo)
         goto cleanup;
 
     PROTECT(list = allocVector(VECSXP, tag_names.count));
+    setAttrib(list, R_NamesSymbol, names = allocVector(STRSXP, tag_names.count));
 
     for(i = 0; i < tag_names.count; i++) {
         SEXP sexp_tag;
@@ -176,6 +178,10 @@ SEXP git2r_tag_list(SEXP repo)
 
         SET_VECTOR_ELT(list, i, sexp_tag = NEW_OBJECT(MAKE_CLASS("git_tag")));
         git2r_tag_init(tag, repo, sexp_tag);
+        SET_STRING_ELT(
+            names,
+            i,
+            STRING_ELT(GET_SLOT(sexp_tag, Rf_install("name")), 0));
 
         git_tag_free(tag);
         tag = NULL;

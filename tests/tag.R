@@ -76,7 +76,7 @@ add(repo, 'test.txt')
 commit(repo, "Commit message")
 
 ## Check tags, no tag added
-stopifnot(identical(tags(repo), list()))
+stopifnot(identical(tags(repo), structure(list(), .Names = character(0))))
 
 ## Create tag
 new_tag <- tag(repo, "Tagname", "Tag message")
