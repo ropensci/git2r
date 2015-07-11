@@ -162,8 +162,16 @@ SEXP git2r_clone(
     if (repository)
         git_repository_free(repository);
 
-    if (GIT_OK != err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+    if (GIT_OK != err) {
+        const char *err_str;
+
+        if (err == -1)
+            err_str = git2r_err_unable_to_authenticate;
+        else
+            err_str = giterr_last()->message;
+
+        git2r_error(git2r_err_from_libgit2,  __func__, err_str);
+    }
 
     return R_NilValue;
 }
