@@ -23,6 +23,7 @@
 #include "common.h"
 
 #include "git2r_cred.h"
+#include "git2r_transfer.h"
 
 /**
  * Callback if the remote host requires authentication in order to
@@ -48,9 +49,10 @@ int git2r_cred_acquire_cb(
 
     GIT_UNUSED(url);
 
-    if (payload)
-        credentials = (SEXP)payload;
+    if (!payload)
+        return -1;
 
+    credentials = ((git2r_transfer_data*)payload)->credentials;
     if (R_NilValue != credentials) {
         SEXP class_name;
 

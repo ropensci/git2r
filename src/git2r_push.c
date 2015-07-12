@@ -25,6 +25,7 @@
 #include "git2r_push.h"
 #include "git2r_repository.h"
 #include "git2r_signature.h"
+#include "git2r_transfer.h"
 
 /**
  * Check if any non NA refspec
@@ -66,6 +67,7 @@ SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP credentials)
     git_repository *repository = NULL;
     git_strarray c_refspecs = {0};
     git_push_options opts = GIT_PUSH_OPTIONS_INIT;
+    git2r_transfer_data payload = GIT2R_TRANSFER_DATA_INIT;
 
     if (git2r_arg_check_string(name))
         git2r_error(git2r_err_string_arg, __func__, "name");
@@ -85,11 +87,9 @@ SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP credentials)
     if (GIT_OK != err)
         goto cleanup;
 
+    payload.credentials = credentials;
+    opts.callbacks.payload = &payload;
     opts.callbacks.credentials = &git2r_cred_acquire_cb;
-    if (credentials == R_NilValue)
-        opts.callbacks.payload = NULL;
-    else
-        opts.callbacks.payload = credentials;
 
     c_refspecs.count = length(refspec);
     if (c_refspecs.count) {

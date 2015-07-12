@@ -23,6 +23,18 @@
 #include <Rinternals.h>
 #include "git2.h"
 
+/**
+ * Data structure to hold information when performing a clone, fetch
+ * or push operation.
+ */
+typedef struct {
+    int received_progress;
+    int received_done;
+    SEXP credentials;
+} git2r_transfer_data;
+
+#define GIT2R_TRANSFER_DATA_INIT {0, 0, R_NilValue}
+
 void git2r_transfer_progress_init(
     const git_transfer_progress *source,
     SEXP dest);
