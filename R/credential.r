@@ -14,6 +14,41 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+##' Create a new environmental credential object
+##'
+##' @rdname cred_env-methods
+##' @param username The name of the environmental variable that holds
+##' the username for the authentication.
+##' @param password The name of the environmental variable that holds
+##' the password for the authentication.
+##' @return A S4 \code{cred_env} object
+##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Create an environmental credential object for the username and
+##' ## and a personal access token (PAT).
+##' cred <- cred_env("GITHUB_USER", "GITHUB_PAT")
+##' repo <- repository("git2r")
+##' push(repo, credentials = cred)
+##' }
+setGeneric("cred_env",
+           signature = c("username", "password"),
+           function(username, password)
+           standardGeneric("cred_env"))
+
+##' @rdname cred_env-methods
+##' @export
+setMethod("cred_env",
+          signature(username = "character",
+                    password = "character"),
+          function(username, password)
+          {
+              new("cred_env",
+                  username = username,
+                  password = password)
+          }
+)
+
 ##' Create a new plain-text username and password credential object
 ##'
 ##' @rdname cred_user_pass-methods
