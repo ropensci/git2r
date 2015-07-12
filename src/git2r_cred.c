@@ -84,6 +84,29 @@ int git2r_cred_acquire_cb(
                     privatekey,
                     passphrase);
             }
+        } else if (0 == strcmp(CHAR(STRING_ELT(class_name, 0)), "cred_env")) {
+            if (GIT_CREDTYPE_USERPASS_PLAINTEXT & allowed_types) {
+                const char *username;
+                const char *password;
+
+                username = CHAR(STRING_ELT(
+                                    GET_SLOT(credentials,
+                                             Rf_install("username")), 0));
+                password = CHAR(STRING_ELT(
+                                    GET_SLOT(credentials,
+                                             Rf_install("password")), 0));
+
+                username = getenv(username);
+                if (username) {
+                    password = getenv(password);
+                    if (password) {
+                        err = git_cred_userpass_plaintext_new(
+                            cred,
+                            username,
+                            password);
+                    }
+                }
+            }
         } else if (0 == strcmp(CHAR(STRING_ELT(class_name, 0)), "cred_user_pass")) {
             if (GIT_CREDTYPE_USERPASS_PLAINTEXT & allowed_types) {
                 const char *username;
