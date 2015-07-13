@@ -46,12 +46,12 @@ static int git2r_branch_count(git_repository *repo, int flags, size_t *n)
     *n = 0;
 
     err = git_branch_iterator_new(&iter, repo, flags);
-    if (GIT_OK != err)
+    if (err)
         return err;
 
     for (;;) {
         err = git_branch_next(&ref, &type, iter);
-        if (GIT_OK != err)
+        if (err)
             break;
         git_reference_free(ref);
         (*n)++;
@@ -84,7 +84,7 @@ int git2r_branch_init(
     const char *name;
 
     err = git_branch_name(&name, source);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
     SET_SLOT(dest, Rf_install("name"), mkString(name));
     SET_SLOT(dest, Rf_install("type"), ScalarInteger(type));
@@ -128,7 +128,7 @@ SEXP git2r_branch_create(
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git2r_commit_lookup(&target, repository, commit);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     if (LOGICAL(force)[0])
@@ -140,7 +140,7 @@ SEXP git2r_branch_create(
         CHAR(STRING_ELT(branch_name, 0)),
         target,
         overwrite);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_branch")));
@@ -159,7 +159,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -189,7 +189,7 @@ SEXP git2r_branch_delete(SEXP branch)
     name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
     type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
     err = git_branch_lookup(&reference, repository, name, type);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_branch_delete(reference);
@@ -201,7 +201,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
@@ -234,7 +234,7 @@ SEXP git2r_branch_is_head(SEXP branch)
                             repository,
                             name,
                             INTEGER(GET_SLOT(branch, Rf_install("type")))[0]);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_branch_is_head(reference);
@@ -254,7 +254,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -288,20 +288,20 @@ SEXP git2r_branch_list(SEXP repo, SEXP flags)
 
     /* Count number of branches before creating the list */
     err = git2r_branch_count(repository, INTEGER(flags)[0], &n);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
     PROTECT(result = allocVector(VECSXP, n));
     setAttrib(result, R_NamesSymbol, names = allocVector(STRSXP, n));
 
     err = git_branch_iterator_new(&iter, repository,  INTEGER(flags)[0]);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     for (i = 0; i < n; i++) {
         SEXP branch;
 
         err = git_branch_next(&reference, &type, iter);
-        if (GIT_OK != err) {
+        if (err) {
             if (GIT_ITEROVER == err)
                 err = GIT_OK;
             goto cleanup;
@@ -309,7 +309,7 @@ SEXP git2r_branch_list(SEXP repo, SEXP flags)
 
         SET_VECTOR_ELT(result, i, branch = NEW_OBJECT(MAKE_CLASS("git_branch")));
         err = git2r_branch_init(reference, type, repo, branch);
-        if (GIT_OK != err)
+        if (err)
             goto cleanup;
         SET_STRING_ELT(
             names,
@@ -333,7 +333,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -364,7 +364,7 @@ SEXP git2r_branch_canonical_name(SEXP branch)
     name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
     type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
     err = git_branch_lookup(&reference, repository, name, type);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     PROTECT(result = allocVector(STRSXP, 1));
@@ -380,7 +380,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -417,7 +417,7 @@ SEXP git2r_branch_upstream_canonical_name(SEXP branch)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_repository_config_snapshot(&cfg, repository);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_buf_join3(
@@ -426,7 +426,7 @@ SEXP git2r_branch_upstream_canonical_name(SEXP branch)
         "branch",
         CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0)),
         "merge");
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     git_config_get_string(&name, cfg, buf.ptr);
@@ -444,7 +444,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -479,13 +479,13 @@ SEXP git2r_branch_remote_name(SEXP branch)
 
     name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
     err = git_branch_lookup(&reference, repository, name, type);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_branch_remote_name(&buf,
                                  repository,
                                  git_reference_name(reference));
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     PROTECT(result = allocVector(STRSXP, 1));
@@ -502,7 +502,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -538,19 +538,19 @@ SEXP git2r_branch_remote_url(SEXP branch)
 
     name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
     err = git_branch_lookup(&reference, repository, name, type);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_branch_remote_name(&buf,
                                  repository,
                                  git_reference_name(reference));
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_remote_lookup(&remote, repository, buf.ptr);
-    if (GIT_OK != err) {
+    if (err) {
         err = git_remote_create_anonymous(&remote, repository, buf.ptr);
-        if (GIT_OK != err) {
+        if (err) {
             git_buf_free(&buf);
             goto cleanup;
         }
@@ -573,7 +573,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -617,7 +617,7 @@ SEXP git2r_branch_rename(
     type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
     name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
     err = git_branch_lookup(&reference, repository, name, type);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     if (LOGICAL(force)[0])
@@ -628,7 +628,7 @@ SEXP git2r_branch_rename(
         reference,
         CHAR(STRING_ELT(new_branch_name, 0)),
         overwrite);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_branch")));
@@ -647,7 +647,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -679,7 +679,7 @@ SEXP git2r_branch_target(SEXP branch)
     name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
     type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
     err = git_branch_lookup(&reference, repository, name, type);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     PROTECT(result = allocVector(STRSXP, 1));
@@ -701,7 +701,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -735,11 +735,11 @@ SEXP git2r_branch_get_upstream(SEXP branch)
     name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
     type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
     err = git_branch_lookup(&reference, repository, name, type);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_branch_upstream(&upstream, reference);
-    if (GIT_OK != err) {
+    if (err) {
         if (GIT_ENOTFOUND == err)
             err = GIT_OK;
         goto cleanup;
@@ -761,7 +761,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -802,7 +802,7 @@ SEXP git2r_branch_set_upstream(SEXP branch, SEXP upstream_name)
     name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
     type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
     err = git_branch_lookup(&reference, repository, name, type);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_branch_set_upstream(reference, u_name);
@@ -814,7 +814,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;

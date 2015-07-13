@@ -67,23 +67,23 @@ SEXP git2r_merge_base(SEXP one, SEXP two)
 
     sha = GET_SLOT(one, Rf_install("sha"));
     err = git_oid_fromstr(&oid_one, CHAR(STRING_ELT(sha, 0)));
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     sha = GET_SLOT(two, Rf_install("sha"));
     err = git_oid_fromstr(&oid_two, CHAR(STRING_ELT(sha, 0)));
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_merge_base(&oid, repository, &oid_one, &oid_two);
-    if (GIT_OK != err) {
+    if (err) {
         if (GIT_ENOTFOUND == err)
             err = GIT_OK;
         goto cleanup;
     }
 
     err = git_commit_lookup(&commit, repository, &oid);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_commit")));
@@ -99,7 +99,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -130,26 +130,26 @@ static int git2r_fast_forward_merge(
 
     oid = git_annotated_commit_id(merge_head);
     err = git_commit_lookup(&commit, repository, oid);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_commit_tree(&tree, commit);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     opts.checkout_strategy = GIT_CHECKOUT_SAFE;
     err = git_checkout_tree(repository, (git_object*)tree, &opts);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_repository_head(&reference, repository);
-    if (GIT_OK != err) {
+    if (err) {
         if (GIT_ENOTFOUND != err)
             goto cleanup;
     }
 
     err = git_buf_printf(&buf, "%s: Fast-forward", log_message);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     if (GIT_ENOTFOUND == err) {
@@ -234,11 +234,11 @@ static int git2r_normal_merge(
         n,
         merge_opts,
         checkout_opts);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_repository_index(&index, repository);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     if (git_index_has_conflicts(index)) {
@@ -257,7 +257,7 @@ static int git2r_normal_merge(
                 message,
                 merger,
                 merger);
-            if (GIT_OK != err)
+            if (err)
                 goto cleanup;
 
             git_oid_fmt(sha, &oid);
@@ -316,7 +316,7 @@ static int git2r_merge(
         repository,
         merge_heads,
         n);
-    if (GIT_OK != err)
+    if (err)
         return err;
 
     if (merge_analysis & GIT_MERGE_ANALYSIS_UP_TO_DATE) {
@@ -455,7 +455,7 @@ SEXP git2r_merge_branch(SEXP branch, SEXP merger, SEXP commit_on_success)
         git2r_error(git2r_err_signature_arg, __func__, "merger");
 
     err = git2r_signature_from_arg(&who, merger);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
@@ -465,7 +465,7 @@ SEXP git2r_merge_branch(SEXP branch, SEXP merger, SEXP commit_on_success)
     name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
     type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
     err = git_branch_lookup(&reference, repository, name, type);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     merge_heads = calloc(1, sizeof(git_annotated_commit*));
@@ -478,11 +478,11 @@ SEXP git2r_merge_branch(SEXP branch, SEXP merger, SEXP commit_on_success)
         &(merge_heads[0]),
         repository,
         reference);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_buf_printf(&buf, "merge %s", name);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_merge_result")));
@@ -514,7 +514,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -553,7 +553,7 @@ static int git2r_merge_heads_from_fetch_heads(
         err = git_oid_fromstr(
             &oid,
             CHAR(STRING_ELT(GET_SLOT(fh, Rf_install("sha")), 0)));
-        if (GIT_OK != err)
+        if (err)
             goto cleanup;
 
         err = git_annotated_commit_from_fetchhead(
@@ -562,12 +562,12 @@ static int git2r_merge_heads_from_fetch_heads(
             CHAR(STRING_ELT(GET_SLOT(fh, Rf_install("ref_name")), 0)),
             CHAR(STRING_ELT(GET_SLOT(fh, Rf_install("remote_url")), 0)),
             &oid);
-        if (GIT_OK != err)
+        if (err)
             goto cleanup;
     }
 
 cleanup:
-    if (GIT_OK != err) {
+    if (err) {
         if (*merge_heads)
             git2r_merge_heads_free(*merge_heads, n);
         *merge_heads = NULL;
@@ -599,7 +599,7 @@ SEXP git2r_merge_fetch_heads(SEXP fetch_heads, SEXP merger)
         git2r_error(git2r_err_signature_arg, __func__, "merger");
 
     err = git2r_signature_from_arg(&who, merger);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     n = LENGTH(fetch_heads);
@@ -615,7 +615,7 @@ SEXP git2r_merge_fetch_heads(SEXP fetch_heads, SEXP merger)
         repository,
         fetch_heads,
         n);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_merge_result")));
@@ -628,7 +628,7 @@ SEXP git2r_merge_fetch_heads(SEXP fetch_heads, SEXP merger)
         "pull",
         who,
         1); /* Commit on success */
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
 cleanup:
@@ -644,7 +644,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;

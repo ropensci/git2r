@@ -101,11 +101,11 @@ SEXP git2r_revwalk_list(
         sort_mode |= GIT_SORT_REVERSE;
 
     err = git_revwalk_new(&walker, repository);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_revwalk_push_head(walker);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
     git_revwalk_sorting(walker, sort_mode);
 
@@ -117,7 +117,7 @@ SEXP git2r_revwalk_list(
 
     git_revwalk_reset(walker);
     err = git_revwalk_push_head(walker);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
     git_revwalk_sorting(walker, sort_mode);
 
@@ -127,14 +127,14 @@ SEXP git2r_revwalk_list(
         git_oid oid;
 
         err = git_revwalk_next(&oid, walker);
-        if (GIT_OK != err) {
+        if (err) {
             if (GIT_ITEROVER == err)
                 err = GIT_OK;
             goto cleanup;
         }
 
         err = git_commit_lookup(&commit, repository, &oid);
-        if (GIT_OK != err)
+        if (err)
             goto cleanup;
 
         SET_VECTOR_ELT(result, i, item = NEW_OBJECT(MAKE_CLASS("git_commit")));
@@ -152,7 +152,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -208,11 +208,11 @@ SEXP git2r_revwalk_contributions(
         sort_mode |= GIT_SORT_REVERSE;
 
     err = git_revwalk_new(&walker, repository);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_revwalk_push_head(walker);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
     git_revwalk_sorting(walker, sort_mode);
 
@@ -231,7 +231,7 @@ SEXP git2r_revwalk_contributions(
 
     git_revwalk_reset(walker);
     err = git_revwalk_push_head(walker);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
     git_revwalk_sorting(walker, sort_mode);
 
@@ -241,14 +241,14 @@ SEXP git2r_revwalk_contributions(
         git_oid oid;
 
         err = git_revwalk_next(&oid, walker);
-        if (GIT_OK != err) {
+        if (err) {
             if (GIT_ITEROVER == err)
                 err = GIT_OK;
             goto cleanup;
         }
 
         err = git_commit_lookup(&commit, repository, &oid);
-        if (GIT_OK != err)
+        if (err)
             goto cleanup;
 
         c_author = git_commit_author(commit);
@@ -270,7 +270,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;

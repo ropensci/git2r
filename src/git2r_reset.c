@@ -55,7 +55,7 @@ SEXP git2r_reset(SEXP commit, SEXP reset_type)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git2r_commit_lookup(&target, repository, commit);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_reset(
@@ -71,7 +71,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;

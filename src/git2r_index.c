@@ -74,14 +74,14 @@ SEXP git2r_index_add_all(SEXP repo, SEXP path, SEXP force)
             pathspec.strings[i] = (char *)CHAR(STRING_ELT(path, i));
 
     err = git_repository_index(&index, repository);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     if (LOGICAL(force)[0])
         flags |= GIT_INDEX_ADD_FORCE;
 
     err = git_index_add_all(index, &pathspec, flags, NULL, NULL);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_index_write(index);
@@ -96,7 +96,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
@@ -125,14 +125,14 @@ SEXP git2r_index_remove_bypath(SEXP repo, SEXP path)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_repository_index(&index, repository);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     len = length(path);
     for (i = 0; i < len; i++) {
         if (NA_STRING != STRING_ELT(path, i)) {
             err = git_index_remove_bypath(index, CHAR(STRING_ELT(path, i)));
-            if (GIT_OK != err)
+            if (err)
                 goto cleanup;
         }
     }
@@ -146,7 +146,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;

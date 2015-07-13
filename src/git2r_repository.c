@@ -134,7 +134,7 @@ SEXP git2r_repository_fetch_heads(SEXP repo)
         git2r_repository_fetchhead_foreach_cb,
         &cb_data);
 
-    if (GIT_OK != err) {
+    if (err) {
         if (GIT_ENOTFOUND == err)
             err = GIT_OK;
         goto cleanup;
@@ -156,7 +156,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -183,7 +183,7 @@ SEXP git2r_repository_head(SEXP repo)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_repository_head(&reference, repository);
-    if (GIT_OK != err) {
+    if (err) {
         if (GIT_EUNBORNBRANCH == err || GIT_ENOTFOUND == err)
             err = GIT_OK;
         goto cleanup;
@@ -200,7 +200,7 @@ SEXP git2r_repository_head(SEXP repo)
             &commit,
             repository,
             git_reference_target(reference));
-        if (GIT_OK != err)
+        if (err)
             goto cleanup;
         PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_commit")));
         git2r_commit_init(commit, repo, result);
@@ -219,7 +219,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -248,7 +248,7 @@ SEXP git2r_repository_init(SEXP path, SEXP bare)
     err = git_repository_init(&repository,
                               CHAR(STRING_ELT(path, 0)),
                               LOGICAL(bare)[0]);
-    if (GIT_OK != err)
+    if (err)
         git2r_error("Error in '%s': Unable to init repository", __func__, NULL);
 
     if (repository)
@@ -434,7 +434,7 @@ SEXP git2r_repository_set_head(SEXP repo, SEXP ref_name)
     if (repository)
         git_repository_free(repository);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
@@ -463,11 +463,11 @@ SEXP git2r_repository_set_head_detached(SEXP commit)
 
     sha = GET_SLOT(commit, Rf_install("sha"));
     err = git_oid_fromstr(&oid, CHAR(STRING_ELT(sha, 0)));
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_commit_lookup(&treeish, repository, &oid);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_repository_set_head_detached(
@@ -481,7 +481,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
@@ -539,7 +539,7 @@ SEXP git2r_repository_discover(SEXP path)
                                   CHAR(STRING_ELT(path, 0)),
                                   0,
                                   /* const char *ceiling_dirs */ NULL);
-    if (GIT_OK != err) {
+    if (err) {
         /* NB just return R_NilValue if we can't discover the repo */
         if (GIT_ENOTFOUND == err)
             err = GIT_OK;
@@ -555,7 +555,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;

@@ -60,7 +60,7 @@ SEXP git2r_graph_ahead_behind(SEXP local, SEXP upstream)
 
     err = git_graph_ahead_behind(&ahead, &behind, repository, &local_oid,
                                  &upstream_oid);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     PROTECT(result = allocVector(INTSXP, 2));
@@ -74,7 +74,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -127,7 +127,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;

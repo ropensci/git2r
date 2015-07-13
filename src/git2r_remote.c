@@ -65,7 +65,7 @@ SEXP git2r_remote_add(SEXP repo, SEXP name, SEXP url)
     if (repository)
 	git_repository_free(repository);
 
-    if (GIT_OK != err)
+    if (err)
 	git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
@@ -106,14 +106,14 @@ SEXP git2r_remote_fetch(
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_remote_lookup(&remote, repository, CHAR(STRING_ELT(name, 0)));
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     payload.credentials = credentials;
     fetch_opts.callbacks.payload = &payload;
     fetch_opts.callbacks.credentials = &git2r_cred_acquire_cb;
     err = git_remote_fetch(remote, NULL, &fetch_opts, CHAR(STRING_ELT(msg, 0)));
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     stats = git_remote_stats(remote);
@@ -133,7 +133,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err) {
+    if (err) {
         const char *err_str;
 
         if (err == -1)
@@ -166,7 +166,7 @@ SEXP git2r_remote_list(SEXP repo)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_remote_list(&rem_list, repository);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     PROTECT(list = allocVector(STRSXP, rem_list.count));
@@ -182,7 +182,7 @@ cleanup:
     if (R_NilValue != list)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return list;
@@ -214,7 +214,7 @@ SEXP git2r_remote_remove(SEXP repo, SEXP name)
     if (repository)
 	git_repository_free(repository);
 
-    if (GIT_OK != err)
+    if (err)
 	git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
@@ -248,7 +248,7 @@ SEXP git2r_remote_rename(SEXP repo, SEXP oldname, SEXP newname)
         repository,
         CHAR(STRING_ELT(oldname, 0)),
         CHAR(STRING_ELT(newname, 0)));
-    if (GIT_OK != err)
+    if (err)
 	goto cleanup;
 
     git_strarray_free(&problems);
@@ -257,7 +257,7 @@ cleanup:
     if (repository)
 	git_repository_free(repository);
 
-    if (GIT_OK != err)
+    if (err)
 	git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
@@ -299,7 +299,7 @@ SEXP git2r_remote_url(SEXP repo, SEXP remote)
                 &tmp_remote,
                 repository,
                 CHAR(STRING_ELT(remote, i)));
-            if (GIT_OK != err)
+            if (err)
                 goto cleanup;
 
             SET_STRING_ELT(url, i, mkChar(git_remote_url(tmp_remote)));
@@ -313,7 +313,7 @@ cleanup:
 
     UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return url;

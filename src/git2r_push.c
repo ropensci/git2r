@@ -84,7 +84,7 @@ SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP credentials)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_remote_lookup(&remote, repository, CHAR(STRING_ELT(name, 0)));
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     payload.credentials = credentials;
@@ -120,7 +120,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (GIT_OK != err) {
+    if (err) {
         const char *err_str;
 
         if (err == -1)

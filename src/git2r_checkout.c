@@ -52,7 +52,7 @@ SEXP git2r_checkout_tree(SEXP repo, SEXP revision, SEXP force)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_revparse_single(&treeish, repository, CHAR(STRING_ELT(revision, 0)));
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     switch (git_object_type(treeish)) {
@@ -66,7 +66,7 @@ SEXP git2r_checkout_tree(SEXP repo, SEXP revision, SEXP force)
         err = GIT_ERROR;
         break;
     }
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     if (LOGICAL(force)[0])
@@ -83,7 +83,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;

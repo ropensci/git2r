@@ -45,7 +45,7 @@ static int git2r_any_changes_in_index(git_repository *repository)
     opts.show  = GIT_STATUS_SHOW_INDEX_ONLY;
 
     err = git_status_list_new(&status, repository, &opts);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     count = git_status_list_entrycount(status);
@@ -171,7 +171,7 @@ static int git2r_retrieve_parents(
             repository,
             git2r_repository_mergehead_foreach_cb,
             &cb_data);
-        if (GIT_OK != err)
+        if (err)
             return err;
     }
 
@@ -183,11 +183,11 @@ static int git2r_retrieve_parents(
     *n_parents = cb_data.n + 1;
 
     err = git_reference_name_to_id(&oid, repository, "HEAD");
-    if (GIT_OK != err)
+    if (err)
         return err;
 
     err = git_commit_lookup(&**parents, repository, &oid);
-    if (GIT_OK != err)
+    if (err)
         return err;
 
     if (state == GIT_REPOSITORY_STATE_MERGE) {
@@ -199,7 +199,7 @@ static int git2r_retrieve_parents(
             repository,
             git2r_repository_mergehead_foreach_cb,
             &cb_data);
-        if (GIT_OK != err)
+        if (err)
             return err;
     }
 
@@ -232,15 +232,15 @@ int git2r_commit_create(
     size_t n_parents = 0;
 
     err = git_index_write_tree(&oid, index);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_tree_lookup(&tree, repository, &oid);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git2r_retrieve_parents(&parents, &n_parents, repository);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_commit_create(
@@ -254,7 +254,7 @@ int git2r_commit_create(
         tree,
         n_parents,
         (const git_commit**)parents);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_repository_state_cleanup(repository);
@@ -305,19 +305,19 @@ SEXP git2r_commit(
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git2r_signature_from_arg(&c_author, author);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git2r_signature_from_arg(&c_committer, committer);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git2r_any_changes_in_index(repository);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_repository_index(&index, repository);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git2r_commit_create(
@@ -327,11 +327,11 @@ SEXP git2r_commit(
         CHAR(STRING_ELT(message, 0)),
         c_author,
         c_committer);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_commit_lookup(&commit, repository, &oid);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_commit")));
@@ -356,7 +356,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -407,11 +407,11 @@ SEXP git2r_commit_tree(SEXP commit)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git2r_commit_lookup(&commit_obj, repository, commit);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_commit_tree(&tree, commit_obj);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_tree")));
@@ -430,7 +430,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -499,7 +499,7 @@ SEXP git2r_commit_parent_list(SEXP commit)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git2r_commit_lookup(&commit_obj, repository, commit);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     n = git_commit_parentcount(commit_obj);
@@ -510,7 +510,7 @@ SEXP git2r_commit_parent_list(SEXP commit)
         SEXP item;
 
         err = git_commit_parent(&parent, commit_obj, i);
-        if (GIT_OK != err)
+        if (err)
             goto cleanup;
 
         SET_VECTOR_ELT(list, i, item = NEW_OBJECT(MAKE_CLASS("git_commit")));
@@ -528,7 +528,7 @@ cleanup:
     if (R_NilValue != list)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return list;

@@ -88,11 +88,11 @@ SEXP git2r_tag_create(SEXP repo, SEXP name, SEXP message, SEXP tagger)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git2r_signature_from_arg(&sig_tagger, tagger);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_revparse_single(&target, repository, "HEAD^{commit}");
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_tag_create(
@@ -103,11 +103,11 @@ SEXP git2r_tag_create(SEXP repo, SEXP name, SEXP message, SEXP tagger)
         sig_tagger,
         CHAR(STRING_ELT(message, 0)),
         0);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_tag_lookup(&tag, repository, &oid);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_tag")));
@@ -129,7 +129,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -157,7 +157,7 @@ SEXP git2r_tag_list(SEXP repo)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_tag_list(&tag_names, repository);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     PROTECT(list = allocVector(VECSXP, tag_names.count));
@@ -168,12 +168,12 @@ SEXP git2r_tag_list(SEXP repo)
         const git_oid *oid;
 
         err = git_reference_dwim(&reference, repository, tag_names.strings[i]);
-        if (GIT_OK != err)
+        if (err)
             goto cleanup;
 
         oid = git_reference_target(reference);
         err = git_tag_lookup(&tag, repository, oid);
-        if (GIT_OK != err)
+        if (err)
             goto cleanup;
 
         SET_VECTOR_ELT(list, i, sexp_tag = NEW_OBJECT(MAKE_CLASS("git_tag")));
@@ -204,7 +204,7 @@ cleanup:
     if (R_NilValue != list)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return list;

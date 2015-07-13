@@ -128,7 +128,7 @@ SEXP git2r_blame_file(SEXP repo, SEXP path)
         repository,
         CHAR(STRING_ELT(path, 0)),
         &blame_opts);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_blame")));
@@ -144,7 +144,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;

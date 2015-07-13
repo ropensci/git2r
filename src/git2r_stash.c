@@ -59,7 +59,7 @@ SEXP git2r_stash_drop(SEXP repo, SEXP index)
 
     err = git_stash_drop(repository, INTEGER(index)[0]);
     git_repository_free(repository);
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;
@@ -84,7 +84,7 @@ int git2r_stash_init(
     git_commit *commit = NULL;
 
     err = git_commit_lookup(&commit, repository, source);
-    if (GIT_OK != err)
+    if (err)
         return err;
     git2r_commit_init(commit, repo, dest);
     git_commit_free(commit);
@@ -127,7 +127,7 @@ static int git2r_stash_list_cb(
             cb_data->repository,
             cb_data->repo,
             stash);
-        if (GIT_OK != err)
+        if (err)
             return err;
     }
 
@@ -155,7 +155,7 @@ SEXP git2r_stash_list(SEXP repo)
 
     /* Count number of stashes before creating the list */
     err = git_stash_foreach(repository, &git2r_stash_list_cb, &cb_data);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     PROTECT(list = allocVector(VECSXP, cb_data.n));
@@ -172,7 +172,7 @@ cleanup:
     if (R_NilValue != list)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return list;
@@ -229,7 +229,7 @@ SEXP git2r_stash_save(
         flags |= GIT_STASH_INCLUDE_IGNORED;
 
     err = git2r_signature_from_arg(&c_stasher, stasher);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git_stash_save(
@@ -238,7 +238,7 @@ SEXP git2r_stash_save(
         c_stasher,
         CHAR(STRING_ELT(message, 0)),
         flags);
-    if (GIT_OK != err) {
+    if (err) {
         if (GIT_ENOTFOUND == err)
             err = GIT_OK;
         goto cleanup;
@@ -260,7 +260,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;

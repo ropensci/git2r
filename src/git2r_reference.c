@@ -78,7 +78,7 @@ SEXP git2r_reference_list(SEXP repo)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_reference_list(&ref_list, repository);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     PROTECT(result = allocVector(VECSXP, ref_list.count));
@@ -92,7 +92,7 @@ SEXP git2r_reference_list(SEXP repo)
         git_reference *ref = NULL;
 
         err = git_reference_lookup(&ref, repository, ref_list.strings[i]);
-        if (GIT_OK != err)
+        if (err)
             goto cleanup;
 
         SET_VECTOR_ELT(
@@ -115,7 +115,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;

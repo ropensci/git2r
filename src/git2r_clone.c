@@ -127,7 +127,7 @@ SEXP git2r_clone(
     if (repository)
         git_repository_free(repository);
 
-    if (GIT_OK != err) {
+    if (err) {
         const char *err_str;
 
         if (err == -1)

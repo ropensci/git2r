@@ -53,7 +53,7 @@ SEXP git2r_odb_hash(SEXP data)
                                CHAR(STRING_ELT(data, i)),
                                LENGTH(STRING_ELT(data, i)),
                                GIT_OBJ_BLOB);
-            if (GIT_OK != err)
+            if (err)
                 break;
 
             git_oid_fmt(sha, &oid);
@@ -64,7 +64,7 @@ SEXP git2r_odb_hash(SEXP data)
 
     UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -97,7 +97,7 @@ SEXP git2r_odb_hashfile(SEXP path)
             err = git_odb_hashfile(&oid,
                                    CHAR(STRING_ELT(path, i)),
                                    GIT_OBJ_BLOB);
-            if (GIT_OK != err)
+            if (err)
                 break;
 
             git_oid_fmt(sha, &oid);
@@ -108,7 +108,7 @@ SEXP git2r_odb_hashfile(SEXP path)
 
     UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -171,7 +171,7 @@ static int git2r_odb_objects_cb(const git_oid *oid, void *payload)
     git2r_odb_objects_cb_data *p = (git2r_odb_objects_cb_data*)payload;
 
     err = git_odb_read_header(&len, &type, p->odb, oid);
-    if (GIT_OK != err)
+    if (err)
         return err;
 
     switch(type) {
@@ -220,13 +220,13 @@ SEXP git2r_odb_objects(SEXP repo)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_repository_odb(&odb, repository);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
     cb_data.odb = odb;
 
     /* Count number of objects before creating the list */
     err = git_odb_foreach(odb, &git2r_odb_objects_cb, &cb_data);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     PROTECT(result = allocVector(VECSXP, 3));
@@ -254,7 +254,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -312,7 +312,7 @@ static int git2r_odb_add_blob(
 
     /* Length */
     err = git_odb_read_header(&len, &type, odb, git_tree_entry_id(entry));
-    if (GIT_OK != err)
+    if (err)
         return err;
     INTEGER(VECTOR_ELT(list, j++))[i] = len;
 
@@ -365,7 +365,7 @@ static int git2r_odb_tree_blobs(
                 &sub_tree,
                 data->repository,
                 git_tree_entry_id(entry));
-            if (GIT_OK != err)
+            if (err)
                 return err;
 
             err = git_buf_joinpath(&buf, path, git_tree_entry_name(entry));
@@ -385,7 +385,7 @@ static int git2r_odb_tree_blobs(
             if (sub_tree)
                 git_tree_free(sub_tree);
 
-            if (GIT_OK != err)
+            if (err)
                 return err;
 
             break;
@@ -401,7 +401,7 @@ static int git2r_odb_tree_blobs(
                     commit,
                     author,
                     when);
-                if (GIT_OK != err)
+                if (err)
                     return err;
             }
             data->n += 1;
@@ -429,7 +429,7 @@ static int git2r_odb_blobs_cb(const git_oid *oid, void *payload)
     git2r_odb_blobs_cb_data *p = (git2r_odb_blobs_cb_data*)payload;
 
     err = git_odb_read_header(&len, &type, p->odb, oid);
-    if (GIT_OK != err)
+    if (err)
         return err;
 
     if (GIT_OBJ_COMMIT == type) {
@@ -439,11 +439,11 @@ static int git2r_odb_blobs_cb(const git_oid *oid, void *payload)
         char sha[GIT_OID_HEXSZ + 1];
 
         err = git_commit_lookup(&commit, p->repository, oid);
-        if (GIT_OK != err)
+        if (err)
             goto cleanup;
 
         err = git_commit_tree(&tree, commit);
-        if (GIT_OK != err)
+        if (err)
             goto cleanup;
 
         git_oid_fmt(sha, oid);
@@ -494,14 +494,14 @@ SEXP git2r_odb_blobs(SEXP repo)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_repository_odb(&odb, repository);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
     cb_data.odb = odb;
 
     /* Count number of blobs before creating the list */
     cb_data.repository = repository;
     err = git_odb_foreach(odb, &git2r_odb_blobs_cb, &cb_data);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     PROTECT(result = allocVector(VECSXP, 7));
@@ -537,7 +537,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;

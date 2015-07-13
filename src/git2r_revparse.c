@@ -52,7 +52,7 @@ SEXP git2r_revparse_single(SEXP repo, SEXP revision)
         &treeish,
         repository,
         CHAR(STRING_ELT(revision, 0)));
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     switch (git_object_type(treeish)) {
@@ -84,7 +84,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err) {
+    if (err) {
         if (GIT_ENOTFOUND == err) {
             git2r_error(
                 git2r_err_from_libgit2,

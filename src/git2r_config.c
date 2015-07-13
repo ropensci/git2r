@@ -40,13 +40,13 @@ static int git2r_config_count_variables(
     git_config_iterator *iterator = NULL;
 
     err = git_config_iterator_new(&iterator, cfg);
-    if (GIT_OK != err)
+    if (err)
         return err;
 
     for (;;) {
         git_config_entry *entry;
         err = git_config_next(&entry, iterator);
-        if (GIT_OK != err) {
+        if (err) {
             if (GIT_ITEROVER == err)
                 err = GIT_OK;
             goto cleanup;
@@ -173,7 +173,7 @@ static int git2r_config_list_variables(
     size_t i = 0;
 
     err = git_config_iterator_new(&iterator, cfg);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     i = git2r_config_list_init(list, 0, n_level, i_list, i, "system");
@@ -186,7 +186,7 @@ static int git2r_config_list_variables(
     for (;;) {
         git_config_entry *entry;
         err = git_config_next(&entry, iterator);
-        if (GIT_OK != err) {
+        if (err) {
             if (GIT_ITEROVER == err)
                 err = GIT_OK;
             goto cleanup;
@@ -245,11 +245,11 @@ SEXP git2r_config_get(SEXP repo)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_repository_config(&cfg, repository);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     err = git2r_config_count_variables(cfg, n_level);
-    if (GIT_OK != err)
+    if (err)
         goto cleanup;
 
     /* Count levels with entries */
@@ -274,7 +274,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -305,7 +305,7 @@ SEXP git2r_config_set(SEXP repo, SEXP variables)
             git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
         err = git_repository_config(&cfg, repository);
-        if (GIT_OK != err)
+        if (err)
             goto cleanup;
 
         names = getAttrib(variables, R_NamesSymbol);
@@ -321,7 +321,7 @@ SEXP git2r_config_set(SEXP repo, SEXP variables)
                 err = git_config_set_string(cfg, key, value);
             else
                 err = git_config_delete_entry(cfg, key);
-            if (GIT_OK != err)
+            if (err)
                 goto cleanup;
         }
 
@@ -334,7 +334,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return R_NilValue;

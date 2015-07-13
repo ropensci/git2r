@@ -135,7 +135,7 @@ SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename)
 				    /*index=*/ NULL,
 				    /*opts=*/ NULL);
 
-    if (GIT_OK != err)
+    if (err)
 	goto cleanup;
 
     if (R_NilValue == filename) {
@@ -157,7 +157,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -193,11 +193,11 @@ SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
     err = git_revparse_single(&obj, repository, "HEAD^{tree}");
-    if (GIT_OK != err)
+    if (err)
 	goto cleanup;
 
     err = git_tree_lookup(&head, repository, git_object_id(obj));
-    if (GIT_OK != err)
+    if (err)
 	goto cleanup;
 
     err = git_diff_tree_to_index(
@@ -206,7 +206,7 @@ SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
         head,
         /* index= */ NULL,
         /* opts = */ NULL);
-    if (GIT_OK != err)
+    if (err)
 	goto cleanup;
 
     if (R_NilValue == filename) {
@@ -235,7 +235,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -277,15 +277,15 @@ SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
 
     sha = GET_SLOT(tree, Rf_install("sha"));
     err = git_revparse_single(&obj, repository, CHAR(STRING_ELT(sha, 0)));
-    if (GIT_OK != err)
+    if (err)
 	goto cleanup;
 
     err = git_tree_lookup(&c_tree, repository, git_object_id(obj));
-    if (GIT_OK != err)
+    if (err)
 	goto cleanup;
 
     err = git_diff_tree_to_workdir(&diff, repository, c_tree, /* opts = */ NULL);
-    if (GIT_OK != err)
+    if (err)
 	goto cleanup;
 
     if (R_NilValue == filename) {
@@ -313,7 +313,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -355,11 +355,11 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
 
     sha = GET_SLOT(tree, Rf_install("sha"));
     err = git_revparse_single(&obj, repository, CHAR(STRING_ELT(sha, 0)));
-    if (GIT_OK != err)
+    if (err)
 	goto cleanup;
 
     err = git_tree_lookup(&c_tree, repository, git_object_id(obj));
-    if (GIT_OK != err)
+    if (err)
 	goto cleanup;
 
     err = git_diff_tree_to_index(
@@ -368,7 +368,7 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
         c_tree,
         /* index= */ NULL,
         /* opts= */ NULL);
-    if (GIT_OK != err)
+    if (err)
 	goto cleanup;
 
     if (R_NilValue == filename) {
@@ -396,7 +396,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
 	git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -442,20 +442,20 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
 
     sha1 = GET_SLOT(tree1, Rf_install("sha"));
     err = git_revparse_single(&obj1, repository, CHAR(STRING_ELT(sha1, 0)));
-    if (GIT_OK != err)
+    if (err)
 	goto cleanup;
 
     sha2 = GET_SLOT(tree2, Rf_install("sha"));
     err = git_revparse_single(&obj2, repository, CHAR(STRING_ELT(sha2, 0)));
-    if (GIT_OK != err)
+    if (err)
 	goto cleanup;
 
     err = git_tree_lookup(&c_tree1, repository, git_object_id(obj1));
-    if (GIT_OK != err)
+    if (err)
 	goto cleanup;
 
     err = git_tree_lookup(&c_tree2, repository, git_object_id(obj2));
-    if (GIT_OK != err)
+    if (err)
 	goto cleanup;
 
     err = git_diff_tree_to_tree(
@@ -464,7 +464,7 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
         c_tree1,
         c_tree2,
         /* opts= */ NULL);
-    if (GIT_OK != err)
+    if (err)
 	goto cleanup;
 
     if (R_NilValue == filename) {
@@ -498,7 +498,7 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (GIT_OK != err)
+    if (err)
 	git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
     return result;
@@ -611,7 +611,7 @@ int git2r_diff_count(git_diff *diff,
 			   git2r_diff_count_line_cb,
 			   /* payload= */ (void*) &n);
 
-    if (GIT_OK != err)
+    if (err)
 	return -1;
 
     *num_files = n.num_files;
@@ -838,7 +838,7 @@ int git2r_diff_format_to_r(git_diff *diff, SEXP dest)
 
     err = git2r_diff_count(diff, &num_files, &max_hunks, &max_lines);
 
-    if (GIT_OK != err)
+    if (err)
         return err;
 
     SET_SLOT(
