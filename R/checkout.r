@@ -189,7 +189,7 @@ setMethod("checkout",
           {
               .Call(git2r_checkout_tree, object@repo, object@target, force)
               .Call(git2r_repository_set_head_detached,
-                    lookup(repo, object@target))
+                    lookup(object@repo, object@target))
               invisible(NULL)
           }
 )
