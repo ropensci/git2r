@@ -97,6 +97,10 @@ sync_libgit2:
 	-cp -f ../libgit2/src/win32/*.h src/libgit2/win32
 	-rm -f src/libgit2/win32/mingw-compat.h
 	-rm -f src/libgit2/win32/msvc-compat.h
+	-rm -f src/libgit2/win32/w32_crtdbg_stacktrace.c
+	-rm -f src/libgit2/win32/w32_crtdbg_stacktrace.h
+	-rm -f src/libgit2/win32/w32_stack.c
+	-rm -f src/libgit2/win32/w32_stack.h
 	-cp -f ../libgit2/src/xdiff/*.c src/libgit2/xdiff
 	-cp -f ../libgit2/src/xdiff/*.h src/libgit2/xdiff
 	cd src/libgit2 && patch -i ../../patches/cache-pass-R-CMD-check-git2r.patch
