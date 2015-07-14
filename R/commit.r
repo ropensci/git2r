@@ -64,6 +64,20 @@ setMethod("ahead_behind",
           }
 )
 
+##' Add sessionInfo to message
+##'
+##' @param message The message.
+##' @return message with appended sessionInfo
+##' @importFrom utils capture.output
+##' @importFrom utils sessionInfo
+##' @keywords internal
+add_session_info <- function(message)
+{
+    paste0(message, "\n\nsessionInfo:\n",
+           paste0(utils::capture.output(utils::sessionInfo()),
+                  collapse="\n"))
+}
+
 ##' Commit
 ##'
 ##' @rdname commit-methods
@@ -148,11 +162,8 @@ setMethod("commit",
                   })
               }
 
-              if (session) {
-                  message <- paste0(message, "\n\nsessionInfo:\n",
-                                    paste0(capture.output(sessionInfo()),
-                                           collapse="\n"))
-              }
+              if (session)
+                  message <- add_session_info(message)
 
               .Call(git2r_commit, repo, message, author, committer)
           }

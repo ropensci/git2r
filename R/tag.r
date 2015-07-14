@@ -25,6 +25,7 @@
 ##' @param tagger The tagger (author) of the tag
 ##' @return invisible(\code{git_tag}) object
 ##' @keywords methods
+##' @include commit.r
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -76,11 +77,8 @@ setMethod("tag",
                         identical(length(session), 1L),
                         is(tagger, "git_signature"))
 
-              if (session) {
-                  message <- paste0(message, "\n\nsessionInfo:\n",
-                                    paste0(capture.output(sessionInfo()),
-                                           collapse="\n"))
-              }
+              if (session)
+                  message <- add_session_info(message)
 
               invisible(.Call(git2r_tag_create, object, name, message, tagger))
           }
