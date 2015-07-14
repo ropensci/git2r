@@ -26,6 +26,11 @@
 ##' @return invisible NULL
 ##' @keywords methods
 ##' @include S4_classes.r
+##' @importFrom graphics axis
+##' @importFrom graphics par
+##' @importFrom graphics plot.new
+##' @importFrom graphics plot.window
+##' @importFrom graphics symbols
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -48,7 +53,7 @@ setMethod("punch_card",
           signature(repo = "git_repository"),
           function (repo, main, ...)
           {
-              savepar <- par(las = 1, mar = c(2.2, 6, 2, 0))
+              savepar <- graphics::par(las = 1, mar = c(2.2, 6, 2, 0))
               on.exit(par(savepar))
 
               wd <- c("Saturday", "Friday", "Thursday", "Wednesday",
@@ -76,16 +81,16 @@ setMethod("punch_card",
               ## Scale
               df$Commits <- sqrt((df$Commits / max(df$Commits)) / pi)
 
-              plot.new()
-              plot.window(xlim = c(0, 23), ylim = c(0.8, 7.2))
-              symbols(df$Hour, df$Weekday, circles = df$Commits, xaxt = "n",
-                      yaxt = "n", inches = FALSE, fg = "white", bg = "black",
-                      add = TRUE, ...)
+              graphics::plot.new()
+              graphics::plot.window(xlim = c(0, 23), ylim = c(0.8, 7.2))
+              graphics::symbols(df$Hour, df$Weekday, circles = df$Commits,
+                                xaxt = "n", yaxt = "n", inches = FALSE,
+                                fg = "white", bg = "black", add = TRUE, ...)
               h <- 0:23
               h <- paste0(ifelse(h > 9, as.character(h),
                                  paste0("0", as.character(h))), ":00")
-              axis(1, at = 0:23, labels = h)
-              axis(2, at = 1:7, labels = wd)
+              graphics::axis(1, at = 0:23, labels = h)
+              graphics::axis(2, at = 1:7, labels = wd)
 
               if (is.null(main)) {
                   if (is_bare(repo)) {
@@ -96,7 +101,7 @@ setMethod("punch_card",
                   }
               }
 
-              title(main)
+              graphics::title(main)
 
               invisible(NULL)
           }
