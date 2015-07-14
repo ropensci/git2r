@@ -136,6 +136,62 @@ cleanup:
 }
 
 /**
+ * Data structure to hold information when iterating over tags.
+ */
+typedef struct {
+    size_t n;
+    git_repository *repository;
+    SEXP repo;
+    SEXP tags;
+} git2r_tag_foreach_cb_data;
+
+/**
+ * Invoked 'callback' for each tag
+ *
+ * @param name The name of the tag, git_oid *oid, void *payload
+ * @param oid The id of the tag
+ * @param payload Payload data passed to 'git_tag_foreach'
+ * @return 0 on success, else error code
+ */
+static int git2r_tag_foreach_cb(const char *name, git_oid *oid, void *payload)
+{
+    int err = 0;
+    git_tag *tag = NULL;
+    git2r_tag_foreach_cb_data *cb_data = (git2r_tag_foreach_cb_data*)payload;
+
+    /* Check if we have a list to populate */
+    if (R_NilValue != cb_data->tags) {
+        SEXP tag_item;
+
+        err = git_tag_lookup(&tag, cb_data->repository, oid);
+        if (err)
+            goto cleanup;
+
+        SET_VECTOR_ELT(
+            cb_data->tags,
+            cb_data->n,
+            tag_item = NEW_OBJECT(MAKE_CLASS("git_tag")));
+        git2r_tag_init(tag, cb_data->repo, tag_item);
+        SET_STRING_ELT(
+            getAttrib(cb_data->tags, R_NamesSymbol),
+            cb_data->n,
+            STRING_ELT(GET_SLOT(tag_item, Rf_install("name")), 0));
+
+        if (tag)
+            git_tag_free(tag);
+        tag = NULL;
+    }
+
+    cb_data->n += 1;
+
+cleanup:
+    if (tag)
+        git_tag_free(tag);
+
+    return err;
+}
+
+/**
  * Get all tags that can be found in a repository.
  *
  * @param repo S4 class git_repository
@@ -144,68 +200,45 @@ cleanup:
 SEXP git2r_tag_list(SEXP repo)
 {
     int err;
-    SEXP list = R_NilValue;
-    SEXP names;
+    SEXP result = R_NilValue;
+    git2r_tag_foreach_cb_data cb_data = {0, NULL, R_NilValue, R_NilValue};
     git_repository *repository;
-    git_reference* reference = NULL;
-    git_tag *tag = NULL;
-    git_strarray tag_names = {0};
-    size_t i;
 
     repository = git2r_repository_open(repo);
     if (!repository)
         git2r_error(git2r_err_invalid_repository, __func__, NULL);
 
-    err = git_tag_list(&tag_names, repository);
-    if (err)
+    /* Count number of tags before creating the list */
+    err = git_tag_foreach(repository, &git2r_tag_foreach_cb, &cb_data);
+    if (err) {
+        if (GIT_ENOTFOUND == err) {
+            err = 0;
+            PROTECT(result = allocVector(VECSXP, 0));
+            setAttrib(result, R_NamesSymbol, allocVector(STRSXP, 0));
+        }
+
         goto cleanup;
-
-    PROTECT(list = allocVector(VECSXP, tag_names.count));
-    setAttrib(list, R_NamesSymbol, names = allocVector(STRSXP, tag_names.count));
-
-    for(i = 0; i < tag_names.count; i++) {
-        SEXP sexp_tag;
-        const git_oid *oid;
-
-        err = git_reference_dwim(&reference, repository, tag_names.strings[i]);
-        if (err)
-            goto cleanup;
-
-        oid = git_reference_target(reference);
-        err = git_tag_lookup(&tag, repository, oid);
-        if (err)
-            goto cleanup;
-
-        SET_VECTOR_ELT(list, i, sexp_tag = NEW_OBJECT(MAKE_CLASS("git_tag")));
-        git2r_tag_init(tag, repo, sexp_tag);
-        SET_STRING_ELT(
-            names,
-            i,
-            STRING_ELT(GET_SLOT(sexp_tag, Rf_install("name")), 0));
-
-        git_tag_free(tag);
-        tag = NULL;
-        git_reference_free(reference);
-        reference = NULL;
     }
 
+    PROTECT(result = allocVector(VECSXP, cb_data.n));
+    setAttrib(result, R_NamesSymbol, allocVector(STRSXP, cb_data.n));
+
+    cb_data.n = 0;
+    cb_data.tags = result;
+    cb_data.repo = repo;
+    cb_data.repository = repository;
+
+    err = git_tag_foreach(repository, &git2r_tag_foreach_cb, &cb_data);
+
 cleanup:
-    git_strarray_free(&tag_names);
-
-    if (tag)
-        git_tag_free(tag);
-
-    if (reference)
-        git_reference_free(reference);
-
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != list)
+    if (R_NilValue != result)
         UNPROTECT(1);
 
     if (err)
         git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
 
-    return list;
+    return result;
 }
