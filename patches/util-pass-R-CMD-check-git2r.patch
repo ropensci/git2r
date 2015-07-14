@@ -1,8 +1,8 @@
-*** util.c	2015-01-13 22:07:47.468530388 +0100
---- util-pass-R-CMD-check-git2r.c	2015-01-13 22:07:52.668530527 +0100
+*** util.c	2015-07-14 09:00:47.819762553 +0200
+--- util-pass-R-CMD-check-git2r.c	2015-07-14 09:00:28.059762724 +0200
 ***************
-*** 14,19 ****
---- 14,30 ----
+*** 18,23 ****
+--- 18,34 ----
   # include <Shlwapi.h>
   #endif
   
@@ -21,7 +21,7 @@
   {
   	size_t i;
 ***************
-*** 330,365 ****
+*** 334,369 ****
   	for (i = 0; i < line_count; ++i) {
   		line = buffer + (i * LINE_WIDTH);
   		for (j = 0; j < LINE_WIDTH; ++j, ++line)
@@ -58,7 +58,7 @@
   }
   
   #ifdef GIT_LEGACY_HASH
---- 341,376 ----
+--- 345,380 ----
   	for (i = 0; i < line_count; ++i) {
   		line = buffer + (i * LINE_WIDTH);
   		for (j = 0; j < LINE_WIDTH; ++j, ++line)
@@ -96,7 +96,7 @@
   
   #ifdef GIT_LEGACY_HASH
 ***************
-*** 607,613 ****
+*** 611,617 ****
   	return (pos - str);
   }
   
@@ -104,7 +104,7 @@
   typedef struct {
   	git__sort_r_cmp cmp;
   	void *payload;
---- 618,624 ----
+--- 622,628 ----
   	return (pos - str);
   }
   
