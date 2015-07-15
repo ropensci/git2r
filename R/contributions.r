@@ -92,10 +92,12 @@ setGeneric("contributions",
 ##' @export
 setMethod("contributions",
           signature(repo = "missing"),
-          function (repo, breaks, by)
+          function (breaks, by)
           {
               ## Try current working directory
-              contributions(getwd(), breaks = breaks, by = by)
+              contributions(repository(getwd(), discover = TRUE),
+                            breaks = breaks,
+                            by = by)
           }
 )
 
