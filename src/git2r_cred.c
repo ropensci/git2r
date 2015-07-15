@@ -26,6 +26,133 @@
 #include "git2r_transfer.h"
 
 /**
+ * Create credential object from S4 class 'cred_ssh_key'.
+ *
+ * @param cred The newly created credential object.
+ * @param user_from_url The username that was embedded in a "user@host"
+ * @param allowed_types A bitmask stating which cred types are OK to return.
+ * @param credentials The S4 class object with credentials.
+ * @return 0 on success, else -1.
+ */
+static int git2r_cred_ssh_key(
+    git_cred **cred,
+    const char *username_from_url,
+    unsigned int allowed_types,
+    SEXP credentials)
+{
+    if (GIT_CREDTYPE_SSH_KEY & allowed_types) {
+        SEXP slot;
+        const char *publickey;
+        const char *privatekey = NULL;
+        const char *passphrase = NULL;
+
+        publickey = CHAR(STRING_ELT(
+                             GET_SLOT(credentials,
+                                      Rf_install("publickey")), 0));
+        privatekey = CHAR(STRING_ELT(
+                              GET_SLOT(credentials,
+                                       Rf_install("privatekey")), 0));
+
+        slot = GET_SLOT(credentials, Rf_install("passphrase"));
+        if (length(slot) && (NA_STRING != STRING_ELT(slot, 0)))
+            passphrase = CHAR(STRING_ELT(slot, 0));
+
+        if (git_cred_ssh_key_new(
+                cred, username_from_url, publickey, privatekey, passphrase))
+            return -1;
+
+        return 0;
+    }
+
+    return -1;
+}
+
+/**
+ * Create credential object from S4 class 'cred_env'.
+ *
+ * @param cred The newly created credential object.
+ * @param allowed_types A bitmask stating which cred types are OK to return.
+ * @param credentials The S4 class object with credentials.
+ * @return 0 on success, else -1.
+ */
+static int git2r_cred_env(
+    git_cred **cred,
+    unsigned int allowed_types,
+    SEXP credentials)
+{
+    if (GIT_CREDTYPE_USERPASS_PLAINTEXT & allowed_types) {
+        int err;
+        git_buf username = GIT_BUF_INIT;
+        git_buf password = GIT_BUF_INIT;
+
+        /* Read value of the username environment variable */
+        err = git__getenv(&username,
+                          CHAR(STRING_ELT(
+                                   GET_SLOT(credentials,
+                                            Rf_install("username")), 0)));
+        if (err)
+            goto cleanup;
+
+        /* Read value of the password environment variable */
+        err = git__getenv(&password,
+                          CHAR(STRING_ELT(
+                                   GET_SLOT(credentials,
+                                            Rf_install("password")), 0)));
+        if (err)
+            goto cleanup;
+
+        err = git_cred_userpass_plaintext_new(
+            cred,
+            git_buf_cstr(&username),
+            git_buf_cstr(&password));
+
+    cleanup:
+        git_buf_free(&username);
+        git_buf_free(&password);
+
+        if (err)
+            return -1;
+
+        return 0;
+    }
+
+    return -1;
+}
+
+/**
+ * Create credential object from S4 class 'cred_user_pass'.
+ *
+ * @param cred The newly created credential object.
+ * @param allowed_types A bitmask stating which cred types are OK to return.
+ * @param credentials The S4 class object with credentials.
+ * @return 0 on success, else -1.
+ */
+static int git2r_cred_user_pass(
+    git_cred **cred,
+    unsigned int allowed_types,
+    SEXP credentials)
+{
+    if (GIT_CREDTYPE_USERPASS_PLAINTEXT & allowed_types) {
+        const char *username;
+        const char *password;
+
+        username = CHAR(STRING_ELT(
+                            GET_SLOT(credentials,
+                                     Rf_install("username")), 0));
+        password = CHAR(STRING_ELT(
+                            GET_SLOT(credentials,
+                                     Rf_install("password")), 0));
+
+        if (git_cred_userpass_plaintext_new(cred, username, password))
+            return -1;
+
+        return 0;
+    }
+
+    return -1;
+}
+
+/**
  * Callback if the remote host requires authentication in order to
  * connect to it
  *
@@ -44,8 +171,7 @@ int git2r_cred_acquire_cb(
     unsigned int allowed_types,
     void *payload)
 {
-    int err = -1;
-    SEXP credentials = R_NilValue;
+    SEXP credentials, class_name;
 
     GIT_UNUSED(url);
 
@@ -53,78 +179,25 @@ int git2r_cred_acquire_cb(
         return -1;
 
     credentials = ((git2r_transfer_data*)payload)->credentials;
-    if (R_NilValue != credentials) {
-        SEXP class_name;
-
-        class_name = getAttrib(credentials, R_ClassSymbol);
-        if (0 == strcmp(CHAR(STRING_ELT(class_name, 0)), "cred_ssh_key")) {
-            if (GIT_CREDTYPE_SSH_KEY & allowed_types) {
-                SEXP slot;
-                const char *publickey;
-                const char *privatekey = NULL;
-                const char *passphrase = NULL;
-
-                publickey = CHAR(STRING_ELT(
-                                     GET_SLOT(credentials,
-                                              Rf_install("publickey")), 0));
-                privatekey = CHAR(STRING_ELT(
-                                      GET_SLOT(credentials,
-                                               Rf_install("privatekey")), 0));
-
-                slot = GET_SLOT(credentials, Rf_install("passphrase"));
-                if (length(slot)) {
-                    if (NA_STRING != STRING_ELT(slot, 0))
-                        passphrase = CHAR(STRING_ELT(slot, 0));
-                }
-
-                err = git_cred_ssh_key_new(
-                    cred,
-                    username_from_url,
-                    publickey,
-                    privatekey,
-                    passphrase);
-            }
-        } else if (0 == strcmp(CHAR(STRING_ELT(class_name, 0)), "cred_env")) {
-            if (GIT_CREDTYPE_USERPASS_PLAINTEXT & allowed_types) {
-                const char *username;
-                const char *password;
-
-                username = CHAR(STRING_ELT(
-                                    GET_SLOT(credentials,
-                                             Rf_install("username")), 0));
-                password = CHAR(STRING_ELT(
-                                    GET_SLOT(credentials,
-                                             Rf_install("password")), 0));
-
-                username = getenv(username);
-                if (username) {
-                    password = getenv(password);
-                    if (password) {
-                        err = git_cred_userpass_plaintext_new(
-                            cred,
-                            username,
-                            password);
-                    }
-                }
-            }
-        } else if (0 == strcmp(CHAR(STRING_ELT(class_name, 0)), "cred_user_pass")) {
-            if (GIT_CREDTYPE_USERPASS_PLAINTEXT & allowed_types) {
-                const char *username;
-                const char *password;
-
-                username = CHAR(STRING_ELT(
-                                    GET_SLOT(credentials,
-                                             Rf_install("username")), 0));
-                password = CHAR(STRING_ELT(
-                                    GET_SLOT(credentials,
-                                             Rf_install("password")), 0));
-
-                err = git_cred_userpass_plaintext_new(cred, username, password);
-            }
+    if (credentials == R_NilValue) {
+        if (GIT_CREDTYPE_SSH_KEY & allowed_types) {
+            if (git_cred_ssh_key_from_agent(cred, username_from_url))
+                return -1;
+            return 0;
         }
-    } else if (GIT_CREDTYPE_SSH_KEY & allowed_types) {
-        err = git_cred_ssh_key_from_agent(cred, username_from_url);
+
+        return -1;
     }
 
-    return err;
+    class_name = getAttrib(credentials, R_ClassSymbol);
+    if (strcmp(CHAR(STRING_ELT(class_name, 0)), "cred_ssh_key") == 0) {
+        return git2r_cred_ssh_key(
+            cred, username_from_url, allowed_types, credentials);
+    } else if (strcmp(CHAR(STRING_ELT(class_name, 0)), "cred_env") == 0) {
+        return git2r_cred_env(cred, allowed_types, credentials);
+    } else if (strcmp(CHAR(STRING_ELT(class_name, 0)), "cred_user_pass") == 0) {
+        return git2r_cred_user_pass(cred, allowed_types, credentials);
+    }
+
+    return -1;
 }
