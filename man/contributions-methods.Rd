@@ -11,8 +11,7 @@
 contributions(repo, breaks = c("month", "year", "quarter", "week", "day"),
   by = c("commits", "author"))
 
-\S4method{contributions}{missing}(repo, breaks = c("month", "year", "quarter",
-  "week", "day"), by = c("commits", "author"))
+\S4method{contributions}{missing}(breaks, by)
 
 \S4method{contributions}{character}(repo, breaks = c("month", "year",
   "quarter", "week", "day"), by = c("commits", "author"))
