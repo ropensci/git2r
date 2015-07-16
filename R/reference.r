@@ -62,6 +62,17 @@ setGeneric("references",
 ##' @include S4_classes.r
 ##' @export
 setMethod("references",
+          signature(repo = "missing"),
+          function ()
+          {
+              references(repository(getwd(), discover = TRUE))
+          }
+)
+
+##' @rdname references-methods
+##' @include S4_classes.r
+##' @export
+setMethod("references",
           signature(repo = "git_repository"),
           function (repo)
           {

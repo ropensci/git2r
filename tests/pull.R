@@ -101,6 +101,12 @@ stopifnot(identical(ref_2@sha, commit_3@sha))
 stopifnot(identical(ref_2@target, NA_character_))
 stopifnot(identical(ref_2@shorthand, "origin/master"))
 
+## Check references with missing repo argument
+wd <- setwd(path_repo_1)
+stopifnot(identical(length(references()), 2L))
+if (!is.null(wd))
+    setwd(wd)
+
 ## Cleanup
 unlink(path_bare, recursive=TRUE)
 unlink(path_repo_1, recursive=TRUE)

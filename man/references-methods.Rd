@@ -4,9 +4,12 @@
 \name{references}
 \alias{references}
 \alias{references,git_repository-method}
+\alias{references,missing-method}
 \title{Get all references that can be found in a repository.}
 \usage{
 references(repo)
+
+\S4method{references}{missing}()
 
 \S4method{references}{git_repository}(repo)
 }
