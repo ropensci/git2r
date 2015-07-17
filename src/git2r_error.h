@@ -19,6 +19,8 @@
 #ifndef INCLUDE_git2r_error_h
 #define INCLUDE_git2r_error_h
 
+#include "git2.h"
+
 /**
  * Error messages
  */
@@ -60,6 +62,10 @@ extern const char git2r_err_string_vec_arg[];
 extern const char git2r_err_tag_arg[];
 extern const char git2r_err_tree_arg[];
 
-void git2r_error(const char *format, const char *func_name, const char *arg);
+void git2r_error(
+    const char *func_name,
+    const git_error *err,
+    const char *msg1,
+    const char *msg2);
 
 #endif

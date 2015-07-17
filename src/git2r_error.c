@@ -17,6 +17,7 @@
  */
 
 #include <Rinternals.h>
+#include "git2.h"
 
 /**
  * Error messages
@@ -81,15 +82,29 @@ const char git2r_err_tree_arg[] =
 /**
  * Raise error
  *
- * @param format C string that contains the text to be written to
- * Rf_error
- * @param func_name The name of the function that raise the error
- * @param arg Optional text argument
+ * @param func_name The name of the function that raise the error.
+ * @param err Optional error argument from libgit2 with the git_error
+ * object that was last generated.
+ * @param msg1 Optional text argument with error message, used if
+ * 'err' is NULL.
+ * @param msg2 Optional text argument, e.g. used during argument
+ * checking to pass the error message to the variable name in 'msg1'.
  */
-void git2r_error(const char *format, const char *func_name, const char *arg)
+void git2r_error(
+    const char *func_name,
+    const git_error *err,
+    const char *msg1,
+    const char *msg2)
 {
-    if (arg)
-        Rf_error(format, func_name, arg);
+    if (func_name && err && err->message)
+        Rf_error("Error in '%s': %s\n", func_name, err->message);
+    else if (func_name && msg1 && msg2)
+        Rf_error("Error in '%s': %s %s\n", func_name, msg1, msg2);
+    else if (func_name && msg1)
+        Rf_error("Error in '%s': %s\n", func_name, msg1);
+    else if (func_name)
+        Rf_error("Error in '%s'\n", func_name);
     else
-        Rf_error(format, func_name);
+        Rf_error("Unexpected error. Please report at"
+                 " https://github.com/ropensci/git2r/issues\n");
 }
