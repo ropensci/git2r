@@ -42,41 +42,41 @@ const char git2r_err_unable_to_authenticate[] = "Unable to authenticate with sup
  * Error messages specific to argument checking
  */
 const char git2r_err_blob_arg[] =
-    "Error in '%s': '%s' must be a S4 class git_blob";
+    "must be a S4 class git_blob";
 const char git2r_err_branch_arg[] =
-    "Error in '%s': '%s' must be a S4 class git_branch";
+    "must be a S4 class git_branch";
 const char git2r_err_commit_arg[] =
-    "Error in '%s': '%s' must be a S4 class git_commit";
+    "must be a S4 class git_commit";
 const char git2r_err_credentials_arg[] =
-    "Error in '%s': '%s' must be a S4 class with credentials";
+    "must be a S4 class with credentials";
 const char git2r_err_diff_arg[] =
-    "Error in '%s': Invalid diff parameters";
+    "Invalid diff parameters";
 const char git2r_err_fetch_heads_arg[] =
-    "Error in '%s': '%s' must be a list of S4 git_fetch_head objects";
+    "must be a list of S4 git_fetch_head objects";
 const char git2r_err_filename_arg[] =
-    "Error in '%s': '%s' must be either 1) NULL, or 2) a character vector of length 0 or 3) a character vector of length 1 and nchar > 0";
+    "must be either 1) NULL, or 2) a character vector of length 0 or 3) a character vector of length 1 and nchar > 0";
 const char git2r_err_sha_arg[] =
-    "Error in '%s': '%s' must be a sha value";
+    "must be a sha value";
 const char git2r_err_integer_arg[] =
-    "Error in '%s': '%s' must be an integer vector of length one with non NA value";
+    "must be an integer vector of length one with non NA value";
 const char git2r_err_integer_gte_zero_arg[] =
-    "Error in '%s': '%s' must be an integer vector of length one with value greater than or equal to zero";
+    "must be an integer vector of length one with value greater than or equal to zero";
 const char git2r_err_list_arg[] =
-    "Error in '%s': '%s' must be a list";
+    "must be a list";
 const char git2r_err_logical_arg[] =
-    "Error in '%s': '%s' must be logical vector of length one with non NA value";
+    "must be logical vector of length one with non NA value";
 const char git2r_err_note_arg[] =
-    "Error in '%s': '%s' must be a S4 class git_note";
+    "must be a S4 class git_note";
 const char git2r_err_signature_arg[] =
-    "Error in '%s': '%s' must be a S4 class git_signature";
+    "must be a S4 class git_signature";
 const char git2r_err_string_arg[] =
-    "Error in '%s': '%s' must be a character vector of length one with non NA value";
+    "must be a character vector of length one with non NA value";
 const char git2r_err_string_vec_arg[] =
-    "Error in '%s': '%s' must be a character vector";
+    "must be a character vector";
 const char git2r_err_tag_arg[] =
-    "Error in '%s': '%s' must be a S4 class git_tag";
+    "must be a S4 class git_tag";
 const char git2r_err_tree_arg[] =
-    "Error in '%s': '%s' must be a S4 class git_tree";
+    "must be a S4 class git_tree";
 
 /**
  * Raise error
