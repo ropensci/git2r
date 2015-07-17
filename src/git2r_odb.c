@@ -65,7 +65,7 @@ SEXP git2r_odb_hash(SEXP data)
     UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }
@@ -109,7 +109,7 @@ SEXP git2r_odb_hashfile(SEXP path)
     UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }
@@ -217,7 +217,7 @@ SEXP git2r_odb_objects(SEXP repo)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     err = git_repository_odb(&odb, repository);
     if (err)
@@ -255,7 +255,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }
@@ -491,7 +491,7 @@ SEXP git2r_odb_blobs(SEXP repo)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     err = git_repository_odb(&odb, repository);
     if (err)
@@ -538,7 +538,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }

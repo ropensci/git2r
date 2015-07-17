@@ -63,7 +63,7 @@ SEXP git2r_merge_base(SEXP one, SEXP two)
     repo = GET_SLOT(one, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     sha = GET_SLOT(one, Rf_install("sha"));
     err = git_oid_fromstr(&oid_one, CHAR(STRING_ELT(sha, 0)));
@@ -100,7 +100,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }
@@ -460,7 +460,7 @@ SEXP git2r_merge_branch(SEXP branch, SEXP merger, SEXP commit_on_success)
 
     repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
     type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
@@ -515,7 +515,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }
@@ -607,7 +607,7 @@ SEXP git2r_merge_fetch_heads(SEXP fetch_heads, SEXP merger)
         SEXP repo = GET_SLOT(VECTOR_ELT(fetch_heads, 0), Rf_install("repo"));
         repository = git2r_repository_open(repo);
         if (!repository)
-            git2r_error(git2r_err_invalid_repository, __func__, NULL);
+            git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
     }
 
     err = git2r_merge_heads_from_fetch_heads(
@@ -645,7 +645,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }

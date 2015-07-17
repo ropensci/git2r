@@ -374,7 +374,7 @@ SEXP git2r_status_list(
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     opts.show  = GIT_STATUS_SHOW_INDEX_AND_WORKDIR;
     opts.flags = GIT_STATUS_OPT_RENAMES_HEAD_TO_INDEX |
@@ -431,7 +431,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return list;
 }

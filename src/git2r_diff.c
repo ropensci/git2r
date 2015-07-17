@@ -128,7 +128,7 @@ SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     err = git_diff_index_to_workdir(&diff,
 				    repository,
@@ -158,7 +158,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }
@@ -190,7 +190,7 @@ SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     err = git_revparse_single(&obj, repository, "HEAD^{tree}");
     if (err)
@@ -236,7 +236,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }
@@ -273,7 +273,7 @@ SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
     repo = GET_SLOT(tree, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     sha = GET_SLOT(tree, Rf_install("sha"));
     err = git_revparse_single(&obj, repository, CHAR(STRING_ELT(sha, 0)));
@@ -314,7 +314,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }
@@ -351,7 +351,7 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
     repo = GET_SLOT(tree, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     sha = GET_SLOT(tree, Rf_install("sha"));
     err = git_revparse_single(&obj, repository, CHAR(STRING_ELT(sha, 0)));
@@ -397,7 +397,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err)
-	git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+	git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }
@@ -438,7 +438,7 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
     repo = GET_SLOT(tree1, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     sha1 = GET_SLOT(tree1, Rf_install("sha"));
     err = git_revparse_single(&obj1, repository, CHAR(STRING_ELT(sha1, 0)));
@@ -499,7 +499,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err)
-	git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+	git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }

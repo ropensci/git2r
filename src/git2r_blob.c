@@ -43,7 +43,7 @@ SEXP git2r_blob_content(SEXP blob)
 
     repository = git2r_repository_open(GET_SLOT(blob, Rf_install("repo")));
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     sha = GET_SLOT(blob, Rf_install("sha"));
     git_oid_fromstr(&oid, CHAR(STRING_ELT(sha, 0)));
@@ -66,7 +66,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }
@@ -93,7 +93,7 @@ SEXP git2r_blob_create_fromdisk(SEXP repo, SEXP path)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     len = length(path);
     PROTECT(result = allocVector(VECSXP, len));
@@ -126,7 +126,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }
@@ -157,7 +157,7 @@ SEXP git2r_blob_create_fromworkdir(SEXP repo, SEXP relative_path)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     len = length(relative_path);
     PROTECT(result = allocVector(VECSXP, len));
@@ -190,7 +190,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }
@@ -234,7 +234,7 @@ SEXP git2r_blob_is_binary(SEXP blob)
 
     repository= git2r_repository_open(GET_SLOT(blob, Rf_install("repo")));
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     sha = GET_SLOT(blob, Rf_install("sha"));
     git_oid_fromstr(&oid, CHAR(STRING_ELT(sha, 0)));
@@ -260,7 +260,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }
@@ -285,7 +285,7 @@ SEXP git2r_blob_rawsize(SEXP blob)
 
     repository= git2r_repository_open(GET_SLOT(blob, Rf_install("repo")));
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     sha = GET_SLOT(blob, Rf_install("sha"));
     git_oid_fromstr(&oid, CHAR(STRING_ELT(sha, 0)));
@@ -304,7 +304,7 @@ cleanup:
         git_repository_free(repository);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return ScalarInteger(size);
 }

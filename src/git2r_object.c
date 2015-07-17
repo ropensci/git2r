@@ -48,7 +48,7 @@ SEXP git2r_object_lookup(SEXP repo, SEXP sha)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     len = LENGTH(STRING_ELT(sha, 0));
     if (GIT_OID_HEXSZ == len) {
@@ -81,7 +81,7 @@ SEXP git2r_object_lookup(SEXP repo, SEXP sha)
         git2r_tag_init((git_tag*)object, repo, result);
         break;
     default:
-        git2r_error(git2r_err_object_type, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_object_type, NULL);
     }
 
 cleanup:
@@ -95,7 +95,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }

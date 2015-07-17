@@ -50,7 +50,7 @@ SEXP git2r_graph_ahead_behind(SEXP local, SEXP upstream)
     slot = GET_SLOT(local, Rf_install("repo"));
     repository = git2r_repository_open(slot);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     slot = GET_SLOT(local, Rf_install("sha"));
     git2r_oid_from_sha_sexp(slot, &local_oid);
@@ -75,7 +75,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }
@@ -104,7 +104,7 @@ SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor)
     slot = GET_SLOT(commit, Rf_install("repo"));
     repository = git2r_repository_open(slot);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     slot = GET_SLOT(commit, Rf_install("sha"));
     git2r_oid_from_sha_sexp(slot, &commit_oid);
@@ -128,7 +128,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }

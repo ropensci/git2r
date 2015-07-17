@@ -46,7 +46,7 @@ SEXP git2r_revparse_single(SEXP repo, SEXP revision)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     err = git_revparse_single(
         &treeish,
@@ -87,14 +87,16 @@ cleanup:
     if (err) {
         if (GIT_ENOTFOUND == err) {
             git2r_error(
-                git2r_err_from_libgit2,
                 __func__,
-                "Requested object could not be found");
+                NULL,
+                "Requested object could not be found",
+                NULL);
         } else {
             git2r_error(
-                git2r_err_from_libgit2,
                 __func__,
-                giterr_last()->message);
+                giterr_last(),
+                NULL,
+                NULL);
         }
     }
 

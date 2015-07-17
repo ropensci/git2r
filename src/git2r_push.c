@@ -81,7 +81,7 @@ SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP credentials)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     err = git_remote_lookup(&remote, repository, CHAR(STRING_ELT(name, 0)));
     if (err)
@@ -120,16 +120,11 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (err) {
-        const char *err_str;
-
-        if (err == -1)
-            err_str = git2r_err_unable_to_authenticate;
-        else
-            err_str = giterr_last()->message;
-
-        git2r_error(git2r_err_from_libgit2,  __func__, err_str);
-    }
+    if (err)
+        git2r_error(
+            __func__,
+            giterr_last(),
+            git2r_err_unable_to_authenticate, NULL);
 
     return R_NilValue;
 }

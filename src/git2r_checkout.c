@@ -49,7 +49,7 @@ SEXP git2r_checkout_tree(SEXP repo, SEXP revision, SEXP force)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     err = git_revparse_single(&treeish, repository, CHAR(STRING_ELT(revision, 0)));
     if (err)
@@ -84,7 +84,7 @@ cleanup:
         git_repository_free(repository);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return R_NilValue;
 }

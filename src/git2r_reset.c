@@ -52,7 +52,7 @@ SEXP git2r_reset(SEXP commit, SEXP reset_type)
     repo = GET_SLOT(commit, Rf_install("repo"));
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     err = git2r_commit_lookup(&target, repository, commit);
     if (err)
@@ -72,7 +72,7 @@ cleanup:
         git_repository_free(repository);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return R_NilValue;
 }

@@ -55,12 +55,12 @@ SEXP git2r_stash_drop(SEXP repo, SEXP index)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     err = git_stash_drop(repository, INTEGER(index)[0]);
     git_repository_free(repository);
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return R_NilValue;
 }
@@ -151,7 +151,7 @@ SEXP git2r_stash_list(SEXP repo)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     /* Count number of stashes before creating the list */
     err = git_stash_foreach(repository, &git2r_stash_list_cb, &cb_data);
@@ -173,7 +173,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return list;
 }
@@ -219,7 +219,7 @@ SEXP git2r_stash_save(
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     if (LOGICAL(index)[0])
         flags |= GIT_STASH_KEEP_INDEX;
@@ -261,7 +261,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }

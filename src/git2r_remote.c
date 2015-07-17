@@ -48,11 +48,11 @@ SEXP git2r_remote_add(SEXP repo, SEXP name, SEXP url)
         git2r_error(__func__, NULL, "'url'", git2r_err_string_arg);
 
     if (!git_remote_is_valid_name(CHAR(STRING_ELT(name, 0))))
-	git2r_error(git2r_err_invalid_remote, __func__, NULL);
+	git2r_error(__func__, NULL, git2r_err_invalid_remote, NULL);
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     err = git_remote_create(&remote,
 			    repository,
@@ -66,7 +66,7 @@ SEXP git2r_remote_add(SEXP repo, SEXP name, SEXP url)
 	git_repository_free(repository);
 
     if (err)
-	git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+	git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return R_NilValue;
 }
@@ -103,7 +103,7 @@ SEXP git2r_remote_fetch(
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     err = git_remote_lookup(&remote, repository, CHAR(STRING_ELT(name, 0)));
     if (err)
@@ -133,16 +133,12 @@ cleanup:
     if (R_NilValue != result)
         UNPROTECT(1);
 
-    if (err) {
-        const char *err_str;
-
-        if (err == -1)
-            err_str = git2r_err_unable_to_authenticate;
-        else
-            err_str = giterr_last()->message;
-
-        git2r_error(git2r_err_from_libgit2,  __func__, err_str);
-    }
+    if (err)
+        git2r_error(
+            __func__,
+            giterr_last(),
+            git2r_err_unable_to_authenticate,
+            NULL);
 
     return result;
 }
@@ -163,7 +159,7 @@ SEXP git2r_remote_list(SEXP repo)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     err = git_remote_list(&rem_list, repository);
     if (err)
@@ -183,7 +179,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return list;
 }
@@ -207,7 +203,7 @@ SEXP git2r_remote_remove(SEXP repo, SEXP name)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     err = git_remote_delete(repository, CHAR(STRING_ELT(name, 0)));
 
@@ -215,7 +211,7 @@ SEXP git2r_remote_remove(SEXP repo, SEXP name)
 	git_repository_free(repository);
 
     if (err)
-	git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+	git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return R_NilValue;
 }
@@ -241,7 +237,7 @@ SEXP git2r_remote_rename(SEXP repo, SEXP oldname, SEXP newname)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     err = git_remote_rename(
         &problems,
@@ -258,7 +254,7 @@ cleanup:
 	git_repository_free(repository);
 
     if (err)
-	git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+	git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return R_NilValue;
 }
@@ -286,7 +282,7 @@ SEXP git2r_remote_url(SEXP repo, SEXP remote)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     len = LENGTH(remote);
     PROTECT(url = allocVector(STRSXP, len));
@@ -314,7 +310,7 @@ cleanup:
     UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return url;
 }

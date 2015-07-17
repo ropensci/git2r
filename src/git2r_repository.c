@@ -126,7 +126,7 @@ SEXP git2r_repository_fetch_heads(SEXP repo)
 
     repository= git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     /* Count number of fetch heads before creating the list */
     err = git_repository_fetchhead_foreach(
@@ -157,7 +157,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }
@@ -180,7 +180,7 @@ SEXP git2r_repository_head(SEXP repo)
 
     repository= git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     err = git_repository_head(&reference, repository);
     if (err) {
@@ -220,7 +220,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }
@@ -249,7 +249,7 @@ SEXP git2r_repository_init(SEXP path, SEXP bare)
                               CHAR(STRING_ELT(path, 0)),
                               LOGICAL(bare)[0]);
     if (err)
-        git2r_error(git2r_err_repo_init, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_repo_init, NULL);
 
     if (repository)
         git_repository_free(repository);
@@ -271,7 +271,7 @@ SEXP git2r_repository_is_bare(SEXP repo)
 
     repository= git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     is_bare = git_repository_is_bare(repository);
     git_repository_free(repository);
@@ -300,12 +300,12 @@ SEXP git2r_repository_is_shallow(SEXP repo)
 
     repository= git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     is_shallow = git_repository_is_shallow(repository);
     git_repository_free(repository);
     if (is_shallow < 0)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     PROTECT(result = allocVector(LGLSXP, 1));
     if (1 == is_shallow)
@@ -331,12 +331,12 @@ SEXP git2r_repository_head_detached(SEXP repo)
 
     repository= git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     head_detached = git_repository_head_detached(repository);
     git_repository_free(repository);
     if (head_detached < 0)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     PROTECT(result = allocVector(LGLSXP, 1));
     if (1 == head_detached)
@@ -362,12 +362,12 @@ SEXP git2r_repository_is_empty(SEXP repo)
 
     repository= git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     is_empty = git_repository_is_empty(repository);
     git_repository_free(repository);
     if (is_empty < 0)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     PROTECT(result = allocVector(LGLSXP, 1));
     if (1 == is_empty)
@@ -423,11 +423,11 @@ SEXP git2r_repository_set_head(SEXP repo, SEXP ref_name)
     if (git2r_arg_check_string(ref_name))
         git2r_error(__func__, NULL, "'ref_name'", git2r_err_string_arg);
     if (!git_reference_is_valid_name(CHAR(STRING_ELT(ref_name, 0))))
-        git2r_error(git2r_err_invalid_refname, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_refname, NULL);
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     err = git_repository_set_head(repository, CHAR(STRING_ELT(ref_name, 0)));
 
@@ -435,7 +435,7 @@ SEXP git2r_repository_set_head(SEXP repo, SEXP ref_name)
         git_repository_free(repository);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return R_NilValue;
 }
@@ -459,7 +459,7 @@ SEXP git2r_repository_set_head_detached(SEXP commit)
 
     repository = git2r_repository_open(GET_SLOT(commit, Rf_install("repo")));
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     sha = GET_SLOT(commit, Rf_install("sha"));
     err = git_oid_fromstr(&oid, CHAR(STRING_ELT(sha, 0)));
@@ -482,7 +482,7 @@ cleanup:
         git_repository_free(repository);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return R_NilValue;
 }
@@ -501,7 +501,7 @@ SEXP git2r_repository_workdir(SEXP repo)
 
     repository = git2r_repository_open(repo);
     if (!repository)
-        git2r_error(git2r_err_invalid_repository, __func__, NULL);
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     if (!git_repository_is_bare(repository)) {
         const char *wd = git_repository_workdir(repository);
@@ -556,7 +556,7 @@ cleanup:
         UNPROTECT(1);
 
     if (err)
-        git2r_error(git2r_err_from_libgit2, __func__, giterr_last()->message);
+        git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }
