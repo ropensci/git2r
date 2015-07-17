@@ -89,7 +89,7 @@ cleanup:
             git2r_error(
                 __func__,
                 NULL,
-                "Requested object could not be found",
+                git2r_err_revparse_not_found,
                 NULL);
         } else {
             git2r_error(

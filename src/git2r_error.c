@@ -34,6 +34,7 @@ const char git2r_err_nothing_added_to_commit[] = "Nothing added to commit";
 const char git2r_err_object_type[] = "Unexpected object type.";
 const char git2r_err_reference[] = "Unexpected reference type";
 const char git2r_err_repo_init[] = "Unable to init repository";
+const char git2r_err_revparse_not_found[] = "Requested object could not be found";
 const char git2r_err_revparse_single[] = "Expected commit, tag or tree";
 const char git2r_err_unexpected_config_level[] = "Unexpected config level";
 const char git2r_err_unable_to_authenticate[] = "Unable to authenticate with supplied credentials";
