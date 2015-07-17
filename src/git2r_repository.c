@@ -249,7 +249,7 @@ SEXP git2r_repository_init(SEXP path, SEXP bare)
                               CHAR(STRING_ELT(path, 0)),
                               LOGICAL(bare)[0]);
     if (err)
-        git2r_error("Error in '%s': Unable to init repository", __func__, NULL);
+        git2r_error(git2r_err_repo_init, __func__, NULL);
 
     if (repository)
         git_repository_free(repository);

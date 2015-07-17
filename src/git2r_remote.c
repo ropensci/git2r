@@ -48,7 +48,7 @@ SEXP git2r_remote_add(SEXP repo, SEXP name, SEXP url)
         git2r_error(git2r_err_string_arg, __func__, "url");
 
     if (!git_remote_is_valid_name(CHAR(STRING_ELT(name, 0))))
-	git2r_error("Error in '%s': Invalid remote name", __func__, NULL);
+	git2r_error(git2r_err_invalid_remote, __func__, NULL);
 
     repository = git2r_repository_open(repo);
     if (!repository)

@@ -81,7 +81,7 @@ SEXP git2r_object_lookup(SEXP repo, SEXP sha)
         git2r_tag_init((git_tag*)object, repo, result);
         break;
     default:
-        git2r_error("Error in '%s': Unimplemented object type. Sorry.", __func__, NULL);
+        git2r_error(git2r_err_object_type, __func__, NULL);
     }
 
 cleanup:

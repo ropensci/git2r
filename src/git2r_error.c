@@ -23,11 +23,17 @@
  */
 
 const char git2r_err_alloc_memory_buffer[] = "Unable to allocate memory buffer";
+const char git2r_err_branch_not_local[] = "Error in '%s': 'branch' is not local";
+const char git2r_err_branch_not_remote[] = "Error in '%s': 'branch' is not remote";
 const char git2r_err_checkout_tree[] = "Expected commit, tag or tree";
 const char git2r_err_from_libgit2[] = "Error in '%s': %s\n";
 const char git2r_err_invalid_refname[] = "Error in '%s': Invalid reference name";
+const char git2r_err_invalid_remote[] = "Error in '%s': Invalid remote name";
 const char git2r_err_invalid_repository[] = "Invalid repository";
 const char git2r_err_nothing_added_to_commit[] = "Nothing added to commit";
+const char git2r_err_object_type[] = "Error in '%s': Unexpected object type.";
+const char git2r_err_reference[] = "Error in '%s': Unexpected reference type";
+const char git2r_err_repo_init[] = "Error in '%s': Unable to init repository";
 const char git2r_err_revparse_single[] = "Expected commit, tag or tree";
 const char git2r_err_unexpected_config_level[] = "Unexpected config level";
 const char git2r_err_unexpected_type_of_branch[] = "Unexpected type of branch";

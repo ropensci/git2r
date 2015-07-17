@@ -23,11 +23,17 @@
  * Error messages
  */
 extern const char git2r_err_alloc_memory_buffer[];
+extern const char git2r_err_branch_not_local[];
+extern const char git2r_err_branch_not_remote[];
 extern const char git2r_err_checkout_tree[];
 extern const char git2r_err_from_libgit2[];
 extern const char git2r_err_invalid_refname[];
+extern const char git2r_err_invalid_remote[];
 extern const char git2r_err_invalid_repository[];
 extern const char git2r_err_nothing_added_to_commit[];
+extern const char git2r_err_object_type[];
+extern const char git2r_err_reference[];
+extern const char git2r_err_repo_init[];
 extern const char git2r_err_revparse_single[];
 extern const char git2r_err_unexpected_config_level[];
 extern const char git2r_err_unexpected_head_of_branch[];

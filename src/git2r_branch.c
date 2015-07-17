@@ -409,7 +409,7 @@ SEXP git2r_branch_upstream_canonical_name(SEXP branch)
 
     type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
     if (GIT_BRANCH_LOCAL != type)
-        git2r_error("Error in '%s': 'branch' is not local", __func__, NULL);
+        git2r_error(git2r_err_branch_not_local, __func__, NULL);
 
     repo = GET_SLOT(branch, Rf_install("repo"));
     repository = git2r_repository_open(repo);
@@ -471,7 +471,7 @@ SEXP git2r_branch_remote_name(SEXP branch)
 
     type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
     if (GIT_BRANCH_REMOTE != type)
-        git2r_error("Error in '%s': 'branch' is not remote", __func__, NULL);
+        git2r_error(git2r_err_branch_not_remote, __func__, NULL);
 
     repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
     if (!repository)
@@ -530,7 +530,7 @@ SEXP git2r_branch_remote_url(SEXP branch)
 
     type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
     if (GIT_BRANCH_REMOTE != type)
-        git2r_error("Error in '%s': 'branch' is not remote", __func__, NULL);
+        git2r_error(git2r_err_branch_not_remote, __func__, NULL);
 
     repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
     if (!repository)

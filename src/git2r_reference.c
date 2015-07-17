@@ -54,7 +54,7 @@ void git2r_reference_init(git_reference *source, SEXP dest)
             mkString(git_reference_symbolic_target(source)));
         break;
     default:
-        git2r_error("Error in '%s': Unexpected reference type", __func__, NULL);
+        git2r_error(git2r_err_reference, __func__, NULL);
     }
 }
 
