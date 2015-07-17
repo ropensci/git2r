@@ -43,9 +43,9 @@ SEXP git2r_checkout_tree(SEXP repo, SEXP revision, SEXP force)
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
 
     if (git2r_arg_check_string(revision))
-        git2r_error(git2r_err_string_arg, __func__, "revision");
+        git2r_error(__func__, NULL, "'revision'", git2r_err_string_arg);
     if (git2r_arg_check_logical(force))
-        git2r_error(git2r_err_logical_arg, __func__, "force");
+        git2r_error(__func__, NULL, "'force'", git2r_err_logical_arg);
 
     repository = git2r_repository_open(repo);
     if (!repository)

@@ -44,7 +44,7 @@ SEXP git2r_object_lookup(SEXP repo, SEXP sha)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_sha(sha))
-        git2r_error(git2r_err_sha_arg, __func__, "sha");
+        git2r_error(__func__, NULL, "'sha'", git2r_err_sha_arg);
 
     repository = git2r_repository_open(repo);
     if (!repository)

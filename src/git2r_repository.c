@@ -241,9 +241,9 @@ SEXP git2r_repository_init(SEXP path, SEXP bare)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_string(path))
-        git2r_error(git2r_err_string_arg, __func__, "path");
+        git2r_error(__func__, NULL, "'path'", git2r_err_string_arg);
     if (git2r_arg_check_logical(bare))
-        git2r_error(git2r_err_logical_arg, __func__, "bare");
+        git2r_error(__func__, NULL, "'bare'", git2r_err_logical_arg);
 
     err = git_repository_init(&repository,
                               CHAR(STRING_ELT(path, 0)),
@@ -392,7 +392,7 @@ SEXP git2r_repository_can_open(SEXP path)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_string(path))
-        git2r_error(git2r_err_string_arg, __func__, "path");
+        git2r_error(__func__, NULL, "'path'", git2r_err_string_arg);
 
     can_open = git_repository_open(&repository, CHAR(STRING_ELT(path, 0)));
     if (repository)
@@ -421,7 +421,7 @@ SEXP git2r_repository_set_head(SEXP repo, SEXP ref_name)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_string(ref_name))
-        git2r_error(git2r_err_string_arg, __func__, "ref_name");
+        git2r_error(__func__, NULL, "'ref_name'", git2r_err_string_arg);
     if (!git_reference_is_valid_name(CHAR(STRING_ELT(ref_name, 0))))
         git2r_error(git2r_err_invalid_refname, __func__, NULL);
 
@@ -455,7 +455,7 @@ SEXP git2r_repository_set_head_detached(SEXP commit)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_commit(commit))
-        git2r_error(git2r_err_commit_arg, __func__, "commit");
+        git2r_error(__func__, NULL, "'commit'", git2r_err_commit_arg);
 
     repository = git2r_repository_open(GET_SLOT(commit, Rf_install("repo")));
     if (!repository)
@@ -530,7 +530,7 @@ SEXP git2r_repository_discover(SEXP path)
     git_buf buf = GIT_BUF_INIT;
 
     if (git2r_arg_check_string(path))
-        git2r_error(git2r_err_string_arg, __func__, "path");
+        git2r_error(__func__, NULL, "'path'", git2r_err_string_arg);
 
     /* note that across_fs (arg #3) is set to 0 so this will stop when
      * a filesystem device change is detected while exploring parent

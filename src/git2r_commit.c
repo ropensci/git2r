@@ -294,11 +294,11 @@ SEXP git2r_commit(
     git_commit *commit = NULL;
 
     if (git2r_arg_check_string(message))
-        git2r_error(git2r_err_string_arg, __func__, "message");
+        git2r_error(__func__, NULL, "'message'", git2r_err_string_arg);
     if (git2r_arg_check_signature(author))
-        git2r_error(git2r_err_signature_arg, __func__, "author");
+        git2r_error(__func__, NULL, "'author'", git2r_err_signature_arg);
     if (git2r_arg_check_signature(committer))
-        git2r_error(git2r_err_signature_arg, __func__, "committer");
+        git2r_error(__func__, NULL, "'committer'", git2r_err_signature_arg);
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -399,7 +399,7 @@ SEXP git2r_commit_tree(SEXP commit)
     git_tree *tree = NULL;
 
     if (git2r_arg_check_commit(commit))
-        git2r_error(git2r_err_commit_arg, __func__, "commit");
+        git2r_error(__func__, NULL, "'commit'", git2r_err_commit_arg);
 
     repo = GET_SLOT(commit, Rf_install("repo"));
     repository = git2r_repository_open(repo);
@@ -491,7 +491,7 @@ SEXP git2r_commit_parent_list(SEXP commit)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_commit(commit))
-        git2r_error(git2r_err_commit_arg, __func__, "commit");
+        git2r_error(__func__, NULL, "'commit'", git2r_err_commit_arg);
 
     repo = GET_SLOT(commit, Rf_install("repo"));
     repository = git2r_repository_open(repo);

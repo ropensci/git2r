@@ -51,7 +51,7 @@ SEXP git2r_stash_drop(SEXP repo, SEXP index)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_integer_gte_zero(index))
-        git2r_error(git2r_err_integer_gte_zero_arg, __func__, "index");
+        git2r_error(__func__, NULL, "'index'", git2r_err_integer_gte_zero_arg);
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -209,13 +209,13 @@ SEXP git2r_stash_save(
     git_signature *c_stasher = NULL;
 
     if (git2r_arg_check_logical(index))
-        git2r_error(git2r_err_logical_arg, __func__, "index");
+        git2r_error(__func__, NULL, "'index'", git2r_err_logical_arg);
     if (git2r_arg_check_logical(untracked))
-        git2r_error(git2r_err_logical_arg, __func__, "untracked");
+        git2r_error(__func__, NULL, "'untracked'", git2r_err_logical_arg);
     if (git2r_arg_check_logical(ignored))
-        git2r_error(git2r_err_logical_arg, __func__, "ignored");
+        git2r_error(__func__, NULL, "'ignored'", git2r_err_logical_arg);
     if (git2r_arg_check_signature(stasher))
-        git2r_error(git2r_err_signature_arg, __func__, "stasher");
+        git2r_error(__func__, NULL, "'stasher'", git2r_err_signature_arg);
 
     repository = git2r_repository_open(repo);
     if (!repository)

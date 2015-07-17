@@ -45,9 +45,9 @@ SEXP git2r_reset(SEXP commit, SEXP reset_type)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_commit(commit))
-        git2r_error(git2r_err_commit_arg, __func__, "commit");
+        git2r_error(__func__, NULL, "'commit'", git2r_err_commit_arg);
     if (git2r_arg_check_integer(reset_type))
-        git2r_error(git2r_err_integer_arg, __func__, "reset_type");
+        git2r_error(__func__, NULL, "'reset_type'", git2r_err_integer_arg);
 
     repo = GET_SLOT(commit, Rf_install("repo"));
     repository = git2r_repository_open(repo);

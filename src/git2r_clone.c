@@ -90,17 +90,17 @@ SEXP git2r_clone(
     git2r_transfer_data payload = GIT2R_TRANSFER_DATA_INIT;
 
     if (git2r_arg_check_string(url))
-        git2r_error(git2r_err_string_arg, __func__, "url");
+        git2r_error(__func__, NULL, "'url'", git2r_err_string_arg);
     if (git2r_arg_check_string(local_path))
-        git2r_error(git2r_err_string_arg, __func__, "local_path");
+        git2r_error(__func__, NULL, "'local_path'", git2r_err_string_arg);
     if (git2r_arg_check_logical(bare))
-        git2r_error(git2r_err_logical_arg, __func__, "bare");
+        git2r_error(__func__, NULL, "'bare'", git2r_err_logical_arg);
     if (branch != R_NilValue && git2r_arg_check_string(branch))
-        git2r_error(git2r_err_string_arg, __func__, "branch");
+        git2r_error(__func__, NULL, "'branch'", git2r_err_string_arg);
     if (git2r_arg_check_credentials(credentials))
-        git2r_error(git2r_err_credentials_arg, __func__, "credentials");
+        git2r_error(__func__, NULL, "'credentials'", git2r_err_credentials_arg);
     if (git2r_arg_check_logical(progress))
-        git2r_error(git2r_err_logical_arg, __func__, "progress");
+        git2r_error(__func__, NULL, "'progress'", git2r_err_logical_arg);
 
     checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE;
     clone_opts.checkout_opts = checkout_opts;

@@ -39,7 +39,7 @@ SEXP git2r_blob_content(SEXP blob)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_blob(blob))
-        git2r_error(git2r_err_blob_arg, __func__, "blob");
+        git2r_error(__func__, NULL, "'blob'", git2r_err_blob_arg);
 
     repository = git2r_repository_open(GET_SLOT(blob, Rf_install("repo")));
     if (!repository)
@@ -89,7 +89,7 @@ SEXP git2r_blob_create_fromdisk(SEXP repo, SEXP path)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_string_vec(path))
-        git2r_error(git2r_err_string_vec_arg, __func__, "path");
+        git2r_error(__func__, NULL, "'path'", git2r_err_string_vec_arg);
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -153,7 +153,7 @@ SEXP git2r_blob_create_fromworkdir(SEXP repo, SEXP relative_path)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_string_vec(relative_path))
-        git2r_error(git2r_err_string_vec_arg, __func__, "relative_path");
+        git2r_error(__func__, NULL, "'relative_path'", git2r_err_string_vec_arg);
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -230,7 +230,7 @@ SEXP git2r_blob_is_binary(SEXP blob)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_blob(blob))
-        git2r_error(git2r_err_blob_arg, __func__, "blob");
+        git2r_error(__func__, NULL, "'blob'", git2r_err_blob_arg);
 
     repository= git2r_repository_open(GET_SLOT(blob, Rf_install("repo")));
     if (!repository)
@@ -281,7 +281,7 @@ SEXP git2r_blob_rawsize(SEXP blob)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_blob(blob))
-        git2r_error(git2r_err_blob_arg, __func__, "blob");
+        git2r_error(__func__, NULL, "'blob'", git2r_err_blob_arg);
 
     repository= git2r_repository_open(GET_SLOT(blob, Rf_install("repo")));
     if (!repository)

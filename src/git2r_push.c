@@ -70,11 +70,11 @@ SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP credentials)
     git2r_transfer_data payload = GIT2R_TRANSFER_DATA_INIT;
 
     if (git2r_arg_check_string(name))
-        git2r_error(git2r_err_string_arg, __func__, "name");
+        git2r_error(__func__, NULL, "'name'", git2r_err_string_arg);
     if (git2r_arg_check_string_vec(refspec))
-        git2r_error(git2r_err_string_vec_arg, __func__, "refspec");
+        git2r_error(__func__, NULL, "'refspec'", git2r_err_string_vec_arg);
     if (git2r_arg_check_credentials(credentials))
-        git2r_error(git2r_err_credentials_arg, __func__, "credentials");
+        git2r_error(__func__, NULL, "'credentials'", git2r_err_credentials_arg);
 
     if (git2r_nothing_to_push(refspec))
         return R_NilValue;

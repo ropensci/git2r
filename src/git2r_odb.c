@@ -41,7 +41,7 @@ SEXP git2r_odb_hash(SEXP data)
     git_oid oid;
 
     if (git2r_arg_check_string_vec(data))
-        git2r_error(git2r_err_string_vec_arg, __func__, "data");
+        git2r_error(__func__, NULL, "'data'", git2r_err_string_vec_arg);
 
     len = length(data);
     PROTECT(result = allocVector(STRSXP, len));
@@ -86,7 +86,7 @@ SEXP git2r_odb_hashfile(SEXP path)
     git_oid oid;
 
     if (git2r_arg_check_string_vec(path))
-        git2r_error(git2r_err_string_vec_arg, __func__, "path");
+        git2r_error(__func__, NULL, "'path'", git2r_err_string_vec_arg);
 
     len = length(path);
     PROTECT(result = allocVector(STRSXP, len));

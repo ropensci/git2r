@@ -75,29 +75,29 @@ SEXP git2r_diff(SEXP repo, SEXP tree1, SEXP tree2, SEXP index, SEXP filename)
     int c_index;
 
     if (git2r_arg_check_logical(index))
-        git2r_error(git2r_err_logical_arg, __func__, "index");
+        git2r_error(__func__, NULL, "'index'", git2r_err_logical_arg);
 
     c_index = LOGICAL(index)[0];
 
     if (isNull(tree1) && ! c_index) {
 	if (!isNull(tree2))
-	    git2r_error(git2r_err_diff_arg, __func__, NULL);
+	    git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
 	return git2r_diff_index_to_wd(repo, filename);
     } else if (isNull(tree1) && c_index) {
 	if (!isNull(tree2))
-	    git2r_error(git2r_err_diff_arg, __func__, NULL);
+	    git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
 	return git2r_diff_head_to_index(repo, filename);
     } else if (!isNull(tree1) && isNull(tree2) && ! c_index) {
 	if (!isNull(repo))
-	    git2r_error(git2r_err_diff_arg, __func__, NULL);
+	    git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
 	return git2r_diff_tree_to_wd(tree1, filename);
     } else if (!isNull(tree1) && isNull(tree2) && c_index) {
 	if (!isNull(repo))
-	    git2r_error(git2r_err_diff_arg, __func__, NULL);
+	    git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
 	return git2r_diff_tree_to_index(tree1, filename);
     } else {
 	if (!isNull(repo))
-	    git2r_error(git2r_err_diff_arg, __func__, NULL);
+	    git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
 	return git2r_diff_tree_to_tree(tree1, tree2, filename);
     }
 }
@@ -124,7 +124,7 @@ SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename)
     SEXP result = R_NilValue;
 
     if (git2r_arg_check_filename(filename))
-        git2r_error(git2r_err_filename_arg, __func__, "filename");
+        git2r_error(__func__, NULL, "'filename'", git2r_err_filename_arg);
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -186,7 +186,7 @@ SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
     SEXP result = R_NilValue;
 
     if (git2r_arg_check_filename(filename))
-        git2r_error(git2r_err_filename_arg, __func__, "filename");
+        git2r_error(__func__, NULL, "'filename'", git2r_err_filename_arg);
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -266,9 +266,9 @@ SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
     SEXP repo;
 
     if (git2r_arg_check_tree(tree))
-        git2r_error(git2r_err_tree_arg, __func__, "tree");
+        git2r_error(__func__, NULL, "'tree'", git2r_err_tree_arg);
     if (git2r_arg_check_filename(filename))
-        git2r_error(git2r_err_filename_arg, __func__, "filename");
+        git2r_error(__func__, NULL, "'filename'", git2r_err_filename_arg);
 
     repo = GET_SLOT(tree, Rf_install("repo"));
     repository = git2r_repository_open(repo);
@@ -344,9 +344,9 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
     SEXP repo;
 
     if (git2r_arg_check_tree(tree))
-        git2r_error(git2r_err_tree_arg, __func__, "tree");
+        git2r_error(__func__, NULL, "'tree'", git2r_err_tree_arg);
     if (git2r_arg_check_filename(filename))
-        git2r_error(git2r_err_filename_arg, __func__, "filename");
+        git2r_error(__func__, NULL, "'filename'", git2r_err_filename_arg);
 
     repo = GET_SLOT(tree, Rf_install("repo"));
     repository = git2r_repository_open(repo);
@@ -428,11 +428,11 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
     SEXP sha1, sha2;
 
     if (git2r_arg_check_tree(tree1))
-        git2r_error(git2r_err_tree_arg, __func__, "tree1");
+        git2r_error(__func__, NULL, "'tree1'", git2r_err_tree_arg);
     if (git2r_arg_check_tree(tree2))
-        git2r_error(git2r_err_tree_arg, __func__, "tree2");
+        git2r_error(__func__, NULL, "'tree2'", git2r_err_tree_arg);
     if (git2r_arg_check_filename(filename))
-        git2r_error(git2r_err_filename_arg, __func__, "filename");
+        git2r_error(__func__, NULL, "'filename'", git2r_err_filename_arg);
 
     /* We already checked that tree2 is from the same repo, in R */
     repo = GET_SLOT(tree1, Rf_install("repo"));

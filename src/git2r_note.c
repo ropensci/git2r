@@ -112,17 +112,17 @@ SEXP git2r_note_create(
     git_repository *repository = NULL;
 
     if (git2r_arg_check_sha(sha))
-        git2r_error(git2r_err_sha_arg, __func__, "sha");
+        git2r_error(__func__, NULL, "'sha'", git2r_err_sha_arg);
     if (git2r_arg_check_string(message))
-        git2r_error(git2r_err_string_arg, __func__, "message");
+        git2r_error(__func__, NULL, "'message'", git2r_err_string_arg);
     if (git2r_arg_check_string(ref))
-        git2r_error(git2r_err_string_arg, __func__, "ref");
+        git2r_error(__func__, NULL, "'ref'", git2r_err_string_arg);
     if (git2r_arg_check_signature(author))
-        git2r_error(git2r_err_signature_arg, __func__, "author");
+        git2r_error(__func__, NULL, "'author'", git2r_err_signature_arg);
     if (git2r_arg_check_signature(committer))
-        git2r_error(git2r_err_signature_arg, __func__, "committer");
+        git2r_error(__func__, NULL, "'committer'", git2r_err_signature_arg);
     if (git2r_arg_check_logical(force))
-        git2r_error(git2r_err_logical_arg, __func__, "force");
+        git2r_error(__func__, NULL, "'force'", git2r_err_logical_arg);
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -281,7 +281,7 @@ SEXP git2r_notes(SEXP repo, SEXP ref)
 
     if (R_NilValue != ref) {
         if (git2r_arg_check_string(ref))
-            git2r_error(git2r_err_string_arg, __func__, "ref");
+            git2r_error(__func__, NULL, "'ref'", git2r_err_string_arg);
     }
 
     repository = git2r_repository_open(repo);
@@ -354,11 +354,11 @@ SEXP git2r_note_remove(SEXP note, SEXP author, SEXP committer)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_note(note))
-        git2r_error(git2r_err_note_arg, __func__, "note");
+        git2r_error(__func__, NULL, "'note'", git2r_err_note_arg);
     if (git2r_arg_check_signature(author))
-        git2r_error(git2r_err_signature_arg, __func__, "author");
+        git2r_error(__func__, NULL, "'author'", git2r_err_signature_arg);
     if (git2r_arg_check_signature(committer))
-        git2r_error(git2r_err_signature_arg, __func__, "committer");
+        git2r_error(__func__, NULL, "'committer'", git2r_err_signature_arg);
 
     repo = GET_SLOT(note, Rf_install("repo"));
     repository = git2r_repository_open(repo);

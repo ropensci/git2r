@@ -42,9 +42,9 @@ SEXP git2r_index_add_all(SEXP repo, SEXP path, SEXP force)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_string_vec(path))
-        git2r_error(git2r_err_string_vec_arg, __func__, "path");
+        git2r_error(__func__, NULL, "'path'", git2r_err_string_vec_arg);
     if (git2r_arg_check_logical(force))
-        git2r_error(git2r_err_logical_arg, __func__, "force");
+        git2r_error(__func__, NULL, "'force'", git2r_err_logical_arg);
 
     repository= git2r_repository_open(repo);
     if (!repository)
@@ -118,7 +118,7 @@ SEXP git2r_index_remove_bypath(SEXP repo, SEXP path)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_string_vec(path))
-        git2r_error(git2r_err_string_vec_arg, __func__, "path");
+        git2r_error(__func__, NULL, "'path'", git2r_err_string_vec_arg);
 
     repository= git2r_repository_open(repo);
     if (!repository)

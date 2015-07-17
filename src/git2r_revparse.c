@@ -42,7 +42,7 @@ SEXP git2r_revparse_single(SEXP repo, SEXP revision)
     git_object *treeish = NULL;
 
     if (git2r_arg_check_string(revision))
-        git2r_error(git2r_err_string_arg, __func__, "revision");
+        git2r_error(__func__, NULL, "'revision'", git2r_err_string_arg);
 
     repository = git2r_repository_open(repo);
     if (!repository)

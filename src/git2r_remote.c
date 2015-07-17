@@ -43,9 +43,9 @@ SEXP git2r_remote_add(SEXP repo, SEXP name, SEXP url)
     git_remote *remote = NULL;
 
     if (git2r_arg_check_string(name))
-        git2r_error(git2r_err_string_arg, __func__, "name");
+        git2r_error(__func__, NULL, "'name'", git2r_err_string_arg);
     if (git2r_arg_check_string(url))
-        git2r_error(git2r_err_string_arg, __func__, "url");
+        git2r_error(__func__, NULL, "'url'", git2r_err_string_arg);
 
     if (!git_remote_is_valid_name(CHAR(STRING_ELT(name, 0))))
 	git2r_error(git2r_err_invalid_remote, __func__, NULL);
@@ -95,11 +95,11 @@ SEXP git2r_remote_fetch(
     git2r_transfer_data payload = GIT2R_TRANSFER_DATA_INIT;
 
     if (git2r_arg_check_string(name))
-        git2r_error(git2r_err_string_arg, __func__, "name");
+        git2r_error(__func__, NULL, "'name'", git2r_err_string_arg);
     if (git2r_arg_check_credentials(credentials))
-        git2r_error(git2r_err_credentials_arg, __func__, "credentials");
+        git2r_error(__func__, NULL, "'credentials'", git2r_err_credentials_arg);
     if (git2r_arg_check_string(msg))
-        git2r_error(git2r_err_string_arg, __func__, "msg");
+        git2r_error(__func__, NULL, "'msg'", git2r_err_string_arg);
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -203,7 +203,7 @@ SEXP git2r_remote_remove(SEXP repo, SEXP name)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_string(name))
-        git2r_error(git2r_err_string_arg, __func__, "name");
+        git2r_error(__func__, NULL, "'name'", git2r_err_string_arg);
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -235,9 +235,9 @@ SEXP git2r_remote_rename(SEXP repo, SEXP oldname, SEXP newname)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_string(oldname))
-        git2r_error(git2r_err_string_arg, __func__, "oldname");
+        git2r_error(__func__, NULL, "'oldname'", git2r_err_string_arg);
     if (git2r_arg_check_string(newname))
-        git2r_error(git2r_err_string_arg, __func__, "newname");
+        git2r_error(__func__, NULL, "'newname'", git2r_err_string_arg);
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -282,7 +282,7 @@ SEXP git2r_remote_url(SEXP repo, SEXP remote)
     git_repository *repository = NULL;
 
     if (git2r_arg_check_string_vec(remote))
-        git2r_error(git2r_err_string_vec_arg, __func__, "remote");
+        git2r_error(__func__, NULL, "'remote'", git2r_err_string_vec_arg);
 
     repository = git2r_repository_open(repo);
     if (!repository)

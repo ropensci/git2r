@@ -75,13 +75,13 @@ SEXP git2r_revwalk_list(
     git_repository *repository = NULL;
 
     if (git2r_arg_check_logical(topological))
-        git2r_error(git2r_err_logical_arg, __func__, "topological");
+        git2r_error(__func__, NULL, "'topological'", git2r_err_logical_arg);
     if (git2r_arg_check_logical(time))
-        git2r_error(git2r_err_logical_arg, __func__, "time");
+        git2r_error(__func__, NULL, "'time'", git2r_err_logical_arg);
     if (git2r_arg_check_logical(reverse))
-        git2r_error(git2r_err_logical_arg, __func__, "reverse");
+        git2r_error(__func__, NULL, "'reverse'", git2r_err_logical_arg);
     if (git2r_arg_check_integer(max_n))
-        git2r_error(git2r_err_integer_arg, __func__, "max_n");
+        git2r_error(__func__, NULL, "'max_n'", git2r_err_integer_arg);
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -187,11 +187,11 @@ SEXP git2r_revwalk_contributions(
     git_repository *repository = NULL;
 
     if (git2r_arg_check_logical(topological))
-        git2r_error(git2r_err_logical_arg, __func__, "topological");
+        git2r_error(__func__, NULL, "'topological'", git2r_err_logical_arg);
     if (git2r_arg_check_logical(time))
-        git2r_error(git2r_err_logical_arg, __func__, "time");
+        git2r_error(__func__, NULL, "'time'", git2r_err_logical_arg);
     if (git2r_arg_check_logical(reverse))
-        git2r_error(git2r_err_logical_arg, __func__, "reverse");
+        git2r_error(__func__, NULL, "'reverse'", git2r_err_logical_arg);
 
     repository = git2r_repository_open(repo);
     if (!repository)

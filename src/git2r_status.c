@@ -364,13 +364,13 @@ SEXP git2r_status_list(
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
 
     if (git2r_arg_check_logical(staged))
-        git2r_error(git2r_err_logical_arg, __func__, "staged");
+        git2r_error(__func__, NULL, "'staged'", git2r_err_logical_arg);
     if (git2r_arg_check_logical(unstaged))
-        git2r_error(git2r_err_logical_arg, __func__, "unstaged");
+        git2r_error(__func__, NULL, "'unstaged'", git2r_err_logical_arg);
     if (git2r_arg_check_logical(untracked))
-        git2r_error(git2r_err_logical_arg, __func__, "untracked");
+        git2r_error(__func__, NULL, "'untracked'", git2r_err_logical_arg);
     if (git2r_arg_check_logical(ignored))
-        git2r_error(git2r_err_logical_arg, __func__, "ignored");
+        git2r_error(__func__, NULL, "'ignored'", git2r_err_logical_arg);
 
     repository = git2r_repository_open(repo);
     if (!repository)
