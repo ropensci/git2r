@@ -18,6 +18,7 @@
 
 #include <Rdefines.h>
 #include "git2.h"
+#include "common.h"
 
 #include "git2r_arg.h"
 #include "git2r_cred.h"
@@ -73,6 +74,42 @@ SEXP git2r_remote_add(SEXP repo, SEXP name, SEXP url)
 }
 
 /**
+ * Each time a reference is updated locally, this function will be
+ * called with information about it.
+ *
+ * Based on the libgit2 network/fetch.c example.
+ *
+ * @refname The name of the remote
+ * @a The previous position of branch
+ * @b The new position of branch
+ * @data Callback data. Not used.
+ * @return 0
+ */
+static int git2r_update_tips_cb(
+    const char *refname,
+    const git_oid *a,
+    const git_oid *b,
+    void *data)
+{
+    char a_str[GIT_OID_HEXSZ + 1], b_str[GIT_OID_HEXSZ + 1];
+
+    GIT_UNUSED(data);
+
+    git_oid_fmt(b_str, b);
+    b_str[GIT_OID_HEXSZ] = '\0';
+
+    if (git_oid_iszero(a)) {
+        Rprintf("[new]     %.20s %s\n", b_str, refname);
+    } else {
+        git_oid_fmt(a_str, a);
+        a_str[GIT_OID_HEXSZ] = '\0';
+        Rprintf("[updated] %.10s..%.10s %s\n", a_str, b_str, refname);
+    }
+
+    return 0;
+}
+
+/**
  * Fetch new data and update tips
  *
  * @param repo S4 class git_repository
@@ -113,6 +150,7 @@ SEXP git2r_remote_fetch(
     payload.credentials = credentials;
     fetch_opts.callbacks.payload = &payload;
     fetch_opts.callbacks.credentials = &git2r_cred_acquire_cb;
+    fetch_opts.callbacks.update_tips = &git2r_update_tips_cb;
     err = git_remote_fetch(remote, NULL, &fetch_opts, CHAR(STRING_ELT(msg, 0)));
     if (err)
         goto cleanup;
