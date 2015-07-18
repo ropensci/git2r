@@ -11,6 +11,7 @@ install:
         md C:\Rextsoft
         Invoke-WebRequest http://www.stats.ox.ac.uk/pub/Rtools/goodies/multilib/local320.zip -OutFile "C:\Rextsoft\local320.zip"
         7z x C:\Rextsoft\local320.zip -oC:\Rextsoft -r
+        Rscript -e "m <- readLines(paste0('${RDrive}', '/R/etc/i386/Makeconf'));cat(m)"
 
 build_script:
   - travis-tool.sh install_deps
