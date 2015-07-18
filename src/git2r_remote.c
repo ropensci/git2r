@@ -54,10 +54,11 @@ SEXP git2r_remote_add(SEXP repo, SEXP name, SEXP url)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git_remote_create(&remote,
-			    repository,
-			    CHAR(STRING_ELT(name, 0)),
-			    CHAR(STRING_ELT(url, 0)));
+    err = git_remote_create(
+        &remote,
+        repository,
+        CHAR(STRING_ELT(name, 0)),
+        CHAR(STRING_ELT(url, 0)));
 
     if (remote)
 	git_remote_free(remote);
