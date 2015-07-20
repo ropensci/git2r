@@ -230,10 +230,11 @@ SEXP git2r_branch_is_head(SEXP branch)
 
     name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
 
-    err = git_branch_lookup(&reference,
-                            repository,
-                            name,
-                            INTEGER(GET_SLOT(branch, Rf_install("type")))[0]);
+    err = git_branch_lookup(
+        &reference,
+        repository,
+        name,
+        INTEGER(GET_SLOT(branch, Rf_install("type")))[0]);
     if (err)
         goto cleanup;
 
@@ -482,9 +483,10 @@ SEXP git2r_branch_remote_name(SEXP branch)
     if (err)
         goto cleanup;
 
-    err = git_branch_remote_name(&buf,
-                                 repository,
-                                 git_reference_name(reference));
+    err = git_branch_remote_name(
+        &buf,
+        repository,
+        git_reference_name(reference));
     if (err)
         goto cleanup;
 
@@ -541,9 +543,10 @@ SEXP git2r_branch_remote_url(SEXP branch)
     if (err)
         goto cleanup;
 
-    err = git_branch_remote_name(&buf,
-                                 repository,
-                                 git_reference_name(reference));
+    err = git_branch_remote_name(
+        &buf,
+        repository,
+        git_reference_name(reference));
     if (err)
         goto cleanup;
 
