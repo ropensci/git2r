@@ -18,9 +18,59 @@
 
 #include <Rdefines.h>
 #include "git2.h"
+
+#include "git2r_arg.h"
 #include "git2r_error.h"
 #include "git2r_reference.h"
 #include "git2r_repository.h"
+
+/**
+ * Lookup the full name of a reference by DWIMing its short name
+ *
+ * @param repo S4 class git_repository
+ * @param shorthand The short name for the reference
+ * @return Character vector of length one with the full name of the
+ * reference
+ */
+SEXP git2r_reference_dwim(SEXP repo, SEXP shorthand)
+{
+    int err;
+    SEXP result = R_NilValue;
+    git_reference* reference = NULL;
+    git_repository *repository = NULL;
+
+    if (git2r_arg_check_string(shorthand))
+        git2r_error(__func__, NULL, "'shorthand'", git2r_err_string_arg);
+
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
+
+    err = git_reference_dwim(
+        &reference,
+        repository,
+        CHAR(STRING_ELT(shorthand, 0)));
+    if (err)
+        goto cleanup;
+
+    PROTECT(result = allocVector(STRSXP, 1));
+    SET_STRING_ELT(result, 0, mkChar(git_reference_name(reference)));
+
+cleanup:
+    if (reference)
+        git_reference_free(reference);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
+    if (err)
+        git2r_error(__func__, giterr_last(), NULL, NULL);
+
+    return result;
+}
 
 /**
  * Init slots in S4 class git_reference.

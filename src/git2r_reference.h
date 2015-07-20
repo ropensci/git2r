@@ -22,6 +22,7 @@
 #include <R.h>
 #include <Rinternals.h>
 
+SEXP git2r_reference_dwim(SEXP repo, SEXP shorthand);
 void git2r_reference_init(git_reference *source, SEXP dest);
 SEXP git2r_reference_list(SEXP repo);
 
