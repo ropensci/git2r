@@ -430,12 +430,16 @@ SEXP git2r_branch_upstream_canonical_name(SEXP branch)
     if (err)
         goto cleanup;
 
-    git_config_get_string(&name, cfg, buf.ptr);
-    git_buf_free(&buf);
+    err = git_config_get_string(&name, cfg, buf.ptr);
+    if (err)
+        goto cleanup;
+
     PROTECT(result = allocVector(STRSXP, 1));
     SET_STRING_ELT(result, 0, mkChar(name));
 
 cleanup:
+    git_buf_free(&buf);
+
     if (cfg)
         git_config_free(cfg);
 
