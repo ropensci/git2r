@@ -339,3 +339,56 @@ cleanup:
 
     return R_NilValue;
 }
+
+/**
+ * Get the value of a string config variable
+ *
+ * @param repo S4 class git_repository
+ * @param name The name of the variable
+ * @return If the variable exists, a character vector of length one
+ * with the value, else R_NilValue.
+ */
+SEXP git2r_config_get_string(SEXP repo, SEXP name)
+{
+    int err;
+    SEXP result = R_NilValue;
+    const char *value;
+    git_config *cfg = NULL;
+    git_repository *repository = NULL;
+
+    if (git2r_arg_check_string(name))
+        git2r_error(__func__, NULL, "'name'", git2r_err_string_arg);
+
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
+
+    err = git_repository_config_snapshot(&cfg, repository);
+    if (err)
+        goto cleanup;
+
+    err = git_config_get_string(&value, cfg, CHAR(STRING_ELT(name, 0)));
+    if (err) {
+        if (err == GIT_ENOTFOUND)
+            err = 0;
+        goto cleanup;
+    }
+
+    PROTECT(result = allocVector(STRSXP, 1));
+    SET_STRING_ELT(result, 0, mkChar(value));
+
+cleanup:
+    if (cfg)
+        git_config_free(cfg);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (R_NilValue != result)
+        UNPROTECT(1);
+
+    if (err)
+        git2r_error(__func__, giterr_last(), NULL, NULL);
+
+    return result;
+}

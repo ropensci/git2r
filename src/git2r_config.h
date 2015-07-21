@@ -23,6 +23,7 @@
 #include <Rinternals.h>
 
 SEXP git2r_config_get(SEXP repo);
+SEXP git2r_config_get_string(SEXP repo, SEXP name);
 SEXP git2r_config_set(SEXP repo, SEXP variables);
 
 #endif
