@@ -47,6 +47,7 @@ Collate:
     'plot.r'
     'pull.r'
     'punch_card.r'
+    'refspec.r'
     'push.r'
     'reference.r'
     'reflog.r'
