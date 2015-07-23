@@ -28,5 +28,24 @@ get_refspec <- function(repo = NULL, remote = NULL, spec = NULL)
     if (is_detached(repo))
         stop("You are not currently on a branch.")
 
+    ## From: http://git-scm.com/docs/git-push
+    ## When the command line does not specify where to push with the
+    ## <repository> argument, branch.*.remote configuration for the
+    ## current branch is consulted to determine where to push. If the
+    ## configuration is missing, it defaults to origin.
+    if (!is.null(remote)) {
+        stopifnot(is.character(remote), identical(length(remote), 1L))
+        remote <- sub("^[[:space:]]*", "", sub("[[:space:]]*$", "", remote))
+        if (identical(nchar(remote), 0L))
+            remote <- NULL
+    }
+    if (is.null(remote)) {
+        remote <- .Call(git2r_config_get_string,
+                        repo,
+                        paste0("branch.", git2r::head(repo)@name, ".remote"))
+        if (is.null(remote))
+            remote <- "origin"
+    }
+
     spec
 }
