@@ -103,6 +103,7 @@ Other authors in alphabetical order
 -----------------------------------
 
 Davide Libenzi  LibXDiff (src/libgit2/xdiff/*)
+Francois Pinard Common wrapper for a few potentially missing GNU programs (tools/missing)
+Isamu Hasegawa  Extended regular expression matching and search library (src/regex/*)
 Linus Torvalds  src/libgit2/date.c
 Per Bothner     Attempt to guess a canonical system name (tools/config.guess)
-Isamu Hasegawa  Extended regular expression matching and search library (src/regex/*)
