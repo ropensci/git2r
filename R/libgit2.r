@@ -47,4 +47,4 @@ libgit2_version <- function() {
 ##' @export
 ##' @examples
 ##' libgit2_sha()
-libgit2_sha <- function() "abbe17ef1ffbc264101808829a3317c1c805df96"
+libgit2_sha <- function() "4e0421fdbdd54004041797b5dd5e79597c86f447"
