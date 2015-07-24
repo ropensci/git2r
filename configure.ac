@@ -154,9 +154,28 @@ have_ssh2=no
 AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
 
 if test "x${have_ssh2}" = xyes; then
-        CPPFLAGS="${CPPFLAGS} -DGIT_SSH"
+    CPPFLAGS="${CPPFLAGS} -DGIT_SSH"
 else
-        AC_MSG_WARN([
+    # Static linking of LibSSH2 on OSX to support redistributable binary packages
+    case "${host_os}" in
+        darwin*)
+            mkdir -p libssh2 && curl -fsSL https://github.com/libssh2/libssh2/releases/download/libssh2-1.6.0/libssh2-1.6.0.tar.gz | tar xz --strip 1 -C libssh2
+            cp -f tools/missing libssh2
+            cd libssh2
+            ./configure --disable-examples-build --disable-shared && make && have_ssh2=yes
+            cd ..
+
+            if test "x${have_ssh2}" = xyes; then
+                cp -f libssh2/src/.libs/libssh2.a ./src/libssh2.a
+                CPPFLAGS="${CPPFLAGS} -DGIT_SSH -I../libssh2/include"
+                GIT2R_LIBSSH2="-L. -lssh2"
+            fi
+        ;;
+    esac
+fi
+
+if test "x${have_ssh2}" = xno; then
+    AC_MSG_WARN([
   ---------------------------------------------
    Unable to find LibSSH2 on this system.
    Building a version without support for SSH.
@@ -227,6 +246,7 @@ AC_CHECK_FUNCS([btowc clock_gettime getcwd gethostbyname gettimeofday isascii me
 
 AC_SUBST(GIT2R_SRC_HASH_GENERIC)
 AC_SUBST(GIT2R_SRC_REGEX)
+AC_SUBST(GIT2R_LIBSSH2)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LIBS)
 
