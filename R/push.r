@@ -121,12 +121,15 @@ setMethod("push",
                   dst <- .Call(git2r_branch_upstream_canonical_name, b)
                   name <- branch_remote_name(upstream)
                   refspec <- paste0(src, ":", dst)
-              } else if (any(is.null(name), is.null(refspec))) {
-                  stop("Both 'name' and 'refspec' must be 'character' or 'NULL'")
-              }
 
-              if (identical(force, TRUE))
-                  refspec <- paste0("+", refspec)
+                  if (identical(force, TRUE))
+                      refspec <- paste0("+", refspec)
+              } else {
+                  opts <- list(force = force)
+                  tmp <- get_refspec(object, name, refspec, opts)
+                  name <- tmp$remote
+                  refspec <- tmp$refspec
+              }
 
               result <- .Call(git2r_push, object, name, refspec, credentials)
 
