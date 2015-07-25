@@ -6,7 +6,7 @@
 ^README\.Rmd$
 ^configure\.ac$
 ^figure$
-^misc$
+^libssh2$
 ^patches$
 ^scripts$
 ^.xapian$
