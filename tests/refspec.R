@@ -44,7 +44,7 @@ add(repo, "test.txt")
 commit_2 <- commit(repo, "Second commit message")
 
 ## Check remote
-stopifnot(identical(git2r:::get_refspec(repo)$remote, "origin"))
+stopifnot(identical(git2r:::get_refspec(repo, spec = "master")$remote, "origin"))
 
 ## Detach
 checkout(commit_1)
