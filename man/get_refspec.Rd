@@ -4,10 +4,12 @@
 \alias{get_refspec}
 \title{Create push refspec from arguments}
 \usage{
-get_refspec(repo = NULL, remote = NULL, spec = NULL)
+get_refspec(repo = NULL, remote = NULL, spec = NULL, opts = NULL)
 }
 \arguments{
 \item{repo}{S4 class \code{git_repository}}
+
+\item{opts}{List with push options. Default is NULL.}
 
 \item{name}{The remote's name. Default is NULL.}
 

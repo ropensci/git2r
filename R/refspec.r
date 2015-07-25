@@ -19,16 +19,25 @@
 ##' @param repo S4 class \code{git_repository}
 ##' @param name The remote's name. Default is NULL.
 ##' @param refspec The refspec to be pushed. Default is NULL.
+##' @param opts List with push options. Default is NULL.
 ##' @return List with remote (character vector) and refspec (character
 ##' vector).
 ##' @keywords internal
-get_refspec <- function(repo = NULL, remote = NULL, spec = NULL)
+get_refspec <- function(repo = NULL, remote = NULL, spec = NULL, opts = NULL)
 {
     stopifnot(is(object = repo, class2 = "git_repository"))
 
     if (is_detached(repo))
         stop("You are not currently on a branch.")
 
+    ## Options:
+    if (!is.null(opts)) {
+        stopifnot(is.list(opts))
+    } else {
+        opts <- list()
+    }
+
+    ## Remote:
     ## From: http://git-scm.com/docs/git-push
     ## When the command line does not specify where to push with the
     ## <repository> argument, branch.*.remote configuration for the
@@ -47,6 +56,12 @@ get_refspec <- function(repo = NULL, remote = NULL, spec = NULL)
         if (is.null(remote))
             remote <- "origin"
     }
+
+    ## Refspec:
+    stopifnot(is.character(spec))
+
+    if (identical(opts$force, TRUE))
+        spec <- paste0("+", spec)
 
     list(remote = remote, refspec = spec)
 }
