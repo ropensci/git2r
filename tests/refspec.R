@@ -43,6 +43,9 @@ writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
 add(repo, "test.txt")
 commit_2 <- commit(repo, "Second commit message")
 
+## Check remote
+stopifnot(identical(git2r:::get_refspec(repo)$remote, "origin"))
+
 ## Detach
 checkout(commit_1)
 tools::assertError(git2r:::get_refspec(repo))

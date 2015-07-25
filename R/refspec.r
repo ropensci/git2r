@@ -19,7 +19,8 @@
 ##' @param repo S4 class \code{git_repository}
 ##' @param name The remote's name. Default is NULL.
 ##' @param refspec The refspec to be pushed. Default is NULL.
-##' @return Character vector with refspec
+##' @return List with remote (character vector) and refspec (character
+##' vector).
 ##' @keywords internal
 get_refspec <- function(repo = NULL, remote = NULL, spec = NULL)
 {
@@ -47,5 +48,5 @@ get_refspec <- function(repo = NULL, remote = NULL, spec = NULL)
             remote <- "origin"
     }
 
-    spec
+    list(remote = remote, refspec = spec)
 }

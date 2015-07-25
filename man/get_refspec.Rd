@@ -14,7 +14,8 @@ get_refspec(repo = NULL, remote = NULL, spec = NULL)
 \item{refspec}{The refspec to be pushed. Default is NULL.}
 }
 \value{
-Character vector with refspec
+List with remote (character vector) and refspec (character
+vector).
 }
 \description{
 Create push refspec from arguments
