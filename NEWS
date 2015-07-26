@@ -1,9 +1,46 @@
 git2r 0.10.1.9000
 -----------------
 
+NEW FEATURES
+
+* Add punch card plot.
+
+* Add branch argument to clone with name of the branch to checkout.
+
+* Add 'force' argument to 'add' method to add ignored files.
+
+* Add branches method with missing repo argument.
+
+* Add references method with missing repo argument.
+
+* Add tags method with missing repo argument.
+
+* Add workdir method with missing repo argument.
+
+* Add name of branch to each item in branch_list.
+
+* Add name of tag to each item in tags list.
+
+* Add S4 class 'cred_env' to pass credentials in environment
+  variables.
+
+IMPROVEMENTS
+
+* Better summary output from S4 class git_commit
+
+* Add imports to DESCRIPTION to fix CRAN notes.
+
 BUG FIXES
 
 * Fix plot function to use the repository argument 'x'
+
+* Update configuration to build on OpenBSD.
+
+* Fix checkout branch in empty repository.
+
+* Fix path argument in rm_file.
+
+* Internal refactoring of C code that raise error to prevent segfault.
 
 git2r 0.10.1
 ------------
