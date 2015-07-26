@@ -19,10 +19,15 @@
 #include <Rdefines.h>
 
 #include "git2r_arg.h"
+#include "git2r_blob.h"
+#include "git2r_commit.h"
 #include "git2r_error.h"
 #include "git2r_repository.h"
 #include "git2r_signature.h"
 #include "git2r_tag.h"
+#include "git2r_tree.h"
+
+#include "util.h"
 
 /**
  * Init slots in S4 class git_tag
@@ -148,7 +153,7 @@ typedef struct {
 /**
  * Invoked 'callback' for each tag
  *
- * @param name The name of the tag, git_oid *oid, void *payload
+ * @param name The name of the tag
  * @param oid The id of the tag
  * @param payload Payload data passed to 'git_tag_foreach'
  * @return 0 on success, else error code
@@ -156,37 +161,69 @@ typedef struct {
 static int git2r_tag_foreach_cb(const char *name, git_oid *oid, void *payload)
 {
     int err = 0;
-    git_tag *tag = NULL;
+    git_object *object = NULL;
     git2r_tag_foreach_cb_data *cb_data = (git2r_tag_foreach_cb_data*)payload;
 
     /* Check if we have a list to populate */
     if (R_NilValue != cb_data->tags) {
-        SEXP tag_item;
+        int skip = 0;
+        SEXP item;
 
-        err = git_tag_lookup(&tag, cb_data->repository, oid);
+        err = git_object_lookup(&object, cb_data->repository, oid, GIT_OBJ_ANY);
         if (err)
             goto cleanup;
 
-        SET_VECTOR_ELT(
-            cb_data->tags,
-            cb_data->n,
-            tag_item = NEW_OBJECT(MAKE_CLASS("git_tag")));
-        git2r_tag_init(tag, cb_data->repo, tag_item);
+        switch (git_object_type(object)) {
+        case GIT_OBJ_COMMIT:
+            SET_VECTOR_ELT(
+                cb_data->tags,
+                cb_data->n,
+                item = NEW_OBJECT(MAKE_CLASS("git_commit")));
+            git2r_commit_init((git_commit*)object, cb_data->repo, item);
+            break;
+        case GIT_OBJ_TREE:
+            SET_VECTOR_ELT(
+                cb_data->tags,
+                cb_data->n,
+                item = NEW_OBJECT(MAKE_CLASS("git_tree")));
+            git2r_tree_init((git_tree*)object, cb_data->repo, item);
+            break;
+        case GIT_OBJ_BLOB:
+            SET_VECTOR_ELT(
+                cb_data->tags,
+                cb_data->n,
+                item = NEW_OBJECT(MAKE_CLASS("git_blob")));
+            git2r_blob_init((git_blob*)object, cb_data->repo, item);
+            break;
+        case GIT_OBJ_TAG:
+            SET_VECTOR_ELT(
+                cb_data->tags,
+                cb_data->n,
+                item = NEW_OBJECT(MAKE_CLASS("git_tag")));
+            git2r_tag_init((git_tag*)object, cb_data->repo, item);
+            break;
+        default:
+            git2r_error(__func__, NULL, git2r_err_object_type, NULL);
+        }
+
+
+        if (git__prefixcmp(name, "refs/tags/") == 0)
+            skip = strlen("refs/tags/");
         SET_STRING_ELT(
             getAttrib(cb_data->tags, R_NamesSymbol),
             cb_data->n,
-            STRING_ELT(GET_SLOT(tag_item, Rf_install("name")), 0));
+            mkChar(name + skip));
 
-        if (tag)
-            git_tag_free(tag);
-        tag = NULL;
+        if (object)
+            git_object_free(object);
+        object = NULL;
     }
 
     cb_data->n += 1;
 
 cleanup:
-    if (tag)
-        git_tag_free(tag);
+    if (object)
+        git_object_free(object);
 
     return err;
 }
