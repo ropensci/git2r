@@ -92,3 +92,9 @@ OBJECTS.root = git2r_arg.o git2r_blame.o git2r_blob.o \
 OBJECTS = $(OBJECTS.libgit2) $(OBJECTS.libgit2.hash) $(OBJECTS.libgit2.transports) \
     $(OBJECTS.libgit2.xdiff) $(OBJECTS.libgit2.win32) $(OBJECTS.http_parser) \
     $(OBJECTS.regex) $(OBJECTS.root)
+
+all: winlibs $(OBJECTS)
+
+# Download libssh2
+winlibs:
+        "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" "../tools/winlibs.R"

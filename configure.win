@@ -1,6 +1,3 @@
 # Create import library for WinHTTP.dll
 dlltool -m i386:x86-64 --as-flags --64 --output-lib src/winhttp/libwinhttp-x64.a --def src/winhttp/winhttp-x64.def
 dlltool -k --output-lib src/winhttp/libwinhttp.a --def src/winhttp/winhttp.def
-
-# Download libssh2
-"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" "tools/winlibs.R"
