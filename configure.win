@@ -1,3 +1,23 @@
 # Create import library for WinHTTP.dll
 dlltool -m i386:x86-64 --as-flags --64 --output-lib src/winhttp/libwinhttp-x64.a --def src/winhttp/winhttp-x64.def
 dlltool -k --output-lib src/winhttp/libwinhttp.a --def src/winhttp/winhttp.def
+
+# Check for libssh2 headers and libraries
+have_ssh2=yes
+if [ ! -e src/libssh2/include/libssh2.h ]; then
+    if [ ! -e src/libssh2-win.zip ]; then
+	echo "  cannot find libssh2 files"
+	echo "  attempting to download them"
+	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" -e "setInternet2(); download.file('https://github.com/rwinlib/libssh2/archive/v1.6.0.zip', 'src/libssh2-win.zip', quiet = TRUE)"
+    fi
+    if [ ! -e src/libssh2-win.zip ]; then
+	have_ssh2=no
+    else
+	echo "  unpacking libssh2"
+	unzip src/libssh2-win.zip -d src
+	mv src/libssh2-1.6.0 src/libssh2
+        if [ ! -e src/libssh2/include/libssh2.h ]; then
+	    have_ssh2=no
+	fi
+    fi
+fi
