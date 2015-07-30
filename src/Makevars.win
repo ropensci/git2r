@@ -4,15 +4,17 @@ Z_LIB = $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" -e \
     "cat(ifelse(compareVersion(sprintf('%s.%s', R.version['major'], R.version['minor']), '3.1.2') > 0, '-lz', '-lRzlib'))")
 
 ifeq "$(WIN)" "64"
-PKG_LIBS = -L./winhttp -lws2_32 -lwinhttp-x64 -lrpcrt4 -lole32 -lcrypt32 $(Z_LIB)
-PKG_CFLAGS = -I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser -Iwin32 -Iregex \
+PKG_LIBS = -Lopenssl/lib/x64 -Llibssh2/lib/x64 -Lwinhttp -lssh2 -lssl -lcrypto -lgdi32 \
+    -lws2_32 -lwinhttp-x64 -lrpcrt4 -lole32 -lcrypt32 $(Z_LIB)
+PKG_CFLAGS = -I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser -Iwin32 -Iregex -Ilibssh2/include \
     -DWIN32 -D_WIN32_WINNT=0x0501 -D__USE_MINGW_ANSI_STDIO=1 -DGIT_WINHTTP \
-    -D_FILE_OFFSET_BITS=64 -DGIT_ARCH_64
+    -D_FILE_OFFSET_BITS=64 -DGIT_ARCH_64 -DGIT_SSH
 else
-PKG_LIBS = -L./winhttp -lws2_32 -lwinhttp -lrpcrt4 -lole32 -lcrypt32 $(Z_LIB)
-PKG_CFLAGS = -I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser -Iwin32 -Iregex \
+PKG_LIBS = -Lopenssl/lib/i386 -Llibssh2/lib/i386 -Lwinhttp -lssh2 -lssl -lcrypto -lgdi32 \
+    -lws2_32 -lwinhttp -lrpcrt4 -lole32 -lcrypt32 $(Z_LIB)
+PKG_CFLAGS = -I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser -Iwin32 -Iregex -Ilibssh2/include \
     -DWIN32 -D_WIN32_WINNT=0x0501 -D__USE_MINGW_ANSI_STDIO=1 -DGIT_WINHTTP \
-    -D_FILE_OFFSET_BITS=64 -DGIT_ARCH_32
+    -D_FILE_OFFSET_BITS=64 -DGIT_ARCH_32 -DGIT_SSH
 endif
 
 OBJECTS.libgit2 = libgit2/annotated_commit.o libgit2/attr.o libgit2/attrcache.o \
