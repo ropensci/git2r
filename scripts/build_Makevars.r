@@ -124,21 +124,25 @@ build_Makevars.win <- function() {
         file = Makevars)
 
     cat("ifeq \"$(WIN)\" \"64\"\n", file=Makevars)
-    cat("PKG_LIBS = -L./winhttp -lws2_32 -lwinhttp-x64 -lrpcrt4 -lole32 -lcrypt32 $(Z_LIB)\n",
+    cat("PKG_LIBS = -Lopenssl/lib/x64 -Llibssh2/lib/x64 -Lwinhttp -lssh2 -lssl -lcrypto -lgdi32 \\\n",
         file = Makevars)
-    cat("PKG_CFLAGS = -I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser -Iwin32 -Iregex \\\n",
-        file=Makevars)
+    cat("    -lws2_32 -lwinhttp-x64 -lrpcrt4 -lole32 -lcrypt32 $(Z_LIB)\n",
+        file = Makevars)
+    cat("PKG_CFLAGS = -I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser -Iwin32 -Iregex -Ilibssh2/include \\\n",
+        file = Makevars)
     cat("    -DWIN32 -D_WIN32_WINNT=0x0501 -D__USE_MINGW_ANSI_STDIO=1 -DGIT_WINHTTP \\\n",
-        file=Makevars)
-    cat("    -D_FILE_OFFSET_BITS=64 -DGIT_ARCH_64\n", file=Makevars)
+        file = Makevars)
+    cat("    -D_FILE_OFFSET_BITS=64 -DGIT_ARCH_64 -DGIT_SSH\n", file=Makevars)
     cat("else\n", file = Makevars)
-    cat("PKG_LIBS = -L./winhttp -lws2_32 -lwinhttp -lrpcrt4 -lole32 -lcrypt32 $(Z_LIB)\n",
+    cat("PKG_LIBS = -Lopenssl/lib/i386 -Llibssh2/lib/i386 -Lwinhttp -lssh2 -lssl -lcrypto -lgdi32 \\\n",
         file = Makevars)
-    cat("PKG_CFLAGS = -I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser -Iwin32 -Iregex \\\n",
+    cat("    -lws2_32 -lwinhttp -lrpcrt4 -lole32 -lcrypt32 $(Z_LIB)\n",
+        file = Makevars)
+    cat("PKG_CFLAGS = -I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser -Iwin32 -Iregex -Ilibssh2/include \\\n",
         file=Makevars)
     cat("    -DWIN32 -D_WIN32_WINNT=0x0501 -D__USE_MINGW_ANSI_STDIO=1 -DGIT_WINHTTP \\\n",
         file=Makevars)
-    cat("    -D_FILE_OFFSET_BITS=64 -DGIT_ARCH_32\n", file=Makevars)
+    cat("    -D_FILE_OFFSET_BITS=64 -DGIT_ARCH_32 -DGIT_SSH\n", file=Makevars)
     cat("endif\n", file = Makevars)
     cat("\n", file = Makevars)
 
