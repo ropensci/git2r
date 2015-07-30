@@ -65,7 +65,7 @@ setMethod("references",
           signature(repo = "missing"),
           function ()
           {
-              references(repository(getwd(), discover = TRUE))
+              callGeneric(repo = repository(getwd(), discover = TRUE))
           }
 )
 

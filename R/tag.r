@@ -123,7 +123,7 @@ setMethod("tags",
           signature(repo = "missing"),
           function ()
           {
-              tags(repo = repository(getwd(), discover = TRUE))
+              callGeneric(repo = repository(getwd(), discover = TRUE))
           }
 )
 

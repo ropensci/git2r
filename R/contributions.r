@@ -95,9 +95,9 @@ setMethod("contributions",
           function (breaks, by)
           {
               ## Try current working directory
-              contributions(repository(getwd(), discover = TRUE),
-                            breaks = breaks,
-                            by = by)
+              callGeneric(repo   = repository(getwd(), discover = TRUE),
+                          breaks = breaks,
+                          by     = by)
           }
 )
 

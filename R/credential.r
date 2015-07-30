@@ -119,10 +119,10 @@ setMethod("cred_ssh_key",
           signature(publickey  = "character",
                     privatekey = "character",
                     passphrase = "missing"),
-          function(publickey, privatekey, passphrase)
+          function(publickey, privatekey)
           {
-              cred_ssh_key(publickey  = publickey,
-                           privatekey = privatekey,
-                           passphrase = character(0))
+              callGeneric(publickey  = publickey,
+                          privatekey = privatekey,
+                          passphrase = character(0))
           }
 )

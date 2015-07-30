@@ -173,7 +173,7 @@ setMethod("repository",
           signature(path = "missing"),
           function()
           {
-              repository(getwd(), discover = TRUE)
+              callGeneric(path = getwd(), discover = TRUE)
           }
 )
 
@@ -416,7 +416,7 @@ setMethod("is_bare",
           signature(repo = "missing"),
           function ()
           {
-              is_bare(repository(getwd(), discover = TRUE))
+              callGeneric(repo = repository(getwd(), discover = TRUE))
           }
 )
 
@@ -469,7 +469,7 @@ setMethod("is_detached",
           signature(repo = "missing"),
           function ()
           {
-              is_detached(repository(getwd(), discover = TRUE))
+              callGeneric(repo = repository(getwd(), discover = TRUE))
           }
 )
 
@@ -523,7 +523,7 @@ setMethod("is_empty",
           signature(repo = "missing"),
           function ()
           {
-              is_empty(repository(getwd(), discover = TRUE))
+              callGeneric(repo = repository(getwd(), discover = TRUE))
           }
 )
 
@@ -575,7 +575,7 @@ setMethod("in_repository",
           signature(path = "missing"),
           function ()
           {
-              !is.null(discover_repository(getwd()))
+              callGeneric(path = getwd())
           }
 )
 
@@ -647,7 +647,7 @@ setMethod("is_shallow",
           signature(repo = "missing"),
           function ()
           {
-              is_shallow(repository(getwd(), discover = TRUE))
+              callGeneric(repo = repository(getwd(), discover = TRUE))
           }
 )
 
@@ -944,7 +944,7 @@ setMethod("workdir",
           signature(repo = "missing"),
           function ()
           {
-              workdir(repo = repository(getwd(), discover = TRUE))
+              callGeneric(repo = repository(getwd(), discover = TRUE))
           }
 )
 

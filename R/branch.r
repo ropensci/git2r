@@ -450,8 +450,8 @@ setMethod("branches",
           signature(repo = "missing"),
           function (flags)
           {
-              branches(repo  = repository(getwd(), discover = TRUE),
-                       flags = flags)
+              callGeneric(repo  = repository(getwd(), discover = TRUE),
+                          flags = flags)
           }
 )
 

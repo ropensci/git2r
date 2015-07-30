@@ -25,6 +25,7 @@
 ##' @param unstaged Include unstaged files. Default TRUE.
 ##' @param untracked Include untracked files. Default TRUE.
 ##' @param ignored Include ignored files. Default FALSE.
+##' @param ... Additional arguments to status.
 ##' @return S3 class \code{git_status} with repository status
 ##' @keywords methods
 ##' @include S4_classes.r
@@ -76,20 +77,22 @@ setGeneric("status",
                     staged    = TRUE,
                     unstaged  = TRUE,
                     untracked = TRUE,
-                    ignored   = FALSE)
+                    ignored   = FALSE,
+                    ...)
            standardGeneric("status"))
 
 ##' @rdname status-methods
 ##' @export
 setMethod("status",
           signature(repo = "missing"),
-          function(staged, unstaged, untracked, ignored)
+          function(staged, unstaged, untracked, ignored, ...)
           {
-              status(repo      = repository(getwd(), discover = TRUE),
-                     staged    = staged,
-                     unstaged  = unstaged,
-                     untracked = untracked,
-                     ignored   = ignored)
+              callGeneric(repo      = repository(getwd(), discover = TRUE),
+                          staged    = staged,
+                          unstaged  = unstaged,
+                          untracked = untracked,
+                          ignored   = ignored,
+                          ...)
           }
 )
 
@@ -97,7 +100,7 @@ setMethod("status",
 ##' @export
 setMethod("status",
           signature(repo = "git_repository"),
-          function(repo, staged, unstaged, untracked, ignored)
+          function(repo, staged, unstaged, untracked, ignored, ...)
           {
               structure(.Call(git2r_status_list, repo, staged,
                               unstaged, untracked, ignored),

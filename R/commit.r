@@ -229,19 +229,18 @@ setGeneric("commits",
 ##' @export
 setMethod("commits",
           signature(repo = "missing"),
-          function(repo,
-                   topological = TRUE,
+          function(topological = TRUE,
                    time        = TRUE,
                    reverse     = FALSE,
                    n           = NULL,
                    ...)
           {
-              commits(repository(getwd(), discover = TRUE),
-                      topological = topological,
-                      time        = time,
-                      reverse     = reverse,
-                      n           = n,
-                      ...)
+              callGeneric(repo        = repository(getwd(), discover = TRUE),
+                          topological = topological,
+                          time        = time,
+                          reverse     = reverse,
+                          n           = n,
+                          ...)
           }
 )
 
