@@ -7,6 +7,11 @@
 ^configure\.ac$
 ^figure$
 ^libssh2$
+^libssh2\.zip$
+src/libssh2
+^openssl$
+^openssl\.zip$
+src/openssl
 ^patches$
 ^scripts$
 ^.xapian$
