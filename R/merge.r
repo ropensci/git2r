@@ -205,7 +205,6 @@ setMethod("merge",
 setMethod("merge",
           signature(x = "git_branch", y = "missing"),
           function(x,
-                   y,
                    ...,
                    commit_on_success = TRUE,
                    merger = default_signature(x@repo))
