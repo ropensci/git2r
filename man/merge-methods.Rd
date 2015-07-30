@@ -9,7 +9,7 @@
 \S4method{merge}{git_repository,character}(x, y, ...,
   commit_on_success = TRUE, merger = default_signature(x))
 
-\S4method{merge}{git_branch,missing}(x, y, ..., commit_on_success = TRUE,
+\S4method{merge}{git_branch,missing}(x, ..., commit_on_success = TRUE,
   merger = default_signature(x@repo))
 }
 \arguments{

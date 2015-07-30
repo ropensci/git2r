@@ -12,8 +12,7 @@ cred_ssh_key(publickey, privatekey, passphrase)
 \S4method{cred_ssh_key}{character,character,character}(publickey, privatekey,
   passphrase)
 
-\S4method{cred_ssh_key}{character,character,missing}(publickey, privatekey,
-  passphrase)
+\S4method{cred_ssh_key}{character,character,missing}(publickey, privatekey)
 }
 \arguments{
 \item{publickey}{The path to the public key of the credential}

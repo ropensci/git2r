@@ -9,7 +9,7 @@
 \usage{
 commits(repo, ...)
 
-\S4method{commits}{missing}(repo, topological = TRUE, time = TRUE,
+\S4method{commits}{missing}(topological = TRUE, time = TRUE,
   reverse = FALSE, n = NULL, ...)
 
 \S4method{commits}{git_repository}(repo, topological = TRUE, time = TRUE,
