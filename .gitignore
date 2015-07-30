@@ -11,5 +11,9 @@ autom4te.cache*
 /src-x64/
 /src/winhttp/libwinhttp-x64.a
 /src/winhttp/libwinhttp.a
-/src/libssh2.a
+/src/libssh2/
 libssh2
+libssh2.zip
+/src/openssl/
+openssl
+openssl.zip
