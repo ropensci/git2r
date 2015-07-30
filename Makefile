@@ -128,7 +128,9 @@ clean:
 	-rm -f config.status
 	-rm -rf autom4te.cache
 	-rm -rf libssh2
-	-rm -f src/libssh2.a
+	-rm -rf src/libssh2
+	-rm -rf openssl
+	-rm -rf src/openssl
 	-rm -f src/Makevars
 	-rm -f src/*.o
 	-rm -f src/*.so
