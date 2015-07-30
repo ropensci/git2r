@@ -21,3 +21,23 @@ if [ ! -e src/libssh2/include/libssh2.h ]; then
 	fi
     fi
 fi
+
+# Check for openssl headers and libraries
+have_openssl=yes
+if [ ! -e src/openssl/include/openssl/ssl.h ]; then
+    if [ ! -e openssl.zip ]; then
+	echo "  cannot find openssl files"
+	echo "  attempting to download them"
+	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" -e "setInternet2(); download.file('https://github.com/rwinlib/openssl/archive/v1.0.1j.zip', 'openssl.zip', quiet = TRUE)"
+    fi
+    if [ ! -e openssl.zip ]; then
+	have_openssl=no
+    else
+	echo "  unpacking openssl"
+	unzip openssl.zip -d src
+	mv src/openssl-1.0.1j src/openssl
+        if [ ! -e src/openssl/include/openssl/ssl.h ]; then
+	    have_openssl=no
+	fi
+    fi
+fi
