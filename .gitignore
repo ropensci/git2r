@@ -17,3 +17,5 @@ libssh2.zip
 /src/openssl/
 openssl
 openssl.zip
+/src/zlib/
+local320.zip
