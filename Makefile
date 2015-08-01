@@ -131,6 +131,8 @@ clean:
 	-rm -rf src/libssh2
 	-rm -rf openssl
 	-rm -rf src/openssl
+	-rm -f local320.zip
+	-rm -rf src/zlib
 	-rm -f src/Makevars
 	-rm -f src/*.o
 	-rm -f src/*.so
