@@ -5,14 +5,7 @@ init:
         Import-Module '..\appveyor-tool.ps1'
 
 install:
-  ps: |
-        Bootstrap
-        Progress "Downloading external software"
-        md C:\Rextsoft
-        Invoke-WebRequest http://www.stats.ox.ac.uk/pub/Rtools/goodies/multilib/local320.zip -OutFile "C:\Rextsoft\local320.zip"
-        7z x C:\Rextsoft\local320.zip -oC:\Rextsoft -r
-        Rscript -e "m <- readLines('D:/R/etc/i386/Makeconf'); m <- paste0(sub('^LOCAL_SOFT = d:/RCompile/r-compiling/local/local320$', 'LOCAL_SOFT = C:/Rextsoft', m), '\n', collapse='\n'); f <- file('D:/R/etc/i386/Makeconf', 'wb'); writeChar(m, f, eos = NULL); close(f)"
-        Rscript -e "m <- readLines('D:/R/etc/x64/Makeconf'); m <- paste0(sub('^LOCAL_SOFT = d:/RCompile/r-compiling/local/local320$', 'LOCAL_SOFT = C:/Rextsoft', m), '\n', collapse='\n'); f <- file('D:/R/etc/x64/Makeconf', 'wb'); writeChar(m, f, eos = NULL); close(f)"
+  ps: Bootstrap
 
 build_script:
   - travis-tool.sh install_deps
