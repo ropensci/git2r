@@ -22,9 +22,9 @@ Type: Package
 LazyData: true
 Biarch: true
 NeedsCompilation: yes
-SystemRequirements: zlib headers and library. OpenSSL (non-Windows)
-    headers and library. Optional LibSSH2 (non-Windows) to enable the
-    SSH transport.
+SystemRequirements: zlib headers and library. OpenSSL headers and
+    library. LibSSH2 (optional on non-Windows) to enable the SSH
+    transport.
 Collate:
     'S4_classes.r'
     'blame.r'
