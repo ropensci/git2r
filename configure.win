@@ -1,6 +1,30 @@
+#!/bin/sh
+
 # Create import library for WinHTTP.dll
 dlltool -m i386:x86-64 --as-flags --64 --output-lib src/winhttp/libwinhttp-x64.a --def src/winhttp/winhttp-x64.def
 dlltool -k --output-lib src/winhttp/libwinhttp.a --def src/winhttp/winhttp.def
+
+# Check for zlib headers and libraries
+have_zlib=yes
+local=`"${R_HOME}/bin/R" CMD config LOCAL_SOFT`
+if [ ! -e "${local}/include/zlib.h" ]; then
+    if [ ! -e src/zlib/include/zlib.h ]; then
+        if [ ! -e local320.zip ]; then
+            echo "  cannot find zlib files"
+            echo "  attempting to download them"
+            "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e "setInternet2(); download.file('http://www.stats.ox.ac.uk/pub/Rtools/goodies/multilib/local320.zip', 'local320.zip')"
+        fi
+        if [ ! -e local320.zip ]; then
+	    have_zlib=no
+        else
+	    echo "  unpacking zlib files from local320.zip"
+            unzip -u local320.zip include/zlib.h include/zconf.h lib/i386/libz.a lib/x64/libz.a -d src/zlib
+            if [ ! -e src/zlib/include/zlib.h ]; then
+	        have_zlib=no
+	    fi
+        fi
+    fi
+fi
 
 # Check for libssh2 headers and libraries
 have_ssh2=yes
