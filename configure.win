@@ -8,7 +8,7 @@ if [ ! -e src/libssh2/include/libssh2.h ]; then
     if [ ! -e libssh2.zip ]; then
 	echo "  cannot find libssh2 files"
 	echo "  attempting to download them"
-	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" -e "setInternet2(); download.file('https://github.com/rwinlib/libssh2/archive/v1.6.0.zip', 'libssh2.zip', quiet = TRUE)"
+	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" -e "setInternet2(); download.file('https://github.com/rwinlib/libssh2/archive/v1.6.0.zip', 'libssh2.zip')"
     fi
     if [ ! -e libssh2.zip ]; then
 	have_ssh2=no
@@ -28,7 +28,7 @@ if [ ! -e src/openssl/include/openssl/ssl.h ]; then
     if [ ! -e openssl.zip ]; then
 	echo "  cannot find openssl files"
 	echo "  attempting to download them"
-	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" -e "setInternet2(); download.file('https://github.com/rwinlib/openssl/archive/v1.0.1j.zip', 'openssl.zip', quiet = TRUE)"
+	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" -e "setInternet2(); download.file('https://github.com/rwinlib/openssl/archive/v1.0.1j.zip', 'openssl.zip')"
     fi
     if [ ! -e openssl.zip ]; then
 	have_openssl=no
