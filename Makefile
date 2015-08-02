@@ -138,8 +138,7 @@ clean:
 	-rm -f src/*.so
 	-rm -rf src-x64
 	-rm -rf src-i386
-	-rm -f src/winhttp/libwinhttp-x64.a
-	-rm -f src/winhttp/libwinhttp.a
+	-rm -rf src/winhttp/lib
 	-rm -f src/libgit2/*.o
 	-rm -f src/libgit2/hash/*.o
 	-rm -f src/libgit2/transports/*.o
