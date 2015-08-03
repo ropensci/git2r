@@ -890,21 +890,26 @@ setMethod("summary",
               n_unstaged <- length(s$unstaged)
               n_staged <- length(s$staged)
 
+              n_stashes <- length(stash_list(object))
+
               ## Determine max characters needed to display numbers
               n <- max(sapply(c(n_branches, n_tags, n_commits, n_authors,
-                                n_ignored, n_untracked, n_unstaged, n_staged),
+                                n_stashes, n_ignored, n_untracked,
+                                n_unstaged, n_staged),
                               nchar))
 
               fmt <- paste0("Branches:        %", n, "i\n",
                             "Tags:            %", n, "i\n",
                             "Commits:         %", n, "i\n",
                             "Contributors:    %", n, "i\n",
+                            "Stashes:         %", n, "i\n",
                             "Ignored files:   %", n, "i\n",
                             "Untracked files: %", n, "i\n",
                             "Unstaged files:  %", n, "i\n",
                             "Staged files:    %", n, "i\n")
               cat(sprintf(fmt, n_branches, n_tags, n_commits, n_authors,
-                          n_ignored, n_untracked, n_unstaged, n_staged))
+                          n_stashes, n_ignored, n_untracked, n_unstaged,
+                          n_staged))
 
               cat("\nLatest commits:\n")
               lapply(commits(object, n = 5), show)
