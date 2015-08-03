@@ -183,6 +183,7 @@ setMethod("stash",
 ##' @param repo The repository.
 ##' @return list of stashes in repository
 ##' @keywords methods
+##' @include S4_classes.r
 ##' @examples \dontrun{
 ##' ## Initialize a temporary repository
 ##' path <- tempfile(pattern="git2r-")
@@ -226,7 +227,16 @@ setGeneric("stash_list",
            standardGeneric("stash_list"))
 
 ##' @rdname stash_list-methods
-##' @include S4_classes.r
+##' @export
+setMethod("stash_list",
+          signature(repo = "missing"),
+          function ()
+          {
+              callGeneric(repo = repository(getwd(), discover = TRUE))
+          }
+)
+
+##' @rdname stash_list-methods
 ##' @export
 setMethod("stash_list",
           signature(repo = "git_repository"),

@@ -4,9 +4,12 @@
 \name{stash_list}
 \alias{stash_list}
 \alias{stash_list,git_repository-method}
+\alias{stash_list,missing-method}
 \title{List stashes in repository}
 \usage{
 stash_list(repo)
+
+\S4method{stash_list}{missing}()
 
 \S4method{stash_list}{git_repository}(repo)
 }

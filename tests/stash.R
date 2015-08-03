@@ -67,6 +67,12 @@ writeLines("Hello world!", file.path(path, "test-3.txt"))
 stash(repo, untracked=TRUE)
 stopifnot(identical(length(stash_list(repo)), 1L))
 
+## Check stash_list method with missing repo argument
+wd <- setwd(path)
+stopifnot(identical(length(stash_list()), 1L))
+if (!is.null(wd))
+    setwd(wd)
+
 ## Drop git_stash object in repository
 stash_drop(stash_list(repo)[[1]])
 
