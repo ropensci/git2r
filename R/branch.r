@@ -450,8 +450,12 @@ setMethod("branches",
           signature(repo = "missing"),
           function (flags)
           {
-              callGeneric(repo  = repository(getwd(), discover = TRUE),
-                          flags = flags)
+              ## Try current working directory
+              repo <- discover_repository(getwd())
+              if (is.null(repo))
+                  stop("The working directory is not in a git repository")
+
+              callGeneric(repo = repository(repo), flags = flags)
           }
 )
 

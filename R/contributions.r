@@ -95,9 +95,11 @@ setMethod("contributions",
           function (breaks, by)
           {
               ## Try current working directory
-              callGeneric(repo   = repository(getwd(), discover = TRUE),
-                          breaks = breaks,
-                          by     = by)
+              repo <- discover_repository(getwd())
+              if (is.null(repo))
+                  stop("The working directory is not in a git repository")
+
+              callGeneric(repo = repository(repo), breaks = breaks, by = by)
           }
 )
 

@@ -123,7 +123,12 @@ setMethod("tags",
           signature(repo = "missing"),
           function ()
           {
-              callGeneric(repo = repository(getwd(), discover = TRUE))
+              ## Try current working directory
+              repo <- discover_repository(getwd())
+              if (is.null(repo))
+                  stop("The working directory is not in a git repository")
+
+              callGeneric(repo = repository(repo))
           }
 )
 
