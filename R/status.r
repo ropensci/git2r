@@ -87,12 +87,7 @@ setMethod("status",
           signature(repo = "missing"),
           function(staged, unstaged, untracked, ignored, ...)
           {
-              ## Try current working directory
-              repo <- discover_repository(getwd())
-              if (is.null(repo))
-                  stop("The working directory is not in a git repository")
-
-              callGeneric(repo      = repository(repo),
+              callGeneric(repo      = lookup_repository(),
                           staged    = staged,
                           unstaged  = unstaged,
                           untracked = untracked,

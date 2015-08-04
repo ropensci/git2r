@@ -416,12 +416,7 @@ setMethod("is_bare",
           signature(repo = "missing"),
           function ()
           {
-              ## Try current working directory
-              repo <- discover_repository(getwd())
-              if (is.null(repo))
-                  stop("The working directory is not in a git repository")
-
-              callGeneric(repo = repository(repo))
+              callGeneric(repo = lookup_repository())
           }
 )
 
@@ -474,12 +469,7 @@ setMethod("is_detached",
           signature(repo = "missing"),
           function ()
           {
-              ## Try current working directory
-              repo <- discover_repository(getwd())
-              if (is.null(repo))
-                  stop("The working directory is not in a git repository")
-
-              callGeneric(repo = repository(repo))
+              callGeneric(repo = lookup_repository())
           }
 )
 
@@ -533,12 +523,7 @@ setMethod("is_empty",
           signature(repo = "missing"),
           function ()
           {
-              ## Try current working directory
-              repo <- discover_repository(getwd())
-              if (is.null(repo))
-                  stop("The working directory is not in a git repository")
-
-              callGeneric(repo = repository(repo))
+              callGeneric(repo = lookup_repository())
           }
 )
 
@@ -662,12 +647,7 @@ setMethod("is_shallow",
           signature(repo = "missing"),
           function ()
           {
-              ## Try current working directory
-              repo <- discover_repository(getwd())
-              if (is.null(repo))
-                  stop("The working directory is not in a git repository")
-
-              callGeneric(repo = repository(repo))
+              callGeneric(repo = lookup_repository())
           }
 )
 
@@ -969,12 +949,7 @@ setMethod("workdir",
           signature(repo = "missing"),
           function ()
           {
-              ## Try current working directory
-              repo <- discover_repository(getwd())
-              if (is.null(repo))
-                  stop("The working directory is not in a git repository")
-
-              callGeneric(repo = repository(repo))
+              callGeneric(repo = lookup_repository())
           }
 )
 
@@ -1035,3 +1010,17 @@ setMethod("discover_repository",
               .Call(git2r_repository_discover, path)
           }
 )
+
+##' Lookup repository for methods with missing repo argument
+##'
+##' @return S4 class git_repository
+##' @keywords internal
+lookup_repository <- function()
+{
+    ## Try current working directory
+    repo <- discover_repository(getwd())
+    if (is.null(repo))
+        stop("The working directory is not in a git repository")
+
+    repository(repo)
+}
