@@ -53,7 +53,7 @@
 ##' }
 setGeneric("revparse_single",
            signature = c("repo", "revision"),
-           function (repo, revision)
+           function(repo, revision)
            standardGeneric("revparse_single")
 )
 
@@ -61,7 +61,7 @@ setGeneric("revparse_single",
 ##' @export
 setMethod("revparse_single",
           signature(repo = "git_repository", revision = "character"),
-          function (repo, revision)
+          function(repo, revision)
           {
               .Call(git2r_revparse_single, repo, revision)
           }

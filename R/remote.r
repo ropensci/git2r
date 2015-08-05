@@ -57,7 +57,7 @@ setGeneric("remotes",
 ##' @export
 setMethod("remotes",
           signature(repo = "git_repository"),
-          function (repo)
+          function(repo)
           {
               .Call(git2r_remote_list, repo)
           }
@@ -270,7 +270,7 @@ setGeneric("remote_url",
 ##' @export
 setMethod("remote_url",
           signature(repo = "git_repository"),
-          function (repo, remote)
+          function(repo, remote)
           {
               .Call(git2r_remote_url, repo, remote)
           }

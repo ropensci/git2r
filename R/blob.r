@@ -114,7 +114,7 @@ setGeneric("content",
 ##' @export
 setMethod("content",
           signature(blob = "git_blob"),
-          function (blob, split)
+          function(blob, split)
           {
               if (is_binary(blob))
                   return(NA_character_)
@@ -242,7 +242,7 @@ setGeneric("is_binary",
 ##' @export
 setMethod("is_binary",
           signature(blob = "git_blob"),
-          function (blob)
+          function(blob)
           {
               .Call(git2r_blob_is_binary, blob)
           }
@@ -338,7 +338,7 @@ setMethod("length",
 ##' }
 setMethod("show",
           signature(object = "git_blob"),
-          function (object)
+          function(object)
           {
               cat(sprintf("blob:  %s\n", object@sha))
           }

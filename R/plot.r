@@ -43,10 +43,10 @@
 ##' }
 setMethod("plot",
           signature(x = "git_repository"),
-          function (x,
-                    breaks = c("month", "year", "quarter", "week", "day"),
-                    main = NULL,
-                    ...)
+          function(x,
+                   breaks = c("month", "year", "quarter", "week", "day"),
+                   main = NULL,
+                   ...)
           {
               breaks = match.arg(breaks)
 

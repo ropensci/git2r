@@ -341,7 +341,7 @@ setMethod("note_remove",
 ##' }
 setMethod("show",
           signature(object = "git_note"),
-          function (object)
+          function(object)
           {
               cat(sprintf("note:  %s\n", object@sha))
           }

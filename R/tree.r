@@ -153,7 +153,7 @@ setGeneric("tree",
 ##' @export
 setMethod("tree",
           signature(object = "git_commit"),
-          function (object)
+          function(object)
           {
               .Call(git2r_commit_tree, object)
           }
@@ -163,7 +163,7 @@ setMethod("tree",
 ##' @export
 setMethod("tree",
           signature(object = "git_stash"),
-          function (object)
+          function(object)
           {
               .Call(git2r_commit_tree, object)
           }

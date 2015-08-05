@@ -82,7 +82,7 @@
 ##' }
 setGeneric("checkout",
            signature = "object",
-           function (object, ...)
+           function(object, ...)
            standardGeneric("checkout")
 )
 
@@ -90,7 +90,7 @@ setGeneric("checkout",
 ##' @export
 setMethod("checkout",
           signature(object = "git_repository"),
-          function (object, branch, create = FALSE, force = FALSE)
+          function(object, branch, create = FALSE, force = FALSE)
           {
               ## Check branch argument
               if (missing(branch))
@@ -160,7 +160,7 @@ setMethod("checkout",
 ##' @export
 setMethod("checkout",
           signature(object = "git_branch"),
-          function (object, force = FALSE)
+          function(object, force = FALSE)
           {
               ref_name <- paste0("refs/heads/", object@name)
               .Call(git2r_checkout_tree, object@repo, ref_name, force)
@@ -173,7 +173,7 @@ setMethod("checkout",
 ##' @export
 setMethod("checkout",
           signature(object = "git_commit"),
-          function (object, force = FALSE)
+          function(object, force = FALSE)
           {
               .Call(git2r_checkout_tree, object@repo, object@sha, force)
               .Call(git2r_repository_set_head_detached, object)
@@ -185,7 +185,7 @@ setMethod("checkout",
 ##' @export
 setMethod("checkout",
           signature(object = "git_tag"),
-          function (object, force = FALSE)
+          function(object, force = FALSE)
           {
               .Call(git2r_checkout_tree, object@repo, object@target, force)
               .Call(git2r_repository_set_head_detached,

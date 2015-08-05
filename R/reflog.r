@@ -104,7 +104,7 @@ setMethod("reflog",
 ##' }
 setMethod("show",
           signature(object = "git_reflog_entry"),
-          function (object)
+          function(object)
           {
               cat(sprintf("[%s] %s@{%i}: %s\n",
                           substring(object@sha, 1, 7),

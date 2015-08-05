@@ -74,7 +74,7 @@ setGeneric("reset",
 ##' @export
 setMethod("reset",
           signature(commit = "git_commit"),
-          function (commit, reset_type)
+          function(commit, reset_type)
           {
               reset_type <- switch(match.arg(reset_type),
                                    soft  = 1L,

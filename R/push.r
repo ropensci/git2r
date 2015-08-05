@@ -76,9 +76,9 @@ setGeneric("push",
 ##' @export
 setMethod("push",
           signature(object = "git_branch"),
-          function (object,
-                    force       = FALSE,
-                    credentials = NULL)
+          function(object,
+                   force       = FALSE,
+                   credentials = NULL)
           {
               upstream <- branch_get_upstream(object)
               if (is.null(upstream)) {
@@ -103,11 +103,11 @@ setMethod("push",
 ##' @export
 setMethod("push",
           signature(object = "git_repository"),
-          function (object,
-                    name        = NULL,
-                    refspec     = NULL,
-                    force       = FALSE,
-                    credentials = NULL)
+          function(object,
+                   name        = NULL,
+                   refspec     = NULL,
+                   force       = FALSE,
+                   credentials = NULL)
           {
               if (all(is.null(name), is.null(refspec))) {
                   b <- head(object)

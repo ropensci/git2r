@@ -58,7 +58,7 @@ setGeneric("add",
 setMethod("add",
           signature(repo = "git_repository",
                     path = "character"),
-          function (repo, path, force = FALSE)
+          function(repo, path, force = FALSE)
           {
               .Call(git2r_index_add_all, repo, path, force)
               invisible(NULL)
@@ -110,7 +110,7 @@ setGeneric("rm_file",
 setMethod("rm_file",
           signature(repo = "git_repository",
                     path = "character"),
-          function (repo, path)
+          function(repo, path)
           {
               if (length(path)) {
                   ## Check that files exists and are known to Git

@@ -63,7 +63,7 @@ setGeneric("references",
 ##' @export
 setMethod("references",
           signature(repo = "missing"),
-          function ()
+          function()
           {
               callGeneric(repo = lookup_repository())
           }
@@ -74,7 +74,7 @@ setMethod("references",
 ##' @export
 setMethod("references",
           signature(repo = "git_repository"),
-          function (repo)
+          function(repo)
           {
               .Call(git2r_reference_list, repo)
           }
@@ -107,7 +107,7 @@ setMethod("references",
 ##' }
 setMethod("show",
           signature(object = "git_reference"),
-          function (object)
+          function(object)
           {
               if (identical(object@type, 1L)) {
                   cat(sprintf("[%s] %s\n",

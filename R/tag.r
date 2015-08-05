@@ -60,11 +60,11 @@ setGeneric("tag",
 ##' @export
 setMethod("tag",
           signature(object = "git_repository"),
-          function (object,
-                    name,
-                    message,
-                    session,
-                    tagger)
+          function(object,
+                   name,
+                   message,
+                   session,
+                   tagger)
           {
               ## Argument checking
               stopifnot(is.character(name),
@@ -121,7 +121,7 @@ setGeneric("tags",
 ##' @export
 setMethod("tags",
           signature(repo = "missing"),
-          function ()
+          function()
           {
               callGeneric(repo = lookup_repository())
           }
@@ -131,7 +131,7 @@ setMethod("tags",
 ##' @export
 setMethod("tags",
           signature(repo = "git_repository"),
-          function (repo)
+          function(repo)
           {
               .Call(git2r_tag_list, repo)
           }
@@ -168,7 +168,7 @@ setMethod("tags",
 ##' }
 setMethod("show",
           signature(object = "git_tag"),
-          function (object)
+          function(object)
           {
               cat(sprintf("[%s] %s\n",
                           substr(object@target, 1 , 6),

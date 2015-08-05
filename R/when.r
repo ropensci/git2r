@@ -53,7 +53,7 @@ setGeneric("when",
 ##' @export
 setMethod("when",
           signature(object = "git_commit"),
-          function (object)
+          function(object)
           {
               as(object@author@when, "character")
           }
@@ -63,7 +63,7 @@ setMethod("when",
 ##' @export
 setMethod("when",
           signature(object = "git_signature"),
-          function (object)
+          function(object)
           {
               as(object@when, "character")
           }
@@ -73,7 +73,7 @@ setMethod("when",
 ##' @export
 setMethod("when",
           signature(object = "git_stash"),
-          function (object)
+          function(object)
           {
               as(object@stasher@when, "character")
           }
@@ -83,7 +83,7 @@ setMethod("when",
 ##' @export
 setMethod("when",
           signature(object = "git_tag"),
-          function (object)
+          function(object)
           {
               as(object@tagger@when, "character")
           }
@@ -93,7 +93,7 @@ setMethod("when",
 ##' @export
 setMethod("when",
           signature(object = "git_time"),
-          function (object)
+          function(object)
           {
               as(object, "character")
           }

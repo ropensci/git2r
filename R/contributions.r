@@ -92,7 +92,7 @@ setGeneric("contributions",
 ##' @export
 setMethod("contributions",
           signature(repo = "missing"),
-          function (breaks, by)
+          function(breaks, by)
           {
               callGeneric(repo   = lookup_repository(),
                           breaks = breaks,
@@ -104,7 +104,7 @@ setMethod("contributions",
 ##' @export
 setMethod("contributions",
           signature(repo = "character"),
-          function (repo, breaks, by)
+          function(repo, breaks, by)
           {
               contributions(repository(repo), breaks = breaks, by = by)
           }
@@ -114,7 +114,7 @@ setMethod("contributions",
 ##' @export
 setMethod("contributions",
           signature(repo = "git_repository"),
-          function (repo, breaks, by)
+          function(repo, breaks, by)
           {
               breaks <- match.arg(breaks)
               by <- match.arg(by)

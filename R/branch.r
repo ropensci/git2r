@@ -448,7 +448,7 @@ setGeneric("branches",
 ##' @export
 setMethod("branches",
           signature(repo = "missing"),
-          function (flags)
+          function(flags)
           {
               callGeneric(repo = lookup_repository(), flags = flags)
           }
@@ -458,7 +458,7 @@ setMethod("branches",
 ##' @export
 setMethod("branches",
           signature(repo = "git_repository"),
-          function (repo, flags)
+          function(repo, flags)
           {
               flags <- switch(match.arg(flags),
                               local  = 1L,
@@ -515,7 +515,7 @@ setGeneric("is_head",
 ##' @export
 setMethod("is_head",
           signature(branch = "git_branch"),
-          function (branch)
+          function(branch)
           {
               .Call(git2r_branch_is_head, branch)
           }
@@ -570,7 +570,7 @@ setGeneric("is_local",
 ##' @export
 setMethod("is_local",
           signature(branch = "git_branch"),
-          function (branch)
+          function(branch)
           {
               identical(branch@type, 1L)
           }
@@ -603,7 +603,7 @@ setMethod("is_local",
 ##' }
 setMethod("show",
           signature(object = "git_branch"),
-          function (object)
+          function(object)
           {
               sha <- branch_target(object)
               if (!is.na(sha)) {

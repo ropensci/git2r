@@ -62,7 +62,7 @@ setGeneric("bundle_r_package",
 ##' @export
 setMethod("bundle_r_package",
           signature(repo = "git_repository"),
-          function (repo)
+          function(repo)
           {
               ## Check for 'inst' folder
               inst <- paste0(workdir(repo), "inst", sep = "")

@@ -367,7 +367,7 @@ setMethod("clone",
 ##' }
 setMethod("head",
           signature(x = "git_repository"),
-          function (x)
+          function(x)
           {
               .Call(git2r_repository_head, x)
           }
@@ -404,7 +404,7 @@ setGeneric("is_bare",
 ##' @export
 setMethod("is_bare",
           signature(repo = "git_repository"),
-          function (repo)
+          function(repo)
           {
               .Call(git2r_repository_is_bare, repo)
           }
@@ -414,7 +414,7 @@ setMethod("is_bare",
 ##' @export
 setMethod("is_bare",
           signature(repo = "missing"),
-          function ()
+          function()
           {
               callGeneric(repo = lookup_repository())
           }
@@ -467,7 +467,7 @@ setGeneric("is_detached",
 ##' @export
 setMethod("is_detached",
           signature(repo = "missing"),
-          function ()
+          function()
           {
               callGeneric(repo = lookup_repository())
           }
@@ -477,7 +477,7 @@ setMethod("is_detached",
 ##' @export
 setMethod("is_detached",
           signature(repo = "git_repository"),
-          function (repo)
+          function(repo)
           {
               .Call(git2r_repository_head_detached, repo)
           }
@@ -521,7 +521,7 @@ setGeneric("is_empty",
 ##' @export
 setMethod("is_empty",
           signature(repo = "missing"),
-          function ()
+          function()
           {
               callGeneric(repo = lookup_repository())
           }
@@ -531,7 +531,7 @@ setMethod("is_empty",
 ##' @export
 setMethod("is_empty",
           signature(repo = "git_repository"),
-          function (repo)
+          function(repo)
           {
               .Call(git2r_repository_is_empty, repo)
           }
@@ -573,7 +573,7 @@ setGeneric("in_repository",
 ##' @export
 setMethod("in_repository",
           signature(path = "missing"),
-          function ()
+          function()
           {
               callGeneric(path = getwd())
           }
@@ -583,7 +583,7 @@ setMethod("in_repository",
 ##' @export
 setMethod("in_repository",
           signature(path = "character"),
-          function (path)
+          function(path)
           {
               !is.null(discover_repository(path))
           }
@@ -645,7 +645,7 @@ setGeneric("is_shallow",
 ##' @export
 setMethod("is_shallow",
           signature(repo = "missing"),
-          function ()
+          function()
           {
               callGeneric(repo = lookup_repository())
           }
@@ -655,7 +655,7 @@ setMethod("is_shallow",
 ##' @export
 setMethod("is_shallow",
           signature(repo = "git_repository"),
-          function (repo)
+          function(repo)
           {
               .Call(git2r_repository_is_shallow, repo)
           }
@@ -723,7 +723,7 @@ setGeneric("lookup",
 setMethod("lookup",
           signature(repo = "git_repository",
                     sha  = "character"),
-          function (repo, sha)
+          function(repo, sha)
           {
               .Call(git2r_object_lookup, repo, sha)
           }
@@ -765,7 +765,7 @@ setGeneric("default_signature",
 ##' @export
 setMethod("default_signature",
           signature(repo = "git_repository"),
-          function (repo)
+          function(repo)
           {
               .Call(git2r_signature_default, repo)
           }
@@ -947,7 +947,7 @@ setGeneric("workdir",
 ##' @export
 setMethod("workdir",
           signature(repo = "missing"),
-          function ()
+          function()
           {
               callGeneric(repo = lookup_repository())
           }
@@ -957,7 +957,7 @@ setMethod("workdir",
 ##' @export
 setMethod("workdir",
           signature(repo = "git_repository"),
-          function (repo)
+          function(repo)
           {
               .Call(git2r_repository_workdir, repo)
           }
@@ -1005,7 +1005,7 @@ setGeneric("discover_repository",
 ##' @export
 setMethod("discover_repository",
           signature(path = "character"),
-          function (path)
+          function(path)
           {
               .Call(git2r_repository_discover, path)
           }

@@ -57,7 +57,7 @@ setGeneric("ahead_behind",
 ##' @export
 setMethod("ahead_behind",
           signature(local = "git_commit", upstream = "git_commit"),
-          function (local, upstream)
+          function(local, upstream)
           {
               stopifnot(identical(local@repo, upstream@repo))
               .Call(git2r_graph_ahead_behind, local, upstream)
@@ -125,13 +125,13 @@ setGeneric("commit",
 ##' @export
 setMethod("commit",
           signature(repo = "git_repository"),
-          function (repo,
-                    message,
-                    all,
-                    session,
-                    reference,
-                    author,
-                    committer)
+          function(repo,
+                   message,
+                   all,
+                   session,
+                   reference,
+                   author,
+                   committer)
           {
               ## Argument checking
               stopifnot(is.character(message),
@@ -319,7 +319,7 @@ setGeneric("descendant_of",
 ##' @export
 setMethod("descendant_of",
           signature(commit = "git_commit", ancestor = "git_commit"),
-          function (commit, ancestor)
+          function(commit, ancestor)
           {
               stopifnot(identical(commit@repo, ancestor@repo))
               .Call(git2r_graph_descendant_of, commit, ancestor)
@@ -418,7 +418,7 @@ setGeneric("is_merge",
 ##' @export
 setMethod("is_merge",
           signature(commit = "git_commit"),
-          function (commit)
+          function(commit)
           {
               length(parents(commit)) > 1
           }
@@ -506,7 +506,7 @@ setMethod("parents",
 ##' }
 setMethod("show",
           signature(object = "git_commit"),
-          function (object)
+          function(object)
           {
               cat(sprintf("[%s] %s: %s\n",
                           substring(object@sha, 1, 7),

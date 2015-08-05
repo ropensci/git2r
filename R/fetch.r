@@ -67,7 +67,7 @@ setGeneric("fetch",
 ##' @export
 setMethod("fetch",
           signature(repo = "git_repository"),
-          function (repo, name, credentials)
+          function(repo, name, credentials)
           {
               result <- .Call(
                   git2r_remote_fetch,
@@ -131,7 +131,7 @@ setGeneric("fetch_heads",
 ##' @export
 setMethod("fetch_heads",
           signature(repo = "git_repository"),
-          function (repo)
+          function(repo)
           {
               .Call(git2r_repository_fetch_heads, repo)
           }

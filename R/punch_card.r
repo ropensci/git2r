@@ -51,7 +51,7 @@ setGeneric("punch_card",
 ##' @export
 setMethod("punch_card",
           signature(repo = "git_repository"),
-          function (repo, main, ...)
+          function(repo, main, ...)
           {
               savepar <- graphics::par(las = 1, mar = c(2.2, 6, 2, 0))
               on.exit(par(savepar))

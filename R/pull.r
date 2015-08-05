@@ -95,8 +95,8 @@ setGeneric("pull",
 ##' @export
 setMethod("pull",
           signature(repo = "git_repository"),
-          function (repo,
-                    merger)
+          function(repo,
+                   merger)
           {
               current_branch <- head(repo)
 
