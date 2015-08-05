@@ -802,27 +802,36 @@ setMethod("show",
           signature(object = "git_repository"),
           function(object)
           {
-              lapply(remotes(object), function(remote) {
-                  cat(sprintf("Remote:   @ %s (%s)\n",
-                              remote,
-                              remote_url(object, remote)))
-              })
-
               if (any(is_empty(object), is.null(head(object)))) {
                   cat(sprintf("Local:    %s\n", workdir(object)))
                   cat("Head:     nothing commited (yet)\n")
-              } else if (is_detached(object)) {
-                  cat(sprintf("Local:    (detached) %s\n", workdir(object)))
               } else {
-                  cat(sprintf("Local:    %s %s\n",
-                              head(object)@name,
-                              workdir(object)))
+                  if (is_detached(object)) {
+                      cat(sprintf("Local:    (detached) %s\n", workdir(object)))
 
-                  commit <- lookup(object, branch_target(head(object)))
+                      h <- git2r::head(object)
+                  } else {
+                      cat(sprintf("Local:    %s %s\n",
+                                  head(object)@name,
+                                  workdir(object)))
+
+                      h <- head(object)
+                      u <- branch_get_upstream(h)
+                      if (!is.null(u)) {
+                          rn <- branch_remote_name(u)
+                          cat(sprintf("Remote:   %s @ %s (%s)\n",
+                                      substr(u@name, nchar(rn) + 2, nchar(u@name)),
+                                      rn,
+                                      branch_remote_url(u)))
+                      }
+
+                      h <- lookup(object, branch_target(head(object)))
+                  }
+
                   cat(sprintf("Head:     [%s] %s: %s\n",
-                              substring(commit@sha, 1, 7),
-                              substring(as(commit@author@when, "character"), 1, 10),
-                              commit@summary))
+                              substring(h@sha, 1, 7),
+                              substring(as(h@author@when, "character"), 1, 10),
+                              h@summary))
               }
           }
 )
