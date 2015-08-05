@@ -4,14 +4,21 @@
 \name{remotes}
 \alias{remotes}
 \alias{remotes,git_repository-method}
+\alias{remotes,missing-method}
 \title{Get the configured remotes for a repo}
 \usage{
 remotes(repo)
 
+\S4method{remotes}{missing}()
+
 \S4method{remotes}{git_repository}(repo)
 }
 \arguments{
-\item{repo}{The repository to get remotes from}
+\item{repo}{The repository \code{object}
+\code{\linkS4class{git_repository}}. If the \code{repo} argument
+is missing, the repository is searched for with
+\code{\link{discover_repository}} in the current working
+directory.}
 }
 \value{
 Character vector with remotes

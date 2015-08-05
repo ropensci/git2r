@@ -17,7 +17,11 @@ status(repo, staged = TRUE, unstaged = TRUE, untracked = TRUE,
   untracked = TRUE, ignored = FALSE, ...)
 }
 \arguments{
-\item{repo}{The \code{git_repository} to get status from.}
+\item{repo}{The repository \code{object}
+\code{\linkS4class{git_repository}} to get status from. If the
+\code{repo} argument is missing, the repository is searched for
+with \code{\link{discover_repository}} in the current working
+directory.}
 
 \item{staged}{Include staged files. Default TRUE.}
 

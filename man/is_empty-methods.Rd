@@ -14,7 +14,11 @@ is_empty(repo)
 \S4method{is_empty}{git_repository}(repo)
 }
 \arguments{
-\item{repo}{The repository to check if it's empty}
+\item{repo}{The repository \code{object}
+\code{\linkS4class{git_repository}} to check if it's empty. If the
+\code{repo} argument is missing, the repository is searched for
+with \code{\link{discover_repository}} in the current working
+directory.}
 }
 \value{
 TRUE if empty else FALSE

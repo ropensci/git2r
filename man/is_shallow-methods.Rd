@@ -14,7 +14,11 @@ is_shallow(repo)
 \S4method{is_shallow}{git_repository}(repo)
 }
 \arguments{
-\item{repo}{The repository}
+\item{repo}{The repository \code{object}
+\code{\linkS4class{git_repository}}. If the \code{repo} argument
+is missing, the repository is searched for with
+\code{\link{discover_repository}} in the current working
+directory.}
 }
 \value{
 TRUE if shallow clone, else FALSE
