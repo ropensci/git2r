@@ -180,7 +180,11 @@ setMethod("stash",
 ##'
 ##' @rdname stash_list-methods
 ##' @docType methods
-##' @param repo The repository.
+##' @param repo The repository \code{object}
+##' \code{\linkS4class{git_repository}}. If the \code{repo} argument
+##' is missing, the repository is searched for with
+##' \code{\link{discover_repository}} in the current working
+##' directory.
 ##' @return list of stashes in repository
 ##' @keywords methods
 ##' @include S4_classes.r

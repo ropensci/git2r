@@ -408,6 +408,10 @@ setMethod("branch_set_upstream",
 ##' @rdname branches-methods
 ##' @docType methods
 ##' @param repo The repository \code{object}
+##' \code{\linkS4class{git_repository}}. If the \code{repo} argument
+##' is missing, the repository is searched for with
+##' \code{\link{discover_repository}} in the current working
+##' directory.
 ##' @param flags Filtering flags for the branch listing. Valid values
 ##' are 'all', 'local' or 'remote'
 ##' @return list of branches in repository

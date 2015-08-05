@@ -20,7 +20,11 @@
 ##' area.
 ##' @rdname status-methods
 ##' @docType methods
-##' @param repo The \code{git_repository} to get status from.
+##' @param repo The repository \code{object}
+##' \code{\linkS4class{git_repository}} to get status from. If the
+##' \code{repo} argument is missing, the repository is searched for
+##' with \code{\link{discover_repository}} in the current working
+##' directory.
 ##' @param staged Include staged files. Default TRUE.
 ##' @param unstaged Include unstaged files. Default TRUE.
 ##' @param untracked Include untracked files. Default TRUE.

@@ -19,7 +19,11 @@
 ##' See contributions to a Git repo
 ##' @rdname contributions-methods
 ##' @docType methods
-##' @param repo The repository.
+##' @param repo The repository \code{object}
+##' \code{\linkS4class{git_repository}}. If the \code{repo} argument
+##' is missing, the repository is searched for with
+##' \code{\link{discover_repository}} in the current working
+##' directory.
 ##' @param breaks Default is \code{month}. Change to year, quarter,
 ##' week or day as necessary.
 ##' @param by Contributions by "commits" or "author". Default is "commits".

@@ -173,7 +173,11 @@ setMethod("commit",
 ##'
 ##' @rdname commits-methods
 ##' @docType methods
-##' @param repo The repository \code{object}.
+##' @param repo The repository \code{object}
+##' \code{\linkS4class{git_repository}}. If the \code{repo} argument
+##' is missing, the repository is searched for with
+##' \code{\link{discover_repository}} in the current working
+##' directory.
 ##' @param ... Additional arguments to commits.
 ##' @param topological Sort the commits in topological order (parents
 ##' before children); can be combined with time sorting. Default is

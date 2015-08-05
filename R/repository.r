@@ -377,7 +377,11 @@ setMethod("head",
 ##'
 ##' @rdname is_bare-methods
 ##' @docType methods
-##' @param repo The repository to check if it's bare
+##' @param repo The repository \code{object}
+##' \code{\linkS4class{git_repository}} to check if it's bare. If the
+##' \code{repo} argument is missing, the repository is searched for
+##' with \code{\link{discover_repository}} in the current working
+##' directory.
 ##' @return TRUE if bare repository, else FALSE
 ##' @keywords methods
 ##' @seealso \link{init}
@@ -425,6 +429,10 @@ setMethod("is_bare",
 ##' @rdname is_detached-methods
 ##' @docType methods
 ##' @param repo The repository \code{object}
+##' \code{\linkS4class{git_repository}}. If the \code{repo} argument
+##' is missing, the repository is searched for with
+##' \code{\link{discover_repository}} in the current working
+##' directory.
 ##' @return TRUE if repository HEAD is detached, else FALSE
 ##' @keywords methods
 ##' @examples
@@ -487,7 +495,11 @@ setMethod("is_detached",
 ##'
 ##' @rdname is_empty-methods
 ##' @docType methods
-##' @param repo The repository to check if it's empty
+##' @param repo The repository \code{object}
+##' \code{\linkS4class{git_repository}} to check if it's empty. If the
+##' \code{repo} argument is missing, the repository is searched for
+##' with \code{\link{discover_repository}} in the current working
+##' directory.
 ##' @return TRUE if empty else FALSE
 ##' @keywords methods
 ##' @examples
@@ -593,7 +605,11 @@ setMethod("in_repository",
 ##'
 ##' @rdname is_shallow-methods
 ##' @docType methods
-##' @param repo The repository
+##' @param repo The repository \code{object}
+##' \code{\linkS4class{git_repository}}. If the \code{repo} argument
+##' is missing, the repository is searched for with
+##' \code{\link{discover_repository}} in the current working
+##' directory.
 ##' @return TRUE if shallow clone, else FALSE
 ##' @keywords methods
 ##' @examples
@@ -931,7 +947,11 @@ setMethod("summary",
 ##'
 ##' @rdname workdir-methods
 ##' @docType methods
-##' @param repo The repository \code{object}.
+##' @param repo The repository \code{object}
+##' \code{\linkS4class{git_repository}}. If the \code{repo} argument
+##' is missing, the repository is searched for with
+##' \code{\link{discover_repository}} in the current working
+##' directory.
 ##' @return Character vector with the path of the workdir. If the
 ##' repository is bare, \code{NULL} will be returned.
 ##' @keywords methods
