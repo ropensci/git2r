@@ -419,8 +419,8 @@ setClass("git_diff",
          slots = c(old   = "ANY",
                    new   = "ANY",
                    files = "list"),
-         prototype = list(old=NA_character_,
-                          new=NA_character_))
+         prototype = list(old = NA_character_,
+                          new = NA_character_))
 
 ##' Git diff file
 ##'
@@ -584,8 +584,8 @@ setClass("git_reference",
                    sha       = "character",
                    target    = "character",
                    shorthand = "character"),
-         prototype=list(sha    = NA_character_,
-                        target = NA_character_))
+         prototype = list(sha    = NA_character_,
+                          target = NA_character_))
 
 ##' Class \code{"git_reflog_entry"}
 ##'
@@ -670,7 +670,7 @@ setClass("git_tag",
                    tagger  = "git_signature",
                    target  = "character",
                    repo    = "git_repository"),
-         validity=function(object)
+         validity = function(object)
          {
              errors <- validObject(object@tagger)
 
@@ -726,7 +726,7 @@ setClass("git_tree",
                    id       = "character",
                    name     = "character",
                    repo     = "git_repository"),
-         validity=function(object)
+         validity = function(object)
          {
              errors <- character(0)
 
