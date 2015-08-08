@@ -35,6 +35,8 @@ IMPROVEMENTS
 * Better summary output from S4 classes 'git_commit' and
   'git_repository'.
 
+* Updated libgit2 source code to commit (98f7bd2) from 2015-08-05.
+
 BUG FIXES
 
 * Add imports to DESCRIPTION to fix CRAN notes.
