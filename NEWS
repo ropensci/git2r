@@ -9,13 +9,11 @@ NEW FEATURES
 
 * Add 'force' argument to 'add' method to add ignored files.
 
-* Add branches method with missing repo argument.
-
-* Add references method with missing repo argument.
-
-* Add tags method with missing repo argument.
-
-* Add workdir method with missing repo argument.
+* The following methods can now be called without the repository
+  argument: 'branches', 'references', 'remotes', 'tags' and 'workdir'.
+  When these methods are called without the repository argument, the
+  repository is searched for with 'discover_repository' in the current
+  working directory.
 
 * Add name of branch to each item in branch_list.
 
@@ -24,13 +22,22 @@ NEW FEATURES
 * Add S4 class 'cred_env' to pass credentials in environment
   variables.
 
+* SSH transport on Windows. This requires 'LibSSH2' and
+  'OpenSSL'. These two libraries are downloaded from
+  'https://github.com/rwinlib' during configuration of the package.
+
+* Static linking of LibSSH2 on OSX to support redistributable binary
+  package with SSH transport enabled. Version 1.6.0 of LibSSH2 is
+  downloaded and built from 'https://github.com/libssh2/libssh2'.
+
 IMPROVEMENTS
 
-* Better summary output from S4 class git_commit
-
-* Add imports to DESCRIPTION to fix CRAN notes.
+* Better summary output from S4 classes 'git_commit' and
+  'git_repository'.
 
 BUG FIXES
+
+* Add imports to DESCRIPTION to fix CRAN notes.
 
 * Fix plot function to use the repository argument 'x'
 
