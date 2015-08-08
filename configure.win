@@ -28,6 +28,22 @@ if [ ! -e "${local}/include/zlib.h" ]; then
     fi
 fi
 
+if [ ${have_zlib} != yes ]; then
+    echo ""
+    echo " *** ERROR: unable to find the zlib files"
+    echo ""
+    echo " They must be either in 'src/zlib' or in 'local320.zip'"
+    echo ""
+    echo " You can download local320.zip from"
+    echo " http://www.stats.ox.ac.uk/pub/Rtools/goodies/multilib/local320.zip"
+    echo ""
+    echo " Another option is to configure the LOCAL_SOFT variable, see:"
+    echo "   https://cran.r-project.org/doc/manuals/r-release/R-admin.html#Windows-packages"
+    echo "   http://www.stats.ox.ac.uk/pub/Rtools/libs.html"
+    echo ""
+    exit 1
+fi
+
 # Check for libssh2 headers and libraries
 have_ssh2=yes
 if [ ! -e src/libssh2/include/libssh2.h ]; then
@@ -46,6 +62,18 @@ if [ ! -e src/libssh2/include/libssh2.h ]; then
 	    have_ssh2=no
 	fi
     fi
+fi
+
+if [ ${have_ssh2} != yes ]; then
+    echo ""
+    echo " *** ERROR: unable to find the libssh2 files"
+    echo ""
+    echo " They must be either in 'src/libssh2' or in 'libssh2.zip'"
+    echo ""
+    echo " You can download the libssh2 files from"
+    echo " https://github.com/rwinlib/libssh2/archive/v1.6.0.zip"
+    echo ""
+    exit 1
 fi
 
 # Check for openssl headers and libraries
@@ -67,3 +95,19 @@ if [ ! -e src/openssl/include/openssl/ssl.h ]; then
 	fi
     fi
 fi
+
+if [ ${have_openssl} != yes ]; then
+    echo ""
+    echo " *** ERROR: unable to find the openssl files"
+    echo ""
+    echo " They must be either in 'src/openssl' or in 'openssl.zip'"
+    echo ""
+    echo " You can download the openssl files from"
+    echo " https://github.com/rwinlib/openssl/archive/v1.0.1j.zip"
+    echo ""
+    exit 1
+fi
+
+echo "  The configuration of git2r seems ok, continuing the build process."
+
+exit 0
