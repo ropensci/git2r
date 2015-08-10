@@ -145,7 +145,13 @@ if test "x${have_ssl}" = xyes; then
           ;;
         esac
 else
-        AC_MSG_FAILURE([OpenSSL library required])
+        AC_MSG_FAILURE([
+  ---------------------------------------------
+   OpenSSL library required
+
+   Please install:
+   libssl-dev (deb) or openssl-devel (rpm)
+  ---------------------------------------------])
 fi
 
 # Check for LibSSH2
@@ -180,6 +186,9 @@ if test "x${have_ssh2}" = xno; then
   ---------------------------------------------
    Unable to find LibSSH2 on this system.
    Building a version without support for SSH.
+
+   To build with SSH support, please install:
+   libssh2-1-dev (deb) or libssh2-devel (rpm)
   ---------------------------------------------])
 fi
 

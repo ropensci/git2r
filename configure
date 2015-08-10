@@ -3759,7 +3759,13 @@ if test "x${have_ssl}" = xyes; then
 else
         { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "OpenSSL library required
+as_fn_error $? "
+  ---------------------------------------------
+   OpenSSL library required
+
+   Please install:
+   libssl-dev (deb) or openssl-devel (rpm)
+  ---------------------------------------------
 See \`config.log' for more details" "$LINENO" 5; }
 fi
 
@@ -3850,11 +3856,17 @@ if test "x${have_ssh2}" = xno; then
   ---------------------------------------------
    Unable to find LibSSH2 on this system.
    Building a version without support for SSH.
+
+   To build with SSH support, please install:
+   libssh2-1-dev (deb) or libssh2-devel (rpm)
   ---------------------------------------------" >&5
 $as_echo "$as_me: WARNING:
   ---------------------------------------------
    Unable to find LibSSH2 on this system.
    Building a version without support for SSH.
+
+   To build with SSH support, please install:
+   libssh2-1-dev (deb) or libssh2-devel (rpm)
   ---------------------------------------------" >&2;}
 fi
 
