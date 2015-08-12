@@ -6,15 +6,20 @@ mkdir -p src/winhttp/lib/x64
 dlltool -m i386:x86-64 --as-flags --64 --output-lib src/winhttp/lib/x64/libwinhttp.a --def src/winhttp/winhttp-x64.def
 dlltool -k --output-lib src/winhttp/lib/i386/libwinhttp.a --def src/winhttp/winhttp.def
 
+# Don't use setInternet2() if R version > 3.2.1
+R_SCRIPT="${R_HOME}/bin${R_ARCH_BIN}/Rscript"
+SET_INTERNET2=`"${R_SCRIPT}" -e "cat(ifelse(compareVersion(sprintf('%s.%s', R.version['major'], R.version['minor']), '3.2.1') > 0, '', 'setInternet2();'))"`
+
 # Check for zlib headers and libraries
 have_zlib=yes
 local=`"${R_HOME}/bin/R" CMD config LOCAL_SOFT`
+LOCAL320_URL=http://www.stats.ox.ac.uk/pub/Rtools/goodies/multilib/local320.zip
 if [ ! -e "${local}/include/zlib.h" ]; then
     if [ ! -e src/zlib/include/zlib.h ]; then
         if [ ! -e local320.zip ]; then
             echo "  cannot find zlib files"
             echo "  attempting to download them"
-            "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e "setInternet2(); download.file('http://www.stats.ox.ac.uk/pub/Rtools/goodies/multilib/local320.zip', 'local320.zip')"
+            "${R_SCRIPT}" -e "${SET_INTERNET2} download.file('${LOCAL320_URL}', 'local320.zip', quiet = TRUE)"
         fi
         if [ ! -e local320.zip ]; then
 	    have_zlib=no
@@ -35,7 +40,7 @@ if [ ${have_zlib} != yes ]; then
     echo " They must be either in 'src/zlib' or in 'local320.zip'"
     echo ""
     echo " You can download local320.zip from"
-    echo " http://www.stats.ox.ac.uk/pub/Rtools/goodies/multilib/local320.zip"
+    echo " ${LOCAL320_URL}"
     echo ""
     echo " Another option is to configure the LOCAL_SOFT variable, see:"
     echo "   https://cran.r-project.org/doc/manuals/r-release/R-admin.html#Windows-packages"
@@ -46,11 +51,12 @@ fi
 
 # Check for libssh2 headers and libraries
 have_ssh2=yes
+LIBSSH2_URL=https://github.com/rwinlib/libssh2/archive/v1.6.0.zip
 if [ ! -e src/libssh2/include/libssh2.h ]; then
     if [ ! -e libssh2.zip ]; then
 	echo "  cannot find libssh2 files"
 	echo "  attempting to download them"
-	"${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e "setInternet2(); download.file('https://github.com/rwinlib/libssh2/archive/v1.6.0.zip', 'libssh2.zip')"
+        "${R_SCRIPT}" -e "${SET_INTERNET2} download.file('${LIBSSH2_URL}', 'libssh2.zip', quiet = TRUE)"
     fi
     if [ ! -e libssh2.zip ]; then
 	have_ssh2=no
@@ -71,18 +77,19 @@ if [ ${have_ssh2} != yes ]; then
     echo " They must be either in 'src/libssh2' or in 'libssh2.zip'"
     echo ""
     echo " You can download the libssh2 files from"
-    echo " https://github.com/rwinlib/libssh2/archive/v1.6.0.zip"
+    echo " ${LIBSSH2_URL}"
     echo ""
     exit 1
 fi
 
 # Check for openssl headers and libraries
 have_openssl=yes
+OPENSSL_URL=https://github.com/rwinlib/openssl/archive/v1.0.1j.zip
 if [ ! -e src/openssl/include/openssl/ssl.h ]; then
     if [ ! -e openssl.zip ]; then
 	echo "  cannot find openssl files"
 	echo "  attempting to download them"
-	"${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e "setInternet2(); download.file('https://github.com/rwinlib/openssl/archive/v1.0.1j.zip', 'openssl.zip')"
+        "${R_SCRIPT}" -e "${SET_INTERNET2} download.file('${OPENSSL_URL}', 'openssl.zip', quiet = TRUE)"
     fi
     if [ ! -e openssl.zip ]; then
 	have_openssl=no
@@ -103,7 +110,7 @@ if [ ${have_openssl} != yes ]; then
     echo " They must be either in 'src/openssl' or in 'openssl.zip'"
     echo ""
     echo " You can download the openssl files from"
-    echo " https://github.com/rwinlib/openssl/archive/v1.0.1j.zip"
+    echo " ${OPENSSL_URL}"
     echo ""
     exit 1
 fi
