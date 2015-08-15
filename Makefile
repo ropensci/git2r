@@ -108,7 +108,7 @@ sync_libgit2:
 	cd src/libgit2 && patch -i ../../patches/common-remove-includes.patch
 	cd src/libgit2 && patch -i ../../patches/diff_print-pass-R-CMD-check-git2r.patch
 	cd src/libgit2 && patch -i ../../patches/rebase-pass-R-CMD-check-git2r.patch
-	cd src/libgit2 && patch -i ../../patches/transaction-pass-R-CMD-check-git2r.patch
+	cd src/libgit2 && patch -i ../../patches/transaction.patch
 	cd src/libgit2 && patch -i ../../patches/util-pass-R-CMD-check-git2r.patch
 	cd src/regex && patch -i ../../patches/regcomp-pass-R-CMD-check-git2r.patch
 	cd src/regex && patch -i ../../patches/regex-prefix-entry-points.patch
