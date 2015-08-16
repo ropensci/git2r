@@ -10,6 +10,9 @@ dlltool -k --output-lib src/winhttp/lib/i386/libwinhttp.a --def src/winhttp/winh
 R_SCRIPT="${R_HOME}/bin${R_ARCH_BIN}/Rscript"
 SET_INTERNET2=`"${R_SCRIPT}" -e "cat(ifelse(compareVersion(sprintf('%s.%s', R.version['major'], R.version['minor']), '3.2.2') > 0, '', 'setInternet2();'))"`
 
+# Use libcurl if available
+USE_LIBCURL=`"${R_SCRIPT}" -e "cat(ifelse(isTRUE(capabilities('libcurl')), 'method=\\'libcurl\\',', ''))"`
+
 # Check for zlib headers and libraries
 have_zlib=yes
 local=`"${R_HOME}/bin/R" CMD config LOCAL_SOFT`
@@ -19,7 +22,7 @@ if [ ! -e "${local}/include/zlib.h" ]; then
         if [ ! -e local320.zip ]; then
             echo "  cannot find zlib files"
             echo "  attempting to download them"
-            "${R_SCRIPT}" -e "${SET_INTERNET2} download.file('${LOCAL320_URL}', 'local320.zip', quiet = TRUE)"
+            "${R_SCRIPT}" -e "${SET_INTERNET2} download.file('${LOCAL320_URL}', 'local320.zip', ${USE_LIBCURL} quiet = TRUE)"
         fi
         if [ ! -e local320.zip ]; then
 	    have_zlib=no
@@ -56,7 +59,7 @@ if [ ! -e src/libssh2/include/libssh2.h ]; then
     if [ ! -e libssh2.zip ]; then
 	echo "  cannot find libssh2 files"
 	echo "  attempting to download them"
-        "${R_SCRIPT}" -e "${SET_INTERNET2} download.file('${LIBSSH2_URL}', 'libssh2.zip', quiet = TRUE)"
+        "${R_SCRIPT}" -e "${SET_INTERNET2} download.file('${LIBSSH2_URL}', 'libssh2.zip', ${USE_LIBCURL} quiet = TRUE)"
     fi
     if [ ! -e libssh2.zip ]; then
 	have_ssh2=no
@@ -89,7 +92,7 @@ if [ ! -e src/openssl/include/openssl/ssl.h ]; then
     if [ ! -e openssl.zip ]; then
 	echo "  cannot find openssl files"
 	echo "  attempting to download them"
-        "${R_SCRIPT}" -e "${SET_INTERNET2} download.file('${OPENSSL_URL}', 'openssl.zip', quiet = TRUE)"
+        "${R_SCRIPT}" -e "${SET_INTERNET2} download.file('${OPENSSL_URL}', 'openssl.zip', ${USE_LIBCURL} quiet = TRUE)"
     fi
     if [ ! -e openssl.zip ]; then
 	have_openssl=no
