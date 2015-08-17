@@ -19,6 +19,8 @@
 ##' @rdname pull-methods
 ##' @docType methods
 ##' @param repo the repository
+##' @param credentials The credentials for remote repository
+##' access. Default is NULL.
 ##' @param merger Who made the merge, if the merge is non-fast forward
 ##' merge that creates a merge commit.
 ##' @return invisible(NULL)
@@ -88,7 +90,8 @@
 setGeneric("pull",
            signature = "repo",
            function(repo,
-                    merger = default_signature(repo))
+                    credentials = NULL,
+                    merger      = default_signature(repo))
            standardGeneric("pull"))
 
 ##' @rdname pull-methods
@@ -96,6 +99,7 @@ setGeneric("pull",
 setMethod("pull",
           signature(repo = "git_repository"),
           function(repo,
+                   credentials,
                    merger)
           {
               current_branch <- head(repo)
@@ -108,7 +112,9 @@ setMethod("pull",
               if (is.null(upstream_branch))
                   stop("'branch' is not tracking a remote branch")
 
-              fetch(repo, branch_remote_name(upstream_branch))
+              fetch(repo        = repo,
+                    name        = branch_remote_name(upstream_branch),
+                    credentials = credentials)
 
               ## fetch heads marked for merge
               fh <- fetch_heads(repo)

@@ -6,12 +6,16 @@
 \alias{pull,git_repository-method}
 \title{Pull}
 \usage{
-pull(repo, merger = default_signature(repo))
+pull(repo, credentials = NULL, merger = default_signature(repo))
 
-\S4method{pull}{git_repository}(repo, merger = default_signature(repo))
+\S4method{pull}{git_repository}(repo, credentials = NULL,
+  merger = default_signature(repo))
 }
 \arguments{
 \item{repo}{the repository}
+
+\item{credentials}{The credentials for remote repository
+access. Default is NULL.}
 
 \item{merger}{Who made the merge, if the merge is non-fast forward
 merge that creates a merge commit.}
