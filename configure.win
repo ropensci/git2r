@@ -11,7 +11,7 @@ R_SCRIPT="${R_HOME}/bin${R_ARCH_BIN}/Rscript"
 SET_INTERNET2=`"${R_SCRIPT}" -e "cat(ifelse(compareVersion(sprintf('%s.%s', R.version['major'], R.version['minor']), '3.2.2') > 0, '', 'setInternet2();'))"`
 
 # Use libcurl if available
-USE_LIBCURL=`"${R_SCRIPT}" -e "cat(ifelse(isTRUE(capabilities('libcurl')), 'method=\\'libcurl\\',', ''))"`
+USE_LIBCURL=`"${R_SCRIPT}" -e "cat(ifelse(capabilities('libcurl'), 'method=\'libcurl\',', ''))"`
 
 # Check for zlib headers and libraries
 have_zlib=yes
