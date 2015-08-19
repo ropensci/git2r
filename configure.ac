@@ -167,6 +167,8 @@ else
             mkdir -p libssh2 && curl -fsSL https://github.com/libssh2/libssh2/releases/download/libssh2-1.6.0/libssh2-1.6.0.tar.gz | tar xz --strip 1 -C libssh2
             mkdir -p src/libssh2
             GIT2R_LIBSSH2_INST_DIR="${PWD}/src/libssh2"
+            export CPPFLAGS
+            export LDFLAGS
             cp -f tools/missing libssh2
             cd libssh2
             ./configure --with-pic --disable-examples-build --disable-shared --enable-static --prefix=$GIT2R_LIBSSH2_INST_DIR \
