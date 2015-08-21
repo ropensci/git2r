@@ -4,7 +4,6 @@
 ^travis-tool\.sh$
 ^Makefile$
 ^README\.Rmd$
-^configure\.ac$
 ^figure$
 ^libssh2$
 ^libssh2\.zip$
