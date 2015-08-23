@@ -239,6 +239,67 @@ setMethod("remote_remove",
           }
 )
 
+##' Set the remote's url in the configuration
+##'
+##' This assumes the common case of a single-url remote and will
+##' otherwise raise an error.
+##' @rdname remote_set_url-methods
+##' @docType methods
+##' @param repo The repository in which to perform the change
+##' @param name The name of the remote
+##' @param url The \code{url} to set
+##' @return NULL, invisibly
+##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a user and commit a file
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit(repo, "First commit message")
+##'
+##' ## Add a remote
+##' remote_add(repo, "playground", "https://example.org/git2r/playground")
+##' remotes(repo)
+##' remote_url(repo, "playground")
+##'
+##' ## Rename a remote
+##' remote_rename(repo, "playground", "foobar")
+##' remotes(repo)
+##' remote_url(repo, "foobar")
+##'
+##' ## Set remote url
+##' remote_set_url(repo, "foobar", "https://example.org/git2r/foobar")
+##' remotes(repo)
+##' remote_url(repo, "foobar")
+##'
+##' ## Remove a remote
+##' remote_remove(repo, "foobar")
+##' remotes(repo)
+##' }
+setGeneric("remote_set_url",
+           signature = c("repo", "name", "url"),
+           function(repo, name, url)
+           standardGeneric("remote_set_url"))
+
+##' @rdname remote_set_url-methods
+##' @export
+setMethod("remote_set_url",
+          signature(repo = "git_repository",
+                    name = "character",
+                    url  = "character"),
+          function(repo, name, url)
+          {
+              ret <- .Call(git2r_remote_set_url, repo, name, url)
+              invisible(ret)
+          }
+)
+
 ##' Get the remote url for remotes in a repo
 ##'
 ##' @rdname remote_url-methods
