@@ -46,6 +46,11 @@ stopifnot(identical(remotes(repo), "foobar"))
 stopifnot(identical(remote_url(repo, "foobar"),
                     "https://github.com/gaborcsardi/playground"))
 
+## Set remote url
+remote_set_url(repo, "foobar", "https://github.com/stewid/playground")
+stopifnot(identical(remote_url(repo, "foobar"),
+                    "https://github.com/stewid/playground"))
+
 ## Remove a remote
 remote_remove(repo, "foobar")
 
