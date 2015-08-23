@@ -16,32 +16,22 @@
 
 library(git2r)
 
-##
 ## Create a directory in tempdir
-##
 path <- tempfile(pattern="git2r-")
 dir.create(path)
 
-##
 ## Initialize a repository
-##
 repo <- init(path)
 config(repo, user.name="Alice", user.email="alice@example.org")
 
-##
 ## Create a file
-##
 writeLines("Hello world!", file.path(path, "test.txt"))
 
-##
 ## Add and commit
-##
 add(repo, "test.txt")
 commit_1 <- commit(repo, "Commit message")
 
-##
 ## Add a remote
-##
 remote_add(repo, "playground",
            "https://github.com/gaborcsardi/playground")
 
@@ -49,23 +39,17 @@ stopifnot(identical(remotes(repo), "playground"))
 stopifnot(identical(remote_url(repo, "playground"),
                     "https://github.com/gaborcsardi/playground"))
 
-##
 ## Rename a remote
-##
 remote_rename(repo, "playground", "foobar")
 
 stopifnot(identical(remotes(repo), "foobar"))
 stopifnot(identical(remote_url(repo, "foobar"),
                     "https://github.com/gaborcsardi/playground"))
 
-##
 ## Remove a remote
-##
 remote_remove(repo, "foobar")
 
 stopifnot(identical(remotes(repo), character(0)))
 
-##
 ## Cleanup
-##
 unlink(path, recursive=TRUE)
