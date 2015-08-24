@@ -21,13 +21,16 @@ the password for the authentication.}
 A S4 \code{cred_env} object
 }
 \description{
-Create a new environmental credential object
+Environmental variables can be written to the file
+\code{.Renviron}. This file is read by \emph{R} during startup,
+see \code{\link[base]{Startup}}.
 }
 \examples{
 \dontrun{
 ## Create an environmental credential object for the username and
-## and a personal access token (PAT).
-cred <- cred_env("GITHUB_USER", "GITHUB_PAT")
+## password.
+cred <- cred_env("NAME_OF_ENV_VARIABLE_WITH_USERNAME",
+                 "NAME_OF_ENV_VARIABLE_WITH_PASSWORD")
 repo <- repository("git2r")
 push(repo, credentials = cred)
 }

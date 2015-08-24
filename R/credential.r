@@ -16,6 +16,9 @@
 
 ##' Create a new environmental credential object
 ##'
+##' Environmental variables can be written to the file
+##' \code{.Renviron}. This file is read by \emph{R} during startup,
+##' see \code{\link[base]{Startup}}.
 ##' @rdname cred_env-methods
 ##' @param username The name of the environmental variable that holds
 ##' the username for the authentication.
@@ -26,8 +29,9 @@
 ##' @examples
 ##' \dontrun{
 ##' ## Create an environmental credential object for the username and
-##' ## and a personal access token (PAT).
-##' cred <- cred_env("GITHUB_USER", "GITHUB_PAT")
+##' ## password.
+##' cred <- cred_env("NAME_OF_ENV_VARIABLE_WITH_USERNAME",
+##'                  "NAME_OF_ENV_VARIABLE_WITH_PASSWORD")
 ##' repo <- repository("git2r")
 ##' push(repo, credentials = cred)
 ##' }
