@@ -1,3 +1,11 @@
+git2r 0.11.0.9000
+-----------------
+
+NEW FEATURES
+
+* Add 'remote_set_url' method to set the remote's url in the
+  configuration.
+
 git2r 0.11.0
 ------------
 
