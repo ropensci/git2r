@@ -6,6 +6,11 @@ NEW FEATURES
 * Add 'remote_set_url' method to set the remote's url in the
   configuration.
 
+CHANGES
+
+* Added the following default arguments to the 'cred_ssh_key' method:
+  publickey = '~/.ssh/id_rsa.pub' and privatekey = '~/.ssh/id_rsa'
+
 git2r 0.11.0
 ------------
 

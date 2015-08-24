@@ -86,47 +86,28 @@ setMethod("cred_user_pass",
 ##' Create a new passphrase-protected ssh key credential object
 ##'
 ##' @rdname cred_ssh_key-methods
-##' @param publickey The path to the public key of the credential
-##' @param privatekey The path to the private key of the credential
-##' @param passphrase The passphrase of the credential
+##' @param publickey The path to the public key of the
+##' credential. Default is \code{'~/.ssh/id_rsa.pub'}
+##' @param privatekey The path to the private key of the
+##' credential. Default is \code{'~/.ssh/id_rsa'}
+##' @param passphrase The passphrase of the credential. Default is
+##' \code{character(0)}
 ##' @return A S4 \code{cred_ssh_key} object
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Create a ssh key credential object. It can optionally be
 ##' ## passphrase-protected
-##' cred_ssh_key("~/.ssh/id_rsa.pub", "~/.ssh/id_rsa")
+##' cred <- cred_ssh_key("~/.ssh/id_rsa.pub", "~/.ssh/id_rsa")
+##' repo <- repository("git2r")
+##' push(repo, credentials = cred)
 ##' }
-setGeneric("cred_ssh_key",
-           signature = c("publickey", "privatekey", "passphrase"),
-           function(publickey, privatekey, passphrase)
-           standardGeneric("cred_ssh_key"))
-
-##' @rdname cred_ssh_key-methods
-##' @export
-setMethod("cred_ssh_key",
-          signature(publickey  = "character",
-                    privatekey = "character",
-                    passphrase = "character"),
-          function(publickey, privatekey, passphrase)
-          {
-              new("cred_ssh_key",
-                  publickey  = normalizePath(publickey, mustWork = TRUE),
-                  privatekey = normalizePath(privatekey, mustWork = TRUE),
-                  passphrase = passphrase)
-          }
-)
-
-##' @rdname cred_ssh_key-methods
-##' @export
-setMethod("cred_ssh_key",
-          signature(publickey  = "character",
-                    privatekey = "character",
-                    passphrase = "missing"),
-          function(publickey, privatekey)
-          {
-              callGeneric(publickey  = publickey,
-                          privatekey = privatekey,
-                          passphrase = character(0))
-          }
-)
+cred_ssh_key <- function(publickey  = "~/.ssh/id_rsa.pub",
+                         privatekey = "~/.ssh/id_rsa",
+                         passphrase = character(0))
+{
+    new("cred_ssh_key",
+        publickey  = normalizePath(publickey, mustWork = TRUE),
+        privatekey = normalizePath(privatekey, mustWork = TRUE),
+        passphrase = passphrase)
+}
