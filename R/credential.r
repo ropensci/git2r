@@ -53,6 +53,35 @@ setMethod("cred_env",
           }
 )
 
+##' Create a new personal access token credential object
+##'
+##' The personal access token is stored in an envrionmental variable.
+##' Environmental variables can be written to the file
+##' \code{.Renviron}. This file is read by \emph{R} during startup,
+##' see \code{\link[base]{Startup}}. On GitHub, personal access tokens
+##' function like ordinary OAuth access tokens. They can be used
+##' instead of a password for Git over HTTPS, see
+##' \url{https://help.github.com/articles/creating-an-access-token-for-command-line-use/}
+##' @rdname cred_token-methods
+##' @param token The name of the environmental variable that holds the
+##' personal access token for the authentication. Defualt is
+##' \code{GITHUB_TOKEN}.
+##' @return A S4 \code{cred_token} object
+##' @export
+##' @examples
+##' \dontrun{
+##' ## Create a personal access token credential object.
+##' ## This example assumes that the token is stored in
+##' ## the 'GITHUB_TOKEN' environmental variable.
+##' repo <- repository("git2r")
+##' cred <- cred_token()
+##' push(repo, credentials = cred)
+##' }
+cred_token <- function(token = "GITHUB_TOKEN")
+{
+    new("cred_token", token = token)
+}
+
 ##' Create a new plain-text username and password credential object
 ##'
 ##' @rdname cred_user_pass-methods

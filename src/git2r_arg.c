@@ -126,6 +126,10 @@ int git2r_arg_check_credentials(SEXP arg)
             return -1;
         if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("password"))))
             return -1;
+    } else if (0 == strcmp(CHAR(STRING_ELT(class_name, 0)), "cred_token")) {
+        /* Check token */
+        if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("token"))))
+            return -1;
     } else if (0 == strcmp(CHAR(STRING_ELT(class_name, 0)), "cred_user_pass")) {
         /* Check username and password */
         if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("username"))))
