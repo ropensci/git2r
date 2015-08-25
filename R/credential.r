@@ -65,19 +65,19 @@ setMethod("cred_env",
 ##' @rdname cred_token-methods
 ##' @param token The name of the environmental variable that holds the
 ##' personal access token for the authentication. Defualt is
-##' \code{GITHUB_TOKEN}.
+##' \code{GITHUB_PAT}.
 ##' @return A S4 \code{cred_token} object
 ##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Create a personal access token credential object.
 ##' ## This example assumes that the token is stored in
-##' ## the 'GITHUB_TOKEN' environmental variable.
+##' ## the 'GITHUB_PAT' environmental variable.
 ##' repo <- repository("git2r")
 ##' cred <- cred_token()
 ##' push(repo, credentials = cred)
 ##' }
-cred_token <- function(token = "GITHUB_TOKEN")
+cred_token <- function(token = "GITHUB_PAT")
 {
     new("cred_token", token = token)
 }
