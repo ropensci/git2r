@@ -115,3 +115,6 @@ stopifnot(any(grepl("binary file", capture.output(summary(diff_7)))))
 
 ## TODO: errors
 ## TODO: printing
+
+## Cleanup
+unlink(path, recursive=TRUE)
