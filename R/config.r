@@ -56,23 +56,28 @@ setMethod("config",
                    user.name,
                    user.email)
           {
-              variables <- as.list(match.call(expand.dots = TRUE))
-              variables <- variables[-(1:2)]
+              variables <- list()
 
-              if (length(variables)) {
-                  ## Check that the variable is either a character vector or NULL
-                  check_is_character <- sapply(variables, function(v) {
-                      any(is.character(v), is.null(v))
-                  })
-                  check_is_character <- check_is_character[!check_is_character]
-                  if (length(check_is_character)) {
-                      stop(sprintf("\n%s", paste(names(check_is_character),
-                                                 "must be character",
-                                                 collapse="\n")))
+              if (!missing(user.name)) {
+                  if (!is.null(user.name)) {
+                      if (!is.character(user.name))
+                          stop("'user.name' must be a character vector")
                   }
 
-                  .Call(git2r_config_set, repo, variables)
+                  variables <- c(variables, list(user.name = user.name))
               }
+
+              if (!missing(user.email)) {
+                  if (!is.null(user.email)) {
+                      if (!is.character(user.email))
+                          stop("'user.email' must be a character vector")
+                  }
+
+                  variables <- c(variables, list(user.email = user.email))
+              }
+
+              if (length(variables))
+                  .Call(git2r_config_set, repo, variables)
 
               cfg <- .Call(git2r_config_get, repo)
 
