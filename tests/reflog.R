@@ -16,37 +16,25 @@
 
 library(git2r)
 
-##
 ## Create a directory in tempdir
-##
 path <- tempfile(pattern="git2r-")
 dir.create(path)
 
-##
 ## Initialize a repository
-##
 repo <- init(path)
 config(repo, user.name="Alice", user.email="alice@example.org")
 
-##
 ## Check that reflog is empty
-##
 stopifnot(identical(reflog(repo), list()))
 
-##
 ## Create a file
-##
 writeLines("Hello world!", file.path(path, "test.txt"))
 
-##
 ## add and commit
-##
 add(repo, "test.txt")
 commit.1 <- commit(repo, "Commit message")
 
-##
 ## Check that reflog is not empry
-##
 stopifnot(identical(length(reflog(repo)), 1L))
 reflog_entry <- reflog(repo)[[1]]
 stopifnot(identical(reflog_entry@sha, commit.1@sha))
@@ -55,7 +43,5 @@ stopifnot(identical(reflog_entry@index, 0L))
 stopifnot(identical(reflog_entry@committer@email, "alice@example.org"))
 stopifnot(identical(reflog_entry@message, "commit (initial): Commit message"))
 
-##
 ## Cleanup
-##
 unlink(path, recursive=TRUE)

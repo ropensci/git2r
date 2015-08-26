@@ -16,37 +16,27 @@
 
 library(git2r)
 
-##
 ## Create a directory in tempdir
-##
 path <- tempfile(pattern="git2r-")
 dir.create(path)
 
-##
 ## Initialize a repository
-##
 repo <- init(path)
 config(repo, user.name="Alice", user.email="alice@example.org")
 
-##
 ## Create a file and commit
-##
 writeLines("Hello world!", file.path(path, "test.txt"))
 add(repo, "test.txt")
 commit.1 <- commit(repo, "First commit message")
 
-##
 ## Create new user and change file
-##
 config(repo, user.name="Bob", user.email="bob@example.org")
 writeLines(c("Hello world!", "HELLO WORLD!", "HOLA"),
            file.path(path, "test.txt"))
 add(repo, "test.txt")
 commit.2 <- commit(repo, "Second commit message")
 
-##
 ## Check blame
-##
 b <- blame(repo, "test.txt")
 stopifnot(identical(length(b@hunks), 2L))
 
@@ -76,7 +66,5 @@ stopifnot(identical(b@hunks[[2]]@orig_signature@email, "bob@example.org"))
 stopifnot(identical(b@hunks[[2]]@orig_path, "test.txt"))
 stopifnot(identical(b@hunks[[2]]@boundary, FALSE))
 
-##
 ## Cleanup
-##
 unlink(path, recursive=TRUE)

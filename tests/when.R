@@ -16,9 +16,7 @@
 
 library(git2r)
 
-##
 ## Check when method
-##
 stopifnot(identical(when(new("git_commit",
                              sha = "166f3f779fd7e4165aaa43f2828050ce040052b0",
                              author = new("git_signature",

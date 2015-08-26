@@ -86,7 +86,5 @@ status_exp <- structure(list(staged = structure(list(deleted = "file-1.txt"),
 status_obs <- status(repo)
 stopifnot(identical(status_obs, status_exp))
 
-##
 ## Cleanup
-##
 unlink(path, recursive=TRUE)

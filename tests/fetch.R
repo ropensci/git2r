@@ -16,9 +16,7 @@
 
 library(git2r)
 
-##
 ## Create 2 directories in tempdir
-##
 path_bare <- tempfile(pattern="git2r-")
 path_repo_1 <- tempfile(pattern="git2r-")
 path_repo_2 <- tempfile(pattern="git2r-")
@@ -27,34 +25,24 @@ dir.create(path_bare)
 dir.create(path_repo_1)
 dir.create(path_repo_2)
 
-##
 ## Create repositories
-##
 bare_repo <- init(path_bare, bare = TRUE)
 repo_1 <- clone(path_bare, path_repo_1)
 repo_2 <- clone(path_bare, path_repo_2)
 
-##
 ## Config repositories
-##
 config(repo_1, user.name="Alice", user.email="alice@example.org")
 config(repo_2, user.name="Bob", user.email="bob@example.org")
 
-##
 ## Add changes to repo 1
-##
 writeLines("Hello world", con = file.path(path_repo_1, "test.txt"))
 add(repo_1, "test.txt")
 commit_1 <- commit(repo_1, "Commit message")
 
-##
 ## Push changes from repo 1 to origin
-##
 push(repo_1, "origin", "refs/heads/master")
 
-##
 ## Check result in bare repository
-##
 stopifnot(identical(length(commits(bare_repo)), 1L))
 bare_commit_1 <- commits(bare_repo)[[1]]
 stopifnot(identical(commit_1@sha, bare_commit_1@sha))
@@ -64,19 +52,13 @@ stopifnot(identical(commit_1@summary, bare_commit_1@summary))
 stopifnot(identical(commit_1@message, bare_commit_1@message))
 stopifnot(!identical(commit_1@repo, bare_commit_1@repo))
 
-##
 ## Fetch
-##
 fetch(repo_2, "origin")
 
-##
 ## Test show method of non-empty repository where head is null
-##
 show(repo_2)
 
-##
 ## Cleanup
-##
 unlink(path_bare, recursive=TRUE)
 unlink(path_repo_1, recursive=TRUE)
 unlink(path_repo_2, recursive=TRUE)

@@ -16,38 +16,26 @@
 
 library(git2r)
 
-##
 ## Create a directory in tempdir
-##
 path <- tempfile(pattern="git2r-")
 dir.create(path)
 
-##
 ## Initialize a repository
-##
 repo <- init(path)
 
-##
 ## Config repository
-##
 cfg <- config(repo, user.name="Alice", user.email="alice@example.org")
 
-##
 ## Check configuration
-##
 stopifnot("local" %in% names(cfg))
 stopifnot("user.name" %in% names(cfg$local))
 stopifnot(identical(cfg$local$user.name, "Alice"))
 stopifnot(identical(cfg$local$user.email, "alice@example.org"))
 
-##
 ## Delete entries
-##
 cfg <- config(repo, user.name=NULL, user.email=NULL)
 
-##
 ## Check configuration
-##
 stopifnot(is.null(cfg$local$user.name))
 stopifnot(is.null(cfg$local$user.email))
 
@@ -61,8 +49,5 @@ cfg <- config(repo, user.name="Alice", user.email=user.email)
 stopifnot(identical(cfg$local$user.name, "Alice"))
 stopifnot(identical(cfg$local$user.email, user.email))
 
-
-##
 ## Cleanup
-##
 unlink(path, recursive=TRUE)

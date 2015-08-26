@@ -47,9 +47,7 @@ stopifnot(identical(list.files(path), "test-1.txt"))
 ## Cleanup
 unlink(path, recursive=TRUE)
 
-##
 ## Checkout branch in empty repository
-##
 
 ## Create a directory in tempdir
 path <- tempfile(pattern="git2r-")
