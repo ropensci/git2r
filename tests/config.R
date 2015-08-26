@@ -51,6 +51,17 @@ cfg <- config(repo, user.name=NULL, user.email=NULL)
 stopifnot(is.null(cfg$local$user.name))
 stopifnot(is.null(cfg$local$user.email))
 
+## Supply values as objects
+user.name <- "Alice"
+user.email <- "alice@example.org"
+cfg <- config(repo, user.name=user.name, user.email="alice@example.org")
+stopifnot(identical(cfg$local$user.name, user.name))
+stopifnot(identical(cfg$local$user.email, "alice@example.org"))
+cfg <- config(repo, user.name="Alice", user.email=user.email)
+stopifnot(identical(cfg$local$user.name, "Alice"))
+stopifnot(identical(cfg$local$user.email, user.email))
+
+
 ##
 ## Cleanup
 ##
