@@ -119,6 +119,7 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_remote_rename", (DL_FUNC)&git2r_remote_rename, 3},
     {"git2r_remote_set_url", (DL_FUNC)&git2r_remote_set_url, 3},
     {"git2r_remote_url", (DL_FUNC)&git2r_remote_url, 2},
+    {"git2r_ls_remote", (DL_FUNC)&git2r_ls_remote, 2},
     {"git2r_repository_can_open", (DL_FUNC)&git2r_repository_can_open, 1},
     {"git2r_repository_discover", (DL_FUNC)&git2r_repository_discover, 1},
     {"git2r_repository_fetch_heads", (DL_FUNC)&git2r_repository_fetch_heads, 1},

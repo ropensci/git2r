@@ -391,3 +391,71 @@ cleanup:
 
     return url;
 }
+
+SEXP git2r_ls_remote(SEXP repo, SEXP name)
+{
+    if (git2r_arg_check_string(name))
+        git2r_error(__func__, NULL, "'name'", git2r_err_string_arg);
+
+    const char *name_ = CHAR(STRING_ELT(name, 0));
+    SEXP result = R_NilValue;
+    SEXP names = R_NilValue;
+    git_remote *remote = NULL;
+    int error;
+    const git_remote_head **refs;
+    size_t refs_len, i;
+    git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
+    git_repository *repo_ = NULL;
+
+    repo_ = git2r_repository_open(repo);
+
+    error = git_remote_lookup(&remote, repo_, name_);
+    if (error < 0) {
+      error = git_remote_create_anonymous(&remote, repo_, name_);
+      if (error < 0) {
+        goto cleanup;
+      }
+    }
+
+    /**
+     * Connect to the remote and call the printing function for
+     * each of the remote references.
+     */
+    callbacks.credentials = git2r_cred_acquire_cb;
+
+    error = git_remote_connect(remote, GIT_DIRECTION_FETCH, &callbacks);
+    if (error < 0) {
+      goto cleanup;
+    }
+
+    /**
+     * Get the list of references on the remote and print out
+     * their name next to what they point to.
+     */
+    if (git_remote_ls(&refs, &refs_len, remote) < 0) {
+      goto cleanup;
+    }
+
+    PROTECT(result = allocVector(STRSXP, refs_len));
+    PROTECT(names = allocVector(STRSXP, refs_len));
+
+    for (i = 0; i < refs_len; i++) {
+      char oid[GIT_OID_HEXSZ + 1] = {0};
+      git_oid_fmt(oid, &refs[i]->oid);
+      SET_STRING_ELT(result, i, mkChar(oid));
+      SET_STRING_ELT(names, i, mkChar(refs[i]->name));
+    }
+    setAttrib(result, R_NamesSymbol, names);
+
+cleanup:
+    if (repo_)
+        git_repository_free(repo_);
+
+    if (result != R_NilValue)
+      UNPROTECT(2);
+
+    if (error)
+        git2r_error(__func__, giterr_last(), NULL, NULL);
+
+    return(result);
+}

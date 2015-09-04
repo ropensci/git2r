@@ -350,3 +350,44 @@ setMethod("remote_url",
               .Call(git2r_remote_url, repo, remote)
           }
 )
+
+
+##' List references in a remote repository
+##'
+##' Displays references available in a remote repository along with the associated commit IDs.
+##' @rdname ls_remote-methods
+##' @docType methods
+##' @param name Character vector with the with "remote" repository URL to query.
+##' @return Character vector for each reference with the associated commit IDs.
+##' @param repo an optional repository object used to store data temporarily.
+##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ls_remote("https://github.com/ropensci/git2r")
+##' }
+##' @export
+setGeneric("ls_remote",
+           signature = c("name", "repo"),
+           function(name, repo)
+           standardGeneric("ls_remote"))
+
+##' @rdname ls_remote-methods
+##' @export
+setMethod("ls_remote",
+          signature(name = "character",
+                    repo = "missing"),
+          function(name)
+          {
+              .Call(git2r_ls_remote, git2r::init(tempdir()), name)
+          }
+)
+##' @rdname ls_remote-methods
+##' @export
+setMethod("ls_remote",
+          signature(name = "character",
+                    repo = "git_repository"),
+          function(name, repo)
+          {
+              .Call(git2r_ls_remote, repo, name)
+          }
+)
