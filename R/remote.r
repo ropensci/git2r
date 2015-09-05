@@ -359,7 +359,7 @@ setMethod("remote_url",
 ##' @rdname remote_ls-methods
 ##' @docType methods
 ##' @param name Character vector with the "remote" repository URL to query or
-##the name of the remote if a \code{repo} argument is given.
+##' the name of the remote if a \code{repo} argument is given.
 ##' @param repo an optional repository object used if remotes are specified by name.
 ##' @param credentials The credentials for the remote repository.
 ##' @keywords methods
