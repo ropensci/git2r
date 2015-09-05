@@ -3,7 +3,8 @@ git2r 0.11.0.9000
 
 NEW FEATURES
 
-* Add 'ls_remote' method to list references in a remote repository.
+* Add 'remote_ls' method to list references in a remote repository akin to the
+  `git ls-remote` command.
 
 * Add 'remote_set_url' method to set the remote's url in the
   configuration.

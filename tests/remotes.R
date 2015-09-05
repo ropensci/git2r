@@ -56,13 +56,13 @@ remote_remove(repo, "foobar")
 
 stopifnot(identical(remotes(repo), character(0)))
 
-refs <- ls_remote("https://github.com/ropensci/git2r")
+refs <- remote_ls("https://github.com/ropensci/git2r")
 stopifnot(length(refs) > 0)
 stopifnot(names(refs) > 0)
 stopifnot(any(names(refs) == "HEAD"))
 
 # an invalid URL should throw an error
-tools::assertError(ls_remote("bad"))
+tools::assertError(remote_ls("bad"))
 
 ## Cleanup
 unlink(path, recursive=TRUE)

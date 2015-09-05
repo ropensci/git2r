@@ -354,40 +354,34 @@ setMethod("remote_url",
 
 ##' List references in a remote repository
 ##'
-##' Displays references available in a remote repository along with the associated commit IDs.
-##' @rdname ls_remote-methods
+##' Displays references available in a remote repository along with the
+##' associated commit IDs.  Akin to the 'git ls-remote' command.
+##' @rdname remote_ls-methods
 ##' @docType methods
-##' @param name Character vector with the with "remote" repository URL to query.
-##' @return Character vector for each reference with the associated commit IDs.
-##' @param repo an optional repository object used to store data temporarily.
+##' @param name Character vector with the "remote" repository URL to query or
+##the name of the remote if a \code{repo} argument is given.
+##' @param repo an optional repository object used if remotes are specified by name.
+##' @param credentials The credentials for the remote repository.
 ##' @keywords methods
+##' @return Character vector for each reference with the associated commit IDs.
 ##' @examples
 ##' \dontrun{
-##' ls_remote("https://github.com/ropensci/git2r")
+##' remote_ls("https://github.com/ropensci/git2r")
 ##' }
 ##' @export
-setGeneric("ls_remote",
-           signature = c("name", "repo"),
-           function(name, repo)
-           standardGeneric("ls_remote"))
+setGeneric("remote_ls",
+           signature = c("name"),
+           function(name,
+                    repo = git2r::init(tempdir()),
+                    credentials = NULL)
+           standardGeneric("remote_ls"))
 
-##' @rdname ls_remote-methods
+##' @rdname remote_ls-methods
 ##' @export
-setMethod("ls_remote",
-          signature(name = "character",
-                    repo = "missing"),
-          function(name)
+setMethod("remote_ls",
+          signature(name = "character"),
+          function(name, repo, credentials)
           {
-              .Call(git2r_ls_remote, git2r::init(tempdir()), name)
-          }
-)
-##' @rdname ls_remote-methods
-##' @export
-setMethod("ls_remote",
-          signature(name = "character",
-                    repo = "git_repository"),
-          function(name, repo)
-          {
-              .Call(git2r_ls_remote, repo, name)
+              .Call(git2r_remote_ls, name, repo, credentials)
           }
 )
