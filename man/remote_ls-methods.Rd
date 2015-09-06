@@ -6,10 +6,9 @@
 \alias{remote_ls,character-method}
 \title{List references in a remote repository}
 \usage{
-remote_ls(name, repo = git2r::init(tempdir()), credentials = NULL)
+remote_ls(name, repo = NULL, credentials = NULL)
 
-\S4method{remote_ls}{character}(name, repo = git2r::init(tempdir()),
-  credentials = NULL)
+\S4method{remote_ls}{character}(name, repo = NULL, credentials = NULL)
 }
 \arguments{
 \item{name}{Character vector with the "remote" repository URL to query or
