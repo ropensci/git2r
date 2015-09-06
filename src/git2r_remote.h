@@ -33,5 +33,6 @@ SEXP git2r_remote_remove(SEXP repo, SEXP remote);
 SEXP git2r_remote_rename(SEXP repo, SEXP oldname, SEXP newname);
 SEXP git2r_remote_set_url(SEXP repo, SEXP name, SEXP url);
 SEXP git2r_remote_url(SEXP repo, SEXP remote);
+SEXP git2r_remote_ls(SEXP name, SEXP repo, SEXP credentials);
 
 #endif
