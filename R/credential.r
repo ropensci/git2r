@@ -19,7 +19,7 @@
 ##' Environmental variables can be written to the file
 ##' \code{.Renviron}. This file is read by \emph{R} during startup,
 ##' see \code{\link[base]{Startup}}.
-##' @rdname cred_env-methods
+##' @family git credential functions
 ##' @param username The name of the environmental variable that holds
 ##' the username for the authentication.
 ##' @param password The name of the environmental variable that holds
@@ -40,7 +40,6 @@ setGeneric("cred_env",
            function(username, password)
            standardGeneric("cred_env"))
 
-##' @rdname cred_env-methods
 ##' @export
 setMethod("cred_env",
           signature(username = "character",
@@ -62,7 +61,7 @@ setMethod("cred_env",
 ##' function like ordinary OAuth access tokens. They can be used
 ##' instead of a password for Git over HTTPS, see
 ##' \url{https://help.github.com/articles/creating-an-access-token-for-command-line-use/}
-##' @rdname cred_token-methods
+##' @family git credential functions
 ##' @param token The name of the environmental variable that holds the
 ##' personal access token for the authentication. Defualt is
 ##' \code{GITHUB_PAT}.
@@ -84,7 +83,7 @@ cred_token <- function(token = "GITHUB_PAT")
 
 ##' Create a new plain-text username and password credential object
 ##'
-##' @rdname cred_user_pass-methods
+##' @family git credential functions
 ##' @param username The username of the credential
 ##' @param password The password of the credential
 ##' @return A S4 \code{cred_user_pass} object
@@ -99,7 +98,6 @@ setGeneric("cred_user_pass",
            function(username, password)
            standardGeneric("cred_user_pass"))
 
-##' @rdname cred_user_pass-methods
 ##' @export
 setMethod("cred_user_pass",
           signature(username = "character",
@@ -114,7 +112,7 @@ setMethod("cred_user_pass",
 
 ##' Create a new passphrase-protected ssh key credential object
 ##'
-##' @rdname cred_ssh_key-methods
+##' @family git credential functions
 ##' @param publickey The path to the public key of the
 ##' credential. Default is \code{'~/.ssh/id_rsa.pub'}
 ##' @param privatekey The path to the private key of the
