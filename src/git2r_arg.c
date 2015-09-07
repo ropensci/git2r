@@ -362,7 +362,7 @@ int git2r_arg_check_real(SEXP arg)
     if (R_NilValue == arg
         || !isReal(arg)
         || 1 != length(arg)
-        || ISNA(REAL(arg)[0]))
+        || !R_finite(REAL(arg)[0]))
         return -1;
     return 0;
 }
