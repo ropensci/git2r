@@ -40,6 +40,7 @@ setGeneric("cred_env",
            function(username, password)
            standardGeneric("cred_env"))
 
+##' @rdname cred_env-methods
 ##' @export
 setMethod("cred_env",
           signature(username = "character",
@@ -98,6 +99,7 @@ setGeneric("cred_user_pass",
            function(username, password)
            standardGeneric("cred_user_pass"))
 
+##' @rdname cred_user_pass-methods
 ##' @export
 setMethod("cred_user_pass",
           signature(username = "character",
