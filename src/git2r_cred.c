@@ -20,6 +20,7 @@
 #include <Rinternals.h>
 #include <Rdefines.h>
 
+#include "buffer.h"
 #include "common.h"
 
 #include "git2r_cred.h"
@@ -93,6 +94,11 @@ static int git2r_cred_env(
         if (err)
             goto cleanup;
 
+        if (!git_buf_len(&username)) {
+            err = -1;
+            goto cleanup;
+        }
+
         /* Read value of the password environment variable */
         err = git__getenv(&password,
                           CHAR(STRING_ELT(
@@ -100,6 +106,11 @@ static int git2r_cred_env(
                                             Rf_install("password")), 0)));
         if (err)
             goto cleanup;
+
+        if (!git_buf_len(&password)) {
+            err = -1;
+            goto cleanup;
+        }
 
         err = git_cred_userpass_plaintext_new(
             cred,
