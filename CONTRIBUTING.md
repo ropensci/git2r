@@ -72,10 +72,10 @@ git commit -s.
 
 ## Overall design `git2r <- libgit2 + R`
 
-Internally the git2r package use the
-[libgit2](https://libgit2.github.com/) C library to interface a Git
+Internally the git2r package uses the
+[libgit2](https://libgit2.github.com/) C library to interact with a Git
 repository. C code can be called from R using the `.Call`
-method. However, in order to map the R data structures to C data
+method. However, in order to map the R data structures to the C data
 structures used by libgit2 an intermediate layer of C code is between
 the R methods and libgit2, see figure below.
 
@@ -87,7 +87,7 @@ The package is based on S4 classes/methods. Each S4 class is prefixed
 with `git_` to have the same name as the corresponding libgit2 data
 structure. The naming strategy for methods is to use the data
 structure (branch, note, stash) followed by the action (create, list,
-remove) e.g. note_create, note_list and note_remove etc. However, the
+remove), e.g. `note_create`, `note_list`, and `note_remove`, etc. However, the
 naming is not completely consistent in the package, e.g. `init`
 instead of `repository_init`.
 
@@ -96,10 +96,10 @@ instead of `repository_init`.
 
 The package documentation is written with
 [roxygen2](http://cran.r-project.org/web/packages/roxygen2/index.html)
-version 4.0.1.  All contributed methods and classes must be
+version 4.1.1.  All contributed methods and classes must be
 documented. Moreover, all exported methods should have examples of
 their usage. Please file an issue if you spot a method in the
-documentation without an example, or better a pull request. The
+documentation without an example, or, better yet, a pull request. The
 recommended way to generate man files from the roxygen documentation
 is to run the `roxygen` target in the `Makefile`
 
@@ -121,20 +121,20 @@ dependencies in `src/http-parser` and `src/regex`.
 #### Naming
 
 The git2r C functions are named with the prefix `git2r_module` where
-`module` group related functionality e.g. `git2r_repository_open` and
+`module` groups related functionality, e.g. `git2r_repository_open` and
 `git2r_repository_init`. The source code for each module is in
 `git2r_module.c` and `git2r_module.h`.
 
 #### Code layout
 
 1. **Argument checking:** All R arguments must be checked prior to
-   their usage. There exists several help functions in
+   their usage. There are several help functions in
    `src/git2r_arg.h` to facilitate argument checking. The `repo`
    argument is checked in the `git2r_repository_open` function and
    returns `NULL` on failure.
 
 2. **Perform the actual work:** The error code (return value) from
-   each call to a libit2 function must be checked. In case of an error
+   each call to a libit2 function must be checked. In case of an error,
    initiate cleanup.
 
 3. **Cleanup:** All allocated resources must be freed. In case of an
@@ -148,7 +148,7 @@ documentatation of the internal git2r C code.
 ### Code style
 
 It's very important to have a consistent code style, so before
-submitting, make sure the code is matching surrounding code.
+submitting, make sure the code matches surrounding code.
 
 ### Makefile
 
