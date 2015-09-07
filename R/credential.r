@@ -19,6 +19,7 @@
 ##' Environmental variables can be written to the file
 ##' \code{.Renviron}. This file is read by \emph{R} during startup,
 ##' see \code{\link[base]{Startup}}.
+##' @rdname cred_env-methods
 ##' @family git credential functions
 ##' @param username The name of the environmental variable that holds
 ##' the username for the authentication.
@@ -84,6 +85,7 @@ cred_token <- function(token = "GITHUB_PAT")
 
 ##' Create a new plain-text username and password credential object
 ##'
+##' @rdname cred_user_pass-methods
 ##' @family git credential functions
 ##' @param username The username of the credential
 ##' @param password The password of the credential
