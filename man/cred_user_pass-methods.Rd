@@ -27,5 +27,10 @@ Create a new plain-text username and password credential object
 cred_user_pass("Random Developer", "SecretPassword")
 }
 }
+\seealso{
+Other git.credential.functions: \code{\link{cred_env}},
+  \code{\link{cred_env,character,character-method}};
+  \code{\link{cred_ssh_key}}; \code{\link{cred_token}}
+}
 \keyword{methods}
 
