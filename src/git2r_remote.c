@@ -402,7 +402,7 @@ cleanup:
  */
 SEXP git2r_remote_ls(SEXP name, SEXP repo, SEXP credentials)
 {
-    const char *name_ = CHAR(STRING_ELT(name, 0));
+    const char *name_ = NULL;
     SEXP result = R_NilValue;
     SEXP names = R_NilValue;
     git_remote *remote = NULL;
@@ -424,6 +424,7 @@ SEXP git2r_remote_ls(SEXP name, SEXP repo, SEXP credentials)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
+    name_ = CHAR(STRING_ELT(name, 0));
     err = git_remote_lookup(&remote, repository, name_);
     if (err < 0) {
         err = git_remote_create_anonymous(&remote, repository, name_);
