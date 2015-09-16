@@ -20,7 +20,8 @@
 ##' @docType methods
 ##' @param repo the repository
 ##' @param credentials The credentials for remote repository
-##' access. Default is NULL.
+##' access. Default is NULL. To use and query an ssh-agent for the ssh
+##' key credentials, let this parameter be NULL (the default).
 ##' @param merger Who made the merge, if the merge is non-fast forward
 ##' merge that creates a merge commit.
 ##' @return invisible(NULL)

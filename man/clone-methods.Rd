@@ -22,8 +22,9 @@ clone(url, local_path, bare = FALSE, branch = NULL, credentials = NULL,
 \item{branch}{The name of the branch to checkout. Default is NULL
 which means to use the remote's default branch.}
 
-\item{credentials}{The credentials for remote repository access. Default
-is NULL.}
+\item{credentials}{The credentials for remote repository
+access. Default is NULL. To use and query an ssh-agent for the ssh
+key credentials, let this parameter be NULL (the default).}
 
 \item{progress}{Show progress. Default is TRUE.}
 }

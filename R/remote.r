@@ -360,8 +360,11 @@ setMethod("remote_url",
 ##' @docType methods
 ##' @param name Character vector with the "remote" repository URL to query or
 ##' the name of the remote if a \code{repo} argument is given.
-##' @param repo an optional repository object used if remotes are specified by name.
-##' @param credentials The credentials for the remote repository.
+##' @param repo an optional repository object used if remotes are
+##' specified by name.
+##' @param credentials The credentials for remote repository
+##' access. Default is NULL. To use and query an ssh-agent for the ssh
+##' key credentials, let this parameter be NULL (the default).
 ##' @keywords methods
 ##' @return Character vector for each reference with the associated commit IDs.
 ##' @examples

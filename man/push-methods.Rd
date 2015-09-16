@@ -23,7 +23,8 @@ push(object, ...)
 with care. Default is FALSE.}
 
 \item{credentials}{The credentials for remote repository
-access. Default is NULL.}
+access. Default is NULL. To use and query an ssh-agent for the ssh
+key credentials, let this parameter be NULL (the default).}
 
 \item{name}{The remote's name. Default is NULL.}
 

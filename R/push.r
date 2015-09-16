@@ -23,7 +23,8 @@
 ##' @param force Force your local revision to the remote repo. Use it
 ##' with care. Default is FALSE.
 ##' @param credentials The credentials for remote repository
-##' access. Default is NULL.
+##' access. Default is NULL. To use and query an ssh-agent for the ssh
+##' key credentials, let this parameter be NULL (the default).
 ##' @return invisible(NULL)
 ##' @seealso \code{\linkS4class{cred_user_pass}},
 ##' \code{\linkS4class{cred_ssh_key}}

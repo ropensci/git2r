@@ -15,7 +15,8 @@ pull(repo, credentials = NULL, merger = default_signature(repo))
 \item{repo}{the repository}
 
 \item{credentials}{The credentials for remote repository
-access. Default is NULL.}
+access. Default is NULL. To use and query an ssh-agent for the ssh
+key credentials, let this parameter be NULL (the default).}
 
 \item{merger}{Who made the merge, if the merge is non-fast forward
 merge that creates a merge commit.}

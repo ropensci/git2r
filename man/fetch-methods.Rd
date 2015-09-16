@@ -16,7 +16,8 @@ fetch(repo, name, credentials = NULL)
 \item{name}{the remote's name}
 
 \item{credentials}{The credentials for remote repository
-access. Default is NULL.}
+access. Default is NULL. To use and query an ssh-agent for the ssh
+key credentials, let this parameter be NULL (the default).}
 }
 \value{
 invisible \code{\linkS4class{git_transfer_progress}} object

@@ -14,9 +14,12 @@ remote_ls(name, repo = NULL, credentials = NULL)
 \item{name}{Character vector with the "remote" repository URL to query or
 the name of the remote if a \code{repo} argument is given.}
 
-\item{repo}{an optional repository object used if remotes are specified by name.}
+\item{repo}{an optional repository object used if remotes are
+specified by name.}
 
-\item{credentials}{The credentials for the remote repository.}
+\item{credentials}{The credentials for remote repository
+access. Default is NULL. To use and query an ssh-agent for the ssh
+key credentials, let this parameter be NULL (the default).}
 }
 \value{
 Character vector for each reference with the associated commit IDs.
