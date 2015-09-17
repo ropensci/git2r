@@ -104,7 +104,7 @@ sync_libgit2:
 	-cp -f ../libgit2/src/xdiff/*.c src/libgit2/xdiff
 	-cp -f ../libgit2/src/xdiff/*.h src/libgit2/xdiff
 	cd src/libgit2 && patch -i ../../patches/cache-pass-R-CMD-check-git2r.patch
-	cd src/libgit2 && patch -i ../../patches/checkout-pass-R-CMD-check-git2r.patch
+	cd src/libgit2 && patch -i ../../patches/checkout.patch
 	cd src/libgit2 && patch -i ../../patches/common-remove-includes.patch
 	cd src/libgit2 && patch -i ../../patches/diff_print-pass-R-CMD-check-git2r.patch
 	cd src/libgit2 && patch -i ../../patches/rebase-pass-R-CMD-check-git2r.patch
