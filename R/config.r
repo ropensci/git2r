@@ -43,9 +43,7 @@
 ##'}
 setGeneric("config",
            signature = "repo",
-           function(repo,
-                    user.name,
-                    user.email)
+           function(repo, ...)
            standardGeneric("config"))
 
 ##' @rdname config-methods
@@ -79,6 +77,24 @@ setMethod("config",
               if (length(variables))
                   .Call(git2r_config_set, repo, variables)
 
+              cfg <- .Call(git2r_config_get, repo)
+
+              ## Sort the variables within levels by name
+              structure(lapply(cfg, function(x) x[order(names(x))]),
+                        class = "git_config")
+          }
+)
+
+##' @rdname config-methods
+##' @export
+setMethod("config",
+          signature(repo = "missing"),
+          function()
+          {
+              ## Try to also include repository in current working directory
+              repo <- discover_repository(getwd())
+              if (!is.null(repo))
+                  repo <- repository(repo)
               cfg <- .Call(git2r_config_get, repo)
 
               ## Sort the variables within levels by name
