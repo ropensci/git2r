@@ -306,13 +306,19 @@ SEXP git2r_config_set(SEXP repo, SEXP variables)
 
     n = length(variables);
     if (n) {
-        repository = git2r_repository_open(repo);
-        if (!repository)
-            git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
+        if (repo != R_NilValue) {
+            repository = git2r_repository_open(repo);
+            if (!repository)
+                git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-        err = git_repository_config(&cfg, repository);
-        if (err)
-            goto cleanup;
+            err = git_repository_config(&cfg, repository);
+            if (err)
+                goto cleanup;
+        } else {
+            err = git_config_open_default(&cfg);
+            if (err)
+                goto cleanup;
+        }
 
         names = getAttrib(variables, R_NamesSymbol);
         for (i = 0; i < n; i++) {
