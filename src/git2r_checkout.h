@@ -22,6 +22,7 @@
 #include <R.h>
 #include <Rinternals.h>
 
+SEXP git2r_checkout_path(SEXP repo, SEXP path);
 SEXP git2r_checkout_tree(SEXP repo, SEXP revision, SEXP force);
 
 #endif

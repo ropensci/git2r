@@ -29,6 +29,34 @@ writeLines("Hello world!", file.path(path, "test.txt"))
 add(repo, 'test.txt')
 commit.1 <- commit(repo, "First commit message")
 
+## Edit file and checkout
+writeLines(c("Hello world!", "Hello world!"), file.path(path, "test.txt"))
+status_exp_1 <- structure(list(staged = structure(list(),
+                                   .Names = character(0)),
+                               unstaged = structure(list(modified = "test.txt"),
+                                   .Names = "modified"),
+                               untracked = structure(list(),
+                                   .Names = character(0))),
+                          .Names = c("staged", "unstaged", "untracked"),
+                          class = "git_status")
+status_obs_1 <- status(repo)
+str(status_exp_1)
+str(status_obs_1)
+stopifnot(identical(status_obs_1, status_exp_1))
+checkout(repo, path = "test.txt")
+status_exp_2 <- structure(list(staged = structure(list(),
+                                   .Names = character(0)),
+                               unstaged = structure(list(),
+                                   .Names = character(0)),
+                               untracked = structure(list(),
+                                   .Names = character(0))),
+                          .Names = c("staged", "unstaged", "untracked"),
+                          class = "git_status")
+status_obs_2 <- status(repo)
+str(status_exp_2)
+str(status_obs_2)
+stopifnot(identical(status_obs_2, status_exp_2))
+
 ## Create second commit
 writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test.txt"))
 add(repo, 'test.txt')

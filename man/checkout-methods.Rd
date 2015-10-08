@@ -11,8 +11,8 @@
 \usage{
 checkout(object, ...)
 
-\S4method{checkout}{git_repository}(object, branch, create = FALSE,
-  force = FALSE)
+\S4method{checkout}{git_repository}(object, branch = NULL, create = FALSE,
+  force = FALSE, path = NULL, ...)
 
 \S4method{checkout}{git_branch}(object, force = FALSE)
 
@@ -27,13 +27,17 @@ be used to update the working directory.}
 \item{...}{Additional arguments affecting the checkout}
 
 \item{branch}{If object is a repository, the name of the branch to
-check out.}
+check out. Default is NULL.}
 
 \item{create}{If object is a repository, then branch is created if
 doesn't exist.}
 
 \item{force}{If TRUE, then make working directory match
 target. This will throw away local changes. Default is FALSE.}
+
+\item{path}{Limit the checkout operation to only certain
+paths. This argument is only used if branch is NULL. Default is
+NULL.}
 }
 \value{
 invisible NULL
@@ -89,6 +93,18 @@ checkout(repo_2, "dev")
 
 ## Read content of 'test.txt'
 readLines(file.path(path_repo_2, "test.txt"))
+
+## Edit "test.txt" in repo_2
+writeLines("Hello world!", con = file.path(path_repo_2, "test.txt"))
+
+## Check status
+status(repo_2)
+
+## Checkout "test.txt"
+checkout(repo_2, path = "test.txt")
+
+## Check status
+status(repo_2)
 }
 }
 \keyword{methods}

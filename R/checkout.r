@@ -26,11 +26,14 @@
 ##' be used to update the working directory.
 ##' @param ... Additional arguments affecting the checkout
 ##' @param branch If object is a repository, the name of the branch to
-##' check out.
+##' check out. Default is NULL.
 ##' @param create If object is a repository, then branch is created if
 ##' doesn't exist.
 ##' @param force If TRUE, then make working directory match
 ##' target. This will throw away local changes. Default is FALSE.
+##' @param path Limit the checkout operation to only certain
+##' paths. This argument is only used if branch is NULL. Default is
+##' NULL.
 ##' @return invisible NULL
 ##' @keywords methods
 ##' @include S4_classes.r
@@ -79,6 +82,18 @@
 ##'
 ##' ## Read content of 'test.txt'
 ##' readLines(file.path(path_repo_2, "test.txt"))
+##'
+##' ## Edit "test.txt" in repo_2
+##' writeLines("Hello world!", con = file.path(path_repo_2, "test.txt"))
+##'
+##' ## Check status
+##' status(repo_2)
+##'
+##' ## Checkout "test.txt"
+##' checkout(repo_2, path = "test.txt")
+##'
+##' ## Check status
+##' status(repo_2)
 ##' }
 setGeneric("checkout",
            signature = "object",
@@ -90,66 +105,80 @@ setGeneric("checkout",
 ##' @export
 setMethod("checkout",
           signature(object = "git_repository"),
-          function(object, branch, create = FALSE, force = FALSE)
+          function(object,
+                   branch = NULL,
+                   create = FALSE,
+                   force = FALSE,
+                   path = NULL,
+                   ...)
           {
-              ## Check branch argument
-              if (missing(branch))
-                  stop("missing 'branch' argument")
-              if (any(!is.character(branch), !identical(length(branch), 1L)))
-                  stop("'branch' must be a character vector of length one")
+              if (!is.null(branch)) {
+                  if (any(!is.character(branch), !identical(length(branch), 1L)))
+                      stop("'branch' must be a character vector of length one")
 
-              if (is_empty(object)) {
-                  if (!identical(create, TRUE))
-                      stop(sprintf("'%s' did not match any branch", branch))
-                  ref_name <- paste0("refs/heads/", branch)
-                  .Call(git2r_repository_set_head, object, ref_name)
-              } else {
-                  if (identical(branch, "-")) {
-                      ## Determine previous branch name
-                      branch <- revparse_single(object, "@{-1}")@sha
-                      branch <- sapply(references(object), function(x) {
-                          ifelse(x@sha == branch, x@shorthand, NA_character_)
-                      })
-                      branch <- branch[!sapply(branch, is.na)]
-                      branch <- sapply(branches(object, "local"), function(x) {
-                          ifelse(x@name %in% branch, x@name, NA_character_)
-                      })
-                      branch <- branch[!sapply(branch, is.na)]
-                      if (any(!is.character(branch), !identical(length(branch), 1L)))
-                          stop("'branch' must be a character vector of length one")
-                  }
-
-                  ## Check if branch exists in a local branch
-                  lb <- branches(object, "local")
-                  lb <- lb[sapply(lb, slot, "name") == branch]
-                  if (length(lb)) {
-                      checkout(lb[[1]], force = force)
+                  if (is_empty(object)) {
+                      if (!identical(create, TRUE))
+                          stop(sprintf("'%s' did not match any branch", branch))
+                      ref_name <- paste0("refs/heads/", branch)
+                      .Call(git2r_repository_set_head, object, ref_name)
                   } else {
-                      ## Check if there exists exactly one remote branch
-                      ## with a matching name.
-                      rb <- branches(object, "remote")
+                      if (identical(branch, "-")) {
+                          ## Determine previous branch name
+                          branch <- revparse_single(object, "@{-1}")@sha
+                          branch <- sapply(references(object), function(x) {
+                                        ifelse(x@sha == branch,
+                                               x@shorthand,
+                                               NA_character_)
+                                    })
+                          branch <- branch[!sapply(branch, is.na)]
+                          branch <- sapply(branches(object, "local"), function(x) {
+                                        ifelse(x@name %in% branch,
+                                               x@name,
+                                               NA_character_)
+                                    })
+                          branch <- branch[!sapply(branch, is.na)]
+                          if (any(!is.character(branch),
+                                  !identical(length(branch), 1L))) {
+                              stop("'branch' must be a character vector of length one")
+                          }
+                      }
 
-                      ## Split remote/name to check for a unique name
-                      name <- sapply(rb, function(x) {
-                          remote <- strsplit(x@name, "/")[[1]][1]
-                          sub(paste0("^", remote, "/"), "", x@name)
-                      })
-                      i <- which(name == branch)
-                      if (identical(length(i), 1L)) {
-                          ## Create branch and track remote
-                          commit <- lookup(object, branch_target(rb[[i]]))
-                          branch <- branch_create(commit, branch)
-                          branch_set_upstream(branch, rb[[i]]@name)
-                          checkout(branch, force = force)
+                      ## Check if branch exists in a local branch
+                      lb <- branches(object, "local")
+                      lb <- lb[sapply(lb, slot, "name") == branch]
+                      if (length(lb)) {
+                          checkout(lb[[1]], force = force)
                       } else {
-                          if (!identical(create, TRUE))
-                              stop(sprintf("'%s' did not match any branch", branch))
+                          ## Check if there exists exactly one remote
+                          ## branch with a matching name.
+                          rb <- branches(object, "remote")
 
-                          ## Create branch
-                          commit <- lookup(object, branch_target(head(object)))
-                          checkout(branch_create(commit, branch), force = force)
+                          ## Split remote/name to check for a unique name
+                          name <- sapply(rb, function(x) {
+                                      remote <- strsplit(x@name, "/")[[1]][1]
+                                      sub(paste0("^", remote, "/"), "", x@name)
+                                  })
+                          i <- which(name == branch)
+                          if (identical(length(i), 1L)) {
+                              ## Create branch and track remote
+                              commit <- lookup(object, branch_target(rb[[i]]))
+                              branch <- branch_create(commit, branch)
+                              branch_set_upstream(branch, rb[[i]]@name)
+                              checkout(branch, force = force)
+                          } else {
+                              if (!identical(create, TRUE))
+                                  stop(sprintf("'%s' did not match any branch", branch))
+
+                              ## Create branch
+                              commit <- lookup(object, branch_target(head(object)))
+                              checkout(branch_create(commit, branch), force = force)
+                          }
                       }
                   }
+              } else if (!is.null(path)) {
+                  .Call(git2r_checkout_path, object, path)
+              } else {
+                  stop("missing 'branch' or 'path' argument")
               }
 
               invisible(NULL)

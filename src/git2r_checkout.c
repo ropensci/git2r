@@ -26,6 +26,66 @@
 #include "git2r_repository.h"
 
 /**
+ * Checkout path
+ *
+ * @param repo S4 class git_repository
+ * @param path The paths to checkout
+ * @return R_NilValue
+ */
+SEXP git2r_checkout_path(SEXP repo, SEXP path)
+{
+    int err;
+    size_t i, len;
+    git_repository *repository = NULL;
+    git_checkout_options opts = GIT_CHECKOUT_OPTIONS_INIT;
+
+    if (git2r_arg_check_string_vec(path))
+        git2r_error(__func__, NULL, "'path'", git2r_err_string_vec_arg);
+
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
+
+    /* Count number of non NA values */
+    len = length(path);
+    for (i = 0; i < len; i++)
+        if (NA_STRING != STRING_ELT(path, i))
+            opts.paths.count++;
+
+    /* We are done if no non-NA values  */
+    if (!opts.paths.count)
+        goto cleanup;
+
+    /* Allocate the strings in pathspec */
+    opts.paths.strings = malloc(opts.paths.count * sizeof(char*));
+    if (!opts.paths.strings) {
+        giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
+        err = GIT_ERROR;
+        goto cleanup;
+    }
+
+    /* Populate the strings in opts.paths */
+    for (i = 0; i < opts.paths.count; i++)
+        if (NA_STRING != STRING_ELT(path, i))
+            opts.paths.strings[i] = (char *)CHAR(STRING_ELT(path, i));
+
+    opts.checkout_strategy = GIT_CHECKOUT_FORCE;
+    err = git_checkout_head(repository, &opts);
+
+cleanup:
+    if (opts.paths.strings)
+        free(opts.paths.strings);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (err)
+        git2r_error(__func__, giterr_last(), NULL, NULL);
+
+    return R_NilValue;
+}
+
+/**
  * Checkout tree
  *
  * @param repo S4 class git_repository
