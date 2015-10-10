@@ -21,11 +21,6 @@
 /**
  * Changed all printf to Rprintf to pass 'R CMD check git2r'
  * 2014-08-19: Stefan Widgren <stefan.widgren@gmail.com>
- *
- * Remove 'defined(GIT_WIN32)' from 'defined(GIT_WIN32) || defined(BSD)'
- * to skip function git_qsort_r_glue_cmp and typedef git_qsort_r_glue
- * on Windows.
- * 2015-01-13: Stefan Widgren <stefan.widgren@gmail.com>
  */
 void Rprintf(const char*, ...);
 
@@ -622,7 +617,7 @@ size_t git__unescape(char *str)
 	return (pos - str);
 }
 
-#if defined(BSD)
+#if defined(HAVE_QSORT_S) || (defined(HAVE_QSORT_R) && defined(BSD))
 typedef struct {
 	git__sort_r_cmp cmp;
 	void *payload;
@@ -639,21 +634,16 @@ static int GIT_STDLIB_CALL git__qsort_r_glue_cmp(
 void git__qsort_r(
 	void *els, size_t nel, size_t elsize, git__sort_r_cmp cmp, void *payload)
 {
-#if defined(__MINGW32__) || defined(AMIGA) || \
-	defined(__OpenBSD__) || defined(__NetBSD__) || \
-	defined(__gnu_hurd__) || defined(__ANDROID_API__) || \
-	defined(__sun) || defined(__CYGWIN__) || \
-	(__GLIBC__ == 2 && __GLIBC_MINOR__ < 8) || \
-	(defined(_MSC_VER) && _MSC_VER < 1500)
-	git__insertsort_r(els, nel, elsize, NULL, cmp, payload);
-#elif defined(GIT_WIN32)
-	git__qsort_r_glue glue = { cmp, payload };
-	qsort_s(els, nel, elsize, git__qsort_r_glue_cmp, &glue);
-#elif defined(BSD)
+#if defined(HAVE_QSORT_R) && defined(BSD)
 	git__qsort_r_glue glue = { cmp, payload };
 	qsort_r(els, nel, elsize, &glue, git__qsort_r_glue_cmp);
-#else
+#elif defined(HAVE_QSORT_R) && defined(__GLIBC__)
 	qsort_r(els, nel, elsize, cmp, payload);
+#elif defined(HAVE_QSORT_S)
+	git__qsort_r_glue glue = { cmp, payload };
+	qsort_s(els, nel, elsize, git__qsort_r_glue_cmp, &glue);
+#else
+	git__insertsort_r(els, nel, elsize, NULL, cmp, payload);
 #endif
 }
 
