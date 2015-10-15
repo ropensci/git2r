@@ -24,5 +24,6 @@
 
 SEXP git2r_libgit2_features(void);
 SEXP git2r_libgit2_version(void);
+SEXP git2r_ssl_cert_locations(SEXP filename, SEXP path);
 
 #endif

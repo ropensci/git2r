@@ -17,6 +17,8 @@
  */
 
 #include "git2.h"
+#include "git2r_arg.h"
+#include "git2r_error.h"
 #include "git2r_libgit2.h"
 
 /**
@@ -78,4 +80,40 @@ SEXP git2r_libgit2_version(void)
     UNPROTECT(1);
 
     return version;
+}
+
+/**
+ * Set the SSL certificate-authority locations
+ *
+ * Either parameter may be 'NULL', but not both.
+ * @param filename Location of a file containing several certificates
+ * concatenated together. Default NULL.
+ * @param path Location of a directory holding several certificates,
+ * one per file. Default NULL.
+ * @return NULL
+ */
+SEXP git2r_ssl_cert_locations(SEXP filename, SEXP path)
+{
+    const char *f = NULL;
+    const char *p = NULL;
+
+    if (filename != R_NilValue) {
+        if (git2r_arg_check_string(filename))
+            git2r_error(__func__, NULL, "'filename'", git2r_err_string_arg);
+        f = CHAR(STRING_ELT(filename, 0));
+    }
+
+    if (path != R_NilValue) {
+        if (git2r_arg_check_string(path))
+            git2r_error(__func__, NULL, "'path'", git2r_err_string_arg);
+        p = CHAR(STRING_ELT(path, 0));
+    }
+
+    if (f == NULL && p == NULL)
+        git2r_error(__func__, NULL, git2r_err_ssl_cert_locations, NULL);
+
+    if (git_libgit2_opts(GIT_OPT_SET_SSL_CERT_LOCATIONS, f, p))
+        git2r_error(__func__, giterr_last(), NULL, NULL);
+
+    return R_NilValue;
 }
