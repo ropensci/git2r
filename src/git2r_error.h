@@ -37,6 +37,7 @@ extern const char git2r_err_reference[];
 extern const char git2r_err_repo_init[];
 extern const char git2r_err_revparse_not_found[];
 extern const char git2r_err_revparse_single[];
+extern const char git2r_err_ssl_cert_locations[];
 extern const char git2r_err_unexpected_config_level[];
 extern const char git2r_err_unable_to_authenticate[];
 
