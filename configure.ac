@@ -122,37 +122,62 @@ if test "x${have_zlib}" = xno; then
         AC_MSG_FAILURE([zlib library required])
 fi
 
-# Check for OpenSSL
-have_ssl=no
-if test "x${OPENSSL_INCLUDES}" = x; then :; else
-        CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
-fi
-AC_SEARCH_LIBS([EVP_EncryptInit], [crypto],
-    [
-        AC_SEARCH_LIBS([SSL_library_init], [ssl], [have_ssl=yes])
-    ])
+# Check for SSL
+case "${host_os}" in
+    darwin*)
+        # On OS X, check for Security and CoreFoundation framework
+        have_framework=no
+        if test -n "${SECURITY_INCLUDE_DIR}" && test -n "${SECURITY_DIRS}"; then
+            # OS X 10.7 and older do not have some functions that
+            # libgit2 requires, fall back to OpenSSL there
+            AC_MSG_CHECKING([whether the Security framework can be linked])
+            save_LIBS="${LIBS}"
+            LIBS="${LIBS} -framework Security -framework CoreFoundation"
+            AC_LINK_IFELSE(
+                [AC_LANG_PROGRAM(
+                    [[#include "Security/SecureTransport.h"]],
+                    [[SSLCreateContext(NULL, kSSLClientSide, kSSLStreamType);]])],
+                [AC_MSG_RESULT([yes])
+                    have_framework=yes;],
+                [AC_MSG_RESULT([no])
+                    LIBS="${save_LIBS}";
+                    have_framework=no];)
+        fi
 
-# Specify sha1 implementation
-if test "x${have_ssl}" = xyes; then
-        CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL"
+        if test "x${have_framework}" = xyes; then
+            CPPFLAGS="${CPPFLAGS} ${SECURITY_INCLUDE_DIR} -DGIT_SECURE_TRANSPORT -DGIT_COMMON_CRYPTO"
+        else
+            AC_MSG_FAILURE([
+  ---------------------------------------------
+   Configuration of SSL failed
+  ---------------------------------------------])
+        fi
+    ;;
+    *)
+        # Check for OpenSSL
+        have_ssl=no
+        if test "x${OPENSSL_INCLUDES}" = x; then :; else
+            CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
+        fi
+        AC_SEARCH_LIBS([EVP_EncryptInit], [crypto],
+        [
+            AC_SEARCH_LIBS([SSL_library_init], [ssl], [have_ssl=yes])
+        ])
 
-        case "${host_os}" in
-          darwin*)
-                CPPFLAGS="${CPPFLAGS} -DGIT_COMMON_CRYPTO"
-          ;;
-          *)
-                CPPFLAGS="${CPPFLAGS} -DOPENSSL_SHA1"
-          ;;
-        esac
-else
-        AC_MSG_FAILURE([
+        # Specify sha1 implementation
+        if test "x${have_ssl}" = xyes; then
+            CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL -DOPENSSL_SHA1"
+        else
+            AC_MSG_FAILURE([
   ---------------------------------------------
    OpenSSL library required
 
    Please install:
    libssl-dev (deb) or openssl-devel (rpm)
   ---------------------------------------------])
-fi
+        fi
+    ;;
+esac
 
 # Check for LibSSH2
 have_ssh2=no
