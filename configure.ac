@@ -119,7 +119,13 @@ have_zlib=no
 AC_SEARCH_LIBS([inflate], [z], [have_zlib=yes])
 
 if test "x${have_zlib}" = xno; then
-        AC_MSG_FAILURE([zlib library required])
+        AC_MSG_FAILURE([
+  ---------------------------------------------
+   zlib library required
+
+   Please install:
+   zlib1g-dev (deb) or zlib-devel (rpm)
+  ---------------------------------------------])
 fi
 
 # Check for OpenSSL
