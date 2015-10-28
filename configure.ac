@@ -127,6 +127,7 @@ case "${host_os}" in
     darwin*)
         # For now, test if git2r builds with the following configuration on OS X
         CPPFLAGS="${CPPFLAGS} ${SECURITY_INCLUDE_DIR} -DGIT_SECURE_TRANSPORT -DGIT_COMMON_CRYPTO"
+        LIBS="${LIBS} -framework Security -framework CoreFoundation"
 
         # On OS X, check for Security and CoreFoundation framework
   dnl       have_framework=no
