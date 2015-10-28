@@ -125,33 +125,36 @@ fi
 # Check for SSL
 case "${host_os}" in
     darwin*)
-        # On OS X, check for Security and CoreFoundation framework
-        have_framework=no
-        if test -n "${SECURITY_INCLUDE_DIR}" && test -n "${SECURITY_DIRS}"; then
-            # OS X 10.7 and older do not have some functions that
-            # libgit2 requires, fall back to OpenSSL there
-            AC_MSG_CHECKING([whether the Security framework can be linked])
-            save_LIBS="${LIBS}"
-            LIBS="${LIBS} -framework Security -framework CoreFoundation"
-            AC_LINK_IFELSE(
-                [AC_LANG_PROGRAM(
-                    [[#include "Security/SecureTransport.h"]],
-                    [[SSLCreateContext(NULL, kSSLClientSide, kSSLStreamType);]])],
-                [AC_MSG_RESULT([yes])
-                    have_framework=yes;],
-                [AC_MSG_RESULT([no])
-                    LIBS="${save_LIBS}";
-                    have_framework=no];)
-        fi
+        # For now, test if git2r builds with the following configuration on OS X
+        CPPFLAGS="${CPPFLAGS} ${SECURITY_INCLUDE_DIR} -DGIT_SECURE_TRANSPORT -DGIT_COMMON_CRYPTO"
 
-        if test "x${have_framework}" = xyes; then
-            CPPFLAGS="${CPPFLAGS} ${SECURITY_INCLUDE_DIR} -DGIT_SECURE_TRANSPORT -DGIT_COMMON_CRYPTO"
-        else
-            AC_MSG_FAILURE([
-  ---------------------------------------------
-   Configuration of SSL failed
-  ---------------------------------------------])
-        fi
+        # On OS X, check for Security and CoreFoundation framework
+  dnl       have_framework=no
+  dnl       if test -n "${SECURITY_INCLUDE_DIR}" && test -n "${SECURITY_DIRS}"; then
+  dnl           # OS X 10.7 and older do not have some functions that
+  dnl           # libgit2 requires, fall back to OpenSSL there
+  dnl           AC_MSG_CHECKING([whether the Security framework can be linked])
+  dnl           save_LIBS="${LIBS}"
+  dnl           LIBS="${LIBS} -framework Security -framework CoreFoundation"
+  dnl           AC_LINK_IFELSE(
+  dnl               [AC_LANG_PROGRAM(
+  dnl                   [[#include "Security/SecureTransport.h"]],
+  dnl                   [[SSLCreateContext(NULL, kSSLClientSide, kSSLStreamType);]])],
+  dnl               [AC_MSG_RESULT([yes])
+  dnl                   have_framework=yes;],
+  dnl               [AC_MSG_RESULT([no])
+  dnl                   LIBS="${save_LIBS}";
+  dnl                   have_framework=no];)
+  dnl       fi
+
+  dnl       if test "x${have_framework}" = xyes; then
+  dnl           CPPFLAGS="${CPPFLAGS} ${SECURITY_INCLUDE_DIR} -DGIT_SECURE_TRANSPORT -DGIT_COMMON_CRYPTO"
+  dnl       else
+  dnl           AC_MSG_FAILURE([
+  dnl ---------------------------------------------
+  dnl  Configuration of SSL failed
+  dnl ---------------------------------------------])
+  dnl       fi
     ;;
     *)
         # Check for OpenSSL

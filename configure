@@ -3628,52 +3628,12 @@ fi
 # Check for SSL
 case "${host_os}" in
     darwin*)
-        # On OS X, check for Security and CoreFoundation framework
-        have_framework=no
-        if test -n "${SECURITY_INCLUDE_DIR}" && test -n "${SECURITY_DIRS}"; then
-            # OS X 10.7 and older do not have some functions that
-            # libgit2 requires, fall back to OpenSSL there
-            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the Security framework can be linked" >&5
-$as_echo_n "checking whether the Security framework can be linked... " >&6; }
-            save_LIBS="${LIBS}"
-            LIBS="${LIBS} -framework Security -framework CoreFoundation"
-            cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include "Security/SecureTransport.h"
-int
-main ()
-{
-SSLCreateContext(NULL, kSSLClientSide, kSSLStreamType);
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-                    have_framework=yes;
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-                    LIBS="${save_LIBS}";
-                    have_framework=no;
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-        fi
+        # For now, test if git2r builds with the following configuration on OS X
+        CPPFLAGS="${CPPFLAGS} ${SECURITY_INCLUDE_DIR} -DGIT_SECURE_TRANSPORT -DGIT_COMMON_CRYPTO"
 
-        if test "x${have_framework}" = xyes; then
-            CPPFLAGS="${CPPFLAGS} ${SECURITY_INCLUDE_DIR} -DGIT_SECURE_TRANSPORT -DGIT_COMMON_CRYPTO"
-        else
-            { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "
-  ---------------------------------------------
-   Configuration of SSL failed
-  ---------------------------------------------
-See \`config.log' for more details" "$LINENO" 5; }
-        fi
-    ;;
+        # On OS X, check for Security and CoreFoundation framework
+
+                    ;;
     *)
         # Check for OpenSSL
         have_ssl=no
