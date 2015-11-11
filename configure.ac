@@ -200,7 +200,7 @@ else
             export LDFLAGS
             cp -f tools/missing libssh2
             cd libssh2
-            ./configure --without-openssl --with-pic --disable-examples-build --disable-shared --enable-static --prefix=$GIT2R_LIBSSH2_INST_DIR \
+            ./configure --with-pic --disable-examples-build --disable-shared --enable-static --prefix=$GIT2R_LIBSSH2_INST_DIR \
                 && make && make install && have_ssh2=yes
             cd ..
 
