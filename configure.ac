@@ -206,7 +206,7 @@ else
 
             if test "x${have_ssh2}" = xyes; then
                 CPPFLAGS="${CPPFLAGS} -DGIT_SSH -Ilibssh2/include"
-                GIT2R_LIBSSH2="-Llibssh2/lib -lssh2"
+                GIT2R_LIBSSH2="-Llibssh2/lib -lssh2 -lssl -lcrypto"
             fi
         ;;
     esac
