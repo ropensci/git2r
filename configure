@@ -3628,6 +3628,15 @@ fi
 # Check for SSL
 case "${host_os}" in
     darwin*)
+        # Check for Homebrew in path
+        case "${PATH}" in
+            *brew*)
+                BREW_OPENSSL=`brew --prefix openssl`
+                CPPFLAGS="${CPPFLAGS} -I${BREW_OPENSSL}/include"
+                LDFLAGS="${LDFLAGS} -L${BREW_OPENSSL}/lib"
+            ;;
+        esac
+
         # For now, test if git2r builds with the following configuration on OS X
         CPPFLAGS="${CPPFLAGS} ${SECURITY_INCLUDE_DIR} -DGIT_SECURE_TRANSPORT -DGIT_COMMON_CRYPTO"
         LIBS="${LIBS} -framework Security -framework CoreFoundation"
