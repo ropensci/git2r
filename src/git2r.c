@@ -138,6 +138,7 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_revwalk_contributions", (DL_FUNC)&git2r_revwalk_contributions, 4},
     {"git2r_revwalk_list", (DL_FUNC)&git2r_revwalk_list, 5},
     {"git2r_signature_default", (DL_FUNC)&git2r_signature_default, 1},
+    {"git2r_ssl_cert_locations", (DL_FUNC)&git2r_ssl_cert_locations, 2},
     {"git2r_stash_drop", (DL_FUNC)&git2r_stash_drop, 2},
     {"git2r_stash_list", (DL_FUNC)&git2r_stash_list, 1},
     {"git2r_stash_save", (DL_FUNC)&git2r_stash_save, 6},

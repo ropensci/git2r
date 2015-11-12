@@ -5,13 +5,13 @@
 --- 5,16 ----
    * a Linking Exception. For full terms see the included COPYING file.
    */
-  
+
 + /**
 +  * Changed all 'abort' to 'Rf_error' to pass 'R CMD check git2r'
 +  * 2014-11-18: Stefan Widgren <stefan.widgren@gmail.com>
 +  */
 + void Rf_error(const char*, ...);
-+ 
++
   #include "common.h"
   #include "repository.h"
   #include "strmap.h"
@@ -22,7 +22,7 @@
   	} else {
 ! 		abort();
   	}
-  
+
   	GITERR_CHECK_ALLOC(ref);
 --- 304,312 ----
   	} else if (node->ref_type == GIT_REF_SYMBOLIC) {
@@ -32,7 +32,7 @@
 !                 "Error in 'update_target': Unexpected error. Please report at"
 !                 " https://github.com/ropensci/git2r/issues");
   	}
-  
+
   	GITERR_CHECK_ALLOC(ref);
 ***************
 *** 311,317 ****
@@ -41,7 +41,7 @@
   	} else {
 ! 		abort();
   	}
-  
+
   	git_reference_free(ref);
 --- 319,327 ----
   	} else if (node->ref_type == GIT_REF_SYMBOLIC) {
@@ -51,5 +51,5 @@
 !                 "Error in 'update_target': Unexpected error. Please report at"
 !                 " https://github.com/ropensci/git2r/issues");
   	}
-  
+
   	git_reference_free(ref);

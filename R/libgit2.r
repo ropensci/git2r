@@ -48,3 +48,18 @@ libgit2_version <- function() {
 ##' @examples
 ##' libgit2_sha()
 libgit2_sha <- function() "3f5877d18f0385044a5fffc579582bbeed296d32"
+
+##' Set the SSL certificate-authority locations
+##'
+##' @note Either parameter may be 'NULL', but not both.
+##' @param filename Location of a file containing several certificates
+##' concatenated together. Default NULL.
+##' @param path Location of a directory holding several certificates,
+##' one per file. Default NULL.
+##' @return invisible(NULL)
+##' @keywords methods
+##' @export
+ssl_cert_locations <- function(filename = NULL, path = NULL)
+{
+    invisible(.Call(git2r_ssl_cert_locations, filename, path))
+}
