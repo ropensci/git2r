@@ -626,8 +626,9 @@ static int refdb_fs_backend__iterator(
 	iter = git__calloc(1, sizeof(refdb_fs_iter));
 	GITERR_CHECK_ALLOC(iter);
 
-	if (git_pool_init(&iter->pool, 1, 0) < 0 ||
-		git_vector_init(&iter->loose, 8, NULL) < 0)
+	git_pool_init(&iter->pool, 1);
+
+	if (git_vector_init(&iter->loose, 8, NULL) < 0)
 		goto fail;
 
 	if (glob != NULL &&
@@ -1463,7 +1464,7 @@ static int reflog_parse(git_reflog *log, const char *buf, size_t buf_size)
 		entry = git__calloc(1, sizeof(git_reflog_entry));
 		GITERR_CHECK_ALLOC(entry);
 
-		entry->committer = git__malloc(sizeof(git_signature));
+		entry->committer = git__calloc(1, sizeof(git_signature));
 		GITERR_CHECK_ALLOC(entry->committer);
 
 		if (git_oid_fromstrn(&entry->oid_old, buf, GIT_OID_HEXSZ) < 0)

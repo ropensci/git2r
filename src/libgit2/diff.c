@@ -56,7 +56,7 @@ static int diff_insert_delta(
 
 	if (diff->opts.notify_cb) {
 		error = diff->opts.notify_cb(
-			diff, delta, matched_pathspec, diff->opts.notify_payload);
+			diff, delta, matched_pathspec, diff->opts.payload);
 
 		if (error) {
 			git__free(delta);
@@ -430,8 +430,9 @@ static git_diff *diff_list_alloc(
 	diff->new_src = new_iter->type;
 	memcpy(&diff->opts, &dflt, sizeof(diff->opts));
 
-	if (git_vector_init(&diff->deltas, 0, git_diff_delta__cmp) < 0 ||
-		git_pool_init(&diff->pool, 1, 0) < 0) {
+	git_pool_init(&diff->pool, 1);
+
+	if (git_vector_init(&diff->deltas, 0, git_diff_delta__cmp) < 0) {
 		git_diff_free(diff);
 		return NULL;
 	}
@@ -493,8 +494,10 @@ static int diff_list_apply_options(
 
 	/* Don't set GIT_DIFFCAPS_USE_DEV - compile time option in core git */
 
-	/* Set GIT_DIFFCAPS_TRUST_NANOSECS on a platform basis */
+	/* Don't trust nanoseconds; we do not load nanos from disk */
+#ifdef GIT_USE_NSEC
 	diff->diffcaps = diff->diffcaps | GIT_DIFFCAPS_TRUST_NANOSECS;
+#endif
 
 	/* If not given explicit `opts`, check `diff.xyz` configs */
 	if (!opts) {
@@ -1257,7 +1260,18 @@ int git_diff__from_iterators(
 
 	/* run iterators building diffs */
 	while (!error && (info.oitem || info.nitem)) {
-		int cmp = info.oitem ?
+		int cmp;
+
+		/* report progress */
+		if (opts && opts->progress_cb) {
+			if ((error = opts->progress_cb(diff,
+					info.oitem ? info.oitem->path : NULL,
+					info.nitem ? info.nitem->path : NULL,
+					opts->payload)))
+				break;
+		}
+
+		cmp = info.oitem ?
 			(info.nitem ? diff->entrycomp(info.oitem, info.nitem) : -1) : 1;
 
 		/* create DELETED records for old items not matched in new */
