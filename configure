@@ -628,7 +628,6 @@ ac_subst_vars='LTLIBOBJS
 GIT2R_LIBSSH2
 GIT2R_SRC_REGEX
 GIT2R_SRC_LIBGIT2_STREAM
-GIT2R_SRC_HASH_GENERIC
 LIBOBJS
 ALLOCA
 EGREP
@@ -3629,13 +3628,10 @@ fi
 # Check for SSL
 case "${host_os}" in
     darwin*)
-        # For now, test if git2r builds with the following configuration on OS X
+        # On OS X, use Security and CoreFoundation framework
         CPPFLAGS="${CPPFLAGS} ${SECURITY_INCLUDE_DIR} -DGIT_SECURE_TRANSPORT -DGIT_COMMON_CRYPTO"
         LIBS="${LIBS} -framework Security -framework CoreFoundation"
-
-        # On OS X, check for Security and CoreFoundation framework
-
-                    ;;
+    ;;
     *)
         # Check for OpenSSL
         have_ssl=no
@@ -5712,7 +5708,6 @@ _ACEOF
 
 fi
 done
-
 
 
 

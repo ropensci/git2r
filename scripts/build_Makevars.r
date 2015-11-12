@@ -86,7 +86,7 @@ build_Makevars.in <- function() {
     cat("\n", file = Makevars)
 
     build_objects(files,
-                  " @GIT2R_SRC_HASH_GENERIC@ @GIT2R_SRC_REGEX@ @GIT2R_SRC_LIBGIT2_STREAM@",
+                  " @GIT2R_SRC_REGEX@ @GIT2R_SRC_LIBGIT2_STREAM@",
                   Makevars)
 
     invisible(NULL)
