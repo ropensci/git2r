@@ -128,37 +128,38 @@ if test "x${have_zlib}" = xno; then
   ---------------------------------------------])
 fi
 
-# Check for OpenSSL
-have_ssl=no
-if test "x${OPENSSL_INCLUDES}" = x; then :; else
-        CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
-fi
-AC_SEARCH_LIBS([EVP_EncryptInit], [crypto],
-    [
-        AC_SEARCH_LIBS([SSL_library_init], [ssl], [have_ssl=yes])
-    ])
+# Check for SSL
+case "${host_os}" in
+    darwin*)
+        # On OS X, use Security and CoreFoundation framework
+        CPPFLAGS="${CPPFLAGS} ${SECURITY_INCLUDE_DIR} -DGIT_SECURE_TRANSPORT -DGIT_COMMON_CRYPTO"
+        LIBS="${LIBS} -framework Security -framework CoreFoundation"
+    ;;
+    *)
+        # Check for OpenSSL
+        have_ssl=no
+        if test "x${OPENSSL_INCLUDES}" = x; then :; else
+            CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
+        fi
+        AC_SEARCH_LIBS([EVP_EncryptInit], [crypto],
+        [
+            AC_SEARCH_LIBS([SSL_library_init], [ssl], [have_ssl=yes])
+        ])
 
-# Specify sha1 implementation
-if test "x${have_ssl}" = xyes; then
-        CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL"
-
-        case "${host_os}" in
-          darwin*)
-                CPPFLAGS="${CPPFLAGS} -DGIT_COMMON_CRYPTO"
-          ;;
-          *)
-                CPPFLAGS="${CPPFLAGS} -DOPENSSL_SHA1"
-          ;;
-        esac
-else
-        AC_MSG_FAILURE([
+        # Specify sha1 implementation
+        if test "x${have_ssl}" = xyes; then
+            CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL -DOPENSSL_SHA1"
+        else
+            AC_MSG_FAILURE([
   ---------------------------------------------
    OpenSSL library required
 
    Please install:
    libssl-dev (deb) or openssl-devel (rpm)
   ---------------------------------------------])
-fi
+        fi
+    ;;
+esac
 
 # Check for LibSSH2
 have_ssh2=no
@@ -170,6 +171,16 @@ else
     # Static linking of LibSSH2 on OSX to support redistributable binary packages
     case "${host_os}" in
         darwin*)
+            # Check for Homebrew in path
+            case "${PATH}" in
+                *brew*)
+                    BREW_OPENSSL=`brew --prefix openssl`
+                    CPPFLAGS="${CPPFLAGS} -I${BREW_OPENSSL}/include"
+                    LDFLAGS="${LDFLAGS} -L${BREW_OPENSSL}/lib"
+                ;;
+            esac
+
+            # Download and build libssh2
             mkdir -p libssh2 && curl -fsSL https://github.com/libssh2/libssh2/releases/download/libssh2-1.6.0/libssh2-1.6.0.tar.gz | tar xz --strip 1 -C libssh2
             mkdir -p src/libssh2
             GIT2R_LIBSSH2_INST_DIR="${PWD}/src/libssh2"
@@ -183,7 +194,8 @@ else
 
             if test "x${have_ssh2}" = xyes; then
                 CPPFLAGS="${CPPFLAGS} -DGIT_SSH -Ilibssh2/include"
-                GIT2R_LIBSSH2="-Llibssh2/lib -lssh2"
+                GIT2R_LIBSSH2="-Llibssh2/lib -lssh2 -lssl -lcrypto"
+                GIT2R_SRC_LIBGIT2_STREAM=libgit2/stransport_stream.o
             fi
         ;;
     esac
@@ -262,7 +274,7 @@ AC_FUNC_MMAP
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([btowc clock_gettime getcwd gethostbyname gettimeofday isascii memchr memmove memset munmap pstat_getdynamic re_comp realpath regcomp select socket strcasecmp strchr strcspn strdup strerror strncasecmp strrchr strspn strstr strtol strtoul])
 
-AC_SUBST(GIT2R_SRC_HASH_GENERIC)
+AC_SUBST(GIT2R_SRC_LIBGIT2_STREAM)
 AC_SUBST(GIT2R_SRC_REGEX)
 AC_SUBST(GIT2R_LIBSSH2)
 AC_SUBST(CPPFLAGS)

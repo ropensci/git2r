@@ -85,7 +85,9 @@ build_Makevars.in <- function() {
     cat("PKG_LIBS = @GIT2R_LIBSSH2@ @LIBS@\n", file = Makevars)
     cat("\n", file = Makevars)
 
-    build_objects(files, " @GIT2R_SRC_HASH_GENERIC@ @GIT2R_SRC_REGEX@", Makevars)
+    build_objects(files,
+                  " @GIT2R_SRC_REGEX@ @GIT2R_SRC_LIBGIT2_STREAM@",
+                  Makevars)
 
     invisible(NULL)
 }

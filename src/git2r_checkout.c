@@ -34,7 +34,7 @@
  */
 SEXP git2r_checkout_path(SEXP repo, SEXP path)
 {
-    int err;
+    int err = 0;
     size_t i, len;
     git_repository *repository = NULL;
     git_checkout_options opts = GIT_CHECKOUT_OPTIONS_INIT;
