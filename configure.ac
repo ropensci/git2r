@@ -134,6 +134,7 @@ case "${host_os}" in
         # On OS X, use Security and CoreFoundation framework
         CPPFLAGS="${CPPFLAGS} ${SECURITY_INCLUDE_DIR} -DGIT_SECURE_TRANSPORT -DGIT_COMMON_CRYPTO"
         LIBS="${LIBS} -framework Security -framework CoreFoundation"
+        GIT2R_SRC_LIBGIT2_STREAM=libgit2/stransport_stream.o
     ;;
     *)
         # Check for OpenSSL
@@ -195,7 +196,6 @@ else
             if test "x${have_ssh2}" = xyes; then
                 CPPFLAGS="${CPPFLAGS} -DGIT_SSH -Ilibssh2/include"
                 GIT2R_LIBSSH2="-Llibssh2/lib -lssh2 -lssl -lcrypto"
-                GIT2R_SRC_LIBGIT2_STREAM=libgit2/stransport_stream.o
             fi
         ;;
     esac
