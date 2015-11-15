@@ -519,26 +519,34 @@ SEXP git2r_repository_workdir(SEXP repo)
  * Find repository base path for given path
  *
  * @param path A character vector specifying the path to a file or folder
+ * @param ceiling The lookup will stop when this absolute path is reached.
  * @return R_NilValue if repository cannot be found or
  * a character vector of length one with path to repository's git dir
  * e.g. /path/to/my/repo/.git
  */
-SEXP git2r_repository_discover(SEXP path)
+SEXP git2r_repository_discover(SEXP path, SEXP ceiling)
 {
     int err;
     SEXP result = R_NilValue;
     git_buf buf = GIT_BUF_INIT;
+    const char *ceiling_dirs = NULL;
 
     if (git2r_arg_check_string(path))
         git2r_error(__func__, NULL, "'path'", git2r_err_string_arg);
+    if (ceiling != R_NilValue) {
+        if (git2r_arg_check_string(ceiling))
+            git2r_error(__func__, NULL, "'ceiling'", git2r_err_string_arg);
+        ceiling_dirs = CHAR(STRING_ELT(ceiling, 0));
+    }
 
     /* note that across_fs (arg #3) is set to 0 so this will stop when
      * a filesystem device change is detected while exploring parent
      * directories */
-    err = git_repository_discover(&buf,
-                                  CHAR(STRING_ELT(path, 0)),
-                                  0,
-                                  /* const char *ceiling_dirs */ NULL);
+    err = git_repository_discover(
+        &buf,
+        CHAR(STRING_ELT(path, 0)),
+        0,
+        ceiling_dirs);
     if (err) {
         /* NB just return R_NilValue if we can't discover the repo */
         if (GIT_ENOTFOUND == err)

@@ -26,7 +26,7 @@
 
 git_repository* git2r_repository_open(SEXP repo);
 SEXP git2r_repository_can_open(SEXP path);
-SEXP git2r_repository_discover(SEXP path);
+SEXP git2r_repository_discover(SEXP path, SEXP ceiling);
 SEXP git2r_repository_fetch_heads(SEXP repo);
 SEXP git2r_repository_head(SEXP repo);
 SEXP git2r_repository_head_detached(SEXP repo);

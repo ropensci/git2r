@@ -3,23 +3,33 @@
 \docType{methods}
 \name{discover_repository}
 \alias{discover_repository}
-\alias{discover_repository,character-method}
+\alias{discover_repository,character,missing-method}
+\alias{discover_repository,character,numeric-method}
 \title{Find path to repository for any file}
 \usage{
-discover_repository(path)
+discover_repository(path, ceiling)
 
-\S4method{discover_repository}{character}(path)
+\S4method{discover_repository}{character,missing}(path)
+
+\S4method{discover_repository}{character,numeric}(path, ceiling)
 }
 \arguments{
 \item{path}{A character vector specifying the path to a file or folder}
+
+\item{ceiling}{The defult is to not use the ceiling argument and
+start the lookup from path and walk across parent
+directories. When ceiling is 0, the lookup is only in path. When
+ceiling is 1, the lookup is in both the path and the parent to
+path.}
 }
 \value{
-Character vector with path to repository or NULL if this cannot be
-  established.
+Character vector with path to repository or NULL if this
+cannot be established.
 }
 \description{
-libgit's git_discover_repository is used to identify the location of the
-  repository. The path will therefore be terminated by a file separator.
+libgit's git_discover_repository is used to identify the location
+of the repository. The path will therefore be terminated by a file
+separator.
 }
 \examples{
 \dontrun{
@@ -43,6 +53,17 @@ writeLines("Not under version control", file_2)
 
 ## Find the path to the repository using the path to the second file
 discover_repository(file_2)
+
+## Demonstrate the 'ceiling' argument
+wd <- workdir(repo)
+dir.create(file.path(wd, "temp"))
+
+## Lookup repository in 'file.path(wd, "temp")'. Should return NULL
+discover_repository(file.path(wd, "temp"), ceiling = 0)
+
+## Lookup repository in parent to 'file.path(wd, "temp")'.
+## Should not return NULL
+discover_repository(file.path(wd, "temp"), ceiling = 1)
 }
 }
 \keyword{methods}

@@ -50,6 +50,13 @@ stopifnot(identical(discover_repository(file.path(wd, 'myfile.txt')),
 stopifnot(identical(discover_repository(file.path(wd, 'doesntexist.txt')),
                     NULL))
 
+# Check that we can use ceiling in discover repostiory
+dir.create(file.path(wd, "temp"))
+stopifnot(identical(discover_repository(file.path(wd, "temp"), 0), NULL))
+stopifnot(identical(discover_repository(file.path(wd, "temp"), 1),
+                    paste0(wd, '.git', .Platform$file.sep)))
+tools::assertError(discover_repository(file.path(wd, "temp"), 2))
+
 ## Check that lookup with a sha of less than 4 characters or more than
 ## 40 characters fail.
 tools::assertError(lookup(repo, paste0(rep("a", 3), collapse = "")))
