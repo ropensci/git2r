@@ -87,7 +87,7 @@ fi
 
 # Check for openssl headers and libraries
 have_openssl=yes
-OPENSSL_URL=https://github.com/rwinlib/openssl/archive/v1.0.1j.zip
+OPENSSL_URL=https://github.com/rwinlib/openssl/archive/v1.0.2d.zip
 if [ ! -e src/openssl/include/openssl/ssl.h ]; then
     if [ ! -e openssl.zip ]; then
 	echo "  cannot find openssl files"
@@ -99,7 +99,7 @@ if [ ! -e src/openssl/include/openssl/ssl.h ]; then
     else
 	echo "  unpacking openssl"
 	unzip openssl.zip -d src
-	mv src/openssl-1.0.1j src/openssl
+	mv src/openssl-1.0.2d src/openssl
         if [ ! -e src/openssl/include/openssl/ssl.h ]; then
 	    have_openssl=no
 	fi
