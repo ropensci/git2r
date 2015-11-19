@@ -137,25 +137,28 @@ build_Makevars.win <- function() {
     cat("endif\n", file = Makevars)
     cat("\n", file = Makevars)
 
-    cat("ifeq \"$(WIN)\" \"64\"\n", file = Makevars)
-    cat("GIT2R_ARCH=GIT_ARCH_64\n", file = Makevars)
-    cat("else\n", file = Makevars)
-    cat("GIT2R_ARCH=GIT_ARCH_32\n", file = Makevars)
-    cat("endif\n", file = Makevars)
-    cat("\n", file = Makevars)
-
     cat("PKG_LIBS = $(GIT2R_ZLIB_LIB) -Lopenssl/lib$(R_ARCH) -Llibssh2/lib$(R_ARCH) \\\n", file = Makevars)
-    cat("    -Lwinhttp/lib$(R_ARCH) -lssh2 -lssl -lcrypto -lgdi32 -lws2_32 -lwinhttp \\\n", file = Makevars)
+    cat("    -L. -lssh2 -lssl -lcrypto -lgdi32 -lws2_32 -lwinhttp \\\n", file = Makevars)
     cat("    -lrpcrt4 -lole32 -lcrypt32 $(Z_LIB)\n", file = Makevars)
     cat("\n", file = Makevars)
 
     cat("PKG_CFLAGS = -I. $(GIT2R_ZLIB_INCLUDE) -Ilibgit2 -Ilibgit2/include \\\n", file = Makevars)
     cat("    -Ihttp-parser -Iwin32 -Iregex -Ilibssh2/include \\\n", file = Makevars)
     cat("    -DWIN32 -D_WIN32_WINNT=0x0501 -D__USE_MINGW_ANSI_STDIO=1 -DGIT_WINHTTP \\\n", file = Makevars)
-    cat("    -D_FILE_OFFSET_BITS=64 -DGIT_SSH -D$(GIT2R_ARCH)\n", file = Makevars)
+    cat("    -D_FILE_OFFSET_BITS=64 -DGIT_SSH -DGIT_ARCH_$(WIN)\n", file = Makevars)
     cat("\n", file = Makevars)
 
     build_objects(files, NULL, Makevars)
+    cat("\n", file = Makevars)
+
+    cat("all: libwinhttp.dll.a\n", file = Makevars)
+    cat("\n", file = Makevars)
+
+    cat("winhttp.def:\n", file = Makevars)
+    cat("\tcp winhttp/winhttp$(WIN).def.in winhttp.def\n", file = Makevars)
+    cat("\n", file = Makevars)
+
+    cat(".PHONY: all\n", file = Makevars)
 
     invisible(NULL)
 }

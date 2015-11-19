@@ -134,11 +134,11 @@ clean:
 	-rm -f local320.zip
 	-rm -rf src/zlib
 	-rm -f src/Makevars
+	-rm -f src/*.def
 	-rm -f src/*.o
 	-rm -f src/*.so
 	-rm -rf src-x64
 	-rm -rf src-i386
-	-rm -rf src/winhttp/lib
 	-rm -f src/libgit2/*.o
 	-rm -f src/libgit2/hash/*.o
 	-rm -f src/libgit2/transports/*.o
