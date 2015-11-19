@@ -16,7 +16,5 @@ a non-negative integer
 \description{
 Number of files in git_diff object
 }
-\keyword{#'}
-\keyword{@export}
 \keyword{methods}
 

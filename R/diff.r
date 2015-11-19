@@ -20,7 +20,7 @@
 #' @param x The git_diff \code{object}
 #' @return a non-negative integer
 #' @keywords methods
-#' #' @export
+#' @export
 setMethod("length",
           signature(x = "git_diff"),
           function(x)
