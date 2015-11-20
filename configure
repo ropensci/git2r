@@ -3556,7 +3556,7 @@ fi
 CC=`"${R_HOME}/bin/R" CMD config CC`
 CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
 CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
-CPPFLAGS="${CPPFLAGS} ${GIT2R_CPPFLAGS}"
+CPPFLAGS="${GIT2R_CPPFLAGS} ${CPPFLAGS}"
 
 # Check for zlib
 have_zlib=no
