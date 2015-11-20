@@ -60,6 +60,13 @@ setMethod("add",
                     path = "character"),
           function(repo, path, force = FALSE)
           {
+              path <- suppressWarnings(normalizePath(path, winslash = "/"))
+              repo_wd <- normalizePath(workdir(repo), winslash = "/")
+
+              ## Substitute common prefix with ""
+              pattern <- paste0("^", repo_wd, "/")
+              path <- sub(pattern, "", path)
+
               .Call(git2r_index_add_all, repo, path, force)
               invisible(NULL)
           }
