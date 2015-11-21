@@ -60,14 +60,40 @@ setMethod("add",
                     path = "character"),
           function(repo, path, force = FALSE)
           {
-              path <- suppressWarnings(normalizePath(path, winslash = "/"))
-              repo_wd <- normalizePath(workdir(repo), winslash = "/")
+              ## Documentation for the pathspec argument in the
+              ## libgit2 function 'git_index_add_all' that git2r use
+              ## internally:
+              ##
+              ## The pathspec is a list of file names or shell glob
+              ## patterns that will matched against files in the
+              ## repository's working directory. Each file that
+              ## matches will be added to the index (either updating
+              ## an existing entry or adding a new entry).
 
-              ## Substitute common prefix with ""
-              pattern <- paste0("^", repo_wd, "/")
-              path <- sub(pattern, "", path)
+              repo_wd <- normalizePath(workdir(repo), winslash = "/")
+              if (!length(grep("/$", repo_wd)))
+                  repo_wd <- paste0(repo_wd, "/")
+
+              path <- sapply(path, function(p) {
+                  np <- suppressWarnings(normalizePath(p, winslash = "/"))
+
+                  ## Check if the path is a file, else let libgit2
+                  ## handle this path unmodified.
+                  if (!file.exists(np))
+                      return(p)
+
+                  ## Check if the file is in the repository's working
+                  ## directory, else let libgit2 handle this path
+                  ## unmodified.
+                  if (!length(grep(paste0("^", repo_wd), np)))
+                      return(p)
+
+                  ## Substitute common prefix with ""
+                  sub(paste0("^", repo_wd), "", np)
+              })
 
               .Call(git2r_index_add_all, repo, path, force)
+
               invisible(NULL)
           }
 )
