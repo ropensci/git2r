@@ -127,8 +127,10 @@ clean:
 	-rm -f config.log
 	-rm -f config.status
 	-rm -rf autom4te.cache
+	-rm -f libssh2.zip
 	-rm -rf libssh2
 	-rm -rf src/libssh2
+	-rm -f openssl.zip
 	-rm -rf openssl
 	-rm -rf src/openssl
 	-rm -f local320.zip
