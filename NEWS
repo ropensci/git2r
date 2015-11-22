@@ -9,10 +9,44 @@ NEW FEATURES
 * Add 'remote_set_url' method to set the remote's url in the
   configuration.
 
+* Add 'cred_token' S4 class to hold the name of the environmental
+  variable with the secret. Default value for the name is GITHUB_PAT.
+
+* It is now possible to checkout a specific file with the 'checkout'
+  method.
+
+* Add 'ssl_cert_locations' method to set libgit2 global option
+  'GIT_OPT_SET_SSL_CERT_LOCATIONS'
+
+* Add 'ceiling' argument to 'discover_repository' method to prevent
+  search from walking up the parent directories.
+
 CHANGES
 
-* Added the following default arguments to the 'cred_ssh_key' method:
+* Improvments to the cred_* functions documentation.
+
+* Add the following default arguments to the 'cred_ssh_key' method:
   publickey = '~/.ssh/id_rsa.pub' and privatekey = '~/.ssh/id_rsa'
+
+* On OSX, cascade CPPFLAGS and LDFLAGS to libssh2 build to allow
+  libssh2 to be built against a user-installed openssl, discovered by
+  configure or from R's Makeconf. Necessary to build on OS X ≥ 10.11
+
+* On OS X, SecureTransport is now used to provide the cryptographic
+  support for HTTPS connections insead of OpenSSL.
+
+* Update OpenSSL on Windows to v1.0.2d
+
+* Update libgit2 source code to commit (3f5877d) from 2015-11-12.
+
+BUG FIXES
+
+* Add missing credentials argument to pull method.
+
+* Fix config failure when user.name or user.email are passed as
+  variables.
+
+* Include 'configure.ac' in the distribution.
 
 git2r 0.11.0
 ------------
