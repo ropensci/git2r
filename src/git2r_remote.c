@@ -415,12 +415,10 @@ SEXP git2r_remote_ls(SEXP name, SEXP repo, SEXP credentials)
 
     if (git2r_arg_check_string(name))
         git2r_error(__func__, NULL, "'name'", git2r_err_string_arg);
-
     if (git2r_arg_check_credentials(credentials))
         git2r_error(__func__, NULL, "'credentials'", git2r_err_credentials_arg);
 
     repository = git2r_repository_open(repo);
-
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
@@ -428,9 +426,8 @@ SEXP git2r_remote_ls(SEXP name, SEXP repo, SEXP credentials)
     err = git_remote_lookup(&remote, repository, name_);
     if (err < 0) {
         err = git_remote_create_anonymous(&remote, repository, name_);
-        if (err < 0) {
+        if (err < 0)
             goto cleanup;
-        }
     }
 
     payload.credentials = credentials;
