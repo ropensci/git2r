@@ -424,9 +424,9 @@ SEXP git2r_remote_ls(SEXP name, SEXP repo, SEXP credentials)
 
     name_ = CHAR(STRING_ELT(name, 0));
     err = git_remote_lookup(&remote, repository, name_);
-    if (err < 0) {
+    if (err) {
         err = git_remote_create_anonymous(&remote, repository, name_);
-        if (err < 0)
+        if (err)
             goto cleanup;
     }
 
@@ -435,11 +435,11 @@ SEXP git2r_remote_ls(SEXP name, SEXP repo, SEXP credentials)
     callbacks.credentials = &git2r_cred_acquire_cb;
 
     err = git_remote_connect(remote, GIT_DIRECTION_FETCH, &callbacks, NULL);
-    if (err < 0)
+    if (err)
         goto cleanup;
 
     err = git_remote_ls(&refs, &refs_len, remote);
-    if (err < 0)
+    if (err)
         goto cleanup;
 
     PROTECT(result = allocVector(STRSXP, refs_len));
