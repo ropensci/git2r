@@ -19,10 +19,10 @@
 ##' @rdname add-methods
 ##' @docType methods
 ##' @param repo The repository \code{object}.
-##' @param path character vector with filenames to add. The path must
-##' be relative to the repository's working folder. Only non-ignored
-##' files are added. If path is a directory, files in sub-folders are
-##' added (if non-ignored)
+##' @param path Character vector with file names or shell glob
+##' patterns that will matched against files in the repository's
+##' working directory. Each file that matches will be added to the
+##' index (either updating an existing entry or adding a new entry).
 ##' @param ... Additional arguments to the method
 ##' @param force Add ignored files. Default is FALSE.
 ##' @return invisible(NULL)
@@ -39,15 +39,40 @@
 ##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Create a file
-##' writeLines("Hello world!", file.path(path, "file-to-add.txt"))
+##' writeLines("a", file.path(path, "a.txt"))
 ##'
-##' ## Add file to repository
-##' add(repo, "file-to-add.txt")
+##' ## Add file to repository and view status
+##' add(repo, "a.txt")
+##' status(repo)
 ##'
-##' ## View status of repository
+##' ## Add file with a leading './' when the repository working
+##' ## directory is the current working directory
+##' setwd(path)
+##' writeLines("b", file.path(path, "b.txt"))
+##' add(repo, "./b.txt")
+##' status(repo)
+##'
+##' ## Add a file in a sub-folder with sub-folder as the working
+##' ## directory. Create a file in the root of the repository
+##' ## working directory that will remain untracked.
+##' dir.create(file.path(path, "sub_dir"))
+##' setwd("./sub_dir")
+##' writeLines("c", file.path(path, "c.txt"))
+##' writeLines("c", file.path(path, "sub_dir/c.txt"))
+##' add(repo, "c.txt")
+##' status(repo)
+##'
+##' ## Demonstrate glob expansion and that the current working
+##' ## directory can be outside the repository's working directory.
+##' setwd(tempdir())
+##' dir.create(file.path(path, "glob_dir"))
+##' writeLines("d", file.path(path, "glob_dir/d.txt"))
+##' writeLines("e", file.path(path, "glob_dir/e.txt"))
+##' writeLines("f", file.path(path, "glob_dir/f.txt"))
+##' writeLines("g", file.path(path, "glob_dir/g.md"))
+##' add(repo, "glob_dir/*txt")
 ##' status(repo)
 ##' }
-##'
 setGeneric("add",
            signature = c("repo", "path"),
            function(repo, path, ...)
@@ -88,7 +113,8 @@ setMethod("add",
                   if (!length(grep(paste0("^", repo_wd), np)))
                       return(p)
 
-                  ## Substitute common prefix with ""
+                  ## Change the path to be relative to the repository's
+                  ## working directory. Substitute common prefix with ""
                   sub(paste0("^", repo_wd), "", np)
               })
 
