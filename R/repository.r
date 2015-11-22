@@ -1054,6 +1054,7 @@ setMethod("discover_repository",
           signature(path = "character", ceiling = "missing"),
           function(path)
           {
+              path <- normalizePath(path)
               .Call(git2r_repository_discover, path, NULL)
           }
 )
@@ -1073,6 +1074,7 @@ setMethod("discover_repository",
                   stop("'ceiling' must be either 0 or 1")
               }
 
+              path <- normalizePath(path)
               .Call(git2r_repository_discover, path, ceiling)
           }
 )
