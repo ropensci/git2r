@@ -72,6 +72,12 @@
 ##' writeLines("g", file.path(path, "glob_dir/g.md"))
 ##' add(repo, "glob_dir/*txt")
 ##' status(repo)
+##'
+##' ## Demonstrate glob expansion with a relative path when the current
+##' ## working directory is inside the repository's working directory.
+##' setwd(path)
+##' add(repo, "./glob_dir/*md")
+##' status(repo)
 ##' }
 setGeneric("add",
            signature = c("repo", "path"),
@@ -102,10 +108,19 @@ setMethod("add",
               path <- sapply(path, function(p) {
                   np <- suppressWarnings(normalizePath(p, winslash = "/"))
 
-                  ## Check if the path is a file, else let libgit2
-                  ## handle this path unmodified.
-                  if (!file.exists(np))
-                      return(p)
+                  ## Check if the normalized path is a non-file e.g. a
+                  ## glob.
+                  if (!file.exists(np)) {
+                      ## Check if the normalized path starts with a
+                      ## leading './'
+                      if (length(grep("^[.]/", np))) {
+                          nd <- suppressWarnings(normalizePath(dirname(p),
+                                                               winslash = "/"))
+                          if (!length(grep("/$", nd)))
+                              nd <- paste0(nd, "/")
+                          np <- paste0(nd, basename(np))
+                      }
+                  }
 
                   ## Check if the file is in the repository's working
                   ## directory, else let libgit2 handle this path

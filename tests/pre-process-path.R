@@ -88,6 +88,30 @@ str(status_exp)
 str(status_obs)
 stopifnot(identical(status_obs, status_exp))
 
+## Test glob expansion with relative path
+setwd(path)
+add(repo, "./glob_dir/*md")
+status_exp <- structure(list(staged = structure(list(
+                                 new = "foo-1",
+                                 new = "foo_dir/foo-2",
+                                 new = "glob_dir/a.txt",
+                                 new = "glob_dir/b.txt",
+                                 new = "glob_dir/c.txt",
+                                 new = "glob_dir/d.md"),
+                                 .Names =
+                                     c("new", "new", "new",
+                                       "new", "new", "new")),
+                             unstaged = structure(list(), .Names = character(0)),
+                             untracked = structure(list(
+                                 untracked = "foo-2"),
+                                 .Names = "untracked")),
+                        .Names = c("staged", "unstaged", "untracked"),
+                        class = "git_status")
+status_obs <- status(repo)
+str(status_exp)
+str(status_obs)
+stopifnot(identical(status_obs, status_exp))
+
 ## Test to add file in root of workdir when the file also exists in
 ## current workdir.
 setwd(tempdir())
@@ -100,14 +124,14 @@ status_exp <- structure(list(staged = structure(list(
                                  new = "foo_dir/foo-2",
                                  new = "glob_dir/a.txt",
                                  new = "glob_dir/b.txt",
-                                 new = "glob_dir/c.txt"),
-                                 .Names = c("new","new",
+                                 new = "glob_dir/c.txt",
+                                 new = "glob_dir/d.md"),
+                                 .Names = c("new","new", "new",
                                      "new", "new", "new", "new")),
                              unstaged = structure(list(), .Names = character(0)),
                              untracked = structure(list(
-                                 untracked = "foo-2",
-                                 untracked = "glob_dir/d.md"),
-                                 .Names = c("untracked", "untracked"))),
+                                 untracked = "foo-2"),
+                                 .Names = "untracked")),
                         .Names = c("staged", "unstaged", "untracked"),
                         class = "git_status")
 status_obs <- status(repo)
