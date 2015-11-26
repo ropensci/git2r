@@ -24,6 +24,10 @@ AC_CANONICAL_HOST
 # Checks for programs.
 AC_PROG_CC
 
+## check for pkg-config
+AC_DEFUN([AC_PROG_PKGCONFIG], [AC_CHECK_PROG(PKGCONFIG,pkg-config,yes)])
+AC_PROG_PKGCONFIG
+
 # Handle optional include and library paths
 GIT2R_CPPFLAGS="-D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser"
 
@@ -164,7 +168,20 @@ esac
 
 # Check for LibSSH2
 have_ssh2=no
-AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
+if test "x${PKGCONFIG}" = xyes; then
+    AC_MSG_CHECKING([whether pkg-config could find libssh2])
+    if pkg-config --exists libssh2; then
+        AC_MSG_RESULT([yes])
+        libssh2_cppflags=`pkg-config --cflags libssh2`
+        GIT2R_LIBSSH2=`pkg-config --libs libssh2`
+        CPPFLAGS="${libssh2_cppflags} ${CPPFLAGS}"
+        have_ssh2=yes
+    fi
+fi
+
+if test "x${have_ssh2}" = xno; then
+    AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
+fi
 
 if test "x${have_ssh2}" = xyes; then
     CPPFLAGS="${CPPFLAGS} -DGIT_SSH"
