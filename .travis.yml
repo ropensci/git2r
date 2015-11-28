@@ -1,13 +1,7 @@
 language: r
-sudo: required
-
 os:
   - linux
   - osx
-
-before_install:
-  - echo "options(repos = c(CRAN='https://cran.rstudio.com/'))" > ~/.Rprofile
-
 notifications:
   slack:
     secure: AGzcnnQM/zF7+8XLzai8uuOC0Ll6E1jChN5FsXZU+02NY1KrpGYG7IQgui0ZDQW5NNGIlSHuz3GBP0J1Ku7RdGi/uTEG8sEnmtAf0IGvWzr2Db2jN8KbVqcQAvqt5XTwS1VHgY0wOwXcaTqIG4KhpRdA6Mae/PkUhbHuv2GjgmE=
