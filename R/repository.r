@@ -191,6 +191,8 @@ setMethod("repository",
 
               if (discover) {
                   path <- discover_repository(path)
+                  if (is.null(path))
+                      stop("The 'path' is not in a git repository")
               } else {
                   path <- normalizePath(path, winslash = "/", mustWork = TRUE)
                   if (!file.info(path)$isdir)

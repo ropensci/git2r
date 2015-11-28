@@ -40,7 +40,7 @@ setClass("git_repository",
 
              can_open <- .Call(git2r_repository_can_open, object@path)
              if (!identical(can_open, TRUE))
-                 errors <- c(errors, "Invalid repository")
+                 errors <- c(errors, "Unable to open repository at 'path'")
 
              if (length(errors) == 0) TRUE else errors
          }
