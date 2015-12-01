@@ -218,7 +218,7 @@ else
                     export PKG_CONFIG_PATH
                     if pkg-config --exists libssh2; then
                         AC_MSG_RESULT([yes])
-                        GIT2R_LIBSSH2=`pkg-config --libs libssh2`
+                        GIT2R_LIBSSH2=`pkg-config --libs --static libssh2`
                         CPPFLAGS="${CPPFLAGS} -DGIT_SSH -Ilibssh2/include"
                         have_ssh2=yes
                     fi

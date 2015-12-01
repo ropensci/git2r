@@ -3929,7 +3929,7 @@ $as_echo_n "checking whether pkg-config could find libssh2... " >&6; }
                     if pkg-config --exists libssh2; then
                         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-                        GIT2R_LIBSSH2=`pkg-config --libs libssh2`
+                        GIT2R_LIBSSH2=`pkg-config --libs --static libssh2`
                         CPPFLAGS="${CPPFLAGS} -DGIT_SSH -Ilibssh2/include"
                         have_ssh2=yes
                     fi
