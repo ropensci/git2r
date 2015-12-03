@@ -633,6 +633,7 @@ ALLOCA
 EGREP
 GREP
 CPP
+PKGCONFIG
 OBJEXT
 EXEEXT
 ac_ct_CC
@@ -3452,6 +3453,46 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
+## check for pkg-config
+
+# Extract the first word of "pkg-config", so it can be a program name with args.
+set dummy pkg-config; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_PKGCONFIG+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$PKGCONFIG"; then
+  ac_cv_prog_PKGCONFIG="$PKGCONFIG" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_PKGCONFIG="yes"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+PKGCONFIG=$ac_cv_prog_PKGCONFIG
+if test -n "$PKGCONFIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PKGCONFIG" >&5
+$as_echo "$PKGCONFIG" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+
 # Handle optional include and library paths
 GIT2R_CPPFLAGS="-D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser"
 
@@ -3779,66 +3820,37 @@ esac
 
 # Check for LibSSH2
 have_ssh2=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing libssh2_version" >&5
-$as_echo_n "checking for library containing libssh2_version... " >&6; }
-if ${ac_cv_search_libssh2_version+:} false; then :
-  $as_echo_n "(cached) " >&6
+if test "x${PKGCONFIG}" = xyes; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether pkg-config could find libssh2" >&5
+$as_echo_n "checking whether pkg-config could find libssh2... " >&6; }
+    if pkg-config --exists libssh2; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+        libssh2_cppflags=`pkg-config --cflags libssh2`
+        GIT2R_LIBSSH2=`pkg-config --libs libssh2`
+        CPPFLAGS="${libssh2_cppflags} ${CPPFLAGS} -DGIT_SSH"
+        have_ssh2=yes
+    fi
 else
-  ac_func_search_save_LIBS=$LIBS
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING:
+  ---------------------------------------------
+   Unable to find pkg-config on this system
+   to search for LibSSH2.
 
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char libssh2_version ();
-int
-main ()
-{
-return libssh2_version ();
-  ;
-  return 0;
-}
-_ACEOF
-for ac_lib in '' ssh2; do
-  if test -z "$ac_lib"; then
-    ac_res="none required"
-  else
-    ac_res=-l$ac_lib
-    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
-  fi
-  if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_search_libssh2_version=$ac_res
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext
-  if ${ac_cv_search_libssh2_version+:} false; then :
-  break
-fi
-done
-if ${ac_cv_search_libssh2_version+:} false; then :
+   To build with SSH support, please install:
+   pkg-config
+  ---------------------------------------------" >&5
+$as_echo "$as_me: WARNING:
+  ---------------------------------------------
+   Unable to find pkg-config on this system
+   to search for LibSSH2.
 
-else
-  ac_cv_search_libssh2_version=no
-fi
-rm conftest.$ac_ext
-LIBS=$ac_func_search_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_libssh2_version" >&5
-$as_echo "$ac_cv_search_libssh2_version" >&6; }
-ac_res=$ac_cv_search_libssh2_version
-if test "$ac_res" != no; then :
-  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-  have_ssh2=yes
+   To build with SSH support, please install:
+   pkg-config
+  ---------------------------------------------" >&2;}
 fi
 
-
-if test "x${have_ssh2}" = xyes; then
-    CPPFLAGS="${CPPFLAGS} -DGIT_SSH"
-else
+if test "x${have_ssh2}" = xno; then
     # Static linking of LibSSH2 on OSX to support redistributable binary packages
     case "${host_os}" in
         darwin*)
@@ -3859,13 +3871,25 @@ else
             export LDFLAGS
             cp -f tools/missing libssh2
             cd libssh2
-            ./configure --with-pic --with-openssl --disable-examples-build --disable-shared --enable-static --prefix=$GIT2R_LIBSSH2_INST_DIR \
+            ./configure --with-pic --disable-examples-build --disable-shared --enable-static --prefix=$GIT2R_LIBSSH2_INST_DIR \
                 && make && make install && have_ssh2=yes
             cd ..
 
             if test "x${have_ssh2}" = xyes; then
-                CPPFLAGS="${CPPFLAGS} -DGIT_SSH -Ilibssh2/include"
-                GIT2R_LIBSSH2="-Llibssh2/lib -lssh2 -lssl -lcrypto"
+                have_ssh2=no
+                if test "x${PKGCONFIG}" = xyes; then
+                    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether pkg-config could find libssh2" >&5
+$as_echo_n "checking whether pkg-config could find libssh2... " >&6; }
+                    export=PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${GIT2R_LIBSSH2_INST_DIR}/lib/pkgconfig"
+                    export PKG_CONFIG_PATH
+                    if pkg-config --exists libssh2; then
+                        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+                        GIT2R_LIBSSH2=`pkg-config --libs --static libssh2`
+                        CPPFLAGS="${CPPFLAGS} -DGIT_SSH -Ilibssh2/include"
+                        have_ssh2=yes
+                    fi
+                fi
             fi
         ;;
     esac

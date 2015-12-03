@@ -24,6 +24,10 @@ AC_CANONICAL_HOST
 # Checks for programs.
 AC_PROG_CC
 
+## check for pkg-config
+AC_DEFUN([AC_PROG_PKGCONFIG], [AC_CHECK_PROG(PKGCONFIG,pkg-config,yes)])
+AC_PROG_PKGCONFIG
+
 # Handle optional include and library paths
 GIT2R_CPPFLAGS="-D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser"
 
@@ -164,11 +168,27 @@ esac
 
 # Check for LibSSH2
 have_ssh2=no
-AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
-
-if test "x${have_ssh2}" = xyes; then
-    CPPFLAGS="${CPPFLAGS} -DGIT_SSH"
+if test "x${PKGCONFIG}" = xyes; then
+    AC_MSG_CHECKING([whether pkg-config could find libssh2])
+    if pkg-config --exists libssh2; then
+        AC_MSG_RESULT([yes])
+        libssh2_cppflags=`pkg-config --cflags libssh2`
+        GIT2R_LIBSSH2=`pkg-config --libs libssh2`
+        CPPFLAGS="${libssh2_cppflags} ${CPPFLAGS} -DGIT_SSH"
+        have_ssh2=yes
+    fi
 else
+    AC_MSG_WARN([
+  ---------------------------------------------
+   Unable to find pkg-config on this system
+   to search for LibSSH2.
+
+   To build with SSH support, please install:
+   pkg-config
+  ---------------------------------------------])
+fi
+
+if test "x${have_ssh2}" = xno; then
     # Static linking of LibSSH2 on OSX to support redistributable binary packages
     case "${host_os}" in
         darwin*)
@@ -189,13 +209,23 @@ else
             export LDFLAGS
             cp -f tools/missing libssh2
             cd libssh2
-            ./configure --with-pic --with-openssl --disable-examples-build --disable-shared --enable-static --prefix=$GIT2R_LIBSSH2_INST_DIR \
+            ./configure --with-pic --disable-examples-build --disable-shared --enable-static --prefix=$GIT2R_LIBSSH2_INST_DIR \
                 && make && make install && have_ssh2=yes
             cd ..
 
             if test "x${have_ssh2}" = xyes; then
-                CPPFLAGS="${CPPFLAGS} -DGIT_SSH -Ilibssh2/include"
-                GIT2R_LIBSSH2="-Llibssh2/lib -lssh2 -lssl -lcrypto"
+                have_ssh2=no
+                if test "x${PKGCONFIG}" = xyes; then
+                    AC_MSG_CHECKING([whether pkg-config could find libssh2])
+                    export=PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${GIT2R_LIBSSH2_INST_DIR}/lib/pkgconfig"
+                    export PKG_CONFIG_PATH
+                    if pkg-config --exists libssh2; then
+                        AC_MSG_RESULT([yes])
+                        GIT2R_LIBSSH2=`pkg-config --libs --static libssh2`
+                        CPPFLAGS="${CPPFLAGS} -DGIT_SSH -Ilibssh2/include"
+                        have_ssh2=yes
+                    fi
+                fi
             fi
         ;;
     esac

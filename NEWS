@@ -35,6 +35,9 @@ CHANGES
 * On OS X, SecureTransport is now used to provide the cryptographic
   support for HTTPS connections insead of OpenSSL.
 
+* The search for libssh2 during configuration (non Windows) is now
+  done via pkg-config.
+
 * Update OpenSSL on Windows to v1.0.2d
 
 * Update libgit2 source code to commit (3f5877d) from 2015-11-12.
