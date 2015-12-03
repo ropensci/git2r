@@ -3828,73 +3828,12 @@ $as_echo_n "checking whether pkg-config could find libssh2... " >&6; }
 $as_echo "yes" >&6; }
         libssh2_cppflags=`pkg-config --cflags libssh2`
         GIT2R_LIBSSH2=`pkg-config --libs libssh2`
-        CPPFLAGS="${libssh2_cppflags} ${CPPFLAGS}"
+        CPPFLAGS="${libssh2_cppflags} ${CPPFLAGS} -DGIT_SSH"
         have_ssh2=yes
     fi
 fi
 
 if test "x${have_ssh2}" = xno; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing libssh2_version" >&5
-$as_echo_n "checking for library containing libssh2_version... " >&6; }
-if ${ac_cv_search_libssh2_version+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_func_search_save_LIBS=$LIBS
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char libssh2_version ();
-int
-main ()
-{
-return libssh2_version ();
-  ;
-  return 0;
-}
-_ACEOF
-for ac_lib in '' ssh2; do
-  if test -z "$ac_lib"; then
-    ac_res="none required"
-  else
-    ac_res=-l$ac_lib
-    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
-  fi
-  if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_search_libssh2_version=$ac_res
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext
-  if ${ac_cv_search_libssh2_version+:} false; then :
-  break
-fi
-done
-if ${ac_cv_search_libssh2_version+:} false; then :
-
-else
-  ac_cv_search_libssh2_version=no
-fi
-rm conftest.$ac_ext
-LIBS=$ac_func_search_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_libssh2_version" >&5
-$as_echo "$ac_cv_search_libssh2_version" >&6; }
-ac_res=$ac_cv_search_libssh2_version
-if test "$ac_res" != no; then :
-  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-  have_ssh2=yes
-fi
-
-fi
-
-if test "x${have_ssh2}" = xyes; then
-    CPPFLAGS="${CPPFLAGS} -DGIT_SSH"
-else
     # Static linking of LibSSH2 on OSX to support redistributable binary packages
     case "${host_os}" in
         darwin*)

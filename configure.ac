@@ -174,18 +174,12 @@ if test "x${PKGCONFIG}" = xyes; then
         AC_MSG_RESULT([yes])
         libssh2_cppflags=`pkg-config --cflags libssh2`
         GIT2R_LIBSSH2=`pkg-config --libs libssh2`
-        CPPFLAGS="${libssh2_cppflags} ${CPPFLAGS}"
+        CPPFLAGS="${libssh2_cppflags} ${CPPFLAGS} -DGIT_SSH"
         have_ssh2=yes
     fi
 fi
 
 if test "x${have_ssh2}" = xno; then
-    AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
-fi
-
-if test "x${have_ssh2}" = xyes; then
-    CPPFLAGS="${CPPFLAGS} -DGIT_SSH"
-else
     # Static linking of LibSSH2 on OSX to support redistributable binary packages
     case "${host_os}" in
         darwin*)
