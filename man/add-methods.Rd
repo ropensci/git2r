@@ -62,8 +62,8 @@ writeLines("c", file.path(path, "sub_dir/c.txt"))
 add(repo, "c.txt")
 status(repo)
 
-## Demonstrate glob expansion and that the current working
-## directory can be outside the repository's working directory.
+## Add files with glob expansion when the current working
+## directory is outside the repository's working directory.
 setwd(tempdir())
 dir.create(file.path(path, "glob_dir"))
 writeLines("d", file.path(path, "glob_dir/d.txt"))
@@ -73,8 +73,9 @@ writeLines("g", file.path(path, "glob_dir/g.md"))
 add(repo, "glob_dir/*txt")
 status(repo)
 
-## Demonstrate glob expansion with a relative path when the current
-## working directory is inside the repository's working directory.
+## Add file with glob expansion with a relative path when
+## the current working directory is inside the repository's
+## working directory.
 setwd(path)
 add(repo, "./glob_dir/*md")
 status(repo)
