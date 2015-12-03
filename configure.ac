@@ -177,6 +177,15 @@ if test "x${PKGCONFIG}" = xyes; then
         CPPFLAGS="${libssh2_cppflags} ${CPPFLAGS} -DGIT_SSH"
         have_ssh2=yes
     fi
+else
+    AC_MSG_WARN([
+  ---------------------------------------------
+   Unable to find pkg-config on this system
+   to search for LibSSH2.
+
+   To build with SSH support, please install:
+   pkg-config
+  ---------------------------------------------])
 fi
 
 if test "x${have_ssh2}" = xno; then

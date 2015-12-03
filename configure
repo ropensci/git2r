@@ -3831,6 +3831,23 @@ $as_echo "yes" >&6; }
         CPPFLAGS="${libssh2_cppflags} ${CPPFLAGS} -DGIT_SSH"
         have_ssh2=yes
     fi
+else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING:
+  ---------------------------------------------
+   Unable to find pkg-config on this system
+   to search for LibSSH2.
+
+   To build with SSH support, please install:
+   pkg-config
+  ---------------------------------------------" >&5
+$as_echo "$as_me: WARNING:
+  ---------------------------------------------
+   Unable to find pkg-config on this system
+   to search for LibSSH2.
+
+   To build with SSH support, please install:
+   pkg-config
+  ---------------------------------------------" >&2;}
 fi
 
 if test "x${have_ssh2}" = xno; then
