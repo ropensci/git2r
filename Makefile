@@ -30,8 +30,9 @@ pdf: roxygen
 # Build and check package
 check: clean
 	cd .. && R CMD build --no-build-vignettes $(PKG_NAME)
-	cd .. && _R_CHECK_CRAN_INCOMING_=FALSE R CMD check --as-cran \
-        --no-manual --no-vignettes --no-build-vignettes $(PKG_TAR)
+	cd .. && _R_CHECK_CRAN_INCOMING_=FALSE NOT_CRAN=true \
+        R CMD check --as-cran --no-manual --no-vignettes \
+        --no-build-vignettes $(PKG_TAR)
 
 # Build and check package with gctorture
 check_gctorture: clean
