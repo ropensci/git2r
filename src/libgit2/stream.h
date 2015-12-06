@@ -62,9 +62,6 @@ GIT_INLINE(int) git_stream_close(git_stream *st)
 
 GIT_INLINE(void) git_stream_free(git_stream *st)
 {
-	if (!st)
-		return;
-
 	st->free(st);
 }
 

@@ -480,16 +480,14 @@ static int iter_load_loose_paths(refdb_fs_backend *backend, refdb_fs_iter *iter)
 	int error = 0;
 	git_buf path = GIT_BUF_INIT;
 	git_iterator *fsit = NULL;
-	git_iterator_options fsit_opts = GIT_ITERATOR_OPTIONS_INIT;
 	const git_index_entry *entry = NULL;
 
 	if (!backend->path) /* do nothing if no path for loose refs */
 		return 0;
 
-	fsit_opts.flags = backend->iterator_flags;
-
 	if ((error = git_buf_printf(&path, "%s/refs", backend->path)) < 0 ||
-		(error = git_iterator_for_filesystem(&fsit, path.ptr, &fsit_opts)) < 0) {
+		(error = git_iterator_for_filesystem(
+			&fsit, path.ptr, backend->iterator_flags, NULL, NULL)) < 0) {
 		git_buf_free(&path);
 		return error;
 	}
@@ -626,9 +624,8 @@ static int refdb_fs_backend__iterator(
 	iter = git__calloc(1, sizeof(refdb_fs_iter));
 	GITERR_CHECK_ALLOC(iter);
 
-	git_pool_init(&iter->pool, 1);
-
-	if (git_vector_init(&iter->loose, 8, NULL) < 0)
+	if (git_pool_init(&iter->pool, 1, 0) < 0 ||
+		git_vector_init(&iter->loose, 8, NULL) < 0)
 		goto fail;
 
 	if (glob != NULL &&
@@ -1414,8 +1411,7 @@ static int setup_namespace(git_buf *path, git_repository *repo)
 	git__free(parts);
 
 	/* Make sure that the folder with the namespace exists */
-	if (git_futils_mkdir_relative(git_buf_cstr(path), repo->path_repository,
-			0777, GIT_MKDIR_PATH, NULL) < 0)
+	if (git_futils_mkdir_r(git_buf_cstr(path), repo->path_repository, 0777) < 0)
 		return -1;
 
 	/* Return root of the namespaced path, i.e. without the trailing '/refs' */
@@ -1464,7 +1460,7 @@ static int reflog_parse(git_reflog *log, const char *buf, size_t buf_size)
 		entry = git__calloc(1, sizeof(git_reflog_entry));
 		GITERR_CHECK_ALLOC(entry);
 
-		entry->committer = git__calloc(1, sizeof(git_signature));
+		entry->committer = git__malloc(sizeof(git_signature));
 		GITERR_CHECK_ALLOC(entry->committer);
 
 		if (git_oid_fromstrn(&entry->oid_old, buf, GIT_OID_HEXSZ) < 0)

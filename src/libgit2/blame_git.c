@@ -9,7 +9,6 @@
 #include "commit.h"
 #include "blob.h"
 #include "xdiff/xinclude.h"
-#include "diff_xdiff.h"
 
 /*
  * Origin is refcounted and usually we keep the blob contents to be
@@ -352,13 +351,6 @@ static int diff_hunks(mmfile_t file_a, mmfile_t file_b, void *cb_data)
 	ecb.priv = cb_data;
 
 	trim_common_tail(&file_a, &file_b, 0);
-
-	if (file_a.size > GIT_XDIFF_MAX_SIZE ||
-		file_b.size > GIT_XDIFF_MAX_SIZE) {
-		giterr_set(GITERR_INVALID, "file too large to blame");
-		return -1;
-	}
-
 	return xdl_diff(&file_a, &file_b, &xpp, &xecfg, &ecb);
 }
 
@@ -387,9 +379,7 @@ static int pass_blame_to_parent(
 	fill_origin_blob(parent, &file_p);
 	fill_origin_blob(target, &file_o);
 
-	if (diff_hunks(file_p, file_o, &d) < 0)
-		return -1;
-
+	diff_hunks(file_p, file_o, &d);
 	/* The reset (i.e. anything after tlno) are the same as the parent */
 	blame_chunk(blame, d.tlno, d.plno, last_in_target, target, parent);
 
@@ -487,13 +477,12 @@ static void pass_whole_blame(git_blame *blame,
 	}
 }
 
-static int pass_blame(git_blame *blame, git_blame__origin *origin, uint32_t opt)
+static void pass_blame(git_blame *blame, git_blame__origin *origin, uint32_t opt)
 {
 	git_commit *commit = origin->commit;
 	int i, num_parents;
 	git_blame__origin *sg_buf[16];
 	git_blame__origin *porigin, **sg_origin = sg_buf;
-	int ret, error = 0;
 
 	num_parents = git_commit_parentcount(commit);
 	if (!git_oid_cmp(git_commit_id(commit), &blame->options.oldest_commit))
@@ -551,13 +540,8 @@ static int pass_blame(git_blame *blame, git_blame__origin *origin, uint32_t opt)
 			origin_incref(porigin);
 			origin->previous = porigin;
 		}
-
-		if ((ret = pass_blame_to_parent(blame, origin, porigin)) != 0) {
-			if (ret < 0)
-				error = -1;
-
+		if (pass_blame_to_parent(blame, origin, porigin))
 			goto finish;
-		}
 	}
 
 	/* TODO: optionally find moves in parents' files */
@@ -570,7 +554,7 @@ finish:
 			origin_decref(sg_origin[i]);
 	if (sg_origin != sg_buf)
 		git__free(sg_origin);
-	return error;
+	return;
 }
 
 /*
@@ -599,7 +583,7 @@ static void coalesce(git_blame *blame)
 	}
 }
 
-int git_blame__like_git(git_blame *blame, uint32_t opt)
+void git_blame__like_git(git_blame *blame, uint32_t opt)
 {
 	while (true) {
 		git_blame__entry *ent;
@@ -610,13 +594,11 @@ int git_blame__like_git(git_blame *blame, uint32_t opt)
 			if (!ent->guilty)
 				suspect = ent->suspect;
 		if (!suspect)
-			return 0; /* all done */
+			return; /* all done */
 
 		/* We'll use this suspect later in the loop, so hold on to it for now. */
 		origin_incref(suspect);
-
-		if (pass_blame(blame, suspect, opt) < 0)
-			return -1;
+		pass_blame(blame, suspect, opt);
 
 		/* Take responsibility for the remaining entries */
 		for (ent = blame->ent; ent; ent = ent->next) {
@@ -631,8 +613,6 @@ int git_blame__like_git(git_blame *blame, uint32_t opt)
 	}
 
 	coalesce(blame);
-
-	return 0;
 }
 
 void git_blame__free_entry(git_blame__entry *ent)

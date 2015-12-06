@@ -130,14 +130,11 @@ static int git_proto_stream_write(
 
 static void git_proto_stream_free(git_smart_subtransport_stream *stream)
 {
-	git_proto_stream *s;
-	git_subtransport *t;
+	git_proto_stream *s = (git_proto_stream *)stream;
+	git_subtransport *t = OWNING_SUBTRANSPORT(s);
+	int ret;
 
-	if (!stream)
-		return;
-
-	s = (git_proto_stream *)stream;
-	t = OWNING_SUBTRANSPORT(s);
+	GIT_UNUSED(ret);
 
 	t->current_stream = NULL;
 

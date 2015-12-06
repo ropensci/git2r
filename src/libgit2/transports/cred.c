@@ -378,11 +378,3 @@ int git_cred_username_new(git_cred **cred, const char *username)
 	*cred = (git_cred *) c;
 	return 0;
 }
-
-void git_cred_free(git_cred *cred)
-{
-	if (!cred)
-		return;
-
-	cred->free(cred);
-}

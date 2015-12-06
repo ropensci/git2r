@@ -526,17 +526,6 @@ bool git_path_isfile(const char *path)
 	return S_ISREG(st.st_mode) != 0;
 }
 
-bool git_path_islink(const char *path)
-{
-	struct stat st;
-
-	assert(path);
-	if (p_lstat(path, &st) < 0)
-		return false;
-
-	return S_ISLNK(st.st_mode) != 0;
-}
-
 #ifdef GIT_WIN32
 
 bool git_path_is_empty_dir(const char *path)
@@ -1177,11 +1166,7 @@ static int diriter_update_paths(git_path_diriter *diriter)
 	diriter->path[path_len-1] = L'\0';
 
 	git_buf_truncate(&diriter->path_utf8, diriter->parent_utf8_len);
-
-	if (diriter->parent_utf8_len > 0 &&
-		diriter->path_utf8.ptr[diriter->parent_utf8_len-1] != '/')
-		git_buf_putc(&diriter->path_utf8, '/');
-
+	git_buf_putc(&diriter->path_utf8, '/');
 	git_buf_put_w(&diriter->path_utf8, diriter->current.cFileName, filename_len);
 
 	if (git_buf_oom(&diriter->path_utf8))
@@ -1330,11 +1315,7 @@ int git_path_diriter_next(git_path_diriter *diriter)
 #endif
 
 	git_buf_truncate(&diriter->path, diriter->parent_len);
-
-	if (diriter->parent_len > 0 &&
-		diriter->path.ptr[diriter->parent_len-1] != '/')
-		git_buf_putc(&diriter->path, '/');
-
+	git_buf_putc(&diriter->path, '/');
 	git_buf_put(&diriter->path, filename, filename_len);
 
 	if (git_buf_oom(&diriter->path))

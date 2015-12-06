@@ -434,7 +434,7 @@ SEXP git2r_remote_ls(SEXP name, SEXP repo, SEXP credentials)
     callbacks.payload = &payload;
     callbacks.credentials = &git2r_cred_acquire_cb;
 
-    err = git_remote_connect(remote, GIT_DIRECTION_FETCH, &callbacks, NULL);
+    err = git_remote_connect(remote, GIT_DIRECTION_FETCH, &callbacks);
     if (err)
         goto cleanup;
 

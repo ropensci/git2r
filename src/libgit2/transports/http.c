@@ -36,8 +36,6 @@ static const char *post_verb = "POST";
 
 #define PARSE_ERROR_GENERIC	-1
 #define PARSE_ERROR_REPLAY	-2
-/** Look at the user field */
-#define PARSE_ERROR_EXT         -3
 
 #define CHUNK_SIZE	4096
 
@@ -80,7 +78,6 @@ typedef struct {
 	git_vector www_authenticate;
 	enum last_cb last_cb;
 	int parse_error;
-	int error;
 	unsigned parse_finished : 1;
 
 	/* Authentication */
@@ -193,7 +190,6 @@ static int gen_request(
 {
 	http_subtransport *t = OWNING_SUBTRANSPORT(s);
 	const char *path = t->connection_data.path ? t->connection_data.path : "/";
-	size_t i;
 
 	git_buf_printf(buf, "%s %s%s HTTP/1.1\r\n", s->verb, path, s->service_url);
 
@@ -210,11 +206,6 @@ static int gen_request(
 			git_buf_printf(buf, "Content-Length: %"PRIuZ "\r\n", content_length);
 	} else
 		git_buf_puts(buf, "Accept: */*\r\n");
-
-	for (i = 0; i < t->owner->custom_headers.count; i++) {
-		if (t->owner->custom_headers.strings[i])
-			git_buf_printf(buf, "%s\r\n", t->owner->custom_headers.strings[i]);
-	}
 
 	/* Apply credentials to the request */
 	if (apply_credentials(buf, t) < 0)
@@ -360,8 +351,7 @@ static int on_headers_complete(http_parser *parser)
 				if (error == GIT_PASSTHROUGH) {
 					no_callback = 1;
 				} else if (error < 0) {
-					t->error = error;
-					return t->parse_error = PARSE_ERROR_EXT;
+					return PARSE_ERROR_GENERIC;
 				} else {
 					assert(t->cred);
 
@@ -720,10 +710,6 @@ replay:
 				return error;
 
 			goto replay;
-		}
-
-		if (t->parse_error == PARSE_ERROR_EXT) {
-			return t->error;
 		}
 
 		if (t->parse_error < 0)

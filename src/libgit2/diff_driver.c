@@ -97,7 +97,8 @@ static int diff_driver_add_patterns(
 	for (scan = regex_str; scan; scan = end) {
 		/* get pattern to fill in */
 		if ((pat = git_array_alloc(drv->fn_patterns)) == NULL) {
-			return -1;
+			error = -1;
+			break;
 		}
 
 		pat->flags = regex_flags;
@@ -116,9 +117,10 @@ static int diff_driver_add_patterns(
 			break;
 
 		if ((error = regcomp(&pat->re, buf.ptr, regex_flags)) != 0) {
-			/*
-			 * TODO: issue a warning
-			 */
+			/* if regex fails to compile, warn? fail? */
+			error = giterr_set_regex(&pat->re, error);
+			regfree(&pat->re);
+			break;
 		}
 	}
 
@@ -126,8 +128,7 @@ static int diff_driver_add_patterns(
 		(void)git_array_pop(drv->fn_patterns); /* release last item */
 	git_buf_free(&buf);
 
-	/* We want to ignore bad patterns, so return success regardless */
-	return 0;
+	return error;
 }
 
 static int diff_driver_xfuncname(const git_config_entry *entry, void *payload)

@@ -687,15 +687,7 @@ int set_transport_callbacks(git_transport *t, const git_remote_callbacks *cbs)
 				cbs->certificate_check, cbs->payload);
 }
 
-static int set_transport_custom_headers(git_transport *t, const git_strarray *custom_headers)
-{
-	if (!t->set_custom_headers)
-		return 0;
-
-	return t->set_custom_headers(t, custom_headers);
-}
-
-int git_remote_connect(git_remote *remote, git_direction direction, const git_remote_callbacks *callbacks, const git_strarray *custom_headers)
+int git_remote_connect(git_remote *remote, git_direction direction, const git_remote_callbacks *callbacks)
 {
 	git_transport *t;
 	const char *url;
@@ -733,9 +725,6 @@ int git_remote_connect(git_remote *remote, git_direction direction, const git_re
 	 * transport registrations which map URI schemes to transport factories */
 	if (!t && (error = git_transport_new(&t, remote, url)) < 0)
 		return error;
-
-	if ((error = set_transport_custom_headers(t, custom_headers)) != 0)
-		goto on_error;
 
 	if ((error = set_transport_callbacks(t, callbacks)) < 0 ||
 	    (error = t->connect(t, url, credentials, payload, direction, flags)) != 0)
@@ -895,18 +884,16 @@ int git_remote_download(git_remote *remote, const git_strarray *refspecs, const 
 	size_t i;
 	git_vector *to_active, specs = GIT_VECTOR_INIT, refs = GIT_VECTOR_INIT;
 	const git_remote_callbacks *cbs = NULL;
-	const git_strarray *custom_headers = NULL;
 
 	assert(remote);
 
 	if (opts) {
 		GITERR_CHECK_VERSION(&opts->callbacks, GIT_REMOTE_CALLBACKS_VERSION, "git_remote_callbacks");
 		cbs = &opts->callbacks;
-		custom_headers = &opts->custom_headers;
 	}
 
 	if (!git_remote_connected(remote) &&
-	    (error = git_remote_connect(remote, GIT_DIRECTION_FETCH, cbs, custom_headers)) < 0)
+	    (error = git_remote_connect(remote, GIT_DIRECTION_FETCH, cbs)) < 0)
 		goto on_error;
 
 	if (ls_to_vector(&refs, remote) < 0)
@@ -970,18 +957,16 @@ int git_remote_fetch(
 	bool prune = false;
 	git_buf reflog_msg_buf = GIT_BUF_INIT;
 	const git_remote_callbacks *cbs = NULL;
-	const git_strarray *custom_headers = NULL;
 
 	if (opts) {
 		GITERR_CHECK_VERSION(&opts->callbacks, GIT_REMOTE_CALLBACKS_VERSION, "git_remote_callbacks");
 		cbs = &opts->callbacks;
-		custom_headers = &opts->custom_headers;
 		update_fetchhead = opts->update_fetchhead;
 		tagopt = opts->download_tags;
 	}
 
 	/* Connect and download everything */
-	if ((error = git_remote_connect(remote, GIT_DIRECTION_FETCH, cbs, custom_headers)) != 0)
+	if ((error = git_remote_connect(remote, GIT_DIRECTION_FETCH, cbs)) != 0)
 		return error;
 
 	error = git_remote_download(remote, refspecs, opts);
@@ -1349,13 +1334,11 @@ static int update_tips_for_spec(
 	for (; i < refs->length; ++i) {
 		head = git_vector_get(refs, i);
 		autotag = 0;
-		git_buf_clear(&refname);
 
 		/* Ignore malformed ref names (which also saves us from tag^{} */
 		if (!git_reference_is_valid_name(head->name))
 			continue;
 
-		/* If we have a tag, see if the auto-follow rules say to update it */
 		if (git_refspec_src_matches(&tagspec, head->name)) {
 			if (tagopt != GIT_REMOTE_DOWNLOAD_TAGS_NONE) {
 
@@ -1365,11 +1348,10 @@ static int update_tips_for_spec(
 				git_buf_clear(&refname);
 				if (git_buf_puts(&refname, head->name) < 0)
 					goto on_error;
+			} else {
+				continue;
 			}
-		}
-
-		/* If we didn't want to auto-follow the tag, check if the refspec matches */
-		if (!autotag && git_refspec_src_matches(spec, head->name)) {
+		} else if (git_refspec_src_matches(spec, head->name)) {
 			if (spec->dst) {
 				if (git_refspec_transform(&refname, spec, head->name) < 0)
 					goto on_error;
@@ -1383,10 +1365,7 @@ static int update_tips_for_spec(
 
 				continue;
 			}
-		}
-
-		/* If we still don't have a refname, we don't want it */
-		if (git_buf_len(&refname) == 0) {
+		} else {
 			continue;
 		}
 
@@ -2392,17 +2371,14 @@ int git_remote_upload(git_remote *remote, const git_strarray *refspecs, const gi
 	git_push *push;
 	git_refspec *spec;
 	const git_remote_callbacks *cbs = NULL;
-	const git_strarray *custom_headers = NULL;
 
 	assert(remote);
 
-	if (opts) {
+	if (opts)
 		cbs = &opts->callbacks;
-		custom_headers = &opts->custom_headers;
-	}
 
 	if (!git_remote_connected(remote) &&
-	    (error = git_remote_connect(remote, GIT_DIRECTION_PUSH, cbs, custom_headers)) < 0)
+	    (error = git_remote_connect(remote, GIT_DIRECTION_PUSH, cbs)) < 0)
 		goto cleanup;
 
 	free_refspecs(&remote->active_refspecs);
@@ -2451,17 +2427,15 @@ int git_remote_push(git_remote *remote, const git_strarray *refspecs, const git_
 {
 	int error;
 	const git_remote_callbacks *cbs = NULL;
-	const git_strarray *custom_headers = NULL;
 
 	if (opts) {
 		GITERR_CHECK_VERSION(&opts->callbacks, GIT_REMOTE_CALLBACKS_VERSION, "git_remote_callbacks");
 		cbs = &opts->callbacks;
-		custom_headers = &opts->custom_headers;
 	}
 
 	assert(remote && refspecs);
 
-	if ((error = git_remote_connect(remote, GIT_DIRECTION_PUSH, cbs, custom_headers)) < 0)
+	if ((error = git_remote_connect(remote, GIT_DIRECTION_PUSH, cbs)) < 0)
 		return error;
 
 	if ((error = git_remote_upload(remote, refspecs, opts)) < 0)

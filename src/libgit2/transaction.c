@@ -18,7 +18,6 @@ void Rf_error(const char*, ...);
 #include "pool.h"
 #include "reflog.h"
 #include "signature.h"
-#include "config.h"
 
 #include "git2/transaction.h"
 #include "git2/signature.h"
@@ -26,12 +25,6 @@ void Rf_error(const char*, ...);
 #include "git2/sys/refdb_backend.h"
 
 GIT__USE_STRMAP
-
-typedef enum {
-	TRANSACTION_NONE,
-	TRANSACTION_REFS,
-	TRANSACTION_CONFIG,
-} transaction_t;
 
 typedef struct {
 	const char *name;
@@ -52,28 +45,12 @@ typedef struct {
 } transaction_node;
 
 struct git_transaction {
-	transaction_t type;
 	git_repository *repo;
 	git_refdb *db;
-	git_config *cfg;
 
 	git_strmap *locks;
 	git_pool pool;
 };
-
-int git_transaction_config_new(git_transaction **out, git_config *cfg)
-{
-	git_transaction *tx;
-	assert(out && cfg);
-
-	tx = git__calloc(1, sizeof(git_transaction));
-	GITERR_CHECK_ALLOC(tx);
-
-	tx->type = TRANSACTION_CONFIG;
-	tx->cfg = cfg;
-	*out = tx;
-	return 0;
-}
 
 int git_transaction_new(git_transaction **out, git_repository *repo)
 {
@@ -83,7 +60,8 @@ int git_transaction_new(git_transaction **out, git_repository *repo)
 
 	assert(out && repo);
 
-	git_pool_init(&pool, 1);
+	if ((error = git_pool_init(&pool, 1, 0)) < 0)
+		return error;
 
 	tx = git_pool_mallocz(&pool, sizeof(git_transaction));
 	if (!tx) {
@@ -99,7 +77,6 @@ int git_transaction_new(git_transaction **out, git_repository *repo)
 	if ((error = git_repository_refdb(&tx->db, repo)) < 0)
 		goto on_error;
 
-	tx->type = TRANSACTION_REFS;
 	memcpy(&tx->pool, &pool, sizeof(git_pool));
 	tx->repo = repo;
 	*out = tx;
@@ -338,13 +315,6 @@ int git_transaction_commit(git_transaction *tx)
 
 	assert(tx);
 
-	if (tx->type == TRANSACTION_CONFIG) {
-		error = git_config_unlock(tx->cfg, true);
-		tx->cfg = NULL;
-
-		return error;
-	}
-
 	for (pos = kh_begin(tx->locks); pos < kh_end(tx->locks); pos++) {
 		if (!git_strmap_has_data(tx->locks, pos))
 			continue;
@@ -371,16 +341,6 @@ void git_transaction_free(git_transaction *tx)
 	git_strmap_iter pos;
 
 	assert(tx);
-
-	if (tx->type == TRANSACTION_CONFIG) {
-		if (tx->cfg) {
-			git_config_unlock(tx->cfg, false);
-			git_config_free(tx->cfg);
-		}
-
-		git__free(tx);
-		return;
-	}
 
 	/* start by unlocking the ones we've left hanging, if any */
 	for (pos = kh_begin(tx->locks); pos < kh_end(tx->locks); pos++) {
