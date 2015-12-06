@@ -303,7 +303,6 @@ AC_FUNC_MMAP
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([btowc clock_gettime getcwd gethostbyname gettimeofday isascii memchr memmove memset munmap pstat_getdynamic re_comp realpath regcomp select socket strcasecmp strchr strcspn strdup strerror strncasecmp strrchr strspn strstr strtol strtoul])
 
-AC_SUBST(GIT2R_SRC_LIBGIT2_STREAM)
 AC_SUBST(GIT2R_SRC_REGEX)
 AC_SUBST(GIT2R_LIBSSH2)
 AC_SUBST(CPPFLAGS)
