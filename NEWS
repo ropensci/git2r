@@ -1,3 +1,9 @@
+git2r 0.12.2
+------------
+
+* On OS X, OpenSSL is now used to provide the cryptographic support
+  for HTTPS connections.
+
 git2r 0.12.1
 ------------
 
