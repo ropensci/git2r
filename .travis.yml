@@ -5,6 +5,14 @@ os:
   - linux
   - osx
 
+after_failure:
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cat /home/travis/build/ropensci/git2r/git2r.Rcheck/00install.out; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then cat /Users/travis/build/ropensci/git2r/git2r.Rcheck/00install.out; fi
+
+after_success:
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cat /home/travis/build/ropensci/git2r/git2r.Rcheck/00install.out; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then cat /Users/travis/build/ropensci/git2r/git2r.Rcheck/00install.out; fi
+
 notifications:
   slack:
     secure: AGzcnnQM/zF7+8XLzai8uuOC0Ll6E1jChN5FsXZU+02NY1KrpGYG7IQgui0ZDQW5NNGIlSHuz3GBP0J1Ku7RdGi/uTEG8sEnmtAf0IGvWzr2Db2jN8KbVqcQAvqt5XTwS1VHgY0wOwXcaTqIG4KhpRdA6Mae/PkUhbHuv2GjgmE=
