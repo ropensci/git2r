@@ -133,38 +133,36 @@ if test "x${have_zlib}" = xno; then
 fi
 
 # Check for SSL
-case "${host_os}" in
-    darwin*)
-        # On OS X, use Security and CoreFoundation framework
-        CPPFLAGS="${CPPFLAGS} ${SECURITY_INCLUDE_DIR} -DGIT_SECURE_TRANSPORT -DGIT_COMMON_CRYPTO"
-        LIBS="${LIBS} -framework Security -framework CoreFoundation"
-        GIT2R_SRC_LIBGIT2_STREAM=libgit2/stransport_stream.o
-    ;;
-    *)
-        # Check for OpenSSL
-        have_ssl=no
-        if test "x${OPENSSL_INCLUDES}" = x; then :; else
-            CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
-        fi
-        AC_SEARCH_LIBS([EVP_EncryptInit], [crypto],
-        [
-            AC_SEARCH_LIBS([SSL_library_init], [ssl], [have_ssl=yes])
-        ])
+have_ssl=no
+if test "x${OPENSSL_INCLUDES}" = x; then :; else
+        CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
+fi
+AC_SEARCH_LIBS([EVP_EncryptInit], [crypto],
+    [
+        AC_SEARCH_LIBS([SSL_library_init], [ssl], [have_ssl=yes])
+    ])
 
-        # Specify sha1 implementation
-        if test "x${have_ssl}" = xyes; then
-            CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL -DOPENSSL_SHA1"
-        else
-            AC_MSG_FAILURE([
+# Specify sha1 implementation
+if test "x${have_ssl}" = xyes; then
+        CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL"
+
+        case "${host_os}" in
+          darwin*)
+                CPPFLAGS="${CPPFLAGS} -DGIT_COMMON_CRYPTO"
+          ;;
+          *)
+                CPPFLAGS="${CPPFLAGS} -DOPENSSL_SHA1"
+          ;;
+        esac
+else
+        AC_MSG_FAILURE([
   ---------------------------------------------
    OpenSSL library required
 
    Please install:
    libssl-dev (deb) or openssl-devel (rpm)
   ---------------------------------------------])
-        fi
-    ;;
-esac
+fi
 
 # Check for LibSSH2
 have_ssh2=no
@@ -209,23 +207,13 @@ if test "x${have_ssh2}" = xno; then
             export LDFLAGS
             cp -f tools/missing libssh2
             cd libssh2
-            ./configure --with-pic --disable-examples-build --disable-shared --enable-static --prefix=$GIT2R_LIBSSH2_INST_DIR \
+            ./configure --with-pic --with-openssl --disable-examples-build --disable-shared --enable-static --prefix=$GIT2R_LIBSSH2_INST_DIR \
                 && make && make install && have_ssh2=yes
             cd ..
 
             if test "x${have_ssh2}" = xyes; then
-                have_ssh2=no
-                if test "x${PKGCONFIG}" = xyes; then
-                    AC_MSG_CHECKING([whether pkg-config could find libssh2])
-                    export=PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${GIT2R_LIBSSH2_INST_DIR}/lib/pkgconfig"
-                    export PKG_CONFIG_PATH
-                    if pkg-config --exists libssh2; then
-                        AC_MSG_RESULT([yes])
-                        GIT2R_LIBSSH2=`pkg-config --libs --static libssh2`
-                        CPPFLAGS="${CPPFLAGS} -DGIT_SSH -Ilibssh2/include"
-                        have_ssh2=yes
-                    fi
-                fi
+                CPPFLAGS="${CPPFLAGS} -DGIT_SSH -Ilibssh2/include"
+                GIT2R_LIBSSH2="-Llibssh2/lib -lssh2"
             fi
         ;;
     esac

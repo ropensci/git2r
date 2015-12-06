@@ -3673,20 +3673,11 @@ See \`config.log' for more details" "$LINENO" 5; }
 fi
 
 # Check for SSL
-case "${host_os}" in
-    darwin*)
-        # On OS X, use Security and CoreFoundation framework
-        CPPFLAGS="${CPPFLAGS} ${SECURITY_INCLUDE_DIR} -DGIT_SECURE_TRANSPORT -DGIT_COMMON_CRYPTO"
-        LIBS="${LIBS} -framework Security -framework CoreFoundation"
-        GIT2R_SRC_LIBGIT2_STREAM=libgit2/stransport_stream.o
-    ;;
-    *)
-        # Check for OpenSSL
-        have_ssl=no
-        if test "x${OPENSSL_INCLUDES}" = x; then :; else
-            CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
-        fi
-        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing EVP_EncryptInit" >&5
+have_ssl=no
+if test "x${OPENSSL_INCLUDES}" = x; then :; else
+        CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing EVP_EncryptInit" >&5
 $as_echo_n "checking for library containing EVP_EncryptInit... " >&6; }
 if ${ac_cv_search_EVP_EncryptInit+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -3740,7 +3731,7 @@ ac_res=$ac_cv_search_EVP_EncryptInit
 if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
 
-            { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing SSL_library_init" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing SSL_library_init" >&5
 $as_echo_n "checking for library containing SSL_library_init... " >&6; }
 if ${ac_cv_search_SSL_library_init+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -3800,11 +3791,20 @@ fi
 fi
 
 
-        # Specify sha1 implementation
-        if test "x${have_ssl}" = xyes; then
-            CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL -DOPENSSL_SHA1"
-        else
-            { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+# Specify sha1 implementation
+if test "x${have_ssl}" = xyes; then
+        CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL"
+
+        case "${host_os}" in
+          darwin*)
+                CPPFLAGS="${CPPFLAGS} -DGIT_COMMON_CRYPTO"
+          ;;
+          *)
+                CPPFLAGS="${CPPFLAGS} -DOPENSSL_SHA1"
+          ;;
+        esac
+else
+        { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
 as_fn_error $? "
   ---------------------------------------------
@@ -3814,9 +3814,7 @@ as_fn_error $? "
    libssl-dev (deb) or openssl-devel (rpm)
   ---------------------------------------------
 See \`config.log' for more details" "$LINENO" 5; }
-        fi
-    ;;
-esac
+fi
 
 # Check for LibSSH2
 have_ssh2=no
@@ -3871,25 +3869,13 @@ if test "x${have_ssh2}" = xno; then
             export LDFLAGS
             cp -f tools/missing libssh2
             cd libssh2
-            ./configure --with-pic --disable-examples-build --disable-shared --enable-static --prefix=$GIT2R_LIBSSH2_INST_DIR \
+            ./configure --with-pic --with-openssl --disable-examples-build --disable-shared --enable-static --prefix=$GIT2R_LIBSSH2_INST_DIR \
                 && make && make install && have_ssh2=yes
             cd ..
 
             if test "x${have_ssh2}" = xyes; then
-                have_ssh2=no
-                if test "x${PKGCONFIG}" = xyes; then
-                    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether pkg-config could find libssh2" >&5
-$as_echo_n "checking whether pkg-config could find libssh2... " >&6; }
-                    export=PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${GIT2R_LIBSSH2_INST_DIR}/lib/pkgconfig"
-                    export PKG_CONFIG_PATH
-                    if pkg-config --exists libssh2; then
-                        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-                        GIT2R_LIBSSH2=`pkg-config --libs --static libssh2`
-                        CPPFLAGS="${CPPFLAGS} -DGIT_SSH -Ilibssh2/include"
-                        have_ssh2=yes
-                    fi
-                fi
+                CPPFLAGS="${CPPFLAGS} -DGIT_SSH -Ilibssh2/include"
+                GIT2R_LIBSSH2="-Llibssh2/lib -lssh2"
             fi
         ;;
     esac
