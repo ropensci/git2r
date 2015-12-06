@@ -170,9 +170,9 @@ if test "x${PKGCONFIG}" = xyes; then
     AC_MSG_CHECKING([whether pkg-config could find libssh2])
     if pkg-config --exists libssh2; then
         AC_MSG_RESULT([yes])
-        libssh2_cppflags=`pkg-config --cflags libssh2`
+        LIBSSH2_CPPFLAGS=`pkg-config --cflags libssh2`
         GIT2R_LIBSSH2=`pkg-config --libs libssh2`
-        CPPFLAGS="${libssh2_cppflags} ${CPPFLAGS} -DGIT_SSH"
+        CPPFLAGS="${LIBSSH2_CPPFLAGS} ${CPPFLAGS} -DGIT_SSH"
         have_ssh2=yes
     fi
 else
@@ -219,8 +219,9 @@ if test "x${have_ssh2}" = xno; then
                     export PKG_CONFIG_PATH
                     if pkg-config --exists libssh2; then
                         AC_MSG_RESULT([yes])
+                        LIBSSH2_CPPFLAGS=`pkg-config --cflags libssh2`
                         GIT2R_LIBSSH2=`pkg-config --libs --static libssh2`
-                        CPPFLAGS="${CPPFLAGS} -DGIT_SSH -Ilibssh2/include"
+                        CPPFLAGS="${LIBSSH2_CPPFLAGS} ${CPPFLAGS} -DGIT_SSH"
                         have_ssh2=yes
                     fi
                 fi
