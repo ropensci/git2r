@@ -87,6 +87,7 @@ sync_libgit2:
 	-cp -f ../libgit2/include/git2/sys/*.h src/libgit2/include/git2/sys
 	-cp -f ../libgit2/src/*.c src/libgit2
 	-cp -f ../libgit2/src/*.h src/libgit2
+	-rm -f src/libgit2/stransport_stream.c
 	-cp -f ../libgit2/src/hash/*.c src/libgit2/hash
 	-cp -f ../libgit2/src/hash/*.h src/libgit2/hash
 	-cp -f ../libgit2/src/transports/*.c src/libgit2/transports
