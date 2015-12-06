@@ -171,7 +171,7 @@ if test "x${PKGCONFIG}" = xyes; then
     if pkg-config --exists libssh2; then
         AC_MSG_RESULT([yes])
         LIBSSH2_CPPFLAGS=`pkg-config --cflags libssh2`
-        GIT2R_LIBSSH2=`pkg-config --libs libssh2`
+        LIBSSH2_LIBS=`pkg-config --libs libssh2`
         CPPFLAGS="${LIBSSH2_CPPFLAGS} ${CPPFLAGS} -DGIT_SSH"
         have_ssh2=yes
     fi
@@ -202,12 +202,12 @@ if test "x${have_ssh2}" = xno; then
             # Download and build libssh2
             mkdir -p libssh2 && curl -fsSL https://github.com/libssh2/libssh2/releases/download/libssh2-1.6.0/libssh2-1.6.0.tar.gz | tar xz --strip 1 -C libssh2
             mkdir -p src/libssh2
-            GIT2R_LIBSSH2_INST_DIR="${PWD}/src/libssh2"
+            LIBSSH2_INST_DIR="${PWD}/src/libssh2"
             export CPPFLAGS
             export LDFLAGS
             cp -f tools/missing libssh2
             cd libssh2
-            ./configure --with-pic --with-openssl --disable-examples-build --disable-shared --enable-static --prefix=$GIT2R_LIBSSH2_INST_DIR \
+            ./configure --with-pic --with-openssl --disable-examples-build --disable-shared --enable-static --prefix=$LIBSSH2_INST_DIR \
                 && make && make install && have_ssh2=yes
             cd ..
 
@@ -215,12 +215,12 @@ if test "x${have_ssh2}" = xno; then
                 have_ssh2=no
                 if test "x${PKGCONFIG}" = xyes; then
                     AC_MSG_CHECKING([whether pkg-config could find libssh2])
-                    PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${GIT2R_LIBSSH2_INST_DIR}/lib/pkgconfig"
+                    PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${LIBSSH2_INST_DIR}/lib/pkgconfig"
                     export PKG_CONFIG_PATH
                     if pkg-config --exists libssh2; then
                         AC_MSG_RESULT([yes])
                         LIBSSH2_CPPFLAGS=`pkg-config --cflags libssh2`
-                        GIT2R_LIBSSH2=`pkg-config --libs --static libssh2`
+                        LIBSSH2_LIBS=`pkg-config --libs --static libssh2`
                         CPPFLAGS="${LIBSSH2_CPPFLAGS} ${CPPFLAGS} -DGIT_SSH"
                         have_ssh2=yes
                     fi
@@ -304,7 +304,7 @@ AC_FUNC_REALLOC
 AC_CHECK_FUNCS([btowc clock_gettime getcwd gethostbyname gettimeofday isascii memchr memmove memset munmap pstat_getdynamic re_comp realpath regcomp select socket strcasecmp strchr strcspn strdup strerror strncasecmp strrchr strspn strstr strtol strtoul])
 
 AC_SUBST(GIT2R_SRC_REGEX)
-AC_SUBST(GIT2R_LIBSSH2)
+AC_SUBST(LIBSSH2_LIBS)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LIBS)
 
