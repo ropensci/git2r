@@ -148,6 +148,7 @@ if test "x${have_ssl}" = xyes; then
 
         case "${host_os}" in
           darwin*)
+                PKG_CFLAGS="-Wno-deprecated-declarations"
                 CPPFLAGS="${CPPFLAGS} -DGIT_COMMON_CRYPTO"
           ;;
           *)
@@ -305,6 +306,7 @@ AC_CHECK_FUNCS([btowc clock_gettime getcwd gethostbyname gettimeofday isascii me
 
 AC_SUBST(GIT2R_SRC_REGEX)
 AC_SUBST(LIBSSH2_LIBS)
+AC_SUBST(PKG_CFLAGS)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LIBS)
 
