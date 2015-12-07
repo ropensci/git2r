@@ -1,8 +1,24 @@
-git2r 0.12.2
+git2r 0.13.0
 ------------
 
-* On OS X, OpenSSL is now used to provide the cryptographic support
-  for HTTPS connections.
+BUG FIXES
+
+* This is a bug-fix release to solve problems introduced in version
+  0.12.1:
+
+  - The bundled libgit2 source code has been reverted to commit
+    (98f7bd2) from 2015-08-05 (same as in v0.11.0) to fix memory
+    alignment errors (clang-UBSAN and gcc-UBSAN).
+
+  - OpenSSL is now used again on OS X to provide the cryptographic
+    support for HTTPS connections to fix a significant compiler
+    warning (arithmetic on a pointer to void is a GNU extension
+    [-Wpointer-arith]) on r-devel-osx-x86_64-clang.
+
+CHANGES
+
+* Set PKG_CFLAGS in the build configuration on OS X to
+  '-Wno-deprecated-declarations'
 
 git2r 0.12.1
 ------------
