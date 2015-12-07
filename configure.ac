@@ -208,7 +208,7 @@ if test "x${have_ssh2}" = xno; then
             cp -f tools/missing libssh2
             cd libssh2
             ./configure --with-pic --with-openssl --disable-examples-build --disable-shared --enable-static --prefix=$LIBSSH2_INST_DIR \
-                && make && make install && have_ssh2=yes
+                && make CFLAGS="-Wno-deprecated-declarations" && make install && have_ssh2=yes
             cd ..
 
             if test "x${have_ssh2}" = xyes; then
