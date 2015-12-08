@@ -3839,25 +3839,16 @@ if test "x${have_ssh2}" = xno; then
     # Static linking of LibSSH2 on OSX to support redistributable binary packages
     case "${host_os}" in
         darwin*)
-            # Check for Homebrew in path
-            case "${PATH}" in
-                *brew*)
-                    BREW_OPENSSL=`brew --prefix openssl`
-                    CPPFLAGS="${CPPFLAGS} -I${BREW_OPENSSL}/include"
-                    LDFLAGS="${LDFLAGS} -L${BREW_OPENSSL}/lib"
-                ;;
-            esac
-
             # Download and build libssh2
             mkdir -p libssh2 && curl -fsSL https://github.com/libssh2/libssh2/releases/download/libssh2-1.6.0/libssh2-1.6.0.tar.gz | tar xz --strip 1 -C libssh2
             mkdir -p src/libssh2
             LIBSSH2_INST_DIR="${PWD}/src/libssh2"
-            export CPPFLAGS
-            export LDFLAGS
             cp -f tools/missing libssh2
             cd libssh2
-            ./configure --with-pic --with-openssl --disable-examples-build --disable-shared --enable-static --prefix=$LIBSSH2_INST_DIR \
-                && make CFLAGS="-Wno-deprecated-declarations" && make install && have_ssh2=yes
+            ./configure --with-openssl --disable-examples-build --disable-shared \
+                --enable-static --prefix=$LIBSSH2_INST_DIR CC="${CC}" \
+                CFLAGS="${CFLAGS} -Wno-deprecated-declarations" \
+                CPPFLAGS="${CPPFLAGS}" && make && make install && have_ssh2=yes
             cd ..
 
             if test "x${have_ssh2}" = xyes; then
