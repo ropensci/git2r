@@ -160,7 +160,6 @@ if test "x${PKGCONFIG}" = xyes; then
         AC_MSG_RESULT([yes])
         LIBSSH2_CPPFLAGS=`pkg-config --cflags libssh2`
         LIBSSH2_LIBS=`pkg-config --libs libssh2`
-        CPPFLAGS="${LIBSSH2_CPPFLAGS} ${CPPFLAGS} -DGIT_SSH"
         have_ssh2=yes
     fi
 else
@@ -200,25 +199,16 @@ if test "x${have_ssh2}" = xno; then
             cd ..
 
             if test "x${have_ssh2}" = xyes; then
-                have_ssh2=no
-                if test "x${PKGCONFIG}" = xyes; then
-                    AC_MSG_CHECKING([whether pkg-config could find libssh2])
-                    PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${LIBSSH2_INST_DIR}/lib/pkgconfig"
-                    export PKG_CONFIG_PATH
-                    if pkg-config --exists libssh2; then
-                        AC_MSG_RESULT([yes])
-                        LIBSSH2_CPPFLAGS=`pkg-config --cflags libssh2`
-                        LIBSSH2_LIBS=`pkg-config --libs --static libssh2`
-                        CPPFLAGS="${LIBSSH2_CPPFLAGS} ${CPPFLAGS} -DGIT_SSH"
-                        have_ssh2=yes
-                    fi
-                fi
+                LIBSSH2_CPPFLAGS="-Ilibssh2/include"
+                LIBSSH2_LIBS="-Llibssh2/lib -lssh2"
             fi
         ;;
     esac
 fi
 
-if test "x${have_ssh2}" = xno; then
+if test "x${have_ssh2}" = xyes; then
+    CPPFLAGS="${CPPFLAGS} ${LIBSSH2_CPPFLAGS} -DGIT_SSH"
+else
     AC_MSG_WARN([
   ---------------------------------------------
    Unable to find LibSSH2 on this system.
