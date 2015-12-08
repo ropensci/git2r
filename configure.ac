@@ -29,7 +29,7 @@ AC_DEFUN([AC_PROG_PKGCONFIG], [AC_CHECK_PROG(PKGCONFIG,pkg-config,yes)])
 AC_PROG_PKGCONFIG
 
 # Handle optional include and library paths
-GIT2R_CPPFLAGS="-D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser"
+GIT2R_CPPFLAGS="-I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser"
 
 # Include and use regex on solaris
 case "${host_os}" in
@@ -142,21 +142,8 @@ AC_SEARCH_LIBS([EVP_EncryptInit], [crypto],
         AC_SEARCH_LIBS([SSL_library_init], [ssl], [have_ssl=yes])
     ])
 
-# Specify sha1 implementation
-if test "x${have_ssl}" = xyes; then
-        CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL"
-
-        case "${host_os}" in
-          darwin*)
-                PKG_CFLAGS="-Wno-deprecated-declarations"
-                CPPFLAGS="${CPPFLAGS} -DGIT_COMMON_CRYPTO"
-          ;;
-          *)
-                CPPFLAGS="${CPPFLAGS} -DOPENSSL_SHA1"
-          ;;
-        esac
-else
-        AC_MSG_FAILURE([
+if test "x${have_ssl}" = xno; then
+    AC_MSG_FAILURE([
   ---------------------------------------------
    OpenSSL library required
 
@@ -254,6 +241,20 @@ case "${host_os}" in
                 AC_MSG_FAILURE([iconv library required])
         fi
     ;;
+esac
+
+# Add definitions
+CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DGIT_OPENSSL"
+
+# Specify sha1 implementation
+case "${host_os}" in
+  darwin*)
+        PKG_CFLAGS="-Wno-deprecated-declarations"
+        CPPFLAGS="${CPPFLAGS} -DGIT_COMMON_CRYPTO"
+  ;;
+  *)
+        CPPFLAGS="${CPPFLAGS} -DOPENSSL_SHA1"
+  ;;
 esac
 
 # Configuration specific for solaris

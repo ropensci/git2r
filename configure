@@ -3494,7 +3494,7 @@ fi
 
 
 # Handle optional include and library paths
-GIT2R_CPPFLAGS="-D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser"
+GIT2R_CPPFLAGS="-I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser"
 
 # Include and use regex on solaris
 case "${host_os}" in
@@ -3791,21 +3791,8 @@ fi
 fi
 
 
-# Specify sha1 implementation
-if test "x${have_ssl}" = xyes; then
-        CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL"
-
-        case "${host_os}" in
-          darwin*)
-                PKG_CFLAGS="-Wno-deprecated-declarations"
-                CPPFLAGS="${CPPFLAGS} -DGIT_COMMON_CRYPTO"
-          ;;
-          *)
-                CPPFLAGS="${CPPFLAGS} -DOPENSSL_SHA1"
-          ;;
-        esac
-else
-        { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+if test "x${have_ssl}" = xno; then
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
 as_fn_error $? "
   ---------------------------------------------
@@ -3984,6 +3971,20 @@ as_fn_error $? "iconv library required
 See \`config.log' for more details" "$LINENO" 5; }
         fi
     ;;
+esac
+
+# Add definitions
+CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DGIT_OPENSSL"
+
+# Specify sha1 implementation
+case "${host_os}" in
+  darwin*)
+        PKG_CFLAGS="-Wno-deprecated-declarations"
+        CPPFLAGS="${CPPFLAGS} -DGIT_COMMON_CRYPTO"
+  ;;
+  *)
+        CPPFLAGS="${CPPFLAGS} -DOPENSSL_SHA1"
+  ;;
 esac
 
 # Configuration specific for solaris
