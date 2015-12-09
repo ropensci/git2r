@@ -3591,6 +3591,7 @@ CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
 CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
 CPPFLAGS="${GIT2R_CPPFLAGS} ${CPPFLAGS}"
 LDFLAGS=`"${R_HOME}/bin/R" CMD config LDFLAGS`
+CPICFLAGS=`"${R_HOME}/bin/R" CMD config LDFLAGS`
 
 # Check for zlib
 have_zlib=no
@@ -3843,7 +3844,7 @@ if test "x${have_ssh2}" = xno; then
             ./configure --with-pic --with-openssl --disable-examples-build \
                 --disable-shared --enable-static \
                 --prefix=$LIBSSH2_INST_DIR CC="${CC}" \
-                CFLAGS="${CFLAGS} -Wno-deprecated-declarations" \
+                CFLAGS="${CFLAGS} ${CPICFLAGS} -Wno-deprecated-declarations" \
                 CPPFLAGS="${CPPFLAGS}" LDFLAGS=${LDFLAGS} \
                 && make && make install && have_ssh2=yes
             cd ..

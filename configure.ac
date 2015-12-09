@@ -1,5 +1,5 @@
 # git2r, R bindings to the libgit2 library.
-# Copyright (C) 2013-2014 The git2r contributors
+# Copyright (C) 2013-2015 The git2r contributors
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2,
@@ -110,6 +110,7 @@ CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
 CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
 CPPFLAGS="${GIT2R_CPPFLAGS} ${CPPFLAGS}"
 LDFLAGS=`"${R_HOME}/bin/R" CMD config LDFLAGS`
+CPICFLAGS=`"${R_HOME}/bin/R" CMD config LDFLAGS`
 
 # Check for zlib
 have_zlib=no
@@ -181,7 +182,7 @@ if test "x${have_ssh2}" = xno; then
             ./configure --with-pic --with-openssl --disable-examples-build \
                 --disable-shared --enable-static \
                 --prefix=$LIBSSH2_INST_DIR CC="${CC}" \
-                CFLAGS="${CFLAGS} -Wno-deprecated-declarations" \
+                CFLAGS="${CFLAGS} ${CPICFLAGS} -Wno-deprecated-declarations" \
                 CPPFLAGS="${CPPFLAGS}" LDFLAGS=${LDFLAGS} \
                 && make && make install && have_ssh2=yes
             cd ..
