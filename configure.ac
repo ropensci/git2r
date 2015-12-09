@@ -215,15 +215,13 @@ if test "x${have_ssh2}" = xno; then
 fi
 
 # Check for iconv
+have_iconv=no
 case "${host_os}" in
   darwin*)
-        have_iconv=no
         AC_SEARCH_LIBS([iconv_open], [iconv], [have_iconv=yes])
 
-        if test "x${have_iconv}" = xyes; then
-                CPPFLAGS="${CPPFLAGS} -DGIT_USE_ICONV"
-        else
-                AC_MSG_FAILURE([iconv library required])
+        if test "x${have_iconv}" = xno; then
+            AC_MSG_FAILURE([iconv library required])
         fi
     ;;
 esac
@@ -245,6 +243,11 @@ esac
 # Add definitions for ssh
 if test "x${have_ssh2}" = xyes; then
     CPPFLAGS="${CPPFLAGS} ${LIBSSH2_CPPFLAGS} -DGIT_SSH"
+fi
+
+# Add definition for iconv
+if test "x${have_iconv}" = xyes; then
+    CPPFLAGS="${CPPFLAGS} -DGIT_USE_ICONV"
 fi
 
 # Configuration specific for solaris

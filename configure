@@ -3885,9 +3885,9 @@ $as_echo "$as_me: WARNING:
 fi
 
 # Check for iconv
+have_iconv=no
 case "${host_os}" in
   darwin*)
-        have_iconv=no
         { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing iconv_open" >&5
 $as_echo_n "checking for library containing iconv_open... " >&6; }
 if ${ac_cv_search_iconv_open+:} false; then :
@@ -3945,10 +3945,8 @@ if test "$ac_res" != no; then :
 fi
 
 
-        if test "x${have_iconv}" = xyes; then
-                CPPFLAGS="${CPPFLAGS} -DGIT_USE_ICONV"
-        else
-                { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+        if test "x${have_iconv}" = xno; then
+            { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
 as_fn_error $? "iconv library required
 See \`config.log' for more details" "$LINENO" 5; }
@@ -3973,6 +3971,11 @@ esac
 # Add definitions for ssh
 if test "x${have_ssh2}" = xyes; then
     CPPFLAGS="${CPPFLAGS} ${LIBSSH2_CPPFLAGS} -DGIT_SSH"
+fi
+
+# Add definition for iconv
+if test "x${have_iconv}" = xyes; then
+    CPPFLAGS="${CPPFLAGS} -DGIT_USE_ICONV"
 fi
 
 # Configuration specific for solaris
