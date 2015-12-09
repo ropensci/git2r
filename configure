@@ -3591,7 +3591,7 @@ CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
 CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
 CPPFLAGS="${GIT2R_CPPFLAGS} ${CPPFLAGS}"
 LDFLAGS=`"${R_HOME}/bin/R" CMD config LDFLAGS`
-CPICFLAGS=`"${R_HOME}/bin/R" CMD config LDFLAGS`
+CPICFLAGS=`"${R_HOME}/bin/R" CMD config CPICFLAGS`
 
 # Check for zlib
 have_zlib=no
