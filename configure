@@ -3598,6 +3598,7 @@ CC=`"${R_HOME}/bin/R" CMD config CC`
 CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
 CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
 CPPFLAGS="${GIT2R_CPPFLAGS} ${CPPFLAGS}"
+LDFLAGS=`"${R_HOME}/bin/R" CMD config LDFLAGS`
 
 # Check for zlib
 have_zlib=no
@@ -3840,16 +3841,21 @@ if test "x${have_ssh2}" = xno; then
     case "${host_os}" in
         darwin*)
             # Download and build libssh2
-            mkdir -p libssh2 && curl -fsSL https://github.com/libssh2/libssh2/releases/download/libssh2-1.6.0/libssh2-1.6.0.tar.gz | tar xz --strip 1 -C libssh2
+            mkdir -p libssh2 && curl -fsSL \
+                https://github.com/libssh2/libssh2/releases/download/libssh2-1.6.0/libssh2-1.6.0.tar.gz \
+                | tar xz --strip 1 -C libssh2
             mkdir -p src/libssh2
             LIBSSH2_INST_DIR="${PWD}/src/libssh2"
             cp -f tools/missing libssh2
             cd libssh2
-            ./configure --with-openssl --disable-examples-build --disable-shared \
-                --enable-static --prefix=$LIBSSH2_INST_DIR CC="${CC}" \
+            ./configure --with-pic --with-openssl --disable-examples-build \
+                --disable-shared --enable-static \
+                --prefix=$LIBSSH2_INST_DIR CC="${CC}" \
                 CFLAGS="${CFLAGS} -Wno-deprecated-declarations" \
-                CPPFLAGS="${CPPFLAGS}" && make && make install && have_ssh2=yes
+                CPPFLAGS="${CPPFLAGS}" LDFLAGS=${LDFLAGS} \
+                && make && make install && have_ssh2=yes
             cd ..
+            rm -rf libssh2
 
             if test "x${have_ssh2}" = xyes; then
                 LIBSSH2_CPPFLAGS="-Ilibssh2/include"
