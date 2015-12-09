@@ -3496,14 +3496,6 @@ fi
 # Handle optional include and library paths
 GIT2R_CPPFLAGS="-I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser"
 
-# Include and use regex on solaris
-case "${host_os}" in
-  solaris*)
-    GIT2R_CPPFLAGS="${GIT2R_CPPFLAGS} -Iregex"
-    GIT2R_SRC_REGEX=regex/regex.o
-    ;;
-esac
-
 # zlib include and library path
 
 # Check whether --with-zlib-include was given.
@@ -3954,34 +3946,9 @@ See \`config.log' for more details" "$LINENO" 5; }
     ;;
 esac
 
-# Add definitions
-CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DGIT_OPENSSL"
-
-# Specify sha1 implementation
-case "${host_os}" in
-  darwin*)
-        PKG_CFLAGS="-Wno-deprecated-declarations"
-        CPPFLAGS="${CPPFLAGS} -DGIT_COMMON_CRYPTO"
-  ;;
-  *)
-        CPPFLAGS="${CPPFLAGS} -DOPENSSL_SHA1"
-  ;;
-esac
-
-# Add definitions for ssh
-if test "x${have_ssh2}" = xyes; then
-    CPPFLAGS="${CPPFLAGS} ${LIBSSH2_CPPFLAGS} -DGIT_SSH"
-fi
-
-# Add definition for iconv
-if test "x${have_iconv}" = xyes; then
-    CPPFLAGS="${CPPFLAGS} -DGIT_USE_ICONV"
-fi
-
 # Configuration specific for solaris
 case "${host_os}" in
   solaris*)
-    CPPFLAGS="${CPPFLAGS} -D_POSIX_C_SOURCE=200112L -D__EXTENSIONS__ -D_POSIX_PTHREAD_SEMANTICS"
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing connect" >&5
 $as_echo_n "checking for library containing connect... " >&6; }
 if ${ac_cv_search_connect+:} false; then :
@@ -4094,6 +4061,41 @@ if test "$ac_res" != no; then :
 
 fi
 
+
+    # Include and use regex on solaris
+    CPPFLAGS="${CPPFLAGS} -Iregex"
+    GIT2R_SRC_REGEX=regex/regex.o
+    ;;
+esac
+
+# Add definitions
+CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DGIT_OPENSSL"
+
+# Specify sha1 implementation
+case "${host_os}" in
+  darwin*)
+        PKG_CFLAGS="-Wno-deprecated-declarations"
+        CPPFLAGS="${CPPFLAGS} -DGIT_COMMON_CRYPTO"
+  ;;
+  *)
+        CPPFLAGS="${CPPFLAGS} -DOPENSSL_SHA1"
+  ;;
+esac
+
+# Add definitions for ssh
+if test "x${have_ssh2}" = xyes; then
+    CPPFLAGS="${CPPFLAGS} ${LIBSSH2_CPPFLAGS} -DGIT_SSH"
+fi
+
+# Add definition for iconv
+if test "x${have_iconv}" = xyes; then
+    CPPFLAGS="${CPPFLAGS} -DGIT_USE_ICONV"
+fi
+
+# Add definitions specific for solaris
+case "${host_os}" in
+  solaris*)
+    CPPFLAGS="${CPPFLAGS} -D_POSIX_C_SOURCE=200112L -D__EXTENSIONS__ -D_POSIX_PTHREAD_SEMANTICS"
     ;;
 esac
 

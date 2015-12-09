@@ -31,14 +31,6 @@ AC_PROG_PKGCONFIG
 # Handle optional include and library paths
 GIT2R_CPPFLAGS="-I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser"
 
-# Include and use regex on solaris
-case "${host_os}" in
-  solaris*)
-    GIT2R_CPPFLAGS="${GIT2R_CPPFLAGS} -Iregex"
-    GIT2R_SRC_REGEX=regex/regex.o
-    ;;
-esac
-
 # zlib include and library path
 AC_ARG_WITH([zlib-include],
     AC_HELP_STRING([--with-zlib-include=INCLUDE_PATH],
@@ -226,6 +218,18 @@ case "${host_os}" in
     ;;
 esac
 
+# Configuration specific for solaris
+case "${host_os}" in
+  solaris*)
+    AC_SEARCH_LIBS(connect, [socket])
+    AC_SEARCH_LIBS(gethostbyname, [nsl socket])
+
+    # Include and use regex on solaris
+    CPPFLAGS="${CPPFLAGS} -Iregex"
+    GIT2R_SRC_REGEX=regex/regex.o
+    ;;
+esac
+
 # Add definitions
 CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DGIT_OPENSSL"
 
@@ -250,12 +254,10 @@ if test "x${have_iconv}" = xyes; then
     CPPFLAGS="${CPPFLAGS} -DGIT_USE_ICONV"
 fi
 
-# Configuration specific for solaris
+# Add definitions specific for solaris
 case "${host_os}" in
   solaris*)
     CPPFLAGS="${CPPFLAGS} -D_POSIX_C_SOURCE=200112L -D__EXTENSIONS__ -D_POSIX_PTHREAD_SEMANTICS"
-    AC_SEARCH_LIBS(connect, [socket])
-    AC_SEARCH_LIBS(gethostbyname, [nsl socket])
     ;;
 esac
 
