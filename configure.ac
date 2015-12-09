@@ -203,9 +203,7 @@ if test "x${have_ssh2}" = xno; then
     esac
 fi
 
-if test "x${have_ssh2}" = xyes; then
-    CPPFLAGS="${CPPFLAGS} ${LIBSSH2_CPPFLAGS} -DGIT_SSH"
-else
+if test "x${have_ssh2}" = xno; then
     AC_MSG_WARN([
   ---------------------------------------------
    Unable to find LibSSH2 on this system.
@@ -243,6 +241,11 @@ case "${host_os}" in
         CPPFLAGS="${CPPFLAGS} -DOPENSSL_SHA1"
   ;;
 esac
+
+# Add definitions for ssh
+if test "x${have_ssh2}" = xyes; then
+    CPPFLAGS="${CPPFLAGS} ${LIBSSH2_CPPFLAGS} -DGIT_SSH"
+fi
 
 # Configuration specific for solaris
 case "${host_os}" in
