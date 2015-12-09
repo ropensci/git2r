@@ -29,7 +29,7 @@ AC_DEFUN([AC_PROG_PKGCONFIG], [AC_CHECK_PROG(PKGCONFIG,pkg-config,yes)])
 AC_PROG_PKGCONFIG
 
 # Handle optional include and library paths
-GIT2R_CPPFLAGS="-I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser"
+GIT2R_CPPFLAGS=
 
 # zlib include and library path
 AC_ARG_WITH([zlib-include],
@@ -226,10 +226,13 @@ case "${host_os}" in
     AC_SEARCH_LIBS(gethostbyname, [nsl socket])
 
     # Include and use regex on solaris
-    CPPFLAGS="${CPPFLAGS} -Iregex"
+    CPPFLAGS="-Iregex ${CPPFLAGS}"
     GIT2R_SRC_REGEX=regex/regex.o
     ;;
 esac
+
+# Add include paths for git2r
+CPPFLAGS="-I. -Ilibgit2 -Ilibgit2/include -Ihttp-parser ${CPPFLAGS}"
 
 # Add definitions
 CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DGIT_OPENSSL"
