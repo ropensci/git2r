@@ -1,4 +1,4 @@
-git2r 0.13.0
+git2r 0.13.1
 ------------
 
 BUG FIXES
@@ -15,10 +15,7 @@ BUG FIXES
     warning (arithmetic on a pointer to void is a GNU extension
     [-Wpointer-arith]) on r-devel-osx-x86_64-clang.
 
-CHANGES
-
-* Set PKG_CFLAGS in the build configuration on OS X to
-  '-Wno-deprecated-declarations'
+  - Several fixes to the build configuration on non-Windows platforms.
 
 git2r 0.12.1
 ------------
