@@ -16,6 +16,9 @@
 
 library(git2r)
 
+## For debugging
+sessionInfo()
+
 stopifnot(identical(names(libgit2_features()),
                     c("threads", "https", "ssh")))
 

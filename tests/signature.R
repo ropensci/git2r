@@ -16,6 +16,9 @@
 
 library(git2r)
 
+## For debugging
+sessionInfo()
+
 ## Check validity of S4 class git_signature
 ## Each slot must have length equal to one
 when <- new("git_time", time = 1395567947, offset = 60)

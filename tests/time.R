@@ -16,6 +16,9 @@
 
 library(git2r)
 
+## For debugging
+sessionInfo()
+
 ## Check validity of S4 class git_time
 tools::assertError(validObject(new("git_time")))
 

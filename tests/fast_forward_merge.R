@@ -16,6 +16,9 @@
 
 library(git2r)
 
+## For debugging
+sessionInfo()
+
 ## Create directory for repository in tempdir
 path <- tempfile(pattern="git2r-")
 dir.create(path)
