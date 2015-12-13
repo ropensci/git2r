@@ -28,19 +28,19 @@ pdf: roxygen
 	cd .. && R CMD Rd2pdf --force $(PKG_NAME)
 
 # Build and check package
-check: clean
+check:
 	cd .. && R CMD build --no-build-vignettes $(PKG_NAME)
 	cd .. && _R_CHECK_CRAN_INCOMING_=FALSE NOT_CRAN=true \
         R CMD check --as-cran --no-manual --no-vignettes \
         --no-build-vignettes $(PKG_TAR)
 
 # Build and check package with gctorture
-check_gctorture: clean
+check_gctorture:
 	cd .. && R CMD build --no-build-vignettes $(PKG_NAME)
 	cd .. && R CMD check --no-manual --no-vignettes --no-build-vignettes --use-gct $(PKG_TAR)
 
 # Build and check package with valgrind
-check_valgrind: clean
+check_valgrind:
 	cd .. && R CMD build --no-build-vignettes $(PKG_NAME)
 	cd .. && R CMD check --as-cran --no-manual --no-vignettes --no-build-vignettes --use-valgrind $(PKG_TAR)
 
@@ -126,30 +126,6 @@ configure: configure.ac
 	chmod +x ./configure
 
 clean:
-	-rm -f config.log
-	-rm -f config.status
-	-rm -rf autom4te.cache
-	-rm -f libssh2.zip
-	-rm -rf libssh2
-	-rm -rf src/libssh2
-	-rm -f openssl.zip
-	-rm -rf openssl
-	-rm -rf src/openssl
-	-rm -f local320.zip
-	-rm -rf src/zlib
-	-rm -f src/Makevars
-	-rm -f src/*.def
-	-rm -f src/*.o
-	-rm -f src/*.so
-	-rm -rf src-x64
-	-rm -rf src-i386
-	-rm -f src/libgit2/*.o
-	-rm -f src/libgit2/hash/*.o
-	-rm -f src/libgit2/transports/*.o
-	-rm -f src/libgit2/unix/*.o
-	-rm -f src/libgit2/win32/*.o
-	-rm -f src/libgit2/xdiff/*.o
-	-rm -f src/http-parser/*.o
-	-rm -f src/regex/*.o
+	./cleanup
 
 .PHONY: all readme install roxygen sync_libgit2 Makevars check check_gctorture check_valgrind valgrind clean
