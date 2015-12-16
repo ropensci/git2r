@@ -312,4 +312,20 @@ AC_SUBST(LIBS)
 
 AC_CONFIG_FILES([src/Makevars])
 
+echo "
+  ------------------ Results of the git2r package configure -----------------
+
+    *** User specified options ***
+    with-zlib-include.......: ${zlib_include_path}
+    with-zlib_lib_path......: ${zlib_lib_path}
+    with-libssh2-include....: ${libssh2_include_path}
+    with-libssh2-lib........: ${libssh2_lib_path}
+    with-libssl-include.....: ${libssl_include_path}
+    with-libssl-lib.........: ${libssl_lib_path}
+    with-libcrypto-include..: ${libcrypto_include_path}
+    with-libcrypto-lib......: ${libcrypto_lib_path}
+
+  ---------------------------------------------------------------------------
+"
+
 AC_OUTPUT
