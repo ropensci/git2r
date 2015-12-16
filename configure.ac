@@ -105,12 +105,16 @@ if test -z "${R_HOME}"; then
   echo "could not determine R_HOME"
   exit 1
 fi
-CC=`"${R_HOME}/bin/R" CMD config CC`
-CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
-CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
-CPPFLAGS="${GIT2R_CPPFLAGS} ${CPPFLAGS}"
-LDFLAGS=`"${R_HOME}/bin/R" CMD config LDFLAGS`
-CPICFLAGS=`"${R_HOME}/bin/R" CMD config CPICFLAGS`
+R_CMD_config_CC=`"${R_HOME}/bin/R" CMD config CC`
+CC="${R_CMD_config_CC}"
+R_CMD_config_CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
+CFLAGS="${R_CMD_config_CFLAGS}"
+R_CMD_config_CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
+CPPFLAGS="${GIT2R_CPPFLAGS} ${R_CMD_config_CPPFLAGS}"
+R_CMD_config_LDFLAGS=`"${R_HOME}/bin/R" CMD config LDFLAGS`
+LDFLAGS="${R_CMD_config_LDFLAGS}"
+R_CMD_config_CPICFLAGS=`"${R_HOME}/bin/R" CMD config CPICFLAGS`
+CPICFLAGS="${R_CMD_config_CPICFLAGS}"
 
 # Check for zlib
 have_zlib=no
@@ -324,6 +328,13 @@ echo "
     with-libssl-lib.........: ${libssl_lib_path}
     with-libcrypto-include..: ${libcrypto_include_path}
     with-libcrypto-lib......: ${libcrypto_lib_path}
+
+    *** R configure variables ***
+    R CMD config CC.........: ${R_CMD_config_CC}
+    R CMD config CFLAGS.....: ${R_CMD_config_CFLAGS}
+    R CMD config CPPFLAGS...: ${R_CMD_config_CPPFLAGS}
+    R CMD config LDFLAGS....: ${R_CMD_config_LDFLAGS}
+    R CMD config CPICFLAGS..: ${R_CMD_config_CPICFLAGS}
 
   ---------------------------------------------------------------------------
 "
