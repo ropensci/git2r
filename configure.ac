@@ -160,15 +160,10 @@ if test "x${PKGCONFIG}" = xyes; then
         LIBSSH2_LIBS=`pkg-config --libs libssh2`
         have_ssh2=yes
     fi
-else
-    AC_MSG_WARN([
-  ---------------------------------------------
-   Unable to find pkg-config on this system
-   to search for LibSSH2.
+fi
 
-   To build with SSH support, please install:
-   pkg-config
-  ---------------------------------------------])
+if test "x${have_ssh2}" = xno; then
+    AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
 fi
 
 if test "x${have_ssh2}" = xno; then
