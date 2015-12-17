@@ -83,7 +83,7 @@ build_Makevars.in <- function() {
         file=Makevars)
     cat("PKG_CFLAGS = @PKG_CFLAGS@\n", file = Makevars)
     cat("PKG_CPPFLAGS = @CPPFLAGS@\n", file = Makevars)
-    cat("PKG_LIBS = @LIBSSH2_LIBS@ @LIBS@\n", file = Makevars)
+    cat("PKG_LIBS = @PKG_LIBS@\n", file = Makevars)
     cat("\n", file = Makevars)
 
     build_objects(files, " @GIT2R_SRC_REGEX@", Makevars)

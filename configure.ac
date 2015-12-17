@@ -132,13 +132,27 @@ fi
 
 # Check for SSL
 have_ssl=no
-if test "x${OPENSSL_INCLUDES}" = x; then :; else
-        CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
+if test "x${PKGCONFIG}" = xyes; then
+    AC_MSG_CHECKING([whether pkg-config could find libssl])
+    if pkg-config --exists libssl; then
+        AC_MSG_RESULT([yes])
+        LIBSSL_CFLAGS=`pkg-config --cflags libssl`
+        LIBSSL_LIBS=`pkg-config --libs libssl`
+        have_ssl=yes
+    else
+        AC_MSG_RESULT([no])
+    fi
 fi
-AC_SEARCH_LIBS([EVP_EncryptInit], [crypto],
-    [
-        AC_SEARCH_LIBS([SSL_library_init], [ssl], [have_ssl=yes])
-    ])
+
+if test "x${have_ssl}" = xno; then
+    if test "x${OPENSSL_INCLUDES}" = x; then :; else
+        CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
+    fi
+
+    AC_SEARCH_LIBS([EVP_EncryptInit],
+                   [crypto],
+                   [AC_SEARCH_LIBS([SSL_library_init], [ssl], [have_ssl=yes])])
+fi
 
 if test "x${have_ssl}" = xno; then
     AC_MSG_FAILURE([
@@ -159,6 +173,8 @@ if test "x${PKGCONFIG}" = xyes; then
         LIBSSH2_CFLAGS=`pkg-config --cflags libssh2`
         LIBSSH2_LIBS=`pkg-config --libs libssh2`
         have_ssh2=yes
+    else
+        AC_MSG_RESULT([no])
     fi
 fi
 
@@ -305,9 +321,9 @@ AC_CHECK_FUNCS([btowc clock_gettime getcwd gethostbyname gettimeofday isascii me
 
 AC_SUBST(GIT2R_SRC_REGEX)
 AC_SUBST(LIBSSH2_LIBS)
-AC_SUBST(PKG_CFLAGS)
+AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS} ${LIBSSL_CFLAGS} ${LIBSSH2_CFLAGS}"])
 AC_SUBST(CPPFLAGS)
-AC_SUBST(LIBS)
+AC_SUBST([PKG_LIBS], ["${LIBS} ${LIBSSL_LIBS} ${LIBSSH2_LIBS}"])
 
 AC_CONFIG_FILES([src/Makevars])
 
@@ -332,6 +348,8 @@ echo "
     R CMD config CPICFLAGS..: ${R_CMD_config_CPICFLAGS}
 
     *** Build options ***
+    LIBSSL_CFLAGS...........: ${LIBSSL_CFLAGS}
+    LIBSSL_LIBS.............: ${LIBSSL_LIBS}
     LIBSSH2_CFLAGS..........: ${LIBSSH2_CFLAGS}
     LIBSSH2_LIBS............: ${LIBSSH2_LIBS}
 
