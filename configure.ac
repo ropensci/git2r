@@ -156,7 +156,7 @@ if test "x${PKGCONFIG}" = xyes; then
     AC_MSG_CHECKING([whether pkg-config could find libssh2])
     if pkg-config --exists libssh2; then
         AC_MSG_RESULT([yes])
-        LIBSSH2_CPPFLAGS=`pkg-config --cflags libssh2`
+        LIBSSH2_CFLAGS=`pkg-config --cflags libssh2`
         LIBSSH2_LIBS=`pkg-config --libs libssh2`
         have_ssh2=yes
     fi
@@ -193,7 +193,7 @@ if test "x${have_ssh2}" = xno; then
             rm -rf libssh2
 
             if test "x${have_ssh2}" = xyes; then
-                LIBSSH2_CPPFLAGS="-Ilibssh2/include"
+                LIBSSH2_CFLAGS="-Ilibssh2/include"
                 LIBSSH2_LIBS="-Llibssh2/lib -lssh2"
             fi
         ;;
@@ -254,7 +254,7 @@ esac
 
 # Add definitions for ssh
 if test "x${have_ssh2}" = xyes; then
-    CPPFLAGS="${CPPFLAGS} ${LIBSSH2_CPPFLAGS} -DGIT_SSH"
+    CPPFLAGS="${CPPFLAGS} ${LIBSSH2_CFLAGS} -DGIT_SSH"
 fi
 
 # Add definition for iconv
@@ -335,6 +335,10 @@ echo "
     R CMD config CPPFLAGS...: ${R_CMD_config_CPPFLAGS}
     R CMD config LDFLAGS....: ${R_CMD_config_LDFLAGS}
     R CMD config CPICFLAGS..: ${R_CMD_config_CPICFLAGS}
+
+    *** Build options ***
+    LIBSSH2_CFLAGS..........: ${LIBSSH2_CFLAGS}
+    LIBSSH2_LIBS............: ${LIBSSH2_LIBS}
 
   ---------------------------------------------------------------------------
 "
