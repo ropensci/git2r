@@ -140,27 +140,41 @@ fi
 
 # Check for SSL
 have_ssl=no
-if test "x${PKGCONFIG}" = xyes; then
-    AC_MSG_CHECKING([whether pkg-config could find libssl])
-    if pkg-config --exists libssl; then
-        AC_MSG_RESULT([yes])
-        LIBSSL_CFLAGS=`pkg-config --cflags libssl`
-        LIBSSL_LIBS=`pkg-config --libs libssl`
-        have_ssl=yes
-    else
-        AC_MSG_RESULT([no])
-    fi
-fi
+case "${host_os}" in
+    darwin*)
+        if test "x${BREW}" = xyes; then
+            BREW_DIR=`brew --prefix`
+            LIBSSL_CFLAGS="-I${BREW_DIR}/opt/openssl/include"
+            LIBSSL_LIBS="-L${BREW_DIR}/opt/openssl/lib -lssl -lcrypto"
+            have_ssl=yes
+        fi
+    ;;
+    *)
+        if test "x${PKGCONFIG}" = xyes; then
+            AC_MSG_CHECKING([whether pkg-config could find libssl])
+            if pkg-config --exists libssl; then
+                AC_MSG_RESULT([yes])
+                LIBSSL_CFLAGS=`pkg-config --cflags libssl`
+                LIBSSL_LIBS=`pkg-config --libs libssl`
+                have_ssl=yes
+            else
+                AC_MSG_RESULT([no])
+           fi
+        fi
 
-if test "x${have_ssl}" = xno; then
-    if test "x${OPENSSL_INCLUDES}" = x; then :; else
-        CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
-    fi
+        if test "x${have_ssl}" = xno; then
+            if test "x${OPENSSL_INCLUDES}" = x; then :; else
+                CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
+            fi
 
-    AC_SEARCH_LIBS([EVP_EncryptInit],
-                   [crypto],
-                   [AC_SEARCH_LIBS([SSL_library_init], [ssl], [have_ssl=yes])])
-fi
+            AC_SEARCH_LIBS([EVP_EncryptInit],
+                           [crypto],
+                           [AC_SEARCH_LIBS([SSL_library_init],
+                                           [ssl],
+                                           [have_ssl=yes])])
+        fi
+    ;;
+esac
 
 if test "x${have_ssl}" = xno; then
     AC_MSG_FAILURE([
