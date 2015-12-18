@@ -28,6 +28,14 @@ AC_PROG_CC
 AC_DEFUN([AC_PROG_PKGCONFIG], [AC_CHECK_PROG(PKGCONFIG,pkg-config,yes)])
 AC_PROG_PKGCONFIG
 
+## check for brew on OS X
+AC_DEFUN([AC_PROG_BREW], [AC_CHECK_PROG(BREW,brew,yes)])
+case "${host_os}" in
+    darwin*)
+        AC_PROG_BREW
+    ;;
+esac
+
 # Handle optional include and library paths
 GIT2R_CPPFLAGS=
 
