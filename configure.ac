@@ -75,37 +75,14 @@ fi
 
 # libssl include and library path
 AC_ARG_WITH([libssl-include],
-    AC_HELP_STRING([--with-libssl-include=INCLUDE_PATH],
-                   [the location of libssl header files]),
-    [libssl_include_path=$withval])
-if test [ -n "$libssl_include_path" ] ; then
-  GIT2R_CPPFLAGS="${GIT2R_CPPFLAGS} -I${libssl_include_path}"
-fi
+            AC_HELP_STRING([--with-libssl-include=INCLUDE_PATH],
+                           [the location of libssl header files]),
+            [libssl_include_path=$withval])
 
 AC_ARG_WITH([libssl-lib],
-    AC_HELP_STRING([--with-libssl-lib=LIB_PATH],
-                   [the location of libssl libraries]),
-    [libssl_lib_path=$withval])
-if test [ -n "$libssl_lib_path" ] ; then
-  LIBS="-L${libssl_lib_path} ${LIBS}"
-fi
-
-# libcrypto include and library path
-AC_ARG_WITH([libcrypto-include],
-    AC_HELP_STRING([--with-libcrypto-include=INCLUDE_PATH],
-                   [the location of libcrypto header files]),
-    [libcrypto_include_path=$withval])
-if test [ -n "$libcrypto_include_path" ] ; then
-  GIT2R_CPPFLAGS="${GIT2R_CPPFLAGS} -I${libcrypto_include_path}"
-fi
-
-AC_ARG_WITH([libcrypto-lib],
-    AC_HELP_STRING([--with-libcrypto-lib=LIB_PATH],
-                   [the location of libcrypto libraries]),
-    [libcrypto_lib_path=$withval])
-if test [ -n "$libcrypto_lib_path" ] ; then
-  LIBS="-L${libcrypto_lib_path} ${LIBS}"
-fi
+            AC_HELP_STRING([--with-libssl-lib=LIB_PATH],
+                           [the location of libssl libraries]),
+            [libssl_lib_path=$withval])
 
 # Find the compiler and compiler flags to use
 : ${R_HOME=`R RHOME`}
@@ -140,41 +117,62 @@ fi
 
 # Check for SSL
 have_ssl=no
-case "${host_os}" in
-    darwin*)
-        if test "x${BREW}" = xyes; then
-            BREW_DIR=`brew --prefix`
-            LIBSSL_CFLAGS="-I${BREW_DIR}/opt/openssl/include"
-            LIBSSL_LIBS="-L${BREW_DIR}/opt/openssl/lib -lssl -lcrypto"
-            have_ssl=yes
-        fi
-    ;;
-    *)
-        if test "x${PKGCONFIG}" = xyes; then
-            AC_MSG_CHECKING([whether pkg-config could find libssl])
-            if pkg-config --exists libssl; then
-                AC_MSG_RESULT([yes])
-                LIBSSL_CFLAGS=`pkg-config --cflags libssl`
-                LIBSSL_LIBS=`pkg-config --libs libssl`
+
+# Check for optional libssl paths
+if test [ -n "$libssl_include_path" ] ; then
+    LIBSSL_CFLAGS="-I${libssl_include_path}"
+    LIBSSL_LIBS="-L${libssl_lib_path} -lssl -lcrypto"
+    have_ssl=yes
+elif test [ -n "$libssl_lib_path" ] ; then
+    LIBSSL_CFLAGS="-I${libssl_include_path}"
+    LIBSSL_LIBS="-L${libssl_lib_path} -lssl -lcrypto"
+    have_ssl=yes
+fi
+
+if test "x${have_ssl}" = xno; then
+    # On OS X, check for libssl in brew
+
+    case "${host_os}" in
+        darwin*)
+            if test "x${BREW}" = xyes; then
+                BREW_DIR=`brew --prefix`
+                LIBSSL_CFLAGS="-I${BREW_DIR}/opt/openssl/include"
+                LIBSSL_LIBS="-L${BREW_DIR}/opt/openssl/lib -lssl -lcrypto"
                 have_ssl=yes
-            else
-                AC_MSG_RESULT([no])
-           fi
-        fi
-
-        if test "x${have_ssl}" = xno; then
-            if test "x${OPENSSL_INCLUDES}" = x; then :; else
-                CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
             fi
+        ;;
+    esac
+fi
 
-            AC_SEARCH_LIBS([EVP_EncryptInit],
-                           [crypto],
-                           [AC_SEARCH_LIBS([SSL_library_init],
-                                           [ssl],
-                                           [have_ssl=yes])])
+if test "x${have_ssl}" = xno; then
+    # Check for libssl with pkg-config
+
+    if test "x${PKGCONFIG}" = xyes; then
+        AC_MSG_CHECKING([whether pkg-config could find libssl])
+        if pkg-config --exists libssl; then
+            AC_MSG_RESULT([yes])
+            LIBSSL_CFLAGS=`pkg-config --cflags libssl`
+            LIBSSL_LIBS=`pkg-config --libs libssl`
+            have_ssl=yes
+        else
+            AC_MSG_RESULT([no])
         fi
-    ;;
-esac
+    fi
+fi
+
+if test "x${have_ssl}" = xno; then
+    # Check for libssl with autoconf macro
+
+    if test "x${OPENSSL_INCLUDES}" = x; then :; else
+        CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
+    fi
+
+    AC_SEARCH_LIBS([EVP_EncryptInit],
+                   [crypto],
+                   [AC_SEARCH_LIBS([SSL_library_init],
+                                   [ssl],
+                                   [have_ssl=yes])])
+fi
 
 if test "x${have_ssl}" = xno; then
     AC_MSG_FAILURE([
@@ -182,7 +180,12 @@ if test "x${have_ssl}" = xno; then
    OpenSSL library required
 
    Please install:
-   libssl-dev (deb) or openssl-devel (rpm)
+     libssl-dev    (deb)
+     openssl-devel (rpm)
+     openssl       (brew)
+
+   You can specify the include and lib path with:
+   R CMD INSTALL --configure-args='--with-libssl-include=INCLUDE_PATH --with-libssl-lib=LIB_PATH' git2r
   ---------------------------------------------])
 fi
 
@@ -357,10 +360,6 @@ echo "
     with-zlib_lib_path......: ${zlib_lib_path}
     with-libssh2-include....: ${libssh2_include_path}
     with-libssh2-lib........: ${libssh2_lib_path}
-    with-libssl-include.....: ${libssl_include_path}
-    with-libssl-lib.........: ${libssl_lib_path}
-    with-libcrypto-include..: ${libcrypto_include_path}
-    with-libcrypto-lib......: ${libcrypto_lib_path}
 
     *** R configure variables ***
     R CMD config CC.........: ${R_CMD_config_CC}

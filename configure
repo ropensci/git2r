@@ -698,8 +698,6 @@ with_libssh2_include
 with_libssh2_lib
 with_libssl_include
 with_libssl_lib
-with_libcrypto_include
-with_libcrypto_lib
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1334,10 +1332,6 @@ Optional Packages:
                           the location of libssl header files
   --with-libssl-lib=LIB_PATH
                           the location of libssl libraries
-  --with-libcrypto-include=INCLUDE_PATH
-                          the location of libcrypto header files
-  --with-libcrypto-lib=LIB_PATH
-                          the location of libcrypto libraries
 
 Some influential environment variables:
   CC          C compiler command
@@ -3591,9 +3585,6 @@ if test "${with_libssl_include+set}" = set; then :
   withval=$with_libssl_include; libssl_include_path=$withval
 fi
 
-if test  -n "$libssl_include_path"  ; then
-  GIT2R_CPPFLAGS="${GIT2R_CPPFLAGS} -I${libssl_include_path}"
-fi
 
 
 # Check whether --with-libssl-lib was given.
@@ -3601,30 +3592,6 @@ if test "${with_libssl_lib+set}" = set; then :
   withval=$with_libssl_lib; libssl_lib_path=$withval
 fi
 
-if test  -n "$libssl_lib_path"  ; then
-  LIBS="-L${libssl_lib_path} ${LIBS}"
-fi
-
-# libcrypto include and library path
-
-# Check whether --with-libcrypto-include was given.
-if test "${with_libcrypto_include+set}" = set; then :
-  withval=$with_libcrypto_include; libcrypto_include_path=$withval
-fi
-
-if test  -n "$libcrypto_include_path"  ; then
-  GIT2R_CPPFLAGS="${GIT2R_CPPFLAGS} -I${libcrypto_include_path}"
-fi
-
-
-# Check whether --with-libcrypto-lib was given.
-if test "${with_libcrypto_lib+set}" = set; then :
-  withval=$with_libcrypto_lib; libcrypto_lib_path=$withval
-fi
-
-if test  -n "$libcrypto_lib_path"  ; then
-  LIBS="-L${libcrypto_lib_path} ${LIBS}"
-fi
 
 # Find the compiler and compiler flags to use
 : ${R_HOME=`R RHOME`}
@@ -3718,37 +3685,60 @@ fi
 
 # Check for SSL
 have_ssl=no
-case "${host_os}" in
-    darwin*)
-        if test "x${BREW}" = xyes; then
-            BREW_DIR=`brew --prefix`
-            LIBSSL_CFLAGS="-I${BREW_DIR}/opt/openssl/include"
-            LIBSSL_LIBS="-L${BREW_DIR}/opt/openssl/lib -lssl -lcrypto"
-            have_ssl=yes
-        fi
-    ;;
-    *)
-        if test "x${PKGCONFIG}" = xyes; then
-            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether pkg-config could find libssl" >&5
-$as_echo_n "checking whether pkg-config could find libssl... " >&6; }
-            if pkg-config --exists libssl; then
-                { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-                LIBSSL_CFLAGS=`pkg-config --cflags libssl`
-                LIBSSL_LIBS=`pkg-config --libs libssl`
+
+# Check for optional libssl paths
+if test  -n "$libssl_include_path"  ; then
+    LIBSSL_CFLAGS="-I${libssl_include_path}"
+    LIBSSL_LIBS="-L${libssl_lib_path} -lssl -lcrypto"
+    have_ssl=yes
+elif test  -n "$libssl_lib_path"  ; then
+    LIBSSL_CFLAGS="-I${libssl_include_path}"
+    LIBSSL_LIBS="-L${libssl_lib_path} -lssl -lcrypto"
+    have_ssl=yes
+fi
+
+if test "x${have_ssl}" = xno; then
+    # On OS X, check for libssl in brew
+
+    case "${host_os}" in
+        darwin*)
+            if test "x${BREW}" = xyes; then
+                BREW_DIR=`brew --prefix`
+                LIBSSL_CFLAGS="-I${BREW_DIR}/opt/openssl/include"
+                LIBSSL_LIBS="-L${BREW_DIR}/opt/openssl/lib -lssl -lcrypto"
                 have_ssl=yes
-            else
-                { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-           fi
-        fi
-
-        if test "x${have_ssl}" = xno; then
-            if test "x${OPENSSL_INCLUDES}" = x; then :; else
-                CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
             fi
+        ;;
+    esac
+fi
 
-            { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing EVP_EncryptInit" >&5
+if test "x${have_ssl}" = xno; then
+    # Check for libssl with pkg-config
+
+    if test "x${PKGCONFIG}" = xyes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether pkg-config could find libssl" >&5
+$as_echo_n "checking whether pkg-config could find libssl... " >&6; }
+        if pkg-config --exists libssl; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+            LIBSSL_CFLAGS=`pkg-config --cflags libssl`
+            LIBSSL_LIBS=`pkg-config --libs libssl`
+            have_ssl=yes
+        else
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+        fi
+    fi
+fi
+
+if test "x${have_ssl}" = xno; then
+    # Check for libssl with autoconf macro
+
+    if test "x${OPENSSL_INCLUDES}" = x; then :; else
+        CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
+    fi
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing EVP_EncryptInit" >&5
 $as_echo_n "checking for library containing EVP_EncryptInit... " >&6; }
 if ${ac_cv_search_EVP_EncryptInit+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -3859,9 +3849,7 @@ fi
 
 fi
 
-        fi
-    ;;
-esac
+fi
 
 if test "x${have_ssl}" = xno; then
     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
@@ -3871,7 +3859,12 @@ as_fn_error $? "
    OpenSSL library required
 
    Please install:
-   libssl-dev (deb) or openssl-devel (rpm)
+     libssl-dev    (deb)
+     openssl-devel (rpm)
+     openssl       (brew)
+
+   You can specify the include and lib path with:
+   R CMD INSTALL --configure-args='--with-libssl-include=INCLUDE_PATH --with-libssl-lib=LIB_PATH' git2r
   ---------------------------------------------
 See \`config.log' for more details" "$LINENO" 5; }
 fi
@@ -5880,10 +5873,6 @@ echo "
     with-zlib_lib_path......: ${zlib_lib_path}
     with-libssh2-include....: ${libssh2_include_path}
     with-libssh2-lib........: ${libssh2_lib_path}
-    with-libssl-include.....: ${libssl_include_path}
-    with-libssl-lib.........: ${libssl_lib_path}
-    with-libcrypto-include..: ${libcrypto_include_path}
-    with-libcrypto-lib......: ${libcrypto_lib_path}
 
     *** R configure variables ***
     R CMD config CC.........: ${R_CMD_config_CC}
