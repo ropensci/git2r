@@ -228,7 +228,8 @@ if test "x${have_ssh2}" = xno; then
     # Static linking of LibSSH2 on OSX to support redistributable binary packages
     case "${host_os}" in
         darwin*)
-            # Download and build libssh2
+            AC_MSG_NOTICE([Download and build libssh2])
+
             mkdir -p libssh2 && curl -fsSL \
                 https://github.com/libssh2/libssh2/releases/download/libssh2-1.6.0/libssh2-1.6.0.tar.gz \
                 | tar xz --strip 1 -C libssh2
