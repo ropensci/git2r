@@ -148,20 +148,20 @@ fi
 
 # Check for SSL
 have_ssl=no
-build_ssl_pkg=no
+test_build_ssl_pkg=no
 
 # Check for optional libssl paths
 if test [ -n "$libssl_include_path" ] ; then
     LIBSSL_CFLAGS="-I${libssl_include_path}"
     LIBSSL_LIBS="-L${libssl_lib_path} -lssl -lcrypto"
-    build_ssl_pkg=yes
+    test_build_ssl_pkg=yes
 elif test [ -n "$libssl_lib_path" ] ; then
     LIBSSL_CFLAGS="-I${libssl_include_path}"
     LIBSSL_LIBS="-L${libssl_lib_path} -lssl -lcrypto"
-    build_ssl_pkg=yes
+    test_build_ssl_pkg=yes
 fi
 
-if test "x${have_ssl}" = xno; then
+if test "x${test_build_ssl_pkg}" = xno; then
     # On OS X, check for libssl in brew
 
     case "${host_os}" in
@@ -170,13 +170,13 @@ if test "x${have_ssl}" = xno; then
                 BREW_DIR=`brew --prefix`
                 LIBSSL_CFLAGS="-I${BREW_DIR}/opt/openssl/include"
                 LIBSSL_LIBS="-L${BREW_DIR}/opt/openssl/lib -lssl -lcrypto"
-                build_ssl_pkg=yes
+                test_build_ssl_pkg=yes
             fi
         ;;
     esac
 fi
 
-if test "x${have_ssl}" = xno; then
+if test "x${test_build_ssl_pkg}" = xno; then
     # Check for libssl with pkg-config
 
     if test "x${PKGCONFIG}" = xyes; then
@@ -185,11 +185,26 @@ if test "x${have_ssl}" = xno; then
             AC_MSG_RESULT([yes])
             LIBSSL_CFLAGS=`pkg-config --cflags libssl`
             LIBSSL_LIBS=`pkg-config --libs libssl`
-            build_ssl_pkg=yes
+            test_build_ssl_pkg=yes
         else
             AC_MSG_RESULT([no])
         fi
     fi
+fi
+
+if test "x${test_build_ssl_pkg}" = xyes; then
+    # Check that build with OpenSSL will work in a package
+
+    AC_MSG_CHECKING([whether OpenSSL will work in a package])
+    AC_LANG_CONFTEST(
+    [AC_LANG_PROGRAM(
+    [[#include <openssl/ssl.h>]],
+    [[ return SSL_library_init (); ]])])
+    PKG_CFLAGS="${LIBSSL_CFLAGS}" PKG_LIBS="${LIBSSL_LIBS}" \
+    "$RBIN" CMD SHLIB conftest.c 1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD && \
+    "$RBIN" --vanilla -q -e "dyn.load(paste('conftest',.Platform\$dynlib.ext,sep=''))" \
+    1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD && have_ssl=yes
+    AC_MSG_RESULT([${have_ssl}])
 fi
 
 if test "x${have_ssl}" = xno; then
@@ -204,21 +219,6 @@ if test "x${have_ssl}" = xno; then
                    [AC_SEARCH_LIBS([SSL_library_init],
                                    [ssl],
                                    [have_ssl=yes])])
-fi
-
-if test "x${build_ssl_pkg}" = xyes; then
-    # Check that build with OpenSSL will work in a package
-
-    AC_MSG_CHECKING([whether OpenSSL will work in a package])
-    AC_LANG_CONFTEST(
-    [AC_LANG_PROGRAM(
-    [[#include <openssl/ssl.h>]],
-    [[ return SSL_library_init (); ]])])
-    PKG_CFLAGS="${LIBSSL_CFLAGS}" PKG_LIBS="${LIBSSL_LIBS}" \
-    "$RBIN" CMD SHLIB conftest.c 1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD && \
-    "$RBIN" --vanilla -q -e "dyn.load(paste('conftest',.Platform\$dynlib.ext,sep=''))" \
-    1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD && have_ssl=yes
-    AC_MSG_RESULT([${have_ssl}])
 fi
 
 if test "x${have_ssl}" = xno; then
