@@ -3543,9 +3543,6 @@ if test "${with_zlib_include+set}" = set; then :
   withval=$with_zlib_include; zlib_include_path=$withval
 fi
 
-if test  -n "$zlib_include_path"  ; then
-  GIT2R_CPPFLAGS="${GIT2R_CPPFLAGS} -I${zlib_include_path}"
-fi
 
 
 # Check whether --with-zlib-lib was given.
@@ -3553,9 +3550,6 @@ if test "${with_zlib_lib+set}" = set; then :
   withval=$with_zlib_lib; zlib_lib_path=$withval
 fi
 
-if test  -n "$zlib_lib_path"  ; then
-  LIBS="-L${zlib_lib_path} ${LIBS}"
-fi
 
 # LibSSH2 include and library path
 
@@ -3614,6 +3608,40 @@ CPICFLAGS="${R_CMD_config_CPICFLAGS}"
 # Check for zlib
 have_zlib=no
 
+# Check for optional zlib paths
+if test  -n "$zlib_include_path"  ; then
+    ZLIB_CFLAGS="-I${zlib_include_path}"
+    ZLIB_LIBS="-L${zlib_lib_path} -lz"
+    have_zlib=yes
+elif test  -n "$zlib_lib_path"  ; then
+    ZLIB_CFLAGS="-I${zlib_include_path}"
+    ZLIB_LIBS="-L${zlib_lib_path} -lz"
+    have_zlib=yes
+fi
+
+if test "x${have_zlib}" = xno; then
+    # Check for zlib with pkg-config
+
+    if test "x${PKGCONFIG}" = xyes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether pkg-config could find zlib" >&5
+$as_echo_n "checking whether pkg-config could find zlib... " >&6; }
+        if pkg-config --exists zlib; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+            ZLIB_CFLAGS=`pkg-config --cflags zlib`
+            ZLIB_LIBS=`pkg-config --libs zlib`
+            have_zlib=yes
+        else
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+        fi
+    fi
+fi
+
+if test "x${have_zlib}" = xno; then
+    # Check for zlib with autoconf macro
+
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing inflate" >&5
 $as_echo_n "checking for library containing inflate... " >&6; }
 if ${ac_cv_search_inflate+:} false; then :
@@ -3670,6 +3698,7 @@ if test "$ac_res" != no; then :
   have_zlib=yes
 fi
 
+fi
 
 if test "x${have_zlib}" = xno; then
         { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
@@ -3679,7 +3708,11 @@ as_fn_error $? "
    zlib library required
 
    Please install:
-   zlib1g-dev (deb) or zlib-devel (rpm)
+     zlib1g-dev (deb)
+     zlib-devel (rpm)
+
+   You can specify the include and lib path with:
+   R CMD INSTALL --configure-args='--with-zlib-include=INCLUDE_PATH --with-zlib-lib=LIB_PATH' git2r
   ---------------------------------------------
 See \`config.log' for more details" "$LINENO" 5; }
 fi

@@ -41,20 +41,14 @@ GIT2R_CPPFLAGS=
 
 # zlib include and library path
 AC_ARG_WITH([zlib-include],
-    AC_HELP_STRING([--with-zlib-include=INCLUDE_PATH],
-                   [the location of zlib header files]),
-    [zlib_include_path=$withval])
-if test [ -n "$zlib_include_path" ] ; then
-  GIT2R_CPPFLAGS="${GIT2R_CPPFLAGS} -I${zlib_include_path}"
-fi
+            AC_HELP_STRING([--with-zlib-include=INCLUDE_PATH],
+                           [the location of zlib header files]),
+            [zlib_include_path=$withval])
 
 AC_ARG_WITH([zlib-lib],
-    AC_HELP_STRING([--with-zlib-lib=LIB_PATH],
-                   [the location of zlib libraries]),
-    [zlib_lib_path=$withval])
-if test [ -n "$zlib_lib_path" ] ; then
-  LIBS="-L${zlib_lib_path} ${LIBS}"
-fi
+            AC_HELP_STRING([--with-zlib-lib=LIB_PATH],
+                           [the location of zlib libraries]),
+            [zlib_lib_path=$withval])
 
 # LibSSH2 include and library path
 AC_ARG_WITH([libssh2-include],
@@ -104,7 +98,39 @@ CPICFLAGS="${R_CMD_config_CPICFLAGS}"
 
 # Check for zlib
 have_zlib=no
-AC_SEARCH_LIBS([inflate], [z], [have_zlib=yes])
+
+# Check for optional zlib paths
+if test [ -n "$zlib_include_path" ] ; then
+    ZLIB_CFLAGS="-I${zlib_include_path}"
+    ZLIB_LIBS="-L${zlib_lib_path} -lz"
+    have_zlib=yes
+elif test [ -n "$zlib_lib_path" ] ; then
+    ZLIB_CFLAGS="-I${zlib_include_path}"
+    ZLIB_LIBS="-L${zlib_lib_path} -lz"
+    have_zlib=yes
+fi
+
+if test "x${have_zlib}" = xno; then
+    # Check for zlib with pkg-config
+
+    if test "x${PKGCONFIG}" = xyes; then
+        AC_MSG_CHECKING([whether pkg-config could find zlib])
+        if pkg-config --exists zlib; then
+            AC_MSG_RESULT([yes])
+            ZLIB_CFLAGS=`pkg-config --cflags zlib`
+            ZLIB_LIBS=`pkg-config --libs zlib`
+            have_zlib=yes
+        else
+            AC_MSG_RESULT([no])
+        fi
+    fi
+fi
+
+if test "x${have_zlib}" = xno; then
+    # Check for zlib with autoconf macro
+
+    AC_SEARCH_LIBS([inflate], [z], [have_zlib=yes])
+fi
 
 if test "x${have_zlib}" = xno; then
         AC_MSG_FAILURE([
@@ -112,7 +138,11 @@ if test "x${have_zlib}" = xno; then
    zlib library required
 
    Please install:
-   zlib1g-dev (deb) or zlib-devel (rpm)
+     zlib1g-dev (deb)
+     zlib-devel (rpm)
+
+   You can specify the include and lib path with:
+   R CMD INSTALL --configure-args='--with-zlib-include=INCLUDE_PATH --with-zlib-lib=LIB_PATH' git2r
   ---------------------------------------------])
 fi
 
