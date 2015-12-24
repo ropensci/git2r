@@ -3599,15 +3599,16 @@ if test -z "${R_HOME}"; then
   echo "could not determine R_HOME"
   exit 1
 fi
-R_CMD_config_CC=`"${R_HOME}/bin/R" CMD config CC`
+RBIN="${R_HOME}/bin/R"
+R_CMD_config_CC=`"${RBIN}" CMD config CC`
 CC="${R_CMD_config_CC}"
-R_CMD_config_CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
+R_CMD_config_CFLAGS=`"${RBIN}" CMD config CFLAGS`
 CFLAGS="${R_CMD_config_CFLAGS}"
-R_CMD_config_CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
+R_CMD_config_CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
 CPPFLAGS="${GIT2R_CPPFLAGS} ${R_CMD_config_CPPFLAGS}"
-R_CMD_config_LDFLAGS=`"${R_HOME}/bin/R" CMD config LDFLAGS`
+R_CMD_config_LDFLAGS=`"${RBIN}" CMD config LDFLAGS`
 LDFLAGS="${R_CMD_config_LDFLAGS}"
-R_CMD_config_CPICFLAGS=`"${R_HOME}/bin/R" CMD config CPICFLAGS`
+R_CMD_config_CPICFLAGS=`"${RBIN}" CMD config CPICFLAGS`
 CPICFLAGS="${R_CMD_config_CPICFLAGS}"
 
 # Check for zlib
@@ -3685,16 +3686,17 @@ fi
 
 # Check for SSL
 have_ssl=no
+build_ssl_pkg=no
 
 # Check for optional libssl paths
 if test  -n "$libssl_include_path"  ; then
     LIBSSL_CFLAGS="-I${libssl_include_path}"
     LIBSSL_LIBS="-L${libssl_lib_path} -lssl -lcrypto"
-    have_ssl=yes
+    build_ssl_pkg=yes
 elif test  -n "$libssl_lib_path"  ; then
     LIBSSL_CFLAGS="-I${libssl_include_path}"
     LIBSSL_LIBS="-L${libssl_lib_path} -lssl -lcrypto"
-    have_ssl=yes
+    build_ssl_pkg=yes
 fi
 
 if test "x${have_ssl}" = xno; then
@@ -3706,7 +3708,7 @@ if test "x${have_ssl}" = xno; then
                 BREW_DIR=`brew --prefix`
                 LIBSSL_CFLAGS="-I${BREW_DIR}/opt/openssl/include"
                 LIBSSL_LIBS="-L${BREW_DIR}/opt/openssl/lib -lssl -lcrypto"
-                have_ssl=yes
+                build_ssl_pkg=yes
             fi
         ;;
     esac
@@ -3723,7 +3725,7 @@ $as_echo_n "checking whether pkg-config could find libssl... " >&6; }
 $as_echo "yes" >&6; }
             LIBSSL_CFLAGS=`pkg-config --cflags libssl`
             LIBSSL_LIBS=`pkg-config --libs libssl`
-            have_ssl=yes
+            build_ssl_pkg=yes
         else
             { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
@@ -3849,6 +3851,30 @@ fi
 
 fi
 
+fi
+
+if test "x${build_ssl_pkg}" = xyes; then
+    # Check that build with OpenSSL will work in a package
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether OpenSSL will work in a package" >&5
+$as_echo_n "checking whether OpenSSL will work in a package... " >&6; }
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <openssl/ssl.h>
+int
+main ()
+{
+ return SSL_library_init ();
+  ;
+  return 0;
+}
+_ACEOF
+    PKG_CFLAGS="${LIBSSL_CFLAGS}" PKG_LIBS="${LIBSSL_LIBS}" \
+    "$RBIN" CMD SHLIB conftest.c 1>&5 2>&5 && \
+    "$RBIN" --vanilla -q -e "dyn.load(paste('conftest',.Platform\$dynlib.ext,sep=''))" \
+    1>&5 2>&5 && have_ssl=yes
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${have_ssl}" >&5
+$as_echo "${have_ssl}" >&6; }
 fi
 
 if test "x${have_ssl}" = xno; then
