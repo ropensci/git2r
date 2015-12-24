@@ -394,9 +394,9 @@ AC_CHECK_FUNCS([btowc clock_gettime getcwd gethostbyname gettimeofday isascii me
 
 AC_SUBST(GIT2R_SRC_REGEX)
 AC_SUBST(LIBSSH2_LIBS)
-AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS} ${LIBSSL_CFLAGS} ${LIBSSH2_CFLAGS}"])
+AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS} ${ZLIB_CFLAGS} ${LIBSSL_CFLAGS} ${LIBSSH2_CFLAGS}"])
 AC_SUBST(CPPFLAGS)
-AC_SUBST([PKG_LIBS], ["${LIBS} ${LIBSSL_LIBS} ${LIBSSH2_LIBS}"])
+AC_SUBST([PKG_LIBS], ["${LIBS} ${ZLIB_LIBS} ${LIBSSL_LIBS} ${LIBSSH2_LIBS}"])
 
 AC_CONFIG_FILES([src/Makevars])
 
@@ -404,8 +404,6 @@ echo "
   ------------------ Results of the git2r package configure -----------------
 
     *** User specified options ***
-    with-zlib-include.......: ${zlib_include_path}
-    with-zlib_lib_path......: ${zlib_lib_path}
     with-libssh2-include....: ${libssh2_include_path}
     with-libssh2-lib........: ${libssh2_lib_path}
 
@@ -417,6 +415,8 @@ echo "
     R CMD config CPICFLAGS..: ${R_CMD_config_CPICFLAGS}
 
     *** Build options ***
+    ZLIB_CFLAGS.............: ${ZLIB_CFLAGS}
+    ZLIB_LIBS...............: ${ZLIB_LIBS}
     LIBSSL_CFLAGS...........: ${LIBSSL_CFLAGS}
     LIBSSL_LIBS.............: ${LIBSSL_LIBS}
     LIBSSH2_CFLAGS..........: ${LIBSSH2_CFLAGS}

@@ -5917,10 +5917,10 @@ done
 
 
 
-PKG_CFLAGS="${PKG_CFLAGS} ${LIBSSL_CFLAGS} ${LIBSSH2_CFLAGS}"
+PKG_CFLAGS="${PKG_CFLAGS} ${ZLIB_CFLAGS} ${LIBSSL_CFLAGS} ${LIBSSH2_CFLAGS}"
 
 
-PKG_LIBS="${LIBS} ${LIBSSL_LIBS} ${LIBSSH2_LIBS}"
+PKG_LIBS="${LIBS} ${ZLIB_LIBS} ${LIBSSL_LIBS} ${LIBSSH2_LIBS}"
 
 
 ac_config_files="$ac_config_files src/Makevars"
@@ -5930,8 +5930,6 @@ echo "
   ------------------ Results of the git2r package configure -----------------
 
     *** User specified options ***
-    with-zlib-include.......: ${zlib_include_path}
-    with-zlib_lib_path......: ${zlib_lib_path}
     with-libssh2-include....: ${libssh2_include_path}
     with-libssh2-lib........: ${libssh2_lib_path}
 
@@ -5943,6 +5941,8 @@ echo "
     R CMD config CPICFLAGS..: ${R_CMD_config_CPICFLAGS}
 
     *** Build options ***
+    ZLIB_CFLAGS.............: ${ZLIB_CFLAGS}
+    ZLIB_LIBS...............: ${ZLIB_LIBS}
     LIBSSL_CFLAGS...........: ${LIBSSL_CFLAGS}
     LIBSSL_LIBS.............: ${LIBSSL_LIBS}
     LIBSSH2_CFLAGS..........: ${LIBSSH2_CFLAGS}
