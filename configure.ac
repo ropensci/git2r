@@ -148,63 +148,26 @@ fi
 
 # Check for SSL
 have_ssl=no
-test_build_ssl_pkg=no
 
 # Check for optional libssl paths
 if test [ -n "$libssl_include_path" ] ; then
-    LIBSSL_CFLAGS="-I${libssl_include_path}"
-    LIBSSL_LIBS="-L${libssl_lib_path} -lssl -lcrypto"
-    test_build_ssl_pkg=yes
+    CPPFLAGS="-I${libssl_include_path} ${CPPFLAGS}"
+fi
+if test [ -n "$libssl_lib_path" ] ; then
+    LIBS="-L${libssl_lib_path} ${LIBS}"
+fi
+if test [ -n "$libssl_include_path" ] ; then
+    AC_SEARCH_LIBS([EVP_EncryptInit],
+                   [crypto],
+                   [AC_SEARCH_LIBS([SSL_library_init],
+                                   [ssl],
+                                   [have_ssl=yes])])
 elif test [ -n "$libssl_lib_path" ] ; then
-    LIBSSL_CFLAGS="-I${libssl_include_path}"
-    LIBSSL_LIBS="-L${libssl_lib_path} -lssl -lcrypto"
-    test_build_ssl_pkg=yes
-fi
-
-if test "x${test_build_ssl_pkg}" = xno; then
-    # On OS X, check for libssl in brew
-
-    case "${host_os}" in
-        darwin*)
-            if test "x${BREW}" = xyes; then
-                BREW_DIR=`brew --prefix`
-                LIBSSL_CFLAGS="-I${BREW_DIR}/opt/openssl/include"
-                LIBSSL_LIBS="-L${BREW_DIR}/opt/openssl/lib -lssl -lcrypto"
-                test_build_ssl_pkg=yes
-            fi
-        ;;
-    esac
-fi
-
-if test "x${test_build_ssl_pkg}" = xno; then
-    # Check for libssl with pkg-config
-
-    if test "x${PKGCONFIG}" = xyes; then
-        AC_MSG_CHECKING([whether pkg-config could find libssl])
-        if pkg-config --exists libssl; then
-            AC_MSG_RESULT([yes])
-            LIBSSL_CFLAGS=`pkg-config --cflags libssl`
-            LIBSSL_LIBS=`pkg-config --libs libssl`
-            test_build_ssl_pkg=yes
-        else
-            AC_MSG_RESULT([no])
-        fi
-    fi
-fi
-
-if test "x${test_build_ssl_pkg}" = xyes; then
-    # Check that build with OpenSSL will work in a package
-
-    AC_MSG_CHECKING([whether OpenSSL will work in a package])
-    AC_LANG_CONFTEST(
-    [AC_LANG_PROGRAM(
-    [[#include <openssl/ssl.h>]],
-    [[ return SSL_library_init (); ]])])
-    PKG_CFLAGS="${LIBSSL_CFLAGS}" PKG_LIBS="${LIBSSL_LIBS}" \
-    "$RBIN" CMD SHLIB conftest.c 1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD && \
-    "$RBIN" --vanilla -q -e "dyn.load(paste('conftest',.Platform\$dynlib.ext,sep=''))" \
-    1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD && have_ssl=yes
-    AC_MSG_RESULT([${have_ssl}])
+    AC_SEARCH_LIBS([EVP_EncryptInit],
+                   [crypto],
+                   [AC_SEARCH_LIBS([SSL_library_init],
+                                   [ssl],
+                                   [have_ssl=yes])])
 fi
 
 if test "x${have_ssl}" = xno; then
@@ -219,6 +182,42 @@ if test "x${have_ssl}" = xno; then
                    [AC_SEARCH_LIBS([SSL_library_init],
                                    [ssl],
                                    [have_ssl=yes])])
+fi
+
+if test "x${have_ssl}" = xno; then
+    # On OS X, check for libssl in brew
+
+    case "${host_os}" in
+        darwin*)
+            if test "x${BREW}" = xyes; then
+                BREW_DIR=`brew --prefix`
+                CPPFLAGS="-I${BREW_DIR}/opt/openssl/include ${CPPFLAGS}"
+                LIBS="-L${BREW_DIR}/opt/openssl/lib ${LIBS}"
+
+                AC_SEARCH_LIBS([EVP_EncryptInit],
+                               [crypto],
+                               [AC_SEARCH_LIBS([SSL_library_init],
+                                               [ssl],
+                                               [have_ssl=yes])])
+            fi
+        ;;
+    esac
+fi
+
+if test "x${have_ssl}" = xno; then
+    # Check for libssl with pkg-config
+
+    if test "x${PKGCONFIG}" = xyes; then
+        AC_MSG_CHECKING([whether pkg-config could find libssl])
+        if pkg-config --exists libssl; then
+            AC_MSG_RESULT([yes])
+            LIBSSL_CFLAGS=`pkg-config --cflags libssl`
+            LIBSSL_LIBS=`pkg-config --libs libssl`
+            have_ssl=yes
+        else
+            AC_MSG_RESULT([no])
+        fi
+    fi
 fi
 
 if test "x${have_ssl}" = xno; then
@@ -241,7 +240,7 @@ have_ssh2=no
 
 # Check for optional libssh2 paths
 if test [ -n "$libssh2_include_path" ] ; then
-    CPPFLAGS="-I${libssh2_include_path} ${CPPFLAGS} "
+    CPPFLAGS="-I${libssh2_include_path} ${CPPFLAGS}"
 fi
 if test [ -n "$libssh2_lib_path" ] ; then
     LIBS="-L${libssh2_lib_path} ${LIBS}"

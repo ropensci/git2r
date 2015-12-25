@@ -3839,75 +3839,238 @@ fi
 
 # Check for SSL
 have_ssl=no
-test_build_ssl_pkg=no
 
 # Check for optional libssl paths
 if test  -n "$libssl_include_path"  ; then
-    LIBSSL_CFLAGS="-I${libssl_include_path}"
-    LIBSSL_LIBS="-L${libssl_lib_path} -lssl -lcrypto"
-    test_build_ssl_pkg=yes
-elif test  -n "$libssl_lib_path"  ; then
-    LIBSSL_CFLAGS="-I${libssl_include_path}"
-    LIBSSL_LIBS="-L${libssl_lib_path} -lssl -lcrypto"
-    test_build_ssl_pkg=yes
+    CPPFLAGS="-I${libssl_include_path} ${CPPFLAGS}"
 fi
-
-if test "x${test_build_ssl_pkg}" = xno; then
-    # On OS X, check for libssl in brew
-
-    case "${host_os}" in
-        darwin*)
-            if test "x${BREW}" = xyes; then
-                BREW_DIR=`brew --prefix`
-                LIBSSL_CFLAGS="-I${BREW_DIR}/opt/openssl/include"
-                LIBSSL_LIBS="-L${BREW_DIR}/opt/openssl/lib -lssl -lcrypto"
-                test_build_ssl_pkg=yes
-            fi
-        ;;
-    esac
+if test  -n "$libssl_lib_path"  ; then
+    LIBS="-L${libssl_lib_path} ${LIBS}"
 fi
-
-if test "x${test_build_ssl_pkg}" = xno; then
-    # Check for libssl with pkg-config
-
-    if test "x${PKGCONFIG}" = xyes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether pkg-config could find libssl" >&5
-$as_echo_n "checking whether pkg-config could find libssl... " >&6; }
-        if pkg-config --exists libssl; then
-            { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-            LIBSSL_CFLAGS=`pkg-config --cflags libssl`
-            LIBSSL_LIBS=`pkg-config --libs libssl`
-            test_build_ssl_pkg=yes
-        else
-            { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-        fi
-    fi
-fi
-
-if test "x${test_build_ssl_pkg}" = xyes; then
-    # Check that build with OpenSSL will work in a package
-
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether OpenSSL will work in a package" >&5
-$as_echo_n "checking whether OpenSSL will work in a package... " >&6; }
-    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+if test  -n "$libssl_include_path"  ; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing EVP_EncryptInit" >&5
+$as_echo_n "checking for library containing EVP_EncryptInit... " >&6; }
+if ${ac_cv_search_EVP_EncryptInit+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#include <openssl/ssl.h>
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char EVP_EncryptInit ();
 int
 main ()
 {
- return SSL_library_init ();
+return EVP_EncryptInit ();
   ;
   return 0;
 }
 _ACEOF
-    PKG_CFLAGS="${LIBSSL_CFLAGS}" PKG_LIBS="${LIBSSL_LIBS}" \
-    "$RBIN" CMD SHLIB conftest.c 1>&5 2>&5 && \
-    "$RBIN" --vanilla -q -e "dyn.load(paste('conftest',.Platform\$dynlib.ext,sep=''))" \
-    1>&5 2>&5 && have_ssl=yes
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${have_ssl}" >&5
-$as_echo "${have_ssl}" >&6; }
+for ac_lib in '' crypto; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_EVP_EncryptInit=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_EVP_EncryptInit+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_EVP_EncryptInit+:} false; then :
+
+else
+  ac_cv_search_EVP_EncryptInit=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_EVP_EncryptInit" >&5
+$as_echo "$ac_cv_search_EVP_EncryptInit" >&6; }
+ac_res=$ac_cv_search_EVP_EncryptInit
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing SSL_library_init" >&5
+$as_echo_n "checking for library containing SSL_library_init... " >&6; }
+if ${ac_cv_search_SSL_library_init+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char SSL_library_init ();
+int
+main ()
+{
+return SSL_library_init ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' ssl; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_SSL_library_init=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_SSL_library_init+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_SSL_library_init+:} false; then :
+
+else
+  ac_cv_search_SSL_library_init=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_SSL_library_init" >&5
+$as_echo "$ac_cv_search_SSL_library_init" >&6; }
+ac_res=$ac_cv_search_SSL_library_init
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  have_ssl=yes
+fi
+
+fi
+
+elif test  -n "$libssl_lib_path"  ; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing EVP_EncryptInit" >&5
+$as_echo_n "checking for library containing EVP_EncryptInit... " >&6; }
+if ${ac_cv_search_EVP_EncryptInit+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char EVP_EncryptInit ();
+int
+main ()
+{
+return EVP_EncryptInit ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' crypto; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_EVP_EncryptInit=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_EVP_EncryptInit+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_EVP_EncryptInit+:} false; then :
+
+else
+  ac_cv_search_EVP_EncryptInit=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_EVP_EncryptInit" >&5
+$as_echo "$ac_cv_search_EVP_EncryptInit" >&6; }
+ac_res=$ac_cv_search_EVP_EncryptInit
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing SSL_library_init" >&5
+$as_echo_n "checking for library containing SSL_library_init... " >&6; }
+if ${ac_cv_search_SSL_library_init+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char SSL_library_init ();
+int
+main ()
+{
+return SSL_library_init ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' ssl; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_SSL_library_init=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_SSL_library_init+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_SSL_library_init+:} false; then :
+
+else
+  ac_cv_search_SSL_library_init=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_SSL_library_init" >&5
+$as_echo "$ac_cv_search_SSL_library_init" >&6; }
+ac_res=$ac_cv_search_SSL_library_init
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  have_ssl=yes
+fi
+
+fi
+
 fi
 
 if test "x${have_ssl}" = xno; then
@@ -4031,6 +4194,151 @@ fi
 fi
 
 if test "x${have_ssl}" = xno; then
+    # On OS X, check for libssl in brew
+
+    case "${host_os}" in
+        darwin*)
+            if test "x${BREW}" = xyes; then
+                BREW_DIR=`brew --prefix`
+                CPPFLAGS="-I${BREW_DIR}/opt/openssl/include ${CPPFLAGS}"
+                LIBS="-L${BREW_DIR}/opt/openssl/lib ${LIBS}"
+
+                { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing EVP_EncryptInit" >&5
+$as_echo_n "checking for library containing EVP_EncryptInit... " >&6; }
+if ${ac_cv_search_EVP_EncryptInit+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char EVP_EncryptInit ();
+int
+main ()
+{
+return EVP_EncryptInit ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' crypto; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_EVP_EncryptInit=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_EVP_EncryptInit+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_EVP_EncryptInit+:} false; then :
+
+else
+  ac_cv_search_EVP_EncryptInit=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_EVP_EncryptInit" >&5
+$as_echo "$ac_cv_search_EVP_EncryptInit" >&6; }
+ac_res=$ac_cv_search_EVP_EncryptInit
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing SSL_library_init" >&5
+$as_echo_n "checking for library containing SSL_library_init... " >&6; }
+if ${ac_cv_search_SSL_library_init+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char SSL_library_init ();
+int
+main ()
+{
+return SSL_library_init ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' ssl; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_SSL_library_init=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_SSL_library_init+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_SSL_library_init+:} false; then :
+
+else
+  ac_cv_search_SSL_library_init=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_SSL_library_init" >&5
+$as_echo "$ac_cv_search_SSL_library_init" >&6; }
+ac_res=$ac_cv_search_SSL_library_init
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  have_ssl=yes
+fi
+
+fi
+
+            fi
+        ;;
+    esac
+fi
+
+if test "x${have_ssl}" = xno; then
+    # Check for libssl with pkg-config
+
+    if test "x${PKGCONFIG}" = xyes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether pkg-config could find libssl" >&5
+$as_echo_n "checking whether pkg-config could find libssl... " >&6; }
+        if pkg-config --exists libssl; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+            LIBSSL_CFLAGS=`pkg-config --cflags libssl`
+            LIBSSL_LIBS=`pkg-config --libs libssl`
+            have_ssl=yes
+        else
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+        fi
+    fi
+fi
+
+if test "x${have_ssl}" = xno; then
     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
 as_fn_error $? "
@@ -4053,7 +4361,7 @@ have_ssh2=no
 
 # Check for optional libssh2 paths
 if test  -n "$libssh2_include_path"  ; then
-    CPPFLAGS="-I${libssh2_include_path} ${CPPFLAGS} "
+    CPPFLAGS="-I${libssh2_include_path} ${CPPFLAGS}"
 fi
 if test  -n "$libssh2_lib_path"  ; then
     LIBS="-L${libssh2_lib_path} ${LIBS}"
