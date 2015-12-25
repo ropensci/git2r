@@ -3539,8 +3539,7 @@ fi
     ;;
 esac
 
-# Handle optional include and library paths
-GIT2R_CPPFLAGS=
+# Optional include and library paths
 
 # iconv include and library path
 
@@ -3579,9 +3578,6 @@ if test "${with_libssh2_include+set}" = set; then :
   withval=$with_libssh2_include; libssh2_include_path=$withval
 fi
 
-if test  -n "$libssh2_include_path"  ; then
-  GIT2R_CPPFLAGS="${GIT2R_CPPFLAGS} -I${libssh2_include_path}"
-fi
 
 
 # Check whether --with-libssh2-lib was given.
@@ -3589,9 +3585,6 @@ if test "${with_libssh2_lib+set}" = set; then :
   withval=$with_libssh2_lib; libssh2_lib_path=$withval
 fi
 
-if test  -n "$libssh2_lib_path"  ; then
-  LIBS="-L${libssh2_lib_path} ${LIBS}"
-fi
 
 # libssl include and library path
 
@@ -3615,16 +3608,10 @@ if test -z "${R_HOME}"; then
   exit 1
 fi
 RBIN="${R_HOME}/bin/R"
-R_CMD_config_CC=`"${RBIN}" CMD config CC`
-CC="${R_CMD_config_CC}"
 R_CMD_config_CFLAGS=`"${RBIN}" CMD config CFLAGS`
 CFLAGS="${R_CMD_config_CFLAGS}"
 R_CMD_config_CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
-CPPFLAGS="${GIT2R_CPPFLAGS} ${R_CMD_config_CPPFLAGS}"
-R_CMD_config_LDFLAGS=`"${RBIN}" CMD config LDFLAGS`
-LDFLAGS="${R_CMD_config_LDFLAGS}"
-R_CMD_config_CPICFLAGS=`"${RBIN}" CMD config CPICFLAGS`
-CPICFLAGS="${R_CMD_config_CPICFLAGS}"
+CPPFLAGS="${R_CMD_config_CPPFLAGS}"
 
 # Check for zlib
 have_zlib=no
@@ -4063,22 +4050,152 @@ fi
 
 # Check for LibSSH2
 have_ssh2=no
-if test "x${PKGCONFIG}" = xyes; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether pkg-config could find libssh2" >&5
+
+# Check for optional libssh2 paths
+if test  -n "$libssh2_include_path"  ; then
+    CPPFLAGS="-I${libssh2_include_path} ${CPPFLAGS} "
+fi
+if test  -n "$libssh2_lib_path"  ; then
+    LIBS="-L${libssh2_lib_path} ${LIBS}"
+fi
+if test  -n "$libssh2_include_path"  ; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing libssh2_version" >&5
+$as_echo_n "checking for library containing libssh2_version... " >&6; }
+if ${ac_cv_search_libssh2_version+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char libssh2_version ();
+int
+main ()
+{
+return libssh2_version ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' ssh2; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_libssh2_version=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_libssh2_version+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_libssh2_version+:} false; then :
+
+else
+  ac_cv_search_libssh2_version=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_libssh2_version" >&5
+$as_echo "$ac_cv_search_libssh2_version" >&6; }
+ac_res=$ac_cv_search_libssh2_version
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  have_ssh2=yes
+fi
+
+elif test  -n "$libssh2_lib_path"  ; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing libssh2_version" >&5
+$as_echo_n "checking for library containing libssh2_version... " >&6; }
+if ${ac_cv_search_libssh2_version+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char libssh2_version ();
+int
+main ()
+{
+return libssh2_version ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' ssh2; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_libssh2_version=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_libssh2_version+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_libssh2_version+:} false; then :
+
+else
+  ac_cv_search_libssh2_version=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_libssh2_version" >&5
+$as_echo "$ac_cv_search_libssh2_version" >&6; }
+ac_res=$ac_cv_search_libssh2_version
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  have_ssh2=yes
+fi
+
+fi
+
+if test "x${have_ssh2}" = xno; then
+    # Check for libssh2 with pkg-config
+
+    if test "x${PKGCONFIG}" = xyes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether pkg-config could find libssh2" >&5
 $as_echo_n "checking whether pkg-config could find libssh2... " >&6; }
-    if pkg-config --exists libssh2; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+        if pkg-config --exists libssh2; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-        LIBSSH2_CFLAGS=`pkg-config --cflags libssh2`
-        LIBSSH2_LIBS=`pkg-config --libs libssh2`
-        have_ssh2=yes
-    else
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+            LIBSSH2_CFLAGS=`pkg-config --cflags libssh2`
+            LIBSSH2_LIBS=`pkg-config --libs libssh2`
+            have_ssh2=yes
+        else
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
+        fi
     fi
 fi
 
 if test "x${have_ssh2}" = xno; then
+    # Check for libssh2 with autoconf macro
+
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing libssh2_version" >&5
 $as_echo_n "checking for library containing libssh2_version... " >&6; }
 if ${ac_cv_search_libssh2_version+:} false; then :
@@ -4144,6 +4261,11 @@ if test "x${have_ssh2}" = xno; then
             { $as_echo "$as_me:${as_lineno-$LINENO}: Download and build libssh2" >&5
 $as_echo "$as_me: Download and build libssh2" >&6;}
 
+            # Find the compiler and compiler flags to use
+            CC=`"${RBIN}" CMD config CC`
+            LDFLAGS=`"${RBIN}" CMD config LDFLAGS`
+            CPICFLAGS=`"${RBIN}" CMD config CPICFLAGS`
+
             mkdir -p libssh2 && curl -fsSL \
                 https://github.com/libssh2/libssh2/releases/download/libssh2-1.6.0/libssh2-1.6.0.tar.gz \
                 | tar xz --strip 1 -C libssh2
@@ -4175,7 +4297,11 @@ if test "x${have_ssh2}" = xno; then
    Building a version without support for SSH.
 
    To build with SSH support, please install:
-   libssh2-1-dev (deb) or libssh2-devel (rpm)
+     libssh2-1-dev (deb)
+     libssh2-devel (rpm)
+
+   You can specify the include and lib path with:
+   R CMD INSTALL --configure-args='--with-libssh2-include=INCLUDE_PATH --with-libssh2-lib=LIB_PATH' git2r
   ---------------------------------------------" >&5
 $as_echo "$as_me: WARNING:
   ---------------------------------------------
@@ -4183,7 +4309,11 @@ $as_echo "$as_me: WARNING:
    Building a version without support for SSH.
 
    To build with SSH support, please install:
-   libssh2-1-dev (deb) or libssh2-devel (rpm)
+     libssh2-1-dev (deb)
+     libssh2-devel (rpm)
+
+   You can specify the include and lib path with:
+   R CMD INSTALL --configure-args='--with-libssh2-include=INCLUDE_PATH --with-libssh2-lib=LIB_PATH' git2r
   ---------------------------------------------" >&2;}
 fi
 
@@ -6083,11 +6213,8 @@ echo "
     with-libssh2-lib........: ${libssh2_lib_path}
 
     *** R configure variables ***
-    R CMD config CC.........: ${R_CMD_config_CC}
     R CMD config CFLAGS.....: ${R_CMD_config_CFLAGS}
     R CMD config CPPFLAGS...: ${R_CMD_config_CPPFLAGS}
-    R CMD config LDFLAGS....: ${R_CMD_config_LDFLAGS}
-    R CMD config CPICFLAGS..: ${R_CMD_config_CPICFLAGS}
 
     *** Build options ***
     ZLIB_CFLAGS.............: ${ZLIB_CFLAGS}

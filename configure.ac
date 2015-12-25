@@ -36,8 +36,7 @@ case "${host_os}" in
     ;;
 esac
 
-# Handle optional include and library paths
-GIT2R_CPPFLAGS=
+# Optional include and library paths
 
 # iconv include and library path
 AC_ARG_WITH([iconv-include],
@@ -63,20 +62,14 @@ AC_ARG_WITH([zlib-lib],
 
 # LibSSH2 include and library path
 AC_ARG_WITH([libssh2-include],
-    AC_HELP_STRING([--with-libssh2-include=INCLUDE_PATH],
-                   [the location of the LibSSH2 header files]),
-    [libssh2_include_path=$withval])
-if test [ -n "$libssh2_include_path" ] ; then
-  GIT2R_CPPFLAGS="${GIT2R_CPPFLAGS} -I${libssh2_include_path}"
-fi
+            AC_HELP_STRING([--with-libssh2-include=INCLUDE_PATH],
+                           [the location of the LibSSH2 header files]),
+            [libssh2_include_path=$withval])
 
 AC_ARG_WITH([libssh2-lib],
-    AC_HELP_STRING([--with-libssh2-lib=LIB_PATH],
-                   [the location of the LibSSH2 library]),
-    [libssh2_lib_path=$withval])
-if test [ -n "$libssh2_lib_path" ] ; then
-  LIBS="-L${libssh2_lib_path} ${LIBS}"
-fi
+            AC_HELP_STRING([--with-libssh2-lib=LIB_PATH],
+                           [the location of the LibSSH2 library]),
+            [libssh2_lib_path=$withval])
 
 # libssl include and library path
 AC_ARG_WITH([libssl-include],
@@ -96,16 +89,10 @@ if test -z "${R_HOME}"; then
   exit 1
 fi
 RBIN="${R_HOME}/bin/R"
-R_CMD_config_CC=`"${RBIN}" CMD config CC`
-CC="${R_CMD_config_CC}"
 R_CMD_config_CFLAGS=`"${RBIN}" CMD config CFLAGS`
 CFLAGS="${R_CMD_config_CFLAGS}"
 R_CMD_config_CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
-CPPFLAGS="${GIT2R_CPPFLAGS} ${R_CMD_config_CPPFLAGS}"
-R_CMD_config_LDFLAGS=`"${RBIN}" CMD config LDFLAGS`
-LDFLAGS="${R_CMD_config_LDFLAGS}"
-R_CMD_config_CPICFLAGS=`"${RBIN}" CMD config CPICFLAGS`
-CPICFLAGS="${R_CMD_config_CPICFLAGS}"
+CPPFLAGS="${R_CMD_config_CPPFLAGS}"
 
 # Check for zlib
 have_zlib=no
@@ -251,19 +238,39 @@ fi
 
 # Check for LibSSH2
 have_ssh2=no
-if test "x${PKGCONFIG}" = xyes; then
-    AC_MSG_CHECKING([whether pkg-config could find libssh2])
-    if pkg-config --exists libssh2; then
-        AC_MSG_RESULT([yes])
-        LIBSSH2_CFLAGS=`pkg-config --cflags libssh2`
-        LIBSSH2_LIBS=`pkg-config --libs libssh2`
-        have_ssh2=yes
-    else
-        AC_MSG_RESULT([no])
+
+# Check for optional libssh2 paths
+if test [ -n "$libssh2_include_path" ] ; then
+    CPPFLAGS="-I${libssh2_include_path} ${CPPFLAGS} "
+fi
+if test [ -n "$libssh2_lib_path" ] ; then
+    LIBS="-L${libssh2_lib_path} ${LIBS}"
+fi
+if test [ -n "$libssh2_include_path" ] ; then
+    AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
+elif test [ -n "$libssh2_lib_path" ] ; then
+    AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
+fi
+
+if test "x${have_ssh2}" = xno; then
+    # Check for libssh2 with pkg-config
+
+    if test "x${PKGCONFIG}" = xyes; then
+        AC_MSG_CHECKING([whether pkg-config could find libssh2])
+        if pkg-config --exists libssh2; then
+            AC_MSG_RESULT([yes])
+            LIBSSH2_CFLAGS=`pkg-config --cflags libssh2`
+            LIBSSH2_LIBS=`pkg-config --libs libssh2`
+            have_ssh2=yes
+        else
+            AC_MSG_RESULT([no])
+        fi
     fi
 fi
 
 if test "x${have_ssh2}" = xno; then
+    # Check for libssh2 with autoconf macro
+
     AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
 fi
 
@@ -272,6 +279,11 @@ if test "x${have_ssh2}" = xno; then
     case "${host_os}" in
         darwin*)
             AC_MSG_NOTICE([Download and build libssh2])
+
+            # Find the compiler and compiler flags to use
+            CC=`"${RBIN}" CMD config CC`
+            LDFLAGS=`"${RBIN}" CMD config LDFLAGS`
+            CPICFLAGS=`"${RBIN}" CMD config CPICFLAGS`
 
             mkdir -p libssh2 && curl -fsSL \
                 https://github.com/libssh2/libssh2/releases/download/libssh2-1.6.0/libssh2-1.6.0.tar.gz \
@@ -304,7 +316,11 @@ if test "x${have_ssh2}" = xno; then
    Building a version without support for SSH.
 
    To build with SSH support, please install:
-   libssh2-1-dev (deb) or libssh2-devel (rpm)
+     libssh2-1-dev (deb)
+     libssh2-devel (rpm)
+
+   You can specify the include and lib path with:
+   R CMD INSTALL --configure-args='--with-libssh2-include=INCLUDE_PATH --with-libssh2-lib=LIB_PATH' git2r
   ---------------------------------------------])
 fi
 
@@ -437,11 +453,8 @@ echo "
     with-libssh2-lib........: ${libssh2_lib_path}
 
     *** R configure variables ***
-    R CMD config CC.........: ${R_CMD_config_CC}
     R CMD config CFLAGS.....: ${R_CMD_config_CFLAGS}
     R CMD config CPPFLAGS...: ${R_CMD_config_CPPFLAGS}
-    R CMD config LDFLAGS....: ${R_CMD_config_LDFLAGS}
-    R CMD config CPICFLAGS..: ${R_CMD_config_CPICFLAGS}
 
     *** Build options ***
     ZLIB_CFLAGS.............: ${ZLIB_CFLAGS}
