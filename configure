@@ -627,7 +627,6 @@ ac_func_list=
 ac_subst_vars='LTLIBOBJS
 PKG_LIBS
 PKG_CFLAGS
-LIBSSH2_LIBS
 GIT2R_SRC_REGEX
 LIBOBJS
 ALLOCA
@@ -3901,15 +3900,17 @@ fi
 # Check for LibSSH2
 have_ssh2=no
 
-# Check for optional libssh2 paths
+# Check for optional libssh2 include path
 if test  -n "$libssh2_include_path"  ; then
     CPPFLAGS="-I${libssh2_include_path} ${CPPFLAGS}"
 fi
+
+# Check for optional libssh2 lib path
 if test  -n "$libssh2_lib_path"  ; then
     LIBS="-L${libssh2_lib_path} ${LIBS}"
 fi
-if test  -n "$libssh2_include_path"  ; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing libssh2_version" >&5
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing libssh2_version" >&5
 $as_echo_n "checking for library containing libssh2_version... " >&6; }
 if ${ac_cv_search_libssh2_version+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -3965,144 +3966,6 @@ if test "$ac_res" != no; then :
   have_ssh2=yes
 fi
 
-elif test  -n "$libssh2_lib_path"  ; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing libssh2_version" >&5
-$as_echo_n "checking for library containing libssh2_version... " >&6; }
-if ${ac_cv_search_libssh2_version+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_func_search_save_LIBS=$LIBS
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char libssh2_version ();
-int
-main ()
-{
-return libssh2_version ();
-  ;
-  return 0;
-}
-_ACEOF
-for ac_lib in '' ssh2; do
-  if test -z "$ac_lib"; then
-    ac_res="none required"
-  else
-    ac_res=-l$ac_lib
-    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
-  fi
-  if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_search_libssh2_version=$ac_res
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext
-  if ${ac_cv_search_libssh2_version+:} false; then :
-  break
-fi
-done
-if ${ac_cv_search_libssh2_version+:} false; then :
-
-else
-  ac_cv_search_libssh2_version=no
-fi
-rm conftest.$ac_ext
-LIBS=$ac_func_search_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_libssh2_version" >&5
-$as_echo "$ac_cv_search_libssh2_version" >&6; }
-ac_res=$ac_cv_search_libssh2_version
-if test "$ac_res" != no; then :
-  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-  have_ssh2=yes
-fi
-
-fi
-
-if test "x${have_ssh2}" = xno; then
-    # Check for libssh2 with pkg-config
-
-    if test "x${PKGCONFIG}" = xyes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether pkg-config could find libssh2" >&5
-$as_echo_n "checking whether pkg-config could find libssh2... " >&6; }
-        if pkg-config --exists libssh2; then
-            { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-            LIBSSH2_CFLAGS=`pkg-config --cflags libssh2`
-            LIBSSH2_LIBS=`pkg-config --libs libssh2`
-            have_ssh2=yes
-        else
-            { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-        fi
-    fi
-fi
-
-if test "x${have_ssh2}" = xno; then
-    # Check for libssh2 with autoconf macro
-
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing libssh2_version" >&5
-$as_echo_n "checking for library containing libssh2_version... " >&6; }
-if ${ac_cv_search_libssh2_version+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_func_search_save_LIBS=$LIBS
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char libssh2_version ();
-int
-main ()
-{
-return libssh2_version ();
-  ;
-  return 0;
-}
-_ACEOF
-for ac_lib in '' ssh2; do
-  if test -z "$ac_lib"; then
-    ac_res="none required"
-  else
-    ac_res=-l$ac_lib
-    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
-  fi
-  if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_search_libssh2_version=$ac_res
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext
-  if ${ac_cv_search_libssh2_version+:} false; then :
-  break
-fi
-done
-if ${ac_cv_search_libssh2_version+:} false; then :
-
-else
-  ac_cv_search_libssh2_version=no
-fi
-rm conftest.$ac_ext
-LIBS=$ac_func_search_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_libssh2_version" >&5
-$as_echo "$ac_cv_search_libssh2_version" >&6; }
-ac_res=$ac_cv_search_libssh2_version
-if test "$ac_res" != no; then :
-  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-  have_ssh2=yes
-fi
-
-fi
 
 if test "x${have_ssh2}" = xno; then
     # Static linking of LibSSH2 on OSX to support redistributable binary packages
@@ -4133,8 +3996,8 @@ $as_echo "$as_me: Download and build libssh2" >&6;}
             rm -rf libssh2
 
             if test "x${have_ssh2}" = xyes; then
-                LIBSSH2_CFLAGS="-Ilibssh2/include"
-                LIBSSH2_LIBS="-Llibssh2/lib -lssh2"
+                CPPFLAGS="${CPPFLAGS} -Ilibssh2/include"
+                LIBS="${LIBS} -Llibssh2/lib -lssh2"
             fi
         ;;
     esac
@@ -4394,7 +4257,7 @@ esac
 
 # Add definitions for ssh
 if test "x${have_ssh2}" = xyes; then
-    CPPFLAGS="${CPPFLAGS} ${LIBSSH2_CFLAGS} -DGIT_SSH"
+    CPPFLAGS="${CPPFLAGS} -DGIT_SSH"
 fi
 
 # Add definition for iconv
@@ -6045,11 +5908,10 @@ done
 
 
 
+PKG_CFLAGS="${PKG_CFLAGS} ${ZLIB_CFLAGS} ${LIBSSL_CFLAGS}"
 
-PKG_CFLAGS="${PKG_CFLAGS} ${ZLIB_CFLAGS} ${LIBSSL_CFLAGS} ${LIBSSH2_CFLAGS}"
 
-
-PKG_LIBS="${LIBS} ${ZLIB_LIBS} ${LIBSSL_LIBS} ${LIBSSH2_LIBS}"
+PKG_LIBS="${LIBS} ${ZLIB_LIBS} ${LIBSSL_LIBS}"
 
 
 ac_config_files="$ac_config_files src/Makevars"
@@ -6069,8 +5931,6 @@ echo "
     *** Build options ***
     LIBSSL_CFLAGS...........: ${LIBSSL_CFLAGS}
     LIBSSL_LIBS.............: ${LIBSSL_LIBS}
-    LIBSSH2_CFLAGS..........: ${LIBSSH2_CFLAGS}
-    LIBSSH2_LIBS............: ${LIBSSH2_LIBS}
 
   ---------------------------------------------------------------------------
 "
