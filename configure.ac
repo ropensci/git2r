@@ -208,24 +208,17 @@ fi
 # Check for LibSSH2
 have_ssh2=no
 
-# Check for optional libssh2 paths
+# Check for optional libssh2 include path
 if test [ -n "$libssh2_include_path" ] ; then
     CPPFLAGS="-I${libssh2_include_path} ${CPPFLAGS}"
 fi
+
+# Check for optional libssh2 lib path
 if test [ -n "$libssh2_lib_path" ] ; then
     LIBS="-L${libssh2_lib_path} ${LIBS}"
 fi
-if test [ -n "$libssh2_include_path" ] ; then
-    AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
-elif test [ -n "$libssh2_lib_path" ] ; then
-    AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
-fi
 
-if test "x${have_ssh2}" = xno; then
-    # Check for libssh2 with autoconf macro
-
-    AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
-fi
+AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
 
 if test "x${have_ssh2}" = xno; then
     # Static linking of LibSSH2 on OSX to support redistributable binary packages
