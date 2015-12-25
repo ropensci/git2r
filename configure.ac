@@ -112,13 +112,15 @@ have_zlib=no
 
 # Check for optional zlib paths
 if test [ -n "$zlib_include_path" ] ; then
-    ZLIB_CFLAGS="-I${zlib_include_path}"
-    ZLIB_LIBS="-L${zlib_lib_path} -lz"
-    have_zlib=yes
+    CPPFLAGS="-I${zlib_include_path} ${CPPFLAGS}"
+fi
+if test [ -n "$zlib_lib_path" ] ; then
+    LIBS="-L${zlib_lib_path} ${LIBS}"
+fi
+if test [ -n "$zlib_include_path" ] ; then
+    AC_SEARCH_LIBS([inflate], [z], [have_zlib=yes])
 elif test [ -n "$zlib_lib_path" ] ; then
-    ZLIB_CFLAGS="-I${zlib_include_path}"
-    ZLIB_LIBS="-L${zlib_lib_path} -lz"
-    have_zlib=yes
+    AC_SEARCH_LIBS([inflate], [z], [have_zlib=yes])
 fi
 
 if test "x${have_zlib}" = xno; then
