@@ -4025,25 +4025,6 @@ fi
 fi
 
 if test "x${have_ssh2}" = xno; then
-    # Check for libssh2 with pkg-config
-
-    if test "x${PKGCONFIG}" = xyes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether pkg-config could find libssh2" >&5
-$as_echo_n "checking whether pkg-config could find libssh2... " >&6; }
-        if pkg-config --exists libssh2; then
-            { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-            LIBSSH2_CFLAGS=`pkg-config --cflags libssh2`
-            LIBSSH2_LIBS=`pkg-config --libs libssh2`
-            have_ssh2=yes
-        else
-            { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-        fi
-    fi
-fi
-
-if test "x${have_ssh2}" = xno; then
     # Check for libssh2 with autoconf macro
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing libssh2_version" >&5

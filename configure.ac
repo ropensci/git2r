@@ -222,22 +222,6 @@ elif test [ -n "$libssh2_lib_path" ] ; then
 fi
 
 if test "x${have_ssh2}" = xno; then
-    # Check for libssh2 with pkg-config
-
-    if test "x${PKGCONFIG}" = xyes; then
-        AC_MSG_CHECKING([whether pkg-config could find libssh2])
-        if pkg-config --exists libssh2; then
-            AC_MSG_RESULT([yes])
-            LIBSSH2_CFLAGS=`pkg-config --cflags libssh2`
-            LIBSSH2_LIBS=`pkg-config --libs libssh2`
-            have_ssh2=yes
-        else
-            AC_MSG_RESULT([no])
-        fi
-    fi
-fi
-
-if test "x${have_ssh2}" = xno; then
     # Check for libssh2 with autoconf macro
 
     AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
