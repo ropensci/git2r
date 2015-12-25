@@ -39,21 +39,32 @@ esac
 # Handle optional include and library paths
 GIT2R_CPPFLAGS=
 
+# iconv include and library path
+AC_ARG_WITH([iconv-include],
+            AC_HELP_STRING([--with-iconv-include=INCLUDE_PATH],
+                           [the location of the iconv header files]),
+            [iconv_include_path=$withval])
+
+AC_ARG_WITH([iconv-lib],
+            AC_HELP_STRING([--with-iconv-lib=LIB_PATH],
+                           [the location of the iconv library]),
+            [iconv_lib_path=$withval])
+
 # zlib include and library path
 AC_ARG_WITH([zlib-include],
             AC_HELP_STRING([--with-zlib-include=INCLUDE_PATH],
-                           [the location of zlib header files]),
+                           [the location of the zlib header files]),
             [zlib_include_path=$withval])
 
 AC_ARG_WITH([zlib-lib],
             AC_HELP_STRING([--with-zlib-lib=LIB_PATH],
-                           [the location of zlib libraries]),
+                           [the location of the zlib library]),
             [zlib_lib_path=$withval])
 
 # LibSSH2 include and library path
 AC_ARG_WITH([libssh2-include],
     AC_HELP_STRING([--with-libssh2-include=INCLUDE_PATH],
-                   [the location of LibSSH2 header files]),
+                   [the location of the LibSSH2 header files]),
     [libssh2_include_path=$withval])
 if test [ -n "$libssh2_include_path" ] ; then
   GIT2R_CPPFLAGS="${GIT2R_CPPFLAGS} -I${libssh2_include_path}"
@@ -61,7 +72,7 @@ fi
 
 AC_ARG_WITH([libssh2-lib],
     AC_HELP_STRING([--with-libssh2-lib=LIB_PATH],
-                   [the location of LibSSH2 libraries]),
+                   [the location of the LibSSH2 library]),
     [libssh2_lib_path=$withval])
 if test [ -n "$libssh2_lib_path" ] ; then
   LIBS="-L${libssh2_lib_path} ${LIBS}"
@@ -70,12 +81,12 @@ fi
 # libssl include and library path
 AC_ARG_WITH([libssl-include],
             AC_HELP_STRING([--with-libssl-include=INCLUDE_PATH],
-                           [the location of libssl header files]),
+                           [the location of the libssl header files]),
             [libssl_include_path=$withval])
 
 AC_ARG_WITH([libssl-lib],
             AC_HELP_STRING([--with-libssl-lib=LIB_PATH],
-                           [the location of libssl libraries]),
+                           [the location of the libssl library]),
             [libssl_lib_path=$withval])
 
 # Find the compiler and compiler flags to use
@@ -298,11 +309,27 @@ fi
 # Check for iconv
 have_iconv=no
 case "${host_os}" in
-  darwin*)
+    darwin*)
+        # Check for optional iconv include path
+        if test [ -n "$iconv_include_path" ] ; then
+            CPPFLAGS="-I${iconv_include_path} ${CPPFLAGS}"
+        fi
+
+        # Check for optional iconv lib path
+        if test [ -n "$iconv_lib_path" ] ; then
+            LIBS="-L${iconv_lib_path} ${LIBS}"
+        fi
+
         AC_SEARCH_LIBS([iconv_open], [iconv], [have_iconv=yes])
 
         if test "x${have_iconv}" = xno; then
-            AC_MSG_FAILURE([iconv library required])
+            AC_MSG_FAILURE([
+  ---------------------------------------------
+   iconv library required
+
+   You can specify the include and lib path with:
+   R CMD INSTALL --configure-args='--with-iconv-include=INCLUDE_PATH --with-iconv-lib=LIB_PATH' git2r
+  ---------------------------------------------])
         fi
     ;;
 esac

@@ -692,6 +692,8 @@ SHELL'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
+with_iconv_include
+with_iconv_lib
 with_zlib_include
 with_zlib_lib
 with_libssh2_include
@@ -1320,18 +1322,22 @@ if test -n "$ac_init_help"; then
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-iconv-include=INCLUDE_PATH
+                          the location of the iconv header files
+  --with-iconv-lib=LIB_PATH
+                          the location of the iconv library
   --with-zlib-include=INCLUDE_PATH
-                          the location of zlib header files
+                          the location of the zlib header files
   --with-zlib-lib=LIB_PATH
-                          the location of zlib libraries
+                          the location of the zlib library
   --with-libssh2-include=INCLUDE_PATH
-                          the location of LibSSH2 header files
+                          the location of the LibSSH2 header files
   --with-libssh2-lib=LIB_PATH
-                          the location of LibSSH2 libraries
+                          the location of the LibSSH2 library
   --with-libssl-include=INCLUDE_PATH
-                          the location of libssl header files
+                          the location of the libssl header files
   --with-libssl-lib=LIB_PATH
-                          the location of libssl libraries
+                          the location of the libssl library
 
 Some influential environment variables:
   CC          C compiler command
@@ -3536,6 +3542,21 @@ esac
 # Handle optional include and library paths
 GIT2R_CPPFLAGS=
 
+# iconv include and library path
+
+# Check whether --with-iconv-include was given.
+if test "${with_iconv_include+set}" = set; then :
+  withval=$with_iconv_include; iconv_include_path=$withval
+fi
+
+
+
+# Check whether --with-iconv-lib was given.
+if test "${with_iconv_lib+set}" = set; then :
+  withval=$with_iconv_lib; iconv_lib_path=$withval
+fi
+
+
 # zlib include and library path
 
 # Check whether --with-zlib-include was given.
@@ -4057,7 +4078,17 @@ fi
 # Check for iconv
 have_iconv=no
 case "${host_os}" in
-  darwin*)
+    darwin*)
+        # Check for optional iconv include path
+        if test  -n "$iconv_include_path"  ; then
+            CPPFLAGS="-I${iconv_include_path} ${CPPFLAGS}"
+        fi
+
+        # Check for optional iconv lib path
+        if test  -n "$iconv_lib_path"  ; then
+            LIBS="-L${iconv_lib_path} ${LIBS}"
+        fi
+
         { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing iconv_open" >&5
 $as_echo_n "checking for library containing iconv_open... " >&6; }
 if ${ac_cv_search_iconv_open+:} false; then :
@@ -4118,7 +4149,13 @@ fi
         if test "x${have_iconv}" = xno; then
             { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "iconv library required
+as_fn_error $? "
+  ---------------------------------------------
+   iconv library required
+
+   You can specify the include and lib path with:
+   R CMD INSTALL --configure-args='--with-iconv-include=INCLUDE_PATH --with-iconv-lib=LIB_PATH' git2r
+  ---------------------------------------------
 See \`config.log' for more details" "$LINENO" 5; }
         fi
     ;;
