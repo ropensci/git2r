@@ -143,60 +143,36 @@ fi
 # Check for SSL
 have_ssl=no
 
-# Check for optional libssl paths
+# Check for optional libssl include path
 if test [ -n "$libssl_include_path" ] ; then
     CPPFLAGS="-I${libssl_include_path} ${CPPFLAGS}"
 fi
+
+# Check for optional libssl lib path
 if test [ -n "$libssl_lib_path" ] ; then
     LIBS="-L${libssl_lib_path} ${LIBS}"
 fi
-if test [ -n "$libssl_include_path" ] ; then
-    AC_SEARCH_LIBS([EVP_EncryptInit],
-                   [crypto],
-                   [AC_SEARCH_LIBS([SSL_library_init],
-                                   [ssl],
-                                   [have_ssl=yes])])
-elif test [ -n "$libssl_lib_path" ] ; then
-    AC_SEARCH_LIBS([EVP_EncryptInit],
-                   [crypto],
-                   [AC_SEARCH_LIBS([SSL_library_init],
-                                   [ssl],
-                                   [have_ssl=yes])])
+
+if test "x${OPENSSL_INCLUDES}" = x; then :; else
+    CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
 fi
 
-if test "x${have_ssl}" = xno; then
-    # Check for libssl with autoconf macro
+# On OS X, add path to libssl in brew
+case "${host_os}" in
+    darwin*)
+        if test "x${BREW}" = xyes; then
+            BREW_DIR=`brew --prefix`
+            CPPFLAGS="${CPPFLAGS} -I${BREW_DIR}/opt/openssl/include"
+            LIBS="${LIBS} -L${BREW_DIR}/opt/openssl/lib"
+        fi
+    ;;
+esac
 
-    if test "x${OPENSSL_INCLUDES}" = x; then :; else
-        CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
-    fi
-
-    AC_SEARCH_LIBS([EVP_EncryptInit],
-                   [crypto],
-                   [AC_SEARCH_LIBS([SSL_library_init],
-                                   [ssl],
-                                   [have_ssl=yes])])
-fi
-
-if test "x${have_ssl}" = xno; then
-    # On OS X, check for libssl in brew
-
-    case "${host_os}" in
-        darwin*)
-            if test "x${BREW}" = xyes; then
-                BREW_DIR=`brew --prefix`
-                CPPFLAGS="-I${BREW_DIR}/opt/openssl/include ${CPPFLAGS}"
-                LIBS="-L${BREW_DIR}/opt/openssl/lib ${LIBS}"
-
-                AC_SEARCH_LIBS([EVP_EncryptInit],
-                               [crypto],
-                               [AC_SEARCH_LIBS([SSL_library_init],
-                                               [ssl],
-                                               [have_ssl=yes])])
-            fi
-        ;;
-    esac
-fi
+AC_SEARCH_LIBS([EVP_EncryptInit],
+               [crypto],
+               [AC_SEARCH_LIBS([SSL_library_init],
+                               [ssl],
+                               [have_ssl=yes])])
 
 if test "x${have_ssl}" = xno; then
     # Check for libssl with pkg-config
