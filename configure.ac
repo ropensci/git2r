@@ -208,17 +208,40 @@ fi
 # Check for LibSSH2
 have_ssh2=no
 
-# Check for optional libssh2 include path
+# Check for optional libssh2 paths
 if test [ -n "$libssh2_include_path" ] ; then
     CPPFLAGS="-I${libssh2_include_path} ${CPPFLAGS}"
 fi
-
-# Check for optional libssh2 lib path
 if test [ -n "$libssh2_lib_path" ] ; then
     LIBS="-L${libssh2_lib_path} ${LIBS}"
 fi
+if test [ -n "$libssh2_include_path" ] ; then
+    AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
+elif test [ -n "$libssh2_lib_path" ] ; then
+    AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
+fi
 
-AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
+if test "x${have_ssh2}" = xno; then
+    # Check for libssh2 with pkg-config
+
+    if test "x${PKGCONFIG}" = xyes; then
+        AC_MSG_CHECKING([whether pkg-config could find libssh2])
+        if pkg-config --exists libssh2; then
+            AC_MSG_RESULT([yes])
+            LIBSSH2_CFLAGS=`pkg-config --cflags libssh2`
+            LIBSSH2_LIBS=`pkg-config --libs libssh2`
+            have_ssh2=yes
+        else
+            AC_MSG_RESULT([no])
+        fi
+    fi
+fi
+
+if test "x${have_ssh2}" = xno; then
+    # Check for libssh2 with autoconf macro
+
+    AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
+fi
 
 if test "x${have_ssh2}" = xno; then
     # Static linking of LibSSH2 on OSX to support redistributable binary packages
@@ -248,8 +271,8 @@ if test "x${have_ssh2}" = xno; then
             rm -rf libssh2
 
             if test "x${have_ssh2}" = xyes; then
-                CPPFLAGS="${CPPFLAGS} -Ilibssh2/include"
-                LIBS="${LIBS} -Llibssh2/lib -lssh2"
+                LIBSSH2_CFLAGS="-Ilibssh2/include"
+                LIBSSH2_LIBS="-Llibssh2/lib -lssh2"
             fi
         ;;
     esac
@@ -329,7 +352,7 @@ esac
 
 # Add definitions for ssh
 if test "x${have_ssh2}" = xyes; then
-    CPPFLAGS="${CPPFLAGS} -DGIT_SSH"
+    CPPFLAGS="${CPPFLAGS} ${LIBSSH2_CFLAGS} -DGIT_SSH"
 fi
 
 # Add definition for iconv
@@ -384,9 +407,10 @@ AC_FUNC_REALLOC
 AC_CHECK_FUNCS([btowc clock_gettime getcwd gethostbyname gettimeofday isascii memchr memmove memset munmap pstat_getdynamic re_comp realpath regcomp select socket strcasecmp strchr strcspn strdup strerror strncasecmp strrchr strspn strstr strtol strtoul])
 
 AC_SUBST(GIT2R_SRC_REGEX)
-AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS} ${ZLIB_CFLAGS} ${LIBSSL_CFLAGS}"])
+AC_SUBST(LIBSSH2_LIBS)
+AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS} ${ZLIB_CFLAGS} ${LIBSSL_CFLAGS} ${LIBSSH2_CFLAGS}"])
 AC_SUBST(CPPFLAGS)
-AC_SUBST([PKG_LIBS], ["${LIBS} ${ZLIB_LIBS} ${LIBSSL_LIBS}"])
+AC_SUBST([PKG_LIBS], ["${LIBS} ${ZLIB_LIBS} ${LIBSSL_LIBS} ${LIBSSH2_LIBS}"])
 
 AC_CONFIG_FILES([src/Makevars])
 
@@ -404,6 +428,8 @@ echo "
     *** Build options ***
     LIBSSL_CFLAGS...........: ${LIBSSL_CFLAGS}
     LIBSSL_LIBS.............: ${LIBSSL_LIBS}
+    LIBSSH2_CFLAGS..........: ${LIBSSH2_CFLAGS}
+    LIBSSH2_LIBS............: ${LIBSSH2_LIBS}
 
   ---------------------------------------------------------------------------
 "
