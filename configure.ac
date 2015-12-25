@@ -97,18 +97,18 @@ CPPFLAGS="${R_CMD_config_CPPFLAGS}"
 # Check for zlib
 have_zlib=no
 
-# Check for optional zlib paths
+# Check for optional zlib include path
 if test [ -n "$zlib_include_path" ] ; then
     CPPFLAGS="-I${zlib_include_path} ${CPPFLAGS}"
 fi
+
+# Check for optional zlib lib path
 if test [ -n "$zlib_lib_path" ] ; then
     LIBS="-L${zlib_lib_path} ${LIBS}"
 fi
-if test [ -n "$zlib_include_path" ] ; then
-    AC_SEARCH_LIBS([inflate], [z], [have_zlib=yes])
-elif test [ -n "$zlib_lib_path" ] ; then
-    AC_SEARCH_LIBS([inflate], [z], [have_zlib=yes])
-fi
+
+# Check for zlib with autoconf macro
+AC_SEARCH_LIBS([inflate], [z], [have_zlib=yes])
 
 if test "x${have_zlib}" = xno; then
     # Check for zlib with pkg-config
@@ -124,12 +124,6 @@ if test "x${have_zlib}" = xno; then
             AC_MSG_RESULT([no])
         fi
     fi
-fi
-
-if test "x${have_zlib}" = xno; then
-    # Check for zlib with autoconf macro
-
-    AC_SEARCH_LIBS([inflate], [z], [have_zlib=yes])
 fi
 
 if test "x${have_zlib}" = xno; then
@@ -456,8 +450,6 @@ echo "
     R CMD config CPPFLAGS...: ${R_CMD_config_CPPFLAGS}
 
     *** Build options ***
-    ZLIB_CFLAGS.............: ${ZLIB_CFLAGS}
-    ZLIB_LIBS...............: ${ZLIB_LIBS}
     LIBSSL_CFLAGS...........: ${LIBSSL_CFLAGS}
     LIBSSL_LIBS.............: ${LIBSSL_LIBS}
     LIBSSH2_CFLAGS..........: ${LIBSSH2_CFLAGS}

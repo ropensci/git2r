@@ -3616,14 +3616,17 @@ CPPFLAGS="${R_CMD_config_CPPFLAGS}"
 # Check for zlib
 have_zlib=no
 
-# Check for optional zlib paths
+# Check for optional zlib include path
 if test  -n "$zlib_include_path"  ; then
     CPPFLAGS="-I${zlib_include_path} ${CPPFLAGS}"
 fi
+
+# Check for optional zlib lib path
 if test  -n "$zlib_lib_path"  ; then
     LIBS="-L${zlib_lib_path} ${LIBS}"
 fi
-if test  -n "$zlib_include_path"  ; then
+
+# Check for zlib with autoconf macro
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing inflate" >&5
 $as_echo_n "checking for library containing inflate... " >&6; }
@@ -3681,64 +3684,6 @@ if test "$ac_res" != no; then :
   have_zlib=yes
 fi
 
-elif test  -n "$zlib_lib_path"  ; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing inflate" >&5
-$as_echo_n "checking for library containing inflate... " >&6; }
-if ${ac_cv_search_inflate+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_func_search_save_LIBS=$LIBS
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char inflate ();
-int
-main ()
-{
-return inflate ();
-  ;
-  return 0;
-}
-_ACEOF
-for ac_lib in '' z; do
-  if test -z "$ac_lib"; then
-    ac_res="none required"
-  else
-    ac_res=-l$ac_lib
-    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
-  fi
-  if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_search_inflate=$ac_res
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext
-  if ${ac_cv_search_inflate+:} false; then :
-  break
-fi
-done
-if ${ac_cv_search_inflate+:} false; then :
-
-else
-  ac_cv_search_inflate=no
-fi
-rm conftest.$ac_ext
-LIBS=$ac_func_search_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_inflate" >&5
-$as_echo "$ac_cv_search_inflate" >&6; }
-ac_res=$ac_cv_search_inflate
-if test "$ac_res" != no; then :
-  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-  have_zlib=yes
-fi
-
-fi
 
 if test "x${have_zlib}" = xno; then
     # Check for zlib with pkg-config
@@ -3757,67 +3702,6 @@ $as_echo "yes" >&6; }
 $as_echo "no" >&6; }
         fi
     fi
-fi
-
-if test "x${have_zlib}" = xno; then
-    # Check for zlib with autoconf macro
-
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing inflate" >&5
-$as_echo_n "checking for library containing inflate... " >&6; }
-if ${ac_cv_search_inflate+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_func_search_save_LIBS=$LIBS
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char inflate ();
-int
-main ()
-{
-return inflate ();
-  ;
-  return 0;
-}
-_ACEOF
-for ac_lib in '' z; do
-  if test -z "$ac_lib"; then
-    ac_res="none required"
-  else
-    ac_res=-l$ac_lib
-    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
-  fi
-  if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_search_inflate=$ac_res
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext
-  if ${ac_cv_search_inflate+:} false; then :
-  break
-fi
-done
-if ${ac_cv_search_inflate+:} false; then :
-
-else
-  ac_cv_search_inflate=no
-fi
-rm conftest.$ac_ext
-LIBS=$ac_func_search_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_inflate" >&5
-$as_echo "$ac_cv_search_inflate" >&6; }
-ac_res=$ac_cv_search_inflate
-if test "$ac_res" != no; then :
-  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-  have_zlib=yes
-fi
-
 fi
 
 if test "x${have_zlib}" = xno; then
@@ -6525,8 +6409,6 @@ echo "
     R CMD config CPPFLAGS...: ${R_CMD_config_CPPFLAGS}
 
     *** Build options ***
-    ZLIB_CFLAGS.............: ${ZLIB_CFLAGS}
-    ZLIB_LIBS...............: ${ZLIB_LIBS}
     LIBSSL_CFLAGS...........: ${LIBSSL_CFLAGS}
     LIBSSL_LIBS.............: ${LIBSSL_LIBS}
     LIBSSH2_CFLAGS..........: ${LIBSSH2_CFLAGS}
