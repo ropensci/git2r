@@ -5,6 +5,9 @@ os:
   - linux
   - osx
 
+apt_packages:
+  - libssh2-1-dev
+
 after_failure:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cat /home/travis/build/ropensci/git2r/git2r.Rcheck/00install.out; fi
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then cat /Users/travis/build/ropensci/git2r/git2r.Rcheck/00install.out; fi
