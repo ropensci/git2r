@@ -3567,10 +3567,8 @@ if test -z "${R_HOME}"; then
   exit 1
 fi
 RBIN="${R_HOME}/bin/R"
-R_CMD_config_CFLAGS=`"${RBIN}" CMD config CFLAGS`
-CFLAGS="${R_CMD_config_CFLAGS}"
-R_CMD_config_CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
-CPPFLAGS="${R_CMD_config_CPPFLAGS}"
+CFLAGS=`"${RBIN}" CMD config CFLAGS`
+CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
 
 # Check for zlib
 have_zlib=no
