@@ -635,7 +635,6 @@ EGREP
 GREP
 CPP
 BREW
-PKGCONFIG
 OBJEXT
 EXEEXT
 ac_ct_CC
@@ -3455,46 +3454,6 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-## check for pkg-config
-
-# Extract the first word of "pkg-config", so it can be a program name with args.
-set dummy pkg-config; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_PKGCONFIG+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$PKGCONFIG"; then
-  ac_cv_prog_PKGCONFIG="$PKGCONFIG" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_PKGCONFIG="yes"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-PKGCONFIG=$ac_cv_prog_PKGCONFIG
-if test -n "$PKGCONFIG"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PKGCONFIG" >&5
-$as_echo "$PKGCONFIG" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-
 ## check for brew on OS X
 
 case "${host_os}" in
@@ -3626,7 +3585,6 @@ if test  -n "$zlib_lib_path"  ; then
     LIBS="-L${zlib_lib_path} ${LIBS}"
 fi
 
-# Check for zlib with autoconf macro
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing inflate" >&5
 $as_echo_n "checking for library containing inflate... " >&6; }
@@ -3684,25 +3642,6 @@ if test "$ac_res" != no; then :
   have_zlib=yes
 fi
 
-
-if test "x${have_zlib}" = xno; then
-    # Check for zlib with pkg-config
-
-    if test "x${PKGCONFIG}" = xyes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether pkg-config could find zlib" >&5
-$as_echo_n "checking whether pkg-config could find zlib... " >&6; }
-        if pkg-config --exists zlib; then
-            { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-            ZLIB_CFLAGS=`pkg-config --cflags zlib`
-            ZLIB_LIBS=`pkg-config --libs zlib`
-            have_zlib=yes
-        else
-            { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-        fi
-    fi
-fi
 
 if test "x${have_zlib}" = xno; then
         { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
@@ -3860,25 +3799,6 @@ fi
 
 fi
 
-
-if test "x${have_ssl}" = xno; then
-    # Check for libssl with pkg-config
-
-    if test "x${PKGCONFIG}" = xyes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether pkg-config could find libssl" >&5
-$as_echo_n "checking whether pkg-config could find libssl... " >&6; }
-        if pkg-config --exists libssl; then
-            { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-            LIBSSL_CFLAGS=`pkg-config --cflags libssl`
-            LIBSSL_LIBS=`pkg-config --libs libssl`
-            have_ssl=yes
-        else
-            { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-        fi
-    fi
-fi
 
 if test "x${have_ssl}" = xno; then
     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
@@ -4247,13 +4167,13 @@ CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DGIT_OPENSSL"
 
 # Specify sha1 implementation
 case "${host_os}" in
-  darwin*)
+    darwin*)
         PKG_CFLAGS="-Wno-deprecated-declarations"
         CPPFLAGS="${CPPFLAGS} -DGIT_COMMON_CRYPTO"
-  ;;
-  *)
+    ;;
+    *)
         CPPFLAGS="${CPPFLAGS} -DOPENSSL_SHA1"
-  ;;
+    ;;
 esac
 
 # Add definitions for ssh
@@ -4268,8 +4188,8 @@ fi
 
 # Add definitions specific for solaris
 case "${host_os}" in
-  solaris*)
-    CPPFLAGS="${CPPFLAGS} -D_POSIX_C_SOURCE=200112L -D__EXTENSIONS__ -D_POSIX_PTHREAD_SEMANTICS"
+    solaris*)
+        CPPFLAGS="${CPPFLAGS} -D_POSIX_C_SOURCE=200112L -D__EXTENSIONS__ -D_POSIX_PTHREAD_SEMANTICS"
     ;;
 esac
 
@@ -4705,11 +4625,11 @@ _ACEOF
 
 
 if test "x$ac_cv_sizeof_voidp" == "x8"; then
-        CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_64"
+    CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_64"
 elif test "x$ac_cv_sizeof_voidp" == "x4"; then
-        CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_32"
+    CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_32"
 else
-        { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
 as_fn_error $? "Unsupported architecture
 See \`config.log' for more details" "$LINENO" 5; }

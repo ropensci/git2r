@@ -24,10 +24,6 @@ AC_CANONICAL_HOST
 # Checks for programs.
 AC_PROG_CC
 
-## check for pkg-config
-AC_DEFUN([AC_PROG_PKGCONFIG], [AC_CHECK_PROG(PKGCONFIG,pkg-config,yes)])
-AC_PROG_PKGCONFIG
-
 ## check for brew on OS X
 AC_DEFUN([AC_PROG_BREW], [AC_CHECK_PROG(BREW,brew,yes)])
 case "${host_os}" in
@@ -107,24 +103,7 @@ if test [ -n "$zlib_lib_path" ] ; then
     LIBS="-L${zlib_lib_path} ${LIBS}"
 fi
 
-# Check for zlib with autoconf macro
 AC_SEARCH_LIBS([inflate], [z], [have_zlib=yes])
-
-if test "x${have_zlib}" = xno; then
-    # Check for zlib with pkg-config
-
-    if test "x${PKGCONFIG}" = xyes; then
-        AC_MSG_CHECKING([whether pkg-config could find zlib])
-        if pkg-config --exists zlib; then
-            AC_MSG_RESULT([yes])
-            ZLIB_CFLAGS=`pkg-config --cflags zlib`
-            ZLIB_LIBS=`pkg-config --libs zlib`
-            have_zlib=yes
-        else
-            AC_MSG_RESULT([no])
-        fi
-    fi
-fi
 
 if test "x${have_zlib}" = xno; then
         AC_MSG_FAILURE([
@@ -173,22 +152,6 @@ AC_SEARCH_LIBS([EVP_EncryptInit],
                [AC_SEARCH_LIBS([SSL_library_init],
                                [ssl],
                                [have_ssl=yes])])
-
-if test "x${have_ssl}" = xno; then
-    # Check for libssl with pkg-config
-
-    if test "x${PKGCONFIG}" = xyes; then
-        AC_MSG_CHECKING([whether pkg-config could find libssl])
-        if pkg-config --exists libssl; then
-            AC_MSG_RESULT([yes])
-            LIBSSL_CFLAGS=`pkg-config --cflags libssl`
-            LIBSSL_LIBS=`pkg-config --libs libssl`
-            have_ssl=yes
-        else
-            AC_MSG_RESULT([no])
-        fi
-    fi
-fi
 
 if test "x${have_ssl}" = xno; then
     AC_MSG_FAILURE([
@@ -318,13 +281,13 @@ CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DGIT_OPENSSL"
 
 # Specify sha1 implementation
 case "${host_os}" in
-  darwin*)
+    darwin*)
         PKG_CFLAGS="-Wno-deprecated-declarations"
         CPPFLAGS="${CPPFLAGS} -DGIT_COMMON_CRYPTO"
-  ;;
-  *)
+    ;;
+    *)
         CPPFLAGS="${CPPFLAGS} -DOPENSSL_SHA1"
-  ;;
+    ;;
 esac
 
 # Add definitions for ssh
@@ -339,19 +302,19 @@ fi
 
 # Add definitions specific for solaris
 case "${host_os}" in
-  solaris*)
-    CPPFLAGS="${CPPFLAGS} -D_POSIX_C_SOURCE=200112L -D__EXTENSIONS__ -D_POSIX_PTHREAD_SEMANTICS"
+    solaris*)
+        CPPFLAGS="${CPPFLAGS} -D_POSIX_C_SOURCE=200112L -D__EXTENSIONS__ -D_POSIX_PTHREAD_SEMANTICS"
     ;;
 esac
 
 # Determine architecture of the machine
 AC_CHECK_SIZEOF([void*])
 if test "x$ac_cv_sizeof_voidp" == "x8"; then
-        CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_64"
+    CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_64"
 elif test "x$ac_cv_sizeof_voidp" == "x4"; then
-        CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_32"
+    CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_32"
 else
-        AC_MSG_FAILURE([Unsupported architecture])
+    AC_MSG_FAILURE([Unsupported architecture])
 fi
 
 # Checks for header files.
