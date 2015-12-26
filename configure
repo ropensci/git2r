@@ -4176,9 +4176,9 @@ case "${host_os}" in
     ;;
 esac
 
-# Add definitions for ssh
+# Add definition for ssh
 if test "x${have_ssh2}" = xyes; then
-    CPPFLAGS="${CPPFLAGS} ${LIBSSH2_CFLAGS} -DGIT_SSH"
+    CPPFLAGS="${CPPFLAGS} -DGIT_SSH"
 fi
 
 # Add definition for iconv
