@@ -347,28 +347,19 @@ AC_FUNC_REALLOC
 AC_CHECK_FUNCS([btowc clock_gettime getcwd gethostbyname gettimeofday isascii memchr memmove memset munmap pstat_getdynamic re_comp realpath regcomp select socket strcasecmp strchr strcspn strdup strerror strncasecmp strrchr strspn strstr strtol strtoul])
 
 AC_SUBST(GIT2R_SRC_REGEX)
-AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS} ${ZLIB_CFLAGS} ${LIBSSH2_CFLAGS}"])
+AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS} ${LIBSSH2_CFLAGS}"])
 AC_SUBST([PKG_CPPFLAGS], ["${CPPFLAGS}"])
-AC_SUBST([PKG_LIBS], ["${LIBS} ${ZLIB_LIBS} ${LIBSSH2_LIBS}"])
+AC_SUBST([PKG_LIBS], ["${LIBS} ${LIBSSH2_LIBS}"])
 
 AC_CONFIG_FILES([src/Makevars])
 
 echo "
-  ------------------ Results of the git2r package configure -----------------
+  ----- Results of the git2r package configure -----
 
-    *** User specified options ***
-    with-libssh2-include....: ${libssh2_include_path}
-    with-libssh2-lib........: ${libssh2_lib_path}
+    OpenSSL to talk over HTTPS...........: ${have_ssl}
+    LibSSH2 to enable the SSH transport..: ${have_ssh2}
 
-    *** R configure variables ***
-    R CMD config CFLAGS.....: ${R_CMD_config_CFLAGS}
-    R CMD config CPPFLAGS...: ${R_CMD_config_CPPFLAGS}
-
-    *** Build options ***
-    LIBSSH2_CFLAGS..........: ${LIBSSH2_CFLAGS}
-    LIBSSH2_LIBS............: ${LIBSSH2_LIBS}
-
-  ---------------------------------------------------------------------------
+  --------------------------------------------------
 "
 
 AC_OUTPUT
