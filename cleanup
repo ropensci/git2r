@@ -9,7 +9,7 @@ rm -rf src/libssh2
 rm -f openssl.zip
 rm -rf openssl
 rm -rf src/openssl
-rm -f local320.zip
+rm -f local.zip
 rm -rf src/zlib
 rm -f src/*.def
 rm -f src/*.o

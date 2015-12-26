@@ -10,19 +10,19 @@ USE_LIBCURL=`"${R_SCRIPT}" -e "cat(ifelse(capabilities('libcurl'), 'method=\'lib
 # Check for zlib headers and libraries
 have_zlib=yes
 local=`"${R_HOME}/bin/R" CMD config LOCAL_SOFT`
-LOCAL320_URL=https://www.stats.ox.ac.uk/pub/Rtools/goodies/multilib/local320.zip
+LOCAL_URL=https://www.stats.ox.ac.uk/pub/Rtools/goodies/multilib/local323.zip
 if [ ! -e "${local}/include/zlib.h" ]; then
     if [ ! -e src/zlib/include/zlib.h ]; then
-        if [ ! -e local320.zip ]; then
+        if [ ! -e local.zip ]; then
             echo "  cannot find zlib files"
             echo "  attempting to download them"
-            "${R_SCRIPT}" -e "${SET_INTERNET2} download.file('${LOCAL320_URL}', 'local320.zip', ${USE_LIBCURL} quiet = TRUE)"
+            "${R_SCRIPT}" -e "${SET_INTERNET2} download.file('${LOCAL_URL}', 'local.zip', ${USE_LIBCURL} quiet = TRUE)"
         fi
-        if [ ! -e local320.zip ]; then
+        if [ ! -e local.zip ]; then
 	    have_zlib=no
         else
-	    echo "  unpacking zlib files from local320.zip"
-            unzip -u local320.zip include/zlib.h include/zconf.h lib/i386/libz.a lib/x64/libz.a -d src/zlib
+	    echo "  unpacking zlib files from local.zip"
+            unzip -u local.zip include/zlib.h include/zconf.h lib/i386/libz.a lib/x64/libz.a -d src/zlib
             if [ ! -e src/zlib/include/zlib.h ]; then
 	        have_zlib=no
 	    fi
@@ -34,10 +34,10 @@ if [ ${have_zlib} != yes ]; then
     echo ""
     echo " *** ERROR: unable to find the zlib files"
     echo ""
-    echo " They must be either in 'src/zlib' or in 'local320.zip'"
+    echo " They must be either in 'src/zlib' or in 'local.zip'"
     echo ""
-    echo " You can download local320.zip from"
-    echo " ${LOCAL320_URL}"
+    echo " You can download external software from (save as 'local.zip')"
+    echo " ${LOCAL_URL}"
     echo ""
     echo " Another option is to configure the LOCAL_SOFT variable, see:"
     echo "   https://cran.r-project.org/doc/manuals/r-release/R-admin.html#Windows-packages"
