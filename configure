@@ -628,7 +628,6 @@ ac_subst_vars='LTLIBOBJS
 PKG_LIBS
 PKG_CPPFLAGS
 PKG_CFLAGS
-LIBSSH2_LIBS
 GIT2R_SRC_REGEX
 LIBOBJS
 ALLOCA
@@ -4040,8 +4039,8 @@ esac
 
 # Configuration specific for solaris
 case "${host_os}" in
-  solaris*)
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing connect" >&5
+    solaris*)
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing connect" >&5
 $as_echo_n "checking for library containing connect... " >&6; }
 if ${ac_cv_search_connect+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -4097,7 +4096,7 @@ if test "$ac_res" != no; then :
 
 fi
 
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing gethostbyname" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing gethostbyname" >&5
 $as_echo_n "checking for library containing gethostbyname... " >&6; }
 if ${ac_cv_search_gethostbyname+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -4154,9 +4153,9 @@ if test "$ac_res" != no; then :
 fi
 
 
-    # Include and use regex on solaris
-    CPPFLAGS="-Iregex ${CPPFLAGS}"
-    GIT2R_SRC_REGEX=regex/regex.o
+        # Include and use regex on solaris
+        CPPFLAGS="-Iregex ${CPPFLAGS}"
+        GIT2R_SRC_REGEX=regex/regex.o
     ;;
 esac
 
@@ -5830,12 +5829,11 @@ done
 
 
 
-
-PKG_CFLAGS="${PKG_CFLAGS} ${ZLIB_CFLAGS} ${LIBSSL_CFLAGS} ${LIBSSH2_CFLAGS}"
+PKG_CFLAGS="${PKG_CFLAGS} ${ZLIB_CFLAGS} ${LIBSSH2_CFLAGS}"
 
 PKG_CPPFLAGS="${CPPFLAGS}"
 
-PKG_LIBS="${LIBS} ${ZLIB_LIBS} ${LIBSSL_LIBS} ${LIBSSH2_LIBS}"
+PKG_LIBS="${LIBS} ${ZLIB_LIBS} ${LIBSSH2_LIBS}"
 
 
 ac_config_files="$ac_config_files src/Makevars"
@@ -5853,8 +5851,6 @@ echo "
     R CMD config CPPFLAGS...: ${R_CMD_config_CPPFLAGS}
 
     *** Build options ***
-    LIBSSL_CFLAGS...........: ${LIBSSL_CFLAGS}
-    LIBSSL_LIBS.............: ${LIBSSL_LIBS}
     LIBSSH2_CFLAGS..........: ${LIBSSH2_CFLAGS}
     LIBSSH2_LIBS............: ${LIBSSH2_LIBS}
 

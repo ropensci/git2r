@@ -263,13 +263,13 @@ esac
 
 # Configuration specific for solaris
 case "${host_os}" in
-  solaris*)
-    AC_SEARCH_LIBS(connect, [socket])
-    AC_SEARCH_LIBS(gethostbyname, [nsl socket])
+    solaris*)
+        AC_SEARCH_LIBS(connect, [socket])
+        AC_SEARCH_LIBS(gethostbyname, [nsl socket])
 
-    # Include and use regex on solaris
-    CPPFLAGS="-Iregex ${CPPFLAGS}"
-    GIT2R_SRC_REGEX=regex/regex.o
+        # Include and use regex on solaris
+        CPPFLAGS="-Iregex ${CPPFLAGS}"
+        GIT2R_SRC_REGEX=regex/regex.o
     ;;
 esac
 
@@ -347,10 +347,9 @@ AC_FUNC_REALLOC
 AC_CHECK_FUNCS([btowc clock_gettime getcwd gethostbyname gettimeofday isascii memchr memmove memset munmap pstat_getdynamic re_comp realpath regcomp select socket strcasecmp strchr strcspn strdup strerror strncasecmp strrchr strspn strstr strtol strtoul])
 
 AC_SUBST(GIT2R_SRC_REGEX)
-AC_SUBST(LIBSSH2_LIBS)
-AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS} ${ZLIB_CFLAGS} ${LIBSSL_CFLAGS} ${LIBSSH2_CFLAGS}"])
+AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS} ${ZLIB_CFLAGS} ${LIBSSH2_CFLAGS}"])
 AC_SUBST([PKG_CPPFLAGS], ["${CPPFLAGS}"])
-AC_SUBST([PKG_LIBS], ["${LIBS} ${ZLIB_LIBS} ${LIBSSL_LIBS} ${LIBSSH2_LIBS}"])
+AC_SUBST([PKG_LIBS], ["${LIBS} ${ZLIB_LIBS} ${LIBSSH2_LIBS}"])
 
 AC_CONFIG_FILES([src/Makevars])
 
@@ -366,8 +365,6 @@ echo "
     R CMD config CPPFLAGS...: ${R_CMD_config_CPPFLAGS}
 
     *** Build options ***
-    LIBSSL_CFLAGS...........: ${LIBSSL_CFLAGS}
-    LIBSSL_LIBS.............: ${LIBSSL_LIBS}
     LIBSSH2_CFLAGS..........: ${LIBSSH2_CFLAGS}
     LIBSSH2_LIBS............: ${LIBSSH2_LIBS}
 
