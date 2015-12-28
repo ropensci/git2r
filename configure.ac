@@ -106,13 +106,18 @@ AC_SEARCH_LIBS([inflate], [z], [have_zlib=yes])
 if test "x${have_zlib}" = xno; then
         AC_MSG_FAILURE([
   ---------------------------------------------
-   zlib library required
+   The zlib library that is required to build
+   git2r was not found.
 
    Please install:
-     zlib1g-dev (deb)
-     zlib-devel (rpm)
+     zlib1g-dev (package on e.g. Debian and Ubuntu)
+     zlib-devel (package on e.g. Fedora, CentOS and RHEL)
+   and try again.
 
-   You can specify the include and lib path with:
+   If the zlib library is installed on your
+   system but the git2r configuration is
+   unable to find it, you can specify the
+   include and lib path to zlib with:
    R CMD INSTALL --configure-args='--with-zlib-include=INCLUDE_PATH --with-zlib-lib=LIB_PATH' git2r
   ---------------------------------------------])
 fi
@@ -154,14 +159,19 @@ AC_SEARCH_LIBS([EVP_EncryptInit],
 if test "x${have_ssl}" = xno; then
     AC_MSG_FAILURE([
   ---------------------------------------------
-   OpenSSL library required
+   The OpenSSL library that is required to
+   build git2r was not found.
 
    Please install:
-     libssl-dev    (deb)
-     openssl-devel (rpm)
-     openssl       (brew)
+     libssl-dev    (package on e.g. Debian and Ubuntu)
+     openssl-devel (package on e.g. Fedora, CentOS and RHEL)
+     openssl       (Homebrew package on OS X)
+   and try again.
 
-   You can specify the include and lib path with:
+   If the OpenSSL library is installed on
+   your system but the git2r configuration
+   is unable to find it, you can specify
+   the include and lib path to OpenSSL with:
    R CMD INSTALL --configure-args='--with-libssl-include=INCLUDE_PATH --with-libssl-lib=LIB_PATH' git2r
   ---------------------------------------------])
 fi
@@ -219,14 +229,19 @@ fi
 if test "x${have_ssh2}" = xno; then
     AC_MSG_WARN([
   ---------------------------------------------
-   Unable to find LibSSH2 on this system.
-   Building a version without support for SSH.
+   Unable to find the LibSSH2 library on this
+   system. Building a version without support
+   for SSH transport.
 
    To build with SSH support, please install:
-     libssh2-1-dev (deb)
-     libssh2-devel (rpm)
+     libssh2-1-dev (package on e.g. Debian and Ubuntu)
+     libssh2-devel (package on e.g. Fedora, CentOS and RHEL)
+   and try again.
 
-   You can specify the include and lib path with:
+   If the LibSSH2 library is installed on
+   your system but the git2r configuration
+   is unable to find it, you can specify
+   the include and lib path to LibSSH2 with:
    R CMD INSTALL --configure-args='--with-libssh2-include=INCLUDE_PATH --with-libssh2-lib=LIB_PATH' git2r
   ---------------------------------------------])
 fi
@@ -250,9 +265,13 @@ case "${host_os}" in
         if test "x${have_iconv}" = xno; then
             AC_MSG_FAILURE([
   ---------------------------------------------
-   iconv library required
+   The iconv library that is required to
+   build git2r was not found.
 
-   You can specify the include and lib path with:
+   If the iconv library is installed on
+   your system but the git2r configuration
+   is unable to find it, you can specify
+   the include and lib path to iconv with:
    R CMD INSTALL --configure-args='--with-iconv-include=INCLUDE_PATH --with-iconv-lib=LIB_PATH' git2r
   ---------------------------------------------])
         fi
