@@ -295,7 +295,7 @@ cleanup:
  */
 SEXP git2r_config_set(SEXP repo, SEXP variables)
 {
-    int err = GIT_OK;
+    int err = 0;
     SEXP names;
     size_t i, n;
     git_config *cfg = NULL;
@@ -322,7 +322,6 @@ SEXP git2r_config_set(SEXP repo, SEXP variables)
 
         names = getAttrib(variables, R_NamesSymbol);
         for (i = 0; i < n; i++) {
-            int err;
             const char *key = CHAR(STRING_ELT(names, i));
             const char *value = NULL;
 
@@ -333,8 +332,15 @@ SEXP git2r_config_set(SEXP repo, SEXP variables)
                 err = git_config_set_string(cfg, key, value);
             else
                 err = git_config_delete_entry(cfg, key);
-            if (err)
-                goto cleanup;
+
+            if (err) {
+                if (err == GIT_EINVALIDSPEC) {
+                    Rf_warning("Variable was not in a valid format: '%s'", key);
+                    err = 0;
+                } else {
+                    goto cleanup;
+                }
+            }
         }
 
     }
