@@ -227,6 +227,48 @@ cleanup:
 }
 
 /**
+ * Open configuration file
+ *
+ * @param out Pointer to store the loaded configuration.
+ * @param repo S4 class git_repository. If non-R_NilValue open the
+ * configuration file for the repository. If R_NilValue open the
+ * global, XDG and system configuration files.
+ * @param snapshot Open a snapshot of the configuration.
+ * @return 0 on success, or an error code.
+ */
+static int git2r_config_open(git_config **out, SEXP repo, int snapshot)
+{
+    int err;
+
+    if (repo != R_NilValue) {
+        git_repository *repository = git2r_repository_open(repo);
+        if (!repository)
+            git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
+
+        if (snapshot)
+            err = git_repository_config_snapshot(out, repository);
+        else
+            err = git_repository_config(out, repository);
+
+        git_repository_free(repository);
+    } else {
+        git_config *config = NULL;
+
+        err = git_config_open_default(&config);
+        if (err) {
+            git_config_free(config);
+            return err;
+        }
+
+        err = git_config_snapshot(out, config);
+
+        git_config_free(config);
+    }
+
+    return err;
+}
+
+/**
  * Get config variables
  *
  * @param repo S4 class git_repository
@@ -238,21 +280,10 @@ SEXP git2r_config_get(SEXP repo)
     SEXP result = R_NilValue;
     size_t i = 0, n = 0, n_level[GIT2R_N_CONFIG_LEVELS] = {0};
     git_config *cfg = NULL;
-    git_repository *repository = NULL;
 
-    if (repo != R_NilValue) {
-        repository = git2r_repository_open(repo);
-        if (!repository)
-            git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
-
-        err = git_repository_config(&cfg, repository);
-        if (err)
-            goto cleanup;
-    } else {
-        err = git_config_open_default(&cfg);
-        if (err)
-            goto cleanup;
-    }
+    err = git2r_config_open(&cfg, repo, 0);
+    if (err)
+        goto cleanup;
 
     err = git2r_config_count_variables(cfg, n_level);
     if (err)
@@ -273,9 +304,6 @@ SEXP git2r_config_get(SEXP repo)
 cleanup:
     if (cfg)
         git_config_free(cfg);
-
-    if (repository)
-        git_repository_free(repository);
 
     if (R_NilValue != result)
         UNPROTECT(1);
@@ -299,26 +327,15 @@ SEXP git2r_config_set(SEXP repo, SEXP variables)
     SEXP names;
     size_t i, n;
     git_config *cfg = NULL;
-    git_repository *repository = NULL;
 
     if (git2r_arg_check_list(variables))
         git2r_error(__func__, NULL, "'variables'", git2r_err_list_arg);
 
     n = length(variables);
     if (n) {
-        if (repo != R_NilValue) {
-            repository = git2r_repository_open(repo);
-            if (!repository)
-                git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
-
-            err = git_repository_config(&cfg, repository);
-            if (err)
-                goto cleanup;
-        } else {
-            err = git_config_open_default(&cfg);
-            if (err)
-                goto cleanup;
-        }
+        err = git2r_config_open(&cfg, repo, 0);
+        if (err)
+            goto cleanup;
 
         names = getAttrib(variables, R_NamesSymbol);
         for (i = 0; i < n; i++) {
@@ -349,9 +366,6 @@ cleanup:
     if (cfg)
         git_config_free(cfg);
 
-    if (repository)
-        git_repository_free(repository);
-
     if (err)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
@@ -372,16 +386,11 @@ SEXP git2r_config_get_string(SEXP repo, SEXP name)
     SEXP result = R_NilValue;
     const char *value;
     git_config *cfg = NULL;
-    git_repository *repository = NULL;
 
     if (git2r_arg_check_string(name))
         git2r_error(__func__, NULL, "'name'", git2r_err_string_arg);
 
-    repository = git2r_repository_open(repo);
-    if (!repository)
-        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
-
-    err = git_repository_config_snapshot(&cfg, repository);
+    err = git2r_config_open(&cfg, repo, 1);
     if (err)
         goto cleanup;
 
@@ -398,9 +407,6 @@ SEXP git2r_config_get_string(SEXP repo, SEXP name)
 cleanup:
     if (cfg)
         git_config_free(cfg);
-
-    if (repository)
-        git_repository_free(repository);
 
     if (R_NilValue != result)
         UNPROTECT(1);
@@ -425,16 +431,11 @@ SEXP git2r_config_get_logical(SEXP repo, SEXP name)
     SEXP result = R_NilValue;
     int value;
     git_config *cfg = NULL;
-    git_repository *repository = NULL;
 
     if (git2r_arg_check_string(name))
         git2r_error(__func__, NULL, "'name'", git2r_err_string_arg);
 
-    repository = git2r_repository_open(repo);
-    if (!repository)
-        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
-
-    err = git_repository_config_snapshot(&cfg, repository);
+    err = git2r_config_open(&cfg, repo, 1);
     if (err)
         goto cleanup;
 
@@ -454,9 +455,6 @@ SEXP git2r_config_get_logical(SEXP repo, SEXP name)
 cleanup:
     if (cfg)
         git_config_free(cfg);
-
-    if (repository)
-        git_repository_free(repository);
 
     if (R_NilValue != result)
         UNPROTECT(1);
