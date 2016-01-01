@@ -251,7 +251,7 @@ static int git2r_config_open(git_config **out, SEXP repo, int snapshot)
             err = git_repository_config(out, repository);
 
         git_repository_free(repository);
-    } else {
+    } else if (snapshot) {
         git_config *config = NULL;
 
         err = git_config_open_default(&config);
@@ -263,6 +263,8 @@ static int git2r_config_open(git_config **out, SEXP repo, int snapshot)
         err = git_config_snapshot(out, config);
 
         git_config_free(config);
+    } else {
+        err = git_config_open_default(out);
     }
 
     return err;
