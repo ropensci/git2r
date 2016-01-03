@@ -85,6 +85,7 @@ if test -z "${R_HOME}"; then
   exit 1
 fi
 RBIN="${R_HOME}/bin/R"
+CC=`"${RBIN}" CMD config CC`
 CFLAGS=`"${RBIN}" CMD config CFLAGS`
 CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
 
@@ -198,7 +199,6 @@ if test "x${have_ssh2}" = xno; then
             AC_MSG_NOTICE([Download and build libssh2])
 
             # Find the compiler and compiler flags to use
-            CC=`"${RBIN}" CMD config CC`
             LDFLAGS=`"${RBIN}" CMD config LDFLAGS`
             CPICFLAGS=`"${RBIN}" CMD config CPICFLAGS`
 
@@ -362,6 +362,16 @@ AC_FUNC_MKTIME
 AC_FUNC_MMAP
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([btowc clock_gettime getcwd gethostbyname gettimeofday isascii memchr memmove memset munmap pstat_getdynamic re_comp realpath regcomp select socket strcasecmp strchr strcspn strdup strerror strncasecmp strrchr strspn strstr strtol strtoul])
+
+# Check if compiler flag '-Wno-unused-function' is supported
+oCFLAGS="${CFLAGS}"
+CFLAGS="-Wno-unused-function"
+AC_MSG_CHECKING([if '${CFLAGS}' is supported])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([],[])],
+	          [AC_MSG_RESULT([yes])]
+		  PKG_CFLAGS="${PKG_CFLAGS} ${CFLAGS}",
+		  [AC_MSG_RESULT([no])])
+CFLAGS="${oCFLAGS}"
 
 AC_SUBST(GIT2R_SRC_REGEX)
 AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS} ${LIBSSH2_CFLAGS}"])
