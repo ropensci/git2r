@@ -128,6 +128,9 @@ print.git_status <- function(x, ...)
         invisible(NULL)
     }
 
+    if (max(vapply(x, length, integer(1))) == 0L)
+      cat("working directory clean\n")
+
     if (length(x$ignored)) {
         display_status("Ignored files", x$ignored)
         cat("\n")
