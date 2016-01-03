@@ -7,6 +7,7 @@ to the git2r project (sorted alphabetically):
 Gabor Csardi            Diff support
                         Better remotes support
 Gregory Jefferis        Discover repository
+Jennifer Bryan          Various improvements to code and documentation
 Jim Hester              List references in a remote repository
 Karthik Ram             Summarize contributions to a repository
                         Various fixes of code and documentation
