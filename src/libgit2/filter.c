@@ -433,11 +433,8 @@ static int filter_list_check_attributes(
 		want_type  = git_attr_value(want);
 		found_type = git_attr_value(strs[i]);
 
-		if (want_type != found_type)
-			error = GIT_ENOTFOUND;
-		else if (want_type == GIT_ATTR_VALUE_T &&
-				strcmp(want, strs[i]) &&
-				strcmp(want, "*"))
+		if (want_type != found_type ||
+			(want_type == GIT_ATTR_VALUE_T && strcmp(want, strs[i])))
 			error = GIT_ENOTFOUND;
 	}
 

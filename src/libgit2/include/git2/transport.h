@@ -37,32 +37,39 @@ typedef enum {
  * Hostkey information taken from libssh2
  */
 typedef struct {
-	git_cert parent;
-
 	/**
-	 * A hostkey type from libssh2, either
-	 * `GIT_CERT_SSH_MD5` or `GIT_CERT_SSH_SHA1`
+	 * Type of certificate. Here to share the header with
+	 * `git_cert`.
 	 */
+	git_cert_t cert_type;
+        /**
+         * A hostkey type from libssh2, either
+         * `GIT_CERT_SSH_MD5` or `GIT_CERT_SSH_SHA1`
+         */
 	git_cert_ssh_t type;
 
-	/**
-	 * Hostkey hash. If type has `GIT_CERT_SSH_MD5` set, this will
-	 * have the MD5 hash of the hostkey.
-	 */
+        /**
+         * Hostkey hash. If type has `GIT_CERT_SSH_MD5` set, this will
+         * have the MD5 hash of the hostkey.
+         */
 	unsigned char hash_md5[16];
 
-	/**
-	 * Hostkey hash. If type has `GIT_CERT_SSH_SHA1` set, this will
-	 * have the SHA-1 hash of the hostkey.
-	 */
-	unsigned char hash_sha1[20];
+        /**
+         * Hostkey hash. If type has `GIT_CERT_SSH_SHA1` set, this will
+         * have the SHA-1 hash of the hostkey.
+         */
+        unsigned char hash_sha1[20];
 } git_cert_hostkey;
 
 /**
  * X.509 certificate information
  */
 typedef struct {
-	git_cert parent;
+	/**
+	 * Type of certificate. Here to share the header with
+	 * `git_cert`.
+	 */
+	git_cert_t cert_type;
 	/**
 	 * Pointer to the X.509 certificate data
 	 */

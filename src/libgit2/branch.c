@@ -155,7 +155,18 @@ int git_branch_delete(git_reference *branch)
 		git_reference_owner(branch), git_buf_cstr(&config_section), NULL) < 0)
 		goto on_error;
 
-	error = git_reference_delete(branch);
+	if (git_reference_delete(branch) < 0)
+		goto on_error;
+
+	if ((error = git_reflog_delete(git_reference_owner(branch), git_reference_name(branch))) < 0) {
+		if (error == GIT_ENOTFOUND) {
+			giterr_clear();
+			error = 0;
+		}
+		goto on_error;
+	}
+
+	error = 0;
 
 on_error:
 	git_buf_free(&config_section);

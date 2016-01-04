@@ -67,9 +67,9 @@ static int curls_certificate(git_cert **out, git_stream *stream)
 
 	/* No information is available, can happen with SecureTransport */
 	if (certinfo->num_of_certs == 0) {
-		s->cert_info.parent.cert_type = GIT_CERT_NONE;
-		s->cert_info.data             = NULL;
-		s->cert_info.len              = 0;
+		s->cert_info.cert_type = GIT_CERT_NONE;
+		s->cert_info.data      = NULL;
+		s->cert_info.len       = 0;
 		return 0;
 	}
 
@@ -85,11 +85,11 @@ static int curls_certificate(git_cert **out, git_stream *stream)
 	s->cert_info_strings.strings = (char **) strings.contents;
 	s->cert_info_strings.count   = strings.length;
 
-	s->cert_info.parent.cert_type = GIT_CERT_STRARRAY;
-	s->cert_info.data             = &s->cert_info_strings;
-	s->cert_info.len              = strings.length;
+	s->cert_info.cert_type = GIT_CERT_STRARRAY;
+	s->cert_info.data      = &s->cert_info_strings;
+	s->cert_info.len       = strings.length;
 
-	*out = &s->cert_info.parent;
+	*out = (git_cert *) &s->cert_info;
 
 	return 0;
 }
@@ -220,6 +220,7 @@ int git_curl_stream_new(git_stream **out, const char *host, const char *port)
 	curl_easy_setopt(handle, CURLOPT_SSL_VERIFYPEER, 1);
 	curl_easy_setopt(handle, CURLOPT_CERTINFO, 1);
 	curl_easy_setopt(handle, CURLOPT_HTTPPROXYTUNNEL, 1);
+	curl_easy_setopt(handle, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
 
 	/* curl_easy_setopt(handle, CURLOPT_VERBOSE, 1); */
 

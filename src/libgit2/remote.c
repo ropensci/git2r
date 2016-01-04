@@ -153,7 +153,7 @@ static int get_check_cert(int *out, git_repository *repo)
 	 * most specific to least specific. */
 
 	/* GIT_SSL_NO_VERIFY environment variable */
-	if ((val = p_getenv("GIT_SSL_NO_VERIFY")) != NULL)
+	if ((val = getenv("GIT_SSL_NO_VERIFY")) != NULL)
 		return git_config_parse_bool(out, val);
 
 	/* http.sslVerify config setting */
@@ -759,7 +759,7 @@ int git_remote__get_http_proxy(git_remote *remote, bool use_ssl, char **proxy_ur
 {
 	git_config *cfg;
 	git_config_entry *ce = NULL;
-	git_buf val = GIT_BUF_INIT;
+	const char *val = NULL;
 	int error;
 
 	assert(remote);
@@ -789,7 +789,7 @@ int git_remote__get_http_proxy(git_remote *remote, bool use_ssl, char **proxy_ur
 			return error;
 
 		if (ce && ce->value) {
-			*proxy_url = git__strdup(ce->value);
+			val = ce->value;
 			goto found;
 		}
 	}
@@ -797,28 +797,19 @@ int git_remote__get_http_proxy(git_remote *remote, bool use_ssl, char **proxy_ur
 	/* http.proxy config setting */
 	if ((error = git_config__lookup_entry(&ce, cfg, "http.proxy", false)) < 0)
 		return error;
-
 	if (ce && ce->value) {
-		*proxy_url = git__strdup(ce->value);
+		val = ce->value;
 		goto found;
 	}
 
 	/* HTTP_PROXY / HTTPS_PROXY environment variables */
-	error = git__getenv(&val, use_ssl ? "HTTPS_PROXY" : "HTTP_PROXY");
-
-	if (error < 0) {
-		if (error == GIT_ENOTFOUND) {
-			giterr_clear();
-			error = 0;
-		}
-
-		return error;
-	}
-
-	*proxy_url = git_buf_detach(&val);
+	val = use_ssl ? getenv("HTTPS_PROXY") : getenv("HTTP_PROXY");
 
 found:
-	GITERR_CHECK_ALLOC(*proxy_url);
+	if (val && val[0]) {
+		*proxy_url = git__strdup(val);
+		GITERR_CHECK_ALLOC(*proxy_url);
+	}
 	git_config_entry_free(ce);
 
 	return 0;
@@ -1334,11 +1325,13 @@ static int update_tips_for_spec(
 	for (; i < refs->length; ++i) {
 		head = git_vector_get(refs, i);
 		autotag = 0;
+		git_buf_clear(&refname);
 
 		/* Ignore malformed ref names (which also saves us from tag^{} */
 		if (!git_reference_is_valid_name(head->name))
 			continue;
 
+		/* If we have a tag, see if the auto-follow rules say to update it */
 		if (git_refspec_src_matches(&tagspec, head->name)) {
 			if (tagopt != GIT_REMOTE_DOWNLOAD_TAGS_NONE) {
 
@@ -1348,10 +1341,11 @@ static int update_tips_for_spec(
 				git_buf_clear(&refname);
 				if (git_buf_puts(&refname, head->name) < 0)
 					goto on_error;
-			} else {
-				continue;
 			}
-		} else if (git_refspec_src_matches(spec, head->name)) {
+		}
+
+		/* If we didn't want to auto-follow the tag, check if the refspec matches */
+		if (!autotag && git_refspec_src_matches(spec, head->name)) {
 			if (spec->dst) {
 				if (git_refspec_transform(&refname, spec, head->name) < 0)
 					goto on_error;
@@ -1365,7 +1359,10 @@ static int update_tips_for_spec(
 
 				continue;
 			}
-		} else {
+		}
+
+		/* If we still don't have a refname, we don't want it */
+		if (git_buf_len(&refname) == 0) {
 			continue;
 		}
 

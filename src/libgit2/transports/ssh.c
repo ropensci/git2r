@@ -527,10 +527,10 @@ static int _git_ssh_setup_conn(
 		goto done;
 
 	if (t->owner->certificate_check_cb != NULL) {
-		git_cert_hostkey cert = {{ 0 }}, *cert_ptr;
+		git_cert_hostkey cert = { 0 }, *cert_ptr;
 		const char *key;
 
-		cert.parent.cert_type = GIT_CERT_HOSTKEY_LIBSSH2;
+		cert.cert_type = GIT_CERT_HOSTKEY_LIBSSH2;
 
 		key = libssh2_hostkey_hash(session, LIBSSH2_HOSTKEY_HASH_SHA1);
 		if (key != NULL) {
@@ -756,8 +756,10 @@ static int list_auth_methods(int *out, LIBSSH2_SESSION *session, const char *use
 	list = libssh2_userauth_list(session, username, strlen(username));
 
 	/* either error, or the remote accepts NONE auth, which is bizarre, let's punt */
-	if (list == NULL && !libssh2_userauth_authenticated(session))
+	if (list == NULL && !libssh2_userauth_authenticated(session)) {
+		ssh_error(session, "Failed to retrieve list of SSH authentication methods");
 		return -1;
+	}
 
 	ptr = list;
 	while (ptr) {

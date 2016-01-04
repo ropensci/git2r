@@ -10,10 +10,6 @@
 #include <ctype.h>
 #include "posix.h"
 
-#ifdef GIT_WIN32
-# include "win32/w32_buffer.h"
-#endif
-
 #ifdef _MSC_VER
 # include <Shlwapi.h>
 #endif
@@ -21,11 +17,6 @@
 /**
  * Changed all printf to Rprintf to pass 'R CMD check git2r'
  * 2014-08-19: Stefan Widgren <stefan.widgren@gmail.com>
- *
- * Remove 'defined(GIT_WIN32)' from 'defined(GIT_WIN32) || defined(BSD)'
- * to skip function git_qsort_r_glue_cmp and typedef git_qsort_r_glue
- * on Windows.
- * 2015-01-13: Stefan Widgren <stefan.widgren@gmail.com>
  */
 void Rprintf(const char*, ...);
 
@@ -622,7 +613,7 @@ size_t git__unescape(char *str)
 	return (pos - str);
 }
 
-#if defined(BSD)
+#if defined(HAVE_QSORT_S) || (defined(HAVE_QSORT_R) && defined(BSD))
 typedef struct {
 	git__sort_r_cmp cmp;
 	void *payload;
@@ -639,21 +630,16 @@ static int GIT_STDLIB_CALL git__qsort_r_glue_cmp(
 void git__qsort_r(
 	void *els, size_t nel, size_t elsize, git__sort_r_cmp cmp, void *payload)
 {
-#if defined(__MINGW32__) || defined(AMIGA) || \
-	defined(__OpenBSD__) || defined(__NetBSD__) || \
-	defined(__gnu_hurd__) || defined(__ANDROID_API__) || \
-	defined(__sun) || defined(__CYGWIN__) || \
-	(__GLIBC__ == 2 && __GLIBC_MINOR__ < 8) || \
-	(defined(_MSC_VER) && _MSC_VER < 1500)
-	git__insertsort_r(els, nel, elsize, NULL, cmp, payload);
-#elif defined(GIT_WIN32)
-	git__qsort_r_glue glue = { cmp, payload };
-	qsort_s(els, nel, elsize, git__qsort_r_glue_cmp, &glue);
-#elif defined(BSD)
+#if defined(HAVE_QSORT_R) && defined(BSD)
 	git__qsort_r_glue glue = { cmp, payload };
 	qsort_r(els, nel, elsize, &glue, git__qsort_r_glue_cmp);
-#else
+#elif defined(HAVE_QSORT_R) && defined(__GLIBC__)
 	qsort_r(els, nel, elsize, cmp, payload);
+#elif defined(HAVE_QSORT_S)
+	git__qsort_r_glue glue = { cmp, payload };
+	qsort_s(els, nel, elsize, git__qsort_r_glue_cmp, &glue);
+#else
+	git__insertsort_r(els, nel, elsize, NULL, cmp, payload);
 #endif
 }
 
@@ -780,47 +766,3 @@ int git__utf8_iterate(const uint8_t *str, int str_len, int32_t *dst)
 	*dst = uc;
 	return length;
 }
-
-#ifdef GIT_WIN32
-int git__getenv(git_buf *out, const char *name)
-{
-	wchar_t *wide_name = NULL, *wide_value = NULL;
-	DWORD value_len;
-	int error = -1;
-
-	git_buf_clear(out);
-
-	if (git__utf8_to_16_alloc(&wide_name, name) < 0)
-		return -1;
-
-	if ((value_len = GetEnvironmentVariableW(wide_name, NULL, 0)) > 0) {
-		wide_value = git__malloc(value_len * sizeof(wchar_t));
-		GITERR_CHECK_ALLOC(wide_value);
-
-		value_len = GetEnvironmentVariableW(wide_name, wide_value, value_len);
-	}
-
-	if (value_len)
-		error = git_buf_put_w(out, wide_value, value_len);
-	else if (GetLastError() == ERROR_ENVVAR_NOT_FOUND)
-		error = GIT_ENOTFOUND;
-	else
-		giterr_set(GITERR_OS, "could not read environment variable '%s'", name);
-
-	git__free(wide_name);
-	git__free(wide_value);
-	return error;
-}
-#else
-int git__getenv(git_buf *out, const char *name)
-{
-	const char *val = getenv(name);
-
-	git_buf_clear(out);
-
-	if (!val)
-		return GIT_ENOTFOUND;
-
-	return git_buf_puts(out, val);
-}
-#endif
