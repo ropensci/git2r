@@ -5837,7 +5837,7 @@ $as_echo "#define realloc rpl_realloc" >>confdefs.h
 fi
 
 
-for ac_func in btowc clock_gettime getcwd gethostbyname gettimeofday isascii memchr memmove memset munmap pstat_getdynamic re_comp realpath regcomp select socket strcasecmp strchr strcspn strdup strerror strncasecmp strrchr strspn strstr strtol strtoul
+for ac_func in futimens qsort_r qsort_s
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -5849,6 +5849,18 @@ _ACEOF
 fi
 done
 
+
+if test $ac_cv_func_futimens = yes; then
+    CPPFLAGS="${CPPFLAGS} -DHAVE_FUTIMENS"
+fi
+
+if test $ac_cv_func_qsort_r = yes; then
+    CPPFLAGS="${CPPFLAGS} -DHAVE_QSORT_R"
+fi
+
+if test $ac_cv_func_qsort_s = yes; then
+    CPPFLAGS="${CPPFLAGS} -DHAVE_QSORT_S"
+fi
 
 # Check if compiler flag '-Wno-unused-function' is supported
 oCFLAGS="${CFLAGS}"

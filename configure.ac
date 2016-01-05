@@ -361,7 +361,19 @@ AC_FUNC_MALLOC
 AC_FUNC_MKTIME
 AC_FUNC_MMAP
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([btowc clock_gettime getcwd gethostbyname gettimeofday isascii memchr memmove memset munmap pstat_getdynamic re_comp realpath regcomp select socket strcasecmp strchr strcspn strdup strerror strncasecmp strrchr strspn strstr strtol strtoul])
+AC_CHECK_FUNCS([futimens qsort_r qsort_s])
+
+if test $ac_cv_func_futimens = yes; then
+    CPPFLAGS="${CPPFLAGS} -DHAVE_FUTIMENS"
+fi
+
+if test $ac_cv_func_qsort_r = yes; then
+    CPPFLAGS="${CPPFLAGS} -DHAVE_QSORT_R"
+fi
+
+if test $ac_cv_func_qsort_s = yes; then
+    CPPFLAGS="${CPPFLAGS} -DHAVE_QSORT_S"
+fi
 
 # Check if compiler flag '-Wno-unused-function' is supported
 oCFLAGS="${CFLAGS}"
