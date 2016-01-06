@@ -18,7 +18,7 @@ AC_PREREQ([2.69])
 AC_INIT([git2r], [see.DESCRIPTION.file], [https://github.com/ropensci/git2r/issues])
 AC_CONFIG_SRCDIR([src/git2r.c])
 AC_CONFIG_AUX_DIR([tools])
-
+m4_include([tools/libcurl.m4])
 AC_CANONICAL_HOST
 
 # Checks for programs.
@@ -278,6 +278,9 @@ case "${host_os}" in
     ;;
 esac
 
+# Check for libcurl
+LIBCURL_CHECK_CONFIG(, , [have_libcurl=yes], [have_libcurl=no])
+
 # Configuration specific for solaris
 case "${host_os}" in
     solaris*)
@@ -310,6 +313,11 @@ esac
 # Add definition for ssh
 if test "x${have_ssh2}" = xyes; then
     CPPFLAGS="${CPPFLAGS} -DGIT_SSH"
+fi
+
+# Add definition for curl
+if test "x${have_libcurl}" = xyes; then
+    CPPFLAGS="${CPPFLAGS} -DGIT_CURL"
 fi
 
 # Add definition for iconv
@@ -372,8 +380,8 @@ CFLAGS="${oCFLAGS}"
 
 AC_SUBST(GIT2R_SRC_REGEX)
 AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS} ${LIBSSH2_CFLAGS}"])
-AC_SUBST([PKG_CPPFLAGS], ["${CPPFLAGS}"])
-AC_SUBST([PKG_LIBS], ["${LIBS} ${LIBSSH2_LIBS}"])
+AC_SUBST([PKG_CPPFLAGS], ["${CPPFLAGS} ${LIBCURL_CPPFLAGS}"])
+AC_SUBST([PKG_LIBS], ["${LIBS} ${LIBSSH2_LIBS} ${LIBCURL}"])
 
 AC_CONFIG_FILES([src/Makevars])
 
