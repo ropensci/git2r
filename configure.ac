@@ -334,6 +334,17 @@ else
     AC_MSG_FAILURE([Unsupported architecture])
 fi
 
+# Checks for structures
+AC_CHECK_MEMBERS([struct stat.st_atimespec],
+                 [CPPFLAGS="${CPPFLAGS} -DGIT_USE_STAT_ATIMESPEC"],
+                 [],
+                 [#ifdef HAVE_SYS_TYPES_H
+                  # include <sys/types.h>
+                  #endif
+                  #ifdef HAVE_SYS_STAT_H
+                  # include <sys/stat.h>
+                  #endif])
+
 # Checks for library functions.
 AC_CHECK_FUNCS([futimens qsort_r qsort_s])
 
