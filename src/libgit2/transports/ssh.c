@@ -136,9 +136,14 @@ static int ssh_stream_read(
 	 * not-found error, so read from stderr and signal EOF on
 	 * stderr.
 	 */
-	if (rc == 0 && (rc = libssh2_channel_read_stderr(s->channel, buffer, buf_size)) > 0) {
-		giterr_set(GITERR_SSH, "%*s", rc, buffer);
-		return GIT_EEOF;
+	if (rc == 0) {
+		if ((rc = libssh2_channel_read_stderr(s->channel, buffer, buf_size)) > 0) {
+			giterr_set(GITERR_SSH, "%*s", rc, buffer);
+			return GIT_EEOF;
+		} else if (rc < LIBSSH2_ERROR_NONE) {
+			ssh_error(s->session, "SSH could not read stderr");
+			return -1;
+		}
 	}
 
 
@@ -527,10 +532,10 @@ static int _git_ssh_setup_conn(
 		goto done;
 
 	if (t->owner->certificate_check_cb != NULL) {
-		git_cert_hostkey cert = { 0 }, *cert_ptr;
+		git_cert_hostkey cert = {{ 0 }}, *cert_ptr;
 		const char *key;
 
-		cert.cert_type = GIT_CERT_HOSTKEY_LIBSSH2;
+		cert.parent.cert_type = GIT_CERT_HOSTKEY_LIBSSH2;
 
 		key = libssh2_hostkey_hash(session, LIBSSH2_HOSTKEY_HASH_SHA1);
 		if (key != NULL) {

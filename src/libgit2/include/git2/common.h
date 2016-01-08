@@ -101,8 +101,9 @@ GIT_EXTERN(void) git_libgit2_version(int *major, int *minor, int *rev);
  */
 typedef enum {
 	GIT_FEATURE_THREADS	= (1 << 0),
-	GIT_FEATURE_HTTPS = (1 << 1),
-	GIT_FEATURE_SSH = (1 << 2),
+	GIT_FEATURE_HTTPS	= (1 << 1),
+	GIT_FEATURE_SSH		= (1 << 2),
+	GIT_FEATURE_NSEC	= (1 << 3),
 } git_feature_t;
 
 /**
@@ -145,6 +146,7 @@ typedef enum {
 	GIT_OPT_GET_TEMPLATE_PATH,
 	GIT_OPT_SET_TEMPLATE_PATH,
 	GIT_OPT_SET_SSL_CERT_LOCATIONS,
+	GIT_OPT_SET_USER_AGENT,
 } git_libgit2_opt_t;
 
 /**
@@ -172,9 +174,9 @@ typedef enum {
  *	* opts(GIT_OPT_GET_SEARCH_PATH, int level, git_buf *buf)
  *
  *		> Get the search path for a given level of config data.  "level" must
- *		> be one of `GIT_CONFIG_LEVEL_SYSTEM`, `GIT_CONFIG_LEVEL_GLOBAL`, or
- *		> `GIT_CONFIG_LEVEL_XDG`.  The search path is written to the `out`
- *		> buffer.
+ *		> be one of `GIT_CONFIG_LEVEL_SYSTEM`, `GIT_CONFIG_LEVEL_GLOBAL`,
+ *		> `GIT_CONFIG_LEVEL_XDG`, or `GIT_CONFIG_LEVEL_PROGRAMDATA`.
+ *		> The search path is written to the `out` buffer.
  *
  *	* opts(GIT_OPT_SET_SEARCH_PATH, int level, const char *path)
  *
@@ -186,8 +188,9 @@ typedef enum {
  *		>   variables).  Use magic path `$PATH` to include the old value
  *		>   of the path (if you want to prepend or append, for instance).
  *		>
- *		> - `level` must be GIT_CONFIG_LEVEL_SYSTEM, GIT_CONFIG_LEVEL_GLOBAL,
- *		>   or GIT_CONFIG_LEVEL_XDG.
+ *		> - `level` must be `GIT_CONFIG_LEVEL_SYSTEM`,
+ *		>   `GIT_CONFIG_LEVEL_GLOBAL`, `GIT_CONFIG_LEVEL_XDG`, or
+ *		>   `GIT_CONFIG_LEVEL_PROGRAMDATA`.
  *
  *	* opts(GIT_OPT_SET_CACHE_OBJECT_LIMIT, git_otype type, size_t size)
  *
@@ -239,6 +242,8 @@ typedef enum {
  *		>   certificates, one per file.
  *		>
  * 		> Either parameter may be `NULL`, but not both.
+ *
+ *	* opts(GIT_OPT_SET_USER_AGENT, const char *user_agent)
  *
  * @param option Option key
  * @param ... value to set the option
