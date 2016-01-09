@@ -288,8 +288,8 @@ case "${host_os}" in
         AC_SEARCH_LIBS(gethostbyname, [nsl socket])
 
         # Include and use regex on solaris
-        CPPFLAGS="-Iregex ${CPPFLAGS}"
-        GIT2R_SRC_REGEX=regex/regex.o
+        CPPFLAGS="-Ilibgit2/deps/regex ${CPPFLAGS}"
+        GIT2R_SRC_REGEX=libgit2/deps/regex/regex.o
     ;;
 esac
 
