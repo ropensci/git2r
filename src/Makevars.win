@@ -20,7 +20,7 @@ PKG_LIBS = $(GIT2R_ZLIB_LIB) -Lopenssl/lib$(R_ARCH) -Llibssh2/lib$(R_ARCH) \
     -lrpcrt4 -lole32 -lcrypt32 $(Z_LIB)
 
 PKG_CFLAGS = -I. $(GIT2R_ZLIB_INCLUDE) -Ilibgit2 -Ilibgit2/include \
-    -Ihttp-parser -Iwin32 -Iregex -Ilibssh2/include \
+    -Ilibgit2/deps/http-parser -Iwin32 -Iregex -Ilibssh2/include \
     -DWIN32 -D_WIN32_WINNT=0x0501 -D__USE_MINGW_ANSI_STDIO=1 -DGIT_WINHTTP \
     -D_FILE_OFFSET_BITS=64 -DGIT_SSH -DGIT_ARCH_$(WIN)
 
@@ -77,7 +77,7 @@ OBJECTS.libgit2.win32 = libgit2/win32/dir.o libgit2/win32/error.o libgit2/win32/
     libgit2/win32/precompiled.o libgit2/win32/utf-conv.o libgit2/win32/w32_buffer.o \
     libgit2/win32/w32_util.o
 
-OBJECTS.http_parser = http-parser/http_parser.o
+OBJECTS.http_parser = libgit2/deps/http-parser/http_parser.o
 
 OBJECTS.regex = regex/regex.o
 
