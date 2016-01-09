@@ -149,7 +149,7 @@ build_Makevars.win <- function() {
     cat("\n", file = Makevars)
 
     cat("PKG_CFLAGS = -I. $(GIT2R_ZLIB_INCLUDE) -Ilibgit2 -Ilibgit2/include \\\n", file = Makevars)
-    cat("    -Ilibgit2/deps/http-parser -Iwin32 -Iregex -Ilibssh2/include \\\n", file = Makevars)
+    cat("    -Ilibgit2/deps/http-parser -Iregex -Ilibssh2/include \\\n", file = Makevars)
     cat("    -DWIN32 -D_WIN32_WINNT=0x0501 -D__USE_MINGW_ANSI_STDIO=1 -DGIT_WINHTTP \\\n", file = Makevars)
     cat("    -D_FILE_OFFSET_BITS=64 -DGIT_SSH -DGIT_ARCH_$(WIN)\n", file = Makevars)
     cat("\n", file = Makevars)
@@ -161,7 +161,7 @@ build_Makevars.win <- function() {
     cat("\n", file = Makevars)
 
     cat("winhttp.def:\n", file = Makevars)
-    cat("\tcp winhttp/winhttp$(WIN).def.in winhttp.def\n", file = Makevars)
+    cat("\tcp libgit2/deps/winhttp/winhttp$(WIN).def.in winhttp.def\n", file = Makevars)
     cat("\n", file = Makevars)
 
     cat(".PHONY: all\n", file = Makevars)

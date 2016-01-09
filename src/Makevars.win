@@ -20,7 +20,7 @@ PKG_LIBS = $(GIT2R_ZLIB_LIB) -Lopenssl/lib$(R_ARCH) -Llibssh2/lib$(R_ARCH) \
     -lrpcrt4 -lole32 -lcrypt32 $(Z_LIB)
 
 PKG_CFLAGS = -I. $(GIT2R_ZLIB_INCLUDE) -Ilibgit2 -Ilibgit2/include \
-    -Ilibgit2/deps/http-parser -Iwin32 -Iregex -Ilibssh2/include \
+    -Ilibgit2/deps/http-parser -Iregex -Ilibssh2/include \
     -DWIN32 -D_WIN32_WINNT=0x0501 -D__USE_MINGW_ANSI_STDIO=1 -DGIT_WINHTTP \
     -D_FILE_OFFSET_BITS=64 -DGIT_SSH -DGIT_ARCH_$(WIN)
 
@@ -101,6 +101,6 @@ OBJECTS = $(OBJECTS.libgit2) $(OBJECTS.libgit2.hash) $(OBJECTS.libgit2.transport
 all: libwinhttp.dll.a
 
 winhttp.def:
-	cp winhttp/winhttp$(WIN).def.in winhttp.def
+	cp libgit2/deps/winhttp/winhttp$(WIN).def.in winhttp.def
 
 .PHONY: all
