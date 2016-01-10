@@ -59,58 +59,33 @@ valgrind:
 sync_libgit2:
 	-rm -f src/libgit2/deps/http-parser/*
 	-rm -f src/regex/*
-	-rm -f src/libgit2/include/*.h
-	-rm -f src/libgit2/include/git2/*.h
-	-rm -f src/libgit2/include/git2/sys/*.h
-	-rm -f src/libgit2/*.c
-	-rm -f src/libgit2/*.h
-	-rm -f src/libgit2/hash/*.c
-	-rm -f src/libgit2/hash/*.h
-	-rm -f src/libgit2/transports/*.c
-	-rm -f src/libgit2/transports/*.h
-	-rm -f src/libgit2/unix/*.c
-	-rm -f src/libgit2/unix/*.h
-	-rm -f src/libgit2/win32/*.c
-	-rm -f src/libgit2/win32/*.h
-	-rm -f src/libgit2/xdiff/*.c
-	-rm -f src/libgit2/xdiff/*.h
+	-rm -rf src/libgit2/include
+	-rm -rf src/libgit2/src
 	-cp -f ../libgit2/deps/http-parser/* src/libgit2/deps/http-parser
 	-cp -f ../libgit2/deps/regex/* src/regex
-	-cp -f ../libgit2/include/*.h src/libgit2/include
-	-cp -f ../libgit2/include/git2/*.h src/libgit2/include/git2
+	-cp -r ../libgit2/include/ src/libgit2/include
 	-rm -f src/libgit2/include/git2/inttypes.h
 	-rm -f src/libgit2/include/git2/stdint.h
-	-cp -f ../libgit2/include/git2/sys/*.h src/libgit2/include/git2/sys
-	-cp -f ../libgit2/src/*.c src/libgit2
-	-cp -f ../libgit2/src/*.h src/libgit2
-	-rm -f src/libgit2/stransport_stream.c
-	-cp -f ../libgit2/src/hash/*.c src/libgit2/hash
-	-cp -f ../libgit2/src/hash/*.h src/libgit2/hash
-	-cp -f ../libgit2/src/transports/*.c src/libgit2/transports
-	-cp -f ../libgit2/src/transports/*.h src/libgit2/transports
-	-cp -f ../libgit2/src/unix/*.c src/libgit2/unix
-	-cp -f ../libgit2/src/unix/*.h src/libgit2/unix
-	-cp -f ../libgit2/src/win32/*.c src/libgit2/win32
-	-cp -f ../libgit2/src/win32/*.h src/libgit2/win32
-	-rm -f src/libgit2/win32/mingw-compat.h
-	-rm -f src/libgit2/win32/msvc-compat.h
-	-rm -f src/libgit2/win32/w32_crtdbg_stacktrace.c
-	-rm -f src/libgit2/win32/w32_crtdbg_stacktrace.h
-	-rm -f src/libgit2/win32/w32_stack.c
-	-rm -f src/libgit2/win32/w32_stack.h
-	-cp -f ../libgit2/src/xdiff/*.c src/libgit2/xdiff
-	-cp -f ../libgit2/src/xdiff/*.h src/libgit2/xdiff
-	cd src/libgit2 && patch -i ../../patches/annotated_commit.c.patch
-	cd src/libgit2 && patch -i ../../patches/cache-pass-R-CMD-check-git2r.patch
-	cd src/libgit2 && patch -i ../../patches/checkout.patch
-	cd src/libgit2 && patch -i ../../patches/common.h.patch
-	cd src/libgit2 && patch -i ../../patches/diff_print-pass-R-CMD-check-git2r.patch
-	cd src/libgit2 && patch -i ../../patches/rebase-pass-R-CMD-check-git2r.patch
-	cd src/libgit2 && patch -i ../../patches/transaction.patch
-	cd src/libgit2 && patch -i ../../patches/util.patch
+	-cp -r ../libgit2/src/ src/libgit2/src
+	-rm -f src/libgit2/src/stransport_stream.c
+	-rm -f src/libgit2/src/win32/mingw-compat.h
+	-rm -f src/libgit2/src/win32/msvc-compat.h
+	-rm -f src/libgit2/src/win32/w32_crtdbg_stacktrace.c
+	-rm -f src/libgit2/src/win32/w32_crtdbg_stacktrace.h
+	-rm -f src/libgit2/src/win32/pthread.c
+	-rm -f src/libgit2/src/win32/w32_stack.c
+	-rm -f src/libgit2/src/win32/w32_stack.h
+	cd src/libgit2/src && patch -i ../../../patches/annotated_commit.c.patch
+	cd src/libgit2/src && patch -i ../../../patches/cache-pass-R-CMD-check-git2r.patch
+	cd src/libgit2/src && patch -i ../../../patches/checkout.patch
+	cd src/libgit2/src && patch -i ../../../patches/common.h.patch
+	cd src/libgit2/src && patch -i ../../../patches/diff_print-pass-R-CMD-check-git2r.patch
+	cd src/libgit2/src && patch -i ../../../patches/rebase-pass-R-CMD-check-git2r.patch
+	cd src/libgit2/src && patch -i ../../../patches/transaction.patch
+	cd src/libgit2/src && patch -i ../../../patches/util.patch
 	cd src/regex && patch -i ../../patches/regcomp-pass-R-CMD-check-git2r.patch
 	cd src/regex && patch -i ../../patches/regex-prefix-entry-points.patch
-	cd src/libgit2/win32 && patch -i ../../../patches/posix-pass-R-CMD-check-git2r.patch
+	cd src/libgit2/src/win32 && patch -i ../../../../patches/posix-pass-R-CMD-check-git2r.patch
 	Rscript scripts/build_Makevars.r
 	Rscript scripts/libgit2_sha.r
 
