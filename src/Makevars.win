@@ -15,7 +15,7 @@ endif
 endif
 endif
 
-PKG_LIBS = $(GIT2R_ZLIB_LIB) -Llibgit2/deps/openssl/lib$(R_ARCH) -Llibgi2/deps/libssh2/lib$(R_ARCH) \
+PKG_LIBS = $(GIT2R_ZLIB_LIB) -Llibgit2/deps/openssl/lib$(R_ARCH) -Llibgit2/deps/libssh2/lib$(R_ARCH) \
     -L. -lssh2 -lssl -lcrypto -lgdi32 -lws2_32 -lwinhttp \
     -lrpcrt4 -lole32 -lcrypt32 $(Z_LIB)
 

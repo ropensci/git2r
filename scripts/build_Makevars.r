@@ -137,7 +137,7 @@ build_Makevars.win <- function() {
     cat("endif\n", file = Makevars)
     cat("\n", file = Makevars)
 
-    cat("PKG_LIBS = $(GIT2R_ZLIB_LIB) -Llibgit2/deps/openssl/lib$(R_ARCH) -Llibgi2/deps/libssh2/lib$(R_ARCH) \\\n", file = Makevars)
+    cat("PKG_LIBS = $(GIT2R_ZLIB_LIB) -Llibgit2/deps/openssl/lib$(R_ARCH) -Llibgit2/deps/libssh2/lib$(R_ARCH) \\\n", file = Makevars)
     cat("    -L. -lssh2 -lssl -lcrypto -lgdi32 -lws2_32 -lwinhttp \\\n", file = Makevars)
     cat("    -lrpcrt4 -lole32 -lcrypt32 $(Z_LIB)\n", file = Makevars)
     cat("\n", file = Makevars)
