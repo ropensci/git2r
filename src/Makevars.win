@@ -8,7 +8,7 @@ Z_LIB = $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e \
 ifeq ($(Z_LIB),-lz)
 GIT2R_LOCAL_SOFT=$(shell "${R_HOME}/bin/R" CMD config LOCAL_SOFT)
 ifeq ($(wildcard "${GIT2R_LOCAL_SOFT}/include/zlib.h"),)
-ifneq ($(wildcard zlib/include/zlib.h),)
+ifneq ($(wildcard libgit2/deps/zlib/include/zlib.h),)
 GIT2R_ZLIB_LIB = -Llibgit2/deps/zlib/lib$(R_ARCH)
 GIT2R_ZLIB_INCLUDE = -Ilibgit2/deps/zlib/include
 endif

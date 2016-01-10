@@ -129,7 +129,7 @@ build_Makevars.win <- function() {
     cat("ifeq ($(Z_LIB),-lz)\n", file = Makevars)
     cat("GIT2R_LOCAL_SOFT=$(shell \"${R_HOME}/bin/R\" CMD config LOCAL_SOFT)\n", file = Makevars)
     cat("ifeq ($(wildcard \"${GIT2R_LOCAL_SOFT}/include/zlib.h\"),)\n", file = Makevars)
-    cat("ifneq ($(wildcard zlib/include/zlib.h),)\n", file = Makevars)
+    cat("ifneq ($(wildcard libgit2/deps/zlib/include/zlib.h),)\n", file = Makevars)
     cat("GIT2R_ZLIB_LIB = -Llibgit2/deps/zlib/lib$(R_ARCH)\n", file = Makevars)
     cat("GIT2R_ZLIB_INCLUDE = -Ilibgit2/deps/zlib/include\n", file = Makevars)
     cat("endif\n", file = Makevars)
