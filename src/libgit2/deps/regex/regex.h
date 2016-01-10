@@ -37,17 +37,6 @@
 #define __USE_GNU	1
 #endif
 
-/**
- * Remapped the POSIX entry points with a 'gnu_' prefix to use the
- * bundled regex library on Solaris.
- * 2015-05-03: Stefan Widgren <stefan.widgren@gmail.com>
- */
-# define regfree(preg) gnu_regfree (preg)
-# define regexec(pr, st, nm, pm, ef) gnu_regexec (pr, st, nm, pm, ef)
-# define regcomp(preg, pattern, cflags) gnu_regcomp (preg, pattern, cflags)
-# define regerror(errcode, preg, errbuf, errbuf_size) \
-	gnu_regerror(errcode, preg, errbuf, errbuf_size)
-
 /* Allow the use in C++ code.  */
 #ifdef __cplusplus
 extern "C" {
