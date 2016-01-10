@@ -84,6 +84,7 @@ sync_libgit2:
 	cd src/libgit2/src && patch -i ../../../patches/transaction.patch
 	cd src/libgit2/src && patch -i ../../../patches/util.patch
 	cd src/libgit2/deps/regex && patch -i ../../../../patches/regcomp-pass-R-CMD-check-git2r.patch
+	cd src/libgit2/deps/regex && patch -i ../../../../patches/regex-prefix-entry-points.patch
 	cd src/libgit2/src/win32 && patch -i ../../../../patches/posix-pass-R-CMD-check-git2r.patch
 	Rscript scripts/build_Makevars.r
 	Rscript scripts/libgit2_sha.r
