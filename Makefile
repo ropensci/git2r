@@ -58,11 +58,11 @@ valgrind:
 # 3) Build and check updated package 'make check'
 sync_libgit2:
 	-rm -f src/libgit2/deps/http-parser/*
-	-rm -f src/regex/*
+	-rm -f src/libgit2/deps/regex/*
 	-rm -rf src/libgit2/include
 	-rm -rf src/libgit2/src
 	-cp -f ../libgit2/deps/http-parser/* src/libgit2/deps/http-parser
-	-cp -f ../libgit2/deps/regex/* src/regex
+	-cp -f ../libgit2/deps/regex/* src/libgit2/deps/regex
 	-cp -r ../libgit2/include/ src/libgit2/include
 	-rm -f src/libgit2/include/git2/inttypes.h
 	-rm -f src/libgit2/include/git2/stdint.h
@@ -83,8 +83,8 @@ sync_libgit2:
 	cd src/libgit2/src && patch -i ../../../patches/rebase-pass-R-CMD-check-git2r.patch
 	cd src/libgit2/src && patch -i ../../../patches/transaction.patch
 	cd src/libgit2/src && patch -i ../../../patches/util.patch
-	cd src/regex && patch -i ../../patches/regcomp-pass-R-CMD-check-git2r.patch
-	cd src/regex && patch -i ../../patches/regex-prefix-entry-points.patch
+	cd src/libgit2/deps/regex && patch -i ../../../../patches/regcomp-pass-R-CMD-check-git2r.patch
+	cd src/libgit2/deps/regex && patch -i ../../../../patches/regex-prefix-entry-points.patch
 	cd src/libgit2/src/win32 && patch -i ../../../../patches/posix-pass-R-CMD-check-git2r.patch
 	Rscript scripts/build_Makevars.r
 	Rscript scripts/libgit2_sha.r

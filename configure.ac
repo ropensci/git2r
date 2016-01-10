@@ -289,7 +289,7 @@ case "${host_os}" in
 
         # Include and use regex on solaris
         CPPFLAGS="-Iregex ${CPPFLAGS}"
-        GIT2R_SRC_REGEX=regex/regex.o
+        GIT2R_SRC_REGEX=libgit2/deps/regex/regex.o
     ;;
 esac
 
