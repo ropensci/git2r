@@ -69,15 +69,13 @@ build_Makevars.in <- function() {
     Makevars <- file("src/Makevars.in", "w")
     on.exit(close(Makevars))
 
-    files <- list(libgit2 =
-                      o_files("src/libgit2",
-                              "libgit2/stransport_stream.o"),
+    files <- list(libgit2 = o_files("src/libgit2/src"),
                   libgit2.transports =
-                      o_files("src/libgit2/transports",
-                              c("libgit2/transports/auth_negotiate.o",
-                                "libgit2/transports/winhttp.o")),
-                  libgit2.unix = o_files("src/libgit2/unix"),
-                  libgit2.xdiff = o_files("src/libgit2/xdiff"),
+                      o_files("src/libgit2/src/transports",
+                              c("libgit2/src/transports/auth_negotiate.o",
+                                "libgit2/src/transports/winhttp.o")),
+                  libgit2.unix = o_files("src/libgit2/src/unix"),
+                  libgit2.xdiff = o_files("src/libgit2/src/xdiff"),
                   http_parser = o_files("src/libgit2/deps/http-parser"),
                   root = o_files("src"))
 
@@ -100,20 +98,16 @@ build_Makevars.win <- function() {
     Makevars <- file("src/Makevars.win", "w")
     on.exit(close(Makevars))
 
-    files <- list(libgit2 =
-                      o_files("src/libgit2",
-                              "libgit2/stransport_stream.o"),
+    files <- list(libgit2 = o_files("src/libgit2/src"),
                   libgit2.hash =
-                      o_files("src/libgit2/hash",
-                              "libgit2/hash/hash_win32.o"),
+                      o_files("src/libgit2/src/hash",
+                              "libgit2/src/hash/hash_win32.o"),
                   libgit2.transports =
-                      o_files("src/libgit2/transports",
-                              c("libgit2/transports/auth_negotiate.o",
-                                "libgit2/transports/http.o")),
-                  libgit2.xdiff = o_files("src/libgit2/xdiff"),
-                  libgit2.win32 =
-                      o_files("src/libgit2/win32",
-                              "libgit2/win32/pthread.o"),
+                      o_files("src/libgit2/src/transports",
+                              c("libgit2/src/transports/auth_negotiate.o",
+                                "libgit2/src/transports/http.o")),
+                  libgit2.xdiff = o_files("src/libgit2/src/xdiff"),
+                  libgit2.win32 = o_files("src/libgit2/src/win32"),
                   http_parser = o_files("src/libgit2/deps/http-parser"),
                   regex =
                       o_files("src/regex",
@@ -148,7 +142,7 @@ build_Makevars.win <- function() {
     cat("    -lrpcrt4 -lole32 -lcrypt32 $(Z_LIB)\n", file = Makevars)
     cat("\n", file = Makevars)
 
-    cat("PKG_CFLAGS = -I. $(GIT2R_ZLIB_INCLUDE) -Ilibgit2 -Ilibgit2/include \\\n", file = Makevars)
+    cat("PKG_CFLAGS = -I. $(GIT2R_ZLIB_INCLUDE) -Ilibgit2/src -Ilibgit2/include \\\n", file = Makevars)
     cat("    -Ilibgit2/deps/http-parser -Iregex -Ilibssh2/include \\\n", file = Makevars)
     cat("    -DWIN32 -D_WIN32_WINNT=0x0501 -D__USE_MINGW_ANSI_STDIO=1 -DGIT_WINHTTP \\\n", file = Makevars)
     cat("    -D_FILE_OFFSET_BITS=64 -DGIT_SSH -DGIT_ARCH_$(WIN)\n", file = Makevars)
