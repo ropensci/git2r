@@ -9,18 +9,18 @@ ifeq ($(Z_LIB),-lz)
 GIT2R_LOCAL_SOFT=$(shell "${R_HOME}/bin/R" CMD config LOCAL_SOFT)
 ifeq ($(wildcard "${GIT2R_LOCAL_SOFT}/include/zlib.h"),)
 ifneq ($(wildcard zlib/include/zlib.h),)
-GIT2R_ZLIB_LIB = -Lzlib/lib$(R_ARCH)
-GIT2R_ZLIB_INCLUDE = -Izlib/include
+GIT2R_ZLIB_LIB = -Llibgit2/deps/zlib/lib$(R_ARCH)
+GIT2R_ZLIB_INCLUDE = -Ilibgit2/deps/zlib/include
 endif
 endif
 endif
 
-PKG_LIBS = $(GIT2R_ZLIB_LIB) -Lopenssl/lib$(R_ARCH) -Llibssh2/lib$(R_ARCH) \
+PKG_LIBS = $(GIT2R_ZLIB_LIB) -Llibgit2/deps/openssl/lib$(R_ARCH) -Llibgi2/deps/libssh2/lib$(R_ARCH) \
     -L. -lssh2 -lssl -lcrypto -lgdi32 -lws2_32 -lwinhttp \
     -lrpcrt4 -lole32 -lcrypt32 $(Z_LIB)
 
 PKG_CFLAGS = -I. $(GIT2R_ZLIB_INCLUDE) -Ilibgit2/src -Ilibgit2/include \
-    -Ilibgit2/deps/http-parser -Ilibgit2/deps/regex -Ilibssh2/include \
+    -Ilibgit2/deps/http-parser -Ilibgit2/deps/regex -Ilibgit2/deps/libssh2/include \
     -DWIN32 -D_WIN32_WINNT=0x0501 -D__USE_MINGW_ANSI_STDIO=1 -DGIT_WINHTTP \
     -D_FILE_OFFSET_BITS=64 -DGIT_SSH -DGIT_ARCH_$(WIN)
 

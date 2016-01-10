@@ -12,7 +12,7 @@ have_zlib=yes
 local=`"${R_HOME}/bin/R" CMD config LOCAL_SOFT`
 LOCAL_URL=https://www.stats.ox.ac.uk/pub/Rtools/goodies/multilib/local323.zip
 if [ ! -e "${local}/include/zlib.h" ]; then
-    if [ ! -e src/zlib/include/zlib.h ]; then
+    if [ ! -e src/libgit2/deps/zlib/include/zlib.h ]; then
         if [ ! -e local.zip ]; then
             echo "  cannot find zlib files"
             echo "  attempting to download them"
@@ -22,10 +22,13 @@ if [ ! -e "${local}/include/zlib.h" ]; then
 	    have_zlib=no
         else
 	    echo "  unpacking zlib files from local.zip"
-            unzip -u local.zip include/zlib.h include/zconf.h lib/i386/libz.a lib/x64/libz.a -d src/zlib
-            if [ ! -e src/zlib/include/zlib.h ]; then
+            unzip -u local.zip include/zlib.h include/zconf.h lib/i386/libz.a lib/x64/libz.a -d src/libgit2/deps/zlib
+            if [ ! -e src/libgit2/deps/zlib/include/zlib.h ]; then
 	        have_zlib=no
 	    fi
+
+            # Cleanup
+            rm -f local.zip
         fi
     fi
 fi
@@ -34,7 +37,7 @@ if [ ${have_zlib} != yes ]; then
     echo ""
     echo " *** ERROR: unable to find the zlib files"
     echo ""
-    echo " They must be either in 'src/zlib' or in 'local.zip'"
+    echo " They must be either in 'src/libgit2/deps/zlib' or in 'local.zip'"
     echo ""
     echo " You can download external software from (save as 'local.zip')"
     echo " ${LOCAL_URL}"
@@ -49,7 +52,7 @@ fi
 # Check for libssh2 headers and libraries
 have_ssh2=yes
 LIBSSH2_URL=https://github.com/rwinlib/libssh2/archive/v1.6.0.zip
-if [ ! -e src/libssh2/include/libssh2.h ]; then
+if [ ! -e src/libgit2/deps/libssh2/include/libssh2.h ]; then
     if [ ! -e libssh2.zip ]; then
 	echo "  cannot find libssh2 files"
 	echo "  attempting to download them"
@@ -59,11 +62,14 @@ if [ ! -e src/libssh2/include/libssh2.h ]; then
 	have_ssh2=no
     else
 	echo "  unpacking libssh2"
-	unzip libssh2.zip -d src
-	mv src/libssh2-1.6.0 src/libssh2
-        if [ ! -e src/libssh2/include/libssh2.h ]; then
+	unzip libssh2.zip -d src/libgit2/deps
+	mv src/libgit2/deps/libssh2-1.6.0 src/libgit2/deps/libssh2
+        if [ ! -e src/libgit2/deps/libssh2/include/libssh2.h ]; then
 	    have_ssh2=no
 	fi
+
+        # Cleanup
+        rm -f libssh2.zip
     fi
 fi
 
@@ -71,7 +77,7 @@ if [ ${have_ssh2} != yes ]; then
     echo ""
     echo " *** ERROR: unable to find the libssh2 files"
     echo ""
-    echo " They must be either in 'src/libssh2' or in 'libssh2.zip'"
+    echo " They must be either in 'src/libgit2/deps/libssh2' or in 'libssh2.zip'"
     echo ""
     echo " You can download the libssh2 files from"
     echo " ${LIBSSH2_URL}"
@@ -82,7 +88,7 @@ fi
 # Check for openssl headers and libraries
 have_openssl=yes
 OPENSSL_URL=https://github.com/rwinlib/openssl/archive/v1.0.2d.zip
-if [ ! -e src/openssl/include/openssl/ssl.h ]; then
+if [ ! -e src/libgit2/deps/openssl/include/openssl/ssl.h ]; then
     if [ ! -e openssl.zip ]; then
 	echo "  cannot find openssl files"
 	echo "  attempting to download them"
@@ -92,11 +98,14 @@ if [ ! -e src/openssl/include/openssl/ssl.h ]; then
 	have_openssl=no
     else
 	echo "  unpacking openssl"
-	unzip openssl.zip -d src
-	mv src/openssl-1.0.2d src/openssl
-        if [ ! -e src/openssl/include/openssl/ssl.h ]; then
+	unzip openssl.zip -d src/libgit2/deps
+	mv src/libgit2/deps/openssl-1.0.2d src/libgit2/deps/openssl
+        if [ ! -e src/libgit2/deps/openssl/include/openssl/ssl.h ]; then
 	    have_openssl=no
 	fi
+
+        # Cleanup
+        rm -f openssl.zip
     fi
 fi
 
@@ -104,7 +113,7 @@ if [ ${have_openssl} != yes ]; then
     echo ""
     echo " *** ERROR: unable to find the openssl files"
     echo ""
-    echo " They must be either in 'src/openssl' or in 'openssl.zip'"
+    echo " They must be either in 'src/libgit2/deps/openssl' or in 'openssl.zip'"
     echo ""
     echo " You can download the openssl files from"
     echo " ${OPENSSL_URL}"
