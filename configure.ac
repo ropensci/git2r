@@ -34,17 +34,6 @@ esac
 
 # Optional include and library paths
 
-# iconv include and library path
-AC_ARG_WITH([iconv-include],
-            AC_HELP_STRING([--with-iconv-include=INCLUDE_PATH],
-                           [the location of the iconv header files]),
-            [iconv_include_path=$withval])
-
-AC_ARG_WITH([iconv-lib],
-            AC_HELP_STRING([--with-iconv-lib=LIB_PATH],
-                           [the location of the iconv library]),
-            [iconv_lib_path=$withval])
-
 # zlib include and library path
 AC_ARG_WITH([zlib-include],
             AC_HELP_STRING([--with-zlib-include=INCLUDE_PATH],
@@ -250,29 +239,16 @@ fi
 have_iconv=no
 case "${host_os}" in
     darwin*)
-        # Check for optional iconv include path
-        if test [ -n "$iconv_include_path" ] ; then
-            CPPFLAGS="-I${iconv_include_path} ${CPPFLAGS}"
-        fi
+        AM_ICONV
 
-        # Check for optional iconv lib path
-        if test [ -n "$iconv_lib_path" ] ; then
-            LIBS="-L${iconv_lib_path} ${LIBS}"
-        fi
-
-        AC_SEARCH_LIBS([iconv_open], [iconv], [have_iconv=yes])
-
-        if test "x${have_iconv}" = xno; then
+        if test "x${am_cv_func_iconv}" = xyes; then
+           have_iconv=yes
+           LIBS="${LIBS} ${LIBICONV}"
+        else
             AC_MSG_FAILURE([
   ---------------------------------------------
    The iconv library that is required to
    build git2r was not found.
-
-   If the iconv library is installed on
-   your system but the git2r configuration
-   is unable to find it, you can specify
-   the include and lib path to iconv with:
-   R CMD INSTALL --configure-args='--with-iconv-include=INCLUDE_PATH --with-iconv-lib=LIB_PATH' git2r
   ---------------------------------------------])
         fi
     ;;
