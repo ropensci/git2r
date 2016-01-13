@@ -37,6 +37,8 @@ status_obs_1 <- status(repo)
 str(status_exp_1)
 str(status_obs_1)
 stopifnot(identical(status_obs_1, status_exp_1))
+stopifnot(identical(capture.output(status(repo)),
+                    "working directory clean"))
 
 ## Status case 2, include ignored files
 status_exp_2 <- structure(list(staged = structure(list(), .Names = character(0)),
@@ -45,10 +47,12 @@ status_exp_2 <- structure(list(staged = structure(list(), .Names = character(0))
                                ignored = structure(list(), .Names = character(0))),
                           .Names = c("staged", "unstaged", "untracked", "ignored"),
                           class = "git_status")
-status_obs_2 <- status(repo, ignored=TRUE)
+status_obs_2 <- status(repo, ignored = TRUE)
 str(status_exp_2)
 str(status_obs_2)
 stopifnot(identical(status_obs_2, status_exp_2))
+stopifnot(identical(capture.output(status(repo, ignored = TRUE)),
+                    "working directory clean"))
 
 ## Create 4 files
 writeLines("File-1", file.path(path, "test-1.txt"))
