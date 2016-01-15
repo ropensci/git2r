@@ -29,6 +29,9 @@ AC_DEFUN([AC_PROG_BREW], [AC_CHECK_PROG(BREW,brew,yes)])
 case "${host_os}" in
     darwin*)
         AC_PROG_BREW
+        if test "x${BREW}" = xyes; then
+            BREW_DIR=`brew --prefix`
+        fi
     ;;
 esac
 
@@ -133,7 +136,6 @@ fi
 case "${host_os}" in
     darwin*)
         if test "x${BREW}" = xyes; then
-            BREW_DIR=`brew --prefix`
             CPPFLAGS="${CPPFLAGS} -I${BREW_DIR}/opt/openssl/include"
             LIBS="${LIBS} -L${BREW_DIR}/opt/openssl/lib"
         fi
@@ -179,41 +181,17 @@ if test [ -n "$libssh2_lib_path" ] ; then
     LIBS="-L${libssh2_lib_path} ${LIBS}"
 fi
 
+# On OS X, add path to libssh2 in brew
+case "${host_os}" in
+    darwin*)
+        if test "x${BREW}" = xyes; then
+            CPPFLAGS="${CPPFLAGS} -I${BREW_DIR}/opt/libssh2/include"
+            LIBS="${LIBS} -L${BREW_DIR}/opt/libssh2/lib"
+        fi
+    ;;
+esac
+
 AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
-
-if test "x${have_ssh2}" = xno; then
-    # Static linking of LibSSH2 on OSX to support redistributable binary packages
-    case "${host_os}" in
-        darwin*)
-            AC_MSG_NOTICE([Download and build libssh2])
-
-            # Find the compiler and compiler flags to use
-            LDFLAGS=`"${RBIN}" CMD config LDFLAGS`
-            CPICFLAGS=`"${RBIN}" CMD config CPICFLAGS`
-
-            mkdir -p libssh2 && curl -fsSL \
-                https://github.com/libssh2/libssh2/releases/download/libssh2-1.6.0/libssh2-1.6.0.tar.gz \
-                | tar xz --strip 1 -C libssh2
-            mkdir -p src/libssh2
-            LIBSSH2_INST_DIR="${PWD}/src/libssh2"
-            cp -f tools/missing libssh2
-            cd libssh2
-            ./configure --with-pic --with-openssl --disable-examples-build \
-                --disable-shared --enable-static \
-                --prefix=$LIBSSH2_INST_DIR CC="${CC}" \
-                CFLAGS="${CFLAGS} ${CPICFLAGS} -Wno-deprecated-declarations" \
-                CPPFLAGS="${CPPFLAGS}" LDFLAGS=${LDFLAGS} \
-                && make && make install && have_ssh2=yes
-            cd ..
-            rm -rf libssh2
-
-            if test "x${have_ssh2}" = xyes; then
-                LIBSSH2_CFLAGS="-Ilibssh2/include"
-                LIBSSH2_LIBS="-Llibssh2/lib -lssh2"
-            fi
-        ;;
-    esac
-fi
 
 if test "x${have_ssh2}" = xno; then
     AC_MSG_WARN([
@@ -225,6 +203,7 @@ if test "x${have_ssh2}" = xno; then
    To build with SSH support, please install:
      libssh2-1-dev (package on e.g. Debian and Ubuntu)
      libssh2-devel (package on e.g. Fedora, CentOS and RHEL)
+     libssh2       (Homebrew package on OS X)
    and try again.
 
    If the LibSSH2 library is installed on
