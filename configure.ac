@@ -219,16 +219,8 @@ have_iconv=no
 case "${host_os}" in
     darwin*)
         AM_ICONV
-
         if test "x${am_cv_func_iconv}" = xyes; then
-           have_iconv=yes
-           LIBS="${LIBS} ${LIBICONV}"
-        else
-            AC_MSG_FAILURE([
-  ---------------------------------------------
-   The iconv library that is required to
-   build git2r was not found.
-  ---------------------------------------------])
+            have_iconv=yes
         fi
     ;;
 esac
@@ -336,7 +328,7 @@ CFLAGS="${oCFLAGS}"
 AC_SUBST(GIT2R_SRC_REGEX)
 AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS} ${LIBSSH2_CFLAGS}"])
 AC_SUBST([PKG_CPPFLAGS], ["${CPPFLAGS} ${LIBCURL_CPPFLAGS}"])
-AC_SUBST([PKG_LIBS], ["${LIBS} ${LIBSSH2_LIBS} ${LIBCURL}"])
+AC_SUBST([PKG_LIBS], ["${LIBS} ${LIBSSH2_LIBS} ${LIBCURL} ${LIBICONV}"])
 
 AC_CONFIG_FILES([src/Makevars])
 

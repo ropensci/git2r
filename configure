@@ -4995,19 +4995,8 @@ _ACEOF
 
   fi
 
-
         if test "x${am_cv_func_iconv}" = xyes; then
-           have_iconv=yes
-           LIBS="${LIBS} ${LIBICONV}"
-        else
-            { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "
-  ---------------------------------------------
-   The iconv library that is required to
-   build git2r was not found.
-  ---------------------------------------------
-See \`config.log' for more details" "$LINENO" 5; }
+            have_iconv=yes
         fi
     ;;
 esac
@@ -5809,7 +5798,7 @@ PKG_CFLAGS="${PKG_CFLAGS} ${LIBSSH2_CFLAGS}"
 
 PKG_CPPFLAGS="${CPPFLAGS} ${LIBCURL_CPPFLAGS}"
 
-PKG_LIBS="${LIBS} ${LIBSSH2_LIBS} ${LIBCURL}"
+PKG_LIBS="${LIBS} ${LIBSSH2_LIBS} ${LIBCURL} ${LIBICONV}"
 
 
 ac_config_files="$ac_config_files src/Makevars"
