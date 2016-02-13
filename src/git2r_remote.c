@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2016 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -79,31 +79,33 @@ SEXP git2r_remote_add(SEXP repo, SEXP name, SEXP url)
  *
  * Based on the libgit2 network/fetch.c example.
  *
- * @refname The name of the remote
- * @a The previous position of branch
- * @b The new position of branch
- * @data Callback data. Not used.
+ * @param refname The name of the remote
+ * @param a The previous position of branch
+ * @param b The new position of branch
+ * @param payload Callback data.
  * @return 0
  */
 static int git2r_update_tips_cb(
     const char *refname,
     const git_oid *a,
     const git_oid *b,
-    void *data)
+    void *payload)
 {
-    char a_str[GIT_OID_HEXSZ + 1], b_str[GIT_OID_HEXSZ + 1];
+    git2r_transfer_data *cb_data = (git2r_transfer_data*)payload;
 
-    GIT_UNUSED(data);
+    if (cb_data->verbose) {
+        char b_str[GIT_OID_HEXSZ + 1];
+        git_oid_fmt(b_str, b);
+        b_str[GIT_OID_HEXSZ] = '\0';
 
-    git_oid_fmt(b_str, b);
-    b_str[GIT_OID_HEXSZ] = '\0';
-
-    if (git_oid_iszero(a)) {
-        Rprintf("[new]     %.20s %s\n", b_str, refname);
-    } else {
-        git_oid_fmt(a_str, a);
-        a_str[GIT_OID_HEXSZ] = '\0';
-        Rprintf("[updated] %.10s..%.10s %s\n", a_str, b_str, refname);
+        if (git_oid_iszero(a)) {
+            Rprintf("[new]     %.20s %s\n", b_str, refname);
+        } else {
+            char a_str[GIT_OID_HEXSZ + 1];
+            git_oid_fmt(a_str, a);
+            a_str[GIT_OID_HEXSZ] = '\0';
+            Rprintf("[updated] %.10s..%.10s %s\n", a_str, b_str, refname);
+        }
     }
 
     return 0;
@@ -116,13 +118,15 @@ static int git2r_update_tips_cb(
  * @param name The name of the remote to fetch from
  * @param credentials The credentials for remote repository access.
  * @param msg The one line long message to be appended to the reflog
+ * @param verbose Print information each time a reference is updated locally.
  * @return R_NilValue
  */
 SEXP git2r_remote_fetch(
     SEXP repo,
     SEXP name,
     SEXP credentials,
-    SEXP msg)
+    SEXP msg,
+    SEXP verbose)
 {
     int err;
     SEXP result = R_NilValue;
@@ -138,6 +142,8 @@ SEXP git2r_remote_fetch(
         git2r_error(__func__, NULL, "'credentials'", git2r_err_credentials_arg);
     if (git2r_arg_check_string(msg))
         git2r_error(__func__, NULL, "'msg'", git2r_err_string_arg);
+    if (git2r_arg_check_logical(verbose))
+        git2r_error(__func__, NULL, "'verbose'", git2r_err_logical_arg);
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -147,6 +153,8 @@ SEXP git2r_remote_fetch(
     if (err)
         goto cleanup;
 
+    if (LOGICAL(verbose)[0])
+        payload.verbose = 1;
     payload.credentials = credentials;
     fetch_opts.callbacks.payload = &payload;
     fetch_opts.callbacks.credentials = &git2r_cred_acquire_cb;

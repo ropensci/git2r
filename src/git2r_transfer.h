@@ -30,10 +30,11 @@
 typedef struct {
     int received_progress;
     int received_done;
+    int verbose;
     SEXP credentials;
 } git2r_transfer_data;
 
-#define GIT2R_TRANSFER_DATA_INIT {0, 0, R_NilValue}
+#define GIT2R_TRANSFER_DATA_INIT {0, 0, 0, R_NilValue}
 
 void git2r_transfer_progress_init(
     const git_transfer_progress *source,

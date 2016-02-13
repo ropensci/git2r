@@ -114,7 +114,7 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_reference_list", (DL_FUNC)&git2r_reference_list, 1},
     {"git2r_reflog_list", (DL_FUNC)&git2r_reflog_list, 2},
     {"git2r_remote_add", (DL_FUNC)&git2r_remote_add, 3},
-    {"git2r_remote_fetch", (DL_FUNC)&git2r_remote_fetch, 4},
+    {"git2r_remote_fetch", (DL_FUNC)&git2r_remote_fetch, 5},
     {"git2r_remote_list", (DL_FUNC)&git2r_remote_list, 1},
     {"git2r_remote_remove", (DL_FUNC)&git2r_remote_remove, 2},
     {"git2r_remote_rename", (DL_FUNC)&git2r_remote_rename, 3},

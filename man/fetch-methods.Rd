@@ -6,9 +6,10 @@
 \alias{fetch,git_repository-method}
 \title{Fetch new data and update tips}
 \usage{
-fetch(repo, name, credentials = NULL)
+fetch(repo, name, credentials = NULL, verbose = TRUE)
 
-\S4method{fetch}{git_repository}(repo, name, credentials = NULL)
+\S4method{fetch}{git_repository}(repo, name, credentials = NULL,
+  verbose = TRUE)
 }
 \arguments{
 \item{repo}{the repository}
@@ -16,11 +17,15 @@ fetch(repo, name, credentials = NULL)
 \item{name}{the remote's name}
 
 \item{credentials}{The credentials for remote repository
-access. Default is NULL. To use and query an ssh-agent for the ssh
-key credentials, let this parameter be NULL (the default).}
+access. Default is NULL. To use and query an ssh-agent for the
+ssh key credentials, let this parameter be NULL (the default).}
+
+\item{verbose}{Print information each time a reference is updated
+locally. Default is \code{TRUE},}
 }
 \value{
-invisible \code{\linkS4class{git_transfer_progress}} object
+invisible \code{\linkS4class{git_transfer_progress}}
+    object
 }
 \description{
 Fetch new data and update tips
