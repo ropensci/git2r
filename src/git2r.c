@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2016 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -114,7 +114,7 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_reference_list", (DL_FUNC)&git2r_reference_list, 1},
     {"git2r_reflog_list", (DL_FUNC)&git2r_reflog_list, 2},
     {"git2r_remote_add", (DL_FUNC)&git2r_remote_add, 3},
-    {"git2r_remote_fetch", (DL_FUNC)&git2r_remote_fetch, 5},
+    {"git2r_remote_fetch", (DL_FUNC)&git2r_remote_fetch, 6},
     {"git2r_remote_list", (DL_FUNC)&git2r_remote_list, 1},
     {"git2r_remote_remove", (DL_FUNC)&git2r_remote_remove, 2},
     {"git2r_remote_rename", (DL_FUNC)&git2r_remote_rename, 3},

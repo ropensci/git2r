@@ -119,6 +119,8 @@ static int git2r_update_tips_cb(
  * @param credentials The credentials for remote repository access.
  * @param msg The one line long message to be appended to the reflog
  * @param verbose Print information each time a reference is updated locally.
+ * @param refspecs The refspecs to use for this fetch. Pass R_NilValue
+ *        to use the base refspecs.
  * @return R_NilValue
  */
 SEXP git2r_remote_fetch(
@@ -126,7 +128,8 @@ SEXP git2r_remote_fetch(
     SEXP name,
     SEXP credentials,
     SEXP msg,
-    SEXP verbose)
+    SEXP verbose,
+    SEXP refspecs)
 {
     int err;
     SEXP result = R_NilValue;
@@ -135,6 +138,7 @@ SEXP git2r_remote_fetch(
     git_repository *repository = NULL;
     git_fetch_options fetch_opts = GIT_FETCH_OPTIONS_INIT;
     git2r_transfer_data payload = GIT2R_TRANSFER_DATA_INIT;
+    git_strarray refs = {0};
 
     if (git2r_arg_check_string(name))
         git2r_error(__func__, NULL, "'name'", git2r_err_string_arg);
@@ -144,6 +148,8 @@ SEXP git2r_remote_fetch(
         git2r_error(__func__, NULL, "'msg'", git2r_err_string_arg);
     if (git2r_arg_check_logical(verbose))
         git2r_error(__func__, NULL, "'verbose'", git2r_err_logical_arg);
+    if (refspecs != R_NilValue && git2r_arg_check_string_vec(refspecs))
+        git2r_error(__func__, NULL, "'refspecs'", git2r_err_string_vec_arg);
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -153,13 +159,38 @@ SEXP git2r_remote_fetch(
     if (err)
         goto cleanup;
 
+    if (refspecs != R_NilValue) {
+        size_t i, len;
+
+        /* Count number of non NA values */
+        len = length(refspecs);
+        for (i = 0; i < len; i++)
+            if (NA_STRING != STRING_ELT(refspecs, i))
+                refs.count++;
+
+        if (refs.count) {
+            /* Allocate the strings in refs */
+            refs.strings = malloc(refs.count * sizeof(char*));
+            if (!refs.strings) {
+                giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
+                err = GIT_ERROR;
+                goto cleanup;
+            }
+
+            /* Populate the strings in refs */
+            for (i = 0; i < refs.count; i++)
+                if (NA_STRING != STRING_ELT(refspecs, i))
+                    refs.strings[i] = (char *)CHAR(STRING_ELT(refspecs, i));
+        }
+    }
+
     if (LOGICAL(verbose)[0])
         payload.verbose = 1;
     payload.credentials = credentials;
     fetch_opts.callbacks.payload = &payload;
     fetch_opts.callbacks.credentials = &git2r_cred_acquire_cb;
     fetch_opts.callbacks.update_tips = &git2r_update_tips_cb;
-    err = git_remote_fetch(remote, NULL, &fetch_opts, CHAR(STRING_ELT(msg, 0)));
+    err = git_remote_fetch(remote, &refs, &fetch_opts, CHAR(STRING_ELT(msg, 0)));
     if (err)
         goto cleanup;
 
@@ -168,6 +199,9 @@ SEXP git2r_remote_fetch(
     git2r_transfer_progress_init(stats, result);
 
 cleanup:
+    if (refs.strings)
+        free(refs.strings);
+
     if (remote) {
         if (git_remote_connected(remote))
             git_remote_disconnect(remote);
