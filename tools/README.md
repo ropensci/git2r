@@ -14,10 +14,9 @@ install utility.
 
 ```
 git clone http://git.savannah.gnu.org/cgit/automake.git
-git checkout 24bf687ed03f1259dea1f0b6588c9e5c1e57366c
+git checkout 4cf99902de8708538843d9fc173549fde4868159
 cp automake/lib/config.guess /path/to/git2r/tools/
 cp automake/lib/config.sub /path/to/git2r/tools/
 cp automake/lib/install-sh /path/to/git2r/tools/
-git checkout 6357a630dc3cac6682a0f17b255104b4dd78f89a
 cp automake/lib/missing /path/to/git2r/tools/
 ```
