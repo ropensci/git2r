@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2016 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -13,6 +13,31 @@
 ## You should have received a copy of the GNU General Public License along
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+##' Determine previous branch name
+##'
+##' @param repo The repository.
+##' @noRd
+previous_branch_name <- function(repo)
+{
+    branch <- revparse_single(repo, "@{-1}")@sha
+
+    branch <- sapply(references(repo), function(x) {
+        ifelse(x@sha == branch, x@shorthand, NA_character_)
+    })
+    branch <- branch[!sapply(branch, is.na)]
+
+    branch <- sapply(branches(repo, "local"), function(x) {
+        ifelse(x@name %in% branch, x@name, NA_character_)
+    })
+    branch <- branch[!sapply(branch, is.na)]
+
+    if (any(!is.character(branch), !identical(length(branch), 1L))) {
+        stop("'branch' must be a character vector of length one")
+    }
+
+    branch
+}
 
 ##' Checkout
 ##'
@@ -122,26 +147,8 @@ setMethod("checkout",
                       ref_name <- paste0("refs/heads/", branch)
                       .Call(git2r_repository_set_head, object, ref_name)
                   } else {
-                      if (identical(branch, "-")) {
-                          ## Determine previous branch name
-                          branch <- revparse_single(object, "@{-1}")@sha
-                          branch <- sapply(references(object), function(x) {
-                                        ifelse(x@sha == branch,
-                                               x@shorthand,
-                                               NA_character_)
-                                    })
-                          branch <- branch[!sapply(branch, is.na)]
-                          branch <- sapply(branches(object, "local"), function(x) {
-                                        ifelse(x@name %in% branch,
-                                               x@name,
-                                               NA_character_)
-                                    })
-                          branch <- branch[!sapply(branch, is.na)]
-                          if (any(!is.character(branch),
-                                  !identical(length(branch), 1L))) {
-                              stop("'branch' must be a character vector of length one")
-                          }
-                      }
+                      if (identical(branch, "-"))
+                          branch <- previous_branch_name(object)
 
                       ## Check if branch exists in a local branch
                       lb <- branches(object, "local")
