@@ -259,4 +259,4 @@ check_git2r_use_registered_symbol(calls)
 
 ## Generate Makevars
 build_Makevars.in()
-build_Makevars.win()
+##build_Makevars.win()
