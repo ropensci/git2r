@@ -21,7 +21,7 @@ all: clean winlibs libwinhttp.dll.a libmygit.a
 winhttp.def:
 	cp libgit2/deps/winhttp/winhttp$(WIN).def.in winhttp.def
 
-libmygit.a: $(LIBGIT:.c=.o)
+libmygit.a: $(LIBGIT)
 	$(AR) rcs libmygit.a $(LIBGIT)
 
 winlibs:
