@@ -1,6 +1,7 @@
 *.so
 *.o
 *.dll
+*.a
 *.Rproj
 .xapian/*
 /src/Makevars
@@ -19,3 +20,4 @@ openssl.zip
 /src/zlib/
 local320.zip
 .Rproj.user
+windows

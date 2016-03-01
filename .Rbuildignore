@@ -12,3 +12,5 @@
 ^tools/README\.md$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^windows
+^.*\.a$
