@@ -327,7 +327,7 @@ static int submodules_from_index(git_strmap *map, git_index *idx, git_config *cf
        const git_index_entry *entry;
        git_buf name = GIT_BUF_INIT;
 
-       if ((error = git_iterator_for_index(&i, idx, NULL)) < 0)
+       if ((error = git_iterator_for_index(&i, git_index_owner(idx), idx, NULL)) < 0)
                return error;
 
        while (!(error = git_iterator_advance(&entry, i))) {
@@ -778,9 +778,9 @@ int git_submodule_add_to_index(git_submodule *sm, int write_index)
 	if ((error = git_commit_lookup(&head, sm_repo, &sm->wd_oid)) < 0)
 		goto cleanup;
 
-	entry.ctime.seconds = git_commit_time(head);
+	entry.ctime.seconds = (int32_t)git_commit_time(head);
 	entry.ctime.nanoseconds = 0;
-	entry.mtime.seconds = git_commit_time(head);
+	entry.mtime.seconds = (int32_t)git_commit_time(head);
 	entry.mtime.nanoseconds = 0;
 
 	git_commit_free(head);
@@ -1037,7 +1037,7 @@ static int submodule_repo_create(
 
 	/**
 	 * Repodir: path to the sub-repo. sub-repo goes in:
-	 * <repo-dir>/modules/<name>/ with a gitlink in the 
+	 * <repo-dir>/modules/<name>/ with a gitlink in the
 	 * sub-repo workdir directory to that repository.
 	 */
 	error = git_buf_join3(
@@ -1154,7 +1154,7 @@ int git_submodule_update(git_submodule *sm, int init, git_submodule_update_optio
 		clone_options.repository_cb_payload = sm;
 
 		/*
-		 * Do not perform checkout as part of clone, instead we 
+		 * Do not perform checkout as part of clone, instead we
 		 * will checkout the specific commit manually.
 		 */
 		clone_options.checkout_opts.checkout_strategy = GIT_CHECKOUT_NONE;

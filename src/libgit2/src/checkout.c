@@ -5,12 +5,6 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
-/**
- * Changed 'abort' to 'Rf_error' to pass 'R CMD check git2r'
- * 2014-11-20: Stefan Widgren <stefan.widgren@gmail.com>
- */
-void Rf_error(const char*, ...);
-
 #include <assert.h>
 
 #include "checkout.h"
@@ -1209,9 +1203,7 @@ static int checkout_conflict_append_remove(
 	else if (theirs)
 		name = git__strdup(theirs->path);
 	else
-                Rf_error("Unexpected error in 'checkout_conflict_append_remove'."
-                         " Please report at"
-                         " https://github.com/ropensci/git2r/issues");
+		abort();
 
 	GITERR_CHECK_ALLOC(name);
 
@@ -1234,7 +1226,7 @@ static int checkout_verify_paths(
 	int action,
 	git_diff_delta *delta)
 {
-	unsigned int flags = GIT_PATH_REJECT_DEFAULTS | GIT_PATH_REJECT_DOT_GIT;
+	unsigned int flags = GIT_PATH_REJECT_WORKDIR_DEFAULTS;
 
 	if (action & CHECKOUT_ACTION__REMOVE) {
 		if (!git_path_isvalid(repo, delta->old_file.path, flags)) {
@@ -1495,8 +1487,10 @@ static int blob_content_to_file(
 	if (!data->opts.disable_filters &&
 		(error = git_filter_list__load_ext(
 			&fl, data->repo, blob, hint_path,
-			GIT_FILTER_TO_WORKTREE, &filter_opts)))
+			GIT_FILTER_TO_WORKTREE, &filter_opts))) {
+		p_close(fd);
 		return error;
+	}
 
 	/* setup the writer */
 	memset(&writer, 0, sizeof(struct checkout_stream));
@@ -2527,7 +2521,8 @@ int git_checkout_iterator(
 
 	if (data.opts.baseline_index) {
 		if ((error = git_iterator_for_index(
-				&baseline, data.opts.baseline_index, &baseline_opts)) < 0)
+				&baseline, git_index_owner(data.opts.baseline_index),
+				data.opts.baseline_index, &baseline_opts)) < 0)
 			goto cleanup;
 	} else {
 		if ((error = git_iterator_for_tree(
@@ -2639,7 +2634,7 @@ int git_checkout_index(
 		return error;
 	GIT_REFCOUNT_INC(index);
 
-	if (!(error = git_iterator_for_index(&index_i, index, NULL)))
+	if (!(error = git_iterator_for_index(&index_i, repo, index, NULL)))
 		error = git_checkout_iterator(index_i, index, opts);
 
 	if (owned)

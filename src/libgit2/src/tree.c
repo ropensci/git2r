@@ -17,6 +17,9 @@
 #define DEFAULT_TREE_SIZE 16
 #define MAX_FILEMODE_BYTES 6
 
+#define TREE_ENTRY_CHECK_NAMELEN(n) \
+	if (n > UINT16_MAX) { giterr_set(GITERR_INVALID, "tree entry path too long"); }
+
 GIT__USE_STRMAP
 
 static bool valid_filemode(const int filemode)
@@ -89,10 +92,7 @@ static git_tree_entry *alloc_entry_base(git_pool *pool, const char *filename, si
 	git_tree_entry *entry = NULL;
 	size_t tree_len;
 
-	if (filename_len > UINT16_MAX) {
-		giterr_set(GITERR_INVALID, "tree entry is over UINT16_MAX in length");
-		return NULL;
-	}
+	TREE_ENTRY_CHECK_NAMELEN(filename_len);
 
 	if (GIT_ADD_SIZET_OVERFLOW(&tree_len, sizeof(git_tree_entry), filename_len) ||
 	    GIT_ADD_SIZET_OVERFLOW(&tree_len, tree_len, 1))
@@ -106,7 +106,7 @@ static git_tree_entry *alloc_entry_base(git_pool *pool, const char *filename, si
 	memset(entry, 0x0, sizeof(git_tree_entry));
 	memcpy(entry->filename, filename, filename_len);
 	entry->filename[filename_len] = 0;
-	entry->filename_len = filename_len;
+	entry->filename_len = (uint16_t)filename_len;
 
 	return entry;
 }
@@ -143,8 +143,8 @@ static int homing_search_cmp(const void *key, const void *array_member)
 	const struct tree_key_search *ksearch = key;
 	const git_tree_entry *entry = array_member;
 
-	const size_t len1 = ksearch->filename_len;
-	const size_t len2 = entry->filename_len;
+	const uint16_t len1 = ksearch->filename_len;
+	const uint16_t len2 = entry->filename_len;
 
 	return memcmp(
 		ksearch->filename,
@@ -180,8 +180,10 @@ static int tree_key_search(
 	const git_tree_entry *entry;
 	size_t homing, i;
 
+	TREE_ENTRY_CHECK_NAMELEN(filename_len);
+
 	ksearch.filename = filename;
-	ksearch.filename_len = filename_len;
+	ksearch.filename_len = (uint16_t)filename_len;
 
 	/* Initial homing search; find an entry on the tree with
 	 * the same prefix as the filename we're looking for */
@@ -334,6 +336,7 @@ const git_tree_entry *git_tree_entry_byname(
 	const git_tree *tree, const char *filename)
 {
 	assert(tree && filename);
+
 	return entry_fromname(tree, filename, strlen(filename));
 }
 
@@ -364,13 +367,16 @@ int git_tree__prefix_position(const git_tree *tree, const char *path)
 {
 	const git_vector *entries = &tree->entries;
 	struct tree_key_search ksearch;
-	size_t at_pos;
+	size_t at_pos, path_len;
 
 	if (!path)
 		return 0;
 
+	path_len = strlen(path);
+	TREE_ENTRY_CHECK_NAMELEN(path_len);
+
 	ksearch.filename = path;
-	ksearch.filename_len = strlen(path);
+	ksearch.filename_len = (uint16_t)path_len;
 
 	/* be safe when we cast away constness - i.e. don't trigger a sort */
 	assert(git_vector_is_sorted(&tree->entries));
@@ -720,6 +726,18 @@ on_error:
 	return -1;
 }
 
+static git_otype otype_from_mode(git_filemode_t filemode)
+{
+	switch (filemode) {
+	case GIT_FILEMODE_TREE:
+		return GIT_OBJ_TREE;
+	case GIT_FILEMODE_COMMIT:
+		return GIT_OBJ_COMMIT;
+	default:
+		return GIT_OBJ_BLOB;
+	}
+}
+
 int git_treebuilder_insert(
 	const git_tree_entry **entry_out,
 	git_treebuilder *bld,
@@ -738,6 +756,9 @@ int git_treebuilder_insert(
 
 	if (!valid_entry_name(bld->repo, filename))
 		return tree_error("Failed to insert entry. Invalid name for a tree entry", filename);
+
+	if (!git_object__is_valid(bld->repo, id, otype_from_mode(filemode)))
+		return tree_error("Failed to insert entry; invalid object specified", filename);
 
 	pos = git_strmap_lookup_index(bld->map, filename);
 	if (git_strmap_valid_index(bld->map, pos)) {

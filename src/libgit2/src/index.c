@@ -603,14 +603,14 @@ const git_oid *git_index_checksum(git_index *index)
  */
 static int compare_checksum(git_index *index)
 {
-	int fd, error;
+	int fd;
 	ssize_t bytes_read;
 	git_oid checksum = {{ 0 }};
 
 	if ((fd = p_open(index->index_file_path, O_RDONLY)) < 0)
 		return fd;
 
-	if ((error = p_lseek(fd, -20, SEEK_END)) < 0) {
+	if (p_lseek(fd, -20, SEEK_END) < 0) {
 		p_close(fd);
 		giterr_set(GITERR_OS, "failed to seek to end of file");
 		return -1;
@@ -826,11 +826,11 @@ const git_index_entry *git_index_get_bypath(
 void git_index_entry__init_from_stat(
 	git_index_entry *entry, struct stat *st, bool trust_mode)
 {
-	entry->ctime.seconds = (git_time_t)st->st_ctime;
-	entry->mtime.seconds = (git_time_t)st->st_mtime;
+	entry->ctime.seconds = (int32_t)st->st_ctime;
+	entry->mtime.seconds = (int32_t)st->st_mtime;
 #if defined(GIT_USE_NSEC)
-	entry->mtime.nanoseconds = st->st_mtim.tv_nsec;
-	entry->ctime.nanoseconds = st->st_ctim.tv_nsec;
+	entry->mtime.nanoseconds = st->st_mtime_nsec;
+	entry->ctime.nanoseconds = st->st_ctime_nsec;
 #endif
 	entry->dev  = st->st_rdev;
 	entry->ino  = st->st_ino;
@@ -838,7 +838,7 @@ void git_index_entry__init_from_stat(
 		git_index__create_mode(0666) : git_index__create_mode(st->st_mode);
 	entry->uid  = st->st_uid;
 	entry->gid  = st->st_gid;
-	entry->file_size = st->st_size;
+	entry->file_size = (uint32_t)st->st_size;
 }
 
 static void index_entry_adjust_namemask(
@@ -853,17 +853,31 @@ static void index_entry_adjust_namemask(
 		entry->flags |= GIT_IDXENTRY_NAMEMASK;
 }
 
+/* When `from_workdir` is true, we will validate the paths to avoid placing
+ * paths that are invalid for the working directory on the current filesystem
+ * (eg, on Windows, we will disallow `GIT~1`, `AUX`, `COM1`, etc).  This
+ * function will *always* prevent `.git` and directory traversal `../` from
+ * being added to the index.
+ */
 static int index_entry_create(
 	git_index_entry **out,
 	git_repository *repo,
-	const char *path)
+	const char *path,
+	bool from_workdir)
 {
 	size_t pathlen = strlen(path), alloclen;
 	struct entry_internal *entry;
+	unsigned int path_valid_flags = GIT_PATH_REJECT_INDEX_DEFAULTS;
 
-	if (!git_path_isvalid(repo, path,
-		GIT_PATH_REJECT_DEFAULTS | GIT_PATH_REJECT_DOT_GIT)) {
-		giterr_set(GITERR_INDEX, "Invalid path: '%s'", path);
+	/* always reject placing `.git` in the index and directory traversal.
+	 * when requested, disallow platform-specific filenames and upgrade to
+	 * the platform-specific `.git` tests (eg, `git~1`, etc).
+	 */
+	if (from_workdir)
+		path_valid_flags |= GIT_PATH_REJECT_WORKDIR_DEFAULTS;
+
+	if (!git_path_isvalid(repo, path, path_valid_flags)) {
+		giterr_set(GITERR_INDEX, "invalid path: '%s'", path);
 		return -1;
 	}
 
@@ -895,7 +909,7 @@ static int index_entry_init(
 			"Could not initialize index entry. "
 			"Index is not backed up by an existing repository.");
 
-	if (index_entry_create(&entry, INDEX_OWNER(index), rel_path) < 0)
+	if (index_entry_create(&entry, INDEX_OWNER(index), rel_path, true) < 0)
 		return -1;
 
 	/* write the blob to disk and get the oid and stat info */
@@ -975,7 +989,7 @@ static int index_entry_dup(
 	git_index *index,
 	const git_index_entry *src)
 {
-	if (index_entry_create(out, INDEX_OWNER(index), src->path) < 0)
+	if (index_entry_create(out, INDEX_OWNER(index), src->path, false) < 0)
 		return -1;
 
 	index_entry_cpy(*out, src);
@@ -997,7 +1011,7 @@ static int index_entry_dup_nocache(
 	git_index *index,
 	const git_index_entry *src)
 {
-	if (index_entry_create(out, INDEX_OWNER(index), src->path) < 0)
+	if (index_entry_create(out, INDEX_OWNER(index), src->path, false) < 0)
 		return -1;
 
 	index_entry_cpy_nocache(*out, src);
@@ -1231,17 +1245,22 @@ static void index_existing_and_best(
  * it, then it will return an error **and also free the entry**.  When
  * it replaces an existing entry, it will update the entry_ptr with the
  * actual entry in the index (and free the passed in one).
+ *
  * trust_path is whether we use the given path, or whether (on case
  * insensitive systems only) we try to canonicalize the given path to
  * be within an existing directory.
+ *
  * trust_mode is whether we trust the mode in entry_ptr.
+ *
+ * trust_id is whether we trust the id or it should be validated.
  */
 static int index_insert(
 	git_index *index,
 	git_index_entry **entry_ptr,
 	int replace,
 	bool trust_path,
-	bool trust_mode)
+	bool trust_mode,
+	bool trust_id)
 {
 	int error = 0;
 	size_t path_length, position;
@@ -1273,6 +1292,15 @@ static int index_insert(
 	/* canonicalize the directory name */
 	if (!trust_path)
 		error = canonicalize_directory_path(index, entry, best);
+
+	/* ensure that the given id exists (unless it's a submodule) */
+	if (!error && !trust_id && INDEX_OWNER(index) &&
+		(entry->mode & GIT_FILEMODE_COMMIT) != GIT_FILEMODE_COMMIT) {
+
+		if (!git_object__is_valid(INDEX_OWNER(index), &entry->id,
+			git_object__type_from_filemode(entry->mode)))
+			error = -1;
+	}
 
 	/* look for tree / blob name collisions, removing conflicts if requested */
 	if (!error)
@@ -1381,7 +1409,7 @@ int git_index_add_frombuffer(
 	git_oid_cpy(&entry->id, &id);
 	entry->file_size = len;
 
-	if ((error = index_insert(index, &entry, 1, true, true)) < 0)
+	if ((error = index_insert(index, &entry, 1, true, true, true)) < 0)
 		return error;
 
 	/* Adding implies conflict was resolved, move conflict entries to REUC */
@@ -1402,7 +1430,7 @@ static int add_repo_as_submodule(git_index_entry **out, git_index *index, const 
 	struct stat st;
 	int error;
 
-	if (index_entry_create(&entry, INDEX_OWNER(index), path) < 0)
+	if (index_entry_create(&entry, INDEX_OWNER(index), path, true) < 0)
 		return -1;
 
 	if ((error = git_buf_joinpath(&abspath, git_repository_workdir(repo), path)) < 0)
@@ -1440,7 +1468,7 @@ int git_index_add_bypath(git_index *index, const char *path)
 	assert(index && path);
 
 	if ((ret = index_entry_init(&entry, index, path)) == 0)
-		ret = index_insert(index, &entry, 1, false, false);
+		ret = index_insert(index, &entry, 1, false, false, true);
 
 	/* If we were given a directory, let's see if it's a submodule */
 	if (ret < 0 && ret != GIT_EDIRECTORY)
@@ -1466,7 +1494,7 @@ int git_index_add_bypath(git_index *index, const char *path)
 			if ((ret = add_repo_as_submodule(&entry, index, path)) < 0)
 				return ret;
 
-			if ((ret = index_insert(index, &entry, 1, false, false)) < 0)
+			if ((ret = index_insert(index, &entry, 1, false, false, true)) < 0)
 				return ret;
 		} else if (ret < 0) {
 			return ret;
@@ -1515,7 +1543,7 @@ int git_index__fill(git_index *index, const git_vector *source_entries)
 		return 0;
 
 	git_vector_size_hint(&index->entries, source_entries->length);
-	git_idxmap_resize(index->entries_map, source_entries->length * 1.3);
+	git_idxmap_resize(index->entries_map, (khint_t)(source_entries->length * 1.3));
 
 	git_vector_foreach(source_entries, i, source_entry) {
 		git_index_entry *entry = NULL;
@@ -1555,7 +1583,7 @@ int git_index_add(git_index *index, const git_index_entry *source_entry)
 	}
 
 	if ((ret = index_entry_dup(&entry, index, source_entry)) < 0 ||
-		(ret = index_insert(index, &entry, 1, true, true)) < 0)
+		(ret = index_insert(index, &entry, 1, true, true, false)) < 0)
 		return ret;
 
 	git_tree_cache_invalidate_path(index->tree, entry->path);
@@ -1717,7 +1745,7 @@ int git_index_conflict_add(git_index *index,
 		/* Make sure stage is correct */
 		GIT_IDXENTRY_STAGE_SET(entries[i], i + 1);
 
-		if ((ret = index_insert(index, &entries[i], 1, true, true)) < 0)
+		if ((ret = index_insert(index, &entries[i], 1, true, true, false)) < 0)
 			goto on_error;
 
 		entries[i] = NULL; /* don't free if later entry fails */
@@ -2121,11 +2149,11 @@ static int read_reuc(git_index *index, const char *buffer, size_t size)
 
 		/* read 3 ASCII octal numbers for stage entries */
 		for (i = 0; i < 3; i++) {
-			int tmp;
+			int64_t tmp;
 
-			if (git__strtol32(&tmp, buffer, &endptr, 8) < 0 ||
+			if (git__strtol64(&tmp, buffer, &endptr, 8) < 0 ||
 				!endptr || endptr == buffer || *endptr ||
-				(unsigned)tmp > UINT_MAX) {
+				tmp < 0) {
 				index_entry_reuc_free(lost);
 				return index_error_invalid("reading reuc entry stage");
 			}
@@ -2179,9 +2207,10 @@ static int read_conflict_names(git_index *index, const char *buffer, size_t size
 
 #define read_conflict_name(ptr) \
 	len = p_strnlen(buffer, size) + 1; \
-	if (size < len) \
-		return index_error_invalid("reading conflict name entries"); \
-	\
+	if (size < len) { \
+		index_error_invalid("reading conflict name entries"); \
+		goto out_err; \
+	} \
 	if (len == 1) \
 		ptr = NULL; \
 	else { \
@@ -2202,7 +2231,16 @@ static int read_conflict_names(git_index *index, const char *buffer, size_t size
 		read_conflict_name(conflict_name->theirs);
 
 		if (git_vector_insert(&index->names, conflict_name) < 0)
-			return -1;
+			goto out_err;
+
+		continue;
+
+out_err:
+		git__free(conflict_name->ancestor);
+		git__free(conflict_name->ours);
+		git__free(conflict_name->theirs);
+		git__free(conflict_name);
+		return -1;
 	}
 
 #undef read_conflict_name
@@ -2788,7 +2826,7 @@ static int read_tree_cb(
 	if (git_buf_joinpath(&path, root, tentry->filename) < 0)
 		return -1;
 
-	if (index_entry_create(&entry, INDEX_OWNER(data->index), path.ptr) < 0)
+	if (index_entry_create(&entry, INDEX_OWNER(data->index), path.ptr, false) < 0)
 		return -1;
 
 	entry->mode = tentry->attr;
@@ -2907,8 +2945,8 @@ int git_index_read_index(
 
 	opts.flags = GIT_ITERATOR_DONT_IGNORE_CASE;
 
-	if ((error = git_iterator_for_index(&index_iterator, index, &opts)) < 0 ||
-		(error = git_iterator_for_index(&new_iterator, (git_index *)new_index, &opts)) < 0)
+	if ((error = git_iterator_for_index(&index_iterator, git_index_owner(index), index, &opts)) < 0 ||
+		(error = git_iterator_for_index(&new_iterator, git_index_owner(new_index), (git_index *)new_index, &opts)) < 0)
 		goto done;
 
 	if (((error = git_iterator_current(&old_entry, index_iterator)) < 0 &&

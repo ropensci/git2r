@@ -18,12 +18,6 @@
 # include <Shlwapi.h>
 #endif
 
-/**
- * Changed all printf to Rprintf to pass 'R CMD check git2r'
- * 2014-08-19: Stefan Widgren <stefan.widgren@gmail.com>
- */
-void Rprintf(const char*, ...);
-
 void git_strarray_free(git_strarray *array)
 {
 	size_t i;
@@ -340,36 +334,36 @@ void git__hexdump(const char *buffer, size_t len)
 	for (i = 0; i < line_count; ++i) {
 		line = buffer + (i * LINE_WIDTH);
 		for (j = 0; j < LINE_WIDTH; ++j, ++line)
-			Rprintf("%02X ", (unsigned char)*line & 0xFF);
+			printf("%02X ", (unsigned char)*line & 0xFF);
 
-		Rprintf("| ");
+		printf("| ");
 
 		line = buffer + (i * LINE_WIDTH);
 		for (j = 0; j < LINE_WIDTH; ++j, ++line)
-			Rprintf("%c", (*line >= 32 && *line <= 126) ? *line : '.');
+			printf("%c", (*line >= 32 && *line <= 126) ? *line : '.');
 
-		Rprintf("\n");
+		printf("\n");
 	}
 
 	if (last_line > 0) {
 
 		line = buffer + (line_count * LINE_WIDTH);
 		for (j = 0; j < last_line; ++j, ++line)
-			Rprintf("%02X ", (unsigned char)*line & 0xFF);
+			printf("%02X ", (unsigned char)*line & 0xFF);
 
 		for (j = 0; j < (LINE_WIDTH - last_line); ++j)
-			Rprintf("	");
+			printf("	");
 
-		Rprintf("| ");
+		printf("| ");
 
 		line = buffer + (line_count * LINE_WIDTH);
 		for (j = 0; j < last_line; ++j, ++line)
-			Rprintf("%c", (*line >= 32 && *line <= 126) ? *line : '.');
+			printf("%c", (*line >= 32 && *line <= 126) ? *line : '.');
 
-		Rprintf("\n");
+		printf("\n");
 	}
 
-	Rprintf("\n");
+	printf("\n");
 }
 
 #ifdef GIT_LEGACY_HASH

@@ -5,12 +5,6 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
-/**
- * Changed 'abort' to 'Rf_error' to pass 'R CMD check git2r'
- * 2016-01-07: Stefan Widgren <stefan.widgren@gmail.com>
- */
-void Rf_error(const char*, ...);
-
 #include "common.h"
 #include "annotated_commit.h"
 #include "refs.h"
@@ -201,9 +195,7 @@ void git_annotated_commit_free(git_annotated_commit *annotated_commit)
 			git_array_clear(annotated_commit->parents);
 			break;
 		default:
-                        Rf_error("Error in 'git_annotated_commit_free':"
-                                 " Unexpected error. Please report at"
-                                 " https://github.com/ropensci/git2r/issues");
+			abort();
 	}
 
 	git__free(annotated_commit);

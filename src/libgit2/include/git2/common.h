@@ -147,6 +147,7 @@ typedef enum {
 	GIT_OPT_SET_TEMPLATE_PATH,
 	GIT_OPT_SET_SSL_CERT_LOCATIONS,
 	GIT_OPT_SET_USER_AGENT,
+	GIT_OPT_ENABLE_STRICT_OBJECT_CREATION,
 } git_libgit2_opt_t;
 
 /**
@@ -244,6 +245,20 @@ typedef enum {
  * 		> Either parameter may be `NULL`, but not both.
  *
  *	* opts(GIT_OPT_SET_USER_AGENT, const char *user_agent)
+ *
+ *		> Set the value of the User-Agent header.  This value will be
+ *		> appended to "git/1.0", for compatibility with other git clients.
+ *		>
+ *		> - `user_agent` is the value that will be delivered as the
+ *		>   User-Agent header on HTTP requests.
+ *
+ *	* opts(GIT_OPT_ENABLE_STRICT_OBJECT_CREATION, int enabled)
+ *
+ *		> Enable strict input validation when creating new objects
+ *		> to ensure that all inputs to the new objects are valid.  For
+ *		> example, when this is enabled, the parent(s) and tree inputs
+ *		> will be validated when creating a new commit.  This defaults
+ *		> to disabled.
  *
  * @param option Option key
  * @param ... value to set the option

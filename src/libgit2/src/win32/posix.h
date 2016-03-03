@@ -7,15 +7,9 @@
 #ifndef INCLUDE_posix__w32_h__
 #define INCLUDE_posix__w32_h__
 
-/**
- * Changed to use the 'gnu_printf' format attribute on 'p_snprintf' to
- * pass 'R CMD check git2r' on Windows
- *
- * 2014-08-22: Stefan Widgren <stefan.widgren@gmail.com>
- */
-
 #include "common.h"
 #include "../posix.h"
+#include "win32-compat.h"
 #include "path_w32.h"
 #include "utf-conv.h"
 #include "dir.h"
@@ -23,12 +17,13 @@
 typedef SOCKET GIT_SOCKET;
 
 #define p_lseek(f,n,w) _lseeki64(f, n, w)
-#define p_fstat(f,b) _fstat64(f, b)
-extern int p_lstat(const char *file_name, struct stat *buf);
-extern int p_stat(const char* path, struct stat* buf);
 
-extern int p_utimes(const char *filename, const struct timeval times[2]);
-extern int p_futimes(int fd, const struct timeval times[2]);
+extern int p_fstat(int fd, struct stat *buf);
+extern int p_lstat(const char *file_name, struct stat *buf);
+extern int p_stat(const char* path, struct stat *buf);
+
+extern int p_utimes(const char *filename, const struct p_timeval times[2]);
+extern int p_futimes(int fd, const struct p_timeval times[2]);
 
 extern int p_readlink(const char *path, char *buf, size_t bufsiz);
 extern int p_symlink(const char *old, const char *new);
@@ -43,7 +38,7 @@ extern int p_send(GIT_SOCKET socket, const void *buffer, size_t length, int flag
 extern int p_inet_pton(int af, const char* src, void* dst);
 
 extern int p_vsnprintf(char *buffer, size_t count, const char *format, va_list argptr);
-extern int p_snprintf(char *buffer, size_t count, const char *format, ...) __attribute__((__format__ (gnu_printf, 3, 4)));
+extern int p_snprintf(char *buffer, size_t count, const char *format, ...) GIT_FORMAT_PRINTF(3, 4);
 extern int p_mkstemp(char *tmp_path);
 extern int p_chdir(const char* path);
 extern int p_chmod(const char* path, mode_t mode);

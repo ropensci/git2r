@@ -68,6 +68,12 @@
 # endif
 #define GIT_STDLIB_CALL
 
+#ifdef GIT_USE_STAT_ATIMESPEC
+# define st_atim st_atimespec
+# define st_ctim st_ctimespec
+# define st_mtim st_mtimespec
+#endif
+
 # include <arpa/inet.h>
 
 #endif
@@ -88,6 +94,11 @@
  * Check a pointer allocation result, returning -1 if it failed.
  */
 #define GITERR_CHECK_ALLOC(ptr) if (ptr == NULL) { return -1; }
+
+/**
+ * Check a buffer allocation result, returning -1 if it failed.
+ */
+#define GITERR_CHECK_ALLOC_BUF(buf) if ((void *)(buf) == NULL || git_buf_oom(buf)) { return -1; }
 
 /**
  * Check a return value and propagate result if non-zero.

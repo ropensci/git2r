@@ -15,21 +15,6 @@
 #include "object.h"
 #include "git2/oid.h"
 
-/**
- * Changed all printf to Rprintf to pass 'R CMD check git2r'
- * 2014-08-09: Stefan Widgren <stefan.widgren@gmail.com>
- *
- * Use R's 'runif' instead of 'rand' in function 'cache_evict_entries'
- * to fix 'R CMD check git2r' note: "Compiled code should not call
- * entry points which might terminate R nor write to stdout/stderr
- * instead of to the console, nor the C RNG".
- * 2014-08-28: Stefan Widgren <stefan.widgren@gmail.com>
- */
-#include <Rmath.h>
-void Rprintf(const char*, ...);
-void GetRNGstate(void);
-void PutRNGstate(void);
-
 GIT__USE_OIDMAP
 
 bool git_cache__enabled = true;
@@ -65,12 +50,12 @@ void git_cache_dump_stats(git_cache *cache)
 	if (kh_size(cache->map) == 0)
 		return;
 
-	Rprintf("Cache %p: %d items cached, %"PRIdZ" bytes\n",
+	printf("Cache %p: %d items cached, %"PRIdZ" bytes\n",
 		cache, kh_size(cache->map), cache->used_memory);
 
 	kh_foreach_value(cache->map, object, {
 		char oid_str[9];
-		Rprintf(" %s%c %s (%"PRIuZ")\n",
+		printf(" %s%c %s (%"PRIuZ")\n",
 			git_object_type2string(object->type),
 			object->flags == GIT_CACHE_STORE_PARSED ? '*' : ' ',
 			git_oid_tostr(oid_str, sizeof(oid_str), &object->oid),
@@ -129,14 +114,9 @@ void git_cache_free(git_cache *cache)
 /* Called with lock */
 static void cache_evict_entries(git_cache *cache)
 {
-        uint32_t seed;
+	uint32_t seed = rand();
 	size_t evict_count = 8;
 	ssize_t evicted_memory = 0;
-
-        /* Use R's 'runif' instead of 'rand' to pass 'R CMD check git2r' */
-        GetRNGstate();
-        seed = (uint32_t)runif(0, RAND_MAX);
-        PutRNGstate();
 
 	/* do not infinite loop if there's not enough entries to evict  */
 	if (evict_count > kh_size(cache->map)) {

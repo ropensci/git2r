@@ -558,6 +558,8 @@ static bool tree_iterator__pop_frame(tree_iterator *ti, bool final)
 {
 	tree_iterator_frame *tf = ti->head;
 
+	assert(tf);
+
 	if (!tf->up)
 		return false;
 
@@ -581,6 +583,8 @@ static void tree_iterator__pop_all(tree_iterator *ti, bool to_end, bool final)
 	while (tree_iterator__pop_frame(ti, final)) /* pop to root */;
 
 	if (!final) {
+		assert(ti->head);
+
 		ti->head->current = to_end ? ti->head->n_entries : 0;
 		ti->path_ambiguities = 0;
 		git_buf_clear(&ti->path);
@@ -773,10 +777,12 @@ static void tree_iterator__free(git_iterator *self)
 {
 	tree_iterator *ti = (tree_iterator *)self;
 
-	tree_iterator__pop_all(ti, true, false);
+	if (ti->head) {
+		tree_iterator__pop_all(ti, true, false);
+		git_tree_free(ti->head->entries[0]->tree);
+		git__free(ti->head);
+	}
 
-	git_tree_free(ti->head->entries[0]->tree);
-	git__free(ti->head);
 	git_pool_clear(&ti->pool);
 	git_buf_free(&ti->path);
 }
@@ -1080,6 +1086,7 @@ static void index_iterator__free(git_iterator *self)
 
 int git_iterator_for_index(
 	git_iterator **iter,
+	git_repository *repo,
 	git_index  *index,
 	git_iterator_options *options)
 {
@@ -1093,7 +1100,7 @@ int git_iterator_for_index(
 	}
 	ii->index = index;
 
-	ITERATOR_BASE_INIT(ii, index, INDEX, git_index_owner(index));
+	ITERATOR_BASE_INIT(ii, index, INDEX, repo);
 
 	if ((error = iterator__update_ignore_case((git_iterator *)ii, options ? options->flags : 0)) < 0) {
 		git_iterator_free((git_iterator *)ii);
@@ -2071,7 +2078,7 @@ int git_iterator_advance_over_with_status(
 
 			if (!error)
 				continue;
-			
+
 			else if (error == GIT_ENOTFOUND) {
 				/* we entered this directory only hoping to find child matches to
 				 * our pathlist (eg, this is `foo` and we had a pathlist entry for

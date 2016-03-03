@@ -1985,9 +1985,6 @@ static int create_virtual_base(
 	git_index *index = NULL;
 	git_merge_options virtual_opts = GIT_MERGE_OPTIONS_INIT;
 
-	result = git__calloc(1, sizeof(git_annotated_commit));
-	GITERR_CHECK_ALLOC(result);
-
 	/* Conflicts in the merge base creation do not propagate to conflicts
 	 * in the result; the conflicted base will act as the common ancestor.
 	 */
@@ -2001,6 +1998,8 @@ static int create_virtual_base(
 			recursion_level + 1, &virtual_opts)) < 0)
 		return -1;
 
+	result = git__calloc(1, sizeof(git_annotated_commit));
+	GITERR_CHECK_ALLOC(result);
 	result->type = GIT_ANNOTATED_COMMIT_VIRTUAL;
 	result->index = index;
 
@@ -2084,9 +2083,9 @@ static int iterator_for_annotated_commit(
 	opts.flags = GIT_ITERATOR_DONT_IGNORE_CASE;
 
 	if (commit == NULL) {
-		error = git_iterator_for_nothing(out, &opts); 
+		error = git_iterator_for_nothing(out, &opts);
 	} else if (commit->type == GIT_ANNOTATED_COMMIT_VIRTUAL) {
-		error = git_iterator_for_index(out, commit->index, &opts);
+		error = git_iterator_for_index(out, git_index_owner(commit->index), commit->index, &opts);
 	} else {
 		if (!commit->tree &&
 			(error = git_commit_tree(&commit->tree, commit->commit)) < 0)
@@ -2428,7 +2427,7 @@ static int write_merge_msg(
 	assert(repo && heads);
 
 	entries = git__calloc(heads_len, sizeof(struct merge_msg_entry));
-	GITERR_CHECK_ALLOC(entries); 
+	GITERR_CHECK_ALLOC(entries);
 
 	if (git_vector_init(&matching, heads_len, NULL) < 0) {
 		git__free(entries);
@@ -2482,7 +2481,7 @@ static int write_merge_msg(
 
 	if (matching.length)
 		sep =',';
-	
+
 	if ((error = merge_msg_entries(&matching, entries, heads_len, msg_entry_is_tag)) < 0 ||
 		(error = merge_msg_write_tags(&file, &matching, sep)) < 0)
 		goto cleanup;
@@ -2683,8 +2682,8 @@ static int merge_check_index(size_t *conflicts, git_repository *repo, git_index 
 	iter_opts.pathlist.strings = (char **)staged_paths.contents;
 	iter_opts.pathlist.count = staged_paths.length;
 
-	if ((error = git_iterator_for_index(&iter_repo, index_repo, &iter_opts)) < 0 ||
-		(error = git_iterator_for_index(&iter_new, index_new, &iter_opts)) < 0 ||
+	if ((error = git_iterator_for_index(&iter_repo, repo, index_repo, &iter_opts)) < 0 ||
+		(error = git_iterator_for_index(&iter_new, repo, index_new, &iter_opts)) < 0 ||
 		(error = git_diff__from_iterators(&index_diff_list, repo, iter_repo, iter_new, &opts)) < 0)
 		goto done;
 
@@ -2760,7 +2759,7 @@ int git_merge__check_result(git_repository *repo, git_index *index_new)
 
 	if ((error = git_repository_head_tree(&head_tree, repo)) < 0 ||
 		(error = git_iterator_for_tree(&iter_head, head_tree, &iter_opts)) < 0 ||
-		(error = git_iterator_for_index(&iter_new, index_new, &iter_opts)) < 0 ||
+		(error = git_iterator_for_index(&iter_new, repo, index_new, &iter_opts)) < 0 ||
 		(error = git_diff__from_iterators(&merged_list, repo, iter_head, iter_new, &opts)) < 0)
 		goto done;
 
