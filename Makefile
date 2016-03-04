@@ -75,17 +75,9 @@ sync_libgit2:
 	-rm -f src/libgit2/src/win32/pthread.c
 	-rm -f src/libgit2/src/win32/w32_stack.c
 	-rm -f src/libgit2/src/win32/w32_stack.h
-	cd src/libgit2/src && patch -i ../../../patches/annotated_commit.c.patch
-	cd src/libgit2/src && patch -i ../../../patches/cache-pass-R-CMD-check-git2r.patch
-	cd src/libgit2/src && patch -i ../../../patches/checkout.patch
 	cd src/libgit2/src && patch -i ../../../patches/common.h.patch
-	cd src/libgit2/src && patch -i ../../../patches/diff_print-pass-R-CMD-check-git2r.patch
-	cd src/libgit2/src && patch -i ../../../patches/rebase-pass-R-CMD-check-git2r.patch
-	cd src/libgit2/src && patch -i ../../../patches/transaction.patch
-	cd src/libgit2/src && patch -i ../../../patches/util.patch
 	cd src/libgit2/deps/regex && patch -i ../../../../patches/regcomp-pass-R-CMD-check-git2r.patch
 	cd src/libgit2/deps/regex && patch -i ../../../../patches/regex-prefix-entry-points.patch
-	cd src/libgit2/src/win32 && patch -i ../../../../patches/posix-pass-R-CMD-check-git2r.patch
 	Rscript scripts/build_Makevars.r
 	Rscript scripts/libgit2_sha.r
 
