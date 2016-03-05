@@ -13,10 +13,10 @@ Maintainer: Stefan Widgren <stefan.widgren@gmail.com>
 Author: See AUTHORS file.
 Imports:
     graphics,
-    methods,
     utils
 Depends:
-    R (>= 3.0.2)
+    R (>= 3.0.2),
+    methods
 Type: Package
 LazyData: true
 Biarch: true
