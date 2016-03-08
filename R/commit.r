@@ -640,3 +640,63 @@ setMethod("summary",
               invisible(NULL)
           }
 )
+
+
+##' @export sha
+setGeneric("sha",
+           function(object)
+             standardGeneric("sha"))
+##' @rdname commit-methods
+##' @export sha
+setMethod("sha",
+          signature(object = "git_commit"),
+          function (object)
+          {
+              as(object@sha, "character")
+          }
+)
+
+
+##' @export committer
+setGeneric("committer",
+           function(object)
+             standardGeneric("committer"))
+##' @rdname commit-methods
+##' @export committer
+setMethod("committer",
+          signature(object = "git_commit"),
+          function (object)
+          {
+            as(object@committer@name, "character")
+          }
+)
+
+
+##' @export message
+setGeneric("message",
+           function(object)
+             standardGeneric("message"))
+##' @rdname commit-methods
+##' @export message
+setMethod("message",
+          signature(object = "git_commit"),
+          function (object)
+          {
+            as(object@summary, "character")
+          }
+)
+
+
+##' @export branch
+setGeneric("branch",
+           function(object)
+             standardGeneric("branch"))
+##' @rdname commit-methods
+##' @export branch
+setMethod("branch",
+          signature(object = "git_commit"),
+          function (object)
+          {
+            as(branches(repo)[[1]]@name, "character")
+          }
+)
