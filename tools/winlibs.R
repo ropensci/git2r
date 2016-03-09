@@ -2,7 +2,7 @@
 if(getRversion() < "3.3.0") setInternet2()
 
 # Download libz
-if(!file.exists("../windows/libz-1.2.8/include/libssh2.h")){
+if(!file.exists("../windows/libz-1.2.8/include/zlib.h")){
   download.file("https://github.com/rwinlib/libz/archive/v1.2.8.zip", "lib.zip", quiet = TRUE)
   dir.create("../windows", showWarnings = FALSE)
   unzip("lib.zip", exdir = "../windows")
