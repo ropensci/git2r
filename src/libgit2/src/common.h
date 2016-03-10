@@ -8,11 +8,10 @@
 #define INCLUDE_common_h__
 
 /**
- * Removed unused include directives
+ * Commented out unused include directive
  *  - # include "win32/msvc-compat.h"
- *  - # include "win32/mingw-compat.h"
  *
- * 2014-12-26: Stefan Widgren <stefan.widgren@gmail.com>
+ * 2016-03-10: Stefan Widgren <stefan.widgren@gmail.com>
  */
 
 #include "git2/common.h"
@@ -47,6 +46,8 @@
 # include <winsock2.h>
 # include <windows.h>
 # include <ws2tcpip.h>
+/* # include "win32/msvc-compat.h" */
+# include "win32/mingw-compat.h"
 # include "win32/win32-compat.h"
 # include "win32/error.h"
 # include "win32/version.h"
