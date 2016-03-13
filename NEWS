@@ -1,3 +1,25 @@
+git2r 0.13.1.9000
+-----------------
+
+IMPROVEMENTS
+
+* Updated libgit2 source code to commit (785d8c48) from
+  2016-03-04. This is release v0.24.0 of libgit2.
+
+* Refactoring of the build scripts.
+
+* Added a check that the configuration key is valid when setting a
+  configuration variable and output a warning if the key is invalid.
+
+* The status method now prints "working directory clean" instead of
+  nothing when the working directory is clean.
+
+* Added the 'refspec' argument to the 'fetch' method to specify the
+  refs to fetch and which local refs to update.
+
+* Added a workaround to the 'commit' method to list commits in a
+  shallow clone since the libgit2 library does not yet support this.
+
 git2r 0.13.1
 ------------
 
