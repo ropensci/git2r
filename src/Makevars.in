@@ -57,7 +57,7 @@ OBJECTS.http_parser = libgit2/deps/http-parser/http_parser.o
 LIBGIT = $(OBJECTS.libgit2) $(OBJECTS.libgit2.transports) $(OBJECTS.libgit2.unix) \
     $(OBJECTS.libgit2.xdiff) $(OBJECTS.http_parser) @GIT2R_SRC_REGEX@
 
-all: libmygit.a
+$(SHLIB): libmygit.a
 
 libmygit.a: $(LIBGIT)
 	$(AR) rcs libmygit.a $(LIBGIT)
