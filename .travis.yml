@@ -20,7 +20,7 @@ after_failure:
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then cat /Users/travis/build/ropensci/git2r/git2r.Rcheck/00install.out; fi
 
 after_success:
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then Rscript -e 'library(covr); coveralls()'; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then Rscript -e "library(covr); coveralls(exclusions=list.files('src/libgit2/src', pattern='[.]c$', full.names=TRUE))"; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cat /home/travis/build/ropensci/git2r/git2r.Rcheck/00install.out; fi
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then cat /Users/travis/build/ropensci/git2r/git2r.Rcheck/00install.out; fi
 
