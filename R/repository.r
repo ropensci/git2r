@@ -82,15 +82,7 @@ setAs(from="git_repository",
       to="data.frame",
       def=function(from)
       {
-          do.call("rbind", lapply(commits(from), function(x) {
-              data.frame(sha              = x@sha,
-                         summary          = x@summary,
-                         message          = x@message,
-                         author           = x@author@name,
-                         email            = x@author@email,
-                         when             = as(x@author@when, "POSIXct"),
-                         stringsAsFactors = FALSE)
-          }))
+          do.call("rbind", lapply(commits(from), as, "data.frame"))
       }
 )
 

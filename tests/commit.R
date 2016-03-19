@@ -104,6 +104,12 @@ stopifnot(identical(length(commits(repo, n = 2)), 2L))
 tools::assertError(commits(repo, n = 2.2))
 tools::assertError(commits(repo, n = "2"))
 
+## Check to coerce repository to data.frame
+df <- as(repo, "data.frame")
+stopifnot(identical(dim(df), c(4L, 6L)))
+stopifnot(identical(names(df), c("sha", "summary", "message",
+                                 "author", "email", "when")))
+
 ## Set working directory to path and check commits
 setwd(path)
 stopifnot(identical(length(commits()), 4L))

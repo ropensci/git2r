@@ -640,3 +640,75 @@ setMethod("summary",
               invisible(NULL)
           }
 )
+
+##' Coerce a commit to a \code{data.frame}
+##'
+##' The commit is coerced to a \code{data.frame}
+##'
+##'
+##' The \code{data.frame} have the following columns:
+##' \describe{
+##'
+##'   \item{sha}{
+##'     The 40 character hexadecimal string of the SHA-1
+##'   }
+##'
+##'   \item{summary}{
+##'     the short "summary" of the git commit message.
+##'   }
+##'
+##'   \item{message}{
+##'     the full message of a commit
+##'   }
+##'
+##'   \item{author}{
+##'     full name of the author
+##'   }
+##'
+##'   \item{email}{
+##'     email of the author
+##'   }
+##'
+##'   \item{when}{
+##'     time when the commit happened
+##'   }
+##'
+##' }
+##' @name coerce-git_commit-method
+##' @aliases coerce,git_commit,data.frame-method
+##' @docType methods
+##' @param from The commit \code{object}
+##' @return \code{data.frame}
+##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a user
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##'
+##' ## Create a file and commit
+##' writeLines("Example file",  file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' c1 <- commit(repo, "Commit message")
+##'
+##' ## Coerce the commit to a data.frame
+##' df <- as(c1, "data.frame")
+##' df
+##' }
+setAs(from = "git_commit",
+      to   = "data.frame",
+      def  = function(from)
+      {
+          data.frame(sha              = from@sha,
+                     summary          = from@summary,
+                     message          = from@message,
+                     author           = from@author@name,
+                     email            = from@author@email,
+                     when             = as(from@author@when, "POSIXct"),
+                     stringsAsFactors = FALSE)
+      }
+)
