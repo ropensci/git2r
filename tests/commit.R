@@ -118,5 +118,21 @@ stopifnot(identical(length(commits(n = 2)), 2L))
 tools::assertError(commits(n = 2.2))
 tools::assertError(commits(n = "2"))
 
+## Check plot method
+plot_file <- tempfile(fileext = ".pdf")
+pdf(plot_file)
+plot(repo)
+dev.off()
+stopifnot(file.exists(plot_file))
+unlink(plot_file)
+
+## Check punch card plot method
+punch_card_plot_file <- tempfile(fileext = ".pdf")
+pdf(punch_card_plot_file)
+punch_card(repo)
+dev.off()
+stopifnot(file.exists(punch_card_plot_file))
+unlink(punch_card_plot_file)
+
 ## Cleanup
 unlink(path, recursive=TRUE)
