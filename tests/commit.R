@@ -49,6 +49,10 @@ stopifnot(identical(commits(repo)[[1]]@author@name, "Alice"))
 stopifnot(identical(commits(repo)[[1]]@author@email, "alice@example.org"))
 stopifnot(identical(parents(commit_1), list()))
 
+## Check is_commit
+stopifnot(identical(is_commit(commit_1), TRUE))
+stopifnot(identical(is_commit(5), FALSE))
+
 ## Commit without adding changes should produce an error
 tools::assertError(commit(repo, "Test to commit"))
 
