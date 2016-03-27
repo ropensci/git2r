@@ -636,3 +636,33 @@ setMethod("show",
               }
           }
 )
+
+##' Check if object is S4 class git_branch
+##'
+##' @param object Check if object is S4 class git_branch
+##' @return TRUE if object is S4 class git_branch, else FALSE
+##' @keywords methods
+##' @export
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a user
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##'
+##' ## Commit a text file
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit(repo, "First commit message")
+##'
+##' branch <- branches(repo)[[1]]
+##'
+##' ## Check if branch
+##' is_branch(branch)
+##' }
+is_branch <- function(object) {
+    methods::is(object = object, class2 = "git_branch")
+}

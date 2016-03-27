@@ -50,6 +50,10 @@ stopifnot(identical(length(branches(repo)), 2L))
 stopifnot(identical(branch_target(branches(repo)[[1]]),
                     branch_target(branches(repo)[[2]])))
 
+## Check is_branch
+stopifnot(identical(is_branch(b), TRUE))
+stopifnot(identical(is_branch(5), FALSE))
+
 ## Add one more commit
 writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test.txt"))
 add(repo, "test.txt")
