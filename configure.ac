@@ -118,6 +118,14 @@ fi
 # Check for SSL
 have_ssl=no
 
+PKG_PROG_PKG_CONFIG
+AS_IF([test x != "x${PKG_CONFIG}"],
+      [PKG_CHECK_MODULES([libssl], [libssl],
+                         [CPPFLAGS="${libssl_CFLAGS} ${CPPFLAGS}"
+                          LIBS="${libssl_LIBS} ${LIBS}"],
+                         [AC_MSG_WARN("pkg-config failed to find libssl.")])],
+      [AC_MSG_WARN("pkg-config not found. Proceeding without it")])
+
 # Check for optional libssl include path
 if test [ -n "$libssl_include_path" ] ; then
     CPPFLAGS="-I${libssl_include_path} ${CPPFLAGS}"
