@@ -87,7 +87,7 @@ build_Makevars.in <- function() {
 
     build_objects(files, " @GIT2R_SRC_REGEX@", Makevars)
 
-    cat("\nall: libmygit.a\n\n", file = Makevars)
+    cat("\n$(SHLIB): libmygit.a\n\n", file = Makevars)
     cat("libmygit.a: $(LIBGIT)\n\t$(AR) rcs libmygit.a $(LIBGIT)\n\n", file = Makevars)
     cat("clean:\n\trm -f *.o libmygit.a git2r.so $(LIBGIT)\n\n", file = Makevars)
     cat(".PHONY: all clean\n", file = Makevars)
