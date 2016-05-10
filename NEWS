@@ -1,3 +1,21 @@
+git2r 0.14.0.9000
+-----------------
+
+IMPROVEMENTS
+
+* Build configuration: 'pkg-config' is now used to find 'libssl', if
+  possible (Elias Pipping in PR #231).
+
+* Added a method to coerce a 'git_commit' object to a 'data.frame'.
+
+* Added the method 'is_branch' to check if an object is a
+  'git_branch'.
+
+BUG FIXES
+
+* Build configuration: fixed installation with parallel make (Kirill
+  Müller in PR #228).
+
 git2r 0.14.0
 ------------
 
