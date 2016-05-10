@@ -53,7 +53,14 @@ static int load_alternates(git_odb *odb, const char *objects_dir, int alternate_
 int git_odb__format_object_header(char *hdr, size_t n, git_off_t obj_len, git_otype obj_type)
 {
 	const char *type_str = git_object_type2string(obj_type);
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-extra-args"
 	int len = p_snprintf(hdr, n, "%s %lld", type_str, (long long)obj_len);
+#pragma GCC diagnostic pop
+#else
+	int len = p_snprintf(hdr, n, "%s %lld", type_str, (long long)obj_len);
+#endif
 	assert(len > 0 && len <= (int)n);
 	return len+1;
 }
