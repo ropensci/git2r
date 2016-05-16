@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2016 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -48,6 +48,10 @@ stopifnot(identical(length(commits(repo)), 1L))
 stopifnot(identical(commits(repo)[[1]]@author@name, "Alice"))
 stopifnot(identical(commits(repo)[[1]]@author@email, "alice@example.org"))
 stopifnot(identical(parents(commit_1), list()))
+
+## Check the commits method with other objects
+stopifnot(identical(commits(commit_1), commits(repo)))
+stopifnot(identical(commits(branches(repo)$master), commits(repo)))
 
 ## Check is_commit
 stopifnot(identical(is_commit(commit_1), TRUE))

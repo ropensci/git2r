@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2016 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -240,6 +240,46 @@ setMethod("commits",
                    ...)
           {
               callGeneric(repo        = lookup_repository(),
+                          topological = topological,
+                          time        = time,
+                          reverse     = reverse,
+                          n           = n,
+                          ...)
+          }
+)
+
+##' @rdname commits-methods
+##' @export
+setMethod("commits",
+          signature(repo = "git_branch"),
+          function(repo,
+                   topological = TRUE,
+                   time        = TRUE,
+                   reverse     = FALSE,
+                   n           = NULL,
+                   ...)
+          {
+              callGeneric(repo        = repo@repo,
+                          topological = topological,
+                          time        = time,
+                          reverse     = reverse,
+                          n           = n,
+                          ...)
+          }
+)
+
+##' @rdname commits-methods
+##' @export
+setMethod("commits",
+          signature(repo = "git_commit"),
+          function(repo,
+                   topological = TRUE,
+                   time        = TRUE,
+                   reverse     = FALSE,
+                   n           = NULL,
+                   ...)
+          {
+              callGeneric(repo        = repo@repo,
                           topological = topological,
                           time        = time,
                           reverse     = reverse,

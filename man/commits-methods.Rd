@@ -3,6 +3,8 @@
 \docType{methods}
 \name{commits}
 \alias{commits}
+\alias{commits,git_branch-method}
+\alias{commits,git_commit-method}
 \alias{commits,git_repository-method}
 \alias{commits,missing-method}
 \title{Commits}
@@ -10,6 +12,12 @@
 commits(repo, ...)
 
 \S4method{commits}{missing}(topological = TRUE, time = TRUE,
+  reverse = FALSE, n = NULL, ...)
+
+\S4method{commits}{git_branch}(repo, topological = TRUE, time = TRUE,
+  reverse = FALSE, n = NULL, ...)
+
+\S4method{commits}{git_commit}(repo, topological = TRUE, time = TRUE,
   reverse = FALSE, n = NULL, ...)
 
 \S4method{commits}{git_repository}(repo, topological = TRUE, time = TRUE,
