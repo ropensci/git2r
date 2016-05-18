@@ -6,6 +6,7 @@
 \alias{commits,git_branch-method}
 \alias{commits,git_commit-method}
 \alias{commits,git_repository-method}
+\alias{commits,git_tag-method}
 \alias{commits,missing-method}
 \title{Commits}
 \usage{
@@ -18,6 +19,9 @@ commits(repo, ...)
   reverse = FALSE, n = NULL, ...)
 
 \S4method{commits}{git_commit}(repo, topological = TRUE, time = TRUE,
+  reverse = FALSE, n = NULL, ...)
+
+\S4method{commits}{git_tag}(repo, topological = TRUE, time = TRUE,
   reverse = FALSE, n = NULL, ...)
 
 \S4method{commits}{git_repository}(repo, topological = TRUE, time = TRUE,

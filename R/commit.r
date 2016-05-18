@@ -288,6 +288,27 @@ setMethod("commits",
           }
 )
 
+
+##' @rdname commits-methods
+##' @export
+setMethod("commits",
+          signature(repo = "git_tag"),
+          function(repo,
+                   topological = TRUE,
+                   time        = TRUE,
+                   reverse     = FALSE,
+                   n           = NULL,
+                   ...)
+          {
+              callGeneric(repo        = repo@repo,
+                          topological = topological,
+                          time        = time,
+                          reverse     = reverse,
+                          n           = n,
+                          ...)
+          }
+)
+
 ##' @rdname commits-methods
 ##' @include S4_classes.r
 ##' @export

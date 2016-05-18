@@ -50,6 +50,8 @@ stopifnot(identical(commits(repo)[[1]]@author@email, "alice@example.org"))
 stopifnot(identical(parents(commit_1), list()))
 
 ## Check the commits method with other objects
+tag_1 <- tag(repo, "Tagname", "Tag message")
+stopifnot(identical(commits(tag_1), commits(repo)))
 stopifnot(identical(commits(commit_1), commits(repo)))
 stopifnot(identical(commits(branches(repo)$master), commits(repo)))
 
