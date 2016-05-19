@@ -111,27 +111,10 @@ setMethod("status",
           signature(repo = "git_repository"),
           function(repo, staged, unstaged, untracked, ignored, all_untracked, ...)
           {
-              s <- .Call(git2r_status_list, repo, staged,
-                         unstaged, untracked, ignored)
-
-              if (identical(untracked, TRUE) && identical(all_untracked, TRUE)) {
-                  if (!is.null(s$untracked)) {
-                      u <- lapply(s$untracked, function(x) {
-                          if (all(file.exists(x), file.info(x)$isdir)) {
-                              x <- list.files(basename(x),
-                                              full.names = TRUE,
-                                              recursive = TRUE)
-                          }
-                          x
-                      })
-
-                      u <- unlist(u)
-                      names(u) <- rep("untracked", length(u))
-                      s$untracked <- as.list(u)
-                  }
-              }
-
-              structure(s, class = "git_status")
+              structure(.Call(git2r_status_list, repo, staged,
+                              unstaged, untracked, all_untracked,
+                              ignored),
+                        class = "git_status")
           }
 )
 

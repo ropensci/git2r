@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2016 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -344,7 +344,9 @@ static void git2r_status_list_untracked(
  * @param repo S4 class git_repository
  * @param staged Include staged files.
  * @param unstaged Include unstaged files.
- * @param untracked Include untracked files.
+ * @param untracked Include untracked files and directories.
+ * @param all_untracked Shows individual files in untracked
+ *        directories if 'untracked' is 'TRUE'.
  * @param ignored Include ignored files.
  * @return VECXSP with status
  */
@@ -353,6 +355,7 @@ SEXP git2r_status_list(
     SEXP staged,
     SEXP unstaged,
     SEXP untracked,
+    SEXP all_untracked,
     SEXP ignored)
 {
     int err;
@@ -369,6 +372,8 @@ SEXP git2r_status_list(
         git2r_error(__func__, NULL, "'unstaged'", git2r_err_logical_arg);
     if (git2r_arg_check_logical(untracked))
         git2r_error(__func__, NULL, "'untracked'", git2r_err_logical_arg);
+    if (git2r_arg_check_logical(all_untracked))
+        git2r_error(__func__, NULL, "'all_untracked'", git2r_err_logical_arg);
     if (git2r_arg_check_logical(ignored))
         git2r_error(__func__, NULL, "'ignored'", git2r_err_logical_arg);
 
@@ -380,8 +385,11 @@ SEXP git2r_status_list(
     opts.flags = GIT_STATUS_OPT_RENAMES_HEAD_TO_INDEX |
         GIT_STATUS_OPT_SORT_CASE_SENSITIVELY;
 
-    if (LOGICAL(untracked)[0])
+    if (LOGICAL(untracked)[0]) {
         opts.flags |= GIT_STATUS_OPT_INCLUDE_UNTRACKED;
+        if (LOGICAL(all_untracked)[0])
+            opts.flags |= GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS;
+    }
     if (LOGICAL(ignored)[0])
         opts.flags |= GIT_STATUS_OPT_INCLUDE_IGNORED;
     err = git_status_list_new(&status_list, repository, &opts);
