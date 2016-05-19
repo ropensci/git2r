@@ -8,28 +8,32 @@
 \title{Status}
 \usage{
 status(repo, staged = TRUE, unstaged = TRUE, untracked = TRUE,
-  ignored = FALSE, ...)
+  ignored = FALSE, all_untracked = FALSE, ...)
 
 \S4method{status}{missing}(repo, staged = TRUE, unstaged = TRUE,
-  untracked = TRUE, ignored = FALSE, ...)
+  untracked = TRUE, ignored = FALSE, all_untracked = FALSE, ...)
 
 \S4method{status}{git_repository}(repo, staged = TRUE, unstaged = TRUE,
-  untracked = TRUE, ignored = FALSE, ...)
+  untracked = TRUE, ignored = FALSE, all_untracked = FALSE, ...)
 }
 \arguments{
 \item{repo}{The repository \code{object}
 \code{\linkS4class{git_repository}} to get status from. If the
-\code{repo} argument is missing, the repository is searched for
-with \code{\link{discover_repository}} in the current working
-directory.}
+\code{repo} argument is missing, the repository is searched
+for with \code{\link{discover_repository}} in the current
+working directory.}
 
 \item{staged}{Include staged files. Default TRUE.}
 
 \item{unstaged}{Include unstaged files. Default TRUE.}
 
-\item{untracked}{Include untracked files. Default TRUE.}
+\item{untracked}{Include untracked files and directories. Default
+TRUE.}
 
 \item{ignored}{Include ignored files. Default FALSE.}
+
+\item{all_untracked}{Shows individual files in untracked
+directories if \code{untracked} is \code{TRUE}.}
 
 \item{...}{Additional arguments to status.}
 }

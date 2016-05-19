@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2016 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -21,14 +21,17 @@
 ##' @rdname status-methods
 ##' @docType methods
 ##' @param repo The repository \code{object}
-##' \code{\linkS4class{git_repository}} to get status from. If the
-##' \code{repo} argument is missing, the repository is searched for
-##' with \code{\link{discover_repository}} in the current working
-##' directory.
+##'     \code{\linkS4class{git_repository}} to get status from. If the
+##'     \code{repo} argument is missing, the repository is searched
+##'     for with \code{\link{discover_repository}} in the current
+##'     working directory.
 ##' @param staged Include staged files. Default TRUE.
 ##' @param unstaged Include unstaged files. Default TRUE.
-##' @param untracked Include untracked files. Default TRUE.
+##' @param untracked Include untracked files and directories. Default
+##'     TRUE.
 ##' @param ignored Include ignored files. Default FALSE.
+##' @param all_untracked Shows individual files in untracked
+##'     directories if \code{untracked} is \code{TRUE}.
 ##' @param ... Additional arguments to status.
 ##' @return S3 class \code{git_status} with repository status
 ##' @keywords methods
@@ -82,6 +85,7 @@ setGeneric("status",
                     unstaged  = TRUE,
                     untracked = TRUE,
                     ignored   = FALSE,
+                    all_untracked = FALSE,
                     ...)
            standardGeneric("status"))
 
@@ -89,13 +93,14 @@ setGeneric("status",
 ##' @export
 setMethod("status",
           signature(repo = "missing"),
-          function(staged, unstaged, untracked, ignored, ...)
+          function(staged, unstaged, untracked, ignored, all_untracked, ...)
           {
-              callGeneric(repo      = lookup_repository(),
-                          staged    = staged,
-                          unstaged  = unstaged,
-                          untracked = untracked,
-                          ignored   = ignored,
+              callGeneric(repo          = lookup_repository(),
+                          staged        = staged,
+                          unstaged      = unstaged,
+                          untracked     = untracked,
+                          ignored       = ignored,
+                          all_untracked = all_untracked,
                           ...)
           }
 )
@@ -104,11 +109,29 @@ setMethod("status",
 ##' @export
 setMethod("status",
           signature(repo = "git_repository"),
-          function(repo, staged, unstaged, untracked, ignored, ...)
+          function(repo, staged, unstaged, untracked, ignored, all_untracked, ...)
           {
-              structure(.Call(git2r_status_list, repo, staged,
-                              unstaged, untracked, ignored),
-                        class = "git_status")
+              s <- .Call(git2r_status_list, repo, staged,
+                         unstaged, untracked, ignored)
+
+              if (identical(untracked, TRUE) && identical(all_untracked, TRUE)) {
+                  if (!is.null(s$untracked)) {
+                      u <- lapply(s$untracked, function(x) {
+                          if (all(file.exists(x), file.info(x)$isdir)) {
+                              x <- list.files(basename(x),
+                                              full.names = TRUE,
+                                              recursive = TRUE)
+                          }
+                          x
+                      })
+
+                      u <- unlist(u)
+                      names(u) <- rep("untracked", length(u))
+                      s$untracked <- as.list(u)
+                  }
+              }
+
+              structure(s, class = "git_status")
           }
 )
 
