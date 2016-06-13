@@ -289,9 +289,9 @@ esac
 
 # Determine architecture of the machine
 AC_CHECK_SIZEOF([void*])
-if test "x$ac_cv_sizeof_voidp" == "x8"; then
+if test "x$ac_cv_sizeof_voidp" = "x8"; then
     CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_64"
-elif test "x$ac_cv_sizeof_voidp" == "x4"; then
+elif test "x$ac_cv_sizeof_voidp" = "x4"; then
     CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_32"
 else
     AC_MSG_FAILURE([Unsupported architecture])
