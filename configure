@@ -5929,9 +5929,9 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 
-if test "x$ac_cv_sizeof_voidp" == "x8"; then
+if test "x$ac_cv_sizeof_voidp" = "x8"; then
     CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_64"
-elif test "x$ac_cv_sizeof_voidp" == "x4"; then
+elif test "x$ac_cv_sizeof_voidp" = "x4"; then
     CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_32"
 else
     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
