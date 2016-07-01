@@ -1,0 +1,19 @@
+*** odb.c.orig	2016-05-10 18:19:52.276037659 +0200
+--- odb.c	2016-05-10 18:20:40.516038950 +0200
+***************
+*** 53,59 ****
+--- 53,66 ----
+  int git_odb__format_object_header(char *hdr, size_t n, git_off_t obj_len, git_otype obj_type)
+  {
+  	const char *type_str = git_object_type2string(obj_type);
++ #ifdef _WIN32
++ #pragma GCC diagnostic push
++ #pragma GCC diagnostic ignored "-Wformat-extra-args"
+  	int len = p_snprintf(hdr, n, "%s %lld", type_str, (long long)obj_len);
++ #pragma GCC diagnostic pop
++ #else
++ 	int len = p_snprintf(hdr, n, "%s %lld", type_str, (long long)obj_len);
++ #endif
+  	assert(len > 0 && len <= (int)n);
+  	return len+1;
+  }

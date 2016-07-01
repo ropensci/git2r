@@ -75,6 +75,8 @@ sync_libgit2:
 	-rm -f src/libgit2/src/win32/w32_stack.c
 	-rm -f src/libgit2/src/win32/w32_stack.h
 	cd src/libgit2/src && patch -i ../../../patches/common.h.patch
+	cd src/libgit2/src && patch -i ../../../patches/config.c.patch
+	cd src/libgit2/src && patch -i ../../../patches/odb.c.patch
 	cd src/libgit2/deps/regex && patch -i ../../../../patches/regcomp-pass-R-CMD-check-git2r.patch
 	cd src/libgit2/deps/regex && patch -i ../../../../patches/regex-prefix-entry-points.patch
 	Rscript scripts/build_Makevars.r
