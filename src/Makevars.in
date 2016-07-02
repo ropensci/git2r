@@ -4,30 +4,32 @@ PKG_CFLAGS = @PKG_CFLAGS@
 PKG_CPPFLAGS = @PKG_CPPFLAGS@
 PKG_LIBS = -L. -lmygit @PKG_LIBS@
 
-OBJECTS.libgit2 = libgit2/src/annotated_commit.o libgit2/src/attr.o libgit2/src/attrcache.o \
-    libgit2/src/attr_file.o libgit2/src/blame.o libgit2/src/blame_git.o \
-    libgit2/src/blob.o libgit2/src/branch.o libgit2/src/buffer.o \
-    libgit2/src/buf_text.o libgit2/src/cache.o libgit2/src/checkout.o \
-    libgit2/src/cherrypick.o libgit2/src/clone.o libgit2/src/commit.o \
-    libgit2/src/commit_list.o libgit2/src/config.o libgit2/src/config_cache.o \
-    libgit2/src/config_file.o libgit2/src/crlf.o libgit2/src/curl_stream.o \
-    libgit2/src/date.o libgit2/src/delta-apply.o libgit2/src/delta.o \
+OBJECTS.libgit2 = libgit2/src/annotated_commit.o libgit2/src/apply.o libgit2/src/attr.o \
+    libgit2/src/attrcache.o libgit2/src/attr_file.o libgit2/src/blame.o \
+    libgit2/src/blame_git.o libgit2/src/blob.o libgit2/src/branch.o \
+    libgit2/src/buffer.o libgit2/src/buf_text.o libgit2/src/cache.o \
+    libgit2/src/checkout.o libgit2/src/cherrypick.o libgit2/src/clone.o \
+    libgit2/src/commit.o libgit2/src/commit_list.o libgit2/src/config.o \
+    libgit2/src/config_cache.o libgit2/src/config_file.o libgit2/src/crlf.o \
+    libgit2/src/curl_stream.o libgit2/src/date.o libgit2/src/delta.o \
     libgit2/src/describe.o libgit2/src/diff.o libgit2/src/diff_driver.o \
-    libgit2/src/diff_file.o libgit2/src/diff_patch.o libgit2/src/diff_print.o \
-    libgit2/src/diff_stats.o libgit2/src/diff_tform.o libgit2/src/diff_xdiff.o \
-    libgit2/src/errors.o libgit2/src/fetch.o libgit2/src/fetchhead.o \
-    libgit2/src/filebuf.o libgit2/src/fileops.o libgit2/src/filter.o \
-    libgit2/src/fnmatch.o libgit2/src/global.o libgit2/src/graph.o \
-    libgit2/src/hash.o libgit2/src/hashsig.o libgit2/src/ident.o \
-    libgit2/src/ignore.o libgit2/src/index.o libgit2/src/indexer.o \
-    libgit2/src/iterator.o libgit2/src/merge.o libgit2/src/merge_file.o \
-    libgit2/src/message.o libgit2/src/mwindow.o libgit2/src/netops.o \
-    libgit2/src/notes.o libgit2/src/object_api.o libgit2/src/object.o \
-    libgit2/src/odb.o libgit2/src/odb_loose.o libgit2/src/odb_mempack.o \
-    libgit2/src/odb_pack.o libgit2/src/oidarray.o libgit2/src/oid.o \
-    libgit2/src/openssl_stream.o libgit2/src/pack.o libgit2/src/pack-objects.o \
-    libgit2/src/path.o libgit2/src/pathspec.o libgit2/src/pool.o \
-    libgit2/src/posix.o libgit2/src/pqueue.o libgit2/src/push.o \
+    libgit2/src/diff_file.o libgit2/src/diff_generate.o libgit2/src/diff_parse.o \
+    libgit2/src/diff_print.o libgit2/src/diff_stats.o libgit2/src/diff_tform.o \
+    libgit2/src/diff_xdiff.o libgit2/src/errors.o libgit2/src/fetch.o \
+    libgit2/src/fetchhead.o libgit2/src/filebuf.o libgit2/src/fileops.o \
+    libgit2/src/filter.o libgit2/src/fnmatch.o libgit2/src/global.o \
+    libgit2/src/graph.o libgit2/src/hash.o libgit2/src/hashsig.o \
+    libgit2/src/ident.o libgit2/src/ignore.o libgit2/src/index.o \
+    libgit2/src/indexer.o libgit2/src/iterator.o libgit2/src/merge.o \
+    libgit2/src/merge_driver.o libgit2/src/merge_file.o libgit2/src/message.o \
+    libgit2/src/mwindow.o libgit2/src/netops.o libgit2/src/notes.o \
+    libgit2/src/object_api.o libgit2/src/object.o libgit2/src/odb.o \
+    libgit2/src/odb_loose.o libgit2/src/odb_mempack.o libgit2/src/odb_pack.o \
+    libgit2/src/oidarray.o libgit2/src/oid.o libgit2/src/openssl_stream.o \
+    libgit2/src/pack.o libgit2/src/pack-objects.o libgit2/src/patch.o \
+    libgit2/src/patch_generate.o libgit2/src/patch_parse.o libgit2/src/path.o \
+    libgit2/src/pathspec.o libgit2/src/pool.o libgit2/src/posix.o \
+    libgit2/src/pqueue.o libgit2/src/proxy.o libgit2/src/push.o \
     libgit2/src/rebase.o libgit2/src/refdb.o libgit2/src/refdb_fs.o \
     libgit2/src/reflog.o libgit2/src/refs.o libgit2/src/refspec.o \
     libgit2/src/remote.o libgit2/src/repository.o libgit2/src/reset.o \
