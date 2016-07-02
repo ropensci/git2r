@@ -71,7 +71,7 @@ sync_libgit2:
 	-rm -f src/libgit2/src/win32/msvc-compat.h
 	-rm -f src/libgit2/src/win32/w32_crtdbg_stacktrace.c
 	-rm -f src/libgit2/src/win32/w32_crtdbg_stacktrace.h
-	-rm -f src/libgit2/src/win32/pthread.c
+	-rm -f src/libgit2/src/win32/thread.c
 	-rm -f src/libgit2/src/win32/w32_stack.c
 	-rm -f src/libgit2/src/win32/w32_stack.h
 	cd src/libgit2/src && patch -i ../../../patches/common.h.patch
