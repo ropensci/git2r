@@ -5941,22 +5941,60 @@ See \`config.log' for more details" "$LINENO" 5; }
 fi
 
 # Checks for structures
-ac_fn_c_check_member "$LINENO" "struct stat" "st_atimespec" "ac_cv_member_struct_stat_st_atimespec" "#ifdef HAVE_SYS_TYPES_H
-                  # include <sys/types.h>
-                  #endif
-                  #ifdef HAVE_SYS_STAT_H
-                  # include <sys/stat.h>
-                  #endif
+ac_fn_c_check_member "$LINENO" "struct stat" "st_mtim" "ac_cv_member_struct_stat_st_mtim" "#ifdef HAVE_SYS_TYPES_H
+                 # include <sys/types.h>
+                 #endif
+                 #ifdef HAVE_SYS_STAT_H
+                 # include <sys/stat.h>
+                 #endif
 "
-if test "x$ac_cv_member_struct_stat_st_atimespec" = xyes; then :
-
-cat >>confdefs.h <<_ACEOF
-#define HAVE_STRUCT_STAT_ST_ATIMESPEC 1
-_ACEOF
-
-CPPFLAGS="${CPPFLAGS} -DGIT_USE_STAT_ATIMESPEC"
+if test "x$ac_cv_member_struct_stat_st_mtim" = xyes; then :
+  CPPFLAGS="${CPPFLAGS} -DGIT_USE_STAT_MTIM"
 fi
 
+
+ac_fn_c_check_member "$LINENO" "struct stat" "st_mtimespec" "ac_cv_member_struct_stat_st_mtimespec" "#ifdef HAVE_SYS_TYPES_H
+                 # include <sys/types.h>
+                 #endif
+                 #ifdef HAVE_SYS_STAT_H
+                 # include <sys/stat.h>
+                 #endif
+"
+if test "x$ac_cv_member_struct_stat_st_mtimespec" = xyes; then :
+  CPPFLAGS="${CPPFLAGS} -DGIT_USE_STAT_MTIMESPEC"
+fi
+
+
+ac_fn_c_check_member "$LINENO" "struct stat" "st_mtime_nsec" "ac_cv_member_struct_stat_st_mtime_nsec" "#ifdef HAVE_SYS_STAT_H
+                 # include <sys/stat.h>
+                 #endif
+"
+if test "x$ac_cv_member_struct_stat_st_mtime_nsec" = xyes; then :
+  CPPFLAGS="${CPPFLAGS} -DGIT_USE_STAT_MTIME_NSEC"
+fi
+
+
+if test "x$ac_cv_member_struct_stat_st_mtim" = "xyes"; then
+    ac_fn_c_check_member "$LINENO" "struct stat" "st_mtim.tv_nsec" "ac_cv_member_struct_stat_st_mtim_tv_nsec" "#ifdef HAVE_SYS_STAT_H
+                     # include <sys/stat.h>
+                     #endif
+"
+if test "x$ac_cv_member_struct_stat_st_mtim_tv_nsec" = xyes; then :
+  CPPFLAGS="${CPPFLAGS} -DGIT_USE_NSEC"
+fi
+
+elif test "x$ac_cv_member_struct_stat_st_mtimespec" = "xyes"; then
+    ac_fn_c_check_member "$LINENO" "struct stat" "st_mtimespec.tv_nsec" "ac_cv_member_struct_stat_st_mtimespec_tv_nsec" "#ifdef HAVE_SYS_STAT_H
+                     # include <sys/stat.h>
+                     #endif
+"
+if test "x$ac_cv_member_struct_stat_st_mtimespec_tv_nsec" = xyes; then :
+  CPPFLAGS="${CPPFLAGS} -DGIT_USE_NSEC"
+fi
+
+else
+    CPPFLAGS="${CPPFLAGS} -DGIT_USE_NSEC"
+fi
 
 # Checks for library functions.
 for ac_func in futimens qsort_r qsort_s

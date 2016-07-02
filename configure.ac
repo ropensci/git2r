@@ -298,15 +298,50 @@ else
 fi
 
 # Checks for structures
-AC_CHECK_MEMBERS([struct stat.st_atimespec],
-                 [CPPFLAGS="${CPPFLAGS} -DGIT_USE_STAT_ATIMESPEC"],
-                 [],
-                 [#ifdef HAVE_SYS_TYPES_H
-                  # include <sys/types.h>
-                  #endif
-                  #ifdef HAVE_SYS_STAT_H
-                  # include <sys/stat.h>
-                  #endif])
+AC_CHECK_MEMBER([struct stat.st_mtim],
+                [CPPFLAGS="${CPPFLAGS} -DGIT_USE_STAT_MTIM"],
+                [],
+                [#ifdef HAVE_SYS_TYPES_H
+                 # include <sys/types.h>
+                 #endif
+                 #ifdef HAVE_SYS_STAT_H
+                 # include <sys/stat.h>
+                 #endif])
+
+AC_CHECK_MEMBER([struct stat.st_mtimespec],
+                [CPPFLAGS="${CPPFLAGS} -DGIT_USE_STAT_MTIMESPEC"],
+                [],
+                [#ifdef HAVE_SYS_TYPES_H
+                 # include <sys/types.h>
+                 #endif
+                 #ifdef HAVE_SYS_STAT_H
+                 # include <sys/stat.h>
+                 #endif])
+
+AC_CHECK_MEMBER([struct stat.st_mtime_nsec],
+                [CPPFLAGS="${CPPFLAGS} -DGIT_USE_STAT_MTIME_NSEC"],
+                [],
+                [#ifdef HAVE_SYS_STAT_H
+                 # include <sys/stat.h>
+                 #endif])
+
+if test "x$ac_cv_member_struct_stat_st_mtim" = "xyes"; then
+    AC_CHECK_MEMBER([struct stat.st_mtim.tv_nsec],
+                    [CPPFLAGS="${CPPFLAGS} -DGIT_USE_NSEC"],
+                    [],
+                    [#ifdef HAVE_SYS_STAT_H
+                     # include <sys/stat.h>
+                     #endif])
+elif test "x$ac_cv_member_struct_stat_st_mtimespec" = "xyes"; then
+    AC_CHECK_MEMBER([struct stat.st_mtimespec.tv_nsec],
+                    [CPPFLAGS="${CPPFLAGS} -DGIT_USE_NSEC"],
+                    [],
+                    [#ifdef HAVE_SYS_STAT_H
+                     # include <sys/stat.h>
+                     #endif])
+else
+    CPPFLAGS="${CPPFLAGS} -DGIT_USE_NSEC"
+fi
 
 # Checks for library functions.
 AC_CHECK_FUNCS([futimens qsort_r qsort_s])
