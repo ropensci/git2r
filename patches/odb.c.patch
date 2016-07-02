@@ -1,8 +1,8 @@
-*** odb.c.orig	2016-05-10 18:19:52.276037659 +0200
---- odb.c	2016-05-10 18:20:40.516038950 +0200
+*** odb.c.orig	2016-07-02 10:29:01.052154934 +0200
+--- odb.c	2016-07-02 10:29:01.100154935 +0200
 ***************
-*** 53,59 ****
---- 53,66 ----
+*** 83,89 ****
+--- 83,96 ----
   int git_odb__format_object_header(char *hdr, size_t n, git_off_t obj_len, git_otype obj_type)
   {
   	const char *type_str = git_object_type2string(obj_type);
