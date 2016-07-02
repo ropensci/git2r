@@ -306,6 +306,25 @@ int git_path_join_unrooted(
 	return 0;
 }
 
+void git_path_squash_slashes(git_buf *path)
+{
+	char *p, *q;
+
+	if (path->size == 0)
+		return;
+
+	for (p = path->ptr, q = path->ptr; *q; p++, q++) {
+		*p = *q;
+
+		while (*q == '/' && *(q+1) == '/') {
+			path->size--;
+			q++;
+		}
+	}
+
+	*p = '\0';
+}
+
 int git_path_prettify(git_buf *path_out, const char *path, const char *base)
 {
 	char buf[GIT_PATH_MAX];
@@ -808,6 +827,20 @@ int git_path_cmp(
 		c2 = '/';
 
 	return (c1 < c2) ? -1 : (c1 > c2) ? 1 : 0;
+}
+
+size_t git_path_common_dirlen(const char *one, const char *two)
+{
+	const char *p, *q, *dirsep = NULL;
+
+	for (p = one, q = two; *p && *q; p++, q++) {
+		if (*p == '/' && *q == '/')
+			dirsep = p;
+		else if (*p != *q)
+			break;
+	}
+
+	return dirsep ? (dirsep - one) + 1 : 0;
 }
 
 int git_path_make_relative(git_buf *path, const char *parent)

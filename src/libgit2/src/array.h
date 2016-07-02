@@ -85,7 +85,6 @@ on_oom:
 #define git_array_foreach(a, i, element) \
 	for ((i) = 0; (i) < (a).size && ((element) = &(a).ptr[(i)]); (i)++)
 
-
 GIT_INLINE(int) git_array__search(
 	size_t *out,
 	void *array_ptr,
@@ -96,7 +95,7 @@ GIT_INLINE(int) git_array__search(
 {
 	size_t lim;
 	unsigned char *part, *array = array_ptr, *base = array_ptr;
-	int cmp;
+	int cmp = -1;
 
 	for (lim = array_len; lim != 0; lim >>= 1) {
 		part = base + (lim >> 1) * item_size;
