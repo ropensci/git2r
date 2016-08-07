@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2016 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -28,7 +28,7 @@ repo <- init(path)
 config(repo, user.name="Alice", user.email="alice@example.org")
 
 ## Check that reflog is empty
-stopifnot(identical(reflog(repo), list()))
+stopifnot(identical(reflog(repo), structure(list(), class = "git_reflog")))
 
 ## Create a file
 writeLines("Hello world!", file.path(path, "test.txt"))

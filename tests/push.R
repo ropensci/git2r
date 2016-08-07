@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2016 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -58,7 +58,8 @@ tools::assertError(push(repo, name = "origin"))
 push(repo, "origin", character(0))
 push(repo, "origin", NA_character_)
 push(repo, "origin", c(NA_character_, NA_character_))
-stopifnot(identical(reflog(repo, "refs/remotes/origin/master"), list()))
+stopifnot(identical(reflog(repo, "refs/remotes/origin/master"),
+                    structure(list(), class = "git_reflog")))
 
 ## No tracking branch assigned to master
 tools::assertError(push(branches(repo)[[1]]))

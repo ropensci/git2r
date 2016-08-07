@@ -3,23 +3,24 @@
 \docType{methods}
 \name{reflog}
 \alias{reflog}
-\alias{reflog,git_repository-method}
+\alias{reflog,git_repository,character-method}
+\alias{reflog,git_repository,missing-method}
 \title{List and view reflog information}
 \usage{
-reflog(repo, refname = "HEAD", verbose = TRUE)
+reflog(repo, refname)
 
-\S4method{reflog}{git_repository}(repo, refname = "HEAD", verbose = TRUE)
+\S4method{reflog}{git_repository,missing}(repo)
+
+\S4method{reflog}{git_repository,character}(repo, refname)
 }
 \arguments{
 \item{repo}{S4 class git_repository \code{object}.}
 
 \item{refname}{The name of the reference to list. 'HEAD' by
 default.}
-
-\item{verbose}{Display reflog. Default TRUE.}
 }
 \value{
-invisible list of S4 git_reflog_entry objects
+S3 class \code{git_reflog} with git_reflog_entry objects.
 }
 \description{
 List and view reflog information

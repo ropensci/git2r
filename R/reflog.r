@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2016 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -20,9 +20,8 @@
 ##' @docType methods
 ##' @param repo S4 class git_repository \code{object}.
 ##' @param refname The name of the reference to list. 'HEAD' by
-##' default.
-##' @param verbose Display reflog. Default TRUE.
-##' @return invisible list of S4 git_reflog_entry objects
+##'     default.
+##' @return S3 class \code{git_reflog} with git_reflog_entry objects.
 ##' @keywords methods
 ##' @examples
 ##' \dontrun{
@@ -59,24 +58,39 @@
 ##' reflog(repo)
 ##' }
 setGeneric("reflog",
-           signature = c("repo"),
-           function(repo,
-                    refname = "HEAD",
-                    verbose = TRUE)
+           signature = c("repo", "refname"),
+           function(repo, refname)
            standardGeneric("reflog"))
 
 ##' @rdname reflog-methods
 ##' @export
 setMethod("reflog",
-          signature(repo = "git_repository"),
-          function(repo, refname, verbose)
+          signature(repo    = "git_repository",
+                    refname = "missing"),
+          function(repo)
           {
-              result <- .Call(git2r_reflog_list, repo, refname)
-              if (verbose)
-                  lapply(result, show)
-              invisible(result)
+              callGeneric(repo = repo, refname = "HEAD")
           }
 )
+
+##' @rdname reflog-methods
+##' @export
+setMethod("reflog",
+          signature(repo    = "git_repository",
+                    refname = "character"),
+          function(repo, refname)
+          {
+              structure(.Call(git2r_reflog_list, repo, refname),
+                        class = "git_reflog")
+          }
+)
+
+##' @export
+print.git_reflog <- function(x, ...)
+{
+    lapply(x, show)
+    invisible(NULL)
+}
 
 ##' Brief summary of a reflog entry
 ##'
