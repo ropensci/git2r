@@ -3,22 +3,42 @@
 \docType{methods}
 \name{reset}
 \alias{reset}
+\alias{reset,character-method}
 \alias{reset,git_commit-method}
+\alias{reset,git_repository-method}
 \title{Reset current HEAD to the specified state}
 \usage{
-reset(commit, reset_type = c("soft", "mixed", "hard"))
+reset(object, ...)
 
-\S4method{reset}{git_commit}(commit, reset_type = c("soft", "mixed", "hard"))
+\S4method{reset}{git_commit}(object, reset_type = c("soft", "mixed", "hard"))
+
+\S4method{reset}{git_repository}(object, path)
+
+\S4method{reset}{character}(object)
 }
 \arguments{
-\item{commit}{The \code{\linkS4class{git_commit}} to which the
-HEAD should be moved to.}
+\item{object}{Either a \code{\linkS4class{git_commit}}, a
+\code{\linkS4class{git_repository}} or a character vector. If
+\code{object} is a \code{git_commit}, HEAD is moved to the
+\code{git_commit}. If \code{object} is a
+\code{git_repository}, resets the index entries in the
+\code{path} argument to their state at HEAD. If \code{object}
+is a character vector with paths, resets the index entries in
+\code{object} to their state at HEAD if the current working
+directory is in a repository.}
 
-\item{reset_type}{Kind of reset operation to perform. 'soft' means
-the Head will be moved to the commit. 'mixed' reset will trigger a
-'soft' reset, plus the index will be replaced with the content of
-the commit tree. 'hard' reset will trigger a 'mixed' reset and the
-working directory will be replaced with the content of the index.}
+\item{...}{Additional arguments affecting the reset.}
+
+\item{reset_type}{If object is a 'git_commit', the kind of reset
+operation to perform. 'soft' means the HEAD will be moved to
+the commit. 'mixed' reset will trigger a 'soft' reset, plus
+the index will be replaced with the content of the commit
+tree. 'hard' reset will trigger a 'mixed' reset and the
+working directory will be replaced with the content of the
+index.}
+
+\item{path}{If object is a 'git_repository', resets the index
+entries for all paths to their state at HEAD.}
 }
 \value{
 invisible NULL
@@ -41,8 +61,16 @@ writeLines("Hello world!", file.path(path, "test-1.txt"))
 add(repo, 'test-1.txt')
 commit_1 <- commit(repo, "Commit message")
 
-## Make one more commit
+## Change and stage the file
 writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test-1.txt"))
+add(repo, 'test-1.txt')
+status(repo)
+
+## Unstage file
+reset(repo, 'test-1.txt')
+status(repo)
+
+## Make one more commit
 add(repo, 'test-1.txt')
 commit(repo, "Next commit message")
 

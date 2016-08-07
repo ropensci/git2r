@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2016 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -18,13 +18,25 @@
 ##'
 ##' @rdname reset-methods
 ##' @docType methods
-##' @param commit The \code{\linkS4class{git_commit}} to which the
-##' HEAD should be moved to.
-##' @param reset_type Kind of reset operation to perform. 'soft' means
-##' the Head will be moved to the commit. 'mixed' reset will trigger a
-##' 'soft' reset, plus the index will be replaced with the content of
-##' the commit tree. 'hard' reset will trigger a 'mixed' reset and the
-##' working directory will be replaced with the content of the index.
+##' @param object Either a \code{\linkS4class{git_commit}}, a
+##'     \code{\linkS4class{git_repository}} or a character vector. If
+##'     \code{object} is a \code{git_commit}, HEAD is moved to the
+##'     \code{git_commit}. If \code{object} is a
+##'     \code{git_repository}, resets the index entries in the
+##'     \code{path} argument to their state at HEAD. If \code{object}
+##'     is a character vector with paths, resets the index entries in
+##'     \code{object} to their state at HEAD if the current working
+##'     directory is in a repository.
+##' @param ... Additional arguments affecting the reset.
+##' @param reset_type If object is a 'git_commit', the kind of reset
+##'     operation to perform. 'soft' means the HEAD will be moved to
+##'     the commit. 'mixed' reset will trigger a 'soft' reset, plus
+##'     the index will be replaced with the content of the commit
+##'     tree. 'hard' reset will trigger a 'mixed' reset and the
+##'     working directory will be replaced with the content of the
+##'     index.
+##' @param path If object is a 'git_repository', resets the index
+##'     entries for all paths to their state at HEAD.
 ##' @return invisible NULL
 ##' @keywords methods
 ##' @include S4_classes.r
@@ -42,8 +54,16 @@
 ##' add(repo, 'test-1.txt')
 ##' commit_1 <- commit(repo, "Commit message")
 ##'
-##' ## Make one more commit
+##' ## Change and stage the file
 ##' writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test-1.txt"))
+##' add(repo, 'test-1.txt')
+##' status(repo)
+##'
+##' ## Unstage file
+##' reset(repo, 'test-1.txt')
+##' status(repo)
+##'
+##' ## Make one more commit
 ##' add(repo, 'test-1.txt')
 ##' commit(repo, "Next commit message")
 ##'
@@ -66,21 +86,49 @@
 ##' status(repo)
 ##' }
 setGeneric("reset",
-           signature = c("commit"),
-           function(commit, reset_type = c("soft", "mixed", "hard"))
+           signature = c("object"),
+           function(object, ...)
            standardGeneric("reset"))
 
 ##' @rdname reset-methods
 ##' @export
 setMethod("reset",
-          signature(commit = "git_commit"),
-          function(commit, reset_type)
+          signature(object = "git_commit"),
+          function(object, reset_type = c("soft", "mixed", "hard"))
           {
               reset_type <- switch(match.arg(reset_type),
                                    soft  = 1L,
                                    mixed = 2L,
                                    hard  = 3L)
 
-              invisible(.Call(git2r_reset, commit, reset_type))
+              invisible(.Call(git2r_reset, object, reset_type))
+          }
+)
+
+##' @rdname reset-methods
+##' @export
+setMethod("reset",
+          signature(object = "git_repository"),
+          function(object, path)
+          {
+              if (length(path)) {
+                  if (is_empty(object)) {
+                      .Call(git2r_index_remove_bypath, object, path)
+                  } else {
+                      .Call(git2r_reset_default, object, path)
+                  }
+              }
+
+              invisible(NULL)
+          }
+)
+
+##' @rdname reset-methods
+##' @export
+setMethod("reset",
+          signature(object = "character"),
+          function(object)
+          {
+              callGeneric(lookup_repository(), path = object)
           }
 )
