@@ -111,12 +111,10 @@ setMethod("reset",
           signature(object = "git_repository"),
           function(object, path)
           {
-              if (length(path)) {
-                  if (is_empty(object)) {
-                      .Call(git2r_index_remove_bypath, object, path)
-                  } else {
-                      .Call(git2r_reset_default, object, path)
-                  }
+              if (is_empty(object)) {
+                  .Call(git2r_index_remove_bypath, object, path)
+              } else {
+                  .Call(git2r_reset_default, object, path)
               }
 
               invisible(NULL)
