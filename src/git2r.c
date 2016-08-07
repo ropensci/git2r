@@ -134,6 +134,7 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_repository_set_head_detached", (DL_FUNC)&git2r_repository_set_head_detached, 1},
     {"git2r_repository_workdir", (DL_FUNC)&git2r_repository_workdir, 1},
     {"git2r_reset", (DL_FUNC)&git2r_reset, 2},
+    {"git2r_reset_default", (DL_FUNC)&git2r_reset_default, 2},
     {"git2r_revparse_single", (DL_FUNC)&git2r_revparse_single, 2},
     {"git2r_revwalk_contributions", (DL_FUNC)&git2r_revwalk_contributions, 4},
     {"git2r_revwalk_list", (DL_FUNC)&git2r_revwalk_list, 5},

@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2016 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -67,6 +67,81 @@ SEXP git2r_reset(SEXP commit, SEXP reset_type)
 cleanup:
     if (target)
         git_commit_free(target);
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (err)
+        git2r_error(__func__, giterr_last(), NULL, NULL);
+
+    return R_NilValue;
+}
+
+/**
+ * Updates some entries in the index from the HEAD commit tree.
+ *
+ * @param repo S4 class git_repository
+ * @param path The paths to reset
+ * @return R_NilValue
+ */
+SEXP git2r_reset_default(SEXP repo, SEXP path)
+{
+    int err = 0;
+    size_t i, len;
+    git_strarray pathspec = {0};
+    git_reference *head = NULL;
+    git_object *head_commit = NULL;
+    git_repository *repository = NULL;
+
+    if (git2r_arg_check_string_vec(path))
+        git2r_error(__func__, NULL, "'path'", git2r_err_string_vec_arg);
+
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
+
+    /* Count number of non NA values */
+    len = length(path);
+    for (i = 0; i < len; i++)
+        if (NA_STRING != STRING_ELT(path, i))
+            pathspec.count++;
+
+    /* We are done if no non-NA values  */
+    if (!pathspec.count)
+        goto cleanup;
+
+    /* Allocate the strings in pathspec */
+    pathspec.strings = malloc(pathspec.count * sizeof(char*));
+    if (!pathspec.strings) {
+        giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
+        err = GIT_ERROR;
+        goto cleanup;
+    }
+
+    /* Populate the strings in pathspec */
+    for (i = 0; i < pathspec.count; i++)
+        if (NA_STRING != STRING_ELT(path, i))
+            pathspec.strings[i] = (char *)CHAR(STRING_ELT(path, i));
+
+    err = git_repository_head(&head, repository);
+    if (err)
+        goto cleanup;
+
+    err = git_reference_peel(&head_commit, head, GIT_OBJ_COMMIT);
+    if (err)
+        goto cleanup;
+
+    err = git_reset_default(repository, head_commit, &pathspec);
+
+cleanup:
+    if (head)
+        git_reference_free(head);
+
+    if (head_commit)
+        git_object_free(head_commit);
+
+    if (pathspec.strings)
+        free(pathspec.strings);
 
     if (repository)
         git_repository_free(repository);

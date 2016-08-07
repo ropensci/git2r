@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2016 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -23,5 +23,6 @@
 #include <Rinternals.h>
 
 SEXP git2r_reset(SEXP commit, SEXP reset_type);
+SEXP git2r_reset_default(SEXP repo, SEXP path);
 
 #endif
