@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2016 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -37,6 +37,32 @@ writeLines("Hello world!", file.path(path, "sub-folder", "file-2.txt"))
 writeLines("Hello world!", file.path(path, "sub-folder", "file-3.txt"))
 writeLines("Hello world!", file.path(path, "sub-folder", "sub-sub-folder", "file-4.txt"))
 writeLines("Hello world!", file.path(path, "sub-folder", "sub-sub-folder", "file-5.txt"))
+
+## Add
+add(repo, "file-1.txt")
+status_exp <- structure(list(staged = structure(list(new = "file-1.txt"),
+                                                .Names = "new"),
+                             unstaged = structure(list(),
+                                                  .Names = character(0)),
+                             untracked = structure(list(untracked = "sub-folder/"),
+                                                   .Names = "untracked")),
+                        .Names = c("staged", "unstaged", "untracked"),
+                        class = "git_status")
+status_obs <- status(repo)
+stopifnot(identical(status_obs, status_exp))
+
+## Index remove by path
+index_remove_bypath(repo, "file-1.txt")
+status_exp <- structure(list(staged = structure(list(), .Names = character(0)),
+                             unstaged = structure(list(), .Names = character(0)),
+                             untracked = structure(list(
+                                 untracked = "file-1.txt",
+                                 untracked = "sub-folder/"),
+                                 .Names = c("untracked", "untracked"))),
+                        .Names = c("staged", "unstaged", "untracked"),
+                        class = "git_status")
+status_obs <- status(repo)
+stopifnot(identical(status_obs, status_exp))
 
 ## Add
 add(repo, "sub-folder")

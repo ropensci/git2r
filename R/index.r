@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2016 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -221,6 +221,66 @@ setMethod("rm_file",
                       file.remove(paste0(workdir(repo), x))
                       .Call(git2r_index_remove_bypath, repo, x)
                   })
+              }
+
+              invisible(NULL)
+          }
+)
+
+##' Remove an index entry corresponding to a file on disk
+##'
+##' @rdname index_remove_bypath-methods
+##' @docType methods
+##' @param repo The repository \code{object}.
+##' @param path character vector with filenames to remove. The path
+##'     must be relative to the repository's working folder. It may
+##'     exist. If this file currently is the result of a merge
+##'     conflict, this file will no longer be marked as
+##'     conflicting. The data about the conflict will be moved to the
+##'     "resolve undo" (REUC) section.
+##' @return invisible(NULL)
+##' @keywords methods
+##' @include S4_classes.r
+##' @examples
+##' \dontrun{
+##' ## Initialize a repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a user
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##'
+##' ## Create a file
+##' writeLines("Hello world!", file.path(path, "file-to-remove.txt"))
+##'
+##' ## Add file to repository
+##' add(repo, "file-to-remove.txt")
+##'
+##' ## View status of repository
+##' status(repo)
+##'
+##' ## Remove file
+##' index_remove_bypath(repo, "file-to-remove.txt")
+##'
+##' ## View status of repository
+##' status(repo)
+##' }
+##'
+setGeneric("index_remove_bypath",
+           signature = c("repo", "path"),
+           function(repo, path)
+           standardGeneric("index_remove_bypath"))
+
+##' @rdname index_remove_bypath-methods
+##' @export
+setMethod("index_remove_bypath",
+          signature(repo = "git_repository",
+                    path = "character"),
+          function(repo, path)
+          {
+              if (length(path)) {
+                  .Call(git2r_index_remove_bypath, repo, path)
               }
 
               invisible(NULL)
