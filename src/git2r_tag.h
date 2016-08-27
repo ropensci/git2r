@@ -26,6 +26,7 @@
 
 void git2r_tag_init(git_tag *source, SEXP repo, SEXP dest);
 SEXP git2r_tag_create(SEXP repo, SEXP name, SEXP message, SEXP tagger);
+SEXP git2r_tag_delete(SEXP repo, SEXP name);
 SEXP git2r_tag_list(SEXP repo);
 
 #endif

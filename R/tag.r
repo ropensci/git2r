@@ -84,6 +84,85 @@ setMethod("tag",
           }
 )
 
+##' Delete an existing tag reference
+##'
+##' @rdname tag_delete-methods
+##' @docType methods
+##' @param object Can be either a
+##'     (\code{\linkS4class{git_repository}}) object, a
+##'     \code{\linkS4class{git_tag}} object or the tag name. If the
+##'     \code{object} argument is the tag name, the repository is
+##'     searched for with \code{\link{discover_repository}} in the
+##'     current working directory.
+##' @param ... Additional arguments
+##' @param name If the \code{object} argument is a
+##'     \code{git_repository}, the name of the tag to delete.
+##' @return \code{invisible(NULL)}
+##' @keywords methods
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a user
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##'
+##' ## Commit a text file
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit(repo, "First commit message")
+##'
+##' ## Create two tags
+##' tag(repo, "Tag1", "Tag message 1")
+##' t2 <- tag(repo, "Tag2", "Tag message 2")
+##'
+##' ## List the two tags in the repository
+##' tags(repo)
+##'
+##' ## Delete the two tags in the repository
+##' tag_delete(repo, "Tag1")
+##' tag_delete(t2)
+##'
+##' ## Show the empty list with tags in the repository
+##' tags(repo)
+##' }
+setGeneric("tag_delete",
+           signature = "object",
+           function(object, ...)
+           standardGeneric("tag_delete"))
+
+##' @rdname tag_delete-methods
+##' @export
+setMethod("tag_delete",
+          signature(object = "git_repository"),
+          function(object, name)
+          {
+              invisible(.Call(git2r_tag_delete, object, name))
+          }
+)
+
+##' @rdname tag_delete-methods
+##' @export
+setMethod("tag_delete",
+          signature(object = "character"),
+          function(object)
+          {
+              callGeneric(object = lookup_repository(), name = object)
+          }
+)
+
+##' @rdname tag_delete-methods
+##' @export
+setMethod("tag_delete",
+          signature(object = "git_tag"),
+          function(object)
+          {
+              callGeneric(object = object@repo, name = object@name)
+          }
+)
+
 ##' Tags
 ##'
 ##' @rdname tags-methods

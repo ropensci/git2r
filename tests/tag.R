@@ -105,9 +105,18 @@ stopifnot(identical(table(odb_objects(repo)$type),
                                   .Names = ""),
                               class = "table")))
 
+## Delete tag
+tag_delete(new_tag)
+stopifnot(identical(length(tags(repo)), 0L))
+
+## Create tag
+tag(repo, "Tagname", "Tag message")
+
 ## Check tags method with missing repo argument
 wd <- setwd(path)
 stopifnot(identical(length(tags()), 1L))
+tag_delete("Tagname")
+stopifnot(identical(length(tags()), 0L))
 if (!is.null(wd))
     setwd(wd)
 

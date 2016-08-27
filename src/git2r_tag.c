@@ -141,6 +141,36 @@ cleanup:
 }
 
 /**
+ * Delete an existing tag reference.
+ *
+ * @param repo S4 class git_repository
+ * @param name Name of the tag to be deleted
+ * @return R_NilValue
+ */
+SEXP git2r_tag_delete(SEXP repo, SEXP name)
+{
+    int err;
+    git_repository *repository = NULL;
+
+    if (git2r_arg_check_string(name))
+        git2r_error(__func__, NULL, "'name'", git2r_err_string_arg);
+
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
+
+    err = git_tag_delete(repository, CHAR(STRING_ELT(name, 0)));
+
+    if (repository)
+        git_repository_free(repository);
+
+    if (err)
+        git2r_error(__func__, giterr_last(), NULL, NULL);
+
+    return R_NilValue;
+}
+
+/**
  * Data structure to hold information when iterating over tags.
  */
 typedef struct {

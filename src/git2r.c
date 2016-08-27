@@ -145,6 +145,7 @@ static const R_CallMethodDef callMethods[] =
     {"git2r_stash_save", (DL_FUNC)&git2r_stash_save, 6},
     {"git2r_status_list", (DL_FUNC)&git2r_status_list, 6},
     {"git2r_tag_create", (DL_FUNC)&git2r_tag_create, 4},
+    {"git2r_tag_delete", (DL_FUNC)&git2r_tag_delete, 2},
     {"git2r_tag_list", (DL_FUNC)&git2r_tag_list, 1},
     {NULL, NULL, 0}
 };
