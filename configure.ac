@@ -152,9 +152,8 @@ esac
 
 AC_SEARCH_LIBS([EVP_EncryptInit],
                [crypto],
-               [AC_SEARCH_LIBS([SSL_library_init],
-                               [ssl],
-                               [have_ssl=yes])])
+               [AC_SEARCH_LIBS([SSL_library_init], [ssl], [have_ssl=yes])
+                AC_SEARCH_LIBS([OPENSSL_init_ssl], [ssl], [have_ssl=yes])])
 
 if test "x${have_ssl}" = xno; then
     AC_MSG_FAILURE([
