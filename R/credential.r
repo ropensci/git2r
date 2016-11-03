@@ -122,7 +122,10 @@ setMethod("cred_user_pass",
 ##' @param privatekey The path to the private key of the
 ##' credential. Default is \code{'~/.ssh/id_rsa'}
 ##' @param passphrase The passphrase of the credential. Default is
-##' \code{character(0)}
+##' \code{character(0)}. If getPass is installed and private key is 
+##' passphrase protected \code{getPass::getPass()} will be called 
+##' to allow for interactive and obfuscated interactive input of 
+##' the passphrase. 
 ##' @return A S4 \code{cred_ssh_key} object
 ##' @export
 ##' @examples
@@ -133,12 +136,35 @@ setMethod("cred_user_pass",
 ##' repo <- repository("git2r")
 ##' push(repo, credentials = cred)
 ##' }
-cred_ssh_key <- function(publickey  = "~/.ssh/id_rsa.pub",
-                         privatekey = "~/.ssh/id_rsa",
-                         passphrase = character(0))
+cred_ssh_key <-  function (publickey = "~/.ssh/id_rsa.pub",
+                           privatekey = "~/.ssh/id_rsa", 
+                           passphrase = character(0))
 {
+    publickey = normalizePath(publickey, mustWork = TRUE)
+    privatekey = normalizePath(privatekey, mustWork = TRUE)
+
+    if (length(passphrase) == 0) {
+        if (ssh_key_needs_passphrase(privatekey)) {
+            if (requireNamespace("getPass", quietly = TRUE)) {
+                passphrase <- getPass::getPass()
+            }
+        }
+    }
+
     new("cred_ssh_key",
-        publickey  = normalizePath(publickey, mustWork = TRUE),
-        privatekey = normalizePath(privatekey, mustWork = TRUE),
+        publickey  = publickey,
+        privatekey = privatekey,
         passphrase = passphrase)
+}
+
+##' Check if private key is passphrase protected
+##' @param privatekey The path to the private key of the
+##' credential. Default is \code{'~/.ssh/id_rsa'}
+##' @keywords internal
+ssh_key_needs_passphrase <- function(privatekey = "~/.ssh/id_rsa"){
+  private_content    <- readLines(privatekey, n=3)
+  contains_encrypted <- grepl("encrypted",  private_content , ignore.case = TRUE)
+  return(
+    any(contains_encrypted)
+  )
 }
