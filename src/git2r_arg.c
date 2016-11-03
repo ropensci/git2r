@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2016 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -20,6 +20,7 @@
 #include "git2.h"
 
 #include "git2r_arg.h"
+#include "git2r_error.h"
 
 /**
  * Check blob argument
@@ -428,6 +429,43 @@ int git2r_arg_check_string_vec(SEXP arg)
 {
     if (R_NilValue == arg || !isString(arg))
         return -1;
+    return 0;
+}
+
+/**
+ * Copy SEXP character vector to git_strarray
+ *
+ * @param dst Destination of data
+ * @src src Source of data. Skips NA strings.
+ * @return 0 if OK, else error code
+ */
+
+int git2r_copy_string_vec(git_strarray *dst, SEXP src)
+{
+    size_t i, len;
+
+    /* Count number of non NA values */
+    len = length(src);
+    for (i = 0; i < len; i++)
+        if (NA_STRING != STRING_ELT(src, i))
+            dst->count++;
+
+    /* We are done if no non-NA values  */
+    if (!dst->count)
+        return 0;
+
+    /* Allocate the strings in dst */
+    dst->strings = malloc(dst->count * sizeof(char*));
+    if (!dst->strings) {
+        giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
+        return GIT_ERROR;
+    }
+
+    /* Copy strings to dst */
+    for (i = 0; i < dst->count; i++)
+        if (NA_STRING != STRING_ELT(src, i))
+            dst->strings[i] = (char *)CHAR(STRING_ELT(src, i));
+
     return 0;
 }
 
