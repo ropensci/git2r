@@ -87,7 +87,6 @@ cleanup:
 SEXP git2r_reset_default(SEXP repo, SEXP path)
 {
     int err = 0;
-    size_t i, len;
     git_strarray pathspec = {0};
     git_reference *head = NULL;
     git_object *head_commit = NULL;
@@ -100,28 +99,9 @@ SEXP git2r_reset_default(SEXP repo, SEXP path)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    /* Count number of non NA values */
-    len = length(path);
-    for (i = 0; i < len; i++)
-        if (NA_STRING != STRING_ELT(path, i))
-            pathspec.count++;
-
-    /* We are done if no non-NA values  */
-    if (!pathspec.count)
+    err = git2r_copy_string_vec(&pathspec, path);
+    if (err || !pathspec.count)
         goto cleanup;
-
-    /* Allocate the strings in pathspec */
-    pathspec.strings = malloc(pathspec.count * sizeof(char*));
-    if (!pathspec.strings) {
-        giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
-        err = GIT_ERROR;
-        goto cleanup;
-    }
-
-    /* Populate the strings in pathspec */
-    for (i = 0; i < pathspec.count; i++)
-        if (NA_STRING != STRING_ELT(path, i))
-            pathspec.strings[i] = (char *)CHAR(STRING_ELT(path, i));
 
     err = git_repository_head(&head, repository);
     if (err)

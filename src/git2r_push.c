@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2016 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -62,7 +62,6 @@ static int git2r_nothing_to_push(SEXP refspec)
 SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP credentials)
 {
     int err;
-    size_t i;
     git_remote *remote = NULL;
     git_repository *repository = NULL;
     git_strarray c_refspecs = {0};
@@ -91,19 +90,9 @@ SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP credentials)
     opts.callbacks.payload = &payload;
     opts.callbacks.credentials = &git2r_cred_acquire_cb;
 
-    c_refspecs.count = length(refspec);
-    if (c_refspecs.count) {
-        c_refspecs.strings = calloc(c_refspecs.count, sizeof(char*));
-        if (!c_refspecs.strings) {
-            giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
-            err = GIT_ERROR;
-            goto cleanup;
-        }
-        for (i = 0; i < c_refspecs.count; i++) {
-            if (NA_STRING != STRING_ELT(refspec, i))
-                c_refspecs.strings[i] = (char*)CHAR(STRING_ELT(refspec, i));
-        }
-    }
+    err = git2r_copy_string_vec(&c_refspecs, refspec);
+    if (err)
+        goto cleanup;
 
     err = git_remote_push(remote, &c_refspecs, &opts);
 

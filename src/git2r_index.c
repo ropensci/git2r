@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2016 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -50,28 +50,9 @@ SEXP git2r_index_add_all(SEXP repo, SEXP path, SEXP force)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    /* Count number of non NA values */
-    len = length(path);
-    for (i = 0; i < len; i++)
-        if (NA_STRING != STRING_ELT(path, i))
-            pathspec.count++;
-
-    /* We are done if no non-NA values  */
-    if (!pathspec.count)
+    err = git2r_copy_string_vec(&pathspec, path);
+    if (err || !pathspec.count)
         goto cleanup;
-
-    /* Allocate the strings in pathspec */
-    pathspec.strings = malloc(pathspec.count * sizeof(char*));
-    if (!pathspec.strings) {
-        giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
-        err = GIT_ERROR;
-        goto cleanup;
-    }
-
-    /* Populate the strings in pathspec */
-    for (i = 0; i < pathspec.count; i++)
-        if (NA_STRING != STRING_ELT(path, i))
-            pathspec.strings[i] = (char *)CHAR(STRING_ELT(path, i));
 
     err = git_repository_index(&index, repository);
     if (err)
