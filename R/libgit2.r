@@ -47,7 +47,7 @@ libgit2_version <- function() {
 ##' @export
 ##' @examples
 ##' libgit2_sha()
-libgit2_sha <- function() "e4218450338cf6757077f63bac570ea77f655eff"
+libgit2_sha <- function() "7175222ce63ef61749cc00a1f29d11d098bd28a8"
 
 ##' Set the SSL certificate-authority locations
 ##'
