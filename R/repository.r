@@ -1048,8 +1048,7 @@ setMethod("discover_repository",
           signature(path = "character", ceiling = "missing"),
           function(path)
           {
-              path <- normalizePath(path)
-              .Call(git2r_repository_discover, path, NULL)
+              callGeneric(path = path, ceiling = as.numeric(NA))
           }
 )
 
@@ -1059,16 +1058,26 @@ setMethod("discover_repository",
           signature(path = "character", ceiling = "numeric"),
           function(path, ceiling)
           {
-              ceiling <- as.integer(ceiling)
-              if (identical(ceiling, 0L)) {
-                  ceiling <- normalizePath(path)
-              } else if (identical(ceiling, 1L)) {
-                  ceiling <- dirname(dirname(normalizePath(path)))
+              if (is.na(ceiling)) {
+                  ceiling <- NULL
               } else {
-                  stop("'ceiling' must be either 0 or 1")
+                  ceiling <- as.integer(ceiling)
+                  if (identical(ceiling, 0L)) {
+                      ceiling <- dirname(normalizePath(path))
+                  } else if (identical(ceiling, 1L)) {
+                      ceiling <- dirname(dirname(normalizePath(path)))
+                  } else {
+                      stop("'ceiling' must be either 0 or 1")
+                  }
               }
 
               path <- normalizePath(path)
+              if (identical(file.info(path)$isdir, FALSE)) {
+                  path <- dirname(path)
+              } else if (is.na(file.info(path)$isdir)) {
+                  return(NULL)
+              }
+
               .Call(git2r_repository_discover, path, ceiling)
           }
 )

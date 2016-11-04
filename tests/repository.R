@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013 - 2016 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -46,18 +46,18 @@ stopifnot(identical(commits(repo), list()))
 stopifnot(identical(head(repo), NULL))
 
 # check that we can find repository from a path
-wd <- workdir(repo)
-writeLines('test file', con=file.path(wd, 'myfile.txt'))
-stopifnot(identical(discover_repository(file.path(wd, 'myfile.txt')),
-                    paste0(wd, '.git', .Platform$file.sep)))
-stopifnot(identical(discover_repository(file.path(wd, 'doesntexist.txt')),
+wd <- sub(paste0("[", .Platform$file.sep, "]$"), "",  workdir(repo))
+writeLines('test file', con = file.path(wd, "myfile.txt"))
+stopifnot(identical(discover_repository(file.path(wd, "myfile.txt")),
+                    paste0(file.path(wd, ".git"), .Platform$file.sep)))
+stopifnot(identical(discover_repository(file.path(wd, "doesntexist.txt")),
                     NULL))
 
 # Check that we can use ceiling in discover repostiory
 dir.create(file.path(wd, "temp"))
 stopifnot(identical(discover_repository(file.path(wd, "temp"), 0), NULL))
 stopifnot(identical(discover_repository(file.path(wd, "temp"), 1),
-                    paste0(wd, '.git', .Platform$file.sep)))
+                    paste0(file.path(wd, ".git"), .Platform$file.sep)))
 tools::assertError(discover_repository(file.path(wd, "temp"), 2))
 
 ## Check that lookup with a sha of less than 4 characters or more than
