@@ -40,8 +40,8 @@ OBJECTS.libgit2 = libgit2/src/annotated_commit.o libgit2/src/apply.o libgit2/src
     libgit2/src/sysdir.o libgit2/src/tag.o libgit2/src/thread-utils.o \
     libgit2/src/tls_stream.o libgit2/src/trace.o libgit2/src/transaction.o \
     libgit2/src/transport.o libgit2/src/tree.o libgit2/src/tree-cache.o \
-    libgit2/src/tsort.o libgit2/src/util.o libgit2/src/vector.o \
-    libgit2/src/zstream.o
+    libgit2/src/tsort.o libgit2/src/util.o libgit2/src/varint.o \
+    libgit2/src/vector.o libgit2/src/zstream.o
 
 OBJECTS.libgit2.transports = libgit2/src/transports/auth.o libgit2/src/transports/cred.o libgit2/src/transports/cred_helpers.o \
     libgit2/src/transports/git.o libgit2/src/transports/http.o libgit2/src/transports/local.o \
