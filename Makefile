@@ -68,6 +68,7 @@ sync_libgit2:
 	-rm -f src/libgit2/include/git2/stdint.h
 	-cp -r ../libgit2/src/ src/libgit2/src
 	-rm -f src/libgit2/src/stransport_stream.c
+	-rm -f src/libgit2/src/transports/auth_negotiate.c
 	-rm -f src/libgit2/src/win32/msvc-compat.h
 	-rm -f src/libgit2/src/win32/w32_crtdbg_stacktrace.c
 	-rm -f src/libgit2/src/win32/w32_crtdbg_stacktrace.h
