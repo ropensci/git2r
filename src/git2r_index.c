@@ -35,7 +35,6 @@
 SEXP git2r_index_add_all(SEXP repo, SEXP path, SEXP force)
 {
     int err = GIT_OK;
-    size_t i, len;
     unsigned int flags = 0;
     git_strarray pathspec = {0};
     git_index *index = NULL;
