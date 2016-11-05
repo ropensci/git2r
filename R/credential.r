@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013 - 2016 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -122,10 +122,10 @@ setMethod("cred_user_pass",
 ##' @param privatekey The path to the private key of the
 ##' credential. Default is \code{'~/.ssh/id_rsa'}
 ##' @param passphrase The passphrase of the credential. Default is
-##' \code{character(0)}. If getPass is installed and private key is 
-##' passphrase protected \code{getPass::getPass()} will be called 
-##' to allow for interactive and obfuscated interactive input of 
-##' the passphrase. 
+##' \code{character(0)}. If getPass is installed and private key is
+##' passphrase protected \code{getPass::getPass()} will be called
+##' to allow for interactive and obfuscated interactive input of
+##' the passphrase.
 ##' @return A S4 \code{cred_ssh_key} object
 ##' @export
 ##' @examples
@@ -137,7 +137,7 @@ setMethod("cred_user_pass",
 ##' push(repo, credentials = cred)
 ##' }
 cred_ssh_key <-  function (publickey = "~/.ssh/id_rsa.pub",
-                           privatekey = "~/.ssh/id_rsa", 
+                           privatekey = "~/.ssh/id_rsa",
                            passphrase = character(0))
 {
     publickey = normalizePath(publickey, mustWork = TRUE)
