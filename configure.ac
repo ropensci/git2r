@@ -357,16 +357,6 @@ if test $ac_cv_func_qsort_s = yes; then
     CPPFLAGS="${CPPFLAGS} -DHAVE_QSORT_S"
 fi
 
-# Check if compiler flag '-Wno-unused-function' is supported
-oCFLAGS="${CFLAGS}"
-CFLAGS="-Wno-unused-function"
-AC_MSG_CHECKING([if '${CFLAGS}' is supported])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([],[])],
-	          [AC_MSG_RESULT([yes])]
-		  PKG_CFLAGS="${PKG_CFLAGS} ${CFLAGS}",
-		  [AC_MSG_RESULT([no])])
-CFLAGS="${oCFLAGS}"
-
 AC_SUBST(GIT2R_SRC_REGEX)
 AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS} ${LIBSSH2_CFLAGS}"])
 AC_SUBST([PKG_CPPFLAGS], ["${CPPFLAGS} ${LIBCURL_CPPFLAGS}"])

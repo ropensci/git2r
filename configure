@@ -6078,33 +6078,6 @@ if test $ac_cv_func_qsort_s = yes; then
     CPPFLAGS="${CPPFLAGS} -DHAVE_QSORT_S"
 fi
 
-# Check if compiler flag '-Wno-unused-function' is supported
-oCFLAGS="${CFLAGS}"
-CFLAGS="-Wno-unused-function"
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if '${CFLAGS}' is supported" >&5
-$as_echo_n "checking if '${CFLAGS}' is supported... " >&6; }
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-int
-main ()
-{
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-		  PKG_CFLAGS="${PKG_CFLAGS} ${CFLAGS}"
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-CFLAGS="${oCFLAGS}"
-
 
 PKG_CFLAGS="${PKG_CFLAGS} ${LIBSSH2_CFLAGS}"
 
