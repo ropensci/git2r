@@ -1,0 +1,40 @@
+*** rebase.c.orig	2016-11-05 23:23:19.188028953 +0100
+--- rebase.c	2016-11-05 23:21:13.136025578 +0100
+***************
+*** 235,243 ****
+--- 235,252 ----
+  	for (i = 0; i < end; i++) {
+  		git_buf_clear(&cmt);
+  
++ #ifdef _WIN32
++ #pragma GCC diagnostic push
++ #pragma GCC diagnostic ignored "-Wformat"
+  		if ((error = git_buf_printf(&cmt, "cmt.%" PRIuZ, (i+1))) < 0 ||
+  			(error = rebase_readoid(&id, &buf, &state_path, cmt.ptr)) < 0)
+  			goto done;
++ #pragma GCC diagnostic pop
++ #else
++ 		if ((error = git_buf_printf(&cmt, "cmt.%" PRIuZ, (i+1))) < 0 ||
++ 			(error = rebase_readoid(&id, &buf, &state_path, cmt.ptr)) < 0)
++ 			goto done;
++ #endif
+  
+  		operation = rebase_operation_alloc(rebase, GIT_REBASE_OPERATION_PICK, &id, NULL);
+  		GITERR_CHECK_ALLOC(operation);
+***************
+*** 455,461 ****
+--- 464,477 ----
+  		operation = git_array_get(rebase->operations, i);
+  
+  		git_buf_clear(&commit_filename);
++ #ifdef _WIN32
++ #pragma GCC diagnostic push
++ #pragma GCC diagnostic ignored "-Wformat"
++ 		git_buf_printf(&commit_filename, CMT_FILE_FMT, i+1);
++ #pragma GCC diagnostic pop
++ #else
+  		git_buf_printf(&commit_filename, CMT_FILE_FMT, i+1);
++ #endif
+  
+  		git_oid_fmt(id_str, &operation->id);
+  

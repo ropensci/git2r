@@ -1,0 +1,19 @@
+*** diff_print.c.orig	2016-11-05 23:23:19.204028954 +0100
+--- diff_print.c	2016-11-05 23:20:43.996024797 +0100
+***************
+*** 460,466 ****
+--- 460,473 ----
+  		"delta" : "literal";
+  	const char *scan, *end;
+  
++ #ifdef _WIN32
++ #pragma GCC diagnostic push
++ #pragma GCC diagnostic ignored "-Wformat"
+  	git_buf_printf(pi->buf, "%s %" PRIuZ "\n", typename, inflatedlen);
++ #pragma GCC diagnostic pop
++ #else
++ 	git_buf_printf(pi->buf, "%s %" PRIuZ "\n", typename, inflatedlen);
++ #endif
+  	pi->line.num_lines++;
+  
+  	for (scan = data, end = data + datalen; scan < end; ) {

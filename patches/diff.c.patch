@@ -1,0 +1,28 @@
+*** diff.c.orig	2016-11-05 23:23:19.180028953 +0100
+--- diff.c	2016-11-05 23:20:37.016024611 +0100
+***************
+*** 157,164 ****
+--- 157,172 ----
+  		if (total_patches == 1) {
+  			error = git_buf_puts(out, "[PATCH] ");
+  		} else {
++ #ifdef _WIN32
++ #pragma GCC diagnostic push
++ #pragma GCC diagnostic ignored "-Wformat"
+  			error = git_buf_printf(out, "[PATCH %"PRIuZ"/%"PRIuZ"] ",
+  				patch_no, total_patches);
++ #pragma GCC diagnostic pop
++ #else
++ 			error = git_buf_printf(out, "[PATCH %"PRIuZ"/%"PRIuZ"] ",
++ 				patch_no, total_patches);
++ #endif
+  		}
+  
+  		if (error < 0)
+***************
+*** 338,341 ****
+  		GIT_DIFF_FORMAT_EMAIL_OPTIONS_INIT);
+  	return 0;
+  }
+- 
+--- 346,348 ----
