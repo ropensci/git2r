@@ -75,9 +75,22 @@ sync_libgit2:
 	-rm -f src/libgit2/src/win32/thread.c
 	-rm -f src/libgit2/src/win32/w32_stack.c
 	-rm -f src/libgit2/src/win32/w32_stack.h
+	cd src/libgit2/src && patch -i ../../../patches/attrcache.c.patch
+	cd src/libgit2/src && patch -i ../../../patches/cache.c.patch
 	cd src/libgit2/src && patch -i ../../../patches/common.h.patch
 	cd src/libgit2/src && patch -i ../../../patches/config.c.patch
+	cd src/libgit2/src && patch -i ../../../patches/diff.c.patch
+	cd src/libgit2/src && patch -i ../../../patches/diff_print.c.patch
+	cd src/libgit2/src && patch -i ../../../patches/diff_stats.c.patch
+	cd src/libgit2/src && patch -i ../../../patches/global.c.patch
+	cd src/libgit2/src && patch -i ../../../patches/index.c.patch
 	cd src/libgit2/src && patch -i ../../../patches/odb.c.patch
+	cd src/libgit2/src && patch -i ../../../patches/rebase.c.patch
+	cd src/libgit2/src && patch -i ../../../patches/repository.c.patch
+	cd src/libgit2/src && patch -i ../../../patches/tree-cache.c.patch
+	cd src/libgit2/src && patch -i ../../../patches/tsort.c.patch
+	cd src/libgit2/src/transports && patch -i ../../../../patches/smart_protocol.c.patch
+	cd src/libgit2/src/win32 && patch -i ../../../../patches/reparse.h.patch
 	cd src/libgit2/deps/regex && patch -i ../../../../patches/regcomp-pass-R-CMD-check-git2r.patch
 	cd src/libgit2/deps/regex && patch -i ../../../../patches/regex-prefix-entry-points.patch
 	Rscript scripts/build_Makevars.r
