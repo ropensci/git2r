@@ -252,7 +252,14 @@ static void write_tree(git_buf *out, git_tree_cache *tree)
 {
 	size_t i;
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat"
 	git_buf_printf(out, "%s%c%"PRIdZ" %"PRIuZ"\n", tree->name, 0, tree->entry_count, tree->children_count);
+#pragma GCC diagnostic pop
+#else
+	git_buf_printf(out, "%s%c%"PRIdZ" %"PRIuZ"\n", tree->name, 0, tree->entry_count, tree->children_count);
+#endif
 
 	if (tree->entry_count != -1)
 		git_buf_put(out, (const char *) &tree->oid, GIT_OID_RAWSZ);

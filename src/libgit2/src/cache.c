@@ -50,6 +50,9 @@ void git_cache_dump_stats(git_cache *cache)
 	if (kh_size(cache->map) == 0)
 		return;
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat"
 	printf("Cache %p: %d items cached, %"PRIdZ" bytes\n",
 		cache, kh_size(cache->map), cache->used_memory);
 
@@ -62,6 +65,21 @@ void git_cache_dump_stats(git_cache *cache)
 			object->size
 		);
 	});
+#pragma GCC diagnostic pop
+#else
+	printf("Cache %p: %d items cached, %"PRIdZ" bytes\n",
+		cache, kh_size(cache->map), cache->used_memory);
+
+	kh_foreach_value(cache->map, object, {
+		char oid_str[9];
+		printf(" %s%c %s (%"PRIuZ")\n",
+			git_object_type2string(object->type),
+			object->flags == GIT_CACHE_STORE_PARSED ? '*' : ' ',
+			git_oid_tostr(oid_str, sizeof(oid_str), &object->oid),
+			object->size
+		);
+	});
+#endif
 }
 
 int git_cache_init(git_cache *cache)

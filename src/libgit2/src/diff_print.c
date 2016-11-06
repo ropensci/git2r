@@ -460,7 +460,14 @@ static int format_binary(
 		"delta" : "literal";
 	const char *scan, *end;
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat"
 	git_buf_printf(pi->buf, "%s %" PRIuZ "\n", typename, inflatedlen);
+#pragma GCC diagnostic pop
+#else
+	git_buf_printf(pi->buf, "%s %" PRIuZ "\n", typename, inflatedlen);
+#endif
 	pi->line.num_lines++;
 
 	for (scan = data, end = data + datalen; scan < end; ) {

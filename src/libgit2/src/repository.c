@@ -58,10 +58,20 @@ static void set_odb(git_repository *repo, git_odb *odb)
 		GIT_REFCOUNT_INC(odb);
 	}
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 	if ((odb = git__swap(repo->_odb, odb)) != NULL) {
 		GIT_REFCOUNT_OWN(odb, NULL);
 		git_odb_free(odb);
 	}
+#pragma GCC diagnostic pop
+#else
+	if ((odb = git__swap(repo->_odb, odb)) != NULL) {
+		GIT_REFCOUNT_OWN(odb, NULL);
+		git_odb_free(odb);
+	}
+#endif
 }
 
 static void set_refdb(git_repository *repo, git_refdb *refdb)
@@ -71,10 +81,20 @@ static void set_refdb(git_repository *repo, git_refdb *refdb)
 		GIT_REFCOUNT_INC(refdb);
 	}
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 	if ((refdb = git__swap(repo->_refdb, refdb)) != NULL) {
 		GIT_REFCOUNT_OWN(refdb, NULL);
 		git_refdb_free(refdb);
 	}
+#pragma GCC diagnostic pop
+#else
+	if ((refdb = git__swap(repo->_refdb, refdb)) != NULL) {
+		GIT_REFCOUNT_OWN(refdb, NULL);
+		git_refdb_free(refdb);
+	}
+#endif
 }
 
 static void set_config(git_repository *repo, git_config *config)
@@ -84,10 +104,20 @@ static void set_config(git_repository *repo, git_config *config)
 		GIT_REFCOUNT_INC(config);
 	}
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 	if ((config = git__swap(repo->_config, config)) != NULL) {
 		GIT_REFCOUNT_OWN(config, NULL);
 		git_config_free(config);
 	}
+#pragma GCC diagnostic pop
+#else
+	if ((config = git__swap(repo->_config, config)) != NULL) {
+		GIT_REFCOUNT_OWN(config, NULL);
+		git_config_free(config);
+	}
+#endif
 
 	git_repository__cvar_cache_clear(repo);
 }
@@ -99,10 +129,20 @@ static void set_index(git_repository *repo, git_index *index)
 		GIT_REFCOUNT_INC(index);
 	}
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 	if ((index = git__swap(repo->_index, index)) != NULL) {
 		GIT_REFCOUNT_OWN(index, NULL);
 		git_index_free(index);
 	}
+#pragma GCC diagnostic pop
+#else
+	if ((index = git__swap(repo->_index, index)) != NULL) {
+		GIT_REFCOUNT_OWN(index, NULL);
+		git_index_free(index);
+	}
+#endif
 }
 
 void git_repository__cleanup(git_repository *repo)
@@ -1076,7 +1116,7 @@ static int reserved_names_add8dot3(git_repository *repo, const char *path)
 
 	name_len = strlen(name);
 
-	if ((name_len == def_len && memcmp(name, def, def_len) == 0) || 
+	if ((name_len == def_len && memcmp(name, def, def_len) == 0) ||
 		(name_len == def_dot_git_len && memcmp(name, def_dot_git, def_dot_git_len) == 0)) {
 		git__free(name);
 		return 0;
@@ -2450,7 +2490,7 @@ int git_repository__cleanup_files(
 			error = git_futils_rmdir_r(path, NULL,
 				GIT_RMDIR_REMOVE_FILES | GIT_RMDIR_REMOVE_BLOCKERS);
 		}
-			
+
 		git_buf_clear(&buf);
 	}
 
@@ -2530,8 +2570,16 @@ int git_repository_set_ident(git_repository *repo, const char *name, const char 
 		GITERR_CHECK_ALLOC(tmp_email);
 	}
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 	tmp_name = git__swap(repo->ident_name, tmp_name);
 	tmp_email = git__swap(repo->ident_email, tmp_email);
+#pragma GCC diagnostic pop
+#else
+	tmp_name = git__swap(repo->ident_name, tmp_name);
+	tmp_email = git__swap(repo->ident_email, tmp_email);
+#endif
 
 	git__free(tmp_name);
 	git__free(tmp_email);

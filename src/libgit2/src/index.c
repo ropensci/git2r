@@ -497,7 +497,14 @@ static void index_free_deleted(git_index *index)
 		return;
 
 	for (i = 0; i < index->deleted.length; ++i) {
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 		git_index_entry *ie = git__swap(index->deleted.contents[i], NULL);
+#pragma GCC diagnostic pop
+#else
+		git_index_entry *ie = git__swap(index->deleted.contents[i], NULL);
+#endif
 		index_entry_free(ie);
 	}
 
@@ -2145,8 +2152,16 @@ void git_index_reuc_clear(git_index *index)
 
 	assert(index);
 
-	for (i = 0; i < index->reuc.length; ++i)
+	for (i = 0; i < index->reuc.length; ++i) {
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 		index_entry_reuc_free(git__swap(index->reuc.contents[i], NULL));
+#pragma GCC diagnostic pop
+#else
+		index_entry_reuc_free(git__swap(index->reuc.contents[i], NULL));
+#endif
+        }
 
 	git_vector_clear(&index->reuc);
 }
@@ -2358,7 +2373,7 @@ static size_t read_entry(
 		entry.path = (char *)path_ptr;
 	} else {
 		size_t varint_len;
-		size_t shared = git_decode_varint((const unsigned char *)path_ptr, 
+		size_t shared = git_decode_varint((const unsigned char *)path_ptr,
 						  &varint_len);
 		size_t len = strlen(path_ptr + varint_len);
 		size_t last_len = strlen(*last);
@@ -3000,7 +3015,14 @@ int git_index_read_tree(git_index *index, const git_tree *tree)
 		/* well, this isn't good */;
 	} else {
 		git_vector_swap(&entries, &index->entries);
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 		entries_map = git__swap(index->entries_map, entries_map);
+#pragma GCC diagnostic pop
+#else
+		entries_map = git__swap(index->entries_map, entries_map);
+#endif
 	}
 
 cleanup:
@@ -3131,7 +3153,14 @@ static int git_index_read_iterator(
 	git_index_reuc_clear(index);
 
 	git_vector_swap(&new_entries, &index->entries);
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 	new_entries_map = git__swap(index->entries_map, new_entries_map);
+#pragma GCC diagnostic pop
+#else
+	new_entries_map = git__swap(index->entries_map, new_entries_map);
+#endif
 
 	git_vector_foreach(&remove_entries, i, entry) {
 		if (index->tree)

@@ -157,8 +157,16 @@ int git_diff_format_email__append_header_tobuf(
 		if (total_patches == 1) {
 			error = git_buf_puts(out, "[PATCH] ");
 		} else {
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat"
 			error = git_buf_printf(out, "[PATCH %"PRIuZ"/%"PRIuZ"] ",
 				patch_no, total_patches);
+#pragma GCC diagnostic pop
+#else
+			error = git_buf_printf(out, "[PATCH %"PRIuZ"/%"PRIuZ"] ",
+				patch_no, total_patches);
+#endif
 		}
 
 		if (error < 0)
@@ -338,4 +346,3 @@ int git_diff_format_email_init_options(
 		GIT_DIFF_FORMAT_EMAIL_OPTIONS_INIT);
 	return 0;
 }
-
