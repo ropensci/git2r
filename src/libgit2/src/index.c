@@ -2373,7 +2373,7 @@ static size_t read_entry(
 		entry.path = (char *)path_ptr;
 	} else {
 		size_t varint_len;
-		size_t shared = git_decode_varint((const unsigned char *)path_ptr,
+		size_t shared = git_decode_varint((const unsigned char *)path_ptr, 
 						  &varint_len);
 		size_t len = strlen(path_ptr + varint_len);
 		size_t last_len = strlen(*last);
