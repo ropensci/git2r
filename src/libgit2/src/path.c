@@ -644,6 +644,10 @@ int git_path_set_error(int errno_value, const char *path, const char *action)
 		giterr_set(GITERR_OS, "Failed %s - '%s' already exists", action, path);
 		return GIT_EEXISTS;
 
+	case EACCES:
+		giterr_set(GITERR_OS, "Failed %s - '%s' is locked", action, path);
+		return GIT_ELOCKED;
+
 	default:
 		giterr_set(GITERR_OS, "Could not %s '%s'", action, path);
 		return -1;
@@ -1347,7 +1351,7 @@ int git_path_diriter_next(git_path_diriter *diriter)
 				return GIT_ITEROVER;
 
 			giterr_set(GITERR_OS,
-				"Could not read directory '%s'", diriter->path);
+				"Could not read directory '%s'", diriter->path.ptr);
 			return -1;
 		}
 	} while (skip_dot && git_path_is_dot_or_dotdot(de->d_name));

@@ -917,7 +917,7 @@ int git_tree_entry_bypath(
 
 	if (entry == NULL) {
 		giterr_set(GITERR_TREE,
-			   "the path '%.*s' does not exist in the given tree", filename_len, path);
+			   "the path '%.*s' does not exist in the given tree", (int) filename_len, path);
 		return GIT_ENOTFOUND;
 	}
 
@@ -927,7 +927,7 @@ int git_tree_entry_bypath(
 		 * then this entry *must* be a tree */
 		if (!git_tree_entry__is_tree(entry)) {
 			giterr_set(GITERR_TREE,
-				   "the path '%.*s' exists but is not a tree", filename_len, path);
+				   "the path '%.*s' exists but is not a tree", (int) filename_len, path);
 			return GIT_ENOTFOUND;
 		}
 
@@ -1164,8 +1164,8 @@ int git_tree_create_updated(git_oid *out, git_repository *repo, git_tree *baseli
 		goto cleanup;
 
 	for (i = 0; i < nupdates; i++) {
-		const git_tree_update *last_update = i == 0 ? NULL : &updates[i-1];
-		const git_tree_update *update = &updates[i];
+		const git_tree_update *last_update = i == 0 ? NULL : git_vector_get(&entries, i-1);
+		const git_tree_update *update = git_vector_get(&entries, i);
 		size_t common_prefix = 0, steps_up, j;
 		const char *path;
 
@@ -1200,6 +1200,9 @@ int git_tree_create_updated(git_oid *out, git_repository *repo, git_tree *baseli
 
 			last = git_array_last(stack);
 			entry = last->tree ? git_tree_entry_byname(last->tree, component.ptr) : NULL;
+			if (!entry)
+				entry = treebuilder_get(last->bld, component.ptr);
+
 			if (entry && git_tree_entry_type(entry) != GIT_OBJ_TREE) {
 				giterr_set(GITERR_TREE, "D/F conflict when updating tree");
 				error = -1;
