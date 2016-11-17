@@ -1,19 +1,19 @@
-*** smart_protocol.c.orig	2016-11-05 23:23:19.172028953 +0100
---- smart_protocol.c	2016-11-05 23:21:25.780025916 +0100
+*** smart_protocol.c	2016-11-17 17:39:01.012701790 +0100
+--- smart_protocol.c.orig	2016-11-17 17:39:00.980701721 +0100
 ***************
-*** 661,667 ****
---- 661,674 ----
+*** 665,678 ****
   		git_oid_fmt(old_id, &spec->roid);
   		git_oid_fmt(new_id, &spec->loid);
   
-+ #ifdef _WIN32
-+ #pragma GCC diagnostic push
-+ #pragma GCC diagnostic ignored "-Wformat"
+- #ifdef _WIN32
+- #pragma GCC diagnostic push
+- #pragma GCC diagnostic ignored "-Wformat"
   		git_buf_printf(buf, "%04"PRIxZ"%s %s %s", len, old_id, new_id, spec->refspec.dst);
-+ #pragma GCC diagnostic pop
-+ #else
-+ 		git_buf_printf(buf, "%04"PRIxZ"%s %s %s", len, old_id, new_id, spec->refspec.dst);
-+ #endif
+- #pragma GCC diagnostic pop
+- #else
+- 		git_buf_printf(buf, "%04"PRIxZ"%s %s %s", len, old_id, new_id, spec->refspec.dst);
+- #endif
   
   		if (i == 0) {
   			git_buf_putc(buf, '\0');
+--- 665,671 ----
