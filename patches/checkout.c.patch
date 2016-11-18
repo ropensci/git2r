@@ -1,0 +1,25 @@
+*** checkout.c	2016-11-18 20:04:06.152366302 +0100
+--- checkout.c.orig	2016-11-18 20:02:09.787620155 +0100
+***************
+*** 1331,1350 ****
+  	if (counts[CHECKOUT_ACTION__CONFLICT] > 0 &&
+  		(data->strategy & GIT_CHECKOUT_ALLOW_CONFLICTS) == 0)
+  	{
+- #ifdef _WIN32
+- #pragma GCC diagnostic push
+- #pragma GCC diagnostic ignored "-Wformat"
+  		giterr_set(GITERR_CHECKOUT, "%"PRIuZ" %s checkout",
+  			counts[CHECKOUT_ACTION__CONFLICT],
+  			counts[CHECKOUT_ACTION__CONFLICT] == 1 ?
+  			"conflict prevents" : "conflicts prevent");
+- #pragma GCC diagnostic pop
+- #else
+- 		giterr_set(GITERR_CHECKOUT, "%"PRIuZ" %s checkout",
+- 			counts[CHECKOUT_ACTION__CONFLICT],
+- 			counts[CHECKOUT_ACTION__CONFLICT] == 1 ?
+- 			"conflict prevents" : "conflicts prevent");
+- #endif
+  		error = GIT_ECONFLICT;
+  		goto fail;
+  	}
+--- 1331,1340 ----

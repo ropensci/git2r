@@ -1,0 +1,144 @@
+*** fetchhead.c	2016-11-18 19:31:08.564815405 +0100
+--- fetchhead.c.orig	2016-11-18 19:31:36.172963171 +0100
+***************
+*** 148,163 ****
+  	*remote_url = NULL;
+  
+  	if (!*line) {
+- #ifdef _WIN32
+- #pragma GCC diagnostic push
+- #pragma GCC diagnostic ignored "-Wformat"
+  		giterr_set(GITERR_FETCHHEAD,
+  			"Empty line in FETCH_HEAD line %"PRIuZ, line_num);
+- #pragma GCC diagnostic pop
+- #else
+- 		giterr_set(GITERR_FETCHHEAD,
+- 			"Empty line in FETCH_HEAD line %"PRIuZ, line_num);
+- #endif
+  		return -1;
+  	}
+  
+--- 148,155 ----
+***************
+*** 170,185 ****
+  	}
+  
+  	if (strlen(oid_str) != GIT_OID_HEXSZ) {
+- #ifdef _WIN32
+- #pragma GCC diagnostic push
+- #pragma GCC diagnostic ignored "-Wformat"
+- 		giterr_set(GITERR_FETCHHEAD,
+- 			"Invalid object ID in FETCH_HEAD line %"PRIuZ, line_num);
+- #pragma GCC diagnostic pop
+- #else
+  		giterr_set(GITERR_FETCHHEAD,
+  			"Invalid object ID in FETCH_HEAD line %"PRIuZ, line_num);
+- #endif
+  		return -1;
+  	}
+  
+--- 162,169 ----
+***************
+*** 187,218 ****
+  		const git_error *oid_err = giterr_last();
+  		const char *err_msg = oid_err ? oid_err->message : "Invalid object ID";
+  
+- #ifdef _WIN32
+- #pragma GCC diagnostic push
+- #pragma GCC diagnostic ignored "-Wformat"
+  		giterr_set(GITERR_FETCHHEAD, "%s in FETCH_HEAD line %"PRIuZ,
+  			err_msg, line_num);
+- #pragma GCC diagnostic pop
+- #else
+- 		giterr_set(GITERR_FETCHHEAD, "%s in FETCH_HEAD line %"PRIuZ,
+- 			err_msg, line_num);
+- #endif
+  		return -1;
+  	}
+  
+  	/* Parse new data from newer git clients */
+  	if (*line) {
+  		if ((is_merge_str = git__strsep(&line, "\t")) == NULL) {
+- #ifdef _WIN32
+- #pragma GCC diagnostic push
+- #pragma GCC diagnostic ignored "-Wformat"
+- 			giterr_set(GITERR_FETCHHEAD,
+- 				"Invalid description data in FETCH_HEAD line %"PRIuZ, line_num);
+- #pragma GCC diagnostic pop
+- #else
+  			giterr_set(GITERR_FETCHHEAD,
+  				"Invalid description data in FETCH_HEAD line %"PRIuZ, line_num);
+- #endif
+  			return -1;
+  		}
+  
+--- 171,186 ----
+***************
+*** 221,250 ****
+  		else if (strcmp(is_merge_str, "not-for-merge") == 0)
+  			*is_merge = 0;
+  		else {
+- #ifdef _WIN32
+- #pragma GCC diagnostic push
+- #pragma GCC diagnostic ignored "-Wformat"
+  			giterr_set(GITERR_FETCHHEAD,
+  				"Invalid for-merge entry in FETCH_HEAD line %"PRIuZ, line_num);
+- #pragma GCC diagnostic pop
+- #else
+- 			giterr_set(GITERR_FETCHHEAD,
+- 				"Invalid for-merge entry in FETCH_HEAD line %"PRIuZ, line_num);
+- #endif
+  			return -1;
+  		}
+  
+  		if ((desc = line) == NULL) {
+- #ifdef _WIN32
+- #pragma GCC diagnostic push
+- #pragma GCC diagnostic ignored "-Wformat"
+- 			giterr_set(GITERR_FETCHHEAD,
+- 				"Invalid description in FETCH_HEAD line %"PRIuZ, line_num);
+- #pragma GCC diagnostic pop
+- #else
+  			giterr_set(GITERR_FETCHHEAD,
+  				"Invalid description in FETCH_HEAD line %"PRIuZ, line_num);
+- #endif
+  			return -1;
+  		}
+  
+--- 189,202 ----
+***************
+*** 260,275 ****
+  		if (name) {
+  			if ((desc = strstr(name, "' ")) == NULL ||
+  				git__prefixcmp(desc, "' of ") != 0) {
+- #ifdef _WIN32
+- #pragma GCC diagnostic push
+- #pragma GCC diagnostic ignored "-Wformat"
+  				giterr_set(GITERR_FETCHHEAD,
+  					"Invalid description in FETCH_HEAD line %"PRIuZ, line_num);
+- #pragma GCC diagnostic pop
+- #else
+- 				giterr_set(GITERR_FETCHHEAD,
+- 					"Invalid description in FETCH_HEAD line %"PRIuZ, line_num);
+- #endif
+  				return -1;
+  			}
+  
+--- 212,219 ----
+***************
+*** 333,346 ****
+  	}
+  
+  	if (*buffer) {
+- #ifdef _WIN32
+- #pragma GCC diagnostic push
+- #pragma GCC diagnostic ignored "-Wformat"
+- 		giterr_set(GITERR_FETCHHEAD, "No EOL at line %"PRIuZ, line_num+1);
+- #pragma GCC diagnostic pop
+- #else
+  		giterr_set(GITERR_FETCHHEAD, "No EOL at line %"PRIuZ, line_num+1);
+- #endif
+  		error = -1;
+  		goto done;
+  	}
+--- 277,283 ----

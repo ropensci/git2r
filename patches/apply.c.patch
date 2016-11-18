@@ -1,0 +1,19 @@
+*** apply.c	2016-11-18 19:34:32.901907227 +0100
+--- apply.c.orig	2016-11-18 19:34:38.745938392 +0100
+***************
+*** 173,186 ****
+  		git_diff_line *line = git_array_get(patch->lines, linenum);
+  
+  		if (!line) {
+- #ifdef _WIN32
+- #pragma GCC diagnostic push
+- #pragma GCC diagnostic ignored "-Wformat"
+  			error = apply_err("Preimage does not contain line %"PRIuZ, linenum);
+- #pragma GCC diagnostic pop
+- #else
+- 			error = apply_err("Preimage does not contain line %"PRIuZ, linenum);
+- #endif
+  			goto done;
+  		}
+  
+--- 173,179 ----
