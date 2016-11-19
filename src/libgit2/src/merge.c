@@ -52,6 +52,10 @@
 #define GIT_MERGE_INDEX_ENTRY_EXISTS(X)	((X).mode != 0)
 #define GIT_MERGE_INDEX_ENTRY_ISFILE(X) S_ISREG((X).mode)
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat"
+#endif
 
 typedef enum {
 	TREE_IDX_ANCESTOR = 0,
@@ -3172,3 +3176,7 @@ int git_merge_file_init_options(
 		opts, version, git_merge_file_options, GIT_MERGE_FILE_OPTIONS_INIT);
 	return 0;
 }
+
+#ifdef _WIN32
+#pragma GCC diagnostic pop
+#endif

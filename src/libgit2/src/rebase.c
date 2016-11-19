@@ -198,6 +198,11 @@ static git_rebase_operation *rebase_operation_alloc(
 	return operation;
 }
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat"
+#endif
+
 static int rebase_open_merge(git_rebase *rebase)
 {
 	git_buf state_path = GIT_BUF_INIT, buf = GIT_BUF_INIT, cmt = GIT_BUF_INIT;
@@ -235,18 +240,9 @@ static int rebase_open_merge(git_rebase *rebase)
 	for (i = 0; i < end; i++) {
 		git_buf_clear(&cmt);
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat"
 		if ((error = git_buf_printf(&cmt, "cmt.%" PRIuZ, (i+1))) < 0 ||
 			(error = rebase_readoid(&id, &buf, &state_path, cmt.ptr)) < 0)
 			goto done;
-#pragma GCC diagnostic pop
-#else
-		if ((error = git_buf_printf(&cmt, "cmt.%" PRIuZ, (i+1))) < 0 ||
-			(error = rebase_readoid(&id, &buf, &state_path, cmt.ptr)) < 0)
-			goto done;
-#endif
 
 		operation = rebase_operation_alloc(rebase, GIT_REBASE_OPERATION_PICK, &id, NULL);
 		GITERR_CHECK_ALLOC(operation);
@@ -265,6 +261,10 @@ done:
 
 	return error;
 }
+
+#ifdef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 static int rebase_alloc(git_rebase **out, const git_rebase_options *rebase_opts)
 {
@@ -448,6 +448,11 @@ static const char *rebase_onto_name(const git_annotated_commit *onto)
 		return onto->id_str;
 }
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat"
+#endif
+
 static int rebase_setupfiles_merge(git_rebase *rebase)
 {
 	git_buf commit_filename = GIT_BUF_INIT;
@@ -464,14 +469,7 @@ static int rebase_setupfiles_merge(git_rebase *rebase)
 		operation = git_array_get(rebase->operations, i);
 
 		git_buf_clear(&commit_filename);
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat"
 		git_buf_printf(&commit_filename, CMT_FILE_FMT, i+1);
-#pragma GCC diagnostic pop
-#else
-		git_buf_printf(&commit_filename, CMT_FILE_FMT, i+1);
-#endif
 
 		git_oid_fmt(id_str, &operation->id);
 
@@ -484,6 +482,10 @@ done:
 	git_buf_free(&commit_filename);
 	return error;
 }
+
+#ifdef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 static int rebase_setupfiles(git_rebase *rebase)
 {
@@ -798,6 +800,11 @@ GIT_INLINE(int) rebase_movenext(git_rebase *rebase)
 	return 0;
 }
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat"
+#endif
+
 static int rebase_next_merge(
 	git_rebase_operation **out,
 	git_rebase *rebase)
@@ -859,6 +866,10 @@ done:
 
 	return error;
 }
+
+#ifdef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 static int rebase_next_inmemory(
 	git_rebase_operation **out,

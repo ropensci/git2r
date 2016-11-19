@@ -1296,6 +1296,11 @@ static filesystem_iterator_entry *filesystem_iterator_entry_init(
 	return entry;
 }
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat"
+#endif
+
 static int filesystem_iterator_frame_push(
 	filesystem_iterator *iter,
 	filesystem_iterator_entry *frame_entry)
@@ -1437,6 +1442,10 @@ done:
 	git_path_diriter_free(&diriter);
 	return error;
 }
+
+#ifdef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 GIT_INLINE(void) filesystem_iterator_frame_pop(filesystem_iterator *iter)
 {

@@ -248,18 +248,16 @@ int git_tree_cache_new(git_tree_cache **out, const char *name, git_pool *pool)
 	return 0;
 }
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat"
+#endif
+
 static void write_tree(git_buf *out, git_tree_cache *tree)
 {
 	size_t i;
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat"
 	git_buf_printf(out, "%s%c%"PRIdZ" %"PRIuZ"\n", tree->name, 0, tree->entry_count, tree->children_count);
-#pragma GCC diagnostic pop
-#else
-	git_buf_printf(out, "%s%c%"PRIdZ" %"PRIuZ"\n", tree->name, 0, tree->entry_count, tree->children_count);
-#endif
 
 	if (tree->entry_count != -1)
 		git_buf_put(out, (const char *) &tree->oid, GIT_OID_RAWSZ);
@@ -267,6 +265,10 @@ static void write_tree(git_buf *out, git_tree_cache *tree)
 	for (i = 0; i < tree->children_count; i++)
 		write_tree(out, tree->children[i]);
 }
+
+#ifdef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 int git_tree_cache_write(git_buf *out, git_tree_cache *tree)
 {

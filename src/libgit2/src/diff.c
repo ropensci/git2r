@@ -120,6 +120,11 @@ int git_diff_get_perfdata(git_diff_perfdata *out, const git_diff *diff)
 	return 0;
 }
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat"
+#endif
+
 int git_diff_format_email__append_header_tobuf(
 	git_buf *out,
 	const git_oid *id,
@@ -157,16 +162,8 @@ int git_diff_format_email__append_header_tobuf(
 		if (total_patches == 1) {
 			error = git_buf_puts(out, "[PATCH] ");
 		} else {
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat"
 			error = git_buf_printf(out, "[PATCH %"PRIuZ"/%"PRIuZ"] ",
 				patch_no, total_patches);
-#pragma GCC diagnostic pop
-#else
-			error = git_buf_printf(out, "[PATCH %"PRIuZ"/%"PRIuZ"] ",
-				patch_no, total_patches);
-#endif
 		}
 
 		if (error < 0)
@@ -184,6 +181,10 @@ int git_diff_format_email__append_header_tobuf(
 
 	return error;
 }
+
+#ifdef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 int git_diff_format_email__append_patches_tobuf(
 	git_buf *out,
@@ -208,6 +209,11 @@ int git_diff_format_email__append_patches_tobuf(
 
 	return error;
 }
+
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat"
+#endif
 
 int git_diff_format_email(
 	git_buf *out,
@@ -289,6 +295,10 @@ on_error:
 
 	return error;
 }
+
+#ifdef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 int git_diff_commit_as_email(
 	git_buf *out,

@@ -10,6 +10,11 @@
 #include "diff_parse.h"
 #include "path.h"
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat"
+#endif
+
 #define parse_err(...) \
 	( giterr_set(GITERR_PATCH, __VA_ARGS__), -1 )
 
@@ -1157,3 +1162,6 @@ int git_patch_from_buffer(
 	return error;
 }
 
+#ifdef _WIN32
+#pragma GCC diagnostic pop
+#endif

@@ -302,6 +302,11 @@ static int attr_cache__lookup_path(
 	return error;
 }
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
+
 static void attr_cache__free(git_attr_cache *cache)
 {
 	bool unlock;
@@ -316,9 +321,6 @@ static void attr_cache__free(git_attr_cache *cache)
 		git_attr_file *file;
 		int i;
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpedantic"
 		git_strmap_foreach_value(cache->files, entry, {
 			for (i = 0; i < GIT_ATTR_FILE_NUM_SOURCES; ++i) {
 				if ((file = git__swap(entry->file[i], NULL)) != NULL) {
@@ -327,17 +329,6 @@ static void attr_cache__free(git_attr_cache *cache)
 				}
 			}
 		});
-#pragma GCC diagnostic pop
-#else
-		git_strmap_foreach_value(cache->files, entry, {
-			for (i = 0; i < GIT_ATTR_FILE_NUM_SOURCES; ++i) {
-				if ((file = git__swap(entry->file[i], NULL)) != NULL) {
-					GIT_REFCOUNT_OWN(file, NULL);
-					git_attr_file__free(file);
-				}
-			}
-		});
-#endif
 		git_strmap_free(cache->files);
 	}
 
@@ -364,6 +355,10 @@ static void attr_cache__free(git_attr_cache *cache)
 
 	git__free(cache);
 }
+
+#ifdef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 int git_attr_cache__do_init(git_repository *repo)
 {
@@ -422,6 +417,11 @@ cancel:
 	return ret;
 }
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
+
 void git_attr_cache_flush(git_repository *repo)
 {
 	git_attr_cache *cache;
@@ -429,17 +429,13 @@ void git_attr_cache_flush(git_repository *repo)
 	/* this could be done less expensively, but for now, we'll just free
 	 * the entire attrcache and let the next use reinitialize it...
 	 */
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpedantic"
 	if (repo && (cache = git__swap(repo->attrcache, NULL)) != NULL)
 		attr_cache__free(cache);
-#pragma GCC diagnostic pop
-#else
-	if (repo && (cache = git__swap(repo->attrcache, NULL)) != NULL)
-		attr_cache__free(cache);
-#endif
 }
+
+#ifdef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 int git_attr_cache__insert_macro(git_repository *repo, git_attr_rule *macro)
 {

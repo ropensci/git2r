@@ -44,6 +44,11 @@ static int digits_for_value(size_t val)
 	return count;
 }
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat"
+#endif
+
 int git_diff_file_stats__full_to_buf(
 	git_buf *out,
 	const git_diff_delta *delta,
@@ -79,34 +84,15 @@ int git_diff_file_stats__full_to_buf(
 		goto on_error;
 
 	if (delta->flags & GIT_DIFF_FLAG_BINARY) {
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat"
 		if (git_buf_printf(out,
 				"Bin %" PRIuZ " -> %" PRIuZ " bytes", old_size, new_size) < 0)
 			goto on_error;
-#pragma GCC diagnostic pop
-#else
-		if (git_buf_printf(out,
-				"Bin %" PRIuZ " -> %" PRIuZ " bytes", old_size, new_size) < 0)
-			goto on_error;
-#endif
 	}
 	else {
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat"
 		if (git_buf_printf(out,
 				"%*" PRIuZ, stats->max_digits,
 				filestat->insertions + filestat->deletions) < 0)
 			goto on_error;
-#pragma GCC diagnostic pop
-#else
-		if (git_buf_printf(out,
-				"%*" PRIuZ, stats->max_digits,
-				filestat->insertions + filestat->deletions) < 0)
-			goto on_error;
-#endif
 
 		if (filestat->insertions || filestat->deletions) {
 			if (git_buf_putc(out, ' ') < 0)
@@ -144,23 +130,18 @@ int git_diff_file_stats__number_to_buf(
 	int error;
 	const char *path = delta->new_file.path;
 
-	if (delta->flags & GIT_DIFF_FLAG_BINARY) {
+	if (delta->flags & GIT_DIFF_FLAG_BINARY)
 		error = git_buf_printf(out, "%-8c" "%-8c" "%s\n", '-', '-', path);
-	} else {
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat"
+	else
 		error = git_buf_printf(out, "%-8" PRIuZ "%-8" PRIuZ "%s\n",
 			filestats->insertions, filestats->deletions, path);
-#pragma GCC diagnostic pop
-#else
-		error = git_buf_printf(out, "%-8" PRIuZ "%-8" PRIuZ "%s\n",
-			filestats->insertions, filestats->deletions, path);
-#endif
-        }
 
 	return error;
 }
+
+#ifdef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 int git_diff_file_stats__summary_to_buf(
 	git_buf *out,
@@ -282,6 +263,11 @@ size_t git_diff_stats_deletions(
 	return stats->deletions;
 }
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat"
+#endif
+
 int git_diff_stats_to_buf(
 	git_buf *out,
 	const git_diff_stats *stats,
@@ -328,9 +314,6 @@ int git_diff_stats_to_buf(
 	}
 
 	if (format & GIT_DIFF_STATS_FULL || format & GIT_DIFF_STATS_SHORT) {
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat"
 		git_buf_printf(
 			out, " %" PRIuZ " file%s changed",
 			stats->files_changed, stats->files_changed != 1 ? "s" : "");
@@ -344,22 +327,6 @@ int git_diff_stats_to_buf(
 			git_buf_printf(
 				out, ", %" PRIuZ " deletion%s(-)",
 				stats->deletions, stats->deletions != 1 ? "s" : "");
-#pragma GCC diagnostic pop
-#else
-		git_buf_printf(
-			out, " %" PRIuZ " file%s changed",
-			stats->files_changed, stats->files_changed != 1 ? "s" : "");
-
-		if (stats->insertions || stats->deletions == 0)
-			git_buf_printf(
-				out, ", %" PRIuZ " insertion%s(+)",
-				stats->insertions, stats->insertions != 1 ? "s" : "");
-
-		if (stats->deletions || stats->insertions == 0)
-			git_buf_printf(
-				out, ", %" PRIuZ " deletion%s(-)",
-				stats->deletions, stats->deletions != 1 ? "s" : "");
-#endif
 
 		git_buf_putc(out, '\n');
 
@@ -380,6 +347,10 @@ int git_diff_stats_to_buf(
 
 	return error;
 }
+
+#ifdef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 void git_diff_stats_free(git_diff_stats *stats)
 {

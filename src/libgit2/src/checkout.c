@@ -1269,6 +1269,11 @@ static int checkout_verify_paths(
 	return 0;
 }
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat"
+#endif
+
 static int checkout_get_actions(
 	uint32_t **actions_ptr,
 	size_t **counts_ptr,
@@ -1363,6 +1368,10 @@ fail:
 
 	return error;
 }
+
+#ifdef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 static bool should_remove_existing(checkout_data *data)
 {

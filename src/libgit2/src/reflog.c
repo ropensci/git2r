@@ -183,6 +183,11 @@ const char * git_reflog_entry_message(const git_reflog_entry *entry)
 	return entry->msg;
 }
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat"
+#endif
+
 int git_reflog_drop(git_reflog *reflog, size_t idx, int rewrite_previous_entry)
 {
 	size_t entrycount;
@@ -230,3 +235,7 @@ int git_reflog_drop(git_reflog *reflog, size_t idx, int rewrite_previous_entry)
 
 	return 0;
 }
+
+#ifdef _WIN32
+#pragma GCC diagnostic pop
+#endif

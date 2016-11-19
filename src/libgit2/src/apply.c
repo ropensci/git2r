@@ -159,6 +159,11 @@ static int update_hunk(
 	return 0;
 }
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat"
+#endif
+
 static int apply_hunk(
 	patch_image *image,
 	git_patch *patch,
@@ -206,6 +211,10 @@ done:
 
 	return error;
 }
+
+#ifdef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 static int apply_hunks(
 	git_buf *out,

@@ -70,6 +70,11 @@ static int init_common(void)
 	return ret;
 }
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
+
 static void shutdown_common(void)
 {
 	int pos;
@@ -79,16 +84,8 @@ static void shutdown_common(void)
 		pos > 0;
 		pos = git_atomic_dec(&git__n_shutdown_callbacks)) {
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpedantic"
 		git_global_shutdown_fn cb = git__swap(
 			git__shutdown_callbacks[pos - 1], NULL);
-#pragma GCC diagnostic pop
-#else
-		git_global_shutdown_fn cb = git__swap(
-			git__shutdown_callbacks[pos - 1], NULL);
-#endif
 
 		if (cb != NULL)
 			cb();
@@ -97,6 +94,10 @@ static void shutdown_common(void)
 	git__free(git__user_agent);
 	git__free(git__ssl_ciphers);
 }
+
+#ifdef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 /**
  * Handle the global state with TLS

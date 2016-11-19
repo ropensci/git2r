@@ -133,6 +133,11 @@ int git_fetchhead_write(git_repository *repo, git_vector *fetchhead_refs)
 	return git_filebuf_commit(&file);
 }
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat"
+#endif
+
 static int fetchhead_ref_parse(
 	git_oid *oid,
 	unsigned int *is_merge,
@@ -289,6 +294,10 @@ done:
 
 	return error;
 }
+
+#ifdef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 void git_fetchhead_ref_free(git_fetchhead_ref *fetchhead_ref)
 {

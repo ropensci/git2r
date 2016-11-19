@@ -487,6 +487,11 @@ void git_index_free(git_index *index)
 	GIT_REFCOUNT_DEC(index, index_free);
 }
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
+
 /* call with locked index */
 static void index_free_deleted(git_index *index)
 {
@@ -497,19 +502,16 @@ static void index_free_deleted(git_index *index)
 		return;
 
 	for (i = 0; i < index->deleted.length; ++i) {
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpedantic"
 		git_index_entry *ie = git__swap(index->deleted.contents[i], NULL);
-#pragma GCC diagnostic pop
-#else
-		git_index_entry *ie = git__swap(index->deleted.contents[i], NULL);
-#endif
 		index_entry_free(ie);
 	}
 
 	git_vector_clear(&index->deleted);
 }
+
+#ifdef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 /* call with locked index */
 static int index_remove_entry(git_index *index, size_t pos)
@@ -2146,25 +2148,26 @@ int git_index_reuc_remove(git_index *index, size_t position)
 	return error;
 }
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
+
 void git_index_reuc_clear(git_index *index)
 {
 	size_t i;
 
 	assert(index);
 
-	for (i = 0; i < index->reuc.length; ++i) {
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpedantic"
+	for (i = 0; i < index->reuc.length; ++i)
 		index_entry_reuc_free(git__swap(index->reuc.contents[i], NULL));
-#pragma GCC diagnostic pop
-#else
-		index_entry_reuc_free(git__swap(index->reuc.contents[i], NULL));
-#endif
-        }
 
 	git_vector_clear(&index->reuc);
 }
+
+#ifdef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 static int index_error_invalid(const char *message)
 {
@@ -2966,6 +2969,11 @@ static int read_tree_cb(
 	return 0;
 }
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
+
 int git_index_read_tree(git_index *index, const git_tree *tree)
 {
 	int error = 0;
@@ -3015,14 +3023,7 @@ int git_index_read_tree(git_index *index, const git_tree *tree)
 		/* well, this isn't good */;
 	} else {
 		git_vector_swap(&entries, &index->entries);
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpedantic"
 		entries_map = git__swap(index->entries_map, entries_map);
-#pragma GCC diagnostic pop
-#else
-		entries_map = git__swap(index->entries_map, entries_map);
-#endif
 	}
 
 cleanup:
@@ -3153,14 +3154,7 @@ static int git_index_read_iterator(
 	git_index_reuc_clear(index);
 
 	git_vector_swap(&new_entries, &index->entries);
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpedantic"
 	new_entries_map = git__swap(index->entries_map, new_entries_map);
-#pragma GCC diagnostic pop
-#else
-	new_entries_map = git__swap(index->entries_map, new_entries_map);
-#endif
 
 	git_vector_foreach(&remove_entries, i, entry) {
 		if (index->tree)
@@ -3180,6 +3174,10 @@ done:
 	git_iterator_free(index_iterator);
 	return error;
 }
+
+#ifdef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 int git_index_read_index(
 	git_index *index,

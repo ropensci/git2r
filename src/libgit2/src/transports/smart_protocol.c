@@ -644,6 +644,11 @@ done:
 	return error;
 }
 
+#ifdef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat"
+#endif
+
 static int gen_pktline(git_buf *buf, git_push *push)
 {
 	push_spec *spec;
@@ -665,14 +670,7 @@ static int gen_pktline(git_buf *buf, git_push *push)
 		git_oid_fmt(old_id, &spec->roid);
 		git_oid_fmt(new_id, &spec->loid);
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat"
 		git_buf_printf(buf, "%04"PRIxZ"%s %s %s", len, old_id, new_id, spec->refspec.dst);
-#pragma GCC diagnostic pop
-#else
-		git_buf_printf(buf, "%04"PRIxZ"%s %s %s", len, old_id, new_id, spec->refspec.dst);
-#endif
 
 		if (i == 0) {
 			git_buf_putc(buf, '\0');
@@ -691,6 +689,10 @@ static int gen_pktline(git_buf *buf, git_push *push)
 	git_buf_puts(buf, "0000");
 	return git_buf_oom(buf) ? -1 : 0;
 }
+
+#ifdef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 static int add_push_report_pkt(git_push *push, git_pkt *pkt)
 {
