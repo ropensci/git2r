@@ -1,0 +1,25 @@
+*** merge.c.orig	2016-11-19 10:41:16.702920892 +0100
+--- merge.c	2016-11-19 10:41:57.791147224 +0100
+***************
+*** 52,57 ****
+--- 52,61 ----
+  #define GIT_MERGE_INDEX_ENTRY_EXISTS(X)	((X).mode != 0)
+  #define GIT_MERGE_INDEX_ENTRY_ISFILE(X) S_ISREG((X).mode)
+  
++ #ifdef _WIN32
++ #pragma GCC diagnostic push
++ #pragma GCC diagnostic ignored "-Wformat"
++ #endif
+  
+  typedef enum {
+  	TREE_IDX_ANCESTOR = 0,
+***************
+*** 3172,3174 ****
+--- 3176,3182 ----
+  		opts, version, git_merge_file_options, GIT_MERGE_FILE_OPTIONS_INIT);
+  	return 0;
+  }
++ 
++ #ifdef _WIN32
++ #pragma GCC diagnostic pop
++ #endif

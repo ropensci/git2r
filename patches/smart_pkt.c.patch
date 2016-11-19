@@ -1,0 +1,29 @@
+*** smart_pkt.c.orig	2016-11-19 12:08:28.996515292 +0100
+--- smart_pkt.c	2016-11-19 12:09:27.765019547 +0100
+***************
+*** 500,505 ****
+--- 500,510 ----
+  	return git_buf_put(buf, pkt_flush_str, strlen(pkt_flush_str));
+  }
+  
++ #ifdef _WIN32
++ #pragma GCC diagnostic push
++ #pragma GCC diagnostic ignored "-Wformat"
++ #endif
++ 
+  static int buffer_want_with_caps(const git_remote_head *head, transport_smart_caps *caps, git_buf *buf)
+  {
+  	git_buf str = GIT_BUF_INIT;
+***************
+*** 550,555 ****
+--- 555,564 ----
+  	return 0;
+  }
+  
++ #ifdef _WIN32
++ #pragma GCC diagnostic pop
++ #endif
++ 
+  /*
+   * All "want" packets have the same length and format, so what we do
+   * is overwrite the OID each time.

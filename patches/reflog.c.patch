@@ -1,0 +1,26 @@
+*** reflog.c.orig	2016-11-19 10:58:51.574805127 +0100
+--- reflog.c	2016-11-19 10:59:16.148294210 +0100
+***************
+*** 183,188 ****
+--- 183,193 ----
+  	return entry->msg;
+  }
+  
++ #ifdef _WIN32
++ #pragma GCC diagnostic push
++ #pragma GCC diagnostic ignored "-Wformat"
++ #endif
++ 
+  int git_reflog_drop(git_reflog *reflog, size_t idx, int rewrite_previous_entry)
+  {
+  	size_t entrycount;
+***************
+*** 230,232 ****
+--- 235,241 ----
+  
+  	return 0;
+  }
++ 
++ #ifdef _WIN32
++ #pragma GCC diagnostic pop
++ #endif

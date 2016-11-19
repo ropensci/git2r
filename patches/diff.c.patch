@@ -1,28 +1,63 @@
-*** diff.c.orig	2016-11-05 23:23:19.180028953 +0100
---- diff.c	2016-11-05 23:20:37.016024611 +0100
+*** diff.c.orig	2016-11-19 20:30:07.492469703 +0100
+--- diff.c	2016-11-19 20:31:19.964791969 +0100
 ***************
-*** 157,164 ****
---- 157,172 ----
-  		if (total_patches == 1) {
-  			error = git_buf_puts(out, "[PATCH] ");
-  		} else {
+*** 120,125 ****
+--- 120,130 ----
+  	return 0;
+  }
+  
 + #ifdef _WIN32
 + #pragma GCC diagnostic push
 + #pragma GCC diagnostic ignored "-Wformat"
-  			error = git_buf_printf(out, "[PATCH %"PRIuZ"/%"PRIuZ"] ",
-  				patch_no, total_patches);
-+ #pragma GCC diagnostic pop
-+ #else
-+ 			error = git_buf_printf(out, "[PATCH %"PRIuZ"/%"PRIuZ"] ",
-+ 				patch_no, total_patches);
 + #endif
-  		}
++ 
+  int git_diff_format_email__append_header_tobuf(
+  	git_buf *out,
+  	const git_oid *id,
+***************
+*** 177,182 ****
+--- 182,191 ----
+  	return error;
+  }
   
-  		if (error < 0)
++ #ifdef _WIN32
++ #pragma GCC diagnostic pop
++ #endif
++ 
+  int git_diff_format_email__append_patches_tobuf(
+  	git_buf *out,
+  	git_diff *diff)
+***************
+*** 201,206 ****
+--- 210,220 ----
+  	return error;
+  }
+  
++ #ifdef _WIN32
++ #pragma GCC diagnostic push
++ #pragma GCC diagnostic ignored "-Wformat"
++ #endif
++ 
+  int git_diff_format_email(
+  	git_buf *out,
+  	git_diff *diff,
+***************
+*** 282,287 ****
+--- 296,305 ----
+  	return error;
+  }
+  
++ #ifdef _WIN32
++ #pragma GCC diagnostic pop
++ #endif
++ 
+  int git_diff_commit_as_email(
+  	git_buf *out,
+  	git_repository *repo,
 ***************
 *** 338,341 ****
   		GIT_DIFF_FORMAT_EMAIL_OPTIONS_INIT);
   	return 0;
   }
 - 
---- 346,348 ----
+--- 356,358 ----

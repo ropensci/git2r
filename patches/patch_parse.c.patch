@@ -1,0 +1,25 @@
+*** patch_parse.c.orig	2016-11-19 10:50:06.153825677 +0100
+--- patch_parse.c	2016-11-19 10:50:39.974010502 +0100
+***************
+*** 10,15 ****
+--- 10,20 ----
+  #include "diff_parse.h"
+  #include "path.h"
+  
++ #ifdef _WIN32
++ #pragma GCC diagnostic push
++ #pragma GCC diagnostic ignored "-Wformat"
++ #endif
++ 
+  #define parse_err(...) \
+  	( giterr_set(GITERR_PATCH, __VA_ARGS__), -1 )
+  
+***************
+*** 1157,1159 ****
+--- 1162,1167 ----
+  	return error;
+  }
+  
++ #ifdef _WIN32
++ #pragma GCC diagnostic pop
++ #endif

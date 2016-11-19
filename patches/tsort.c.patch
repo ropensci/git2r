@@ -1,29 +1,26 @@
-*** tsort.c.orig	2016-11-05 23:23:19.196028954 +0100
---- tsort.c	2016-11-05 23:21:51.828026614 +0100
+*** tsort.c.orig	2016-11-19 21:30:41.603589074 +0100
+--- tsort.c	2016-11-19 21:32:19.272089285 +0100
 ***************
-*** 376,385 ****
---- 376,399 ----
+*** 374,379 ****
+--- 374,384 ----
+  	}
+  }
   
++ #ifdef _WIN32
++ #pragma GCC diagnostic push
++ #pragma GCC diagnostic ignored "-Wpedantic"
++ #endif
++ 
   static int tsort_r_cmp(const void *a, const void *b, void *payload)
   {
-+ #ifdef _WIN32
-+ #pragma GCC diagnostic push
-+ #pragma GCC diagnostic ignored "-Wpedantic"
   	return ((git__tsort_cmp)payload)(a, b);
-+ #pragma GCC diagnostic pop
-+ #else
-+ 	return ((git__tsort_cmp)payload)(a, b);
-+ #endif
-  }
-  
-  void git__tsort(void **dst, size_t size, git__tsort_cmp cmp)
+***************
+*** 383,385 ****
+--- 388,394 ----
   {
-+ #ifdef _WIN32
-+ #pragma GCC diagnostic push
-+ #pragma GCC diagnostic ignored "-Wpedantic"
-+ 	git__tsort_r(dst, size, tsort_r_cmp, cmp);
-+ #pragma GCC diagnostic pop
-+ #else
   	git__tsort_r(dst, size, tsort_r_cmp, cmp);
-+ #endif
   }
++ 
++ #ifdef _WIN32
++ #pragma GCC diagnostic pop
++ #endif

@@ -1,19 +1,29 @@
-*** smart_protocol.c	2016-11-17 17:39:01.012701790 +0100
---- smart_protocol.c.orig	2016-11-17 17:39:00.980701721 +0100
+*** smart_protocol.c.orig	2016-11-19 16:24:56.233284904 +0100
+--- smart_protocol.c	2016-11-19 16:25:35.767314141 +0100
 ***************
-*** 665,678 ****
-  		git_oid_fmt(old_id, &spec->roid);
-  		git_oid_fmt(new_id, &spec->loid);
+*** 644,649 ****
+--- 644,654 ----
+  	return error;
+  }
   
-- #ifdef _WIN32
-- #pragma GCC diagnostic push
-- #pragma GCC diagnostic ignored "-Wformat"
-  		git_buf_printf(buf, "%04"PRIxZ"%s %s %s", len, old_id, new_id, spec->refspec.dst);
-- #pragma GCC diagnostic pop
-- #else
-- 		git_buf_printf(buf, "%04"PRIxZ"%s %s %s", len, old_id, new_id, spec->refspec.dst);
-- #endif
++ #ifdef _WIN32
++ #pragma GCC diagnostic push
++ #pragma GCC diagnostic ignored "-Wformat"
++ #endif
++ 
+  static int gen_pktline(git_buf *buf, git_push *push)
+  {
+  	push_spec *spec;
+***************
+*** 685,690 ****
+--- 690,699 ----
+  	return git_buf_oom(buf) ? -1 : 0;
+  }
   
-  		if (i == 0) {
-  			git_buf_putc(buf, '\0');
---- 665,671 ----
++ #ifdef _WIN32
++ #pragma GCC diagnostic pop
++ #endif
++ 
+  static int add_push_report_pkt(git_push *push, git_pkt *pkt)
+  {
+  	push_status *status;

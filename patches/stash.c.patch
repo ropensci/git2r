@@ -1,0 +1,83 @@
+*** stash.c.orig	2016-11-19 12:01:08.104441915 +0100
+--- stash.c	2016-11-19 12:02:17.965076100 +0100
+***************
+*** 573,578 ****
+--- 573,583 ----
+  	return error;
+  }
+  
++ #ifdef _WIN32
++ #pragma GCC diagnostic push
++ #pragma GCC diagnostic ignored "-Wformat"
++ #endif
++ 
+  static int retrieve_stash_commit(
+  	git_commit **commit,
+  	git_repository *repo,
+***************
+*** 607,612 ****
+--- 612,621 ----
+  	return error;
+  }
+  
++ #ifdef _WIN32
++ #pragma GCC diagnostic pop
++ #endif
++ 
+  static int retrieve_stash_trees(
+  	git_tree **out_stash_tree,
+  	git_tree **out_base_tree,
+***************
+*** 763,768 ****
+--- 772,782 ----
+  		}							\
+  	} while(false);
+  
++ #ifdef _WIN32
++ #pragma GCC diagnostic push
++ #pragma GCC diagnostic ignored "-Wformat"
++ #endif
++ 
+  static int ensure_clean_index(git_repository *repo, git_index *index)
+  {
+  	git_tree *head_tree = NULL;
+***************
+*** 786,791 ****
+--- 800,809 ----
+  	return error;
+  }
+  
++ #ifdef _WIN32
++ #pragma GCC diagnostic pop
++ #endif
++ 
+  static int stage_new_file(const git_index_entry **entries, void *data)
+  {
+  	git_index *index = data;
+***************
+*** 1010,1015 ****
+--- 1028,1038 ----
+  	return error;
+  }
+  
++ #ifdef _WIN32
++ #pragma GCC diagnostic push
++ #pragma GCC diagnostic ignored "-Wformat"
++ #endif
++ 
+  int git_stash_drop(
+  	git_repository *repo,
+  	size_t index)
+***************
+*** 1066,1071 ****
+--- 1089,1098 ----
+  	return error;
+  }
+  
++ #ifdef _WIN32
++ #pragma GCC diagnostic pop
++ #endif
++ 
+  int git_stash_pop(
+  	git_repository *repo,
+  	size_t index,

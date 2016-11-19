@@ -1,19 +1,29 @@
-*** diff_print.c.orig	2016-11-05 23:23:19.204028954 +0100
---- diff_print.c	2016-11-05 23:20:43.996024797 +0100
+*** diff_print.c.orig	2016-11-19 20:36:34.826328690 +0100
+--- diff_print.c	2016-11-19 20:36:55.842450267 +0100
 ***************
-*** 460,466 ****
---- 460,473 ----
-  		"delta" : "literal";
-  	const char *scan, *end;
+*** 449,454 ****
+--- 449,459 ----
+  	return error;
+  }
   
 + #ifdef _WIN32
 + #pragma GCC diagnostic push
 + #pragma GCC diagnostic ignored "-Wformat"
-  	git_buf_printf(pi->buf, "%s %" PRIuZ "\n", typename, inflatedlen);
-+ #pragma GCC diagnostic pop
-+ #else
-+ 	git_buf_printf(pi->buf, "%s %" PRIuZ "\n", typename, inflatedlen);
 + #endif
-  	pi->line.num_lines++;
++ 
+  static int format_binary(
+  	diff_print_info *pi,
+  	git_diff_binary_t type,
+***************
+*** 487,492 ****
+--- 492,501 ----
+  	return 0;
+  }
   
-  	for (scan = data, end = data + datalen; scan < end; ) {
++ #ifdef _WIN32
++ #pragma GCC diagnostic pop
++ #endif
++ 
+  static int diff_print_patch_file_binary_noshow(
+  	diff_print_info *pi, git_diff_delta *delta,
+  	const char *old_pfx, const char *new_pfx)

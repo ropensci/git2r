@@ -1,19 +1,82 @@
-*** odb.c.orig	2016-11-03 23:29:11.232128519 +0100
---- odb.c	2016-11-03 23:29:11.556128528 +0100
+*** odb.c.orig	2016-11-19 11:12:11.299935756 +0100
+--- odb.c	2016-11-19 11:22:51.538320029 +0100
 ***************
-*** 78,84 ****
---- 78,91 ----
-  int git_odb__format_object_header(char *hdr, size_t n, git_off_t obj_len, git_otype obj_type)
-  {
-  	const char *type_str = git_object_type2string(obj_type);
+*** 75,80 ****
+--- 75,85 ----
+  	return 0;
+  }
+  
 + #ifdef _WIN32
 + #pragma GCC diagnostic push
 + #pragma GCC diagnostic ignored "-Wformat-extra-args"
-  	int len = p_snprintf(hdr, n, "%s %lld", type_str, (long long)obj_len);
-+ #pragma GCC diagnostic pop
-+ #else
-+ 	int len = p_snprintf(hdr, n, "%s %lld", type_str, (long long)obj_len);
 + #endif
-  	assert(len > 0 && len <= (int)n);
++ 
+  int git_odb__format_object_header(char *hdr, size_t n, git_off_t obj_len, git_otype obj_type)
+  {
+  	const char *type_str = git_object_type2string(obj_type);
+***************
+*** 83,88 ****
+--- 88,97 ----
   	return len+1;
   }
+  
++ #ifdef _WIN32
++ #pragma GCC diagnostic pop
++ #endif
++ 
+  int git_odb__hashobj(git_oid *id, git_rawobj *obj)
+  {
+  	git_buf_vec vec[2];
+***************
+*** 479,484 ****
+--- 488,497 ----
+  	return -1;
+  }
+  
++ #ifdef _WIN32
++ #pragma GCC diagnostic push
++ #pragma GCC diagnostic ignored "-Wformat"
++ #endif
+  
+  int git_odb_get_backend(git_odb_backend **out, git_odb *odb, size_t pos)
+  {
+***************
+*** 496,501 ****
+--- 509,518 ----
+  	return GIT_ENOTFOUND;
+  }
+  
++ #ifdef _WIN32
++ #pragma GCC diagnostic pop
++ #endif
++ 
+  static int add_default_backends(
+  	git_odb *db, const char *objects_dir,
+  	bool as_alternates, int alternate_depth)
+***************
+*** 1259,1264 ****
+--- 1276,1286 ----
+  	return error;
+  }
+  
++ #ifdef _WIN32
++ #pragma GCC diagnostic push
++ #pragma GCC diagnostic ignored "-Wformat"
++ #endif
++ 
+  static int git_odb_stream__invalid_length(
+  	const git_odb_stream *stream,
+  	const char *action)
+***************
+*** 1272,1277 ****
+--- 1294,1303 ----
+  	return -1;
+  }
+  
++ #ifdef _WIN32
++ #pragma GCC diagnostic pop
++ #endif
++ 
+  int git_odb_stream_write(git_odb_stream *stream, const char *buffer, size_t len)
+  {
+  	git_hash_update(stream->hash_ctx, buffer, len);
