@@ -1,6 +1,35 @@
 git2r 0.15.0.9000
 -----------------
 
+IMPROVEMENTS
+
+* Updated libgit2 source code to commit (6b0510e) from
+  17 November 2016.
+
+* Add the option 'all_untracked' to the 'status' method to show
+  individual files in untracked directories if the 'untracked' option
+  is TRUE.
+
+* Add the 'tag_delete' method to delete an existing tag reference.
+
+* Update build configuration to support OpenSSL 1.1.0.
+
+* If the the 'getPass' package is installed the 'cred_ssh_key' method
+  to create a new passphrase-protected ssh key credential object will
+  call the 'getPass::getPass()' method if the private key is
+  passphrase protected to allow for interactive input of the
+  passphrase. The 'getPass' package is a suggested package. (Peter
+  Meissner in PR #254)
+
+* Add 'path' argument to the 'reset' method to enable path-specific
+  unstage, i.e. resets the index entries for all paths to their state
+  at HEAD
+
+BUG FIXES
+
+* Build configuration: use portable string equality comparison
+  operator. This fixes the build e.g. for those without Bash as
+  /bin/sh. (Sander Maijers in PR #243).
 
 git2r 0.15.0
 ------------
