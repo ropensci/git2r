@@ -25,15 +25,15 @@ AC_CANONICAL_HOST
 AC_PROG_CC
 
 ## check for brew on OS X
-dnl AC_DEFUN([AC_PROG_BREW], [AC_CHECK_PROG(BREW,brew,yes)])
-dnl case "${host_os}" in
-dnl     darwin*)
-dnl         AC_PROG_BREW
-dnl         if test "x${BREW}" = xyes; then
-dnl             BREW_DIR=`brew --prefix`
-dnl         fi
-dnl     ;;
-dnl esac
+AC_DEFUN([AC_PROG_BREW], [AC_CHECK_PROG(BREW,brew,yes)])
+case "${host_os}" in
+    darwin*)
+        AC_PROG_BREW
+        if test "x${BREW}" = xyes; then
+            BREW_DIR=`brew --prefix`
+        fi
+    ;;
+esac
 
 # Optional include and library paths
 
