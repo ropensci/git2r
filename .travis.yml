@@ -9,9 +9,6 @@ os:
 apt_packages:
   - libssh2-1-dev
 
-brew_packages:
-  - libssh2
-
 r_packages:
   - covr
 
