@@ -80,6 +80,7 @@ RBIN="${R_HOME}/bin/R"
 CC=`"${RBIN}" CMD config CC`
 CFLAGS=`"${RBIN}" CMD config CFLAGS`
 CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
+CPICFLAGS=`"${RBIN}" CMD config CPICFLAGS`
 
 # Check for zlib
 have_zlib=no
@@ -205,7 +206,9 @@ case "${host_os}" in
 
             AC_MSG_NOTICE([Download and build libssh2])
 
-            mkdir -p libssh2 && curl -fsSL https://www.libssh2.org/download/libssh2-1.8.0.tar.gz | tar xz --strip 1 -C libssh2
+            mkdir -p libssh2 && \
+            curl -fsSL https://www.libssh2.org/download/libssh2-1.8.0.tar.gz | \
+            tar xz --strip 1 -C libssh2
 
             mkdir -p src/libgit2/deps/libssh2
             LIBSSH2_INST_DIR="${PWD}/src/libgit2/deps/libssh2"
@@ -213,7 +216,7 @@ case "${host_os}" in
             cd libssh2
             ./configure --with-pic --with-openssl --disable-examples-build \
               --disable-shared --enable-static --prefix=$LIBSSH2_INST_DIR \
-              CC="${CC}" CFLAGS="${CFLAGS} -Wno-deprecated-declarations" \
+              CC="${CC}" CFLAGS="${CFLAGS} ${CPICFLAGS} -Wno-deprecated-declarations" \
               CPPFLAGS="${CPPFLAGS}" && make && make install && have_ssh2=yes
             cd ..
             rm -rf libssh2
