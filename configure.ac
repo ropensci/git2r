@@ -219,8 +219,8 @@ case "${host_os}" in
             rm -rf libssh2
 
             if test "x${have_ssh2}" = xyes; then
-                LIBSSH2_CFLAGS="-Ilibssh2/include"
-                LIBSSH2_LIBS="-Llibssh2/lib -lssh2"
+                LIBSSH2_CFLAGS="-Ilibgit2/deps/libssh2/include"
+                LIBSSH2_LIBS="-Llibgit2/deps/libssh2/lib -lssh2"
             fi
 
         fi
