@@ -509,8 +509,10 @@ int git_packfile_resolve_header(
 		git_packfile_stream_free(&stream);
 		if (error < 0)
 			return error;
-	} else
+	} else {
 		*size_p = size;
+		base_offset = 0;
+	}
 
 	while (type == GIT_OBJ_OFS_DELTA || type == GIT_OBJ_REF_DELTA) {
 		curpos = base_offset;
@@ -757,8 +759,11 @@ int git_packfile_unpack(
 	}
 
 cleanup:
-	if (error < 0)
+	if (error < 0) {
 		git__free(obj->data);
+		if (cached)
+			git_atomic_dec(&cached->refcount);
+	}
 
 	if (elem)
 		*obj_offset = curpos;
