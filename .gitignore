@@ -8,6 +8,7 @@
 /config.log
 /config.status
 autom4te.cache*
+aclocal.m4
 /src-i386/
 /src-x64/
 /src/winhttp/lib/
