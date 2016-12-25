@@ -1,6 +1,14 @@
 git2r 0.16.0.9000
 -----------------
 
+IMPROVEMENTS
+
+* Updated the bundled libgit2 source code to commit (6b0510e) from 20
+  December 2016.
+
+* Static linking of LibSSH2 on mac to support redistributable binary
+  package with SSH transport enabled. Version 1.8.0 of LibSSH2 is
+  downloaded and built from 'https://www.libssh2.org/download/'.
 
 git2r 0.16.0
 ------------
