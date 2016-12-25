@@ -2,6 +2,7 @@
 ^LICENSE$
 ^\.travis\.yml$
 ^travis-tool\.sh$
+^aclocal\.m4$
 ^Makefile$
 ^README\.Rmd$
 ^figure$
