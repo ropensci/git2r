@@ -13,3 +13,4 @@ rm -f src/libgit2/src/unix/*.o
 rm -f src/libgit2/src/xdiff/*.o
 rm -f src/libgit2/deps/http-parser/*.o
 rm -f src/libgit2/deps/regex/*.o
+rm -rf src/libgit2/deps/libssh2
