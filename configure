@@ -3906,11 +3906,13 @@ fi
 
 case "${host_os}" in
     darwin*)
+        # Save flags
+        oCPPFLAGS="${CPPFLAGS}"
+        oLIBS="${LIBS}"
+
         # On OS X, try to find libssh2 in brew
         if test "x${BREW}" = xyes; then
-            oCPPFLAGS="${CPPFLAGS}"
             CPPFLAGS="${CPPFLAGS} -I${BREW_DIR}/opt/libssh2/include"
-            oLIBS="${LIBS}"
             LIBS="${LIBS} -L${BREW_DIR}/opt/libssh2/lib"
             { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing libssh2_version" >&5
 $as_echo_n "checking for library containing libssh2_version... " >&6; }
@@ -3996,7 +3998,6 @@ $as_echo "$as_me: Download and build libssh2" >&6;}
                 LIBSSH2_CFLAGS="-Ilibgit2/deps/libssh2/include"
                 LIBSSH2_LIBS="-Llibgit2/deps/libssh2/lib -lssh2"
             fi
-
         fi
     ;;
     *)

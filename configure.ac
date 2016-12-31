@@ -191,11 +191,13 @@ fi
 
 case "${host_os}" in
     darwin*)
+        # Save flags
+        oCPPFLAGS="${CPPFLAGS}"
+        oLIBS="${LIBS}"
+
         # On OS X, try to find libssh2 in brew
         if test "x${BREW}" = xyes; then
-            oCPPFLAGS="${CPPFLAGS}"
             CPPFLAGS="${CPPFLAGS} -I${BREW_DIR}/opt/libssh2/include"
-            oLIBS="${LIBS}"
             LIBS="${LIBS} -L${BREW_DIR}/opt/libssh2/lib"
             AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
         fi
@@ -225,7 +227,6 @@ case "${host_os}" in
                 LIBSSH2_CFLAGS="-Ilibgit2/deps/libssh2/include"
                 LIBSSH2_LIBS="-Llibgit2/deps/libssh2/lib -lssh2"
             fi
-
         fi
     ;;
     *)
