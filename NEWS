@@ -1,6 +1,11 @@
-git2r 0.17.0.9000
------------------
+git2r 0.18.0
+------------
 
+BUG FIXES
+
+* This is a bug-fix release to solve an error introduced in the build
+  configuration on mac in version 0.17.0. The package failed with
+  'unable to load shared object', see issue #267.
 
 git2r 0.17.0
 ------------
