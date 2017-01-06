@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2017 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -117,6 +117,43 @@ diff(repo, as_char=TRUE, filename = file.path(path, "test.diff"))
 stopifnot(any(grepl("binary file", capture.output(summary(diff_7)))))
 
 ## TODO: errors
+## Check non-logical index argument
+res <- tools::assertError(
+                  .Call(git2r:::git2r_diff, NULL, NULL, NULL, "FALSE", NULL))
+stopifnot(length(grep("Error in 'git2r_diff': 'index' must be logical vector of length one with non NA value\n",
+                      res[[1]]$message)) > 0)
+
+## Check various combinations of diff arguments
+res <- tools::assertError(
+                  .Call(git2r:::git2r_diff, NULL, NULL, tree(commits(repo)[[1]]), FALSE, NULL))
+stopifnot(length(grep("Error in 'git2r_diff': Invalid diff parameters",
+                      res[[1]]$message)) > 0)
+
+res <- tools::assertError(
+                  .Call(git2r:::git2r_diff, NULL, NULL, tree(commits(repo)[[1]]), TRUE, NULL))
+stopifnot(length(grep("Error in 'git2r_diff': Invalid diff parameters",
+                      res[[1]]$message)) > 0)
+
+res <- tools::assertError(
+                  .Call(git2r:::git2r_diff, repo, tree(commits(repo)[[1]]), NULL, FALSE, NULL))
+stopifnot(length(grep("Error in 'git2r_diff': Invalid diff parameters",
+                      res[[1]]$message)) > 0)
+
+res <- tools::assertError(
+                  .Call(git2r:::git2r_diff, repo, tree(commits(repo)[[1]]), NULL, TRUE, NULL))
+stopifnot(length(grep("Error in 'git2r_diff': Invalid diff parameters",
+                      res[[1]]$message)) > 0)
+
+res <- tools::assertError(
+                  .Call(git2r:::git2r_diff, repo, tree(commits(repo)[[1]]), tree(commits(repo)[[2]]), FALSE, NULL))
+stopifnot(length(grep("Error in 'git2r_diff': Invalid diff parameters",
+                      res[[1]]$message)) > 0)
+
+res <- tools::assertError(
+                  .Call(git2r:::git2r_diff, repo, tree(commits(repo)[[1]]), tree(commits(repo)[[2]]), TRUE, NULL))
+stopifnot(length(grep("Error in 'git2r_diff': Invalid diff parameters",
+                      res[[1]]$message)) > 0)
+
 ## TODO: printing
 
 ## Cleanup
