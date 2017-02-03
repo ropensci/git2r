@@ -3,8 +3,8 @@
 \docType{methods}
 \name{reflog}
 \alias{reflog}
-\alias{reflog,git_repository,character-method}
 \alias{reflog,git_repository,missing-method}
+\alias{reflog,git_repository,character-method}
 \title{List and view reflog information}
 \usage{
 reflog(repo, refname)
@@ -61,4 +61,3 @@ reflog(repo)
 }
 }
 \keyword{methods}
-

@@ -3,8 +3,8 @@
 \docType{methods}
 \name{in_repository}
 \alias{in_repository}
-\alias{in_repository,character-method}
 \alias{in_repository,missing-method}
+\alias{in_repository,character-method}
 \title{Determine if a directory is in a git repository}
 \usage{
 in_repository(path)
@@ -43,4 +43,3 @@ in_repository()
 }
 }
 \keyword{methods}
-

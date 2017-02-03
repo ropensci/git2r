@@ -55,4 +55,3 @@ fetch_heads(repo_2)
 }
 }
 \keyword{methods}
-

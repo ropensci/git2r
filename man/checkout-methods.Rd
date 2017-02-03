@@ -3,9 +3,9 @@
 \docType{methods}
 \name{checkout}
 \alias{checkout}
+\alias{checkout,git_repository-method}
 \alias{checkout,git_branch-method}
 \alias{checkout,git_commit-method}
-\alias{checkout,git_repository-method}
 \alias{checkout,git_tag-method}
 \title{Checkout}
 \usage{
@@ -108,4 +108,3 @@ status(repo_2)
 }
 }
 \keyword{methods}
-

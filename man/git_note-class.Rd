@@ -29,6 +29,6 @@ Class \code{git_note}
   }
 }
 }
+
 \keyword{classes}
 \keyword{methods}
-

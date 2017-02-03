@@ -67,4 +67,3 @@ discover_repository(file.path(wd, "temp"), ceiling = 1)
 }
 }
 \keyword{methods}
-

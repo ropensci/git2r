@@ -51,4 +51,3 @@ descendant_of(commit_2, commit_1)
 }
 }
 \keyword{methods}
-

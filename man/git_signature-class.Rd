@@ -21,6 +21,6 @@ Class \code{"git_signature"}
   }
 }
 }
+
 \keyword{classes}
 \keyword{methods}
-

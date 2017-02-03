@@ -47,4 +47,3 @@ parents(commit_2)
 }
 }
 \keyword{methods}
-

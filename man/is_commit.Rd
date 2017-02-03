@@ -35,4 +35,3 @@ is_commit(commit_1)
 }
 }
 \keyword{methods}
-

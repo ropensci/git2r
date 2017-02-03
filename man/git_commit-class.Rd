@@ -38,6 +38,6 @@ Class \code{"git_commit"}
   \item{show}{\code{signature(object = "git_commit")}}
 }
 }
+
 \keyword{classes}
 \keyword{methods}
-

@@ -50,4 +50,3 @@ revparse_single(repo, "HEAD^")
 }
 }
 \keyword{methods}
-

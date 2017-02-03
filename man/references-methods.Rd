@@ -3,8 +3,8 @@
 \docType{methods}
 \name{references}
 \alias{references}
-\alias{references,git_repository-method}
 \alias{references,missing-method}
+\alias{references,git_repository-method}
 \title{Get all references that can be found in a repository.}
 \usage{
 references(repo)
@@ -61,4 +61,3 @@ references(repo)
 
 }
 \keyword{methods}
-

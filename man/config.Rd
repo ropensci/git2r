@@ -55,4 +55,3 @@ config(repo, user.email = NULL)
 config(repo)
 }
 }
-

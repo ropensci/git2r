@@ -35,4 +35,3 @@ references(repo)[[1]]
 }
 }
 \keyword{methods}
-

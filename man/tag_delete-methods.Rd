@@ -3,8 +3,8 @@
 \docType{methods}
 \name{tag_delete}
 \alias{tag_delete}
-\alias{tag_delete,character-method}
 \alias{tag_delete,git_repository-method}
+\alias{tag_delete,character-method}
 \alias{tag_delete,git_tag-method}
 \title{Delete an existing tag reference}
 \usage{
@@ -66,4 +66,3 @@ tags(repo)
 }
 }
 \keyword{methods}
-

@@ -3,8 +3,8 @@
 \docType{methods}
 \name{repository}
 \alias{repository}
-\alias{repository,character-method}
 \alias{repository,missing-method}
+\alias{repository,character-method}
 \title{Open a repository}
 \usage{
 repository(path, ...)
@@ -87,4 +87,3 @@ tags(repo)
 }
 }
 \keyword{methods}
-

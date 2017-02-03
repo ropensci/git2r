@@ -46,4 +46,3 @@ blame(repo, "example.txt")
 }
 }
 \keyword{methods}
-

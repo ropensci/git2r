@@ -2,8 +2,8 @@
 % Please edit documentation in R/commit.r
 \docType{methods}
 \name{coerce-git_commit-method}
-\alias{coerce,git_commit,data.frame-method}
 \alias{coerce-git_commit-method}
+\alias{coerce,git_commit,data.frame-method}
 \title{Coerce a commit to a \code{data.frame}}
 \arguments{
 \item{from}{The commit \code{object}}
@@ -65,4 +65,3 @@ df
 }
 }
 \keyword{methods}
-

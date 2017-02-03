@@ -14,4 +14,3 @@ credential. Default is \code{'~/.ssh/id_rsa'}}
 Check if private key is passphrase protected
 }
 \keyword{internal}
-

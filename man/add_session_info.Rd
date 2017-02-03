@@ -16,4 +16,3 @@ message with appended sessionInfo
 Add sessionInfo to message
 }
 \keyword{internal}
-

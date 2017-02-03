@@ -2,8 +2,8 @@
 % Please edit documentation in R/repository.r
 \docType{methods}
 \name{coerce-git_repository-method}
-\alias{coerce,git_repository,data.frame-method}
 \alias{coerce-git_repository-method}
+\alias{coerce,git_repository,data.frame-method}
 \title{Coerce Git repository to a \code{data.frame}}
 \arguments{
 \item{from}{The repository \code{object}}
@@ -71,4 +71,3 @@ df
 }
 }
 \keyword{methods}
-

@@ -39,4 +39,3 @@ summary(blob_1)
 }
 }
 \keyword{methods}
-

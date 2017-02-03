@@ -54,4 +54,3 @@ when(tags(repo)[[1]])
 }
 }
 \keyword{methods}
-

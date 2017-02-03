@@ -38,4 +38,3 @@ branch_target(head(repo))
 }
 }
 \keyword{methods}
-

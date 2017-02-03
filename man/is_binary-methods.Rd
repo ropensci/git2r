@@ -53,4 +53,3 @@ is_binary(b_png)
 }
 }
 \keyword{methods}
-

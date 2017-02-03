@@ -35,4 +35,3 @@ reflog(repo)
 }
 }
 \keyword{methods}
-

@@ -13,4 +13,3 @@ S4 class git_repository
 Lookup repository for methods with missing repo argument
 }
 \keyword{internal}
-

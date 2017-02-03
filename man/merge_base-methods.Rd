@@ -55,4 +55,3 @@ stopifnot(identical(merge_base(commit_2, commit_3), commit_1))
 }
 }
 \keyword{methods}
-

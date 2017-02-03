@@ -9,4 +9,3 @@ Class \code{"git_stash"}
 }
 \keyword{classes}
 \keyword{methods}
-

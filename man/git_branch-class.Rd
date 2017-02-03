@@ -30,6 +30,6 @@ Class \code{git_branch}
   \item{show}{\code{signature(object = "git_branch")}}
 }
 }
+
 \keyword{classes}
 \keyword{methods}
-

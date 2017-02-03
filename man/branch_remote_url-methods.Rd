@@ -47,4 +47,3 @@ branch_remote_url(branch_get_upstream(head(repo)))
 }
 }
 \keyword{methods}
-

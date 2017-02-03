@@ -43,4 +43,3 @@ is_bare(repo_bare)
 \link{repository}
 }
 \keyword{methods}
-

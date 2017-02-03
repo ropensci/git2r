@@ -30,6 +30,6 @@ Class \code{"git_tag"}
   }
 }
 }
+
 \keyword{classes}
 \keyword{methods}
-

@@ -3,8 +3,8 @@
 \docType{methods}
 \name{status}
 \alias{status}
-\alias{status,git_repository-method}
 \alias{status,missing-method}
+\alias{status,git_repository-method}
 \title{Status}
 \usage{
 status(repo, staged = TRUE, unstaged = TRUE, untracked = TRUE,
@@ -88,4 +88,3 @@ status(repo)
 }
 }
 \keyword{methods}
-

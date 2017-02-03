@@ -50,4 +50,3 @@ blob_list_2 <- blob_create(repo, c(temp_file_1, temp_file_2), relative = FALSE)
 }
 }
 \keyword{methods}
-

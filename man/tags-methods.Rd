@@ -3,8 +3,8 @@
 \docType{methods}
 \name{tags}
 \alias{tags}
-\alias{tags,git_repository-method}
 \alias{tags,missing-method}
+\alias{tags,git_repository-method}
 \title{Tags}
 \usage{
 tags(repo)
@@ -49,4 +49,3 @@ tags(repo)
 }
 }
 \keyword{methods}
-

@@ -66,4 +66,3 @@ lookup(repo, substr(sha_tag, 1, 7))
 }
 }
 \keyword{methods}
-

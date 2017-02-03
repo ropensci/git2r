@@ -45,4 +45,3 @@ summary(stash_list(repo)[[1]])
 }
 }
 \keyword{methods}
-

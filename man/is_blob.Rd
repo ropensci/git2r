@@ -37,4 +37,3 @@ is_blob(blob_1)
 }
 }
 \keyword{methods}
-

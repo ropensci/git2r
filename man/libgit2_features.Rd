@@ -16,4 +16,3 @@ Compile time options for libgit2.
 libgit2_features()
 }
 \keyword{methods}
-

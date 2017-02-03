@@ -2,8 +2,8 @@
 % Please edit documentation in R/S4_classes.r
 \docType{class}
 \name{git_time-class}
-\alias{coerce,git_time,character-method}
 \alias{git_time-class}
+\alias{coerce,git_time,character-method}
 \title{S4 class to handle a git time in a signature}
 \description{
 Class \code{"git_time"}
@@ -26,6 +26,6 @@ Class \code{"git_time"}
   \item{show}{\code{signature(object = "git_time")}}
 }
 }
+
 \keyword{classes}
 \keyword{methods}
-

@@ -67,4 +67,3 @@ stash_list(repo)
 }
 }
 \keyword{methods}
-

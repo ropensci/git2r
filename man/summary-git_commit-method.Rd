@@ -40,4 +40,3 @@ summary(commits(repo)[[1]])
 }
 }
 \keyword{methods}
-

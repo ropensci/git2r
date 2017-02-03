@@ -41,4 +41,3 @@ invisible(lapply(as(tree(new_commit), "list"),
 }
 }
 \keyword{methods}
-

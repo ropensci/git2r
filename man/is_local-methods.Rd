@@ -53,4 +53,3 @@ is_local(branches(repo)[[2]])
 }
 }
 \keyword{methods}
-

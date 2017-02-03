@@ -3,8 +3,8 @@
 \docType{methods}
 \name{branches}
 \alias{branches}
-\alias{branches,git_repository-method}
 \alias{branches,missing-method}
+\alias{branches,git_repository-method}
 \title{Branches}
 \usage{
 branches(repo, flags = c("all", "local", "remote"))
@@ -57,4 +57,3 @@ branches(repo)
 }
 }
 \keyword{methods}
-

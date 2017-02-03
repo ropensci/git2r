@@ -3,8 +3,8 @@
 \docType{methods}
 \name{workdir}
 \alias{workdir}
-\alias{workdir,git_repository-method}
 \alias{workdir,missing-method}
+\alias{workdir,git_repository-method}
 \title{Workdir of repository}
 \usage{
 workdir(repo)
@@ -41,4 +41,3 @@ workdir(repo)
 }
 }
 \keyword{methods}
-

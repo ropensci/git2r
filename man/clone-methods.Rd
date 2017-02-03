@@ -80,4 +80,3 @@ commits(repo_2)
 \code{\linkS4class{cred_ssh_key}}
 }
 \keyword{methods}
-

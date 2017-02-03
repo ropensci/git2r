@@ -34,7 +34,6 @@ push(repo, credentials = cred)
 }
 }
 \seealso{
-Other git.credential.functions: \code{\link{cred_env}},
+Other git credential functions: \code{\link{cred_env}},
   \code{\link{cred_ssh_key}}, \code{\link{cred_user_pass}}
 }
-

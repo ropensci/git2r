@@ -17,4 +17,3 @@ based on
 libgit2_version()
 }
 \keyword{methods}
-

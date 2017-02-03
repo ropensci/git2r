@@ -34,4 +34,3 @@ remote_ls("https://github.com/ropensci/git2r")
 }
 }
 \keyword{methods}
-

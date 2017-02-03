@@ -28,8 +28,7 @@ cred_user_pass("Random Developer", "SecretPassword")
 }
 }
 \seealso{
-Other git.credential.functions: \code{\link{cred_env}},
+Other git credential functions: \code{\link{cred_env}},
   \code{\link{cred_ssh_key}}, \code{\link{cred_token}}
 }
 \keyword{methods}
-

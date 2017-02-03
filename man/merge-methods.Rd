@@ -2,8 +2,8 @@
 % Please edit documentation in R/merge.r
 \docType{methods}
 \name{merge,git_repository,character-method}
-\alias{merge,git_branch,missing-method}
 \alias{merge,git_repository,character-method}
+\alias{merge,git_branch,missing-method}
 \title{Merge a branch into HEAD}
 \usage{
 \S4method{merge}{git_repository,character}(x, y, ...,
@@ -100,4 +100,3 @@ status(repo)
 }
 }
 \keyword{methods}
-

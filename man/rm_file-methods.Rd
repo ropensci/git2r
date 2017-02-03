@@ -49,4 +49,3 @@ status(repo)
 
 }
 \keyword{methods}
-

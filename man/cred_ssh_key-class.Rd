@@ -22,6 +22,6 @@ Class \code{"cred_ssh_key"}
   }
 }
 }
+
 \keyword{classes}
 \keyword{methods}
-

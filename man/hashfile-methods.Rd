@@ -35,4 +35,3 @@ identical(hashfile(path), hash("Hello, world!\\n"))
 }
 }
 \keyword{methods}
-

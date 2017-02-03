@@ -83,4 +83,3 @@ note_create(tree(commit_1)["example.txt"], "Note-5")
 }
 }
 \keyword{methods}
-

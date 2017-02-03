@@ -52,4 +52,3 @@ remotes(repo)
 }
 }
 \keyword{methods}
-

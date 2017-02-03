@@ -45,4 +45,3 @@ is_bare(repo_bare)
 \link{init}
 }
 \keyword{methods}
-

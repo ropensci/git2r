@@ -26,6 +26,6 @@ Class \code{"git_merge_result"}
   }
 }
 }
+
 \keyword{classes}
 \keyword{methods}
-

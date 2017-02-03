@@ -36,4 +36,3 @@ summary(tree(commits(repo)[[1]]))
 }
 }
 \keyword{methods}
-

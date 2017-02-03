@@ -112,4 +112,3 @@ cat(diff(repo, index=TRUE, as_char=TRUE))
 }
 }
 \keyword{methods}
-

@@ -23,4 +23,3 @@ Set the SSL certificate-authority locations
 Either parameter may be 'NULL', but not both.
 }
 \keyword{methods}
-

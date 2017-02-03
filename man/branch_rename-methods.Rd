@@ -44,4 +44,3 @@ branches(repo)
 }
 }
 \keyword{methods}
-

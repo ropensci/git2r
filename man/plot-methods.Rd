@@ -2,8 +2,8 @@
 % Please edit documentation in R/plot.r
 \docType{methods}
 \name{plot,git_repository-method}
-\alias{plot}
 \alias{plot,git_repository-method}
+\alias{plot}
 \title{Plot commits over time}
 \usage{
 \S4method{plot}{git_repository}(x, breaks = c("month", "year", "quarter",
@@ -35,4 +35,3 @@ plot(repo)
 }
 }
 \keyword{methods}
-

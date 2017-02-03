@@ -21,6 +21,6 @@ Class \code{"git_blame"}
   }
 }
 }
+
 \keyword{classes}
 \keyword{methods}
-

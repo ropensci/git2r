@@ -18,6 +18,6 @@ Class \code{"git_blob"}
   }
 }
 }
+
 \keyword{classes}
 \keyword{methods}
-

@@ -3,8 +3,8 @@
 \docType{methods}
 \name{is_shallow}
 \alias{is_shallow}
-\alias{is_shallow,git_repository-method}
 \alias{is_shallow,missing-method}
+\alias{is_shallow,git_repository-method}
 \title{Determine if the repository was a shallow clone}
 \usage{
 is_shallow(repo)
@@ -67,4 +67,3 @@ is_shallow(repo_2)
 }
 }
 \keyword{methods}
-

@@ -47,4 +47,3 @@ branch_remote_name(branches(repo)[[2]])
 }
 }
 \keyword{methods}
-

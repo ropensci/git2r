@@ -36,6 +36,6 @@ Class \code{"git_reference"}
   \item{show}{\code{signature(object = "git_reference")}}
 }
 }
+
 \keyword{classes}
 \keyword{methods}
-

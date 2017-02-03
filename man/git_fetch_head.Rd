@@ -28,6 +28,6 @@ Class \code{"git_fetch_head"}
   }
 }
 }
+
 \keyword{classes}
 \keyword{methods}
-

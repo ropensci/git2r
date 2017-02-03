@@ -23,6 +23,6 @@ Class \code{"git_repository"}
   \item{is_empty}{\code{signature(object = "git_repository")}}
 }
 }
+
 \keyword{classes}
 \keyword{methods}
-

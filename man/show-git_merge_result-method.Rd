@@ -52,4 +52,3 @@ readLines(file.path(path, "example.txt"))
 }
 }
 \keyword{methods}
-

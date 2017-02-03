@@ -52,4 +52,3 @@ branch_2 <- branch_create(commit_2, name = "test-branch", force = TRUE)
 }
 }
 \keyword{methods}
-

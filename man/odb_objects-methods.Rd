@@ -48,4 +48,3 @@ odb_objects(repo)
 }
 }
 \keyword{methods}
-

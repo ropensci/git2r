@@ -3,8 +3,8 @@
 \docType{methods}
 \name{stash_list}
 \alias{stash_list}
-\alias{stash_list,git_repository-method}
 \alias{stash_list,missing-method}
+\alias{stash_list,git_repository-method}
 \title{List stashes in repository}
 \usage{
 stash_list(repo)
@@ -66,4 +66,3 @@ stash_list(repo)
 }
 }
 \keyword{methods}
-

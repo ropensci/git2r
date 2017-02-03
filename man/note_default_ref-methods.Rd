@@ -33,4 +33,3 @@ note_default_ref(repo)
 }
 }
 \keyword{methods}
-

@@ -3,8 +3,8 @@
 \docType{methods}
 \name{is_detached}
 \alias{is_detached}
-\alias{is_detached,git_repository-method}
 \alias{is_detached,missing-method}
+\alias{is_detached,git_repository-method}
 \title{Check if HEAD of repository is detached}
 \usage{
 is_detached(repo)
@@ -58,4 +58,3 @@ is_detached(repo)
 }
 }
 \keyword{methods}
-

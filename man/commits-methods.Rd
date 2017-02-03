@@ -3,8 +3,8 @@
 \docType{methods}
 \name{commits}
 \alias{commits}
-\alias{commits,git_repository-method}
 \alias{commits,missing-method}
+\alias{commits,git_repository-method}
 \title{Commits}
 \usage{
 commits(repo, ...)
@@ -79,4 +79,3 @@ commits(repo)
 }
 }
 \keyword{methods}
-

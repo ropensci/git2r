@@ -52,4 +52,3 @@ tags(repo)
 }
 }
 \keyword{methods}
-

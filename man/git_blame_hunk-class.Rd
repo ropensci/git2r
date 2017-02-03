@@ -46,6 +46,6 @@ Class \code{"git_blame_hunk"}
   }
 }
 }
+
 \keyword{classes}
 \keyword{methods}
-

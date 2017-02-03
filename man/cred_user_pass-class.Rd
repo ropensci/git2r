@@ -19,6 +19,6 @@ Class \code{"cred_user_pass"}
   }
 }
 }
+
 \keyword{classes}
 \keyword{methods}
-

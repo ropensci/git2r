@@ -23,4 +23,3 @@ vector).
 Create push refspec from arguments
 }
 \keyword{internal}
-

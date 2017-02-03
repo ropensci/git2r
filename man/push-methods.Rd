@@ -79,4 +79,3 @@ commits(repo_bare)
 \code{\linkS4class{cred_ssh_key}}
 }
 \keyword{methods}
-

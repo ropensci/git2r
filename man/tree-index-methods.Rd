@@ -2,10 +2,10 @@
 % Please edit documentation in R/tree.r
 \docType{methods}
 \name{[,git_tree,integer,missing-method}
-\alias{[,git_tree,character,missing-method}
 \alias{[,git_tree,integer,missing-method}
-\alias{[,git_tree,logical,missing-method}
 \alias{[,git_tree,numeric,missing-method}
+\alias{[,git_tree,logical,missing-method}
+\alias{[,git_tree,character,missing-method}
 \title{Extract object from tree}
 \usage{
 \S4method{[}{git_tree,integer,missing}(x, i)
@@ -68,4 +68,3 @@ tree_object[sapply(as(tree_object, 'list'), is_blob)]
 }
 }
 \keyword{methods}
-

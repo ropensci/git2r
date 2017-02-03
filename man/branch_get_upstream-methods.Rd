@@ -47,4 +47,3 @@ branch_get_upstream(head(repo))
 }
 }
 \keyword{methods}
-

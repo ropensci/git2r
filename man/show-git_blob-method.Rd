@@ -35,4 +35,3 @@ tree(commits(repo)[[1]])["example.txt"]
 }
 }
 \keyword{methods}
-

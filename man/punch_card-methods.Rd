@@ -37,4 +37,3 @@ punch_card(repo)
 }
 }
 \keyword{methods}
-

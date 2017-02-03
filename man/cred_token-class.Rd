@@ -17,6 +17,6 @@ Class \code{"cred_token"}
   }
 }
 }
+
 \keyword{classes}
 \keyword{methods}
-

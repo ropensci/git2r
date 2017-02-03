@@ -37,4 +37,3 @@ is_branch(branch)
 }
 }
 \keyword{methods}
-

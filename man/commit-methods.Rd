@@ -56,4 +56,3 @@ commit(repo, "First commit message")
 }
 }
 \keyword{methods}
-

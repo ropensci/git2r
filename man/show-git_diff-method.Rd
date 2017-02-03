@@ -38,4 +38,3 @@ diff(repo)
 }
 }
 \keyword{methods}
-

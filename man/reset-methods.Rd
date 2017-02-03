@@ -3,9 +3,9 @@
 \docType{methods}
 \name{reset}
 \alias{reset}
-\alias{reset,character-method}
 \alias{reset,git_commit-method}
 \alias{reset,git_repository-method}
+\alias{reset,character-method}
 \title{Reset current HEAD to the specified state}
 \usage{
 reset(object, ...)
@@ -94,4 +94,3 @@ status(repo)
 }
 }
 \keyword{methods}
-

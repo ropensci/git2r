@@ -32,4 +32,3 @@ default_signature(repo)
 }
 }
 \keyword{methods}
-

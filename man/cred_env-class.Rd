@@ -21,6 +21,6 @@ Class \code{"cred_env"}
   }
 }
 }
+
 \keyword{classes}
 \keyword{methods}
-

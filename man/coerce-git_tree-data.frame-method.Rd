@@ -2,8 +2,8 @@
 % Please edit documentation in R/tree.r
 \docType{methods}
 \name{coerce-git_tree-data.frame-method}
-\alias{coerce,git_tree,data.frame-method}
 \alias{coerce-git_tree-data.frame-method}
+\alias{coerce,git_tree,data.frame-method}
 \title{Coerce entries in a git_tree to a \code{data.frame}}
 \arguments{
 \item{from}{The tree \code{object}}
@@ -60,4 +60,3 @@ df
 }
 }
 \keyword{methods}
-

@@ -3,8 +3,8 @@
 \docType{methods}
 \name{remotes}
 \alias{remotes}
-\alias{remotes,git_repository-method}
 \alias{remotes,missing-method}
+\alias{remotes,git_repository-method}
 \title{Get the configured remotes for a repo}
 \usage{
 remotes(repo)
@@ -55,4 +55,3 @@ remotes(repo)
 }
 }
 \keyword{methods}
-

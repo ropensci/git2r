@@ -35,4 +35,3 @@ branches(repo)[[1]]
 }
 }
 \keyword{methods}
-

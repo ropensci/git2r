@@ -30,6 +30,6 @@ Class \code{"git_tree"}
   }
 }
 }
+
 \keyword{classes}
 \keyword{methods}
-

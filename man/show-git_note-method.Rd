@@ -35,4 +35,3 @@ note_create(commits(repo)[[1]], "My note")
 }
 }
 \keyword{methods}
-

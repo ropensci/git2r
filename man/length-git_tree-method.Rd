@@ -18,4 +18,3 @@ down)
 Number of entries in tree
 }
 \keyword{methods}
-

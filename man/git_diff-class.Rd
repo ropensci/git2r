@@ -21,5 +21,5 @@ Git diff
   }
 }
 }
-\keyword{classes}
 
+\keyword{classes}

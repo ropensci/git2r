@@ -3,8 +3,8 @@
 \docType{methods}
 \name{is_empty}
 \alias{is_empty}
-\alias{is_empty,git_repository-method}
 \alias{is_empty,missing-method}
+\alias{is_empty,git_repository-method}
 \title{Check if repository is empty}
 \usage{
 is_empty(repo)
@@ -49,4 +49,3 @@ is_empty(repo)
 }
 }
 \keyword{methods}
-

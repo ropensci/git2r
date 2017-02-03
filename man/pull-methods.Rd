@@ -90,4 +90,3 @@ commits(repo_bare)
 }
 }
 \keyword{methods}
-

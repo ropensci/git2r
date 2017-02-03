@@ -68,4 +68,3 @@ is_merge(lookup(repo, branch_target(head(repo))))
 }
 }
 \keyword{methods}
-

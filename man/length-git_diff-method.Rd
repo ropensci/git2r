@@ -17,4 +17,3 @@ a non-negative integer
 Number of files in git_diff object
 }
 \keyword{methods}
-

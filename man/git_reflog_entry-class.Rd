@@ -30,6 +30,6 @@ Class \code{"git_reflog_entry"}
   }
 }
 }
+
 \keyword{classes}
 \keyword{methods}
-

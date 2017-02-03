@@ -50,4 +50,3 @@ is_head(master)
 }
 }
 \keyword{methods}
-

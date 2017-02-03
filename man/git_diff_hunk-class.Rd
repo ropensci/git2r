@@ -30,5 +30,5 @@ Git diff hunk
   }
 }
 }
-\keyword{classes}
 
+\keyword{classes}

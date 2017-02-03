@@ -3,9 +3,9 @@
 \docType{methods}
 \name{contributions}
 \alias{contributions}
+\alias{contributions,missing-method}
 \alias{contributions,character-method}
 \alias{contributions,git_repository-method}
-\alias{contributions,missing-method}
 \title{Contributions}
 \usage{
 contributions(repo, breaks = c("month", "year", "quarter", "week", "day"),
@@ -94,4 +94,3 @@ contributions(repo_1, by = "author")
 }
 }
 \keyword{methods}
-

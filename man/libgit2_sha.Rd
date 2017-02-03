@@ -17,4 +17,3 @@ on
 libgit2_sha()
 }
 \keyword{methods}
-

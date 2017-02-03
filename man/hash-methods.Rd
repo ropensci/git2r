@@ -28,4 +28,3 @@ identical(hash(c("Hello, world!\\n",
 }
 }
 \keyword{methods}
-

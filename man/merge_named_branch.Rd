@@ -23,4 +23,3 @@ A \code{\linkS4class{git_merge_result}} object.
 Merge named branch into HEAD
 }
 \keyword{internal}
-

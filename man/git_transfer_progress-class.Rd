@@ -34,6 +34,6 @@ Statistics from the fetch operation.
   }
 }
 }
+
 \keyword{classes}
 \keyword{methods}
-
