@@ -161,6 +161,7 @@ void
 R_init_git2r(DllInfo *info)
 {
     R_registerRoutines(info, NULL, callMethods, NULL, NULL);
+    R_useDynamicSymbols(info, FALSE);
     git_libgit2_init();
 }
 
