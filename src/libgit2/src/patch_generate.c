@@ -417,7 +417,7 @@ static int diff_required(git_diff *diff, const char *action)
 {
 	if (diff)
 		return 0;
-	giterr_set(GITERR_INVALID, "Must provide valid diff to %s", action);
+	giterr_set(GITERR_INVALID, "must provide valid diff to %s", action);
 	return -1;
 }
 
@@ -451,8 +451,10 @@ int git_diff_foreach(
 
 		if (binary_cb || hunk_cb || data_cb) {
 			if ((error = patch_generated_init(&patch, diff, idx)) != 0 ||
-				(error = patch_generated_load(&patch, &xo.output)) != 0)
+				(error = patch_generated_load(&patch, &xo.output)) != 0) {
+				git_patch_free(&patch.base);
 				return error;
+			}
 		}
 
 		if ((error = patch_generated_invoke_file_callback(&patch, &xo.output)) == 0) {
@@ -776,7 +778,7 @@ int git_patch_generated_from_diff(
 
 	delta = git_vector_get(&diff->deltas, idx);
 	if (!delta) {
-		giterr_set(GITERR_INVALID, "Index out of range for delta in diff");
+		giterr_set(GITERR_INVALID, "index out of range for delta in diff");
 		return GIT_ENOTFOUND;
 	}
 

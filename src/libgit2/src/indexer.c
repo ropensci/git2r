@@ -18,8 +18,6 @@
 #include "oidmap.h"
 #include "zstream.h"
 
-GIT__USE_OIDMAP
-
 extern git_mutex git__mwindow_mutex;
 
 #define UINT31_MAX (0x7FFFFFFF)
@@ -33,7 +31,7 @@ struct entry {
 
 struct git_indexer {
 	unsigned int parsed_header :1,
-		opened_pack :1,
+		pack_committed :1,
 		have_stream :1,
 		have_delta :1;
 	struct git_pack_header hdr;
@@ -83,12 +81,12 @@ static int parse_header(struct git_pack_header *hdr, struct git_pack_file *pack)
 
 	/* Verify we recognize this pack file format. */
 	if (hdr->hdr_signature != ntohl(PACK_SIGNATURE)) {
-		giterr_set(GITERR_INDEXER, "Wrong pack signature");
+		giterr_set(GITERR_INDEXER, "wrong pack signature");
 		return -1;
 	}
 
 	if (!pack_version_ok(hdr->hdr_version)) {
-		giterr_set(GITERR_INDEXER, "Wrong pack version");
+		giterr_set(GITERR_INDEXER, "wrong pack version");
 		return -1;
 	}
 
@@ -150,6 +148,12 @@ int git_indexer_new(
 cleanup:
 	if (fd != -1)
 		p_close(fd);
+
+	if (git_buf_len(&tmp_path) > 0)
+		p_unlink(git_buf_cstr(&tmp_path));
+
+	if (idx->pack != NULL)
+		p_unlink(idx->pack->pack_name);
 
 	git_buf_free(&path);
 	git_buf_free(&tmp_path);
@@ -288,7 +292,7 @@ static int store_object(git_indexer *idx)
 	git_oid_cpy(&pentry->sha1, &oid);
 	pentry->offset = entry_start;
 
-	k = kh_put(oid, idx->pack->idx_cache, &pentry->sha1, &error);
+	k = git_oidmap_put(idx->pack->idx_cache, &pentry->sha1, &error);
 	if (error == -1) {
 		git__free(pentry);
 		giterr_set_oom();
@@ -302,7 +306,7 @@ static int store_object(git_indexer *idx)
 	}
 
 
-	kh_value(idx->pack->idx_cache, k) = pentry;
+	git_oidmap_set_value_at(idx->pack->idx_cache, k, pentry);
 
 	git_oid_cpy(&entry->oid, &oid);
 
@@ -327,9 +331,7 @@ on_error:
 
 GIT_INLINE(bool) has_entry(git_indexer *idx, git_oid *id)
 {
-	khiter_t k;
-	k = kh_get(oid, idx->pack->idx_cache, id);
-	return (k != kh_end(idx->pack->idx_cache));
+	return git_oidmap_exists(idx->pack->idx_cache, id);
 }
 
 static int save_entry(git_indexer *idx, struct entry *entry, struct git_pack_entry *pentry, git_off_t entry_start)
@@ -345,14 +347,14 @@ static int save_entry(git_indexer *idx, struct entry *entry, struct git_pack_ent
 	}
 
 	pentry->offset = entry_start;
-	k = kh_put(oid, idx->pack->idx_cache, &pentry->sha1, &error);
+	k = git_oidmap_put(idx->pack->idx_cache, &pentry->sha1, &error);
 
 	if (error <= 0) {
 		giterr_set(GITERR_INDEXER, "cannot insert object into pack");
 		return -1;
 	}
 
-	kh_value(idx->pack->idx_cache, k) = pentry;
+	git_oidmap_set_value_at(idx->pack->idx_cache, k, pentry);
 
 	/* Add the object to the list */
 	if (git_vector_insert(&idx->objects, entry) < 0)
@@ -376,7 +378,7 @@ static int hash_and_save(git_indexer *idx, git_rawobj *obj, git_off_t entry_star
 	GITERR_CHECK_ALLOC(entry);
 
 	if (git_odb__hashobj(&oid, obj) < 0) {
-		giterr_set(GITERR_INDEXER, "Failed to hash object");
+		giterr_set(GITERR_INDEXER, "failed to hash object");
 		goto on_error;
 	}
 
@@ -477,13 +479,29 @@ static int write_at(git_indexer *idx, const void *data, git_off_t offset, size_t
 
 static int append_to_pack(git_indexer *idx, const void *data, size_t size)
 {
+	git_off_t new_size;
+	size_t mmap_alignment;
+	size_t page_offset;
+	git_off_t page_start;
 	git_off_t current_size = idx->pack->mwf.size;
 	int fd = idx->pack->mwf.fd;
+	int error;
 
 	if (!size)
 		return 0;
 
-	if (p_lseek(fd, current_size + size - 1, SEEK_SET) < 0 ||
+	if ((error = git__mmap_alignment(&mmap_alignment)) < 0)
+		return error;
+
+	/* Write a single byte to force the file system to allocate space now or
+	 * report an error, since we can't report errors when writing using mmap.
+	 * Round the size up to the nearest page so that we only need to perform file
+	 * I/O when we add a page, instead of whenever we write even a single byte. */
+	new_size = current_size + size;
+	page_offset = new_size % mmap_alignment;
+	page_start = new_size - page_offset;
+
+	if (p_lseek(fd, page_start + mmap_alignment - 1, SEEK_SET) < 0 ||
 	    p_write(idx->pack->mwf.fd, data, 1) < 0) {
 		giterr_set(GITERR_OS, "cannot extend packfile '%s'", idx->pack->pack_name);
 		return -1;
@@ -1041,6 +1059,13 @@ int git_indexer_commit(git_indexer *idx, git_transfer_progress *stats)
 		goto on_error;
 
 	git_mwindow_free_all(&idx->pack->mwf);
+
+	/* Truncate file to undo rounding up to next page_size in append_to_pack */
+	if (p_ftruncate(idx->pack->mwf.fd, idx->pack->mwf.size) < 0) {
+		giterr_set(GITERR_OS, "failed to truncate pack file '%s'", idx->pack->pack_name);
+		return -1;
+	}
+
 	/* We need to close the descriptor here so Windows doesn't choke on commit_at */
 	if (p_close(idx->pack->mwf.fd) < 0) {
 		giterr_set(GITERR_OS, "failed to close packfile");
@@ -1054,6 +1079,7 @@ int git_indexer_commit(git_indexer *idx, git_transfer_progress *stats)
 
 	/* And don't forget to rename the packfile to its new place. */
 	p_rename(idx->pack->pack_name, git_buf_cstr(&filename));
+	idx->pack_committed = 1;
 
 	git_buf_free(&filename);
 	git_hash_ctx_cleanup(&ctx);
@@ -1074,10 +1100,11 @@ void git_indexer_free(git_indexer *idx)
 
 	git_vector_free_deep(&idx->objects);
 
-	if (idx->pack && idx->pack->idx_cache) {
+	if (idx->pack->idx_cache) {
 		struct git_pack_entry *pentry;
-		kh_foreach_value(
-			idx->pack->idx_cache, pentry, { git__free(pentry); });
+		git_oidmap_foreach_value(idx->pack->idx_cache, pentry, {
+			git__free(pentry);
+		});
 
 		git_oidmap_free(idx->pack->idx_cache);
 	}
@@ -1085,6 +1112,9 @@ void git_indexer_free(git_indexer *idx)
 	git_vector_free_deep(&idx->deltas);
 
 	if (!git_mutex_lock(&git__mwindow_mutex)) {
+		if (!idx->pack_committed)
+			git_packfile_close(idx->pack, true);
+
 		git_packfile_free(idx->pack);
 		git_mutex_unlock(&git__mwindow_mutex);
 	}

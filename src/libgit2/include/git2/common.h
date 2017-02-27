@@ -175,8 +175,10 @@ typedef enum {
 	GIT_OPT_SET_SSL_CERT_LOCATIONS,
 	GIT_OPT_SET_USER_AGENT,
 	GIT_OPT_ENABLE_STRICT_OBJECT_CREATION,
+	GIT_OPT_ENABLE_STRICT_SYMBOLIC_REF_CREATION,
 	GIT_OPT_SET_SSL_CIPHERS,
 	GIT_OPT_GET_USER_AGENT,
+	GIT_OPT_ENABLE_OFS_DELTA,
 } git_libgit2_opt_t;
 
 /**
@@ -289,11 +291,30 @@ typedef enum {
  *		> will be validated when creating a new commit.  This defaults
  *		> to enabled.
  *
+ *	* opts(GIT_OPT_ENABLE_STRICT_SYMBOLIC_REF_CREATION, int enabled)
+ *
+ *		> Validate the target of a symbolic ref when creating it.  For
+ *		> example, `foobar` is not a valid ref, therefore `foobar` is
+ *		> not a valid target for a symbolic ref by default, whereas
+ *		> `refs/heads/foobar` is.  Disabling this bypasses validation
+ *		> so that an arbitrary strings such as `foobar` can be used
+ *		> for a symbolic ref target.  This defaults to enabled.
+ *
  *	* opts(GIT_OPT_SET_SSL_CIPHERS, const char *ciphers)
  *
  *		> Set the SSL ciphers use for HTTPS connections.
  *		>
  *		> - `ciphers` is the list of ciphers that are eanbled.
+ *
+ *	* opts(GIT_OPT_ENABLE_OFS_DELTA, int enabled)
+ *
+ *		> Enable or disable the use of "offset deltas" when creating packfiles,
+ *		> and the negotiation of them when talking to a remote server.
+ *		> Offset deltas store a delta base location as an offset into the
+ *		> packfile from the current location, which provides a shorter encoding
+ *		> and thus smaller resultant packfiles.
+ *		> Packfiles containing offset deltas can still be read.
+ *		> This defaults to enabled.
  *
  * @param option Option key
  * @param ... value to set the option

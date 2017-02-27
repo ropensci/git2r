@@ -283,7 +283,7 @@ static int ensure_remote_doesnot_exist(git_repository *repo, const char *name)
 
 	giterr_set(
 		GITERR_CONFIG,
-		"Remote '%s' already exists.", name);
+		"remote '%s' already exists", name);
 
 	return GIT_EEXISTS;
 }
@@ -476,7 +476,7 @@ int git_remote_lookup(git_remote **out, git_repository *repo, const char *name)
 
 	if (!optional_setting_found) {
 		error = GIT_ENOTFOUND;
-		giterr_set(GITERR_CONFIG, "Remote '%s' does not exist.", name);
+		giterr_set(GITERR_CONFIG, "remote '%s' does not exist", name);
 		goto cleanup;
 	}
 
@@ -770,8 +770,12 @@ int git_remote__get_http_proxy(git_remote *remote, bool use_ssl, char **proxy_ur
 		goto found;
 	}
 
-	/* HTTP_PROXY / HTTPS_PROXY environment variables */
-	error = git__getenv(&val, use_ssl ? "HTTPS_PROXY" : "HTTP_PROXY");
+	/* http_proxy / https_proxy environment variables */
+	error = git__getenv(&val, use_ssl ? "https_proxy" : "http_proxy");
+
+	/* try uppercase environment variables */
+	if (error == GIT_ENOTFOUND)
+		error = git__getenv(&val, use_ssl ? "HTTPS_PROXY" : "HTTP_PROXY");
 
 	if (error < 0) {
 		if (error == GIT_ENOTFOUND) {
@@ -1718,7 +1722,7 @@ int git_remote_set_autotag(git_repository *repo, const char *remote, git_remote_
 			error = 0;
 		break;
 	default:
-		giterr_set(GITERR_INVALID, "Invalid value for the tagopt setting");
+		giterr_set(GITERR_INVALID, "invalid value for the tagopt setting");
 		error = -1;
 	}
 

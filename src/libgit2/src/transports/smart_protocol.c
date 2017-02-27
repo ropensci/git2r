@@ -19,6 +19,8 @@
 /* The minimal interval between progress updates (in seconds). */
 #define MIN_PROGRESS_UPDATE_INTERVAL 0.5
 
+bool git_smart__ofs_delta_enabled = true;
+
 int git_smart__store_refs(transport_smart *t, int flushes)
 {
 	gitno_buffer *buf = &t->buffer;
@@ -60,7 +62,7 @@ int git_smart__store_refs(transport_smart *t, int flushes)
 
 		gitno_consume(buf, line_end);
 		if (pkt->type == GIT_PKT_ERR) {
-			giterr_set(GITERR_NET, "Remote error: %s", ((git_pkt_err *)pkt)->error);
+			giterr_set(GITERR_NET, "remote error: %s", ((git_pkt_err *)pkt)->error);
 			git__free(pkt);
 			return -1;
 		}
@@ -138,7 +140,7 @@ int git_smart__detect_caps(git_pkt_ref *pkt, transport_smart_caps *caps, git_vec
 		if (*ptr == ' ')
 			ptr++;
 
-		if (!git__prefixcmp(ptr, GIT_CAP_OFS_DELTA)) {
+		if (git_smart__ofs_delta_enabled && !git__prefixcmp(ptr, GIT_CAP_OFS_DELTA)) {
 			caps->common = caps->ofs_delta = 1;
 			ptr += strlen(GIT_CAP_OFS_DELTA);
 			continue;
@@ -772,14 +774,6 @@ static int add_push_report_sideband_pkt(git_push *push, git_pkt_data *data_pkt, 
 		line_len -= (line_end - line);
 		line = line_end;
 
-		/* When a valid packet with no content has been
-		 * read, git_pkt_parse_line does not report an
-		 * error, but the pkt pointer has not been set.
-		 * Handle this by skipping over empty packets.
-		 */
-		if (pkt == NULL)
-			continue;
-
 		error = add_push_report_pkt(push, pkt);
 
 		git_pkt_free(pkt);
@@ -833,9 +827,6 @@ static int parse_report(transport_smart *transport, git_push *push)
 		gitno_consume(buf, line_end);
 
 		error = 0;
-
-		if (pkt == NULL)
-			continue;
 
 		switch (pkt->type) {
 			case GIT_PKT_DATA:

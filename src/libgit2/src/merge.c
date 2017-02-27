@@ -82,7 +82,7 @@ int merge_bases_many(git_commit_list **out, git_revwalk **walk_out, git_reposito
 	unsigned int i;
 
 	if (length < 2) {
-		giterr_set(GITERR_INVALID, "At least two commits are required to find an ancestor. Provided 'length' was %" PRIuZ ".", length);
+		giterr_set(GITERR_INVALID, "at least two commits are required to find an ancestor");
 		return -1;
 	}
 
@@ -108,7 +108,7 @@ int merge_bases_many(git_commit_list **out, git_revwalk **walk_out, git_reposito
 		goto on_error;
 
 	if (!result) {
-		giterr_set(GITERR_MERGE, "No merge base found");
+		giterr_set(GITERR_MERGE, "no merge base found");
 		error = GIT_ENOTFOUND;
 		goto on_error;
 	}
@@ -188,7 +188,7 @@ int git_merge_base_octopus(git_oid *out, git_repository *repo, size_t length, co
 	assert(out && repo && input_array);
 
 	if (length < 2) {
-		giterr_set(GITERR_INVALID, "At least two commits are required to find an ancestor. Provided 'length' was %" PRIuZ ".", length);
+		giterr_set(GITERR_INVALID, "at least two commits are required to find an ancestor");
 		return -1;
 	}
 
@@ -234,7 +234,7 @@ static int merge_bases(git_commit_list **out, git_revwalk **walk_out, git_reposi
 
 	if (!result) {
 		git_revwalk_free(walk);
-		giterr_set(GITERR_MERGE, "No merge base found");
+		giterr_set(GITERR_MERGE, "no merge base found");
 		return GIT_ENOTFOUND;
 	}
 
@@ -566,7 +566,7 @@ int git_repository_mergehead_foreach(
 
 	assert(repo && cb);
 
-	if ((error = git_buf_joinpath(&merge_head_path, repo->path_repository,
+	if ((error = git_buf_joinpath(&merge_head_path, repo->gitdir,
 		GIT_MERGE_HEAD_FILE)) < 0)
 		return error;
 
@@ -578,7 +578,7 @@ int git_repository_mergehead_foreach(
 
 	while ((line = git__strsep(&buffer, "\n")) != NULL) {
 		if (strlen(line) != GIT_OID_HEXSZ) {
-			giterr_set(GITERR_INVALID, "Unable to parse OID - invalid length");
+			giterr_set(GITERR_INVALID, "unable to parse OID - invalid length");
 			error = -1;
 			goto cleanup;
 		}
@@ -595,7 +595,7 @@ int git_repository_mergehead_foreach(
 	}
 
 	if (*buffer) {
-		giterr_set(GITERR_MERGE, "No EOL at line %"PRIuZ, line_num);
+		giterr_set(GITERR_MERGE, "no EOL at line %"PRIuZ, line_num);
 		error = -1;
 		goto cleanup;
 	}
@@ -1079,7 +1079,7 @@ static int index_entry_similarity_inexact(
 	int score = 0;
 	int error = 0;
 
-	if (GIT_MODE_TYPE(a->mode) != GIT_MODE_TYPE(b->mode))
+	if (!GIT_MODE_ISBLOB(a->mode) || !GIT_MODE_ISBLOB(b->mode))
 		return 0;
 
 	/* update signature cache if needed */
@@ -1717,15 +1717,15 @@ static int merge_normalize_opts(
 	if ((error = git_repository_config__weakptr(&cfg, repo)) < 0)
 		return error;
 
-	if (given != NULL)
+	if (given != NULL) {
 		memcpy(opts, given, sizeof(git_merge_options));
-	else {
+	} else {
 		git_merge_options init = GIT_MERGE_OPTIONS_INIT;
 		memcpy(opts, &init, sizeof(init));
-
-		opts->flags = GIT_MERGE_FIND_RENAMES;
-		opts->rename_threshold = GIT_MERGE_DEFAULT_RENAME_THRESHOLD;
 	}
+
+	if ((opts->flags & GIT_MERGE_FIND_RENAMES) && !opts->rename_threshold)
+		opts->rename_threshold = GIT_MERGE_DEFAULT_RENAME_THRESHOLD;
 
 	if (given && given->default_driver) {
 		opts->default_driver = git__strdup(given->default_driver);
@@ -2281,7 +2281,7 @@ static int write_merge_head(
 
 	assert(repo && heads);
 
-	if ((error = git_buf_joinpath(&file_path, repo->path_repository, GIT_MERGE_HEAD_FILE)) < 0 ||
+	if ((error = git_buf_joinpath(&file_path, repo->gitdir, GIT_MERGE_HEAD_FILE)) < 0 ||
 		(error = git_filebuf_open(&file, file_path.ptr, GIT_FILEBUF_FORCE, GIT_MERGE_FILE_MODE)) < 0)
 		goto cleanup;
 
@@ -2309,7 +2309,7 @@ static int write_merge_mode(git_repository *repo)
 
 	assert(repo);
 
-	if ((error = git_buf_joinpath(&file_path, repo->path_repository, GIT_MERGE_MODE_FILE)) < 0 ||
+	if ((error = git_buf_joinpath(&file_path, repo->gitdir, GIT_MERGE_MODE_FILE)) < 0 ||
 		(error = git_filebuf_open(&file, file_path.ptr, GIT_FILEBUF_FORCE, GIT_MERGE_FILE_MODE)) < 0)
 		goto cleanup;
 
@@ -2540,7 +2540,7 @@ static int write_merge_msg(
 	for (i = 0; i < heads_len; i++)
 		entries[i].merge_head = heads[i];
 
-	if ((error = git_buf_joinpath(&file_path, repo->path_repository, GIT_MERGE_MSG_FILE)) < 0 ||
+	if ((error = git_buf_joinpath(&file_path, repo->gitdir, GIT_MERGE_MSG_FILE)) < 0 ||
 		(error = git_filebuf_open(&file, file_path.ptr, GIT_FILEBUF_FORCE, GIT_MERGE_FILE_MODE)) < 0 ||
 		(error = git_filebuf_write(&file, "Merge ", 6)) < 0)
 		goto cleanup;
@@ -2918,7 +2918,7 @@ int git_merge__append_conflicts_to_merge_msg(
 	if (!git_index_has_conflicts(index))
 		return 0;
 
-	if ((error = git_buf_joinpath(&file_path, repo->path_repository, GIT_MERGE_MSG_FILE)) < 0 ||
+	if ((error = git_buf_joinpath(&file_path, repo->gitdir, GIT_MERGE_MSG_FILE)) < 0 ||
 		(error = git_filebuf_open(&file, file_path.ptr, GIT_FILEBUF_APPEND, GIT_MERGE_FILE_MODE)) < 0)
 		goto cleanup;
 
@@ -3047,7 +3047,7 @@ int git_merge_analysis(
 	assert(analysis_out && preference_out && repo && their_heads);
 
 	if (their_heads_len != 1) {
-		giterr_set(GITERR_MERGE, "Can only merge a single branch");
+		giterr_set(GITERR_MERGE, "can only merge a single branch");
 		error = -1;
 		goto done;
 	}
@@ -3103,7 +3103,7 @@ int git_merge(
 	assert(repo && their_heads);
 
 	if (their_heads_len != 1) {
-		giterr_set(GITERR_MERGE, "Can only merge a single branch");
+		giterr_set(GITERR_MERGE, "can only merge a single branch");
 		return -1;
 	}
 

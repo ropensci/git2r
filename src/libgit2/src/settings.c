@@ -15,6 +15,8 @@
 #include "cache.h"
 #include "global.h"
 #include "object.h"
+#include "refs.h"
+#include "transports/smart.h"
 
 void git_libgit2_version(int *major, int *minor, int *rev)
 {
@@ -64,7 +66,7 @@ static int config_level_to_sysdir(int config_level)
 		break;
 	default:
 		giterr_set(
-			GITERR_INVALID, "Invalid config path selector %d", config_level);
+			GITERR_INVALID, "invalid config path selector %d", config_level);
 	}
 
 	return val;
@@ -193,6 +195,10 @@ int git_libgit2_opts(int key, ...)
 		git_object__strict_input_validation = (va_arg(ap, int) != 0);
 		break;
 
+	case GIT_OPT_ENABLE_STRICT_SYMBOLIC_REF_CREATION:
+		git_reference__enable_symbolic_ref_target_validation = (va_arg(ap, int) != 0);
+		break;
+
 	case GIT_OPT_SET_SSL_CIPHERS:
 #ifdef GIT_OPENSSL
 		{
@@ -215,6 +221,10 @@ int git_libgit2_opts(int key, ...)
 			git_buf_sanitize(out);
 			error = git_buf_sets(out, git__user_agent);
 		}
+		break;
+
+	case GIT_OPT_ENABLE_OFS_DELTA:
+		git_smart__ofs_delta_enabled = (va_arg(ap, int) != 0);
 		break;
 
 	default:

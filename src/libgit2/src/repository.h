@@ -126,8 +126,9 @@ struct git_repository {
 	git_attr_cache *attrcache;
 	git_diff_driver_registry *diff_drivers;
 
-	char *path_repository;
-	char *path_gitlink;
+	char *gitlink;
+	char *gitdir;
+	char *commondir;
 	char *workdir;
 	char *namespace;
 
@@ -137,12 +138,14 @@ struct git_repository {
 	git_array_t(git_buf) reserved_names;
 
 	unsigned is_bare:1;
+	unsigned is_worktree:1;
 
 	unsigned int lru_counter;
 
 	git_atomic attr_session_key;
 
 	git_cvar_value cvar_cache[GIT_CVAR_CACHE_MAX];
+	git_strmap *submodule_cache;
 };
 
 GIT_INLINE(git_attr_cache *) git_repository_attr_cache(git_repository *repo)
@@ -151,6 +154,7 @@ GIT_INLINE(git_attr_cache *) git_repository_attr_cache(git_repository *repo)
 }
 
 int git_repository_head_tree(git_tree **tree, git_repository *repo);
+int git_repository_create_head(const char *git_dir, const char *ref_name);
 
 /*
  * Weak pointers to repository internals.
@@ -182,7 +186,7 @@ GIT_INLINE(int) git_repository__ensure_not_bare(
 
 	giterr_set(
 		GITERR_REPOSITORY,
-		"Cannot %s. This operation is not allowed against bare repositories.",
+		"cannot %s. This operation is not allowed against bare repositories.",
 		operation_name);
 
 	return GIT_EBAREREPO;
