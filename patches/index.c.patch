@@ -1,8 +1,8 @@
-*** index.c.orig	2016-11-19 21:03:10.707389668 +0100
---- index.c	2016-11-19 21:08:48.109106021 +0100
+*** index.c.orig	2017-03-02 20:16:01.280304479 +0100
+--- index.c	2017-03-02 20:16:01.340305393 +0100
 ***************
-*** 487,492 ****
---- 487,497 ----
+*** 484,489 ****
+--- 484,494 ----
   	GIT_REFCOUNT_DEC(index, index_free);
   }
   
@@ -15,8 +15,8 @@
   static void index_free_deleted(git_index *index)
   {
 ***************
-*** 504,509 ****
---- 509,518 ----
+*** 501,506 ****
+--- 506,515 ----
   	git_vector_clear(&index->deleted);
   }
   
@@ -28,8 +28,8 @@
   static int index_remove_entry(git_index *index, size_t pos)
   {
 ***************
-*** 2139,2144 ****
---- 2148,2158 ----
+*** 2136,2141 ****
+--- 2145,2155 ----
   	return error;
   }
   
@@ -42,8 +42,8 @@
   {
   	size_t i;
 ***************
-*** 2151,2156 ****
---- 2165,2174 ----
+*** 2148,2153 ****
+--- 2162,2171 ----
   	git_vector_clear(&index->reuc);
   }
   
@@ -53,10 +53,10 @@
 + 
   static int index_error_invalid(const char *message)
   {
-  	giterr_set(GITERR_INDEX, "Invalid data in index - %s", message);
+  	giterr_set(GITERR_INDEX, "invalid data in index - %s", message);
 ***************
-*** 2951,2956 ****
---- 2969,2979 ----
+*** 2948,2953 ****
+--- 2966,2976 ----
   	return 0;
   }
   
@@ -69,8 +69,8 @@
   {
   	int error = 0;
 ***************
-*** 3152,3157 ****
---- 3175,3184 ----
+*** 3149,3154 ****
+--- 3172,3181 ----
   	return error;
   }
   

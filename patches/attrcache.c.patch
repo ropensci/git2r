@@ -1,8 +1,8 @@
-*** attrcache.c.orig	2016-11-19 16:38:12.417470911 +0100
---- attrcache.c	2016-11-19 16:39:07.525687541 +0100
+*** attrcache.c.orig	2017-02-27 22:07:50.154262727 +0100
+--- attrcache.c	2017-02-27 22:17:53.194318999 +0100
 ***************
-*** 302,307 ****
---- 302,312 ----
+*** 305,310 ****
+--- 305,315 ----
   	return error;
   }
   
@@ -15,8 +15,8 @@
   {
   	bool unlock;
 ***************
-*** 351,356 ****
---- 356,365 ----
+*** 354,359 ****
+--- 359,368 ----
   	git__free(cache);
   }
   
@@ -24,12 +24,12 @@
 + #pragma GCC diagnostic pop
 + #endif
 + 
-  int git_attr_cache__do_init(git_repository *repo)
+  int git_attr_cache__init(git_repository *repo)
   {
   	int ret = 0;
 ***************
-*** 408,413 ****
---- 417,427 ----
+*** 411,416 ****
+--- 420,430 ----
   	return ret;
   }
   
@@ -42,8 +42,8 @@
   {
   	git_attr_cache *cache;
 ***************
-*** 419,424 ****
---- 433,442 ----
+*** 422,427 ****
+--- 436,445 ----
   		attr_cache__free(cache);
   }
   
@@ -55,9 +55,9 @@
   {
   	git_attr_cache *cache = git_repository_attr_cache(repo);
 ***************
-*** 453,456 ****
+*** 456,459 ****
   
   	return (git_attr_rule *)git_strmap_value_at(macros, pos);
   }
 - 
---- 471,473 ----
+--- 474,476 ----
