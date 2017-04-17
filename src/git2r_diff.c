@@ -720,32 +720,31 @@ int git2r_diff_get_hunk_cb(const git_diff_delta *delta,
     if (p->hunk_ptr != 0) {
 	SEXP lines;
 	size_t len=p->line_ptr, i;
+        SEXP s_lines = Rf_install("lines");
 
-	SET_SLOT(
-            VECTOR_ELT(p->hunk_tmp, p->hunk_ptr-1),
-            Rf_install("lines"),
-            lines = allocVector(VECSXP, p->line_ptr));
+        PROTECT(lines = allocVector(VECSXP, p->line_ptr));
+	SET_SLOT(VECTOR_ELT(p->hunk_tmp, p->hunk_ptr-1), s_lines, lines);
 	for (i = 0; i < len; i++)
 	    SET_VECTOR_ELT(lines, i, VECTOR_ELT(p->line_tmp, i));
+        UNPROTECT(1);
     }
 
     /* OK, ready for the next hunk, if any */
     if (hunk) {
 	SEXP hunk_obj;
+        SEXP s_old_start = Rf_install("old_start");
+        SEXP s_old_lines = Rf_install("old_lines");
+        SEXP s_new_start = Rf_install("new_start");
+        SEXP s_new_lines = Rf_install("new_lines");
+        SEXP s_header = Rf_install("header");
 
-	SET_VECTOR_ELT(
-            p->hunk_tmp,
-            p->hunk_ptr,
-            hunk_obj = NEW_OBJECT(MAKE_CLASS("git_diff_hunk")));
-	SET_SLOT(hunk_obj, Rf_install("old_start"),
-		 ScalarInteger(hunk->old_start));
-	SET_SLOT(hunk_obj, Rf_install("old_lines"),
-		 ScalarInteger(hunk->old_lines));
-	SET_SLOT(hunk_obj, Rf_install("new_start"),
-		 ScalarInteger(hunk->new_start));
-	SET_SLOT(hunk_obj, Rf_install("new_lines"),
-		 ScalarInteger(hunk->new_lines));
-	SET_SLOT(hunk_obj, Rf_install("header"), mkString(hunk->header));
+        PROTECT(hunk_obj = NEW_OBJECT(MAKE_CLASS("git_diff_hunk")));
+	SET_VECTOR_ELT(p->hunk_tmp, p->hunk_ptr, hunk_obj);
+	SET_SLOT(hunk_obj, s_old_start, ScalarInteger(hunk->old_start));
+	SET_SLOT(hunk_obj, s_old_lines, ScalarInteger(hunk->old_lines));
+	SET_SLOT(hunk_obj, s_new_start, ScalarInteger(hunk->new_start));
+	SET_SLOT(hunk_obj, s_new_lines, ScalarInteger(hunk->new_lines));
+	SET_SLOT(hunk_obj, s_header, mkString(hunk->header));
 
 	p->hunk_ptr += 1;
 	p->line_ptr = 0;
