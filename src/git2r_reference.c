@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2017 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -82,26 +82,25 @@ cleanup:
 void git2r_reference_init(git_reference *source, SEXP dest)
 {
     char sha[GIT_OID_HEXSZ + 1];
+    SEXP s_name = Rf_install("name");
+    SEXP s_shorthand = Rf_install("shorthand");
+    SEXP s_type = Rf_install("type");
+    SEXP s_sha = Rf_install("sha");
+    SEXP s_target = Rf_install("target");
 
-    SET_SLOT(dest, Rf_install("name"), mkString(git_reference_name(source)));
-    SET_SLOT(
-        dest,
-        Rf_install("shorthand"),
-        mkString(git_reference_shorthand(source)));
+    SET_SLOT(dest, s_name, mkString(git_reference_name(source)));
+    SET_SLOT(dest, s_shorthand, mkString(git_reference_shorthand(source)));
 
     switch (git_reference_type(source)) {
     case GIT_REF_OID:
-        SET_SLOT(dest, Rf_install("type"), ScalarInteger(GIT_REF_OID));
+        SET_SLOT(dest, s_type, ScalarInteger(GIT_REF_OID));
         git_oid_fmt(sha, git_reference_target(source));
         sha[GIT_OID_HEXSZ] = '\0';
-        SET_SLOT(dest, Rf_install("sha"), mkString(sha));
+        SET_SLOT(dest, s_sha, mkString(sha));
         break;
     case GIT_REF_SYMBOLIC:
-        SET_SLOT(dest, Rf_install("type"), ScalarInteger(GIT_REF_SYMBOLIC));
-        SET_SLOT(
-            dest,
-            Rf_install("target"),
-            mkString(git_reference_symbolic_target(source)));
+        SET_SLOT(dest, s_type, ScalarInteger(GIT_REF_SYMBOLIC));
+        SET_SLOT(dest, s_target, mkString(git_reference_symbolic_target(source)));
         break;
     default:
         git2r_error(__func__, NULL, git2r_err_reference, NULL);
