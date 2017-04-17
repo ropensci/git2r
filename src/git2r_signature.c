@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2017 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -94,17 +94,15 @@ int git2r_signature_from_arg(git_signature **out, SEXP signature)
 void git2r_signature_init(const git_signature *source, SEXP dest)
 {
     SEXP when;
+    SEXP s_name = Rf_install("name");
+    SEXP s_email = Rf_install("email");
+    SEXP s_time = Rf_install("time");
+    SEXP s_offset = Rf_install("offset");
 
-    SET_SLOT(dest, Rf_install("name"), mkString(source->name));
-    SET_SLOT(dest, Rf_install("email"), mkString(source->email));
+    SET_SLOT(dest, s_name, mkString(source->name));
+    SET_SLOT(dest, s_email, mkString(source->email));
 
     when = GET_SLOT(dest, Rf_install("when"));
-
-    SET_SLOT(when,
-             Rf_install("time"),
-             ScalarReal((double)source->when.time));
-
-    SET_SLOT(when,
-             Rf_install("offset"),
-             ScalarReal((double)source->when.offset));
+    SET_SLOT(when, s_time, ScalarReal((double)source->when.time));
+    SET_SLOT(when, s_offset, ScalarReal((double)source->when.offset));
 }
