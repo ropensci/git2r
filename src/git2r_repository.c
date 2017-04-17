@@ -97,17 +97,15 @@ static int git2r_repository_fetchhead_foreach_cb(
         SEXP s_is_merge = Rf_install("is_merge");
         SEXP s_repo = Rf_install("repo");
 
-        SET_VECTOR_ELT(
-            cb_data->list,
-            cb_data->n,
-            fetch_head = NEW_OBJECT(MAKE_CLASS("git_fetch_head")));
-
+        PROTECT(fetch_head = NEW_OBJECT(MAKE_CLASS("git_fetch_head")));
+        SET_VECTOR_ELT(cb_data->list, cb_data->n, fetch_head);
         SET_SLOT(fetch_head, s_ref_name, mkString(ref_name));
         SET_SLOT(fetch_head, s_remote_url, mkString(remote_url));
         git_oid_tostr(sha, sizeof(sha), oid);
         SET_SLOT(fetch_head, s_sha, mkString(sha));
         SET_SLOT(fetch_head, s_is_merge, ScalarLogical(is_merge));
         SET_SLOT(fetch_head, s_repo, cb_data->repo);
+        UNPROTECT(1);
     }
 
     cb_data->n += 1;
