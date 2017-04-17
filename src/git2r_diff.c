@@ -803,7 +803,7 @@ int git2r_diff_get_line_cb(const git_diff_delta *delta,
     if (buffer != short_buffer)
 	free(buffer);
 
-    PROTECT(1);
+    UNPROTECT(1);
 
     return 0;
 }
