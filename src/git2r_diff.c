@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2017 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -776,32 +776,34 @@ int git2r_diff_get_line_cb(const git_diff_delta *delta,
     static char short_buffer[200];
     char *buffer = short_buffer;
     SEXP line_obj;
+    SEXP s_origin = Rf_install("origin");
+    SEXP s_old_lineno = Rf_install("old_lineno");
+    SEXP s_new_lineno = Rf_install("new_lineno");
+    SEXP s_num_lines = Rf_install("num_lines");
+    SEXP s_content = Rf_install("content");
 
     GIT_UNUSED(delta);
     GIT_UNUSED(hunk);
 
-    SET_VECTOR_ELT(
-        p->line_tmp,
-        p->line_ptr++,
-        line_obj = NEW_OBJECT(MAKE_CLASS("git_diff_line")));
+    PROTECT(line_obj = NEW_OBJECT(MAKE_CLASS("git_diff_line")));
+    SET_VECTOR_ELT(p->line_tmp, p->line_ptr++, line_obj);
 
-    SET_SLOT(line_obj, Rf_install("origin"), ScalarInteger(line->origin));
-    SET_SLOT(line_obj, Rf_install("old_lineno"),
-	     ScalarInteger(line->old_lineno));
-    SET_SLOT(line_obj, Rf_install("new_lineno"),
-	     ScalarInteger(line->new_lineno));
-    SET_SLOT(line_obj, Rf_install("num_lines"),
-	     ScalarInteger(line->num_lines));
+    SET_SLOT(line_obj, s_origin, ScalarInteger(line->origin));
+    SET_SLOT(line_obj, s_old_lineno, ScalarInteger(line->old_lineno));
+    SET_SLOT(line_obj, s_new_lineno, ScalarInteger(line->new_lineno));
+    SET_SLOT(line_obj, s_num_lines, ScalarInteger(line->num_lines));
 
     if (line->content_len > sizeof(buffer))
 	buffer = malloc(line->content_len+1);
     memcpy(buffer, line->content, line->content_len);
     buffer[line->content_len] = 0;
 
-    SET_SLOT(line_obj, Rf_install("content"), mkString(buffer));
+    SET_SLOT(line_obj, s_content, mkString(buffer));
 
     if (buffer != short_buffer)
 	free(buffer);
+
+    PROTECT(1);
 
     return 0;
 }
