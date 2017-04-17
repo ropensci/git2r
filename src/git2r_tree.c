@@ -47,10 +47,14 @@ void git2r_tree_init(const git_tree *source, SEXP repo, SEXP dest)
     SET_SLOT(dest, s_sha, mkString(sha));
 
     n = git_tree_entrycount(source);
-    SET_SLOT(dest, s_filemode, filemode = allocVector(INTSXP, n));
-    SET_SLOT(dest, s_id, id = allocVector(STRSXP, n));
-    SET_SLOT(dest, s_type, type = allocVector(STRSXP, n));
-    SET_SLOT(dest, s_name, name = allocVector(STRSXP, n));
+    PROTECT(filemode = allocVector(INTSXP, n));
+    SET_SLOT(dest, s_filemode, filemode);
+    PROTECT(id = allocVector(STRSXP, n));
+    SET_SLOT(dest, s_id, id);
+    PROTECT(type = allocVector(STRSXP, n));
+    SET_SLOT(dest, s_type, type);
+    PROTECT(name = allocVector(STRSXP, n));
+    SET_SLOT(dest, s_name, name);
 
     filemode_ptr = INTEGER(filemode);
     for (i = 0; i < n; ++i) {
@@ -63,4 +67,5 @@ void git2r_tree_init(const git_tree *source, SEXP repo, SEXP dest)
     }
 
     SET_SLOT(dest, s_repo, repo);
+    UNPROTECT(4);
 }
