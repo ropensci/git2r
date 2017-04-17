@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2017 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -46,26 +46,32 @@ void git2r_reflog_entry_init(
     const char *message;
     const git_signature *committer;
     char sha[GIT_OID_HEXSZ + 1];
+    SEXP s_sha = Rf_install("sha");
+    SEXP s_index = Rf_install("index");
+    SEXP s_committer = Rf_install("committer");
+    SEXP s_message = Rf_install("message");
+    SEXP s_refname = Rf_install("refname");
+    SEXP s_repo = Rf_install("repo");
 
     git_oid_fmt(sha, git_reflog_entry_id_new(source));
     sha[GIT_OID_HEXSZ] = '\0';
-    SET_SLOT(dest, Rf_install("sha"), mkString(sha));
+    SET_SLOT(dest, s_sha, mkString(sha));
 
-    SET_SLOT(dest, Rf_install("index"), i = allocVector(INTSXP, 1));
+    SET_SLOT(dest, s_index, i = allocVector(INTSXP, 1));
     INTEGER(i)[0] = index;
 
     committer = git_reflog_entry_committer(source);
     if (committer)
-        git2r_signature_init(committer, GET_SLOT(dest, Rf_install("committer")));
+        git2r_signature_init(committer, GET_SLOT(dest, s_committer));
 
     message = git_reflog_entry_message(source);
     if (message)
-        SET_SLOT(dest, Rf_install("message"), mkString(message));
+        SET_SLOT(dest, s_message, mkString(message));
     else
-        SET_SLOT(dest, Rf_install("message"), ScalarString(NA_STRING));
+        SET_SLOT(dest, s_message, ScalarString(NA_STRING));
 
-    SET_SLOT(dest, Rf_install("refname"), ref);
-    SET_SLOT(dest, Rf_install("repo"), repo);
+    SET_SLOT(dest, s_refname, ref);
+    SET_SLOT(dest, s_repo, repo);
 }
 
 /**
