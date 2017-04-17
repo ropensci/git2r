@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2017 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -43,23 +43,29 @@ void git2r_tag_init(git_tag *source, SEXP repo, SEXP dest)
     const git_oid *oid;
     char sha[GIT_OID_HEXSZ + 1];
     char target[GIT_OID_HEXSZ + 1];
+    SEXP s_sha = Rf_install("sha");
+    SEXP s_message = Rf_install("message");
+    SEXP s_name = Rf_install("name");
+    SEXP s_tagger = Rf_install("tagger");
+    SEXP s_target = Rf_install("target");
+    SEXP s_repo = Rf_install("repo");
 
     oid = git_tag_id(source);
     git_oid_tostr(sha, sizeof(sha), oid);
-    SET_SLOT(dest, Rf_install("sha"), mkString(sha));
+    SET_SLOT(dest, s_sha, mkString(sha));
 
-    SET_SLOT(dest, Rf_install("message"), mkString(git_tag_message(source)));
-    SET_SLOT(dest, Rf_install("name"), mkString(git_tag_name(source)));
+    SET_SLOT(dest, s_message, mkString(git_tag_message(source)));
+    SET_SLOT(dest, s_name, mkString(git_tag_name(source)));
 
     tagger = git_tag_tagger(source);
     if (tagger)
-        git2r_signature_init(tagger, GET_SLOT(dest, Rf_install("tagger")));
+        git2r_signature_init(tagger, GET_SLOT(dest, s_tagger));
 
     oid = git_tag_target_id(source);
     git_oid_tostr(target, sizeof(target), oid);;
-    SET_SLOT(dest, Rf_install("target"), mkString(target));
+    SET_SLOT(dest, s_target, mkString(target));
 
-    SET_SLOT(dest, Rf_install("repo"), repo);
+    SET_SLOT(dest, s_repo, repo);
 }
 
 /**
