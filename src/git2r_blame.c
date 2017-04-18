@@ -39,6 +39,7 @@ void git2r_blame_init(git_blame *source, SEXP repo, SEXP path, SEXP dest)
 {
     SEXP hunks;
     size_t i, n;
+    SEXP s_hunks = Rf_install("hunks");
     SEXP s_lines_in_hunk = Rf_install("lines_in_hunk");
     SEXP s_final_commit_id = Rf_install("final_commit_id");
     SEXP s_final_start_line_number = Rf_install("final_start_line_number");
@@ -52,7 +53,7 @@ void git2r_blame_init(git_blame *source, SEXP repo, SEXP path, SEXP dest)
     SEXP s_path = Rf_install("path");
 
     n = git_blame_get_hunk_count(source);
-    SET_SLOT(dest, Rf_install("hunks"), hunks = allocVector(VECSXP, n));
+    SET_SLOT(dest, s_hunks, hunks = allocVector(VECSXP, n));
     for (i = 0; i < n; i++) {
         const git_blame_hunk *hunk;
 
