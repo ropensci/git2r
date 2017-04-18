@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2017 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -39,6 +39,17 @@ void git2r_blame_init(git_blame *source, SEXP repo, SEXP path, SEXP dest)
 {
     SEXP hunks;
     size_t i, n;
+    SEXP s_lines_in_hunk = Rf_install("lines_in_hunk");
+    SEXP s_final_commit_id = Rf_install("final_commit_id");
+    SEXP s_final_start_line_number = Rf_install("final_start_line_number");
+    SEXP s_final_signature = Rf_install("final_signature");
+    SEXP s_orig_commit_id = Rf_install("orig_commit_id");
+    SEXP s_orig_start_line_number = Rf_install("orig_start_line_number");
+    SEXP s_orig_signature = Rf_install("orig_signature");
+    SEXP s_orig_path = Rf_install("orig_path");
+    SEXP s_boundary = Rf_install("boundary");
+    SEXP s_repo = Rf_install("repo");
+    SEXP s_path = Rf_install("path");
 
     n = git_blame_get_hunk_count(source);
     SET_SLOT(dest, Rf_install("hunks"), hunks = allocVector(VECSXP, n));
@@ -55,50 +66,47 @@ void git2r_blame_init(git_blame *source, SEXP repo, SEXP path, SEXP dest)
                 i,
                 item = NEW_OBJECT(MAKE_CLASS("git_blame_hunk")));
 
-            SET_SLOT(
-                item,
-                Rf_install("lines_in_hunk"),
-                ScalarInteger(hunk->lines_in_hunk));
+            SET_SLOT(item, s_lines_in_hunk, ScalarInteger(hunk->lines_in_hunk));
 
             git_oid_fmt(sha, &(hunk->final_commit_id));
             sha[GIT_OID_HEXSZ] = '\0';
-            SET_SLOT(item, Rf_install("final_commit_id"), mkString(sha));
+            SET_SLOT(item, s_final_commit_id, mkString(sha));
 
             SET_SLOT(
                 item,
-                Rf_install("final_start_line_number"),
+                s_final_start_line_number,
                 ScalarInteger(hunk->final_start_line_number));
 
             git2r_signature_init(
                 hunk->final_signature,
-                GET_SLOT(item, Rf_install("final_signature")));
+                GET_SLOT(item, s_final_signature));
 
             git_oid_fmt(sha, &(hunk->orig_commit_id));
             sha[GIT_OID_HEXSZ] = '\0';
-            SET_SLOT(item, Rf_install("orig_commit_id"), mkString(sha));
+            SET_SLOT(item, s_orig_commit_id, mkString(sha));
 
             SET_SLOT(
                 item,
-                Rf_install("orig_start_line_number"),
+                s_orig_start_line_number,
                 ScalarInteger(hunk->orig_start_line_number));
 
             git2r_signature_init(
                 hunk->orig_signature,
-                GET_SLOT(item, Rf_install("orig_signature")));
+                GET_SLOT(item, s_orig_signature));
 
-            SET_SLOT(item, Rf_install("orig_path"), mkString(hunk->orig_path));
+            SET_SLOT(item, s_orig_path, mkString(hunk->orig_path));
 
             if (hunk->boundary)
-                SET_SLOT(item, Rf_install("boundary"), ScalarLogical(1));
+                SET_SLOT(item, s_boundary, ScalarLogical(1));
             else
-                SET_SLOT(item, Rf_install("boundary"), ScalarLogical(0));
+                SET_SLOT(item, s_boundary, ScalarLogical(0));
 
-            SET_SLOT(item, Rf_install("repo"), repo);
+            SET_SLOT(item, s_repo, repo);
         }
     }
 
-    SET_SLOT(dest, Rf_install("path"), path);
-    SET_SLOT(dest, Rf_install("repo"), repo);
+    SET_SLOT(dest, s_path, path);
+    SET_SLOT(dest, s_repo, repo);
 }
 
 /**
