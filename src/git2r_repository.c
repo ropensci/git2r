@@ -499,6 +499,7 @@ cleanup:
  */
 SEXP git2r_repository_workdir(SEXP repo)
 {
+    int nprotect = 0;
     SEXP result = R_NilValue;
     git_repository *repository;
 
@@ -509,13 +510,14 @@ SEXP git2r_repository_workdir(SEXP repo)
     if (!git_repository_is_bare(repository)) {
         const char *wd = git_repository_workdir(repository);
         PROTECT(result = allocVector(STRSXP, 1));
+        nprotect++;
         SET_STRING_ELT(result, 0, mkChar(wd));
     }
 
     git_repository_free(repository);
 
-    if (!isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     return result;
 }
