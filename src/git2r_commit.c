@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2017 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -451,28 +451,34 @@ void git2r_commit_init(git_commit *source, SEXP repo, SEXP dest)
     const git_signature *author;
     const git_signature *committer;
     char sha[GIT_OID_HEXSZ + 1];
+    SEXP s_sha = Rf_install("sha");
+    SEXP s_author = Rf_install("author");
+    SEXP s_committer = Rf_install("committer");
+    SEXP s_summary = Rf_install("summary");
+    SEXP s_message = Rf_install("message");
+    SEXP s_repo = Rf_install("repo");
 
     git_oid_fmt(sha, git_commit_id(source));
     sha[GIT_OID_HEXSZ] = '\0';
-    SET_SLOT(dest, Rf_install("sha"), mkString(sha));
+    SET_SLOT(dest, s_sha, mkString(sha));
 
     author = git_commit_author(source);
     if (author)
-        git2r_signature_init(author, GET_SLOT(dest, Rf_install("author")));
+        git2r_signature_init(author, GET_SLOT(dest, s_author));
 
     committer = git_commit_committer(source);
     if (committer)
-        git2r_signature_init(committer, GET_SLOT(dest, Rf_install("committer")));
+        git2r_signature_init(committer, GET_SLOT(dest, s_committer));
 
     summary = git_commit_summary(source);
     if (summary)
-        SET_SLOT(dest, Rf_install("summary"), mkString(summary));
+        SET_SLOT(dest, s_summary, mkString(summary));
 
     message = git_commit_message(source);
     if (message)
-        SET_SLOT(dest, Rf_install("message"), mkString(message));
+        SET_SLOT(dest, s_message, mkString(message));
 
-    SET_SLOT(dest, Rf_install("repo"), repo);
+    SET_SLOT(dest, s_repo, repo);
 }
 
 /**
