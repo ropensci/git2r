@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2017 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -59,6 +59,11 @@ static int git2r_note_init(
     int err;
     git_note *note = NULL;
     char sha[GIT_OID_HEXSZ + 1];
+    SEXP s_sha = Rf_install("sha");
+    SEXP s_annotated = Rf_install("annotated");
+    SEXP s_message = Rf_install("message");
+    SEXP s_refname = Rf_install("refname");
+    SEXP s_repo = Rf_install("repo");
 
     err = git_note_read(&note, repository, notes_ref, annotated_object_id);
     if (err)
@@ -66,13 +71,13 @@ static int git2r_note_init(
 
     git_oid_fmt(sha, blob_id);
     sha[GIT_OID_HEXSZ] = '\0';
-    SET_SLOT(dest, Rf_install("sha"), mkString(sha));
+    SET_SLOT(dest, s_sha, mkString(sha));
     git_oid_fmt(sha, annotated_object_id);
     sha[GIT_OID_HEXSZ] = '\0';
-    SET_SLOT(dest, Rf_install("annotated"), mkString(sha));
-    SET_SLOT(dest, Rf_install("message"), mkString(git_note_message(note)));
-    SET_SLOT(dest, Rf_install("refname"), mkString(notes_ref));
-    SET_SLOT(dest, Rf_install("repo"), repo);
+    SET_SLOT(dest, s_annotated, mkString(sha));
+    SET_SLOT(dest, s_message, mkString(git_note_message(note)));
+    SET_SLOT(dest, s_refname, mkString(notes_ref));
+    SET_SLOT(dest, s_repo, repo);
 
     if (note)
         git_note_free(note);
