@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2016 The git2r contributors
+ *  Copyright (C) 2013-2017 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -182,6 +182,8 @@ int git2r_arg_check_fetch_heads(SEXP arg)
 {
     const char *repo = NULL;
     size_t i,n;
+    SEXP s_repo = Rf_install("repo");
+    SEXP s_path = Rf_install("path");
 
     if (R_NilValue == arg || VECSXP != TYPEOF(arg))
         return -1;
@@ -200,7 +202,7 @@ int git2r_arg_check_fetch_heads(SEXP arg)
         if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_fetch_head"))
             return -1;
 
-        path = GET_SLOT(GET_SLOT(item, Rf_install("repo")), Rf_install("path"));
+        path = GET_SLOT(GET_SLOT(item, s_repo), s_path);
         if (git2r_arg_check_string(path))
             return -1;
 
