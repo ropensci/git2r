@@ -510,10 +510,12 @@ SEXP git2r_repository_workdir(SEXP repo)
         const char *wd = git_repository_workdir(repository);
         PROTECT(result = allocVector(STRSXP, 1));
         SET_STRING_ELT(result, 0, mkChar(wd));
-        UNPROTECT(1);
     }
 
     git_repository_free(repository);
+
+    if (!isNull(result))
+        UNPROTECT(1);
 
     return result;
 }
