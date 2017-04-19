@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2017 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -82,13 +82,16 @@ int git2r_branch_init(
 {
     int err;
     const char *name;
+    SEXP s_name = Rf_install("name");
+    SEXP s_type = Rf_install("type");
+    SEXP s_repo = Rf_install("repo");
 
     err = git_branch_name(&name, source);
     if (err)
         goto cleanup;
-    SET_SLOT(dest, Rf_install("name"), mkString(name));
-    SET_SLOT(dest, Rf_install("type"), ScalarInteger(type));
-    SET_SLOT(dest, Rf_install("repo"), repo);
+    SET_SLOT(dest, s_name, mkString(name));
+    SET_SLOT(dest, s_type, ScalarInteger(type));
+    SET_SLOT(dest, s_repo, repo);
 
 cleanup:
     return err;
