@@ -71,6 +71,7 @@ static int git2r_clone_progress(
  * @param bare Create a bare repository.
  * @param branch The name of the branch to checkout. Default is NULL
  *        which means to use the remote's default branch.
+ * @param checkout Checkout HEAD after the clone is complete.
  * @param credentials The credentials for remote repository access.
  * @param progress show progress
  * @return R_NilValue
@@ -80,6 +81,7 @@ SEXP git2r_clone(
     SEXP local_path,
     SEXP bare,
     SEXP branch,
+    SEXP checkout,
     SEXP credentials,
     SEXP progress)
 {
@@ -97,12 +99,18 @@ SEXP git2r_clone(
         git2r_error(__func__, NULL, "'bare'", git2r_err_logical_arg);
     if (branch != R_NilValue && git2r_arg_check_string(branch))
         git2r_error(__func__, NULL, "'branch'", git2r_err_string_arg);
+    if (git2r_arg_check_logical(checkout))
+        git2r_error(__func__, NULL, "'checkout'", git2r_err_logical_arg);
     if (git2r_arg_check_credentials(credentials))
         git2r_error(__func__, NULL, "'credentials'", git2r_err_credentials_arg);
     if (git2r_arg_check_logical(progress))
         git2r_error(__func__, NULL, "'progress'", git2r_err_logical_arg);
 
-    checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE;
+    if (LOGICAL(checkout)[0])
+      checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE;
+    else
+      checkout_opts.checkout_strategy = GIT_CHECKOUT_NONE;
+    
     clone_opts.checkout_opts = checkout_opts;
     payload.credentials = credentials;
     clone_opts.fetch_opts.callbacks.payload = &payload;
