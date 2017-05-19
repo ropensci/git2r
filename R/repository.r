@@ -258,6 +258,7 @@ setMethod("init",
 ##' @param bare Create a bare repository. Default is FALSE.
 ##' @param branch The name of the branch to checkout. Default is NULL
 ##' which means to use the remote's default branch.
+##' @param checkout Checkout HEAD after the clone is complete. Default is TRUE.
 ##' @param credentials The credentials for remote repository
 ##' access. Default is NULL. To use and query an ssh-agent for the ssh
 ##' key credentials, let this parameter be NULL (the default).
@@ -312,6 +313,7 @@ setGeneric("clone",
                     local_path,
                     bare        = FALSE,
                     branch      = NULL,
+                    checkout    = TRUE,
                     credentials = NULL,
                     progress    = TRUE)
            standardGeneric("clone"))
@@ -325,11 +327,12 @@ setMethod("clone",
                    local_path,
                    bare,
                    branch,
+                   checkout,
                    credentials,
                    progress)
           {
               .Call(git2r_clone, url, local_path, bare,
-                    branch, credentials, progress)
+                    branch, checkout, credentials, progress)
 
               repository(local_path)
           }
