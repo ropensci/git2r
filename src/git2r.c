@@ -84,7 +84,7 @@ static const R_CallMethodDef callMethods[] =
     CALLDEF(git2r_branch_upstream_canonical_name, 1),
     CALLDEF(git2r_checkout_path, 2),
     CALLDEF(git2r_checkout_tree, 3),
-    CALLDEF(git2r_clone, 6),
+    CALLDEF(git2r_clone, 7),
     CALLDEF(git2r_commit, 4),
     CALLDEF(git2r_commit_parent_list, 1),
     CALLDEF(git2r_commit_tree, 1),

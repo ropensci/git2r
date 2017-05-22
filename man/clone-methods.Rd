@@ -6,11 +6,11 @@
 \alias{clone,character,character-method}
 \title{Clone a remote repository}
 \usage{
-clone(url, local_path, bare = FALSE, branch = NULL, credentials = NULL,
-  progress = TRUE)
+clone(url, local_path, bare = FALSE, branch = NULL, checkout = TRUE,
+  credentials = NULL, progress = TRUE)
 
 \S4method{clone}{character,character}(url, local_path, bare = FALSE,
-  branch = NULL, credentials = NULL, progress = TRUE)
+  branch = NULL, checkout = TRUE, credentials = NULL, progress = TRUE)
 }
 \arguments{
 \item{url}{The remote repository to clone}
@@ -21,6 +21,8 @@ clone(url, local_path, bare = FALSE, branch = NULL, credentials = NULL,
 
 \item{branch}{The name of the branch to checkout. Default is NULL
 which means to use the remote's default branch.}
+
+\item{checkout}{Checkout HEAD after the clone is complete. Default is TRUE.}
 
 \item{credentials}{The credentials for remote repository
 access. Default is NULL. To use and query an ssh-agent for the ssh
