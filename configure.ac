@@ -82,6 +82,16 @@ CFLAGS=`"${RBIN}" CMD config CFLAGS`
 CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
 CPICFLAGS=`"${RBIN}" CMD config CPICFLAGS`
 
+# Determine architecture of the machine
+AC_CHECK_SIZEOF([void*])
+if test "x$ac_cv_sizeof_voidp" = "x8"; then
+    CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_64"
+elif test "x$ac_cv_sizeof_voidp" = "x4"; then
+    CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_32"
+else
+    AC_MSG_FAILURE([Unsupported architecture])
+fi
+
 # Check for zlib
 have_zlib=no
 
@@ -319,16 +329,6 @@ case "${host_os}" in
         CPPFLAGS="${CPPFLAGS} -D_POSIX_C_SOURCE=200112L -D__EXTENSIONS__ -D_POSIX_PTHREAD_SEMANTICS"
     ;;
 esac
-
-# Determine architecture of the machine
-AC_CHECK_SIZEOF([void*])
-if test "x$ac_cv_sizeof_voidp" = "x8"; then
-    CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_64"
-elif test "x$ac_cv_sizeof_voidp" = "x4"; then
-    CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_32"
-else
-    AC_MSG_FAILURE([Unsupported architecture])
-fi
 
 # Checks for structures
 AC_CHECK_MEMBER([struct stat.st_mtim],
