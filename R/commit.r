@@ -151,15 +151,18 @@ setMethod("commit",
                               untracked = FALSE,
                               ignored   = FALSE)
 
-                  ## Stage modified files
-                  lapply(s$unstaged$modified, function(x) {
-                      add(repo, x)
-                  })
+                  # Convert list of lists to character vector
+                  unstaged <- unlist(s$unstaged)
+                  for (i in seq_along(unstaged)) {
+                    if (names(unstaged)[i] == "modified") {
+                      ## Stage modified files
+                      add(repo, unstaged[i])
+                    } else if (names(unstaged)[i] == "deleted") {
+                      ## Stage deleted files
+                      .Call(git2r_index_remove_bypath, repo, unstaged[i])
+                    }
+                  }
 
-                  ## Stage deleted files
-                  lapply(s$unstaged$deleted, function(x) {
-                      .Call(git2r_index_remove_bypath, repo, x)
-                  })
               }
 
               if (session)
