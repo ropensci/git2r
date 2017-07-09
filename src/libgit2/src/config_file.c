@@ -1027,7 +1027,7 @@ static int parse_section_header_ext(struct reader *reader, const char *line, con
 	first_quote = strchr(line, '"');
 	if (first_quote == NULL) {
 		set_parse_error(reader, 0, "Missing quotation marks in section header");
-		return -1;
+		goto end_error;
 	}
 
 	last_quote = strrchr(line, '"');
@@ -1035,14 +1035,15 @@ static int parse_section_header_ext(struct reader *reader, const char *line, con
 
 	if (quoted_len == 0) {
 		set_parse_error(reader, 0, "Missing closing quotation mark in section header");
-		return -1;
+		goto end_error;
 	}
 
 	GITERR_CHECK_ALLOC_ADD(&alloc_len, base_name_len, quoted_len);
 	GITERR_CHECK_ALLOC_ADD(&alloc_len, alloc_len, 2);
 
-	git_buf_grow(&buf, alloc_len);
-	git_buf_printf(&buf, "%s.", base_name);
+	if (git_buf_grow(&buf, alloc_len) < 0 ||
+	    git_buf_printf(&buf, "%s.", base_name) < 0)
+		goto end_error;
 
 	rpos = 0;
 
@@ -1058,8 +1059,7 @@ static int parse_section_header_ext(struct reader *reader, const char *line, con
 		switch (c) {
 		case 0:
 			set_parse_error(reader, 0, "Unexpected end-of-line in section header");
-			git_buf_free(&buf);
-			return -1;
+			goto end_error;
 
 		case '"':
 			goto end_parse;
@@ -1069,8 +1069,7 @@ static int parse_section_header_ext(struct reader *reader, const char *line, con
 
 			if (c == 0) {
 				set_parse_error(reader, rpos, "Unexpected end-of-line in section header");
-				git_buf_free(&buf);
-				return -1;
+				goto end_error;
 			}
 
 		default:
@@ -1082,6 +1081,9 @@ static int parse_section_header_ext(struct reader *reader, const char *line, con
 	} while (line + rpos < last_quote);
 
 end_parse:
+	if (git_buf_oom(&buf))
+		goto end_error;
+
 	if (line[rpos] != '"' || line[rpos + 1] != ']') {
 		set_parse_error(reader, rpos, "Unexpected text after closing quotes");
 		git_buf_free(&buf);
@@ -1090,6 +1092,11 @@ end_parse:
 
 	*section_name = git_buf_detach(&buf);
 	return 0;
+
+end_error:
+	git_buf_free(&buf);
+
+	return -1;
 }
 
 static int parse_section_header(struct reader *reader, char **section_out)
@@ -1249,7 +1256,7 @@ static int included_path(git_buf *out, const char *dir, const char *path)
 {
 	/* From the user's home */
 	if (path[0] == '~' && path[1] == '/')
-		return git_sysdir_find_global_file(out, &path[1]);
+		return git_sysdir_expand_global_file(out, &path[1]);
 
 	return git_path_join_unrooted(out, path, dir, NULL);
 }
@@ -1260,7 +1267,7 @@ static const char *escaped = "\n\t\b\"\\";
 /* Escape the values to write them to the file */
 static char *escape_value(const char *ptr)
 {
-	git_buf buf = GIT_BUF_INIT;
+	git_buf buf;
 	size_t len;
 	const char *esc;
 
@@ -1270,7 +1277,8 @@ static char *escape_value(const char *ptr)
 	if (!len)
 		return git__calloc(1, sizeof(char));
 
-	git_buf_grow(&buf, len);
+	if (git_buf_init(&buf, len) < 0)
+		return NULL;
 
 	while (*ptr != '\0') {
 		if ((esc = strchr(escaped, *ptr)) != NULL) {

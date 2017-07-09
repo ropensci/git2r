@@ -17,6 +17,7 @@
 #include "oid.h"
 #include "oidmap.h"
 #include "zstream.h"
+#include "object.h"
 
 extern git_mutex git__mwindow_mutex;
 
@@ -33,7 +34,8 @@ struct git_indexer {
 	unsigned int parsed_header :1,
 		pack_committed :1,
 		have_stream :1,
-		have_delta :1;
+		have_delta :1,
+		do_fsync :1;
 	struct git_pack_header hdr;
 	struct git_pack_file *pack;
 	unsigned int mode;
@@ -123,6 +125,9 @@ int git_indexer_new(
 	git_hash_ctx_init(&idx->hash_ctx);
 	git_hash_ctx_init(&idx->trailer);
 
+	if (git_repository__fsync_gitdir)
+		idx->do_fsync = 1;
+
 	error = git_buf_joinpath(&path, prefix, suff);
 	if (error < 0)
 		goto cleanup;
@@ -159,6 +164,11 @@ cleanup:
 	git_buf_free(&tmp_path);
 	git__free(idx);
 	return -1;
+}
+
+void git_indexer__set_fsync(git_indexer *idx, int do_fsync)
+{
+	idx->do_fsync = !!do_fsync;
 }
 
 /* Try to store the delta so we can try to resolve it later */
@@ -927,7 +937,6 @@ int git_indexer_commit(git_indexer *idx, git_transfer_progress *stats)
 	git_buf filename = GIT_BUF_INIT;
 	struct entry *entry;
 	git_oid trailer_hash, file_hash;
-	git_hash_ctx ctx;
 	git_filebuf index_file = {0};
 	void *packfile_trailer;
 
@@ -935,9 +944,6 @@ int git_indexer_commit(git_indexer *idx, git_transfer_progress *stats)
 		giterr_set(GITERR_INDEXER, "incomplete pack header");
 		return -1;
 	}
-
-	if (git_hash_ctx_init(&ctx) < 0)
-		return -1;
 
 	/* Test for this before resolve_deltas(), as it plays with idx->off */
 	if (idx->off + 20 < idx->pack->mwf.size) {
@@ -982,6 +988,10 @@ int git_indexer_commit(git_indexer *idx, git_transfer_progress *stats)
 
 	git_vector_sort(&idx->objects);
 
+	/* Use the trailer hash as the pack file name to ensure
+	 * files with different contents have different names */
+	git_oid_cpy(&idx->hash, &trailer_hash);
+
 	git_buf_sets(&filename, idx->pack->pack_name);
 	git_buf_shorten(&filename, strlen("pack"));
 	git_buf_puts(&filename, "idx");
@@ -989,7 +999,9 @@ int git_indexer_commit(git_indexer *idx, git_transfer_progress *stats)
 		return -1;
 
 	if (git_filebuf_open(&index_file, filename.ptr,
-		GIT_FILEBUF_HASH_CONTENTS, idx->mode) < 0)
+		GIT_FILEBUF_HASH_CONTENTS |
+		(idx->do_fsync ? GIT_FILEBUF_FSYNC : 0),
+		idx->mode) < 0)
 		goto on_error;
 
 	/* Write out the header */
@@ -1006,9 +1018,7 @@ int git_indexer_commit(git_indexer *idx, git_transfer_progress *stats)
 	/* Write out the object names (SHA-1 hashes) */
 	git_vector_foreach(&idx->objects, i, entry) {
 		git_filebuf_write(&index_file, &entry->oid, sizeof(git_oid));
-		git_hash_update(&ctx, &entry->oid, GIT_OID_RAWSZ);
 	}
-	git_hash_final(&idx->hash, &ctx);
 
 	/* Write out the CRC32 values */
 	git_vector_foreach(&idx->objects, i, entry) {
@@ -1066,6 +1076,11 @@ int git_indexer_commit(git_indexer *idx, git_transfer_progress *stats)
 		return -1;
 	}
 
+	if (idx->do_fsync && p_fsync(idx->pack->mwf.fd) < 0) {
+		giterr_set(GITERR_OS, "failed to fsync packfile");
+		goto on_error;
+	}
+
 	/* We need to close the descriptor here so Windows doesn't choke on commit_at */
 	if (p_close(idx->pack->mwf.fd) < 0) {
 		giterr_set(GITERR_OS, "failed to close packfile");
@@ -1078,18 +1093,23 @@ int git_indexer_commit(git_indexer *idx, git_transfer_progress *stats)
 		goto on_error;
 
 	/* And don't forget to rename the packfile to its new place. */
-	p_rename(idx->pack->pack_name, git_buf_cstr(&filename));
+	if (p_rename(idx->pack->pack_name, git_buf_cstr(&filename)) < 0)
+		goto on_error;
+
+	/* And fsync the parent directory if we're asked to. */
+	if (idx->do_fsync &&
+		git_futils_fsync_parent(git_buf_cstr(&filename)) < 0)
+		goto on_error;
+
 	idx->pack_committed = 1;
 
 	git_buf_free(&filename);
-	git_hash_ctx_cleanup(&ctx);
 	return 0;
 
 on_error:
 	git_mwindow_free_all(&idx->pack->mwf);
 	git_filebuf_cleanup(&index_file);
 	git_buf_free(&filename);
-	git_hash_ctx_cleanup(&ctx);
 	return -1;
 }
 

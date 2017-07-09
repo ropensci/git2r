@@ -31,6 +31,8 @@
 /* Default DOS-compatible 8.3 "short name" for a git repository, "GIT~1" */
 #define GIT_DIR_SHORTNAME "GIT~1"
 
+extern bool git_repository__fsync_gitdir;
+
 /** Cvar cache identifiers */
 typedef enum {
 	GIT_CVAR_AUTO_CRLF = 0, /* core.autocrlf */
@@ -46,6 +48,7 @@ typedef enum {
 	GIT_CVAR_LOGALLREFUPDATES, /* core.logallrefupdates */
 	GIT_CVAR_PROTECTHFS,    /* core.protectHFS */
 	GIT_CVAR_PROTECTNTFS,   /* core.protectNTFS */
+	GIT_CVAR_FSYNCOBJECTFILES, /* core.fsyncObjectFiles */
 	GIT_CVAR_CACHE_MAX
 } git_cvar_cached;
 
@@ -106,6 +109,8 @@ typedef enum {
 	GIT_PROTECTHFS_DEFAULT = GIT_CVAR_FALSE,
 	/* core.protectNTFS */
 	GIT_PROTECTNTFS_DEFAULT = GIT_CVAR_FALSE,
+	/* core.fsyncObjectFiles */
+	GIT_FSYNCOBJECTFILES_DEFAULT = GIT_CVAR_FALSE,
 } git_cvar_value;
 
 /* internal repository init flags */
@@ -155,6 +160,26 @@ GIT_INLINE(git_attr_cache *) git_repository_attr_cache(git_repository *repo)
 
 int git_repository_head_tree(git_tree **tree, git_repository *repo);
 int git_repository_create_head(const char *git_dir, const char *ref_name);
+
+/*
+ * Called for each HEAD.
+ *
+ * Can return either 0, causing the iteration over HEADs to
+ * continue, or a non-0 value causing the iteration to abort. The
+ * return value is passed back to the caller of
+ * `git_repository_foreach_head`
+ */
+typedef int (*git_repository_foreach_head_cb)(git_repository *repo, const char *path, void *payload);
+
+/*
+ * Iterate over repository and all worktree HEADs.
+ *
+ * This function will be called for the repository HEAD and for
+ * all HEADS of linked worktrees. For each HEAD, the callback is
+ * executed with the given payload. The return value equals the
+ * return value of the last executed callback function.
+ */
+int git_repository_foreach_head(git_repository *repo, git_repository_foreach_head_cb cb, void *payload);
 
 /*
  * Weak pointers to repository internals.

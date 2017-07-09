@@ -370,10 +370,8 @@ static int checkout_action_wd_only(
 			 */
 			const git_index_entry *e = git_index_get_byindex(data->index, pos);
 
-			if (e != NULL && data->diff->pfxcomp(e->path, wd->path) == 0) {
-				notify = GIT_CHECKOUT_NOTIFY_DIRTY;
-				remove = ((data->strategy & GIT_CHECKOUT_FORCE) != 0);
-			}
+			if (e != NULL && data->diff->pfxcomp(e->path, wd->path) == 0)
+				return git_iterator_advance_into(wditem, workdir);
 		}
 	}
 
@@ -2328,8 +2326,6 @@ static void checkout_data_clear(checkout_data *data)
 	git__free(data->pfx);
 	data->pfx = NULL;
 
-	git_strmap_free(data->mkdir_map);
-
 	git_buf_free(&data->target_path);
 	git_buf_free(&data->tmp);
 
@@ -2337,6 +2333,7 @@ static void checkout_data_clear(checkout_data *data)
 	data->index = NULL;
 
 	git_strmap_free(data->mkdir_map);
+	data->mkdir_map = NULL;
 
 	git_attr_session__free(&data->attr_session);
 }

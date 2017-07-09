@@ -246,7 +246,7 @@ static int resolve_symlink(git_buf *out, const char *path)
 
 		root = git_path_root(target.ptr);
 		if (root >= 0) {
-			if ((error = git_buf_puts(&curpath, target.ptr)) < 0)
+			if ((error = git_buf_sets(&curpath, target.ptr)) < 0)
 				goto cleanup;
 		} else {
 			git_buf dir = GIT_BUF_INIT;
@@ -290,6 +290,9 @@ int git_filebuf_open_withsize(git_filebuf *file, const char *path, int flags, mo
 
 	if (flags & GIT_FILEBUF_DO_NOT_BUFFER)
 		file->do_not_buffer = true;
+
+	if (flags & GIT_FILEBUF_FSYNC)
+		file->do_fsync = true;
 
 	file->buf_size = size;
 	file->buf_pos = 0;
@@ -425,6 +428,11 @@ int git_filebuf_commit(git_filebuf *file)
 
 	file->fd_is_open = false;
 
+	if (file->do_fsync && p_fsync(file->fd) < 0) {
+		giterr_set(GITERR_OS, "failed to fsync '%s'", file->path_lock);
+		goto on_error;
+	}
+
 	if (p_close(file->fd) < 0) {
 		giterr_set(GITERR_OS, "failed to close file at '%s'", file->path_lock);
 		goto on_error;
@@ -436,6 +444,9 @@ int git_filebuf_commit(git_filebuf *file)
 		giterr_set(GITERR_OS, "failed to rename lockfile to '%s'", file->path_original);
 		goto on_error;
 	}
+
+	if (file->do_fsync && git_futils_fsync_parent(file->path_original) < 0)
+		goto on_error;
 
 	file->did_rename = true;
 

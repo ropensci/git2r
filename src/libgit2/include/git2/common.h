@@ -179,6 +179,10 @@ typedef enum {
 	GIT_OPT_SET_SSL_CIPHERS,
 	GIT_OPT_GET_USER_AGENT,
 	GIT_OPT_ENABLE_OFS_DELTA,
+	GIT_OPT_ENABLE_FSYNC_GITDIR,
+	GIT_OPT_GET_WINDOWS_SHAREMODE,
+	GIT_OPT_SET_WINDOWS_SHAREMODE,
+	GIT_OPT_ENABLE_STRICT_HASH_VERIFICATION,
 } git_libgit2_opt_t;
 
 /**
@@ -283,6 +287,17 @@ typedef enum {
  *		> - `user_agent` is the value that will be delivered as the
  *		>   User-Agent header on HTTP requests.
  *
+ *	* opts(GIT_OPT_SET_WINDOWS_SHAREMODE, unsigned long value)
+ *
+ *		> Set the share mode used when opening files on Windows.
+ *		> For more information, see the documentation for CreateFile.
+ *		> The default is: FILE_SHARE_READ | FILE_SHARE_WRITE.  This is
+ *		> ignored and unused on non-Windows platforms.
+ *
+ *	* opts(GIT_OPT_GET_WINDOWS_SHAREMODE, unsigned long *value)
+ *
+ *		> Get the share mode used when opening files on Windows.
+ *
  *	* opts(GIT_OPT_ENABLE_STRICT_OBJECT_CREATION, int enabled)
  *
  *		> Enable strict input validation when creating new objects
@@ -315,6 +330,20 @@ typedef enum {
  *		> and thus smaller resultant packfiles.
  *		> Packfiles containing offset deltas can still be read.
  *		> This defaults to enabled.
+ *
+ *	* opts(GIT_OPT_ENABLE_FSYNC_GITDIR, int enabled)
+ *
+ *		> Enable synchronized writes of files in the gitdir using `fsync`
+ *		> (or the platform equivalent) to ensure that new object data
+ *		> is written to permanent storage, not simply cached.  This
+ *		> defaults to disabled.
+ *
+ *	 opts(GIT_OPT_ENABLE_STRICT_HASH_VERIFICATION, int enabled)
+ *
+ *		> Enable strict verification of object hashsums when reading
+ *		> objects from disk. This may impact performance due to an
+ *		> additional checksum calculation on each object. This defaults
+ *		> to enabled.
  *
  * @param option Option key
  * @param ... value to set the option

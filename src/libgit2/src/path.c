@@ -700,7 +700,8 @@ static bool _check_dir_contents(
 		return false;
 
 	/* save excursion */
-	git_buf_joinpath(dir, dir->ptr, sub);
+	if (git_buf_joinpath(dir, dir->ptr, sub) < 0)
+		return false;
 
 	result = predicate(dir->ptr);
 
@@ -825,8 +826,8 @@ int git_path_resolve_relative(git_buf *path, size_t ceiling)
 
 int git_path_apply_relative(git_buf *target, const char *relpath)
 {
-	git_buf_joinpath(target, git_buf_cstr(target), relpath);
-	return git_path_resolve_relative(target, 0);
+	return git_buf_joinpath(target, git_buf_cstr(target), relpath) ||
+	    git_path_resolve_relative(target, 0);
 }
 
 int git_path_cmp(
@@ -1707,6 +1708,7 @@ GIT_INLINE(unsigned int) dotgit_flags(
 	unsigned int flags)
 {
 	int protectHFS = 0, protectNTFS = 0;
+	int error = 0;
 
 	flags |= GIT_PATH_REJECT_DOT_GIT_LITERAL;
 
@@ -1719,13 +1721,13 @@ GIT_INLINE(unsigned int) dotgit_flags(
 #endif
 
 	if (repo && !protectHFS)
-		git_repository__cvar(&protectHFS, repo, GIT_CVAR_PROTECTHFS);
-	if (protectHFS)
+		error = git_repository__cvar(&protectHFS, repo, GIT_CVAR_PROTECTHFS);
+	if (!error && protectHFS)
 		flags |= GIT_PATH_REJECT_DOT_GIT_HFS;
 
 	if (repo && !protectNTFS)
-		git_repository__cvar(&protectNTFS, repo, GIT_CVAR_PROTECTNTFS);
-	if (protectNTFS)
+		error = git_repository__cvar(&protectNTFS, repo, GIT_CVAR_PROTECTNTFS);
+	if (!error && protectNTFS)
 		flags |= GIT_PATH_REJECT_DOT_GIT_NTFS;
 
 	return flags;

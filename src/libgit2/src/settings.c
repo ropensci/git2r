@@ -15,6 +15,7 @@
 #include "cache.h"
 #include "global.h"
 #include "object.h"
+#include "odb.h"
 #include "refs.h"
 #include "transports/smart.h"
 
@@ -31,7 +32,7 @@ int git_libgit2_features(void)
 #ifdef GIT_THREADS
 		| GIT_FEATURE_THREADS
 #endif
-#if defined(GIT_OPENSSL) || defined(GIT_WINHTTP) || defined(GIT_SECURE_TRANSPORT)
+#ifdef GIT_HTTPS
 		| GIT_FEATURE_HTTPS
 #endif
 #if defined(GIT_SSH)
@@ -225,6 +226,26 @@ int git_libgit2_opts(int key, ...)
 
 	case GIT_OPT_ENABLE_OFS_DELTA:
 		git_smart__ofs_delta_enabled = (va_arg(ap, int) != 0);
+		break;
+
+	case GIT_OPT_ENABLE_FSYNC_GITDIR:
+		git_repository__fsync_gitdir = (va_arg(ap, int) != 0);
+		break;
+
+	case GIT_OPT_GET_WINDOWS_SHAREMODE:
+#ifdef GIT_WIN32
+		*(va_arg(ap, unsigned long *)) = git_win32__createfile_sharemode;
+#endif
+		break;
+
+	case GIT_OPT_SET_WINDOWS_SHAREMODE:
+#ifdef GIT_WIN32
+		git_win32__createfile_sharemode = va_arg(ap, unsigned long);
+#endif
+		break;
+
+	case GIT_OPT_ENABLE_STRICT_HASH_VERIFICATION:
+		git_odb__strict_hash_verification = (va_arg(ap, int) != 0);
 		break;
 
 	default:

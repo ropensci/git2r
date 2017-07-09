@@ -576,22 +576,50 @@ int git_config_foreach_match(
  * Setters
  **************/
 
-static int config_error_nofiles(const char *name)
+typedef enum {
+	BACKEND_USE_SET,
+	BACKEND_USE_DELETE
+} backend_use;
+
+static const char *uses[] = {
+    "set",
+    "delete"
+};
+
+static int get_backend_for_use(git_config_backend **out,
+	git_config *cfg, const char *name, backend_use use)
 {
+	size_t i;
+	file_internal *f;
+
+	*out = NULL;
+
+	if (git_vector_length(&cfg->files) == 0) {
+		giterr_set(GITERR_CONFIG,
+			"cannot %s value for '%s' when no config files exist",
+			uses[use], name);
+		return GIT_ENOTFOUND;
+	}
+
+	git_vector_foreach(&cfg->files, i, f) {
+		if (!f->file->readonly) {
+			*out = f->file;
+			return 0;
+		}
+	}
+
 	giterr_set(GITERR_CONFIG,
-		"cannot set value for '%s' when no config files exist", name);
+		"cannot %s value for '%s' when all config files are readonly",
+		uses[use], name);
 	return GIT_ENOTFOUND;
 }
 
 int git_config_delete_entry(git_config *cfg, const char *name)
 {
 	git_config_backend *file;
-	file_internal *internal;
 
-	internal = git_vector_get(&cfg->files, 0);
-	if (!internal || !internal->file)
-		return config_error_nofiles(name);
-	file = internal->file;
+	if (get_backend_for_use(&file, cfg, name, BACKEND_USE_DELETE) < 0)
+		return GIT_ENOTFOUND;
 
 	return file->del(file, name);
 }
@@ -624,17 +652,14 @@ int git_config_set_string(git_config *cfg, const char *name, const char *value)
 {
 	int error;
 	git_config_backend *file;
-	file_internal *internal;
 
 	if (!value) {
 		giterr_set(GITERR_CONFIG, "the value to set cannot be NULL");
 		return -1;
 	}
 
-	internal = git_vector_get(&cfg->files, 0);
-	if (!internal || !internal->file)
-		return config_error_nofiles(name);
-	file = internal->file;
+	if (get_backend_for_use(&file, cfg, name, BACKEND_USE_SET) < 0)
+		return GIT_ENOTFOUND;
 
 	error = file->set(file, name, value);
 
@@ -1039,12 +1064,9 @@ on_error:
 int git_config_set_multivar(git_config *cfg, const char *name, const char *regexp, const char *value)
 {
 	git_config_backend *file;
-	file_internal *internal;
 
-	internal = git_vector_get(&cfg->files, 0);
-	if (!internal || !internal->file)
-		return config_error_nofiles(name);
-	file = internal->file;
+	if (get_backend_for_use(&file, cfg, name, BACKEND_USE_DELETE) < 0)
+		return GIT_ENOTFOUND;
 
 	return file->set_multivar(file, name, regexp, value);
 }
@@ -1052,12 +1074,9 @@ int git_config_set_multivar(git_config *cfg, const char *name, const char *regex
 int git_config_delete_multivar(git_config *cfg, const char *name, const char *regexp)
 {
 	git_config_backend *file;
-	file_internal *internal;
 
-	internal = git_vector_get(&cfg->files, 0);
-	if (!internal || !internal->file)
-		return config_error_nofiles(name);
-	file = internal->file;
+	if (get_backend_for_use(&file, cfg, name, BACKEND_USE_DELETE) < 0)
+		return GIT_ENOTFOUND;
 
 	return file->del_multivar(file, name, regexp);
 }
@@ -1346,9 +1365,6 @@ fail_parse:
 
 int git_config_parse_path(git_buf *out, const char *value)
 {
-	int error = 0;
-	const git_buf *home;
-
 	assert(out && value);
 
 	git_buf_sanitize(out);
@@ -1359,16 +1375,7 @@ int git_config_parse_path(git_buf *out, const char *value)
 			return -1;
 		}
 
-		if ((error = git_sysdir_get(&home, GIT_SYSDIR_GLOBAL)) < 0)
-			return error;
-
-		git_buf_sets(out, home->ptr);
-		git_buf_puts(out, value + 1);
-
-		if (git_buf_oom(out))
-			return -1;
-
-		return 0;
+		return git_sysdir_expand_global_file(out, value[1] ? &value[2] : NULL);
 	}
 
 	return git_buf_sets(out, value);
