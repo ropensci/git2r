@@ -1,6 +1,10 @@
 git2r 0.18.0.9000
 -----------------
 
+IMPROVEMENTS
+
+* Updated the bundled libgit2 source code to commit (15e1193)
+  (v0.26.0) from 14 June 2017.
 
 git2r 0.18.0
 ------------
