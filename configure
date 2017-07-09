@@ -6078,10 +6078,10 @@ CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DGIT_OPENSSL"
 case "${host_os}" in
     darwin*)
         PKG_CFLAGS="-Wno-deprecated-declarations"
-        CPPFLAGS="${CPPFLAGS} -DGIT_COMMON_CRYPTO"
+        CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_COMMON_CRYPTO"
     ;;
     *)
-        CPPFLAGS="${CPPFLAGS} -DOPENSSL_SHA1"
+        CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_OPENSSL"
     ;;
 esac
 
