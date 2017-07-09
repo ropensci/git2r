@@ -81,43 +81,69 @@ writeLines(c("Hello world!", "HELLO WORLD!", "HeLlO wOrLd!"),
            file.path(path, "test.txt"))
 commit(repo, "Commit message 3", all = TRUE)
 
-stopifnot(identical(status(repo),
-                    structure(list(
-                        staged = structure(list(), .Names = character(0)),
-                        unstaged = structure(list(), .Names = character(0)),
-                        untracked = structure(list(), .Names = character(0))),
-                              .Names = c("staged", "unstaged", "untracked"),
-                              class = "git_status")))
+status_clean <- structure(list(
+  staged = structure(list(), .Names = character(0)),
+  unstaged = structure(list(), .Names = character(0)),
+  untracked = structure(list(), .Names = character(0))),
+  .Names = c("staged", "unstaged", "untracked"),
+  class = "git_status")
+stopifnot(identical(status(repo), status_clean))
 
 ## Delete file and commit with 'all' argument
 file.remove(file.path(path, "test.txt"))
 commit(repo, "Commit message 4", all = TRUE)
 
-stopifnot(identical(status(repo),
-                    structure(list(
-                        staged = structure(list(), .Names = character(0)),
-                        unstaged = structure(list(), .Names = character(0)),
-                        untracked = structure(list(), .Names = character(0))),
-                              .Names = c("staged", "unstaged", "untracked"),
-                              class = "git_status")))
+stopifnot(identical(status(repo), status_clean))
+
+## Add and commit multiple tracked files with 'all' argument
+writeLines(sample(letters, 3), file.path(path, "test2.txt"))
+add(repo, "test2.txt")
+writeLines(sample(letters, 3), file.path(path, "test3.txt"))
+add(repo, "test3.txt")
+writeLines(sample(letters, 3), file.path(path, "test4.txt"))
+add(repo, "test4.txt")
+commit(repo, "Commit message 5")
+
+stopifnot(identical(status(repo), status_clean))
+
+writeLines(sample(letters, 3), file.path(path, "test2.txt"))
+writeLines(sample(letters, 3), file.path(path, "test3.txt"))
+writeLines(sample(letters, 3), file.path(path, "test4.txt"))
+commit(repo, "Commit message 6", all = TRUE)
+
+stopifnot(identical(status(repo), status_clean))
+
+## Add one tracked file and delete another with 'all' argument
+writeLines(sample(letters, 3), file.path(path, "test2.txt"))
+file.remove(file.path(path, "test4.txt"))
+commit(repo, "Commit message 7", all = TRUE)
+
+stopifnot(identical(status(repo), status_clean))
+
+## Delete multiple tracked files with 'all' argument
+file.remove(file.path(path, "test2.txt"))
+file.remove(file.path(path, "test3.txt"))
+commit(repo, "Commit message 8", all = TRUE)
+
+stopifnot(identical(status(repo), status_clean))
 
 ## Check max number of commits in output
-stopifnot(identical(length(commits(repo)), 4L))
-stopifnot(identical(length(commits(repo, n = -1)), 4L))
+stopifnot(identical(length(commits(repo)), 8L))
+stopifnot(identical(length(commits(repo, n = -1)), 8L))
 stopifnot(identical(length(commits(repo, n = 2)), 2L))
 tools::assertError(commits(repo, n = 2.2))
 tools::assertError(commits(repo, n = "2"))
 
 ## Check to coerce repository to data.frame
 df <- as(repo, "data.frame")
-stopifnot(identical(dim(df), c(4L, 6L)))
+stopifnot(identical(dim(df), c(8L, 6L)))
 stopifnot(identical(names(df), c("sha", "summary", "message",
                                  "author", "email", "when")))
 
 ## Set working directory to path and check commits
 setwd(path)
-stopifnot(identical(length(commits()), 4L))
-stopifnot(identical(length(commits(n = -1)), 4L))
+stopifnot(identical(length(commits()), 8L))
+stopifnot(identical(length(commits(n = -1)), 8L))
 stopifnot(identical(length(commits(n = 2)), 2L))
 tools::assertError(commits(n = 2.2))
 tools::assertError(commits(n = "2"))
