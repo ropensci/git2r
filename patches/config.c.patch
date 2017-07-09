@@ -1,8 +1,8 @@
-*** config.c.orig	2016-05-10 18:06:33.224016261 +0200
---- config.c	2016-05-10 18:06:16.200015805 +0200
+*** config.c.orig	2017-07-09 11:32:12.246269164 +0200
+--- config.c	2017-07-09 11:32:12.278268973 +0200
 ***************
-*** 599,605 ****
---- 599,612 ----
+*** 627,633 ****
+--- 627,640 ----
   int git_config_set_int64(git_config *cfg, const char *name, int64_t value)
   {
   	char str_value[32]; /* All numbers should fit in here */

@@ -1,8 +1,8 @@
-*** odb.c.orig	2016-11-19 11:12:11.299935756 +0100
---- odb.c	2016-11-19 11:22:51.538320029 +0100
+*** odb.c.orig	2017-07-09 11:34:35.553411379 +0200
+--- odb.c	2017-07-09 11:36:59.648544838 +0200
 ***************
-*** 75,80 ****
---- 75,85 ----
+*** 77,82 ****
+--- 77,87 ----
   	return 0;
   }
   
@@ -15,8 +15,8 @@
   {
   	const char *type_str = git_object_type2string(obj_type);
 ***************
-*** 83,88 ****
---- 88,97 ----
+*** 85,90 ****
+--- 90,99 ----
   	return len+1;
   }
   
@@ -28,8 +28,8 @@
   {
   	git_buf_vec vec[2];
 ***************
-*** 479,484 ****
---- 488,497 ----
+*** 481,486 ****
+--- 490,499 ----
   	return -1;
   }
   
@@ -41,8 +41,8 @@
   int git_odb_get_backend(git_odb_backend **out, git_odb *odb, size_t pos)
   {
 ***************
-*** 496,501 ****
---- 509,518 ----
+*** 498,503 ****
+--- 511,520 ----
   	return GIT_ENOTFOUND;
   }
   
@@ -50,12 +50,12 @@
 + #pragma GCC diagnostic pop
 + #endif
 + 
-  static int add_default_backends(
+  int git_odb__add_default_backends(
   	git_odb *db, const char *objects_dir,
   	bool as_alternates, int alternate_depth)
 ***************
-*** 1259,1264 ****
---- 1276,1286 ----
+*** 1323,1328 ****
+--- 1340,1350 ----
   	return error;
   }
   
@@ -68,8 +68,8 @@
   	const git_odb_stream *stream,
   	const char *action)
 ***************
-*** 1272,1277 ****
---- 1294,1303 ----
+*** 1336,1341 ****
+--- 1358,1367 ----
   	return -1;
   }
   
