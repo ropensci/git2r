@@ -692,12 +692,11 @@ int git2r_diff_get_file_cb(const git_diff_delta *delta,
         SEXP s_new_file = Rf_install("new_file");
         SEXP s_old_file = Rf_install("old_file");
 
-	SET_VECTOR_ELT(
-            p->result,
-            p->file_ptr,
-            file_obj = NEW_OBJECT(MAKE_CLASS("git_diff_file")));
+        PROTECT(file_obj = NEW_OBJECT(MAKE_CLASS("git_diff_file")));
+	SET_VECTOR_ELT(p->result, p->file_ptr, file_obj);
 	SET_SLOT(file_obj, s_old_file, mkString(delta->old_file.path));
 	SET_SLOT(file_obj, s_new_file, mkString(delta->new_file.path));
+        UNPROTECT(1);
 
 	p->file_ptr++;
 	p->hunk_ptr = 0;
