@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2017 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -108,6 +108,7 @@ static size_t git2r_config_list_init(
 {
     if (n_level[level]) {
         SEXP item;
+        SEXP names;
 
         i_list[level] = i++;
         SET_VECTOR_ELT(
@@ -115,9 +116,8 @@ static size_t git2r_config_list_init(
             i_list[level],
             item = allocVector(VECSXP, n_level[level]));
         setAttrib(item, R_NamesSymbol, allocVector(STRSXP, n_level[level]));
-        SET_STRING_ELT(getAttrib(list, R_NamesSymbol),
-                       i_list[level] ,
-                       mkChar(name));
+        names = getAttrib(list, R_NamesSymbol);
+        SET_STRING_ELT(names, i_list[level] , mkChar(name));
     }
 
     return i;
