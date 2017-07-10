@@ -53,7 +53,8 @@ void git2r_blame_init(git_blame *source, SEXP repo, SEXP path, SEXP dest)
     SEXP s_path = Rf_install("path");
 
     n = git_blame_get_hunk_count(source);
-    SET_SLOT(dest, s_hunks, hunks = allocVector(VECSXP, n));
+    PROTECT(hunks = allocVector(VECSXP, n));
+    SET_SLOT(dest, s_hunks, hunks);
     for (i = 0; i < n; i++) {
         const git_blame_hunk *hunk;
 
@@ -108,6 +109,7 @@ void git2r_blame_init(git_blame *source, SEXP repo, SEXP path, SEXP dest)
 
     SET_SLOT(dest, s_path, path);
     SET_SLOT(dest, s_repo, repo);
+    UNPROTECT(1);
 }
 
 /**
