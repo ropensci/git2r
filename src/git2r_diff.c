@@ -671,11 +671,12 @@ int git2r_diff_get_file_cb(const git_diff_delta *delta,
        temporary storage. */
     if (p->file_ptr != 0) {
         SEXP hunks;
+        SEXP s_hunks = Rf_install("hunks");
 	size_t len=p->hunk_ptr, i;
 
 	SET_SLOT(
             VECTOR_ELT(p->result, p->file_ptr-1),
-            Rf_install("hunks"),
+            s_hunks,
             hunks = allocVector(VECSXP, p->hunk_ptr));
 	for (i = 0; i < len ; i++)
 	    SET_VECTOR_ELT(hunks, i, VECTOR_ELT(p->hunk_tmp, i));
@@ -684,15 +685,15 @@ int git2r_diff_get_file_cb(const git_diff_delta *delta,
     /* OK, ready for next file, if any */
     if (delta) {
 	SEXP file_obj;
+        SEXP s_new_file = Rf_install("new_file");
+        SEXP s_old_file = Rf_install("old_file");
 
 	SET_VECTOR_ELT(
             p->result,
             p->file_ptr,
             file_obj = NEW_OBJECT(MAKE_CLASS("git_diff_file")));
-	SET_SLOT(file_obj, Rf_install("old_file"),
-		 mkString(delta->old_file.path));
-	SET_SLOT(file_obj, Rf_install("new_file"),
-		 mkString(delta->new_file.path));
+	SET_SLOT(file_obj, s_old_file, mkString(delta->old_file.path));
+	SET_SLOT(file_obj, s_new_file, mkString(delta->new_file.path));
 
 	p->file_ptr++;
 	p->hunk_ptr = 0;
