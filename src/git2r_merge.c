@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2017 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -249,6 +249,7 @@ static int git2r_normal_merge(
         if (commit_on_success) {
             char sha[GIT_OID_HEXSZ + 1];
             git_oid oid;
+            SEXP s_sha = Rf_install("sha");
 
             err = git2r_commit_create(
                 &oid,
@@ -262,7 +263,7 @@ static int git2r_normal_merge(
 
             git_oid_fmt(sha, &oid);
             sha[GIT_OID_HEXSZ] = '\0';
-            SET_SLOT(merge_result, Rf_install("sha"), mkString(sha));
+            SET_SLOT(merge_result, s_sha, mkString(sha));
         }
     }
 
