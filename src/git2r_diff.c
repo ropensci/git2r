@@ -295,9 +295,11 @@ SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
 	goto cleanup;
 
     if (R_NilValue == filename) {
+        SEXP s_new = Rf_install("new");
+
         PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
         SET_SLOT(result, Rf_install("old"), tree);
-        SET_SLOT(result, Rf_install("new"), mkString("workdir"));
+        SET_SLOT(result, s_new, mkString("workdir"));
         err = git2r_diff_format_to_r(diff, result);
     } else {
         err = git2r_diff_print(diff, filename, &result);
@@ -378,9 +380,11 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
 	goto cleanup;
 
     if (R_NilValue == filename) {
+        SEXP s_new = Rf_install("new");
+
         PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
         SET_SLOT(result, Rf_install("old"), tree);
-        SET_SLOT(result, Rf_install("new"), mkString("index"));
+        SET_SLOT(result, s_new, mkString("index"));
         err = git2r_diff_format_to_r(diff, result);
     } else {
         err = git2r_diff_print(diff, filename, &result);
@@ -849,10 +853,8 @@ int git2r_diff_format_to_r(git_diff *diff, SEXP dest)
     if (err)
         return err;
 
-    SET_SLOT(
-        dest,
-        Rf_install("files"),
-        payload.result = allocVector(VECSXP, num_files));
+    PROTECT(payload.result = allocVector(VECSXP, num_files));
+    SET_SLOT(dest, Rf_install("files"), payload.result);
     PROTECT(payload.hunk_tmp = allocVector(VECSXP, max_hunks));
     PROTECT(payload.line_tmp = allocVector(VECSXP, max_lines));
 
@@ -871,7 +873,7 @@ int git2r_diff_format_to_r(git_diff *diff, SEXP dest)
             &payload);
     }
 
-    UNPROTECT(2);
+    UNPROTECT(3);
 
     return err;
 }
