@@ -203,7 +203,7 @@ static int git2r_tag_foreach_cb(const char *name, git_oid *oid, void *payload)
     /* Check if we have a list to populate */
     if (R_NilValue != cb_data->tags) {
         int skip = 0;
-        SEXP item;
+        SEXP item, tag;
 
         err = git_object_lookup(&object, cb_data->repository, oid, GIT_OBJ_ANY);
         if (err)
@@ -242,13 +242,14 @@ static int git2r_tag_foreach_cb(const char *name, git_oid *oid, void *payload)
             git2r_error(__func__, NULL, git2r_err_object_type, NULL);
         }
 
-
         if (git__prefixcmp(name, "refs/tags/") == 0)
             skip = strlen("refs/tags/");
+        PROTECT(tag = mkChar(name + skip));
         SET_STRING_ELT(
             getAttrib(cb_data->tags, R_NamesSymbol),
             cb_data->n,
-            mkChar(name + skip));
+            tag);
+        UNPROTECT(1);
 
         if (object)
             git_object_free(object);
