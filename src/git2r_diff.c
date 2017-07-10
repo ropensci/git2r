@@ -755,6 +755,7 @@ int git2r_diff_get_hunk_cb(const git_diff_delta *delta,
 	SET_SLOT(hunk_obj, s_new_start, ScalarInteger(hunk->new_start));
 	SET_SLOT(hunk_obj, s_new_lines, ScalarInteger(hunk->new_lines));
 	SET_SLOT(hunk_obj, s_header, mkString(hunk->header));
+        UNPROTECT(1);
 
 	p->hunk_ptr += 1;
 	p->line_ptr = 0;
