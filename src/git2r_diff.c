@@ -147,8 +147,31 @@ SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename)
         SET_SLOT(result, s_old, mkString("index"));
         SET_SLOT(result, s_new, mkString("workdir"));
         err = git2r_diff_format_to_r(diff, result);
+    } else if (0 == length(filename)) {
+        git_buf buf = GIT_BUF_INIT;
+
+        err = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_buf,
+            &buf);
+        if (0 == err) {
+            PROTECT(result = mkString(buf.ptr));
+            nprotect++;
+        }
+
+        git_buf_free(&buf);
     } else {
-        err = git2r_diff_print(diff, filename, &result);
+        FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
+
+        err = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_file_handle,
+            fp);
+
+        if (fp)
+            fclose(fp);
     }
 
 cleanup:
@@ -223,8 +246,31 @@ SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
         SET_SLOT(result, s_old, mkString("HEAD"));
         SET_SLOT(result, s_new, mkString("index"));
         err = git2r_diff_format_to_r(diff, result);
+    } else if (0 == length(filename)) {
+        git_buf buf = GIT_BUF_INIT;
+
+        err = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_buf,
+            &buf);
+        if (0 == err) {
+            PROTECT(result = mkString(buf.ptr));
+            nprotect++;
+        }
+
+        git_buf_free(&buf);
     } else {
-        err = git2r_diff_print(diff, filename, &result);
+        FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
+
+        err = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_file_handle,
+            fp);
+
+        if (fp)
+            fclose(fp);
     }
 
 cleanup:
@@ -304,8 +350,31 @@ SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
         SET_SLOT(result, Rf_install("old"), tree);
         SET_SLOT(result, s_new, mkString("workdir"));
         err = git2r_diff_format_to_r(diff, result);
+    } else if (0 == length(filename)) {
+        git_buf buf = GIT_BUF_INIT;
+
+        err = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_buf,
+            &buf);
+        if (0 == err) {
+            PROTECT(result = mkString(buf.ptr));
+            nprotect++;
+        }
+
+        git_buf_free(&buf);
     } else {
-        err = git2r_diff_print(diff, filename, &result);
+        FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
+
+        err = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_file_handle,
+            fp);
+
+        if (fp)
+            fclose(fp);
     }
 
 cleanup:
@@ -390,8 +459,31 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
         SET_SLOT(result, Rf_install("old"), tree);
         SET_SLOT(result, s_new, mkString("index"));
         err = git2r_diff_format_to_r(diff, result);
+    } else if (0 == length(filename)) {
+        git_buf buf = GIT_BUF_INIT;
+
+        err = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_buf,
+            &buf);
+        if (0 == err) {
+            PROTECT(result = mkString(buf.ptr));
+            nprotect++;
+        }
+
+        git_buf_free(&buf);
     } else {
-        err = git2r_diff_print(diff, filename, &result);
+        FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
+
+        err = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_file_handle,
+            fp);
+
+        if (fp)
+            fclose(fp);
     }
 
 cleanup:
@@ -487,8 +579,31 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
         SET_SLOT(result, Rf_install("old"), tree1);
         SET_SLOT(result, Rf_install("new"), tree2);
         err = git2r_diff_format_to_r(diff, result);
+    } else if (0 == length(filename)) {
+        git_buf buf = GIT_BUF_INIT;
+
+        err = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_buf,
+            &buf);
+        if (0 == err) {
+            PROTECT(result = mkString(buf.ptr));
+            nprotect++;
+        }
+
+        git_buf_free(&buf);
     } else {
-        err = git2r_diff_print(diff, filename, &result);
+        FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
+
+        err = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_file_handle,
+            fp);
+
+        if (fp)
+            fclose(fp);
     }
 
 cleanup:
@@ -879,51 +994,6 @@ int git2r_diff_format_to_r(git_diff *diff, SEXP dest)
     }
 
     UNPROTECT(3);
-
-    return err;
-}
-
-/**
- * Print a diff
- *
- * @param diff Pointer to the diff
- * @param filename Determines where to write the diff. If filename is
- * a character vector of length 0, then the diff is written to a
- * character vector. If filename is a character vector of length one
- * with non-NA value, the diff is written to a file with name filename
- * (the file is overwritten if it exists).
- * @param r_buf If filename is a character vector of length 0, then
- * the diff is written to r_buf.
- * @return 0 if OK, else error code
- */
-int git2r_diff_print(git_diff *diff, SEXP filename, SEXP* r_buf)
-{
-    int err;
-
-    if (0 == length(filename)) {
-        git_buf buf = GIT_BUF_INIT;
-
-        err = git_diff_print(
-            diff,
-            GIT_DIFF_FORMAT_PATCH,
-            git_diff_print_callback__to_buf,
-            &buf);
-        if (0 == err)
-            PROTECT(*r_buf = mkString(buf.ptr));
-
-        git_buf_free(&buf);
-    } else {
-        FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
-
-        err = git_diff_print(
-            diff,
-            GIT_DIFF_FORMAT_PATCH,
-            git_diff_print_callback__to_file_handle,
-            fp);
-
-        if (fp)
-            fclose(fp);
-    }
 
     return err;
 }
