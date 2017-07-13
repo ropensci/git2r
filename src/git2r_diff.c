@@ -264,7 +264,7 @@ cleanup:
  */
 SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
 {
-    int err;
+    int err, nprotect = 0;
     git_repository *repository = NULL;
     git_diff *diff = NULL;
     git_object *obj = NULL;
@@ -300,6 +300,7 @@ SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
         SEXP s_new = Rf_install("new");
 
         PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
+        nprotect++;
         SET_SLOT(result, Rf_install("old"), tree);
         SET_SLOT(result, s_new, mkString("workdir"));
         err = git2r_diff_format_to_r(diff, result);
@@ -320,8 +321,8 @@ cleanup:
     if (repository)
 	git_repository_free(repository);
 
-    if (R_NilValue != result)
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     if (err)
         git2r_error(__func__, giterr_last(), NULL, NULL);
@@ -344,7 +345,7 @@ cleanup:
  */
 SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
 {
-    int err;
+    int err, nprotect = 0;
     git_repository *repository = NULL;
     git_diff *diff = NULL;
     git_object *obj = NULL;
@@ -385,6 +386,7 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
         SEXP s_new = Rf_install("new");
 
         PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
+        nprotect++;
         SET_SLOT(result, Rf_install("old"), tree);
         SET_SLOT(result, s_new, mkString("index"));
         err = git2r_diff_format_to_r(diff, result);
@@ -405,8 +407,8 @@ cleanup:
     if (repository)
 	git_repository_free(repository);
 
-    if (R_NilValue != result)
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     if (err)
 	git2r_error(__func__, giterr_last(), NULL, NULL);
