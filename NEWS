@@ -6,6 +6,26 @@ IMPROVEMENTS
 * Updated the bundled libgit2 source code to commit (15e1193)
   (v0.26.0) from 14 June 2017.
 
+* Added 'checkout' argument to 'clone()'. Allows to control whether
+  checkout of HEAD is performed after the clone is complete. Setting
+  'checkout=FALSE' has similar effect as the git command line option
+  '--no-checkout'. Andrzej K. Oles in #282.
+
+BUG FIXES
+
+* Fixed memory protection errors in the git2r C source code reported
+  by the 'rchk' tool.
+
+* Added missing calls to 'R_forceSymbols' and 'R_useDynamicSymbols' in
+  the C init function.
+
+* Enable argument 'all' to commit multiple modified (or deleted)
+  files. John Blischak in #283
+
+* Changed the configure script to determine the architecture of the
+  machine earlier in order to fix an unsupported architecture error
+  encountered on CentOS (#268, #288).
+
 git2r 0.18.0
 ------------
 
