@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2017 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -31,10 +31,11 @@ typedef struct {
     int received_progress;
     int received_done;
     int verbose;
+    int ssh_key_agent_tried;
     SEXP credentials;
 } git2r_transfer_data;
 
-#define GIT2R_TRANSFER_DATA_INIT {0, 0, 0, R_NilValue}
+#define GIT2R_TRANSFER_DATA_INIT {0, 0, 0, 0, R_NilValue}
 
 void git2r_transfer_progress_init(
     const git_transfer_progress *source,

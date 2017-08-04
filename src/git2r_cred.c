@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2017 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -231,6 +231,9 @@ int git2r_cred_acquire_cb(
     credentials = ((git2r_transfer_data*)payload)->credentials;
     if (credentials == R_NilValue) {
         if (GIT_CREDTYPE_SSH_KEY & allowed_types) {
+	    if (((git2r_transfer_data*)payload)->ssh_key_agent_tried)
+	        return -1;
+	    ((git2r_transfer_data*)payload)->ssh_key_agent_tried = 1;
             if (git_cred_ssh_key_from_agent(cred, username_from_url))
                 return -1;
             return 0;
