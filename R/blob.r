@@ -120,7 +120,7 @@ setMethod("content",
                   return(NA_character_)
 
               ret <- .Call(git2r_blob_content, blob)
-              if (identical(split, TRUE))
+              if (isTRUE(split))
                   ret <- strsplit(ret, "\n")[[1]]
               ret
           }
