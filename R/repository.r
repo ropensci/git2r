@@ -900,12 +900,12 @@ setMethod("summary",
 
               n_branches <- sum(!is.na(unique(sapply(branches(object),
                                                      branch_target))))
-              n_tags <- sum(!is.na(unique(sapply(tags(object), slot, "sha"))))
+              n_tags <- sum(!is.na(unique(vapply(tags(object), slot, character(1), "sha"))))
 
               work <- commits(object)
               n_commits <- length(work)
-              n_authors <- length(unique(sapply(lapply(work, slot, "author"),
-                                                slot, "name")))
+              n_authors <- length(unique(vapply(lapply(work, slot, "author"),
+                                                slot, character(1), "name")))
 
               s <- .Call(git2r_status_list, object, TRUE, TRUE, TRUE, FALSE, TRUE)
               n_ignored <- length(s$ignored)
@@ -916,10 +916,11 @@ setMethod("summary",
               n_stashes <- length(stash_list(object))
 
               ## Determine max characters needed to display numbers
-              n <- max(sapply(c(n_branches, n_tags, n_commits, n_authors,
+              n <- max(vapply(c(n_branches, n_tags, n_commits, n_authors,
                                 n_stashes, n_ignored, n_untracked,
                                 n_unstaged, n_staged),
-                              nchar))
+                              nchar,
+                              numeric(1)))
 
               fmt <- paste0("Branches:        %", n, "i\n",
                             "Tags:            %", n, "i\n",

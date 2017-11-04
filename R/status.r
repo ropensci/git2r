@@ -134,7 +134,7 @@ print.git_status <- function(x, ...)
         invisible(NULL)
     }
 
-    if (max(vapply(x, length, integer(1))) == 0L)
+    if (max(lengths(x)) == 0L)
       cat("working directory clean\n")
 
     if (length(x$ignored)) {

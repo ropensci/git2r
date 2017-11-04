@@ -280,7 +280,7 @@ setMethod("summary",
 ##' tree_object[1:3]
 ##'
 ##' ## Select all blobs in tree
-##' tree_object[sapply(as(tree_object, 'list'), is_blob)]
+##' tree_object[vapply(as(tree_object, 'list'), is_blob, logical(1))]
 ##' }
 setMethod("[",
           signature(x = "git_tree", i = "integer", j = "missing"),
@@ -310,7 +310,7 @@ setMethod("[",
           signature(x = "git_tree", i = "logical", j = "missing"),
           function(x, i)
           {
-              x[seq_len(length(x))[i]]
+              x[seq_along(x)[i]]
           }
 )
 

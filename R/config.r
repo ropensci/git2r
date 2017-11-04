@@ -75,14 +75,12 @@ config <- function(repo = NULL, global = FALSE, user.name, user.email, ...)
         for (i in seq_len(length(variables))) {
             if (!is.null(variables[[i]])) {
                 if (!is.character(variables[[i]])) {
-                    stop(paste0("'",
-                                names(variables)[i],
-                                "' must be a character vector"))
+                    stop("'", names(variables)[i], "' must be a character vector")
                 }
             }
         }
 
-        if (identical(global, TRUE)) {
+        if (isTRUE(global)) {
             repo <- NULL
         } else if (is.null(repo)) {
             stop("Unable to locate local repository")

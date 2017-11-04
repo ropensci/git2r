@@ -92,7 +92,7 @@ setMethod("stash_drop",
           function(object)
           {
               ## Determine the index of the stash in the stash list
-              i <- match(object@sha, sapply(stash_list(object@repo), slot, "sha"))
+              i <- match(object@sha, vapply(stash_list(object@repo), slot, character(1), "sha"))
 
               ## The stash list is zero-based
               .Call(git2r_stash_drop, object@repo, i - 1L)

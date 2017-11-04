@@ -45,7 +45,7 @@ get_refspec <- function(repo = NULL, remote = NULL, spec = NULL, opts = NULL)
     ## configuration is missing, it defaults to origin.
     if (!is.null(remote)) {
         stopifnot(is.character(remote), identical(length(remote), 1L))
-        remote <- sub("^[[:space:]]*", "", sub("[[:space:]]*$", "", remote))
+        remote <- trimws(remote)
         if (identical(nchar(remote), 0L))
             remote <- NULL
     }
@@ -60,7 +60,7 @@ get_refspec <- function(repo = NULL, remote = NULL, spec = NULL, opts = NULL)
     ## Refspec:
     stopifnot(is.character(spec))
 
-    if (identical(opts$force, TRUE))
+    if (isTRUE(opts$force))
         spec <- paste0("+", spec)
 
     list(remote = remote, refspec = spec)

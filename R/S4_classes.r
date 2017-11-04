@@ -38,7 +38,7 @@ setClass("git_repository",
              errors <- character()
 
              can_open <- .Call(git2r_repository_can_open, object@path)
-             if (!identical(can_open, TRUE))
+             if (!isTRUE(can_open))
                  errors <- c(errors, "Unable to open repository at 'path'")
 
              if (length(errors) == 0) TRUE else errors
@@ -111,7 +111,7 @@ setClass("git_signature",
          {
              errors <- validObject(object@when)
 
-             if (identical(errors, TRUE))
+             if (isTRUE(errors))
                errors <- character()
 
              if (!identical(length(object@name), 1L))
@@ -673,7 +673,7 @@ setClass("git_tag",
          {
              errors <- validObject(object@tagger)
 
-             if (identical(errors, TRUE))
+             if (isTRUE(errors))
                errors <- character()
 
              if (!identical(length(object@sha), 1L))
