@@ -106,7 +106,7 @@ setMethod("add",
               if (!length(grep("/$", repo_wd)))
                   repo_wd <- paste0(repo_wd, "/")
 
-              path <- sapply(path, function(p) {
+              path <- vapply(path, function(p) {
                   np <- suppressWarnings(normalizePath(p, winslash = "/"))
 
                   ## Check if the normalized path is a non-file e.g. a
@@ -132,7 +132,8 @@ setMethod("add",
                   ## Change the path to be relative to the repository's
                   ## working directory. Substitute common prefix with ""
                   sub(paste0("^", repo_wd), "", np)
-              })
+              },
+              character(1))
 
               .Call(git2r_index_add_all, repo, path, force)
 

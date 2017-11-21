@@ -66,14 +66,14 @@ setMethod("bundle_r_package",
           {
               ## Check for 'inst' folder
               inst <- paste0(workdir(repo), "inst", sep = "")
-              if (!identical(file.info(inst)$isdir, TRUE))
+              if (!isTRUE(file.info(inst)$isdir))
                   dir.create(inst)
 
               ## Check for 'pkg.git' folder
               local_path <- paste0(basename(workdir(repo)), ".git", sep = "")
               local_path <- file.path(inst, local_path)
               if (file.exists(local_path))
-                  stop(paste0("Repo already exists:", local_path))
+                  stop("Repo already exists:", local_path)
               invisible(clone(workdir(repo), local_path, bare = TRUE))
           }
 )

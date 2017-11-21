@@ -25,12 +25,12 @@ previous_branch_name <- function(repo)
     branch <- sapply(references(repo), function(x) {
         ifelse(x@sha == branch, x@shorthand, NA_character_)
     })
-    branch <- branch[!sapply(branch, is.na)]
+    branch <- branch[vapply(branch, Negate(is.na), logical(1))]
 
     branch <- sapply(branches(repo, "local"), function(x) {
         ifelse(x@name %in% branch, x@name, NA_character_)
     })
-    branch <- branch[!sapply(branch, is.na)]
+    branch <- branch[vapply(branch, Negate(is.na), logical(1))]
 
     if (any(!is.character(branch), !identical(length(branch), 1L))) {
         stop("'branch' must be a character vector of length one")
@@ -142,7 +142,7 @@ setMethod("checkout",
                       stop("'branch' must be a character vector of length one")
 
                   if (is_empty(object)) {
-                      if (!identical(create, TRUE))
+                      if (!isTRUE(create))
                           stop(sprintf("'%s' did not match any branch", branch))
                       ref_name <- paste0("refs/heads/", branch)
                       .Call(git2r_repository_set_head, object, ref_name)
@@ -152,7 +152,7 @@ setMethod("checkout",
 
                       ## Check if branch exists in a local branch
                       lb <- branches(object, "local")
-                      lb <- lb[sapply(lb, slot, "name") == branch]
+                      lb <- lb[vapply(lb, slot, character(1), "name") == branch]
                       if (length(lb)) {
                           checkout(lb[[1]], force = force)
                       } else {
@@ -161,10 +161,11 @@ setMethod("checkout",
                           rb <- branches(object, "remote")
 
                           ## Split remote/name to check for a unique name
-                          name <- sapply(rb, function(x) {
+                          name <- vapply(rb, function(x) {
                                       remote <- strsplit(x@name, "/")[[1]][1]
                                       sub(paste0("^", remote, "/"), "", x@name)
-                                  })
+                                  },
+                                  character(1))
                           i <- which(name == branch)
                           if (identical(length(i), 1L)) {
                               ## Create branch and track remote
@@ -173,7 +174,7 @@ setMethod("checkout",
                               branch_set_upstream(branch, rb[[i]]@name)
                               checkout(branch, force = force)
                           } else {
-                              if (!identical(create, TRUE))
+                              if (!isTRUE(create))
                                   stop(sprintf("'%s' did not match any branch", branch))
 
                               ## Create branch

@@ -101,14 +101,14 @@ lines_per_file <- function(diff) {
 
 print_lines_per_file <- function(diff) {
   lpf <- lines_per_file(diff)
-  files <- sapply(lpf, function(x) x$file)
-  del <- sapply(lpf, function(x) x$del)
-  add <- sapply(lpf, function(x) x$add)
+  files <- vapply(lpf, function(x) x$file, character(1))
+  del <- vapply(lpf, function(x) x$del, numeric(1))
+  add <- vapply(lpf, function(x) x$add, numeric(1))
   paste0(format(files), " | ", "-", format(del), " +", format(add))
 }
 
 hunks_per_file <- function(diff) {
-    sapply(diff@files, function(x) length(x@hunks))
+    vapply(diff@files, function(x) length(x@hunks), numeric(1))
 }
 
 ##' Show the summary of a diff

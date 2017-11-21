@@ -591,7 +591,7 @@ setMethod("summary",
               cat(sprintf("Commit:  %s\n", object@sha))
 
               if (is_merge_commit) {
-                  sha <- sapply(po, slot, "sha")
+                  sha <- vapply(po, slot, character(1), "sha")
                   cat(sprintf("Merge:   %s\n", sha[1]))
                   cat(paste0("         ", sha[-1]), sep="\n")
               }
@@ -625,8 +625,8 @@ setMethod("summary",
                       }
 
                       cat(sprintf("%i insertions, %i deletions\n",
-                                  sum(sapply(lines_per_file(df), "[[", "add")),
-                                  sum(sapply(lines_per_file(df), "[[", "del"))))
+                                  sum(vapply(lines_per_file(df), "[[", numeric(1), "add")),
+                                  sum(vapply(lines_per_file(df), "[[", numeric(1), "del"))))
 
                       plpf <- print_lines_per_file(df)
                       hpf <- hunks_per_file(df)

@@ -102,7 +102,7 @@ merge_named_branch <- function(repo, branch, commit_on_success, merger)
         stop("'branch' must be a character vector of length one")
 
     b <- branches(repo)
-    b <- b[sapply(b, slot, "name") == branch][[1]]
+    b <- b[vapply(b, slot, character(1), "name") == branch][[1]]
 
     merge_branch(b, commit_on_success, merger)
 }
@@ -259,11 +259,11 @@ setMethod("show",
           signature(object = "git_merge_result"),
           function(object)
           {
-              if (identical(object@up_to_date, TRUE)) {
+              if (isTRUE(object@up_to_date)) {
                   cat("Already up-to-date")
-              } else if (identical(object@conflicts, TRUE)) {
+              } else if (isTRUE(object@conflicts)) {
                   cat("Merge: Conflicts")
-              } else if (identical(object@fast_forward, TRUE)) {
+              } else if (isTRUE(object@fast_forward)) {
                   cat("Merge: Fast-forward")
               } else {
                   cat("Merge")

@@ -83,8 +83,8 @@ setMethod("push",
           {
               upstream <- branch_get_upstream(object)
               if (is.null(upstream)) {
-                  stop(paste0("The branch '", object@name, "' that you are ",
-                              "trying to push does not track an upstream branch."))
+                  stop("The branch '", object@name, "' that you are ",
+                       "trying to push does not track an upstream branch.")
               }
 
               src <- .Call(git2r_branch_canonical_name, object)
@@ -114,8 +114,8 @@ setMethod("push",
                   b <- head(object)
                   upstream <- branch_get_upstream(b)
                   if (is.null(upstream)) {
-                      stop(paste0("The branch '", b@name, "' that you are ",
-                                  "trying to push does not track an upstream branch."))
+                      stop("The branch '", b@name, "' that you are ",
+                           "trying to push does not track an upstream branch.")
                   }
 
                   src <- .Call(git2r_branch_canonical_name, b)
@@ -123,7 +123,7 @@ setMethod("push",
                   name <- branch_remote_name(upstream)
                   refspec <- paste0(src, ":", dst)
 
-                  if (identical(force, TRUE))
+                  if (isTRUE(force))
                       refspec <- paste0("+", refspec)
               } else {
                   opts <- list(force = force)
