@@ -4,6 +4,9 @@
  * This file is part of libgit2, distributed under the GNU GPL v2 with
  * a Linking Exception. For full terms see the included COPYING file.
  */
+
+#include "repository.h"
+
 #include <ctype.h>
 
 #include "git2/object.h"
@@ -11,7 +14,6 @@
 #include "git2/sys/repository.h"
 
 #include "common.h"
-#include "repository.h"
 #include "commit.h"
 #include "tag.h"
 #include "blob.h"
@@ -1244,7 +1246,7 @@ static int reserved_names_add8dot3(git_repository *repo, const char *path)
 
 	name_len = strlen(name);
 
-	if ((name_len == def_len && memcmp(name, def, def_len) == 0) || 
+	if ((name_len == def_len && memcmp(name, def, def_len) == 0) ||
 		(name_len == def_dot_git_len && memcmp(name, def_dot_git, def_dot_git_len) == 0)) {
 		git__free(name);
 		return 0;
@@ -1793,7 +1795,13 @@ static int repo_init_structure(
 			default_template = true;
 		}
 
-		if (tdir) {
+		/*
+		 * If tdir was the empty string, treat it like tdir was a path to an
+		 * empty directory (so, don't do any copying). This is the behavior
+		 * that git(1) exhibits, although it doesn't seem to be officially
+		 * documented.
+		 */
+		if (tdir && git__strcmp(tdir, "") != 0) {
 			uint32_t cpflags = GIT_CPDIR_COPY_SYMLINKS |
 				GIT_CPDIR_SIMPLE_TO_MODE |
 				GIT_CPDIR_COPY_DOTFILES;
@@ -2771,7 +2779,7 @@ int git_repository__cleanup_files(
 			error = git_futils_rmdir_r(path, NULL,
 				GIT_RMDIR_REMOVE_FILES | GIT_RMDIR_REMOVE_BLOCKERS);
 		}
-			
+
 		git_buf_clear(&buf);
 	}
 
