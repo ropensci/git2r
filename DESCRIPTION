@@ -12,6 +12,7 @@ BugReports: https://github.com/ropensci/git2r/issues
 Maintainer: Stefan Widgren <stefan.widgren@gmail.com>
 Author: See AUTHORS file.
 Imports:
+    assertthat,
     graphics,
     utils
 Depends:
