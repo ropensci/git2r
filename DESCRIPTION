@@ -65,4 +65,5 @@ Collate:
     'time.r'
     'tree.r'
     'when.r'
+    'write_delim_git.r'
 RoxygenNote: 6.0.1
