@@ -874,15 +874,16 @@ setClass(
 
 #' @importFrom methods setValidity
 #' @importFrom assertthat assert_that is.string has_name
+#' @importFrom utils file_test
 setValidity(
   "gitConnection",
   function(object){
     assert_that(is.string(object@CommitUser))
     assert_that(is.string(object@CommitEmail))
     root <- paste(object@Repository@path, ".", sep = "/")
-    root <- check_path(path = root, type = "directory")
+    assert_that(file_test("-d", root))
     full.path <- paste(root, object@LocalPath, sep = "/")
-    full.path <- check_path(full.path, type = "directory")
+    assert_that(file_test("-d", full.path))
     if (length(grep(root, full.path)) == 0) {
       return(
         paste0(
