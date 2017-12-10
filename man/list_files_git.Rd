@@ -34,3 +34,6 @@ object}
 \description{
 List the files in a path of a git repository
 }
+\author{
+Thierry Onkelinx, \email{thierry.onkelinx@inbo.be}
+}

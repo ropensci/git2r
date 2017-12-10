@@ -7,6 +7,7 @@
 #' @docType methods
 #' @importFrom methods setGeneric
 #' @include git_connection.r
+#' @template thierry
 setGeneric(
   name = "list_files_git",
   def = function(connection, pattern = NULL, full.names = FALSE, ...){

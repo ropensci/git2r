@@ -27,3 +27,6 @@ object}
 \description{
 Read a tab delimited file from a git repository
 }
+\author{
+Thierry Onkelinx, \email{thierry.onkelinx@inbo.be}
+}

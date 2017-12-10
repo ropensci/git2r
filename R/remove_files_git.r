@@ -8,6 +8,7 @@
 #' @docType methods
 #' @importFrom methods setGeneric
 #' @include list_files_git.r
+#' @template thierry
 setGeneric(
   name = "remove_files_git",
   def = function(connection, pattern = NULL, ...){

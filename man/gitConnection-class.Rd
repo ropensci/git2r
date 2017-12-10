@@ -44,3 +44,8 @@ Open a git connection
   }
 }
 
+\author{
+Thierry Onkelinx, \email{thierry.onkelinx@inbo.be}
+
+Thierry Onkelinx, \email{thierry.onkelinx@inbo.be}
+}

@@ -32,3 +32,6 @@ the SHA1 of the file
 \description{
 The existing file will be overwritten.
 }
+\author{
+Thierry Onkelinx, \email{thierry.onkelinx@inbo.be}
+}

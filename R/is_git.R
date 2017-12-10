@@ -4,6 +4,7 @@
 #' @export
 #' @return A logical vector with the same length as path
 #' @importFrom utils file_test
+#' @template thierry
 is.git <- function(path){
   file_test("-d", paste(path, ".git", sep = "/"))
 }

@@ -15,6 +15,7 @@
 #' @importFrom methods setGeneric
 #' @importFrom utils write.table
 #' @include git_connection.r
+#' @template thierry
 setGeneric(
   name = "write_delim_git",
   def = function(x, file, connection, ...){

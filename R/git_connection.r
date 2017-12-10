@@ -16,6 +16,7 @@
 #' @importFrom methods new
 #' @importFrom assertthat assert_that is.string
 #' @include S4_classes.r
+#' @template thierry
 git_connection <- function(
   repo.path,
   local.path = ".",

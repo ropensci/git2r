@@ -17,3 +17,6 @@ A logical vector with the same length as path
 Is the path a git repository
 Checks if a '.git' subdirectory exists in 'path'
 }
+\author{
+Thierry Onkelinx, \email{thierry.onkelinx@inbo.be}
+}

@@ -860,6 +860,7 @@ setClassUnion("gitCredentials", c("NULL", "cred_user_pass", "cred_ssh_key"))
 #' @aliases gitConnection-class
 #' @importFrom methods setClass
 #' @docType class
+#' @template thierry
 setClass(
   Class = "gitConnection",
   representation = representation(

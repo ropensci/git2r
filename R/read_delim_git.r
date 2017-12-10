@@ -6,6 +6,7 @@
 #' @docType methods
 #' @importFrom methods setGeneric
 #' @include git_connection.r
+#' @template thierry
 setGeneric(
   name = "read_delim_git",
   def = function(file, connection, ...){
