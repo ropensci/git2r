@@ -881,17 +881,12 @@ setValidity(
     assert_that(is.string(object@CommitUser))
     assert_that(is.string(object@CommitEmail))
     root <- paste(object@Repository@path, ".", sep = "/")
-    assert_that(file_test("-d", root))
+    assert_that(file_test("-d", root), msg = paste(root, "is not a directory"))
     full.path <- paste(root, object@LocalPath, sep = "/")
-    assert_that(file_test("-d", full.path))
-    if (length(grep(root, full.path)) == 0) {
-      return(
-        paste0(
-          "Wrong local path. '", full.path,
-          "' is not a subdirectory of '", root, "'"
-        )
-      )
-    }
+    assert_that(
+      file_test("-d", full.path),
+      msg = paste(full.path, "is not a directory")
+    )
     repo <- repository(root)
     repo.config <- config(repo)
     assert_that(has_name(repo.config$local, "user.name"))
