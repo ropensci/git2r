@@ -41,6 +41,7 @@ Collate:
     'diff.r'
     'fetch.r'
     'git2r.r'
+    'git_connection.r'
     'index.r'
     'is_git.R'
     'libgit2.r'
