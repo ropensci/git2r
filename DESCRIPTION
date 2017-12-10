@@ -42,6 +42,7 @@ Collate:
     'fetch.r'
     'git2r.r'
     'git_connection.r'
+    'git_sha.r'
     'index.r'
     'is_git.R'
     'libgit2.r'
