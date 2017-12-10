@@ -16,3 +16,4 @@
 ^\.Rproj\.user$
 ^windows
 ^.*\.a$
+^man-roxygen$
