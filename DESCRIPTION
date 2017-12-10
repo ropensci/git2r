@@ -58,6 +58,7 @@ Collate:
     'reference.r'
     'reflog.r'
     'remote.r'
+    'remove_files_git.r'
     'repository.r'
     'reset.r'
     'revparse.r'
