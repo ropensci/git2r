@@ -89,7 +89,16 @@ if test "x$ac_cv_sizeof_voidp" = "x8"; then
 elif test "x$ac_cv_sizeof_voidp" = "x4"; then
     CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_32"
 else
-    AC_MSG_FAILURE([Unsupported architecture])
+    AC_MSG_CHECKING([size of void*])
+    sizeof_voidp=`"${RBIN}" --slave -e "cat(.Machine\\$sizeof.pointer)"`
+    AC_MSG_RESULT([$sizeof_voidp])
+    if test "x$sizeof_voidp" = "x8"; then
+        CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_64"
+    elif test "x$sizeof_voidp" = "x4"; then
+        CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_32"
+    else
+        AC_MSG_FAILURE([Unsupported architecture])
+    fi
 fi
 
 # Check for zlib
