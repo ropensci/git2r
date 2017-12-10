@@ -14,7 +14,7 @@
 #' @docType methods
 #' @importFrom methods setGeneric
 #' @importFrom utils write.table
-#' @include S4_classes.r
+#' @include git_connection.r
 setGeneric(
   name = "write_delim_git",
   def = function(x, file, connection, ...){

@@ -53,6 +53,7 @@ Collate:
     'punch_card.r'
     'refspec.r'
     'push.r'
+    'read_delim_git.r'
     'reference.r'
     'reflog.r'
     'remote.r'
