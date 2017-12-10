@@ -45,6 +45,7 @@ Collate:
     'index.r'
     'is_git.R'
     'libgit2.r'
+    'list_files_git.r'
     'merge.r'
     'note.r'
     'odb.r'
