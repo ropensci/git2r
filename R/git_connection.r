@@ -29,7 +29,10 @@ git_connection <- function(
   assert_that(is.string(local.path))
   assert_that(is.string(commit.user))
   assert_that(is.string(commit.email))
-  repo.path <- is.git(path = repo.path)
+  assert_that(
+    is.git(path = repo.path),
+    msg = paste(repo.path, "is not a git repo")
+  )
   repo <- repository(repo.path)
   config(repo, user.name = commit.user, user.email = commit.email)
 
