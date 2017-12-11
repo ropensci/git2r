@@ -29,13 +29,14 @@ setMethod(
 #' @rdname git_sha
 #' @aliases git_sha,git_connection-methods
 #' @importFrom methods setMethod
-#' @importFrom assertthat assert_that is.string
+#' @importFrom assertthat assert_that noNA
 #' @importFrom utils read.table
 setMethod(
   f = "git_sha",
   signature = signature(connection = "gitConnection"),
   definition = function(file, connection, ...){
-    assert_that(is.string(file))
+    assert_that(is.character(file))
+    assert_that(noNA(file))
 
     old.wd <- getwd()
     setwd(connection@Repository@path)
@@ -44,13 +45,18 @@ setMethod(
         "git ls-tree -r HEAD",
         connection@LocalPath
       ),
+      ignore.stderr = TRUE,
       intern = TRUE
     )
+    if (length(blobs) == 0) {
+      stop("no commits available")
+    }
     setwd(old.wd)
     blobs <- read.table(
       textConnection(paste(blobs, collapse = "\n")),
       header = FALSE,
       sep = "\t",
+      stringsAsFactors = FALSE,
       col.names = c("SHA", "Path")
     )
     blobs$File <- basename(blobs$Path)
