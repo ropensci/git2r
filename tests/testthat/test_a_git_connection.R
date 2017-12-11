@@ -1,8 +1,10 @@
 context("git_connection")
 
-connection <- tempfile(pattern = "git2r-")
+tmpdir <- tempfile(pattern = "git2r-git_connection")
+connection <- tmpdir
 commit.user <- "me"
 commit.email <- "me@me.com"
+local.path <- "junk"
 
 # test repo.path
 expect_error(
@@ -85,11 +87,11 @@ expect_is(
   "gitConnection"
 )
 expect_identical(
-  git2r::config(repo)$local$user.name,
+  config(repo)$local$user.name,
   commit.user
 )
 expect_identical(
-  git2r::config(repo)$local$user.email,
+  config(repo)$local$user.email,
   commit.email
 )
 
@@ -164,4 +166,38 @@ expect_error(
     commit.email = commit.email
   ),
   "password not not equal to \"\""
+)
+expect_error(
+  git_connection(
+    repo.path = connection,
+    local.path = local.path,
+    username = "me",
+    password = "junk",
+    commit.user = commit.user,
+    commit.email = commit.email
+  ),
+  "is not a directory"
+)
+dir.create(sprintf("%s/%s", tmpdir, local.path), recursive = TRUE)
+expect_is(
+  z <- git_connection(
+    repo.path = connection,
+    local.path = local.path,
+    username = "me",
+    password = "junk",
+    commit.user = commit.user,
+    commit.email = commit.email
+  ),
+  "gitConnection"
+)
+expect_identical(z@LocalPath, local.path)
+expect_true(
+  all(file.remove(
+    list.files(tmpdir, all.files = TRUE, recursive = TRUE, full.names = TRUE)
+  ))
+)
+expect_true(
+  all(file.remove(
+    rev(list.dirs(tmpdir, recursive = TRUE, full.names = TRUE))
+  ))
 )

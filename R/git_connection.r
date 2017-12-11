@@ -35,6 +35,10 @@ git_connection <- function(
   )
   repo <- repository(repo.path)
   config(repo, user.name = commit.user, user.email = commit.email)
+  assert_that(
+    dir.exists(paste(repo.path, local.path, sep = "/")),
+    msg = paste(local.path, "is not a directory")
+  )
 
   if (missing(key) & missing(username)) {
     return(
