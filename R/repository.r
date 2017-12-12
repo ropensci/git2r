@@ -785,6 +785,17 @@ setMethod("default_signature",
           }
 )
 
+##' @rdname default_signature-methods
+##' @export
+##' @include S4_classes.r
+setMethod("default_signature",
+          signature(repo = "gitConnection"),
+          function(repo)
+          {
+              .Call(git2r_signature_default, repo@Repository)
+          }
+)
+
 ##' Brief summary of repository
 ##'
 ##' @aliases show,git_repository-methods

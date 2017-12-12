@@ -172,6 +172,23 @@ setMethod("commit",
           }
 )
 
+##' @rdname commit-methods
+##' @export
+##' @include S4_classes.r
+setMethod("commit",
+  signature(repo = "gitConnection"),
+  function(repo, message, all, session, reference, author, committer) {
+    commit(
+      repo = repo@Repository,
+      message = message,
+      all = all,
+      session = session,
+      reference = reference,
+      author = author,
+      committer = committer
+    )
+  }
+)
 ##' Commits
 ##'
 ##' @rdname commits-methods

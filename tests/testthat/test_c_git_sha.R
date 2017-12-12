@@ -43,7 +43,7 @@ test_that("git_sha returns the correct value", {
     file = file,
     connection = connection
   )
-  commit(connection@Repository, message = "test")
+  commit(connection, message = "test")
   expect_is(
     sha <- git_sha(
       file = file,

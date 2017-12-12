@@ -4,11 +4,14 @@
 \name{default_signature}
 \alias{default_signature}
 \alias{default_signature,git_repository-method}
+\alias{default_signature,gitConnection-method}
 \title{Get the signature}
 \usage{
 default_signature(repo)
 
 \S4method{default_signature}{git_repository}(repo)
+
+\S4method{default_signature}{gitConnection}(repo)
 }
 \arguments{
 \item{repo}{The repository \code{object} to check signature}

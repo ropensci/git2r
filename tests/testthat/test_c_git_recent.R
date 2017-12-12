@@ -35,7 +35,7 @@ test_that("git_recent works", {
     file = file,
     connection = connection
   )
-  z <- commit(connection@Repository, "test")
+  z <- commit(connection, "test")
   expect_is(
     x <- git_recent(file = file, connection = connection),
     "list"

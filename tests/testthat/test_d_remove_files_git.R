@@ -36,7 +36,7 @@ test_that("remove_files_git returns the correct value", {
     commit.user = "me",
     commit.email = "me@me.com"
   )
-  z <- commit(git_con@Repository, message = "test")
+  z <- commit(git_con, message = "test")
   expect_true(
     remove_files_git(
       connection = connection,
