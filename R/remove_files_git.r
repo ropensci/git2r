@@ -25,7 +25,6 @@ setMethod(
   definition = function(connection, pattern = NULL, ...){
     this.connection <- git_connection(
       repo.path = connection,
-      local.path = list(...)$path,
       ...
     )
     remove_files_git(connection = this.connection, pattern = pattern)
