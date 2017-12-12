@@ -2,8 +2,12 @@ context("list files for a git repository")
 describe("list_files_git()", {
   files <- sort(c("test.txt", "0123456.txt", "test", "0123456"))
   local.path <- "test"
-  connection <- tempfile(pattern = "git2r-")
-  connection <- normalizePath(connection, winslash = "/", mustWork = FALSE)
+  tmpdir <- tempfile(pattern = "git2r-list_files_git")
+  connection <- normalizePath(
+    tmpdir,
+    winslash = "/",
+    mustWork = FALSE
+  )
   commit.user <- "me"
   commit.email <- "me@me.com"
 
@@ -80,4 +84,14 @@ describe("list_files_git()", {
       is_identical_to(character(0))
     )
   })
+  expect_true(
+    all(file.remove(
+      list.files(tmpdir, all.files = TRUE, recursive = TRUE, full.names = TRUE)
+    ))
+  )
+  expect_true(
+    all(file.remove(
+      rev(list.dirs(tmpdir, recursive = TRUE, full.names = TRUE))
+    ))
+  )
 })

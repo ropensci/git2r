@@ -6,8 +6,9 @@ describe("write_delim_git()", {
   x1 <- data.frame(1)
   file <- "test.txt"
   local.path <- "test/subdir"
+  tmpdir <- tempfile(pattern = "git2r-write_delim_git")
   connection <- normalizePath(
-    tempfile(pattern = "git2r-"),
+    tmpdir,
     winslash = "/",
     mustWork = FALSE
   )
@@ -27,8 +28,8 @@ describe("write_delim_git()", {
   })
 
   dir.create(connection)
-  repo <- git2r::init(connection)
-  git2r::config(repo, user.name = "me", user.email = "me@me.com")
+  repo <- init(connection)
+  config(repo, user.name = "me", user.email = "me@me.com")
   it("stops if the path doesn't exist", {
     expect_error(
       write_delim_git(
@@ -105,4 +106,14 @@ describe("write_delim_git()", {
       is_identical_to(paste(local.path, file, sep = "/"))
     )
   })
+  expect_true(
+    all(file.remove(
+      list.files(tmpdir, all.files = TRUE, recursive = TRUE, full.names = TRUE)
+    ))
+  )
+  expect_true(
+    all(file.remove(
+      rev(list.dirs(tmpdir, recursive = TRUE, full.names = TRUE))
+    ))
+  )
 })

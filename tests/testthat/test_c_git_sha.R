@@ -2,8 +2,9 @@ context("git_sha")
 test_that("git_sha returns the correct value", {
   file <- "test.txt"
   local.path <- "test"
+  tmpdir <- tempfile(pattern = "git2r-git_sha")
   connection <- normalizePath(
-    tempfile(pattern = "git2r-git_sha"),
+    tmpdir,
     winslash = "/",
     mustWork = FALSE
   )
@@ -58,5 +59,15 @@ test_that("git_sha returns the correct value", {
       File = file,
       stringsAsFactors = FALSE
     )
+  )
+  expect_true(
+    all(file.remove(
+      list.files(tmpdir, all.files = TRUE, recursive = TRUE, full.names = TRUE)
+    ))
+  )
+  expect_true(
+    all(file.remove(
+      rev(list.dirs(tmpdir, recursive = TRUE, full.names = TRUE))
+    ))
   )
 })

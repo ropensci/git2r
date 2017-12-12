@@ -2,8 +2,9 @@ context("read data.frame from git")
 describe("read_delim_git()", {
   file <- "test.txt"
   local.path <- "test"
+  tmpdir <- tempfile(pattern = "git2r-read_delim_git")
   connection <- normalizePath(
-    tempfile(pattern = "git2r-"),
+    tmpdir,
     winslash = "/",
     mustWork = FALSE
   )
@@ -58,4 +59,14 @@ describe("read_delim_git()", {
       is_equivalent_to(df)
     )
   })
+  expect_true(
+    all(file.remove(
+      list.files(tmpdir, all.files = TRUE, recursive = TRUE, full.names = TRUE)
+    ))
+  )
+  expect_true(
+    all(file.remove(
+      rev(list.dirs(tmpdir, recursive = TRUE, full.names = TRUE))
+    ))
+  )
 })
