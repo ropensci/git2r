@@ -37,7 +37,7 @@ setMethod(
 #' @importFrom assertthat assert_that is.string is.flag noNA
 setMethod(
   f = "list_files_git",
-  signature = signature(connection = "gitConnection"),
+  signature = signature(connection = "git_connection"),
   definition = function(connection, pattern = NULL, full.names = FALSE, ...){
     if (!is.null(pattern)) {
       assert_that(is.string(pattern))

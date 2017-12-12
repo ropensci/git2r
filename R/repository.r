@@ -789,7 +789,7 @@ setMethod("default_signature",
 ##' @export
 ##' @include S4_classes.r
 setMethod("default_signature",
-          signature(repo = "gitConnection"),
+          signature(repo = "git_connection"),
           function(repo)
           {
               .Call(git2r_signature_default, repo@Repository)

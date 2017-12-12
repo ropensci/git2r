@@ -5,7 +5,7 @@
 \alias{read_delim_git}
 \alias{read_delim_git,ANY,ANY-method}
 \alias{read_delim_git,git_connection-methods}
-\alias{read_delim_git,ANY,gitConnection-method}
+\alias{read_delim_git,ANY,git_connection-method}
 \alias{read_delim_git,git_connection-methods}
 \title{Read a tab delimited file from a git repository}
 \usage{
@@ -13,12 +13,12 @@ read_delim_git(file, connection, ...)
 
 \S4method{read_delim_git}{ANY,ANY}(file, connection, ...)
 
-\S4method{read_delim_git}{ANY,gitConnection}(file, connection, ...)
+\S4method{read_delim_git}{ANY,git_connection}(file, connection, ...)
 }
 \arguments{
 \item{file}{the name of the file}
 
-\item{connection}{The path of a git repository or a \code{gitConnection}
+\item{connection}{The path of a git repository or a \code{git_connection}
 object}
 
 \item{...}{parameters passed to \code{git_connection()} when

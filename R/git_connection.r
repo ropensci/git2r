@@ -1,6 +1,6 @@
 #' Open a git connection
 #' @name git_connection
-#' @rdname gitConnection-class
+#' @rdname git_connection-class
 #' @param repo.path The path of the root of the repository
 #' @param local.path A path within the repository
 #' @param key Optional: the path to a private ssh key. The public key is assumed
@@ -43,7 +43,7 @@ git_connection <- function(
   if (missing(key) & missing(username)) {
     return(
       new(
-        "gitConnection",
+        "git_connection",
         Repository = repo,
         LocalPath = local.path,
         Credentials = NULL,
@@ -59,7 +59,7 @@ git_connection <- function(
     if (missing(password)) {
       return(
         new(
-          "gitConnection",
+          "git_connection",
           Repository = repo,
           LocalPath = local.path,
           Credentials = cred_ssh_key(
@@ -75,7 +75,7 @@ git_connection <- function(
     assert_that(is.string(password))
     return(
       new(
-        "gitConnection",
+        "git_connection",
         Repository = repo,
         LocalPath = local.path,
         Credentials = cred_ssh_key(
@@ -95,7 +95,7 @@ git_connection <- function(
   assert_that(password != "")
   return(
     new(
-      "gitConnection",
+      "git_connection",
       Repository = repo,
       LocalPath = local.path,
       Credentials = cred_user_pass(

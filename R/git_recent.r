@@ -32,7 +32,7 @@ setMethod(
 #' @importFrom assertthat assert_that is.string
 setMethod(
   f = "git_recent",
-  signature = signature(connection = "gitConnection"),
+  signature = signature(connection = "git_connection"),
   definition = function(file, connection, ...){
     assert_that(is.string(file))
 

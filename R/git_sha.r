@@ -33,7 +33,7 @@ setMethod(
 #' @importFrom utils read.table
 setMethod(
   f = "git_sha",
-  signature = signature(connection = "gitConnection"),
+  signature = signature(connection = "git_connection"),
   definition = function(file, connection, ...){
     assert_that(is.character(file))
     assert_that(noNA(file))

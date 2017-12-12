@@ -84,7 +84,7 @@ expect_is(
     commit.user = commit.user,
     commit.email = commit.email
   ),
-  "gitConnection"
+  "git_connection"
 )
 expect_identical(
   config(repo)$local$user.name,
@@ -103,7 +103,7 @@ expect_is(
     commit.user = commit.user,
     commit.email = commit.email
   ),
-  "gitConnection"
+  "git_connection"
 )
 
 expect_error(
@@ -188,7 +188,7 @@ expect_is(
     commit.user = commit.user,
     commit.email = commit.email
   ),
-  "gitConnection"
+  "git_connection"
 )
 expect_identical(z@LocalPath, local.path)
 expect_true(

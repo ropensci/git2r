@@ -3,7 +3,7 @@
 #' The existing file will be overwritten.
 #' @param x the data.frame
 #' @param file the name of the file
-#' @param connection The path of a git repository or a \code{gitConnection}
+#' @param connection The path of a git repository or a \code{git_connection}
 #'    object
 #' @param ... parameters passed to \code{git_connection()} when
 #'    \code{connection} is a path
@@ -41,7 +41,7 @@ setMethod(
 #' @importFrom assertthat assert_that is.string
 setMethod(
   f = "write_delim_git",
-  signature = signature(connection = "gitConnection"),
+  signature = signature(connection = "git_connection"),
   definition = function(x, file, connection, ...){
     assert_that(inherits(x, "data.frame"))
     assert_that(is.string(file))

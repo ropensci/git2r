@@ -176,7 +176,7 @@ setMethod("commit",
 ##' @export
 ##' @include S4_classes.r
 setMethod("commit",
-  signature(repo = "gitConnection"),
+  signature(repo = "git_connection"),
   function(repo, message, all, session, reference, author, committer) {
     commit(
       repo = repo@Repository,

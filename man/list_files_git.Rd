@@ -5,7 +5,7 @@
 \alias{list_files_git}
 \alias{list_files_git,ANY-method}
 \alias{list_files_git,git_connection-methods}
-\alias{list_files_git,gitConnection-method}
+\alias{list_files_git,git_connection-method}
 \alias{list_files_git,git_connection-methods}
 \title{List the files in a path of a git repository}
 \usage{
@@ -14,11 +14,11 @@ list_files_git(connection, pattern = NULL, full.names = FALSE, ...)
 \S4method{list_files_git}{ANY}(connection, pattern = NULL,
   full.names = FALSE, ...)
 
-\S4method{list_files_git}{gitConnection}(connection, pattern = NULL,
+\S4method{list_files_git}{git_connection}(connection, pattern = NULL,
   full.names = FALSE, ...)
 }
 \arguments{
-\item{connection}{The path of a git repository or a \code{gitConnection}
+\item{connection}{The path of a git repository or a \code{git_connection}
 object}
 
 \item{pattern}{an optional \link{regular expression}.  Only file names

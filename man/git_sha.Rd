@@ -5,7 +5,7 @@
 \alias{git_sha}
 \alias{git_sha,ANY,ANY-method}
 \alias{git_sha,git_connection-methods}
-\alias{git_sha,ANY,gitConnection-method}
+\alias{git_sha,ANY,git_connection-method}
 \alias{git_sha,git_connection-methods}
 \title{Get the SHA of the files at the HEAD}
 \usage{
@@ -13,12 +13,12 @@ git_sha(file, connection, ...)
 
 \S4method{git_sha}{ANY,ANY}(file, connection, ...)
 
-\S4method{git_sha}{ANY,gitConnection}(file, connection, ...)
+\S4method{git_sha}{ANY,git_connection}(file, connection, ...)
 }
 \arguments{
 \item{file}{the name of the file}
 
-\item{connection}{The path of a git repository or a \code{gitConnection}
+\item{connection}{The path of a git repository or a \code{git_connection}
 object}
 
 \item{...}{parameters passed to \code{git_connection()} when

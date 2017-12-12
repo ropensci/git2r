@@ -36,7 +36,7 @@ setMethod(
 #' @importFrom methods setMethod
 setMethod(
   f = "remove_files_git",
-  signature = signature(connection = "gitConnection"),
+  signature = signature(connection = "git_connection"),
   definition = function(connection, pattern = NULL, ...){
     to.remove <- list_files_git(
       connection = connection,

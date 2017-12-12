@@ -844,7 +844,7 @@ setClass("git_merge_result",
 #' @importFrom methods setClassUnion
 setClassUnion("gitCredentials", c("NULL", "cred_user_pass", "cred_ssh_key"))
 
-#' The gitConnection class
+#' The git_connection class
 #'
 #' @section Slots:
 #'   \describe{
@@ -854,15 +854,15 @@ setClassUnion("gitCredentials", c("NULL", "cred_user_pass", "cred_ssh_key"))
 #'    \item{\code{CommitUser}}{the name of the user how will commit}
 #'    \item{\code{CommitEmail}}{the email of the user how will commit}
 #'   }
-#' @name gitConnection-class
-#' @rdname gitConnection-class
-#' @exportClass gitConnection
-#' @aliases gitConnection-class
+#' @name git_connection-class
+#' @rdname git_connection-class
+#' @exportClass git_connection
+#' @aliases git_connection-class
 #' @importFrom methods setClass
 #' @docType class
 #' @template thierry
 setClass(
-  Class = "gitConnection",
+  Class = "git_connection",
   representation = representation(
     Repository = "git_repository",
     LocalPath = "character",
@@ -876,7 +876,7 @@ setClass(
 #' @importFrom assertthat assert_that is.string has_name
 #' @importFrom utils file_test
 setValidity(
-  "gitConnection",
+  "git_connection",
   function(object){
     assert_that(is.string(object@CommitUser))
     assert_that(is.string(object@CommitEmail))

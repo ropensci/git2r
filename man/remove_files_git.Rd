@@ -5,7 +5,7 @@
 \alias{remove_files_git}
 \alias{remove_files_git,ANY-method}
 \alias{remove_files_git,git_connection-methods}
-\alias{remove_files_git,gitConnection-method}
+\alias{remove_files_git,git_connection-method}
 \alias{remove_files_git,git_connection-methods}
 \title{Remove all the files in a path of a git repository}
 \usage{
@@ -13,10 +13,10 @@ remove_files_git(connection, pattern = NULL, ...)
 
 \S4method{remove_files_git}{ANY}(connection, pattern = NULL, ...)
 
-\S4method{remove_files_git}{gitConnection}(connection, pattern = NULL, ...)
+\S4method{remove_files_git}{git_connection}(connection, pattern = NULL, ...)
 }
 \arguments{
-\item{connection}{The path of a git repository or a \code{gitConnection}
+\item{connection}{The path of a git repository or a \code{git_connection}
 object}
 
 \item{pattern}{an optional \link{regular expression}.  Only file names
