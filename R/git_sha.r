@@ -38,6 +38,10 @@ setMethod(
     assert_that(is.character(file))
     assert_that(noNA(file))
 
+    if (is.null(head(connection@Repository))) {
+      stop("no commits available")
+    }
+
     old.wd <- getwd()
     setwd(connection@Repository@path)
     blobs <- system(
@@ -48,9 +52,6 @@ setMethod(
       ignore.stderr = TRUE,
       intern = TRUE
     )
-    if (length(blobs) == 0) {
-      stop("no commits available")
-    }
     setwd(old.wd)
     blobs <- read.table(
       textConnection(paste(blobs, collapse = "\n")),
