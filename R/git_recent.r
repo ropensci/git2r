@@ -36,6 +36,10 @@ setMethod(
   definition = function(file, connection, ...){
     assert_that(is.string(file))
 
+    if (is.null(head(connection@Repository))) {
+      stop("no commits in current branch")
+    }
+
     old.wd <- getwd()
     setwd(connection@Repository@path)
     commit.info <- system(
