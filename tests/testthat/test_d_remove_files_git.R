@@ -46,6 +46,10 @@ test_that("remove_files_git returns the correct value", {
       pattern = "junk"
     )
   )
+  expect_identical(
+    list_files_git(git_con),
+    file
+  )
   expect_true(
     remove_files_git(
       connection = git_con,
@@ -56,6 +60,11 @@ test_that("remove_files_git returns the correct value", {
     list_files_git(git_con),
     character(0)
   )
+  expect_identical(
+    status(git_con@Repository)$staged$deleted,
+    paste(local.path, file, sep = "/")
+  )
+
   expect_true(
     all(file.remove(
       list.files(tmpdir, all.files = TRUE, recursive = TRUE, full.names = TRUE)
