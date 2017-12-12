@@ -842,7 +842,7 @@ setClass("git_merge_result",
 )
 
 #' @importFrom methods setClassUnion
-setClassUnion("gitCredentials", c("NULL", "cred_user_pass", "cred_ssh_key"))
+setClassUnion("git_credentials", c("NULL", "cred_user_pass", "cred_ssh_key"))
 
 #' The git_connection class
 #'
@@ -866,7 +866,7 @@ setClass(
   representation = representation(
     Repository = "git_repository",
     LocalPath = "character",
-    Credentials = "gitCredentials",
+    Credentials = "git_credentials",
     CommitUser = "character",
     CommitEmail = "character"
   )
