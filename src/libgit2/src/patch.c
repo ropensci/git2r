@@ -1,14 +1,7 @@
-/*
-* Copyright (C) the libgit2 contributors. All rights reserved.
-*
-* This file is part of libgit2, distributed under the GNU GPL v2 with
-* a Linking Exception. For full terms see the included COPYING file.
-*/
-
-#include "patch.h"
-
 #include "git2/patch.h"
 #include "diff.h"
+#include "patch.h"
+
 
 int git_patch__invoke_callbacks(
 	git_patch *patch,

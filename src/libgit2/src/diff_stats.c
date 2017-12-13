@@ -4,9 +4,7 @@
  * This file is part of libgit2, distributed under the GNU GPL v2 with
  * a Linking Exception. For full terms see the included COPYING file.
  */
-
 #include "common.h"
-
 #include "vector.h"
 #include "diff.h"
 #include "patch_generate.h"
@@ -45,11 +43,6 @@ static int digits_for_value(size_t val)
 
 	return count;
 }
-
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat"
-#endif
 
 int git_diff_file_stats__full_to_buf(
 	git_buf *out,
@@ -140,10 +133,6 @@ int git_diff_file_stats__number_to_buf(
 
 	return error;
 }
-
-#ifdef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 int git_diff_file_stats__summary_to_buf(
 	git_buf *out,
@@ -265,11 +254,6 @@ size_t git_diff_stats_deletions(
 	return stats->deletions;
 }
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat"
-#endif
-
 int git_diff_stats_to_buf(
 	git_buf *out,
 	const git_diff_stats *stats,
@@ -349,10 +333,6 @@ int git_diff_stats_to_buf(
 
 	return error;
 }
-
-#ifdef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 void git_diff_stats_free(git_diff_stats *stats)
 {

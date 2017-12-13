@@ -7,8 +7,6 @@
 #ifndef INCLUDE_attrcache_h__
 #define INCLUDE_attrcache_h__
 
-#include "common.h"
-
 #include "attr_file.h"
 #include "strmap.h"
 

@@ -5,8 +5,7 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
-#include "transaction.h"
-
+#include "common.h"
 #include "repository.h"
 #include "strmap.h"
 #include "refdb.h"

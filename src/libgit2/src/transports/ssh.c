@@ -5,8 +5,6 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
-#include "ssh.h"
-
 #ifdef GIT_SSH
 #include <libssh2.h>
 #endif
@@ -18,6 +16,7 @@
 #include "smart.h"
 #include "cred.h"
 #include "socket_stream.h"
+#include "ssh.h"
 
 #ifdef GIT_SSH
 

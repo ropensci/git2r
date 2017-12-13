@@ -4,9 +4,6 @@
  * This file is part of libgit2, distributed under the GNU GPL v2 with
  * a Linking Exception. For full terms see the included COPYING file.
  */
-
-#include "common.h"
-
 #include "git2.h"
 #include "git2/odb_backend.h"
 
@@ -650,11 +647,6 @@ done:
 	return error;
 }
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat"
-#endif
-
 static int gen_pktline(git_buf *buf, git_push *push)
 {
 	push_spec *spec;
@@ -695,10 +687,6 @@ static int gen_pktline(git_buf *buf, git_push *push)
 	git_buf_puts(buf, "0000");
 	return git_buf_oom(buf) ? -1 : 0;
 }
-
-#ifdef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 static int add_push_report_pkt(git_push *push, git_pkt *pkt)
 {

@@ -6,7 +6,6 @@
  */
 
 #include "tree-cache.h"
-
 #include "pool.h"
 #include "tree.h"
 
@@ -249,11 +248,6 @@ int git_tree_cache_new(git_tree_cache **out, const char *name, git_pool *pool)
 	return 0;
 }
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat"
-#endif
-
 static void write_tree(git_buf *out, git_tree_cache *tree)
 {
 	size_t i;
@@ -266,10 +260,6 @@ static void write_tree(git_buf *out, git_tree_cache *tree)
 	for (i = 0; i < tree->children_count; i++)
 		write_tree(out, tree->children[i]);
 }
-
-#ifdef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 int git_tree_cache_write(git_buf *out, git_tree_cache *tree)
 {

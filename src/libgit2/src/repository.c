@@ -4,9 +4,6 @@
  * This file is part of libgit2, distributed under the GNU GPL v2 with
  * a Linking Exception. For full terms see the included COPYING file.
  */
-
-#include "repository.h"
-
 #include <ctype.h>
 
 #include "git2/object.h"
@@ -14,6 +11,7 @@
 #include "git2/sys/repository.h"
 
 #include "common.h"
+#include "repository.h"
 #include "commit.h"
 #include "tag.h"
 #include "blob.h"

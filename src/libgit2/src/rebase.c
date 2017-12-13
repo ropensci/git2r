@@ -6,7 +6,6 @@
  */
 
 #include "common.h"
-
 #include "buffer.h"
 #include "repository.h"
 #include "posix.h"
@@ -199,11 +198,6 @@ static git_rebase_operation *rebase_operation_alloc(
 	return operation;
 }
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat"
-#endif
-
 static int rebase_open_merge(git_rebase *rebase)
 {
 	git_buf state_path = GIT_BUF_INIT, buf = GIT_BUF_INIT, cmt = GIT_BUF_INIT;
@@ -262,10 +256,6 @@ done:
 
 	return error;
 }
-
-#ifdef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 static int rebase_alloc(git_rebase **out, const git_rebase_options *rebase_opts)
 {
@@ -449,11 +439,6 @@ static const char *rebase_onto_name(const git_annotated_commit *onto)
 		return onto->id_str;
 }
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat"
-#endif
-
 static int rebase_setupfiles_merge(git_rebase *rebase)
 {
 	git_buf commit_filename = GIT_BUF_INIT;
@@ -483,10 +468,6 @@ done:
 	git_buf_free(&commit_filename);
 	return error;
 }
-
-#ifdef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 static int rebase_setupfiles(git_rebase *rebase)
 {
@@ -803,11 +784,6 @@ GIT_INLINE(int) rebase_movenext(git_rebase *rebase)
 	return 0;
 }
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat"
-#endif
-
 static int rebase_next_merge(
 	git_rebase_operation **out,
 	git_rebase *rebase)
@@ -869,10 +845,6 @@ done:
 
 	return error;
 }
-
-#ifdef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 static int rebase_next_inmemory(
 	git_rebase_operation **out,

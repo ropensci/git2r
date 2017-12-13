@@ -5,8 +5,7 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
-#include "branch.h"
-
+#include "common.h"
 #include "commit.h"
 #include "tag.h"
 #include "config.h"

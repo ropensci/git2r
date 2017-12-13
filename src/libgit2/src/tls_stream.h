@@ -7,8 +7,6 @@
 #ifndef INCLUDE_tls_stream_h__
 #define INCLUDE_tls_stream_h__
 
-#include "common.h"
-
 #include "git2/sys/stream.h"
 
 /**

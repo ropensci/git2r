@@ -6,7 +6,6 @@
  */
 
 #include "common.h"
-
 #include <zlib.h>
 #include "git2/object.h"
 #include "git2/sys/odb_backend.h"

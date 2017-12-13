@@ -7,9 +7,8 @@
 #ifndef INCLUDE_netops_h__
 #define INCLUDE_netops_h__
 
-#include "common.h"
-
 #include "posix.h"
+#include "common.h"
 #include "stream.h"
 
 #ifdef GIT_OPENSSL

@@ -8,7 +8,6 @@
 #define INCLUDE_git_path_w32_h__
 
 #include "common.h"
-
 #include "vector.h"
 
 /*

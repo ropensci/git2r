@@ -7,8 +7,6 @@
 #ifndef INCLUDE_socket_stream_h__
 #define INCLUDE_socket_stream_h__
 
-#include "common.h"
-
 #include "netops.h"
 
 typedef struct {

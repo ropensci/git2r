@@ -6,7 +6,6 @@
  */
 
 #include "common.h"
-
 #include "repository.h"
 #include "commit.h"
 #include "message.h"
@@ -574,11 +573,6 @@ cleanup:
 	return error;
 }
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat"
-#endif
-
 static int retrieve_stash_commit(
 	git_commit **commit,
 	git_repository *repo,
@@ -612,10 +606,6 @@ cleanup:
 	git_reflog_free(reflog);
 	return error;
 }
-
-#ifdef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 static int retrieve_stash_trees(
 	git_tree **out_stash_tree,
@@ -773,11 +763,6 @@ int git_stash_apply_init_options(git_stash_apply_options *opts, unsigned int ver
 		}							\
 	} while(false);
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat"
-#endif
-
 static int ensure_clean_index(git_repository *repo, git_index *index)
 {
 	git_tree *head_tree = NULL;
@@ -800,10 +785,6 @@ done:
 	git_tree_free(head_tree);
 	return error;
 }
-
-#ifdef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 static int stage_new_file(const git_index_entry **entries, void *data)
 {
@@ -1029,11 +1010,6 @@ cleanup:
 	return error;
 }
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat"
-#endif
-
 int git_stash_drop(
 	git_repository *repo,
 	size_t index)
@@ -1089,10 +1065,6 @@ cleanup:
 	git_reflog_free(reflog);
 	return error;
 }
-
-#ifdef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 int git_stash_pop(
 	git_repository *repo,

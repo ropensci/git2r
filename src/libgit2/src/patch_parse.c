@@ -4,18 +4,11 @@
  * This file is part of libgit2, distributed under the GNU GPL v2 with
  * a Linking Exception. For full terms see the included COPYING file.
  */
-
-#include "patch_parse.h"
-
 #include "git2/patch.h"
 #include "patch.h"
+#include "patch_parse.h"
 #include "diff_parse.h"
 #include "path.h"
-
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat"
-#endif
 
 #define parse_err(...) \
 	( giterr_set(GITERR_PATCH, __VA_ARGS__), -1 )
@@ -1165,6 +1158,3 @@ int git_patch_from_buffer(
 	return error;
 }
 
-#ifdef _WIN32
-#pragma GCC diagnostic pop
-#endif

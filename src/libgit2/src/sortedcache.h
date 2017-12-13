@@ -7,8 +7,6 @@
 #ifndef INCLUDE_sorted_cache_h__
 #define INCLUDE_sorted_cache_h__
 
-#include "common.h"
-
 #include "util.h"
 #include "fileops.h"
 #include "vector.h"

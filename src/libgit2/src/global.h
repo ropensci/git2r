@@ -8,7 +8,6 @@
 #define INCLUDE_global_h__
 
 #include "common.h"
-
 #include "mwindow.h"
 #include "hash.h"
 

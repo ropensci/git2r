@@ -5,10 +5,9 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
-#include "common.h"
-
 #include <assert.h>
 
+#include "common.h"
 #include "buffer.h"
 #include "tree.h"
 #include "refdb.h"
@@ -203,11 +202,6 @@ cleanup:
 	return error;
 }
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat"
-#endif
-
 static int retrieve_oid_from_reflog(git_oid *oid, git_reference *ref, size_t identifier)
 {
 	git_reflog *reflog;
@@ -257,10 +251,6 @@ notfound:
 	git_reflog_free(reflog);
 	return GIT_ENOTFOUND;
 }
-
-#ifdef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 static int retrieve_revobject_from_reflog(git_object **out, git_reference **base_ref, git_repository *repo, const char *identifier, size_t position)
 {

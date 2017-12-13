@@ -4,10 +4,9 @@
  * This file is part of libgit2, distributed under the GNU GPL v2 with
  * a Linking Exception. For full terms see the included COPYING file.
  */
-
-#include "diff_parse.h"
-
+#include "common.h"
 #include "diff.h"
+#include "diff_parse.h"
 #include "patch.h"
 #include "patch_parse.h"
 

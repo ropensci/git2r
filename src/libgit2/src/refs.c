@@ -6,7 +6,6 @@
  */
 
 #include "refs.h"
-
 #include "hash.h"
 #include "repository.h"
 #include "fileops.h"

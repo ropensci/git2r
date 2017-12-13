@@ -8,7 +8,6 @@
 #define INCLUDE_patch_generate_h__
 
 #include "common.h"
-
 #include "diff.h"
 #include "diff_file.h"
 #include "patch.h"

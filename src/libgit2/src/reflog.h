@@ -8,7 +8,6 @@
 #define INCLUDE_reflog_h__
 
 #include "common.h"
-
 #include "git2/reflog.h"
 #include "vector.h"
 

@@ -1,9 +1,8 @@
 #ifndef INCLUDE_blame_h__
 #define INCLUDE_blame_h__
 
-#include "common.h"
-
 #include "git2/blame.h"
+#include "common.h"
 #include "vector.h"
 #include "diff.h"
 #include "array.h"

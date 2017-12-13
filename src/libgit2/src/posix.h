@@ -8,7 +8,6 @@
 #define INCLUDE_posix_h__
 
 #include "common.h"
-
 #include <fcntl.h>
 #include <time.h>
 #include "fnmatch.h"

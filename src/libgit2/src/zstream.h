@@ -7,10 +7,9 @@
 #ifndef INCLUDE_zstream_h__
 #define INCLUDE_zstream_h__
 
-#include "common.h"
-
 #include <zlib.h>
 
+#include "common.h"
 #include "buffer.h"
 
 typedef enum {

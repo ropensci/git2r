@@ -7,8 +7,6 @@
 #ifndef INCLUDE_diff_parse_h__
 #define INCLUDE_diff_parse_h__
 
-#include "common.h"
-
 #include "diff.h"
 
 typedef struct {
