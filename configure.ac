@@ -122,39 +122,38 @@ fi
 # Check for SSL
 have_ssl=no
 if test [ -n "$PKG_CONFIG" ] ; then
-    PKG_CHECK_MODULES([libssl], [libssl],
-                      [CPPFLAGS="${libssl_CFLAGS} ${CPPFLAGS}"
-                       LIBS="${libssl_LIBS} ${LIBS}"])
+    PKG_CHECK_MODULES([openssl], [openssl],
+                      [CPPFLAGS="${openssl_CFLAGS} ${CPPFLAGS}"
+                       LIBS="${openssl_LIBS} ${LIBS}"
+                       have_ssl=yes])
 fi
 
-# Check for optional libssl include path
-if test [ -n "$libssl_include_path" ] ; then
-    CPPFLAGS="-I${libssl_include_path} ${CPPFLAGS}"
+if test "x${have_ssl}" = xno; then
+    # Check for optional libssl include path
+    if test [ -n "$libssl_include_path" ] ; then
+        CPPFLAGS="-I${libssl_include_path} ${CPPFLAGS}"
+    fi
+
+    # Check for optional libssl lib path
+    if test [ -n "$libssl_lib_path" ] ; then
+        LIBS="-L${libssl_lib_path} ${LIBS}"
+    fi
+
+    # On OS X, add path to libssl in brew
+    case "${host_os}" in
+        darwin*)
+            if test "x${BREW}" = xyes; then
+                CPPFLAGS="${CPPFLAGS} -I${BREW_DIR}/opt/openssl/include"
+                LIBS="${LIBS} -L${BREW_DIR}/opt/openssl/lib"
+            fi
+        ;;
+    esac
+
+    AC_SEARCH_LIBS([EVP_EncryptInit],
+                   [crypto],
+                   [AC_SEARCH_LIBS([SSL_library_init], [ssl], [have_ssl=yes])
+                    AC_SEARCH_LIBS([OPENSSL_init_ssl], [ssl], [have_ssl=yes])])
 fi
-
-# Check for optional libssl lib path
-if test [ -n "$libssl_lib_path" ] ; then
-    LIBS="-L${libssl_lib_path} ${LIBS}"
-fi
-
-if test "x${OPENSSL_INCLUDES}" = x; then :; else
-    CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
-fi
-
-# On OS X, add path to libssl in brew
-case "${host_os}" in
-    darwin*)
-        if test "x${BREW}" = xyes; then
-            CPPFLAGS="${CPPFLAGS} -I${BREW_DIR}/opt/openssl/include"
-            LIBS="${LIBS} -L${BREW_DIR}/opt/openssl/lib"
-        fi
-    ;;
-esac
-
-AC_SEARCH_LIBS([EVP_EncryptInit],
-               [crypto],
-               [AC_SEARCH_LIBS([SSL_library_init], [ssl], [have_ssl=yes])
-                AC_SEARCH_LIBS([OPENSSL_init_ssl], [ssl], [have_ssl=yes])])
 
 if test "x${have_ssl}" = xno; then
     AC_MSG_FAILURE([
@@ -178,61 +177,69 @@ fi
 
 # Check for LibSSH2
 have_ssh2=no
-
-# Check for optional libssh2 include path
-if test [ -n "$libssh2_include_path" ] ; then
-    CPPFLAGS="-I${libssh2_include_path} ${CPPFLAGS}"
+if test [ -n "$PKG_CONFIG" ] ; then
+    PKG_CHECK_MODULES([libssh2], [libssh2],
+                      [CPPFLAGS="${libssh2_CFLAGS} ${CPPFLAGS}"
+                       LIBS="${libssh2_LIBS} ${LIBS}"
+                       have_ssh2=yes])
 fi
 
-# Check for optional libssh2 lib path
-if test [ -n "$libssh2_lib_path" ] ; then
-    LIBS="-L${libssh2_lib_path} ${LIBS}"
-fi
+if test "x${have_ssh2}" = xno; then
+    # Check for optional libssh2 include path
+    if test [ -n "$libssh2_include_path" ] ; then
+        CPPFLAGS="-I${libssh2_include_path} ${CPPFLAGS}"
+    fi
 
-case "${host_os}" in
-    darwin*)
-        # Save flags
-        oCPPFLAGS="${CPPFLAGS}"
-        oLIBS="${LIBS}"
+    # Check for optional libssh2 lib path
+    if test [ -n "$libssh2_lib_path" ] ; then
+        LIBS="-L${libssh2_lib_path} ${LIBS}"
+    fi
 
-        # On OS X, try to find libssh2 in brew
-        if test "x${BREW}" = xyes; then
-            CPPFLAGS="${CPPFLAGS} -I${BREW_DIR}/opt/libssh2/include"
-            LIBS="${LIBS} -L${BREW_DIR}/opt/libssh2/lib"
-            AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
-        fi
+    case "${host_os}" in
+        darwin*)
+            # Save flags
+            oCPPFLAGS="${CPPFLAGS}"
+            oLIBS="${LIBS}"
 
-        if test "x${have_ssh2}" = xno; then
-            CPPFLAGS="${oCPPFLAGS}"
-            LIBS="${oLIBS}"
-
-            AC_MSG_NOTICE([Download and build libssh2])
-
-            mkdir -p libssh2 && \
-            curl -fsSL https://www.libssh2.org/download/libssh2-1.8.0.tar.gz | \
-            tar xz --strip 1 -C libssh2
-
-            mkdir -p src/libgit2/deps/libssh2
-            LIBSSH2_INST_DIR="${PWD}/src/libgit2/deps/libssh2"
-            cp -f tools/missing libssh2
-            cd libssh2
-            ./configure --with-pic --with-openssl --disable-examples-build \
-              --disable-shared --enable-static --prefix=$LIBSSH2_INST_DIR \
-              CC="${CC}" CFLAGS="${CFLAGS} ${CPICFLAGS} -Wno-deprecated-declarations" \
-              CPPFLAGS="${CPPFLAGS}" && make && make install && have_ssh2=yes
-            cd ..
-            rm -rf libssh2
-
-            if test "x${have_ssh2}" = xyes; then
-                LIBSSH2_CFLAGS="-Ilibgit2/deps/libssh2/include"
-                LIBSSH2_LIBS="-Llibgit2/deps/libssh2/lib -lssh2"
+            # On OS X, try to find libssh2 in brew
+            if test "x${BREW}" = xyes; then
+                CPPFLAGS="${CPPFLAGS} -I${BREW_DIR}/opt/libssh2/include"
+                LIBS="${LIBS} -L${BREW_DIR}/opt/libssh2/lib"
+                AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
             fi
-        fi
-    ;;
-    *)
-        AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
-    ;;
-esac
+
+            if test "x${have_ssh2}" = xno; then
+                CPPFLAGS="${oCPPFLAGS}"
+                LIBS="${oLIBS}"
+
+                AC_MSG_NOTICE([Download and build libssh2])
+
+                mkdir -p libssh2 && \
+                curl -fsSL https://www.libssh2.org/download/libssh2-1.8.0.tar.gz | \
+                tar xz --strip 1 -C libssh2
+
+                mkdir -p src/libgit2/deps/libssh2
+                LIBSSH2_INST_DIR="${PWD}/src/libgit2/deps/libssh2"
+                cp -f tools/missing libssh2
+                cd libssh2
+                ./configure --with-pic --with-openssl --disable-examples-build \
+                  --disable-shared --enable-static --prefix=$LIBSSH2_INST_DIR \
+                  CC="${CC}" CFLAGS="${CFLAGS} ${CPICFLAGS} -Wno-deprecated-declarations" \
+                  CPPFLAGS="${CPPFLAGS}" && make && make install && have_ssh2=yes
+                cd ..
+                rm -rf libssh2
+
+                if test "x${have_ssh2}" = xyes; then
+                    LIBSSH2_CFLAGS="-Ilibgit2/deps/libssh2/include"
+                    LIBSSH2_LIBS="-Llibgit2/deps/libssh2/lib -lssh2"
+                fi
+            fi
+        ;;
+        *)
+            AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
+        ;;
+    esac
+fi
 
 if test "x${have_ssh2}" = xno; then
     AC_MSG_WARN([
