@@ -4,6 +4,9 @@
  * This file is part of libgit2, distributed under the GNU GPL v2 with
  * a Linking Exception. For full terms see the included COPYING file.
  */
+
+#include "repository.h"
+
 #include <ctype.h>
 
 #include "git2/object.h"
@@ -11,7 +14,6 @@
 #include "git2/sys/repository.h"
 
 #include "common.h"
-#include "repository.h"
 #include "commit.h"
 #include "tag.h"
 #include "blob.h"
@@ -81,11 +83,6 @@ git_buf git_repository__reserved_names_posix[] = {
 };
 size_t git_repository__reserved_names_posix_len = 1;
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpedantic"
-#endif
-
 static void set_odb(git_repository *repo, git_odb *odb)
 {
 	if (odb) {
@@ -139,10 +136,6 @@ static void set_index(git_repository *repo, git_index *index)
 		git_index_free(index);
 	}
 }
-
-#ifdef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 void git_repository__cleanup(git_repository *repo)
 {
@@ -2843,11 +2836,6 @@ int git_repository_ident(const char **name, const char **email, const git_reposi
 	return 0;
 }
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpedantic"
-#endif
-
 int git_repository_set_ident(git_repository *repo, const char *name, const char *email)
 {
 	char *tmp_name = NULL, *tmp_email = NULL;
@@ -2898,7 +2886,3 @@ int git_repository_submodule_cache_clear(git_repository *repo)
 	repo->submodule_cache = 0;
 	return 0;
 }
-
-#ifdef _WIN32
-#pragma GCC diagnostic pop
-#endif

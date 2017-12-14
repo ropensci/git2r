@@ -7,13 +7,7 @@
 #ifndef INCLUDE_common_h__
 #define INCLUDE_common_h__
 
-/**
- * Commented out unused include directive
- *  - # include "win32/msvc-compat.h"
- *
- * 2016-03-10: Stefan Widgren <stefan.widgren@gmail.com>
- */
-
+/* #include "git2/sys/features.h" */
 #include "git2/common.h"
 #include "cc-compat.h"
 
@@ -46,17 +40,13 @@
 # include <winsock2.h>
 # include <windows.h>
 # include <ws2tcpip.h>
-/* # include "win32/msvc-compat.h" */
+# include "win32/msvc-compat.h"
 # include "win32/mingw-compat.h"
 # include "win32/win32-compat.h"
 # include "win32/error.h"
 # include "win32/version.h"
 # ifdef GIT_THREADS
 #	include "win32/thread.h"
-# endif
-# if defined(GIT_MSVC_CRTDBG)
-#   include "win32/w32_stack.h"
-#   include "win32/w32_crtdbg_stacktrace.h"
 # endif
 
 #else

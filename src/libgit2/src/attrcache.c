@@ -1,4 +1,12 @@
-#include "common.h"
+/*
+ * Copyright (C) the libgit2 contributors. All rights reserved.
+ *
+ * This file is part of libgit2, distributed under the GNU GPL v2 with
+ * a Linking Exception. For full terms see the included COPYING file.
+ */
+
+#include "attrcache.h"
+
 #include "repository.h"
 #include "attr_file.h"
 #include "config.h"
@@ -307,11 +315,6 @@ static int attr_cache__lookup_path(
 	return error;
 }
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpedantic"
-#endif
-
 static void attr_cache__free(git_attr_cache *cache)
 {
 	bool unlock;
@@ -360,10 +363,6 @@ static void attr_cache__free(git_attr_cache *cache)
 
 	git__free(cache);
 }
-
-#ifdef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 int git_attr_cache__init(git_repository *repo)
 {
@@ -422,11 +421,6 @@ cancel:
 	return ret;
 }
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpedantic"
-#endif
-
 void git_attr_cache_flush(git_repository *repo)
 {
 	git_attr_cache *cache;
@@ -437,10 +431,6 @@ void git_attr_cache_flush(git_repository *repo)
 	if (repo && (cache = git__swap(repo->attrcache, NULL)) != NULL)
 		attr_cache__free(cache);
 }
-
-#ifdef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 int git_attr_cache__insert_macro(git_repository *repo, git_attr_rule *macro)
 {
@@ -476,3 +466,4 @@ git_attr_rule *git_attr_cache__lookup_macro(
 
 	return (git_attr_rule *)git_strmap_value_at(macros, pos);
 }
+

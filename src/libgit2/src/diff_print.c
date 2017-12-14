@@ -4,7 +4,9 @@
  * This file is part of libgit2, distributed under the GNU GPL v2 with
  * a Linking Exception. For full terms see the included COPYING file.
  */
+
 #include "common.h"
+
 #include "diff.h"
 #include "diff_file.h"
 #include "patch_generate.h"
@@ -449,11 +451,6 @@ done:
 	return error;
 }
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat"
-#endif
-
 static int format_binary(
 	diff_print_info *pi,
 	git_diff_binary_t type,
@@ -491,10 +488,6 @@ static int format_binary(
 
 	return 0;
 }
-
-#ifdef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 static int diff_print_patch_file_binary_noshow(
 	diff_print_info *pi, git_diff_delta *delta,
