@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2016 The git2r contributors
+## Copyright (C) 2013-2017 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -70,6 +70,7 @@ build_Makevars.in <- function() {
     on.exit(close(Makevars))
 
     files <- list(libgit2 = o_files("src/libgit2/src"),
+                  libgit2.streams = o_files("src/libgit2/src/streams"),
                   libgit2.transports =
                       o_files("src/libgit2/src/transports",
                               c("libgit2/src/transports/auth_negotiate.o",
