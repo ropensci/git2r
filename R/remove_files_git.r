@@ -44,7 +44,7 @@ setMethod(
       full.names = TRUE
     )
 
-    success <- file.remove(to.remove)
+    success <- suppressWarnings(file.remove(to.remove))
 
     if (length(success) > 0 && !all(success)) {
       stop(
