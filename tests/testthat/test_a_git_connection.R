@@ -191,13 +191,4 @@ expect_is(
   "git_connection"
 )
 expect_identical(z@LocalPath, local.path)
-expect_true(
-  all(file.remove(
-    list.files(tmpdir, all.files = TRUE, recursive = TRUE, full.names = TRUE)
-  ))
-)
-expect_true(
-  all(file.remove(
-    rev(list.dirs(tmpdir, recursive = TRUE, full.names = TRUE))
-  ))
-)
+expect_identical(unlink(tmpdir, recursive = TRUE, force = TRUE), 0L)

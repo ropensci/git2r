@@ -84,14 +84,5 @@ describe("list_files_git()", {
       is_identical_to(character(0))
     )
   })
-  expect_true(
-    all(file.remove(
-      list.files(tmpdir, all.files = TRUE, recursive = TRUE, full.names = TRUE)
-    ))
-  )
-  expect_true(
-    all(file.remove(
-      rev(list.dirs(tmpdir, recursive = TRUE, full.names = TRUE))
-    ))
-  )
+  expect_identical(unlink(tmpdir, recursive = TRUE, force = TRUE), 0L)
 })
