@@ -181,7 +181,7 @@ if test [ -n "$PKG_CONFIG" ] ; then
     PKG_CHECK_MODULES([libssh2], [libssh2],
                       [CPPFLAGS="${libssh2_CFLAGS} ${CPPFLAGS}"
                        LIBS="${libssh2_LIBS} ${LIBS}"
-                       have_ssh2=yes])
+                       have_ssh2=yes], [ ])
 fi
 
 if test "x${have_ssh2}" = xno; then
