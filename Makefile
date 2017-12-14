@@ -125,7 +125,6 @@ sync_libgit2:
 	-rm -f src/libgit2/src/win32/thread.c
 	-rm -f src/libgit2/src/win32/w32_stack.c
 	-rm -f src/libgit2/src/win32/w32_stack.h
-	cd src/libgit2/src && patch -i ../../../patches/attrcache.c.patch
 	cd src/libgit2/src && patch -i ../../../patches/cache.c.patch
 	cd src/libgit2/src && patch -i ../../../patches/checkout.c.patch
 	cd src/libgit2/src && patch -i ../../../patches/common.h.patch
@@ -136,6 +135,7 @@ sync_libgit2:
 	cd src/libgit2/src && patch -i ../../../patches/odb.c.patch
 	cd src/libgit2/src && patch -i ../../../patches/tsort.c.patch
 	cd src/libgit2/src/transports && patch -i ../../../../patches/smart_pkt.c.patch
+	cd src/libgit2/src/unix && patch -i ../../../../patches/posix.h.patch
 	cd src/libgit2/src/win32 && patch -i ../../../../patches/reparse.h.patch
 	cd src/libgit2/deps/regex && patch -i ../../../../patches/regcomp-pass-R-CMD-check-git2r.patch
 	cd src/libgit2/deps/regex && patch -i ../../../../patches/regex-prefix-entry-points.patch
