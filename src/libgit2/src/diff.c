@@ -13,13 +13,6 @@
 #include "commit.h"
 #include "index.h"
 
-#define DIFF_FLAG_IS_SET(DIFF,FLAG) \
-	(((DIFF)->opts.flags & (FLAG)) != 0)
-#define DIFF_FLAG_ISNT_SET(DIFF,FLAG) \
-	(((DIFF)->opts.flags & (FLAG)) == 0)
-#define DIFF_FLAG_SET(DIFF,FLAG,VAL) (DIFF)->opts.flags = \
-	(VAL) ? ((DIFF)->opts.flags | (FLAG)) : ((DIFF)->opts.flags & ~(VAL))
-
 struct patch_id_args {
 	git_hash_ctx ctx;
 	git_oid result;
@@ -517,5 +510,6 @@ int git_diff_patchid(git_oid *out, git_diff *diff, git_diff_patchid_options *opt
 	git_oid_cpy(out, &args.result);
 
 out:
+	git_hash_ctx_cleanup(&args.ctx);
 	return error;
 }

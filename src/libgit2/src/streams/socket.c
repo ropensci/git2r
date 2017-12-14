@@ -5,7 +5,7 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
-#include "socket_stream.h"
+#include "streams/socket.h"
 
 #include "posix.h"
 #include "netops.h"
@@ -104,7 +104,7 @@ int socket_connect(git_stream *stream)
 	}
 
 	for (p = info; p != NULL; p = p->ai_next) {
-		s = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+		s = socket(p->ai_family, p->ai_socktype | SOCK_CLOEXEC, p->ai_protocol);
 
 		if (s == INVALID_SOCKET)
 			continue;

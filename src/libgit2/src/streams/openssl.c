@@ -5,7 +5,7 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
-#include "openssl_stream.h"
+#include "streams/openssl.h"
 
 #ifdef GIT_OPENSSL
 
@@ -14,13 +14,13 @@
 #include "global.h"
 #include "posix.h"
 #include "stream.h"
-#include "socket_stream.h"
+#include "streams/socket.h"
 #include "netops.h"
 #include "git2/transport.h"
 #include "git2/sys/openssl.h"
 
 #ifdef GIT_CURL
-# include "curl_stream.h"
+# include "streams/curl.h"
 #endif
 
 #ifndef GIT_WIN32
@@ -150,10 +150,19 @@ int git_openssl_stream_global_init(void)
 	return 0;
 }
 
+#if defined(GIT_THREADS)
+static void threadid_cb(CRYPTO_THREADID *threadid)
+{
+    CRYPTO_THREADID_set_numeric(threadid, git_thread_currentid());
+}
+#endif
+
 int git_openssl_set_locking(void)
 {
 #if defined(GIT_THREADS) && OPENSSL_VERSION_NUMBER < 0x10100000L
 	int num_locks, i;
+
+	CRYPTO_THREADID_set_callback(threadid_cb);
 
 	num_locks = CRYPTO_num_locks();
 	openssl_locks = git__calloc(num_locks, sizeof(git_mutex));
@@ -628,6 +637,16 @@ out_err:
 	return error;
 }
 
+int git_openssl__set_cert_location(const char *file, const char *path)
+{
+	if (SSL_CTX_load_verify_locations(git__ssl_ctx, file, path) == 0) {
+		giterr_set(GITERR_SSL, "OpenSSL error: failed to load certificates: %s",
+				   ERR_error_string(ERR_get_error(), NULL));
+		return -1;
+	}
+	return 0;
+}
+
 #else
 
 #include "stream.h"
@@ -649,6 +668,15 @@ int git_openssl_stream_new(git_stream **out, const char *host, const char *port)
 	GIT_UNUSED(out);
 	GIT_UNUSED(host);
 	GIT_UNUSED(port);
+
+	giterr_set(GITERR_SSL, "openssl is not supported in this version");
+	return -1;
+}
+
+int git_openssl__set_cert_location(const char *file, const char *path)
+{
+	GIT_UNUSED(file);
+	GIT_UNUSED(path);
 
 	giterr_set(GITERR_SSL, "openssl is not supported in this version");
 	return -1;

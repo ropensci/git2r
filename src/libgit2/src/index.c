@@ -480,11 +480,6 @@ void git_index_free(git_index *index)
 	GIT_REFCOUNT_DEC(index, index_free);
 }
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpedantic"
-#endif
-
 /* call with locked index */
 static void index_free_deleted(git_index *index)
 {
@@ -501,10 +496,6 @@ static void index_free_deleted(git_index *index)
 
 	git_vector_clear(&index->deleted);
 }
-
-#ifdef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 /* call with locked index */
 static int index_remove_entry(git_index *index, size_t pos)
@@ -2141,11 +2132,6 @@ int git_index_reuc_remove(git_index *index, size_t position)
 	return error;
 }
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpedantic"
-#endif
-
 void git_index_reuc_clear(git_index *index)
 {
 	size_t i;
@@ -2157,10 +2143,6 @@ void git_index_reuc_clear(git_index *index)
 
 	git_vector_clear(&index->reuc);
 }
-
-#ifdef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 static int index_error_invalid(const char *message)
 {
@@ -2999,11 +2981,6 @@ static int read_tree_cb(
 	return 0;
 }
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpedantic"
-#endif
-
 int git_index_read_tree(git_index *index, const git_tree *tree)
 {
 	int error = 0;
@@ -3204,10 +3181,6 @@ done:
 	git_iterator_free(index_iterator);
 	return error;
 }
-
-#ifdef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 int git_index_read_index(
 	git_index *index,

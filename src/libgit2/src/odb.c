@@ -77,11 +77,6 @@ static int odb_read_hardcoded(git_rawobj *raw, const git_oid *id)
 	return 0;
 }
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-extra-args"
-#endif
-
 int git_odb__format_object_header(char *hdr, size_t n, git_off_t obj_len, git_otype obj_type)
 {
 	const char *type_str = git_object_type2string(obj_type);
@@ -89,10 +84,6 @@ int git_odb__format_object_header(char *hdr, size_t n, git_off_t obj_len, git_ot
 	assert(len > 0 && len <= (int)n);
 	return len+1;
 }
-
-#ifdef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 int git_odb__hashobj(git_oid *id, git_rawobj *obj)
 {
@@ -490,10 +481,6 @@ static int git_odb__error_unsupported_in_backend(const char *action)
 	return -1;
 }
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat"
-#endif
 
 int git_odb_get_backend(git_odb_backend **out, git_odb *odb, size_t pos)
 {
@@ -510,10 +497,6 @@ int git_odb_get_backend(git_odb_backend **out, git_odb *odb, size_t pos)
 	giterr_set(GITERR_ODB, "no ODB backend loaded at index %" PRIuZ, pos);
 	return GIT_ENOTFOUND;
 }
-
-#ifdef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 int git_odb__add_default_backends(
 	git_odb *db, const char *objects_dir,
@@ -1340,11 +1323,6 @@ done:
 	return error;
 }
 
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat"
-#endif
-
 static int git_odb_stream__invalid_length(
 	const git_odb_stream *stream,
 	const char *action)
@@ -1357,10 +1335,6 @@ static int git_odb_stream__invalid_length(
 
 	return -1;
 }
-
-#ifdef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 int git_odb_stream_write(git_odb_stream *stream, const char *buffer, size_t len)
 {
