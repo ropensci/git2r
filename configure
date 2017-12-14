@@ -3940,7 +3940,66 @@ fi
 
 # Check for zlib
 have_zlib=no
-if test  -n "$PKG_CONFIG"  ; then
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing inflate" >&5
+$as_echo_n "checking for library containing inflate... " >&6; }
+if ${ac_cv_search_inflate+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char inflate ();
+int
+main ()
+{
+return inflate ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' z; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_inflate=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_inflate+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_inflate+:} false; then :
+
+else
+  ac_cv_search_inflate=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_inflate" >&5
+$as_echo "$ac_cv_search_inflate" >&6; }
+ac_res=$ac_cv_search_inflate
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  have_zlib=yes
+fi
+
+
+if test "x${have_zlib}" = xno; then
+    if test  -n "$PKG_CONFIG"  ; then
 
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for zlib" >&5
@@ -4000,99 +4059,21 @@ fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$zlib_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (zlib) were not met:
 
-$zlib_PKG_ERRORS
-
-Consider adjusting the PKG_CONFIG_PATH environment variable if you
-installed software in a non-standard prefix.
-
-Alternatively, you may set the environment variables zlib_CFLAGS
-and zlib_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
      	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
-is in your PATH or set the PKG_CONFIG environment variable to the full
-path to pkg-config.
 
-Alternatively, you may set the environment variables zlib_CFLAGS
-and zlib_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details.
-
-To get pkg-config, see <http://pkg-config.freedesktop.org/>.
-See \`config.log' for more details" "$LINENO" 5; }
 else
 	zlib_CFLAGS=$pkg_cv_zlib_CFLAGS
 	zlib_LIBS=$pkg_cv_zlib_LIBS
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 	CPPFLAGS="${zlib_CFLAGS} ${CPPFLAGS}"
-                       LIBS="${zlib_LIBS} ${LIBS}"
-                       have_zlib=yes
+                           LIBS="${zlib_LIBS} ${LIBS}"
+                           have_zlib=yes
 fi
-fi
-
-if test "x${have_zlib}" = xno; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing inflate" >&5
-$as_echo_n "checking for library containing inflate... " >&6; }
-if ${ac_cv_search_inflate+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_func_search_save_LIBS=$LIBS
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char inflate ();
-int
-main ()
-{
-return inflate ();
-  ;
-  return 0;
-}
-_ACEOF
-for ac_lib in '' z; do
-  if test -z "$ac_lib"; then
-    ac_res="none required"
-  else
-    ac_res=-l$ac_lib
-    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
-  fi
-  if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_search_inflate=$ac_res
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext
-  if ${ac_cv_search_inflate+:} false; then :
-  break
-fi
-done
-if ${ac_cv_search_inflate+:} false; then :
-
-else
-  ac_cv_search_inflate=no
-fi
-rm conftest.$ac_ext
-LIBS=$ac_func_search_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_inflate" >&5
-$as_echo "$ac_cv_search_inflate" >&6; }
-ac_res=$ac_cv_search_inflate
-if test "$ac_res" != no; then :
-  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-  have_zlib=yes
-fi
-
+    fi
 fi
 
 if test "x${have_zlib}" = xno; then
@@ -4113,124 +4094,28 @@ fi
 
 # Check for SSL
 have_ssl=no
-if test  -n "$PKG_CONFIG"  ; then
 
-pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for openssl" >&5
-$as_echo_n "checking for openssl... " >&6; }
-
-if test -n "$openssl_CFLAGS"; then
-    pkg_cv_openssl_CFLAGS="$openssl_CFLAGS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"openssl\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "openssl") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; then
-  pkg_cv_openssl_CFLAGS=`$PKG_CONFIG --cflags "openssl" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
-else
-  pkg_failed=yes
-fi
- else
-    pkg_failed=untried
-fi
-if test -n "$openssl_LIBS"; then
-    pkg_cv_openssl_LIBS="$openssl_LIBS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"openssl\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "openssl") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; then
-  pkg_cv_openssl_LIBS=`$PKG_CONFIG --libs "openssl" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
-else
-  pkg_failed=yes
-fi
- else
-    pkg_failed=untried
+# Check for optional libssl include path
+if test  -n "$libssl_include_path"  ; then
+    CPPFLAGS="-I${libssl_include_path} ${CPPFLAGS}"
 fi
 
-
-
-if test $pkg_failed = yes; then
-   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-
-if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
-        _pkg_short_errors_supported=yes
-else
-        _pkg_short_errors_supported=no
+# Check for optional libssl lib path
+if test  -n "$libssl_lib_path"  ; then
+    LIBS="-L${libssl_lib_path} ${LIBS}"
 fi
-        if test $_pkg_short_errors_supported = yes; then
-	        openssl_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "openssl" 2>&1`
-        else
-	        openssl_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "openssl" 2>&1`
+
+# On OS X, add path to libssl in brew
+case "${host_os}" in
+    darwin*)
+        if test "x${BREW}" = xyes; then
+            CPPFLAGS="${CPPFLAGS} -I${BREW_DIR}/opt/openssl/include"
+            LIBS="${LIBS} -L${BREW_DIR}/opt/openssl/lib"
         fi
-	# Put the nasty error message in config.log where it belongs
-	echo "$openssl_PKG_ERRORS" >&5
+    ;;
+esac
 
-	as_fn_error $? "Package requirements (openssl) were not met:
-
-$openssl_PKG_ERRORS
-
-Consider adjusting the PKG_CONFIG_PATH environment variable if you
-installed software in a non-standard prefix.
-
-Alternatively, you may set the environment variables openssl_CFLAGS
-and openssl_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details." "$LINENO" 5
-elif test $pkg_failed = untried; then
-     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
-is in your PATH or set the PKG_CONFIG environment variable to the full
-path to pkg-config.
-
-Alternatively, you may set the environment variables openssl_CFLAGS
-and openssl_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details.
-
-To get pkg-config, see <http://pkg-config.freedesktop.org/>.
-See \`config.log' for more details" "$LINENO" 5; }
-else
-	openssl_CFLAGS=$pkg_cv_openssl_CFLAGS
-	openssl_LIBS=$pkg_cv_openssl_LIBS
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-	CPPFLAGS="${openssl_CFLAGS} ${CPPFLAGS}"
-                       LIBS="${openssl_LIBS} ${LIBS}"
-                       have_ssl=yes
-fi
-fi
-
-if test "x${have_ssl}" = xno; then
-    # Check for optional libssl include path
-    if test  -n "$libssl_include_path"  ; then
-        CPPFLAGS="-I${libssl_include_path} ${CPPFLAGS}"
-    fi
-
-    # Check for optional libssl lib path
-    if test  -n "$libssl_lib_path"  ; then
-        LIBS="-L${libssl_lib_path} ${LIBS}"
-    fi
-
-    # On OS X, add path to libssl in brew
-    case "${host_os}" in
-        darwin*)
-            if test "x${BREW}" = xyes; then
-                CPPFLAGS="${CPPFLAGS} -I${BREW_DIR}/opt/openssl/include"
-                LIBS="${LIBS} -L${BREW_DIR}/opt/openssl/lib"
-            fi
-        ;;
-    esac
-
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing EVP_EncryptInit" >&5
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing EVP_EncryptInit" >&5
 $as_echo_n "checking for library containing EVP_EncryptInit... " >&6; }
 if ${ac_cv_search_EVP_EncryptInit+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -4339,7 +4224,7 @@ if test "$ac_res" != no; then :
   have_ssl=yes
 fi
 
-                    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing OPENSSL_init_ssl" >&5
+                { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing OPENSSL_init_ssl" >&5
 $as_echo_n "checking for library containing OPENSSL_init_ssl... " >&6; }
 if ${ac_cv_search_OPENSSL_init_ssl+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -4397,6 +4282,83 @@ fi
 
 fi
 
+
+if test "x${have_ssl}" = xno; then
+    if test  -n "$PKG_CONFIG"  ; then
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for openssl" >&5
+$as_echo_n "checking for openssl... " >&6; }
+
+if test -n "$openssl_CFLAGS"; then
+    pkg_cv_openssl_CFLAGS="$openssl_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"openssl\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "openssl") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_openssl_CFLAGS=`$PKG_CONFIG --cflags "openssl" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$openssl_LIBS"; then
+    pkg_cv_openssl_LIBS="$openssl_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"openssl\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "openssl") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_openssl_LIBS=`$PKG_CONFIG --libs "openssl" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        openssl_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "openssl" 2>&1`
+        else
+	        openssl_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "openssl" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$openssl_PKG_ERRORS" >&5
+
+
+elif test $pkg_failed = untried; then
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+else
+	openssl_CFLAGS=$pkg_cv_openssl_CFLAGS
+	openssl_LIBS=$pkg_cv_openssl_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	CPPFLAGS="${openssl_CFLAGS} ${CPPFLAGS}"
+                           LIBS="${openssl_LIBS} ${LIBS}"
+                           have_ssl=yes
+fi
+    fi
 fi
 
 if test "x${have_ssl}" = xno; then
@@ -4424,7 +4386,175 @@ fi
 
 # Check for LibSSH2
 have_ssh2=no
-if test  -n "$PKG_CONFIG"  ; then
+
+# Check for optional libssh2 include path
+if test  -n "$libssh2_include_path"  ; then
+    CPPFLAGS="-I${libssh2_include_path} ${CPPFLAGS}"
+fi
+
+# Check for optional libssh2 lib path
+if test  -n "$libssh2_lib_path"  ; then
+    LIBS="-L${libssh2_lib_path} ${LIBS}"
+fi
+
+case "${host_os}" in
+    darwin*)
+        # Save flags
+        oCPPFLAGS="${CPPFLAGS}"
+        oLIBS="${LIBS}"
+
+        # On OS X, try to find libssh2 in brew
+        if test "x${BREW}" = xyes; then
+            CPPFLAGS="${CPPFLAGS} -I${BREW_DIR}/opt/libssh2/include"
+            LIBS="${LIBS} -L${BREW_DIR}/opt/libssh2/lib"
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing libssh2_version" >&5
+$as_echo_n "checking for library containing libssh2_version... " >&6; }
+if ${ac_cv_search_libssh2_version+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char libssh2_version ();
+int
+main ()
+{
+return libssh2_version ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' ssh2; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_libssh2_version=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_libssh2_version+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_libssh2_version+:} false; then :
+
+else
+  ac_cv_search_libssh2_version=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_libssh2_version" >&5
+$as_echo "$ac_cv_search_libssh2_version" >&6; }
+ac_res=$ac_cv_search_libssh2_version
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  have_ssh2=yes
+fi
+
+        fi
+
+        if test "x${have_ssh2}" = xno; then
+            CPPFLAGS="${oCPPFLAGS}"
+            LIBS="${oLIBS}"
+
+            { $as_echo "$as_me:${as_lineno-$LINENO}: Download and build libssh2" >&5
+$as_echo "$as_me: Download and build libssh2" >&6;}
+
+            mkdir -p libssh2 && \
+            curl -fsSL https://www.libssh2.org/download/libssh2-1.8.0.tar.gz | \
+            tar xz --strip 1 -C libssh2
+
+            mkdir -p src/libgit2/deps/libssh2
+            LIBSSH2_INST_DIR="${PWD}/src/libgit2/deps/libssh2"
+            cp -f tools/missing libssh2
+            cd libssh2
+            ./configure --with-pic --with-openssl --disable-examples-build \
+              --disable-shared --enable-static --prefix=$LIBSSH2_INST_DIR \
+              CC="${CC}" CFLAGS="${CFLAGS} ${CPICFLAGS} -Wno-deprecated-declarations" \
+              CPPFLAGS="${CPPFLAGS}" && make && make install && have_ssh2=yes
+            cd ..
+            rm -rf libssh2
+
+            if test "x${have_ssh2}" = xyes; then
+                LIBSSH2_CFLAGS="-Ilibgit2/deps/libssh2/include"
+                LIBSSH2_LIBS="-Llibgit2/deps/libssh2/lib -lssh2"
+            fi
+        fi
+    ;;
+    *)
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing libssh2_version" >&5
+$as_echo_n "checking for library containing libssh2_version... " >&6; }
+if ${ac_cv_search_libssh2_version+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char libssh2_version ();
+int
+main ()
+{
+return libssh2_version ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' ssh2; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_libssh2_version=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_libssh2_version+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_libssh2_version+:} false; then :
+
+else
+  ac_cv_search_libssh2_version=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_libssh2_version" >&5
+$as_echo "$ac_cv_search_libssh2_version" >&6; }
+ac_res=$ac_cv_search_libssh2_version
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  have_ssh2=yes
+fi
+
+    ;;
+esac
+
+if test "x${have_ssh2}" = xno; then
+    if test  -n "$PKG_CONFIG"  ; then
 
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libssh2" >&5
@@ -4495,177 +4625,10 @@ else
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 	CPPFLAGS="${libssh2_CFLAGS} ${CPPFLAGS}"
-                       LIBS="${libssh2_LIBS} ${LIBS}"
-                       have_ssh2=yes
+                           LIBS="${libssh2_LIBS} ${LIBS}"
+                           have_ssh2=yes
 fi
-fi
-
-if test "x${have_ssh2}" = xno; then
-    # Check for optional libssh2 include path
-    if test  -n "$libssh2_include_path"  ; then
-        CPPFLAGS="-I${libssh2_include_path} ${CPPFLAGS}"
     fi
-
-    # Check for optional libssh2 lib path
-    if test  -n "$libssh2_lib_path"  ; then
-        LIBS="-L${libssh2_lib_path} ${LIBS}"
-    fi
-
-    case "${host_os}" in
-        darwin*)
-            # Save flags
-            oCPPFLAGS="${CPPFLAGS}"
-            oLIBS="${LIBS}"
-
-            # On OS X, try to find libssh2 in brew
-            if test "x${BREW}" = xyes; then
-                CPPFLAGS="${CPPFLAGS} -I${BREW_DIR}/opt/libssh2/include"
-                LIBS="${LIBS} -L${BREW_DIR}/opt/libssh2/lib"
-                { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing libssh2_version" >&5
-$as_echo_n "checking for library containing libssh2_version... " >&6; }
-if ${ac_cv_search_libssh2_version+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_func_search_save_LIBS=$LIBS
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char libssh2_version ();
-int
-main ()
-{
-return libssh2_version ();
-  ;
-  return 0;
-}
-_ACEOF
-for ac_lib in '' ssh2; do
-  if test -z "$ac_lib"; then
-    ac_res="none required"
-  else
-    ac_res=-l$ac_lib
-    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
-  fi
-  if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_search_libssh2_version=$ac_res
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext
-  if ${ac_cv_search_libssh2_version+:} false; then :
-  break
-fi
-done
-if ${ac_cv_search_libssh2_version+:} false; then :
-
-else
-  ac_cv_search_libssh2_version=no
-fi
-rm conftest.$ac_ext
-LIBS=$ac_func_search_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_libssh2_version" >&5
-$as_echo "$ac_cv_search_libssh2_version" >&6; }
-ac_res=$ac_cv_search_libssh2_version
-if test "$ac_res" != no; then :
-  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-  have_ssh2=yes
-fi
-
-            fi
-
-            if test "x${have_ssh2}" = xno; then
-                CPPFLAGS="${oCPPFLAGS}"
-                LIBS="${oLIBS}"
-
-                { $as_echo "$as_me:${as_lineno-$LINENO}: Download and build libssh2" >&5
-$as_echo "$as_me: Download and build libssh2" >&6;}
-
-                mkdir -p libssh2 && \
-                curl -fsSL https://www.libssh2.org/download/libssh2-1.8.0.tar.gz | \
-                tar xz --strip 1 -C libssh2
-
-                mkdir -p src/libgit2/deps/libssh2
-                LIBSSH2_INST_DIR="${PWD}/src/libgit2/deps/libssh2"
-                cp -f tools/missing libssh2
-                cd libssh2
-                ./configure --with-pic --with-openssl --disable-examples-build \
-                  --disable-shared --enable-static --prefix=$LIBSSH2_INST_DIR \
-                  CC="${CC}" CFLAGS="${CFLAGS} ${CPICFLAGS} -Wno-deprecated-declarations" \
-                  CPPFLAGS="${CPPFLAGS}" && make && make install && have_ssh2=yes
-                cd ..
-                rm -rf libssh2
-
-                if test "x${have_ssh2}" = xyes; then
-                    LIBSSH2_CFLAGS="-Ilibgit2/deps/libssh2/include"
-                    LIBSSH2_LIBS="-Llibgit2/deps/libssh2/lib -lssh2"
-                fi
-            fi
-        ;;
-        *)
-            { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing libssh2_version" >&5
-$as_echo_n "checking for library containing libssh2_version... " >&6; }
-if ${ac_cv_search_libssh2_version+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_func_search_save_LIBS=$LIBS
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char libssh2_version ();
-int
-main ()
-{
-return libssh2_version ();
-  ;
-  return 0;
-}
-_ACEOF
-for ac_lib in '' ssh2; do
-  if test -z "$ac_lib"; then
-    ac_res="none required"
-  else
-    ac_res=-l$ac_lib
-    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
-  fi
-  if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_search_libssh2_version=$ac_res
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext
-  if ${ac_cv_search_libssh2_version+:} false; then :
-  break
-fi
-done
-if ${ac_cv_search_libssh2_version+:} false; then :
-
-else
-  ac_cv_search_libssh2_version=no
-fi
-rm conftest.$ac_ext
-LIBS=$ac_func_search_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_libssh2_version" >&5
-$as_echo "$ac_cv_search_libssh2_version" >&6; }
-ac_res=$ac_cv_search_libssh2_version
-if test "$ac_res" != no; then :
-  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-  have_ssh2=yes
-fi
-
-        ;;
-    esac
 fi
 
 if test "x${have_ssh2}" = xno; then
