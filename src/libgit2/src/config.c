@@ -629,14 +629,7 @@ int git_config_delete_entry(git_config *cfg, const char *name)
 int git_config_set_int64(git_config *cfg, const char *name, int64_t value)
 {
 	char str_value[32]; /* All numbers should fit in here */
-#ifdef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-extra-args"
 	p_snprintf(str_value, sizeof(str_value), "%" PRId64, value);
-#pragma GCC diagnostic pop
-#else
-	p_snprintf(str_value, sizeof(str_value), "%" PRId64, value);
-#endif
 	return git_config_set_string(cfg, name, str_value);
 }
 
