@@ -4105,6 +4105,10 @@ if test  -n "$libssl_lib_path"  ; then
     LIBS="-L${libssl_lib_path} ${LIBS}"
 fi
 
+if test "x${OPENSSL_INCLUDES}" = x; then :; else
+    CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
+fi
+
 # On OS X, add path to libssl in brew
 case "${host_os}" in
     darwin*)
