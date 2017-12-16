@@ -49,7 +49,9 @@ typedef size_t size_t;
 #endif
 
 /** Declare a function's takes printf style arguments. */
-#ifdef __GNUC__
+#if defined(__MINGW32__)
+# define GIT_FORMAT_PRINTF(a,b) __attribute__((format (__MINGW_PRINTF_FORMAT, a, b)))
+#elif defined(__GNUC__)
 # define GIT_FORMAT_PRINTF(a,b) __attribute__((format (printf, a, b)))
 #else
 # define GIT_FORMAT_PRINTF(a,b) /* empty */
