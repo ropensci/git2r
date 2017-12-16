@@ -1,0 +1,21 @@
+*** common.h.orig	2017-12-16 07:45:52.466510230 +0100
+--- common.h	2017-12-16 07:47:17.820356002 +0100
+***************
+*** 49,55 ****
+  #endif
+  
+  /** Declare a function's takes printf style arguments. */
+! #ifdef __GNUC__
+  # define GIT_FORMAT_PRINTF(a,b) __attribute__((format (printf, a, b)))
+  #else
+  # define GIT_FORMAT_PRINTF(a,b) /* empty */
+--- 49,57 ----
+  #endif
+  
+  /** Declare a function's takes printf style arguments. */
+! #if defined(__MINGW32__)
+! # define GIT_FORMAT_PRINTF(a,b) __attribute__((format (__MINGW_PRINTF_FORMAT, a, b)))
+! #elif defined(__GNUC__)
+  # define GIT_FORMAT_PRINTF(a,b) __attribute__((format (printf, a, b)))
+  #else
+  # define GIT_FORMAT_PRINTF(a,b) /* empty */
