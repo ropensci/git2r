@@ -40,23 +40,22 @@ revdep: revdep_install revdep_check revdep_results
 revdep_install: clean
 	mkdir -p revdep/lib
 	cd .. && R CMD INSTALL --library=$(PKG_NAME)/revdep/lib $(PKG_NAME)
-	Rscript --vanilla \
+	R_LIBS_USER=./revdep/lib Rscript --vanilla \
           -e "options(repos = c(CRAN='https://cran.r-project.org'))" \
-          -e "lib <- 'revdep/lib'" \
           -e "pkg <- tools::package_dependencies('$(PKG_NAME)', which = 'all', reverse = TRUE)" \
           -e "pkg <- as.character(unlist(pkg))" \
           -e "dep <- sapply(pkg, tools::package_dependencies, which = 'all')" \
           -e "dep <- as.character(unlist(dep))" \
           -e "if ('BiocInstaller' %in% dep) {" \
           -e "    source('https://bioconductor.org/biocLite.R')" \
-          -e "    biocLite('BiocInstaller', lib = lib)" \
+          -e "    biocLite('BiocInstaller')" \
           -e "}" \
-          -e "install.packages(pkg, lib = lib, dependencies = TRUE)" \
+          -e "install.packages(pkg, dependencies = TRUE)" \
           -e "download.packages(pkg, destdir = 'revdep')"
 
 # Check reverse dependencies with 'R CMD check'
 revdep_check:
-	$(foreach var,$(wildcard revdep/*.tar.gz),R_LIBS=revdep/lib \
+	$(foreach var,$(wildcard revdep/*.tar.gz),R_LIBS_USER=./revdep/lib \
           _R_CHECK_CRAN_INCOMING_=FALSE R --vanilla CMD check --as-cran \
           --no-stop-on-test-error --output=revdep $(var) \
           | tee --append revdep/00revdep.log;)
