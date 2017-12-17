@@ -40,6 +40,17 @@ PKG_PROG_PKG_CONFIG
 
 # Optional include and library paths
 
+# zlib include and library path
+AC_ARG_WITH([zlib-include],
+            AC_HELP_STRING([--with-zlib-include=INCLUDE_PATH],
+                           [the location of the zlib header files]),
+            [zlib_include_path=$withval])
+
+AC_ARG_WITH([zlib-lib],
+            AC_HELP_STRING([--with-zlib-lib=LIB_PATH],
+                           [the location of the zlib library]),
+            [zlib_lib_path=$withval])
+
 # LibSSH2 include and library path
 AC_ARG_WITH([libssh2-include],
             AC_HELP_STRING([--with-libssh2-include=INCLUDE_PATH],
@@ -96,6 +107,16 @@ fi
 # Check for zlib
 have_zlib=no
 
+# Check for optional zlib include path
+if test [ -n "$zlib_include_path" ] ; then
+    CPPFLAGS="-I${zlib_include_path} ${CPPFLAGS}"
+fi
+
+# Check for optional zlib lib path
+if test [ -n "$zlib_lib_path" ] ; then
+    LIBS="-L${zlib_lib_path} ${LIBS}"
+fi
+
 AC_SEARCH_LIBS([inflate], [z], [have_zlib=yes])
 
 if test "x${have_zlib}" = xno; then
@@ -117,6 +138,12 @@ if test "x${have_zlib}" = xno; then
      zlib1g-dev (package on e.g. Debian and Ubuntu)
      zlib-devel (package on e.g. Fedora, CentOS and RHEL)
    and try again.
+
+   If the zlib library is installed on your
+   system but the git2r configuration is
+   unable to find it, you can specify the
+   include and lib path to zlib with:
+   R CMD INSTALL --configure-args='--with-zlib-include=INCLUDE_PATH --with-zlib-lib=LIB_PATH' git2r
   ---------------------------------------------])
 fi
 
