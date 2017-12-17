@@ -18,7 +18,7 @@ typedef struct _GIT_REPARSE_DATA_BUFFER {
 	ULONG  ReparseTag;
 	USHORT ReparseDataLength;
 	USHORT Reserved;
-	union {
+	_ANONYMOUS_UNION union {
 		struct {
 			USHORT SubstituteNameOffset;
 			USHORT SubstituteNameLength;
@@ -37,7 +37,7 @@ typedef struct _GIT_REPARSE_DATA_BUFFER {
 		struct {
 			UCHAR DataBuffer[1];
 		} GenericReparseBuffer;
-	};
+	} DUMMYUNIONNAME;
 } GIT_REPARSE_DATA_BUFFER;
 
 #define REPARSE_DATA_HEADER_SIZE			8

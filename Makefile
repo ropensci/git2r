@@ -128,6 +128,7 @@ sync_libgit2:
 	-rm -f src/libgit2/src/win32/w32_stack.c
 	-rm -f src/libgit2/src/win32/w32_stack.h
 	cd src/libgit2/src && patch -i ../../../patches/cc-compat.h.patch
+	cd src/libgit2/src/win32 && patch -i ../../../../patches/reparse.h.patch
 	cd src/libgit2/include/git2 && patch -i ../../../../patches/common.h.patch
 	cd src/libgit2/deps/regex && patch -i ../../../../patches/regcomp-pass-R-CMD-check-git2r.patch
 	cd src/libgit2/deps/regex && patch -i ../../../../patches/regex-prefix-entry-points.patch
