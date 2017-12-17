@@ -1,6 +1,20 @@
 git2r 0.19.0.9000
 -----------------
 
+IMPROVEMENTS
+
+* Updated the bundled libgit2 source code to commit (fa8cf14) from 16
+  December 2017.
+
+* Improvements to the build configuration script.
+
+BUG FIXES
+
+* Fixed the internal callback for remote host authentication from
+  hanging indefinitely when querying an ssh-agent for
+  credentials. Now, the callback signals an error instead of trying
+  again if the authentication failed the first time.
+
 git2r 0.19.0
 ------------
 
