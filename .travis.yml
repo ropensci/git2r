@@ -17,8 +17,22 @@ addons:
 r_packages:
   - covr
 
+r:
+  - 3.2
+  - oldrel
+  - release
+  - devel
+
+matrix:
+  include:
+  - r: 3.1
+    warnings_are_errors: false
+  - r: release
+  env: DISPLAY=""
+
+# Only report coverage for the release version
 after_success:
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then Rscript -e "library(covr); coveralls(exclusions=list.files('src/libgit2', pattern='[.](c|h)$', full.names=TRUE, recursive=TRUE))"; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TRAVIS_R_VERSION_STRING" == "release" ]; then Rscript -e "library(covr); coveralls(exclusions=list.files('src/libgit2', pattern='[.](c|h)$', full.names=TRUE, recursive=TRUE))"; fi
 
 notifications:
   slack:
