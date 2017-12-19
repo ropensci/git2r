@@ -1,13 +1,18 @@
+# R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
+
 language: r
-sudo: required
+sudo: false
+cache: packages
 warnings_are_errors: true
 
 os:
   - linux
   - osx
 
-apt_packages:
-  - libssh2-1-dev
+addons:
+  apt:
+    packages:
+      - libssh2-1-dev
 
 r_packages:
   - covr
