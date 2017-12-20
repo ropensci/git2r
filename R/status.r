@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2016 The git2r contributors
+## Copyright (C) 2013-2017 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -134,7 +134,7 @@ print.git_status <- function(x, ...)
         invisible(NULL)
     }
 
-    if (max(lengths(x)) == 0L)
+    if (max(sapply(x, length)) == 0L)
       cat("working directory clean\n")
 
     if (length(x$ignored)) {
