@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2017 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -45,7 +45,7 @@ get_refspec <- function(repo = NULL, remote = NULL, spec = NULL, opts = NULL)
     ## configuration is missing, it defaults to origin.
     if (!is.null(remote)) {
         stopifnot(is.character(remote), identical(length(remote), 1L))
-        remote <- trimws(remote)
+        remote <- sub("^[[:space:]]*", "", sub("[[:space:]]*$", "", remote))
         if (identical(nchar(remote), 0L))
             remote <- NULL
     }
