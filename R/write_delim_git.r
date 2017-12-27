@@ -64,8 +64,12 @@ setMethod(
     )
 
     # stage the file
-    filename.local <- paste(connection@LocalPath, file, sep = "/")
-    add(connection@Repository, filename.local)
+    if (connection@LocalPath == ".") {
+      filename.local <- file
+    } else {
+      filename.local <- paste(connection@LocalPath, file, sep = "/")
+    }
+    add(repo = connection@Repository, path = filename.local)
 
     return(hashfile(filename.full))
   }
