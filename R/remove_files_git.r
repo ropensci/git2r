@@ -1,6 +1,6 @@
 #' Remove all the files in a path of a git repository
 #'
-#' @inheritParams write_delim_git
+#' @inheritParams read_delim_git
 #' @inheritParams base::list.files
 #' @name remove_files_git
 #' @rdname remove_files_git

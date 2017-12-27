@@ -1,5 +1,5 @@
 #' List the files in a path of a git repository
-#' @inheritParams write_delim_git
+#' @inheritParams read_delim_git
 #' @inheritParams base::list.files
 #' @name list_files_git
 #' @rdname list_files_git

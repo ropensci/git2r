@@ -1,5 +1,9 @@
 #' Read a tab delimited file from a git repository
-#' @inheritParams write_delim_git
+#' @param file the name of the file
+#' @param connection The path of a git repository or a \code{git_connection}
+#'    object
+#' @param ... parameters passed to \code{git_connection()} when
+#'    \code{connection} is a path
 #' @name read_delim_git
 #' @rdname read_delim_git
 #' @exportMethod read_delim_git

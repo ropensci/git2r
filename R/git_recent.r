@@ -1,5 +1,5 @@
 #' Get the info from the latest commit of a file
-#' @inheritParams write_delim_git
+#' @inheritParams read_delim_git
 #' @name git_recent
 #' @rdname git_recent
 #' @exportMethod git_recent

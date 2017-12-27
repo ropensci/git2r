@@ -24,7 +24,8 @@ write_delim_git(x, file, connection, ...)
 object}
 
 \item{...}{parameters passed to \code{git_connection()} when
-\code{connection} is a path}
+\code{connection} is a path. When \code{force} is available it is passed
+to \code{add()}.}
 }
 \value{
 the SHA1 of the file

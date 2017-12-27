@@ -1,5 +1,5 @@
 #' Get the SHA of the files at the HEAD
-#' @inheritParams write_delim_git
+#' @inheritParams read_delim_git
 #' @name git_sha
 #' @rdname git_sha
 #' @exportMethod git_sha

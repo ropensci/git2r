@@ -2,12 +2,11 @@
 #'
 #' The existing file will be overwritten.
 #' @param x the data.frame
-#' @param file the name of the file
-#' @param connection The path of a git repository or a \code{git_connection}
-#'    object
 #' @param ... parameters passed to \code{git_connection()} when
-#'    \code{connection} is a path
+#'    \code{connection} is a path. When \code{force} is available it is passed
+#'    to \code{add()}.
 #' @return the SHA1 of the file
+#' @inheritParams read_delim_git
 #' @name write_delim_git
 #' @rdname write_delim_git
 #' @exportMethod write_delim_git
@@ -38,7 +37,7 @@ setMethod(
 #' @rdname write_delim_git
 #' @aliases write_delim_git,git_connection-methods
 #' @importFrom methods setMethod
-#' @importFrom assertthat assert_that is.string
+#' @importFrom assertthat assert_that is.string has_name
 setMethod(
   f = "write_delim_git",
   signature = signature(connection = "git_connection"),
@@ -69,7 +68,16 @@ setMethod(
     } else {
       filename.local <- paste(connection@LocalPath, file, sep = "/")
     }
-    add(repo = connection@Repository, path = filename.local)
+    dots <- list(...)
+    if (has_name(dots, "force")) {
+      add(
+        repo = connection@Repository,
+        path = filename.local,
+        force = dots$force
+      )
+    } else {
+      add(repo = connection@Repository, path = filename.local)
+    }
 
     return(hashfile(filename.full))
   }
