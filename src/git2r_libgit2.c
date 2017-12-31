@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2017 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -97,13 +97,13 @@ SEXP git2r_ssl_cert_locations(SEXP filename, SEXP path)
     const char *f = NULL;
     const char *p = NULL;
 
-    if (filename != R_NilValue) {
+    if (!isNull(filename)) {
         if (git2r_arg_check_string(filename))
             git2r_error(__func__, NULL, "'filename'", git2r_err_string_arg);
         f = CHAR(STRING_ELT(filename, 0));
     }
 
-    if (path != R_NilValue) {
+    if (!isNull(path)) {
         if (git2r_arg_check_string(path))
             git2r_error(__func__, NULL, "'path'", git2r_err_string_arg);
         p = CHAR(STRING_ELT(path, 0));

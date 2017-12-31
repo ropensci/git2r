@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2017 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -176,19 +176,19 @@ static int git2r_odb_objects_cb(const git_oid *oid, void *payload)
 
     switch(type) {
     case GIT_OBJ_COMMIT:
-        if (R_NilValue != p->list)
+        if (!isNull(p->list))
             git2r_add_object(oid, p->list, p->n, "commit", len);
         break;
     case GIT_OBJ_TREE:
-        if (R_NilValue != p->list)
+        if (!isNull(p->list))
             git2r_add_object(oid, p->list, p->n, "tree", len);
         break;
     case GIT_OBJ_BLOB:
-        if (R_NilValue != p->list)
+        if (!isNull(p->list))
             git2r_add_object(oid, p->list, p->n, "blob", len);
         break;
     case GIT_OBJ_TAG:
-        if (R_NilValue != p->list)
+        if (!isNull(p->list))
             git2r_add_object(oid, p->list, p->n, "tag", len);
         break;
     default:
@@ -251,7 +251,7 @@ cleanup:
     if (odb)
         git_odb_free(odb);
 
-    if (R_NilValue != result)
+    if (!isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -391,7 +391,7 @@ static int git2r_odb_tree_blobs(
             break;
         }
         case GIT_OBJ_BLOB:
-            if (R_NilValue != data->list) {
+            if (!isNull(data->list)) {
                 err = git2r_odb_add_blob(
                     entry,
                     data->odb,
@@ -534,7 +534,7 @@ cleanup:
     if (odb)
         git_odb_free(odb);
 
-    if (R_NilValue != result)
+    if (!isNull(result))
         UNPROTECT(1);
 
     if (err)

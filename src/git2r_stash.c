@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2017 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -114,7 +114,7 @@ static int git2r_stash_list_cb(
     GIT_UNUSED(message);
 
     /* Check if we have a list to populate */
-    if (R_NilValue != cb_data->list) {
+    if (!isNull(cb_data->list)) {
         int err;
         SEXP stash;
 
@@ -169,7 +169,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != list)
+    if (!isNull(list))
         UNPROTECT(1);
 
     if (err)
@@ -257,7 +257,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != result)
+    if (!isNull(result))
         UNPROTECT(1);
 
     if (err)

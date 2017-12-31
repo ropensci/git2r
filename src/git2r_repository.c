@@ -41,7 +41,7 @@ git_repository* git2r_repository_open(SEXP repo)
     SEXP path;
     git_repository *repository;
 
-    if (R_NilValue == repo || S4SXP != TYPEOF(repo))
+    if (isNull(repo) || S4SXP != TYPEOF(repo))
         return NULL;
 
     class_name = getAttrib(repo, R_ClassSymbol);
@@ -88,7 +88,7 @@ static int git2r_repository_fetchhead_foreach_cb(
     git2r_fetch_head_cb_data *cb_data = (git2r_fetch_head_cb_data*)payload;
 
     /* Check if we have a list to populate */
-    if (R_NilValue != cb_data->list) {
+    if (!isNull(cb_data->list)) {
         char sha[GIT_OID_HEXSZ + 1];
         SEXP fetch_head;
         SEXP s_ref_name = Rf_install("ref_name");
@@ -156,7 +156,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != result)
+    if (!isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -219,7 +219,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != result)
+    if (!isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -540,7 +540,7 @@ SEXP git2r_repository_discover(SEXP path, SEXP ceiling)
 
     if (git2r_arg_check_string(path))
         git2r_error(__func__, NULL, "'path'", git2r_err_string_arg);
-    if (ceiling != R_NilValue) {
+    if (!isNull(ceiling)) {
         if (git2r_arg_check_string(ceiling))
             git2r_error(__func__, NULL, "'ceiling'", git2r_err_string_arg);
         ceiling_dirs = CHAR(STRING_ELT(ceiling, 0));
@@ -567,7 +567,7 @@ SEXP git2r_repository_discover(SEXP path, SEXP ceiling)
 cleanup:
     git_buf_free(&buf);
 
-    if (R_NilValue != result)
+    if (!isNull(result))
         UNPROTECT(1);
 
     if (err)

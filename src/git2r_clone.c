@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2017 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -97,7 +97,7 @@ SEXP git2r_clone(
         git2r_error(__func__, NULL, "'local_path'", git2r_err_string_arg);
     if (git2r_arg_check_logical(bare))
         git2r_error(__func__, NULL, "'bare'", git2r_err_logical_arg);
-    if (branch != R_NilValue && git2r_arg_check_string(branch))
+    if ((!isNull(branch)) && git2r_arg_check_string(branch))
         git2r_error(__func__, NULL, "'branch'", git2r_err_string_arg);
     if (git2r_arg_check_logical(checkout))
         git2r_error(__func__, NULL, "'checkout'", git2r_err_logical_arg);
@@ -110,7 +110,7 @@ SEXP git2r_clone(
       checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE;
     else
       checkout_opts.checkout_strategy = GIT_CHECKOUT_NONE;
-    
+
     clone_opts.checkout_opts = checkout_opts;
     payload.credentials = credentials;
     clone_opts.fetch_opts.callbacks.payload = &payload;
@@ -119,7 +119,7 @@ SEXP git2r_clone(
     if (LOGICAL(bare)[0])
         clone_opts.bare = 1;
 
-    if (branch != R_NilValue)
+    if (!isNull(branch))
         clone_opts.checkout_branch = CHAR(STRING_ELT(branch, 0));
 
     if (LOGICAL(progress)[0]) {

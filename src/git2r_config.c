@@ -247,7 +247,7 @@ static int git2r_config_open(git_config **out, SEXP repo, int snapshot)
 {
     int err;
 
-    if (repo != R_NilValue) {
+    if (!isNull(repo)) {
         git_repository *repository = git2r_repository_open(repo);
         if (!repository)
             git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
@@ -314,7 +314,7 @@ cleanup:
     if (cfg)
         git_config_free(cfg);
 
-    if (R_NilValue != result)
+    if (!isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -421,7 +421,7 @@ cleanup:
     if (cfg)
         git_config_free(cfg);
 
-    if (R_NilValue != result)
+    if (!isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -469,7 +469,7 @@ cleanup:
     if (cfg)
         git_config_free(cfg);
 
-    if (R_NilValue != result)
+    if (!isNull(result))
         UNPROTECT(1);
 
     if (err)

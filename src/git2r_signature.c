@@ -52,7 +52,7 @@ cleanup:
     if (signature)
         git_signature_free(signature);
 
-    if (R_NilValue != result)
+    if (!isNull(result))
         UNPROTECT(1);
 
     if (err)

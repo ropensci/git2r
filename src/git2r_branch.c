@@ -159,7 +159,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != result)
+    if (!isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -255,7 +255,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != result)
+    if (!isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -334,7 +334,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != result)
+    if (!isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -381,7 +381,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != result)
+    if (!isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -449,7 +449,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != result)
+    if (!isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -508,7 +508,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != result)
+    if (!isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -580,7 +580,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != result)
+    if (!isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -654,7 +654,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != result)
+    if (!isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -708,7 +708,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != result)
+    if (!isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -768,7 +768,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != result)
+    if (!isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -798,7 +798,7 @@ SEXP git2r_branch_set_upstream(SEXP branch, SEXP upstream_name)
 
     if (git2r_arg_check_branch(branch))
         git2r_error(__func__, NULL, "'branch'", git2r_err_branch_arg);
-    if (R_NilValue != upstream_name) {
+    if (!isNull(upstream_name)) {
         if (git2r_arg_check_string(upstream_name))
             git2r_error(__func__, NULL, "'upstream_name'", git2r_err_string_arg);
         u_name = CHAR(STRING_ELT(upstream_name, 0));

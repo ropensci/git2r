@@ -32,7 +32,7 @@ int git2r_arg_check_blob(SEXP arg)
 {
     SEXP class_name;
 
-    if (R_NilValue == arg || S4SXP != TYPEOF(arg))
+    if (isNull(arg) || S4SXP != TYPEOF(arg))
         return -1;
 
     class_name = getAttrib(arg, R_ClassSymbol);
@@ -56,7 +56,7 @@ int git2r_arg_check_branch(SEXP arg)
     SEXP class_name;
     SEXP slot;
 
-    if (R_NilValue == arg || S4SXP != TYPEOF(arg))
+    if (isNull(arg) || S4SXP != TYPEOF(arg))
         return -1;
 
     class_name = getAttrib(arg, R_ClassSymbol);
@@ -90,7 +90,7 @@ int git2r_arg_check_commit(SEXP arg)
 {
     SEXP class_name;
 
-    if (R_NilValue == arg || S4SXP != TYPEOF(arg))
+    if (isNull(arg) || S4SXP != TYPEOF(arg))
         return -1;
 
     class_name = getAttrib(arg, R_ClassSymbol);
@@ -114,7 +114,7 @@ int git2r_arg_check_credentials(SEXP arg)
     SEXP class_name;
 
     /* It's ok if the credentials is R_NilValue */
-    if (R_NilValue == arg)
+    if (isNull(arg))
         return 0;
 
     if (S4SXP != TYPEOF(arg))
@@ -185,7 +185,7 @@ int git2r_arg_check_fetch_heads(SEXP arg)
     SEXP s_repo = Rf_install("repo");
     SEXP s_path = Rf_install("path");
 
-    if (R_NilValue == arg || VECSXP != TYPEOF(arg))
+    if (isNull(arg) || VECSXP != TYPEOF(arg))
         return -1;
 
     /* Check that the repository paths are identical for each item */
@@ -195,7 +195,7 @@ int git2r_arg_check_fetch_heads(SEXP arg)
         SEXP class_name;
         SEXP item = VECTOR_ELT(arg, i);
 
-        if (R_NilValue == item || S4SXP != TYPEOF(item))
+        if (isNull(item) || S4SXP != TYPEOF(item))
             return -1;
 
         class_name = getAttrib(item, R_ClassSymbol);
@@ -227,7 +227,7 @@ int git2r_arg_check_fetch_heads(SEXP arg)
  */
 int git2r_arg_check_filename(SEXP arg)
 {
-    if (R_NilValue == arg)
+    if (isNull(arg))
         return 0;
     if (!isString(arg))
         return -1;
@@ -275,7 +275,7 @@ int git2r_arg_check_sha(SEXP arg)
  */
 int git2r_arg_check_integer(SEXP arg)
 {
-    if (R_NilValue == arg
+    if (isNull(arg)
         || !isInteger(arg)
         || 1 != length(arg)
         || NA_INTEGER == INTEGER(arg)[0])
@@ -306,7 +306,7 @@ int git2r_arg_check_integer_gte_zero(SEXP arg)
  */
 int git2r_arg_check_list(SEXP arg)
 {
-    if (R_NilValue == arg || !isNewList(arg))
+    if (isNull(arg) || !isNewList(arg))
         return -1;
     return 0;
 }
@@ -320,7 +320,7 @@ int git2r_arg_check_list(SEXP arg)
  */
 int git2r_arg_check_logical(SEXP arg)
 {
-    if (R_NilValue == arg
+    if (isNull(arg)
         || !isLogical(arg)
         || 1 != length(arg)
         || NA_LOGICAL == LOGICAL(arg)[0])
@@ -338,7 +338,7 @@ int git2r_arg_check_note(SEXP arg)
 {
     SEXP class_name;
 
-    if (R_NilValue == arg || S4SXP != TYPEOF(arg))
+    if (isNull(arg) || S4SXP != TYPEOF(arg))
         return -1;
 
     class_name = getAttrib(arg, R_ClassSymbol);
@@ -362,7 +362,7 @@ int git2r_arg_check_note(SEXP arg)
  */
 int git2r_arg_check_real(SEXP arg)
 {
-    if (R_NilValue == arg
+    if (isNull(arg)
         || !isReal(arg)
         || 1 != length(arg)
         || !R_finite(REAL(arg)[0]))
@@ -381,7 +381,7 @@ int git2r_arg_check_signature(SEXP arg)
     SEXP class_name;
     SEXP when;
 
-    if (R_NilValue == arg || S4SXP != TYPEOF(arg))
+    if (isNull(arg) || S4SXP != TYPEOF(arg))
         return -1;
 
     class_name = getAttrib(arg, R_ClassSymbol);
@@ -429,7 +429,7 @@ int git2r_arg_check_string(SEXP arg)
  */
 int git2r_arg_check_string_vec(SEXP arg)
 {
-    if (R_NilValue == arg || !isString(arg))
+    if (isNull(arg) || !isString(arg))
         return -1;
     return 0;
 }
@@ -481,7 +481,7 @@ int git2r_arg_check_tag(SEXP arg)
 {
     SEXP class_name;
 
-    if (R_NilValue == arg || S4SXP != TYPEOF(arg))
+    if (isNull(arg) || S4SXP != TYPEOF(arg))
         return -1;
 
     class_name = getAttrib(arg, R_ClassSymbol);
@@ -504,7 +504,7 @@ int git2r_arg_check_tree(SEXP arg)
 {
     SEXP class_name;
 
-    if (R_NilValue == arg || S4SXP != TYPEOF(arg))
+    if (isNull(arg) || S4SXP != TYPEOF(arg))
         return -1;
 
     class_name = getAttrib(arg, R_ClassSymbol);

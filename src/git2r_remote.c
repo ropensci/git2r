@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2016 The git2r contributors
+ *  Copyright (C) 2013-2017 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -148,7 +148,7 @@ SEXP git2r_remote_fetch(
         git2r_error(__func__, NULL, "'msg'", git2r_err_string_arg);
     if (git2r_arg_check_logical(verbose))
         git2r_error(__func__, NULL, "'verbose'", git2r_err_logical_arg);
-    if (refspecs != R_NilValue && git2r_arg_check_string_vec(refspecs))
+    if ((!isNull(refspecs)) && git2r_arg_check_string_vec(refspecs))
         git2r_error(__func__, NULL, "'refspecs'", git2r_err_string_vec_arg);
 
     repository = git2r_repository_open(repo);
@@ -159,7 +159,7 @@ SEXP git2r_remote_fetch(
     if (err)
         goto cleanup;
 
-    if (refspecs != R_NilValue) {
+    if (!isNull(refspecs)) {
         size_t i, len;
 
         /* Count number of non NA values */
@@ -211,7 +211,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != result)
+    if (!isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -256,7 +256,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != list)
+    if (!isNull(list))
         UNPROTECT(1);
 
     if (err)
@@ -507,7 +507,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (result != R_NilValue)
+    if (!isNull(result))
         UNPROTECT(1);
 
     if (err)

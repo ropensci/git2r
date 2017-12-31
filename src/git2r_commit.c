@@ -353,7 +353,7 @@ cleanup:
     if (commit)
         git_commit_free(commit);
 
-    if (R_NilValue != result)
+    if (!isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -427,7 +427,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != result)
+    if (!isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -531,7 +531,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (R_NilValue != list)
+    if (!isNull(list))
         UNPROTECT(1);
 
     if (err)
