@@ -467,8 +467,15 @@ SEXP git2r_remote_ls(SEXP name, SEXP repo, SEXP credentials)
     }
 
     name_ = CHAR(STRING_ELT(name, 0));
-    err = git_remote_lookup(&remote, repository, name_);
-    if (err) {
+
+    if (repository) {
+        err = git_remote_lookup(&remote, repository, name_);
+        if (err) {
+            err = git_remote_create_anonymous(&remote, repository, name_);
+            if (err)
+                goto cleanup;
+        }
+    } else {
         err = git_remote_create_anonymous(&remote, repository, name_);
         if (err)
             goto cleanup;
