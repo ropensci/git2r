@@ -385,12 +385,6 @@ setMethod("remote_ls",
           signature(name = "character"),
           function(name, repo, credentials)
           {
-              if (is.null(repo)) {
-                  path <- tempdir()
-                  repo <- git2r::init(path)
-                  on.exit(unlink(file.path(path, ".git"), recursive = TRUE))
-              }
-
               .Call(git2r_remote_ls, name, repo, credentials)
           }
 )

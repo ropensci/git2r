@@ -460,9 +460,11 @@ SEXP git2r_remote_ls(SEXP name, SEXP repo, SEXP credentials)
     if (git2r_arg_check_credentials(credentials))
         git2r_error(__func__, NULL, "'credentials'", git2r_err_credentials_arg);
 
-    repository = git2r_repository_open(repo);
-    if (!repository)
-        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
+    if (!isNull(repo)) {
+        repository = git2r_repository_open(repo);
+        if (!repository)
+            git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
+    }
 
     name_ = CHAR(STRING_ELT(name, 0));
     err = git_remote_lookup(&remote, repository, name_);
