@@ -3,10 +3,13 @@
 \docType{methods}
 \name{odb_objects}
 \alias{odb_objects}
+\alias{odb_objects,missing-method}
 \alias{odb_objects,git_repository-method}
 \title{List all objects available in the database}
 \usage{
 odb_objects(repo)
+
+\S4method{odb_objects}{missing}()
 
 \S4method{odb_objects}{git_repository}(repo)
 }
