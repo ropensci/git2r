@@ -138,6 +138,16 @@ setGeneric("odb_objects",
 ##' @rdname odb_objects-methods
 ##' @export
 setMethod("odb_objects",
+          signature(repo = "missing"),
+          function()
+          {
+              callGeneric(repo = lookup_repository())
+          }
+)
+
+##' @rdname odb_objects-methods
+##' @export
+setMethod("odb_objects",
           signature(repo = "git_repository"),
           function(repo)
           {
