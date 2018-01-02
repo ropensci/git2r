@@ -7,8 +7,6 @@
 #ifndef INCLUDE_object_h__
 #define INCLUDE_object_h__
 
-#include "common.h"
-
 #include "repository.h"
 
 extern bool git_object__strict_input_validation;
@@ -29,8 +27,6 @@ int git_object__from_odb_object(
 	git_otype type);
 
 int git_object__resolve_to_type(git_object **obj, git_otype type);
-
-git_otype git_object_stringn2type(const char *str, size_t len);
 
 int git_oid__parse(git_oid *oid, const char **buffer_out, const char *buffer_end, const char *header);
 

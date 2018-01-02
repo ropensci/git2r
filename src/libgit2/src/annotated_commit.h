@@ -7,8 +7,6 @@
 #ifndef INCLUDE_annotated_commit_h__
 #define INCLUDE_annotated_commit_h__
 
-#include "common.h"
-
 #include "oidarray.h"
 
 #include "git2/oid.h"

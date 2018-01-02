@@ -7,8 +7,6 @@
 #ifndef INCLUDE_push_h__
 #define INCLUDE_push_h__
 
-#include "common.h"
-
 #include "git2.h"
 #include "refspec.h"
 

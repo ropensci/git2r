@@ -4,15 +4,14 @@
  * This file is part of libgit2, distributed under the GNU GPL v2 with
  * a Linking Exception. For full terms see the included COPYING file.
  */
-
-#include "repository.h"
-
 #include <ctype.h>
 
 #include "git2/object.h"
+#include "git2/refdb.h"
 #include "git2/sys/repository.h"
 
 #include "common.h"
+#include "repository.h"
 #include "commit.h"
 #include "tag.h"
 #include "blob.h"
@@ -24,7 +23,6 @@
 #include "refs.h"
 #include "filter.h"
 #include "odb.h"
-#include "refdb.h"
 #include "remote.h"
 #include "merge.h"
 #include "diff_driver.h"
@@ -946,7 +944,7 @@ static int load_config(
 		return error;
 
 	if ((error = git_repository_item_path(&config_path, repo, GIT_REPOSITORY_ITEM_CONFIG)) == 0)
-		error = git_config_add_file_ondisk(cfg, config_path.ptr, GIT_CONFIG_LEVEL_LOCAL, repo, 0);
+		error = git_config_add_file_ondisk(cfg, config_path.ptr, GIT_CONFIG_LEVEL_LOCAL, 0);
 
 	if (error && error != GIT_ENOTFOUND)
 		goto on_error;
@@ -955,25 +953,25 @@ static int load_config(
 
 	if (global_config_path != NULL &&
 		(error = git_config_add_file_ondisk(
-			cfg, global_config_path, GIT_CONFIG_LEVEL_GLOBAL, repo, 0)) < 0 &&
+			cfg, global_config_path, GIT_CONFIG_LEVEL_GLOBAL, 0)) < 0 &&
 		error != GIT_ENOTFOUND)
 		goto on_error;
 
 	if (xdg_config_path != NULL &&
 		(error = git_config_add_file_ondisk(
-			cfg, xdg_config_path, GIT_CONFIG_LEVEL_XDG, repo, 0)) < 0 &&
+			cfg, xdg_config_path, GIT_CONFIG_LEVEL_XDG, 0)) < 0 &&
 		error != GIT_ENOTFOUND)
 		goto on_error;
 
 	if (system_config_path != NULL &&
 		(error = git_config_add_file_ondisk(
-			cfg, system_config_path, GIT_CONFIG_LEVEL_SYSTEM, repo, 0)) < 0 &&
+			cfg, system_config_path, GIT_CONFIG_LEVEL_SYSTEM, 0)) < 0 &&
 		error != GIT_ENOTFOUND)
 		goto on_error;
 
 	if (programdata_path != NULL &&
 		(error = git_config_add_file_ondisk(
-			cfg, programdata_path, GIT_CONFIG_LEVEL_PROGRAMDATA, repo, 0)) < 0 &&
+			cfg, programdata_path, GIT_CONFIG_LEVEL_PROGRAMDATA, 0)) < 0 &&
 		error != GIT_ENOTFOUND)
 		goto on_error;
 
@@ -1237,7 +1235,7 @@ static int reserved_names_add8dot3(git_repository *repo, const char *path)
 
 	name_len = strlen(name);
 
-	if ((name_len == def_len && memcmp(name, def, def_len) == 0) ||
+	if ((name_len == def_len && memcmp(name, def, def_len) == 0) || 
 		(name_len == def_dot_git_len && memcmp(name, def_dot_git, def_dot_git_len) == 0)) {
 		git__free(name);
 		return 0;
@@ -1475,7 +1473,7 @@ static int repo_local_config(
 		giterr_clear();
 
 		if (!(error = git_config_add_file_ondisk(
-				parent, cfg_path, GIT_CONFIG_LEVEL_LOCAL, repo, false)))
+				parent, cfg_path, GIT_CONFIG_LEVEL_LOCAL, false)))
 			error = git_config_open_level(out, parent, GIT_CONFIG_LEVEL_LOCAL);
 	}
 
@@ -1786,13 +1784,7 @@ static int repo_init_structure(
 			default_template = true;
 		}
 
-		/*
-		 * If tdir was the empty string, treat it like tdir was a path to an
-		 * empty directory (so, don't do any copying). This is the behavior
-		 * that git(1) exhibits, although it doesn't seem to be officially
-		 * documented.
-		 */
-		if (tdir && git__strcmp(tdir, "") != 0) {
+		if (tdir) {
 			uint32_t cpflags = GIT_CPDIR_COPY_SYMLINKS |
 				GIT_CPDIR_SIMPLE_TO_MODE |
 				GIT_CPDIR_COPY_DOTFILES;
@@ -2256,7 +2248,7 @@ int git_repository_is_empty(git_repository *repo)
 	return is_empty;
 }
 
-int git_repository_item_path(git_buf *out, const git_repository *repo, git_repository_item_t item)
+int git_repository_item_path(git_buf *out, git_repository *repo, git_repository_item_t item)
 {
 	const char *parent;
 
@@ -2296,13 +2288,13 @@ int git_repository_item_path(git_buf *out, const git_repository *repo, git_repos
 	return 0;
 }
 
-const char *git_repository_path(const git_repository *repo)
+const char *git_repository_path(git_repository *repo)
 {
 	assert(repo);
 	return repo->gitdir;
 }
 
-const char *git_repository_workdir(const git_repository *repo)
+const char *git_repository_workdir(git_repository *repo)
 {
 	assert(repo);
 
@@ -2312,7 +2304,7 @@ const char *git_repository_workdir(const git_repository *repo)
 	return repo->workdir;
 }
 
-const char *git_repository_commondir(const git_repository *repo)
+const char *git_repository_commondir(git_repository *repo)
 {
 	assert(repo);
 	return repo->commondir;
@@ -2362,13 +2354,13 @@ int git_repository_set_workdir(
 	return error;
 }
 
-int git_repository_is_bare(const git_repository *repo)
+int git_repository_is_bare(git_repository *repo)
 {
 	assert(repo);
 	return repo->is_bare;
 }
 
-int git_repository_is_worktree(const git_repository *repo)
+int git_repository_is_worktree(git_repository *repo)
 {
 	assert(repo);
 	return repo->is_worktree;
@@ -2770,7 +2762,7 @@ int git_repository__cleanup_files(
 			error = git_futils_rmdir_r(path, NULL,
 				GIT_RMDIR_REMOVE_FILES | GIT_RMDIR_REMOVE_BLOCKERS);
 		}
-
+			
 		git_buf_clear(&buf);
 	}
 

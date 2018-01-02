@@ -385,6 +385,14 @@ setMethod("remote_ls",
           signature(name = "character"),
           function(name, repo, credentials)
           {
+              ## FIXME: When updating to libgit 0.26 + 1, remove this
+              ## and allow repo to be NULL, see 'git2r_remote_ls'.
+              if (is.null(repo)) {
+                  path <- tempdir()
+                  repo <- git2r::init(path)
+                  on.exit(unlink(file.path(path, ".git"), recursive = TRUE))
+              }
+
               .Call(git2r_remote_ls, name, repo, credentials)
           }
 )

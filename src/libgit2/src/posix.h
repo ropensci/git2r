@@ -8,7 +8,6 @@
 #define INCLUDE_posix_h__
 
 #include "common.h"
-
 #include <fcntl.h>
 #include <time.h>
 #include "fnmatch.h"
@@ -59,9 +58,6 @@
 #endif
 #ifndef O_CLOEXEC
 #define O_CLOEXEC 0
-#endif
-#ifndef SOCK_CLOEXEC
-#define SOCK_CLOEXEC 0
 #endif
 
 /* access() mode parameter #defines	*/

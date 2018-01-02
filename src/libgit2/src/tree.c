@@ -5,9 +5,9 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
-#include "tree.h"
-
+#include "common.h"
 #include "commit.h"
+#include "tree.h"
 #include "git2/repository.h"
 #include "git2/object.h"
 #include "fileops.h"

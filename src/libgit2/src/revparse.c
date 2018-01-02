@@ -5,10 +5,9 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
-#include "common.h"
-
 #include <assert.h>
 
+#include "common.h"
 #include "buffer.h"
 #include "tree.h"
 #include "refdb.h"

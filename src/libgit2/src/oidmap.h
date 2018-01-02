@@ -8,7 +8,6 @@
 #define INCLUDE_oidmap_h__
 
 #include "common.h"
-
 #include "git2/oid.h"
 
 #define kmalloc git__malloc

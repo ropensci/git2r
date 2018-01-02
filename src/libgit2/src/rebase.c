@@ -6,7 +6,6 @@
  */
 
 #include "common.h"
-
 #include "buffer.h"
 #include "repository.h"
 #include "posix.h"

@@ -5,31 +5,25 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
-#include "zstream.h"
-
 #include <zlib.h>
 
+#include "zstream.h"
 #include "buffer.h"
 
 #define ZSTREAM_BUFFER_SIZE (1024 * 1024)
 #define ZSTREAM_BUFFER_MIN_EXTRA 8
 
-GIT_INLINE(int) zstream_seterr(git_zstream *zs)
+static int zstream_seterr(git_zstream *zs)
 {
-	switch (zs->zerr) {
-	case Z_OK:
-	case Z_STREAM_END:
-	case Z_BUF_ERROR: /* not fatal; we retry with a larger buffer */
+	if (zs->zerr == Z_OK || zs->zerr == Z_STREAM_END)
 		return 0;
-	case Z_MEM_ERROR:
+
+	if (zs->zerr == Z_MEM_ERROR)
 		giterr_set_oom();
-		break;
-	default:
-		if (zs->z.msg)
-			giterr_set_str(GITERR_ZLIB, zs->z.msg);
-		else
-			giterr_set(GITERR_ZLIB, "unknown compression error");
-	}
+	else if (zs->z.msg)
+		giterr_set_str(GITERR_ZLIB, zs->z.msg);
+	else
+		giterr_set(GITERR_ZLIB, "unknown compression error");
 
 	return -1;
 }
@@ -103,9 +97,8 @@ int git_zstream_get_output(void *out, size_t *out_len, git_zstream *zstream)
 		/* set up in data */
 		zstream->z.next_in  = (Bytef *)zstream->in;
 		zstream->z.avail_in = (uInt)zstream->in_len;
-
 		if ((size_t)zstream->z.avail_in != zstream->in_len) {
-			zstream->z.avail_in = UINT_MAX;
+			zstream->z.avail_in = INT_MAX;
 			zflush = Z_NO_FLUSH;
 		} else {
 			zflush = Z_FINISH;
@@ -116,7 +109,7 @@ int git_zstream_get_output(void *out, size_t *out_len, git_zstream *zstream)
 		zstream->z.next_out = out;
 		zstream->z.avail_out = (uInt)out_remain;
 		if ((size_t)zstream->z.avail_out != out_remain)
-			zstream->z.avail_out = UINT_MAX;
+			zstream->z.avail_out = INT_MAX;
 		out_queued = (size_t)zstream->z.avail_out;
 
 		/* compress next chunk */
@@ -125,8 +118,8 @@ int git_zstream_get_output(void *out, size_t *out_len, git_zstream *zstream)
 		else
 			zstream->zerr = deflate(&zstream->z, zflush);
 
-		if (zstream_seterr(zstream))
-			return -1;
+		if (zstream->zerr == Z_STREAM_ERROR)
+			return zstream_seterr(zstream);
 
 		out_used = (out_queued - zstream->z.avail_out);
 		out_remain -= out_used;

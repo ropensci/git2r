@@ -7,8 +7,6 @@
 #ifndef INCLUDE_hash_h__
 #define INCLUDE_hash_h__
 
-#include "common.h"
-
 #include "git2/oid.h"
 
 typedef struct git_hash_prov git_hash_prov;

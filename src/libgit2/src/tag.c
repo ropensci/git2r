@@ -5,9 +5,9 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
-#include "tag.h"
-
+#include "common.h"
 #include "commit.h"
+#include "tag.h"
 #include "signature.h"
 #include "message.h"
 #include "git2/object.h"

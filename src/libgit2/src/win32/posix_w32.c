@@ -4,9 +4,6 @@
  * This file is part of libgit2, distributed under the GNU GPL v2 with
  * a Linking Exception. For full terms see the included COPYING file.
  */
-
-#include "common.h"
-
 #include "../posix.h"
 #include "../fileops.h"
 #include "path.h"
@@ -165,15 +162,12 @@ GIT_INLINE(bool) last_error_retryable(void)
 
 #define do_with_retries(fn, remediation) \
 	do {                                                             \
-		int __retry, __ret;                                          \
-		for (__retry = git_win32__retries; __retry; __retry--) {     \
+		int __tries, __ret;                                          \
+		for (__tries = 0; __tries < git_win32__retries; __tries++) { \
+			if (__tries && (__ret = (remediation)) != 0)             \
+				return __ret;                                        \
 			if ((__ret = (fn)) != GIT_RETRY)                         \
 				return __ret;                                        \
-			if (__retry > 1 && (__ret = (remediation)) != 0) {       \
-				if (__ret == GIT_RETRY)                              \
-					continue;                                        \
-				return __ret;                                        \
-			}                                                        \
 			Sleep(5);                                                \
 		}                                                            \
 		return -1;                                                   \
@@ -192,7 +186,7 @@ static int ensure_writable(wchar_t *path)
 	if (!SetFileAttributesW(path, (attrs & ~FILE_ATTRIBUTE_READONLY)))
 		goto on_error;
 
-	return GIT_RETRY;
+	return 0;
 
 on_error:
 	set_errno();

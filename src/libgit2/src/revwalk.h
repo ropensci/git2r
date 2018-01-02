@@ -7,8 +7,6 @@
 #ifndef INCLUDE_revwalk_h__
 #define INCLUDE_revwalk_h__
 
-#include "common.h"
-
 #include "git2/revwalk.h"
 #include "oidmap.h"
 #include "commit_list.h"

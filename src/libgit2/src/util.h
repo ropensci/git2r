@@ -7,11 +7,39 @@
 #ifndef INCLUDE_util_h__
 #define INCLUDE_util_h__
 
-#include "common.h"
-
 #include "git2/buffer.h"
 #include "buffer.h"
-#include "thread-utils.h"
+
+#if defined(GIT_MSVC_CRTDBG)
+/* Enable MSVC CRTDBG memory leak reporting.
+ *
+ * We DO NOT use the "_CRTDBG_MAP_ALLOC" macro described in the MSVC
+ * documentation because all allocs/frees in libgit2 already go through
+ * the "git__" routines defined in this file.  Simply using the normal
+ * reporting mechanism causes all leaks to be attributed to a routine
+ * here in util.h (ie, the actual call to calloc()) rather than the
+ * caller of git__calloc().
+ *
+ * Therefore, we declare a set of "git__crtdbg__" routines to replace
+ * the corresponding "git__" routines and re-define the "git__" symbols
+ * as macros.  This allows us to get and report the file:line info of
+ * the real caller.
+ *
+ * We DO NOT replace the "git__free" routine because it needs to remain
+ * a function pointer because it is used as a function argument when
+ * setting up various structure "destructors".
+ *
+ * We also DO NOT use the "_CRTDBG_MAP_ALLOC" macro because it causes
+ * "free" to be remapped to "_free_dbg" and this causes problems for
+ * structures which define a field named "free".
+ *
+ * Finally, CRTDBG must be explicitly enabled and configured at program
+ * startup.  See tests/main.c for an example.
+ */
+#include <stdlib.h>
+#include <crtdbg.h>
+#include "win32/w32_crtdbg_stacktrace.h"
+#endif
 
 #include "common.h"
 #include "strnlen.h"
@@ -39,33 +67,79 @@
 
 #if defined(GIT_MSVC_CRTDBG)
 
-/* Enable MSVC CRTDBG memory leak reporting.
- *
- * We DO NOT use the "_CRTDBG_MAP_ALLOC" macro described in the MSVC
- * documentation because all allocs/frees in libgit2 already go through
- * the "git__" routines defined in this file.  Simply using the normal
- * reporting mechanism causes all leaks to be attributed to a routine
- * here in util.h (ie, the actual call to calloc()) rather than the
- * caller of git__calloc().
- *
- * Therefore, we declare a set of "git__crtdbg__" routines to replace
- * the corresponding "git__" routines and re-define the "git__" symbols
- * as macros.  This allows us to get and report the file:line info of
- * the real caller.
- *
- * We DO NOT replace the "git__free" routine because it needs to remain
- * a function pointer because it is used as a function argument when
- * setting up various structure "destructors".
- *
- * We also DO NOT use the "_CRTDBG_MAP_ALLOC" macro because it causes
- * "free" to be remapped to "_free_dbg" and this causes problems for
- * structures which define a field named "free".
- *
- * Finally, CRTDBG must be explicitly enabled and configured at program
- * startup.  See tests/main.c for an example.
- */
+GIT_INLINE(void *) git__crtdbg__malloc(size_t len, const char *file, int line)
+{
+	void *ptr = _malloc_dbg(len, _NORMAL_BLOCK, git_win32__crtdbg_stacktrace(1,file), line);
+	if (!ptr) giterr_set_oom();
+	return ptr;
+}
 
-#include "win32/w32_crtdbg_stacktrace.h"
+GIT_INLINE(void *) git__crtdbg__calloc(size_t nelem, size_t elsize, const char *file, int line)
+{
+	void *ptr = _calloc_dbg(nelem, elsize, _NORMAL_BLOCK, git_win32__crtdbg_stacktrace(1,file), line);
+	if (!ptr) giterr_set_oom();
+	return ptr;
+}
+
+GIT_INLINE(char *) git__crtdbg__strdup(const char *str, const char *file, int line)
+{
+	char *ptr = _strdup_dbg(str, _NORMAL_BLOCK, git_win32__crtdbg_stacktrace(1,file), line);
+	if (!ptr) giterr_set_oom();
+	return ptr;
+}
+
+GIT_INLINE(char *) git__crtdbg__strndup(const char *str, size_t n, const char *file, int line)
+{
+	size_t length = 0, alloclength;
+	char *ptr;
+
+	length = p_strnlen(str, n);
+
+	if (GIT_ADD_SIZET_OVERFLOW(&alloclength, length, 1) ||
+		!(ptr = git__crtdbg__malloc(alloclength, file, line)))
+		return NULL;
+
+	if (length)
+		memcpy(ptr, str, length);
+
+	ptr[length] = '\0';
+
+	return ptr;
+}
+
+GIT_INLINE(char *) git__crtdbg__substrdup(const char *start, size_t n, const char *file, int line)
+{
+	char *ptr;
+	size_t alloclen;
+
+	if (GIT_ADD_SIZET_OVERFLOW(&alloclen, n, 1) ||
+		!(ptr = git__crtdbg__malloc(alloclen, file, line)))
+		return NULL;
+
+	memcpy(ptr, start, n);
+	ptr[n] = '\0';
+	return ptr;
+}
+
+GIT_INLINE(void *) git__crtdbg__realloc(void *ptr, size_t size, const char *file, int line)
+{
+	void *new_ptr = _realloc_dbg(ptr, size, _NORMAL_BLOCK, git_win32__crtdbg_stacktrace(1,file), line);
+	if (!new_ptr) giterr_set_oom();
+	return new_ptr;
+}
+
+GIT_INLINE(void *) git__crtdbg__reallocarray(void *ptr, size_t nelem, size_t elsize, const char *file, int line)
+{
+	size_t newsize;
+
+	return GIT_MULTIPLY_SIZET_OVERFLOW(&newsize, nelem, elsize) ?
+		NULL : _realloc_dbg(ptr, newsize, _NORMAL_BLOCK, git_win32__crtdbg_stacktrace(1,file), line);
+}
+
+GIT_INLINE(void *) git__crtdbg__mallocarray(size_t nelem, size_t elsize, const char *file, int line)
+{
+	return git__crtdbg__reallocarray(NULL, nelem, elsize, file, line);
+}
 
 #define git__malloc(len)                      git__crtdbg__malloc(len, __FILE__, __LINE__)
 #define git__calloc(nelem, elsize)            git__crtdbg__calloc(nelem, elsize, __FILE__, __LINE__)
@@ -180,7 +254,6 @@ GIT_INLINE(void) git__free(void *ptr)
 
 extern int git__prefixcmp(const char *str, const char *prefix);
 extern int git__prefixcmp_icase(const char *str, const char *prefix);
-extern int git__prefixncmp(const char *str, size_t str_n, const char *prefix);
 extern int git__prefixncmp_icase(const char *str, size_t str_n, const char *prefix);
 extern int git__suffixcmp(const char *str, const char *suffix);
 
@@ -290,6 +363,8 @@ extern int git__strncasecmp(const char *a, const char *b, size_t sz);
 
 extern int git__strcasesort_cmp(const char *a, const char *b);
 
+#include "thread-utils.h"
+
 typedef struct {
 	git_atomic refcount;
 	void *owner;
@@ -298,22 +373,22 @@ typedef struct {
 typedef void (*git_refcount_freeptr)(void *r);
 
 #define GIT_REFCOUNT_INC(r) { \
-	git_atomic_inc(&(r)->rc.refcount);	\
+	git_atomic_inc(&((git_refcount *)(r))->refcount);	\
 }
 
 #define GIT_REFCOUNT_DEC(_r, do_free) { \
-	git_refcount *r = &(_r)->rc; \
+	git_refcount *r = (git_refcount *)(_r); \
 	int val = git_atomic_dec(&r->refcount); \
 	if (val <= 0 && r->owner == NULL) { do_free(_r); } \
 }
 
 #define GIT_REFCOUNT_OWN(r, o) { \
-	(r)->rc.owner = o; \
+	((git_refcount *)(r))->owner = o; \
 }
 
-#define GIT_REFCOUNT_OWNER(r) ((r)->rc.owner)
+#define GIT_REFCOUNT_OWNER(r) (((git_refcount *)(r))->owner)
 
-#define GIT_REFCOUNT_VAL(r) git_atomic_get((r)->rc.refcount)
+#define GIT_REFCOUNT_VAL(r) git_atomic_get(&((git_refcount *)(r))->refcount)
 
 
 static signed char from_hex[] = {

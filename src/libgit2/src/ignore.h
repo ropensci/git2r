@@ -7,8 +7,6 @@
 #ifndef INCLUDE_ignore_h__
 #define INCLUDE_ignore_h__
 
-#include "common.h"
-
 #include "repository.h"
 #include "vector.h"
 #include "attr_file.h"

@@ -8,7 +8,6 @@
 #define INCLUDE_filter_h__
 
 #include "common.h"
-
 #include "attr_file.h"
 #include "git2/filter.h"
 

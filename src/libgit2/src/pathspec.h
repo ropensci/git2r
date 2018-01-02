@@ -8,8 +8,7 @@
 #define INCLUDE_pathspec_h__
 
 #include "common.h"
-
-#include "git2/pathspec.h"
+#include <git2/pathspec.h>
 #include "buffer.h"
 #include "vector.h"
 #include "pool.h"

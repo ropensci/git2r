@@ -7,8 +7,6 @@
 #ifndef INCLUDE_refdb_h__
 #define INCLUDE_refdb_h__
 
-#include "common.h"
-
 #include "git2/refdb.h"
 #include "repository.h"
 

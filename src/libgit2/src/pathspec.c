@@ -5,10 +5,9 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
-#include "pathspec.h"
-
 #include "git2/pathspec.h"
 #include "git2/diff.h"
+#include "pathspec.h"
 #include "buf_text.h"
 #include "attr_file.h"
 #include "iterator.h"

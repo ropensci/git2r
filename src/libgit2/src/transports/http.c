@@ -4,9 +4,6 @@
  * This file is part of libgit2, distributed under the GNU GPL v2 with
  * a Linking Exception. For full terms see the included COPYING file.
  */
-
-#include "common.h"
-
 #ifndef GIT_WINHTTP
 
 #include "git2.h"
@@ -18,9 +15,9 @@
 #include "smart.h"
 #include "auth.h"
 #include "auth_negotiate.h"
-#include "streams/tls.h"
-#include "streams/socket.h"
-#include "streams/curl.h"
+#include "tls_stream.h"
+#include "socket_stream.h"
+#include "curl_stream.h"
 
 git_http_auth_scheme auth_schemes[] = {
 	{ GIT_AUTHTYPE_NEGOTIATE, "Negotiate", GIT_CREDTYPE_DEFAULT, git_http_auth_negotiate },

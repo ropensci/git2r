@@ -6,7 +6,6 @@
  */
 
 #include "reflog.h"
-
 #include "repository.h"
 #include "filebuf.h"
 #include "signature.h"

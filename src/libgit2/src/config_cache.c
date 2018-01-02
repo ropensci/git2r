@@ -6,7 +6,6 @@
  */
 
 #include "common.h"
-
 #include "fileops.h"
 #include "repository.h"
 #include "config.h"

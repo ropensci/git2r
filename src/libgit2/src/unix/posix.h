@@ -7,10 +7,6 @@
 #ifndef INCLUDE_posix__unix_h__
 #define INCLUDE_posix__unix_h__
 
-#ifndef LIBGIT2_NO_FEATURES_H
-# include "git2/sys/features.h"
-#endif
-
 #include <stdio.h>
 #include <dirent.h>
 #include <sys/param.h>
@@ -75,7 +71,7 @@ GIT_INLINE(int) p_fsync(int fd)
 
 #define p_timeval timeval
 
-#ifdef GIT_USE_FUTIMENS
+#ifdef HAVE_FUTIMENS
 GIT_INLINE(int) p_futimes(int f, const struct p_timeval t[2])
 {
 	struct timespec s[2];
@@ -89,7 +85,7 @@ GIT_INLINE(int) p_futimes(int f, const struct p_timeval t[2])
 # define p_futimes futimes
 #endif
 
-#ifdef GIT_USE_REGCOMP_L
+#ifdef HAVE_REGCOMP_L
 #include <xlocale.h>
 GIT_INLINE(int) p_regcomp(regex_t *preg, const char *pattern, int cflags)
 {

@@ -7,8 +7,6 @@
 #ifndef INCLUDE_checkout_h__
 #define INCLUDE_checkout_h__
 
-#include "common.h"
-
 #include "git2/checkout.h"
 #include "iterator.h"
 

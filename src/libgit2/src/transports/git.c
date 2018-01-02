@@ -5,14 +5,12 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
-#include "common.h"
-
 #include "git2.h"
 #include "buffer.h"
 #include "netops.h"
 #include "git2/sys/transport.h"
 #include "stream.h"
-#include "streams/socket.h"
+#include "socket_stream.h"
 
 #define OWNING_SUBTRANSPORT(s) ((git_subtransport *)(s)->parent.subtransport)
 

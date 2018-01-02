@@ -62,6 +62,5 @@
 #include "git2/tree.h"
 #include "git2/types.h"
 #include "git2/version.h"
-#include "git2/worktree.h"
 
 #endif

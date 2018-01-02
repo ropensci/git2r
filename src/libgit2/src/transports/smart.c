@@ -4,10 +4,8 @@
  * This file is part of libgit2, distributed under the GNU GPL v2 with
  * a Linking Exception. For full terms see the included COPYING file.
  */
-
-#include "smart.h"
-
 #include "git2.h"
+#include "smart.h"
 #include "refs.h"
 #include "refspec.h"
 #include "proxy.h"

@@ -7,10 +7,6 @@
 #ifndef INCLUDE_common_h__
 #define INCLUDE_common_h__
 
-#ifndef LIBGIT2_NO_FEATURES_H
-# include "git2/sys/features.h"
-#endif
-
 #include "git2/common.h"
 #include "cc-compat.h"
 
@@ -50,6 +46,10 @@
 # include "win32/version.h"
 # ifdef GIT_THREADS
 #	include "win32/thread.h"
+# endif
+# if defined(GIT_MSVC_CRTDBG)
+#   include "win32/w32_stack.h"
+#   include "win32/w32_crtdbg_stacktrace.h"
 # endif
 
 #else

@@ -4,13 +4,12 @@
  * This file is part of libgit2, distributed under the GNU GPL v2 with
  * a Linking Exception. For full terms see the included COPYING file.
  */
-
-#include "diff_file.h"
-
+#include "common.h"
 #include "git2/blob.h"
 #include "git2/submodule.h"
 #include "diff.h"
 #include "diff_generate.h"
+#include "diff_file.h"
 #include "odb.h"
 #include "fileops.h"
 #include "filter.h"
@@ -139,6 +138,7 @@ int git_diff_file_content__init_from_src(
 	memset(fc, 0, sizeof(*fc));
 	fc->repo = repo;
 	fc->file = as_file;
+	fc->blob = src->blob;
 
 	if (!src->blob && !src->buf) {
 		fc->flags |= GIT_DIFF_FLAG__NO_DATA;
@@ -148,15 +148,12 @@ int git_diff_file_content__init_from_src(
 		fc->file->mode = GIT_FILEMODE_BLOB;
 
 		if (src->blob) {
-			git_blob_dup((git_blob **)&fc->blob, (git_blob *) src->blob);
 			fc->file->size = git_blob_rawsize(src->blob);
 			git_oid_cpy(&fc->file->id, git_blob_id(src->blob));
 			fc->file->id_abbrev = GIT_OID_HEXSZ;
 
 			fc->map.len  = (size_t)fc->file->size;
 			fc->map.data = (char *)git_blob_rawcontent(src->blob);
-
-			fc->flags |= GIT_DIFF_FLAG__FREE_BLOB;
 		} else {
 			fc->file->size = src->buflen;
 			git_odb_hash(&fc->file->id, src->buf, src->buflen, GIT_OBJ_BLOB);

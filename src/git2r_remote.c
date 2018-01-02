@@ -441,6 +441,10 @@ cleanup:
  * @param repo S4 class git_repository
  * @param name Character vector with URL of remote.
  * @return Character vector for each reference with the associated commit IDs.
+ *
+ * FIXME: When updating to libgit 0.26 + 1, change code to use
+ * 'git_remote_create_detached()' when repo is NULL, see CHANGELOG in
+ * libgit2.
  */
 SEXP git2r_remote_ls(SEXP name, SEXP repo, SEXP credentials)
 {
@@ -460,22 +464,13 @@ SEXP git2r_remote_ls(SEXP name, SEXP repo, SEXP credentials)
     if (git2r_arg_check_credentials(credentials))
         git2r_error(__func__, NULL, "'credentials'", git2r_err_credentials_arg);
 
-    if (!isNull(repo)) {
-        repository = git2r_repository_open(repo);
-        if (!repository)
-            git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
-    }
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     name_ = CHAR(STRING_ELT(name, 0));
-
-    if (repository) {
-        err = git_remote_lookup(&remote, repository, name_);
-        if (err) {
-            err = git_remote_create_anonymous(&remote, repository, name_);
-            if (err)
-                goto cleanup;
-        }
-    } else {
+    err = git_remote_lookup(&remote, repository, name_);
+    if (err) {
         err = git_remote_create_anonymous(&remote, repository, name_);
         if (err)
             goto cleanup;

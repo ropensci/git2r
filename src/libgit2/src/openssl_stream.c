@@ -5,8 +5,6 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
-#include "streams/openssl.h"
-
 #ifdef GIT_OPENSSL
 
 #include <ctype.h>
@@ -14,13 +12,14 @@
 #include "global.h"
 #include "posix.h"
 #include "stream.h"
-#include "streams/socket.h"
+#include "socket_stream.h"
+#include "openssl_stream.h"
 #include "netops.h"
 #include "git2/transport.h"
 #include "git2/sys/openssl.h"
 
 #ifdef GIT_CURL
-# include "streams/curl.h"
+# include "curl_stream.h"
 #endif
 
 #ifndef GIT_WIN32
@@ -150,19 +149,10 @@ int git_openssl_stream_global_init(void)
 	return 0;
 }
 
-#if defined(GIT_THREADS)
-static void threadid_cb(CRYPTO_THREADID *threadid)
-{
-    CRYPTO_THREADID_set_numeric(threadid, git_thread_currentid());
-}
-#endif
-
 int git_openssl_set_locking(void)
 {
 #if defined(GIT_THREADS) && OPENSSL_VERSION_NUMBER < 0x10100000L
 	int num_locks, i;
-
-	CRYPTO_THREADID_set_callback(threadid_cb);
 
 	num_locks = CRYPTO_num_locks();
 	openssl_locks = git__calloc(num_locks, sizeof(git_mutex));
@@ -332,7 +322,7 @@ static int check_host_name(const char *name, const char *host)
 
 static int verify_server_cert(SSL *ssl, const char *host)
 {
-	X509 *cert = NULL;
+	X509 *cert;
 	X509_NAME *peer_name;
 	ASN1_STRING *str;
 	unsigned char *peer_cn = NULL;
@@ -341,7 +331,7 @@ static int verify_server_cert(SSL *ssl, const char *host)
 	struct in6_addr addr6;
 	struct in_addr addr4;
 	void *addr;
-	int i = -1, j, error = 0;
+	int i = -1,j;
 
 	if (SSL_get_verify_result(ssl) != X509_V_OK) {
 		giterr_set(GITERR_SSL, "the SSL certificate is invalid");
@@ -362,9 +352,8 @@ static int verify_server_cert(SSL *ssl, const char *host)
 
 	cert = SSL_get_peer_certificate(ssl);
 	if (!cert) {
-		error = -1;
 		giterr_set(GITERR_SSL, "the server did not provide a certificate");
-		goto cleanup;
+		return -1;
 	}
 
 	/* Check the alternative names */
@@ -402,9 +391,8 @@ static int verify_server_cert(SSL *ssl, const char *host)
 	if (matched == 0)
 		goto cert_fail_name;
 
-	if (matched == 1) {
-		goto cleanup;
-	}
+	if (matched == 1)
+		return 0;
 
 	/* If no alternative names are available, check the common name */
 	peer_name = X509_get_subject_name(cert);
@@ -446,21 +434,18 @@ static int verify_server_cert(SSL *ssl, const char *host)
 	if (check_host_name((char *)peer_cn, host) < 0)
 		goto cert_fail_name;
 
-	goto cleanup;
+	OPENSSL_free(peer_cn);
 
-cert_fail_name:
-	error = GIT_ECERTIFICATE;
-	giterr_set(GITERR_SSL, "hostname does not match certificate");
-	goto cleanup;
+	return 0;
 
 on_error:
-	error = ssl_set_error(ssl, 0);
-	goto cleanup;
-
-cleanup:
-	X509_free(cert);
 	OPENSSL_free(peer_cn);
-	return error;
+	return ssl_set_error(ssl, 0);
+
+cert_fail_name:
+	OPENSSL_free(peer_cn);
+	giterr_set(GITERR_SSL, "hostname does not match certificate");
+	return GIT_ECERTIFICATE;
 }
 
 typedef struct {
@@ -642,16 +627,6 @@ out_err:
 	return error;
 }
 
-int git_openssl__set_cert_location(const char *file, const char *path)
-{
-	if (SSL_CTX_load_verify_locations(git__ssl_ctx, file, path) == 0) {
-		giterr_set(GITERR_SSL, "OpenSSL error: failed to load certificates: %s",
-				   ERR_error_string(ERR_get_error(), NULL));
-		return -1;
-	}
-	return 0;
-}
-
 #else
 
 #include "stream.h"
@@ -673,15 +648,6 @@ int git_openssl_stream_new(git_stream **out, const char *host, const char *port)
 	GIT_UNUSED(out);
 	GIT_UNUSED(host);
 	GIT_UNUSED(port);
-
-	giterr_set(GITERR_SSL, "openssl is not supported in this version");
-	return -1;
-}
-
-int git_openssl__set_cert_location(const char *file, const char *path)
-{
-	GIT_UNUSED(file);
-	GIT_UNUSED(path);
 
 	giterr_set(GITERR_SSL, "openssl is not supported in this version");
 	return -1;

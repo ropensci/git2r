@@ -6,7 +6,6 @@
 #define INCLUDE_git_delta_h__
 
 #include "common.h"
-
 #include "pack.h"
 
 typedef struct git_delta_index git_delta_index;

@@ -7,8 +7,6 @@
 #ifndef INCLUDE_patch_h__
 #define INCLUDE_patch_h__
 
-#include "common.h"
-
 #include "git2/patch.h"
 #include "array.h"
 

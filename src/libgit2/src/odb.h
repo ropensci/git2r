@@ -7,8 +7,6 @@
 #ifndef INCLUDE_odb_h__
 #define INCLUDE_odb_h__
 
-#include "common.h"
-
 #include "git2/odb.h"
 #include "git2/oid.h"
 #include "git2/types.h"

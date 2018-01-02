@@ -5,9 +5,9 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
-#include "path_w32.h"
-
+#include "common.h"
 #include "path.h"
+#include "path_w32.h"
 #include "utf-conv.h"
 #include "posix.h"
 #include "reparse.h"
@@ -17,6 +17,11 @@
 #define PATH__NT_NAMESPACE_LEN 4
 
 #define PATH__ABSOLUTE_LEN     3
+
+#define path__is_dirsep(p) ((p) == '/' || (p) == '\\')
+
+#define path__is_absolute(p) \
+	(git__isalpha((p)[0]) && (p)[1] == ':' && ((p)[2] == '\\' || (p)[2] == '/'))
 
 #define path__is_nt_namespace(p) \
 	(((p)[0] == '\\' && (p)[1] == '\\' && (p)[2] == '?' && (p)[3] == '\\') || \
@@ -54,7 +59,7 @@ static wchar_t *path__skip_server(wchar_t *path)
 	wchar_t *c;
 
 	for (c = path; *c; c++) {
-		if (git_path_is_dirsep(*c))
+		if (path__is_dirsep(*c))
 			return c + 1;
 	}
 
@@ -68,9 +73,9 @@ static wchar_t *path__skip_prefix(wchar_t *path)
 
 		if (wcsncmp(path, L"UNC\\", 4) == 0)
 			path = path__skip_server(path + 4);
-		else if (git_path_is_absolute(path))
+		else if (path__is_absolute(path))
 			path += PATH__ABSOLUTE_LEN;
-	} else if (git_path_is_absolute(path)) {
+	} else if (path__is_absolute(path)) {
 		path += PATH__ABSOLUTE_LEN;
 	} else if (path__is_unc(path)) {
 		path = path__skip_server(path + 2);
@@ -191,7 +196,7 @@ int git_win32_path_from_utf8(git_win32_path out, const char *src)
 	dest += PATH__NT_NAMESPACE_LEN;
 
 	/* See if this is an absolute path (beginning with a drive letter) */
-	if (git_path_is_absolute(src)) {
+	if (path__is_absolute(src)) {
 		if (git__utf8_to_16(dest, MAX_PATH, src) < 0)
 			goto on_error;
 	}
@@ -215,7 +220,7 @@ int git_win32_path_from_utf8(git_win32_path out, const char *src)
 		if (path__cwd(dest, MAX_PATH) < 0)
 			goto on_error;
 
-		if (!git_path_is_absolute(dest)) {
+		if (!path__is_absolute(dest)) {
 			errno = ENOENT;
 			goto on_error;
 		}

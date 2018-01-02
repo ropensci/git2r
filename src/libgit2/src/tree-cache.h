@@ -9,7 +9,6 @@
 #define INCLUDE_tree_cache_h__
 
 #include "common.h"
-
 #include "pool.h"
 #include "buffer.h"
 #include "git2/oid.h"

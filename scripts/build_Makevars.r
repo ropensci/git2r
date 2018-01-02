@@ -70,7 +70,8 @@ build_Makevars.in <- function() {
     on.exit(close(Makevars))
 
     files <- list(libgit2 = o_files("src/libgit2/src"),
-                  libgit2.streams = o_files("src/libgit2/src/streams"),
+                  ## FIXME: Uncomment when updating to libgit 0.26 + 1.
+                  ## libgit2.streams = o_files("src/libgit2/src/streams"),
                   libgit2.transports =
                       o_files("src/libgit2/src/transports",
                               c("libgit2/src/transports/auth_negotiate.o",

@@ -7,8 +7,6 @@
 #ifndef INCLUDE_merge_h__
 #define INCLUDE_merge_h__
 
-#include "common.h"
-
 #include "vector.h"
 #include "commit_list.h"
 #include "pool.h"

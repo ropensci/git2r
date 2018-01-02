@@ -6,7 +6,6 @@
  */
 
 #include "common.h"
-
 #include "repository.h"
 #include "commit.h"
 #include "message.h"

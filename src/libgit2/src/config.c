@@ -5,9 +5,9 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
-#include "config.h"
-
+#include "common.h"
 #include "sysdir.h"
+#include "config.h"
 #include "git2/config.h"
 #include "git2/sys/config.h"
 #include "vector.h"
@@ -99,7 +99,6 @@ int git_config_add_file_ondisk(
 	git_config *cfg,
 	const char *path,
 	git_config_level_t level,
-	const git_repository *repo,
 	int force)
 {
 	git_config_backend *file = NULL;
@@ -117,7 +116,7 @@ int git_config_add_file_ondisk(
 	if (git_config_file__ondisk(&file, path) < 0)
 		return -1;
 
-	if ((res = git_config_add_backend(cfg, file, level, repo, force)) < 0) {
+	if ((res = git_config_add_backend(cfg, file, level, force)) < 0) {
 		/*
 		 * free manually; the file is not owned by the config
 		 * instance yet and will not be freed on cleanup
@@ -139,7 +138,7 @@ int git_config_open_ondisk(git_config **out, const char *path)
 	if (git_config_new(&config) < 0)
 		return -1;
 
-	if ((error = git_config_add_file_ondisk(config, path, GIT_CONFIG_LEVEL_LOCAL, NULL, 0)) < 0)
+	if ((error = git_config_add_file_ondisk(config, path, GIT_CONFIG_LEVEL_LOCAL, 0)) < 0)
 		git_config_free(config);
 	else
 		*out = config;
@@ -165,7 +164,7 @@ int git_config_snapshot(git_config **out, git_config *in)
 		if ((error = internal->file->snapshot(&b, internal->file)) < 0)
 			break;
 
-		if ((error = git_config_add_backend(config, b, internal->level, NULL, 0)) < 0) {
+		if ((error = git_config_add_backend(config, b, internal->level, 0)) < 0) {
 			b->free(b);
 			break;
 		}
@@ -308,7 +307,6 @@ int git_config_add_backend(
 	git_config *cfg,
 	git_config_backend *file,
 	git_config_level_t level,
-	const git_repository *repo,
 	int force)
 {
 	file_internal *internal;
@@ -318,7 +316,7 @@ int git_config_add_backend(
 
 	GITERR_CHECK_VERSION(file, GIT_CONFIG_BACKEND_VERSION, "git_config_backend");
 
-	if ((result = file->open(file, level, repo)) < 0)
+	if ((result = file->open(file, level)) < 0)
 		return result;
 
 	internal = git__malloc(sizeof(file_internal));
@@ -1149,20 +1147,20 @@ int git_config_open_default(git_config **out)
 
 	if (!git_config_find_global(&buf) || !git_config__global_location(&buf)) {
 		error = git_config_add_file_ondisk(cfg, buf.ptr,
-			GIT_CONFIG_LEVEL_GLOBAL, NULL, 0);
+			GIT_CONFIG_LEVEL_GLOBAL, 0);
 	}
 
 	if (!error && !git_config_find_xdg(&buf))
 		error = git_config_add_file_ondisk(cfg, buf.ptr,
-			GIT_CONFIG_LEVEL_XDG, NULL, 0);
+			GIT_CONFIG_LEVEL_XDG, 0);
 
 	if (!error && !git_config_find_system(&buf))
 		error = git_config_add_file_ondisk(cfg, buf.ptr,
-			GIT_CONFIG_LEVEL_SYSTEM, NULL, 0);
+			GIT_CONFIG_LEVEL_SYSTEM, 0);
 
 	if (!error && !git_config_find_programdata(&buf))
 		error = git_config_add_file_ondisk(cfg, buf.ptr,
-			GIT_CONFIG_LEVEL_PROGRAMDATA, NULL, 0);
+			GIT_CONFIG_LEVEL_PROGRAMDATA, 0);
 
 	git_buf_free(&buf);
 

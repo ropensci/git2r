@@ -4,10 +4,9 @@
  * This file is part of libgit2, distributed under the GNU GPL v2 with
  * a Linking Exception. For full terms see the included COPYING file.
  */
-
-#include "diff_generate.h"
-
+#include "common.h"
 #include "diff.h"
+#include "diff_generate.h"
 #include "patch_generate.h"
 #include "fileops.h"
 #include "config.h"
@@ -24,7 +23,7 @@
 	(((DIFF)->base.opts.flags & (FLAG)) == 0)
 #define DIFF_FLAG_SET(DIFF,FLAG,VAL) (DIFF)->base.opts.flags = \
 	(VAL) ? ((DIFF)->base.opts.flags | (FLAG)) : \
-	((DIFF)->base.opts.flags & ~(FLAG))
+	((DIFF)->base.opts.flags & ~(VAL))
 
 typedef struct {
 	struct git_diff base;
@@ -411,7 +410,7 @@ static git_diff_generated *diff_generated_alloc(
 	if ((diff = git__calloc(1, sizeof(git_diff_generated))) == NULL)
 		return NULL;
 
-	GIT_REFCOUNT_INC(&diff->base);
+	GIT_REFCOUNT_INC(diff);
 	diff->base.type = GIT_DIFF_TYPE_GENERATED;
 	diff->base.repo = repo;
 	diff->base.old_src = old_iter->type;

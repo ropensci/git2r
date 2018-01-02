@@ -6,7 +6,6 @@
  */
 
 #include "common.h"
-
 #include "git2/cred_helpers.h"
 
 int git_cred_userpass(

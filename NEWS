@@ -1,6 +1,11 @@
 git2r 0.20.0.9000
 -----------------
 
+BUG FIXES
+
+* The bundled libgit2 source code has been reverted to commit
+  (15e1193) from 14 June 2017. (same as in git2r v0.19.0) to fix
+  memory alignment errors.
 
 git2r 0.20.0
 ------------

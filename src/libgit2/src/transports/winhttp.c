@@ -5,8 +5,6 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
-#include "common.h"
-
 #ifdef GIT_WINHTTP
 
 #include "git2.h"
@@ -269,7 +267,7 @@ static int certificate_check(winhttp_stream *s, int valid)
 	cert.parent.cert_type = GIT_CERT_X509;
 	cert.data = cert_ctx->pbCertEncoded;
 	cert.len = cert_ctx->cbCertEncoded;
-	error = t->owner->certificate_check_cb((git_cert *) &cert, valid, t->connection_data.host, t->owner->message_cb_payload);
+	error = t->owner->certificate_check_cb((git_cert *) &cert, valid, t->connection_data.host, t->owner->cred_acquire_payload);
 	CertFreeCertificateContext(cert_ctx);
 
 	if (error < 0 && !giterr_last())

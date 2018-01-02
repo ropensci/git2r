@@ -4,10 +4,9 @@
  * This file is part of libgit2, distributed under the GNU GPL v2 with
  * a Linking Exception. For full terms see the included COPYING file.
  */
-
-#include "diff_parse.h"
-
+#include "common.h"
 #include "diff.h"
+#include "diff_parse.h"
 #include "patch.h"
 #include "patch_parse.h"
 
@@ -36,7 +35,7 @@ static git_diff_parsed *diff_parsed_alloc(void)
 	if ((diff = git__calloc(1, sizeof(git_diff_parsed))) == NULL)
 		return NULL;
 
-	GIT_REFCOUNT_INC(&diff->base);
+	GIT_REFCOUNT_INC(diff);
 	diff->base.type = GIT_DIFF_TYPE_PARSED;
 	diff->base.strcomp = git__strcmp;
 	diff->base.strncomp = git__strncmp;
@@ -83,7 +82,7 @@ int git_diff_from_buffer(
 	ctx = git_patch_parse_ctx_init(content, content_len, NULL);
 	GITERR_CHECK_ALLOC(ctx);
 
-	while (ctx->parse_ctx.remain_len) {
+	while (ctx->remain_len) {
 		if ((error = git_patch_parse(&patch, ctx)) < 0)
 			break;
 

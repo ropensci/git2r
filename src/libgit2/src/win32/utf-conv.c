@@ -5,6 +5,7 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
+#include "common.h"
 #include "utf-conv.h"
 
 GIT_INLINE(void) git__set_errno(void)

@@ -4,14 +4,13 @@
  * This file is part of libgit2, distributed under the GNU GPL v2 with
  * a Linking Exception. For full terms see the included COPYING file.
  */
-
-#include "patch_generate.h"
-
+#include "common.h"
 #include "git2/blob.h"
 #include "diff.h"
 #include "diff_generate.h"
 #include "diff_file.h"
 #include "diff_driver.h"
+#include "patch_generate.h"
 #include "diff_xdiff.h"
 #include "delta.h"
 #include "zstream.h"
@@ -139,7 +138,7 @@ static int patch_generated_alloc_from_diff(
 
 	if (!(error = patch_generated_init(patch, diff, delta_index))) {
 		patch->flags |= GIT_PATCH_GENERATED_ALLOCATED;
-		GIT_REFCOUNT_INC(&patch->base);
+		GIT_REFCOUNT_INC(patch);
 	} else {
 		git__free(patch);
 		patch = NULL;
@@ -642,7 +641,7 @@ int git_patch_from_blob_and_buffer(
 	git_patch **out,
 	const git_blob *old_blob,
 	const char *old_path,
-	const void *buf,
+	const char *buf,
 	size_t buflen,
 	const char *buf_path,
 	const git_diff_options *opts)
@@ -681,7 +680,7 @@ int git_patch_from_buffers(
 	const void *old_buf,
 	size_t old_len,
 	const char *old_path,
-	const void *new_buf,
+	const char *new_buf,
 	size_t new_len,
 	const char *new_path,
 	const git_diff_options *opts)
