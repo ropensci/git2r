@@ -73,6 +73,16 @@ setGeneric("odb_blobs",
 ##' @rdname odb_blobs-methods
 ##' @export
 setMethod("odb_blobs",
+          signature(repo = "missing"),
+          function()
+          {
+              callGeneric(repo = lookup_repository())
+          }
+)
+
+##' @rdname odb_blobs-methods
+##' @export
+setMethod("odb_blobs",
           signature(repo = "git_repository"),
           function(repo)
           {
@@ -133,6 +143,5 @@ setMethod("odb_objects",
           {
               data.frame(.Call(git2r_odb_objects, repo),
                          stringsAsFactors = FALSE)
-
           }
 )
