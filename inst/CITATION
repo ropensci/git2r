@@ -1,8 +1,8 @@
 citHeader(paste0("See AUTHORS file for a list of all authors.\n",
                  "To cite git2r in publications, please use:"))
 
-year <- "2017"
-vers <- "0.20.0"
+year <- "2018"
+vers <- "0.21.0"
 pkg.url <- "https://CRAN.R-project.org/package=git2r"
 
 citEntry(entry = "Manual",

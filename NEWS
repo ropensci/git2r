@@ -1,5 +1,5 @@
-git2r 0.20.0.9000
------------------
+git2r 0.21.0
+------------
 
 * Added methods 'odb_blobs' and 'odb_objects' with missing repository
   signature. Internally, they use 'getwd' and 'discover_repository' to
