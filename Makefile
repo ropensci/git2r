@@ -70,8 +70,12 @@ revdep_results:
           -e "pkg <- as.character(unlist(pkg))" \
           -e "results <- do.call('rbind', lapply(pkg, function(x) {" \
           -e "    filename <- paste0('revdep/', x, '.Rcheck/00check.log')" \
-          -e "    lines <- readLines(filename)" \
-          -e "    status <- sub('^Status: ', '', lines[grep('^Status: ', lines)])" \
+          -e "    if (file.exists(filename)) {" \
+          -e "        lines <- readLines(filename)" \
+          -e "        status <- sub('^Status: ', '', lines[grep('^Status: ', lines)])" \
+          -e "    } else {" \
+          -e "        status <- 'missing'" \
+          -e "    }" \
           -e "    data.frame(Package = x, Status = status)" \
           -e "}))" \
           -e "results <- results[order(results[, 'Status']), ]" \
