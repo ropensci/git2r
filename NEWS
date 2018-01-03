@@ -1,11 +1,15 @@
 git2r 0.20.0.9000
 -----------------
 
+* Added methods 'odb_blobs' and 'odb_objects' with missing repository
+  signature. Internally, they use 'getwd' and 'discover_repository' to
+  open a repository.
+
 BUG FIXES
 
-* The bundled libgit2 source code has been reverted to commit
-  (15e1193) from 14 June 2017. (same as in git2r v0.19.0) to fix
-  memory alignment errors.
+* The bundled libgit2 source code has been reverted to libgit2 v0.26.0
+  (15e1193) from 14 June 2017 (same as in git2r v0.19.0) to fix memory
+  alignment errors.
 
 git2r 0.20.0
 ------------
