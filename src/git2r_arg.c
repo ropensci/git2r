@@ -32,7 +32,7 @@ int git2r_arg_check_blob(SEXP arg)
 {
     SEXP class_name;
 
-    if (isNull(arg) || !isS4(arg))
+    if (!isS4(arg))
         return -1;
 
     class_name = getAttrib(arg, R_ClassSymbol);
@@ -56,7 +56,7 @@ int git2r_arg_check_branch(SEXP arg)
     SEXP class_name;
     SEXP slot;
 
-    if (isNull(arg) || !isS4(arg))
+    if (!isS4(arg))
         return -1;
 
     class_name = getAttrib(arg, R_ClassSymbol);
@@ -90,7 +90,7 @@ int git2r_arg_check_commit(SEXP arg)
 {
     SEXP class_name;
 
-    if (isNull(arg) || !isS4(arg))
+    if (!isS4(arg))
         return -1;
 
     class_name = getAttrib(arg, R_ClassSymbol);
@@ -195,7 +195,7 @@ int git2r_arg_check_fetch_heads(SEXP arg)
         SEXP class_name;
         SEXP item = VECTOR_ELT(arg, i);
 
-        if (isNull(item) || !isS4(item))
+        if (!isS4(item))
             return -1;
 
         class_name = getAttrib(item, R_ClassSymbol);
@@ -338,7 +338,7 @@ int git2r_arg_check_note(SEXP arg)
 {
     SEXP class_name;
 
-    if (isNull(arg) || !isS4(arg))
+    if (!isS4(arg))
         return -1;
 
     class_name = getAttrib(arg, R_ClassSymbol);
@@ -381,7 +381,7 @@ int git2r_arg_check_signature(SEXP arg)
     SEXP class_name;
     SEXP when;
 
-    if (isNull(arg) || !isS4(arg))
+    if (!isS4(arg))
         return -1;
 
     class_name = getAttrib(arg, R_ClassSymbol);
@@ -481,7 +481,7 @@ int git2r_arg_check_tag(SEXP arg)
 {
     SEXP class_name;
 
-    if (isNull(arg) || !isS4(arg))
+    if (!isS4(arg))
         return -1;
 
     class_name = getAttrib(arg, R_ClassSymbol);
@@ -504,7 +504,7 @@ int git2r_arg_check_tree(SEXP arg)
 {
     SEXP class_name;
 
-    if (isNull(arg) || !isS4(arg))
+    if (!isS4(arg))
         return -1;
 
     class_name = getAttrib(arg, R_ClassSymbol);
