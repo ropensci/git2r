@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -142,6 +142,7 @@ stopifnot(identical(names(df), c("sha", "summary", "message",
 
 ## Set working directory to path and check commits
 setwd(path)
+stopifnot(identical(last_commit()@sha, commits(repo, n = 1)[[1]]@sha))
 stopifnot(identical(length(commits()), 8L))
 stopifnot(identical(length(commits(n = -1)), 8L))
 stopifnot(identical(length(commits(n = 2)), 2L))

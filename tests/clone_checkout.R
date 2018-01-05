@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -50,7 +50,8 @@ stopifnot(identical(list.files(path_tgt), character(0)))
 
 ## Compare commits
 stopifnot(identical(length(commits(repo_tgt)), 1L))
-commit_tgt <- commits(repo_tgt)[[1]]
+commit_tgt <- last_commit(repo_tgt)
+stopifnot(identical(last_commit(path_tgt)@sha, commit_tgt@sha))
 stopifnot(identical(commit_src@sha, commit_tgt@sha))
 stopifnot(identical(commit_src@author, commit_tgt@author))
 stopifnot(identical(commit_src@committer, commit_tgt@committer))

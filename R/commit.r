@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -310,6 +310,45 @@ setMethod("commits",
               .Call(git2r_revwalk_list, repo, topological, time, reverse, n)
           }
 )
+
+##' Last commit
+##'
+##' Get last commit in the current branch.
+##' @param repo repository \code{object}
+##'     \code{\linkS4class{git_repository}}, or a path to a
+##'     repository, or \code{NULL}.  If the \code{repo} argument is
+##'     \code{NULL}, the repository is searched for with
+##'     \code{\link{discover_repository}} in the current working
+##'     directory.
+##' @export
+##' @examples
+##' \dontrun{
+##' ## Initialize a repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Config user
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##'
+##' ## Write to a file and commit
+##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+##'            file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit(repo, "First commit message")
+##'
+##' ## Get last commit
+##' last_commit(repo)
+##' last_commit(path)
+##' }
+last_commit <- function(repo = NULL) {
+    if (is.null(repo)) {
+        repo <- lookup_repository()
+    } else if (is.character(repo)) {
+        repo <- repository(repo)
+    }
+    commits(repo, n = 1)[[1]]
+}
 
 ##' Descendant
 ##'
