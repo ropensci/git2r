@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -339,3 +339,33 @@ setMethod("length",
               length(x@id)
           }
 )
+
+##' Check if object is S4 class git_tree
+##'
+##' @param object Check if object is S4 class git_tree
+##' @return TRUE if object is S4 class git_tree, else FALSE
+##' @keywords methods
+##' @export
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a user
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##'
+##' ## Commit a text file
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit_1 <- commit(repo, "First commit message")
+##' tree_1 <- tree(commit_1)
+##'
+##' ## Check if tree
+##' is_tree(commit_1)
+##' is_tree(tree_1)
+##' }
+is_tree <- function(object) {
+    is(object = object, class2 = "git_tree")
+}
