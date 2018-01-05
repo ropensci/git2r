@@ -29,7 +29,7 @@ check:
 	cd .. && R CMD build --no-build-vignettes $(PKG_NAME)
 	cd .. && _R_CHECK_CRAN_INCOMING_=FALSE NOT_CRAN=true \
         R CMD check --as-cran --no-manual --no-vignettes \
-        --no-build-vignettes $(PKG_TAR)
+        --no-build-vignettes --no-stop-on-test-error $(PKG_TAR)
 
 # Check reverse dependencies
 #
