@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2017 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -41,7 +41,7 @@ git_repository* git2r_repository_open(SEXP repo)
     SEXP path;
     git_repository *repository;
 
-    if (isNull(repo) || S4SXP != TYPEOF(repo))
+    if (isNull(repo) || !isS4(repo))
         return NULL;
 
     class_name = getAttrib(repo, R_ClassSymbol);
