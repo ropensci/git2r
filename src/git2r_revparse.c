@@ -56,6 +56,10 @@ SEXP git2r_revparse_single(SEXP repo, SEXP revision)
         goto cleanup;
 
     switch (git_object_type(treeish)) {
+    case GIT_OBJ_BLOB:
+        PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_blob")));
+        git2r_blob_init((git_blob*)treeish, repo, result);
+        break;
     case GIT_OBJ_COMMIT:
         PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_commit")));
         git2r_commit_init((git_commit*)treeish, repo, result);

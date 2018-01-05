@@ -42,6 +42,7 @@ add(repo, "test.txt")
 commit(repo, "Second commit message")
 
 stopifnot(identical(revparse_single(repo, "HEAD^"), commit_1))
+stopifnot(is_blob(revparse_single(repo, "HEAD:test.txt")))
 
 ## Cleanup
 unlink(path, recursive=TRUE)
