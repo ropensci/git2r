@@ -47,6 +47,7 @@ add(repo, "test.txt")
 commit(repo, "Second commit message")
 
 revparse_single(repo, "HEAD^")
+revparse_single(repo, "HEAD:test.txt")
 }
 }
 \keyword{methods}
