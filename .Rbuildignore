@@ -6,6 +6,7 @@
 ^Makefile$
 ^README\.Rmd$
 ^figure$
+^man-roxygen$
 ^patches$
 ^revdep$
 ^scripts$
