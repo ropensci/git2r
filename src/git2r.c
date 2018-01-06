@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2017 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -59,6 +59,7 @@
 #include "git2r_stash.h"
 #include "git2r_status.h"
 #include "git2r_tag.h"
+#include "git2r_tree.h"
 
 #define CALLDEF(name, n) {#name, (DL_FUNC) &name, n}
 
@@ -149,6 +150,7 @@ static const R_CallMethodDef callMethods[] =
     CALLDEF(git2r_tag_create, 4),
     CALLDEF(git2r_tag_delete, 2),
     CALLDEF(git2r_tag_list, 1),
+    CALLDEF(git2r_tree_walk, 2),
     {NULL, NULL, 0}
 };
 

@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2017 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -17,6 +17,11 @@
  */
 
 #include <Rdefines.h>
+#include "buffer.h"
+
+#include "git2r_arg.h"
+#include "git2r_error.h"
+#include "git2r_repository.h"
 #include "git2r_tree.h"
 
 /**
@@ -68,4 +73,157 @@ void git2r_tree_init(const git_tree *source, SEXP repo, SEXP dest)
 
     SET_SLOT(dest, s_repo, repo);
     UNPROTECT(4);
+}
+
+/**
+ * Data structure to hold information for the tree traversal.
+ */
+typedef struct {
+    size_t n;
+    SEXP list;
+    int recursive;
+    git_repository *repository;
+} git2r_tree_walk_cb_data;
+
+/**
+ * Callback for the tree traversal method.
+ *
+ */
+static int git2r_tree_walk_cb(
+    const char *root,
+    const git_tree_entry *entry,
+    void *payload)
+{
+    int err = 0;
+    git2r_tree_walk_cb_data *p = (git2r_tree_walk_cb_data*)payload;
+
+    if (!p->recursive && *root)
+        return 1;
+
+    if (!isNull(p->list)) {
+        git_buf mode = GIT_BUF_INIT;
+        git_object *blob = NULL, *obj = NULL;
+        char sha[GIT_OID_HEXSZ + 1];
+
+        /* mode */
+        err = git_buf_printf(&mode, "%06o", git_tree_entry_filemode(entry));
+        if (err)
+            goto cleanup;
+        SET_STRING_ELT(VECTOR_ELT(p->list, 0), p->n,
+                       mkChar(git_buf_cstr(&mode)));
+
+        /* type */
+        SET_STRING_ELT(VECTOR_ELT(p->list, 1), p->n,
+                       mkChar(git_object_type2string(git_tree_entry_type(entry))));
+
+        /* sha */
+        git_oid_tostr(sha, sizeof(sha), git_tree_entry_id(entry));
+        SET_STRING_ELT(VECTOR_ELT(p->list, 2), p->n, mkChar(sha));
+
+        /* path */
+        SET_STRING_ELT(VECTOR_ELT(p->list, 3), p->n, mkChar(root));
+
+        /* name */
+        SET_STRING_ELT(VECTOR_ELT(p->list, 4), p->n,
+                       mkChar(git_tree_entry_name(entry)));
+
+        /* length */
+        if (git_tree_entry_type(entry) == GIT_OBJ_BLOB) {
+            err = git_tree_entry_to_object(&obj, p->repository, entry);
+            if (err)
+                goto cleanup;
+            err = git_object_peel(&blob, obj, GIT_OBJ_BLOB);
+            if (err)
+                goto cleanup;
+            INTEGER(VECTOR_ELT(p->list, 5))[p->n] = git_blob_rawsize((git_blob *)blob);
+        } else {
+            INTEGER(VECTOR_ELT(p->list, 5))[p->n] = NA_INTEGER;
+        }
+
+    cleanup:
+        git_buf_free(&mode);
+        git_object_free(obj);
+        git_object_free(blob);
+    }
+
+    p->n += 1;
+
+    return err;
+}
+
+/**
+ * Traverse the entries in a tree and its subtrees.
+ *
+ * @param tree S4 class git_tree
+ * @param recursive recurse into sub-trees.
+ * @return A list with entries
+ */
+SEXP git2r_tree_walk(SEXP tree, SEXP recursive)
+{
+    int err, nprotect = 0;
+    git_oid oid;
+    git_tree *tree_obj = NULL;
+    git_repository *repository = NULL;
+    git2r_tree_walk_cb_data cb_data = {0, R_NilValue};
+    SEXP repo, sha, result, names;
+
+    if (git2r_arg_check_tree(tree))
+        git2r_error(__func__, NULL, "'tree'", git2r_err_tree_arg);
+    if (git2r_arg_check_logical(recursive))
+        git2r_error(__func__, NULL, "'recursive'", git2r_err_logical_arg);
+
+    repo = GET_SLOT(tree, Rf_install("repo"));
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
+
+    sha = GET_SLOT(tree, Rf_install("sha"));
+    git_oid_fromstr(&oid, CHAR(STRING_ELT(sha, 0)));
+    err = git_tree_lookup(&tree_obj, repository, &oid);
+    if (err)
+        goto cleanup;
+
+    /* Count number of entries before creating the list */
+    cb_data.repository = repository;
+    if (LOGICAL(recursive)[0])
+        cb_data.recursive = 1;
+    err = git_tree_walk(tree_obj, 0, &git2r_tree_walk_cb, &cb_data);
+    if (err)
+        goto cleanup;
+
+    PROTECT(result = allocVector(VECSXP, 6));
+    nprotect++;
+    setAttrib(result, R_NamesSymbol, names = allocVector(STRSXP, 6));
+
+    SET_VECTOR_ELT(result, 0,   allocVector(STRSXP,  cb_data.n));
+    SET_STRING_ELT(names,  0, mkChar("mode"));
+    SET_VECTOR_ELT(result, 1,   allocVector(STRSXP,  cb_data.n));
+    SET_STRING_ELT(names,  1, mkChar("type"));
+    SET_VECTOR_ELT(result, 2,   allocVector(STRSXP,  cb_data.n));
+    SET_STRING_ELT(names,  2, mkChar("sha"));
+    SET_VECTOR_ELT(result, 3,   allocVector(STRSXP,  cb_data.n));
+    SET_STRING_ELT(names,  3, mkChar("path"));
+    SET_VECTOR_ELT(result, 4,   allocVector(STRSXP,  cb_data.n));
+    SET_STRING_ELT(names,  4, mkChar("name"));
+    SET_VECTOR_ELT(result, 5,   allocVector(INTSXP,  cb_data.n));
+    SET_STRING_ELT(names,  5, mkChar("len"));
+
+    cb_data.list = result;
+    cb_data.n = 0;
+    err = git_tree_walk(tree_obj, 0, &git2r_tree_walk_cb, &cb_data);
+
+cleanup:
+    if (repository)
+        git_repository_free(repository);
+
+    if (tree_obj)
+        git_tree_free(tree_obj);
+
+    if (nprotect)
+        UNPROTECT(nprotect);
+
+    if (err)
+        git2r_error(__func__, giterr_last(), NULL, NULL);
+
+    return result;
 }
