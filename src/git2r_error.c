@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -45,13 +45,13 @@ const char git2r_err_unable_to_authenticate[] = "Unable to authenticate with sup
  * Error messages specific to argument checking
  */
 const char git2r_err_blob_arg[] =
-    "must be a S4 class git_blob";
+    "must be an S4 class git_blob";
 const char git2r_err_branch_arg[] =
-    "must be a S4 class git_branch";
+    "must be an S4 class git_branch";
 const char git2r_err_commit_arg[] =
-    "must be a S4 class git_commit";
+    "must be an S4 class git_commit";
 const char git2r_err_credentials_arg[] =
-    "must be a S4 class with credentials";
+    "must be an S4 class with credentials";
 const char git2r_err_diff_arg[] =
     "Invalid diff parameters";
 const char git2r_err_fetch_heads_arg[] =
@@ -69,17 +69,17 @@ const char git2r_err_list_arg[] =
 const char git2r_err_logical_arg[] =
     "must be logical vector of length one with non NA value";
 const char git2r_err_note_arg[] =
-    "must be a S4 class git_note";
+    "must be an S4 class git_note";
 const char git2r_err_signature_arg[] =
-    "must be a S4 class git_signature";
+    "must be an S4 class git_signature";
 const char git2r_err_string_arg[] =
     "must be a character vector of length one with non NA value";
 const char git2r_err_string_vec_arg[] =
     "must be a character vector";
 const char git2r_err_tag_arg[] =
-    "must be a S4 class git_tag";
+    "must be an S4 class git_tag";
 const char git2r_err_tree_arg[] =
-    "must be a S4 class git_tree";
+    "must be an S4 class git_tree";
 
 /**
  * Raise error

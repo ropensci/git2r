@@ -73,27 +73,27 @@ stopifnot(identical(branch_target(branches(repo)[[1]]),
 
 ## Test arguments
 res <- tools::assertError(.Call(git2r:::git2r_branch_delete, NULL))
-stopifnot(length(grep("'branch' must be a S4 class git_branch",
+stopifnot(length(grep("'branch' must be an S4 class git_branch",
                       res[[1]]$message)) > 0)
 res <- tools::assertError(.Call(git2r:::git2r_branch_delete, 3))
-stopifnot(length(grep("'branch' must be a S4 class git_branch",
+stopifnot(length(grep("'branch' must be an S4 class git_branch",
                       res[[1]]$message)) > 0)
 res <- tools::assertError(.Call(git2r:::git2r_branch_delete, repo))
-stopifnot(length(grep("'branch' must be a S4 class git_branch",
+stopifnot(length(grep("'branch' must be an S4 class git_branch",
                       res[[1]]$message)) > 0)
 b_tmp <- b
 b_tmp@name <- NA_character_
 res <- tools::assertError(.Call(git2r:::git2r_branch_delete, b_tmp))
-stopifnot(length(grep("'branch' must be a S4 class git_branch",
+stopifnot(length(grep("'branch' must be an S4 class git_branch",
                       res[[1]]$message)) > 0)
 b_tmp <- b
 b_tmp@type <- NA_integer_
 res <- tools::assertError(.Call(git2r:::git2r_branch_delete, b_tmp))
-stopifnot(length(grep("'branch' must be a S4 class git_branch",
+stopifnot(length(grep("'branch' must be an S4 class git_branch",
                       res[[1]]$message)) > 0)
 b_tmp@type <- 3L
 res <- tools::assertError(.Call(git2r:::git2r_branch_delete, b_tmp))
-stopifnot(length(grep("'branch' must be a S4 class git_branch",
+stopifnot(length(grep("'branch' must be an S4 class git_branch",
                       res[[1]]$message)) > 0)
 
 ## Delete branch

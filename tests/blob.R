@@ -124,18 +124,18 @@ stopifnot(identical(sapply(blob_list_2, slot, "sha"),
 
 ## Test arguments
 res <- tools::assertError(.Call(git2r:::git2r_blob_content, NULL))
-stopifnot(length(grep("'blob' must be a S4 class git_blob",
+stopifnot(length(grep("'blob' must be an S4 class git_blob",
                       res[[1]]$message)) > 0)
 res <- tools::assertError(.Call(git2r:::git2r_blob_content, 3))
-stopifnot(length(grep("'blob' must be a S4 class git_blob",
+stopifnot(length(grep("'blob' must be an S4 class git_blob",
                       res[[1]]$message)) > 0)
 res <- tools::assertError(.Call(git2r:::git2r_blob_content, repo))
-stopifnot(length(grep("'blob' must be a S4 class git_blob",
+stopifnot(length(grep("'blob' must be an S4 class git_blob",
                       res[[1]]$message)) > 0)
 b <- blob_list_1[[1]]
 b@sha <- NA_character_
 res <- tools::assertError(.Call(git2r:::git2r_blob_content, b))
-stopifnot(length(grep("'blob' must be a S4 class git_blob",
+stopifnot(length(grep("'blob' must be an S4 class git_blob",
                       res[[1]]$message)) > 0)
 
 ## Cleanup

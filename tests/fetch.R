@@ -64,48 +64,48 @@ show(repo_2)
 ## Check that 'git2r_arg_check_credentials' raise error
 res <- tools::assertError(
     .Call(git2r:::git2r_remote_fetch, repo_1, "origin", 3, "fetch", FALSE, NULL))
-stopifnot(length(grep("'credentials' must be a S4 class with credentials",
+stopifnot(length(grep("'credentials' must be an S4 class with credentials",
                       res[[1]]$message)) > 0)
 
 res <- tools::assertError(
     .Call(git2r:::git2r_remote_fetch, repo_1, "origin", repo_1,
           "fetch", FALSE, NULL))
-stopifnot(length(grep("'credentials' must be a S4 class with credentials",
+stopifnot(length(grep("'credentials' must be an S4 class with credentials",
                       res[[1]]$message)) > 0)
 
 credentials <- cred_env(c("username", "username"), "password")
 res <- tools::assertError(
     .Call(git2r:::git2r_remote_fetch, repo_1, "origin", credentials,
           "fetch", FALSE, NULL))
-stopifnot(length(grep("'credentials' must be a S4 class with credentials",
+stopifnot(length(grep("'credentials' must be an S4 class with credentials",
                       res[[1]]$message)) > 0)
 
 credentials <- cred_env("username", c("password", "passowrd"))
 res <- tools::assertError(
     .Call(git2r:::git2r_remote_fetch, repo_1, "origin", credentials,
           "fetch", FALSE, NULL))
-stopifnot(length(grep("'credentials' must be a S4 class with credentials",
+stopifnot(length(grep("'credentials' must be an S4 class with credentials",
                       res[[1]]$message)) > 0)
 
 credentials <- cred_user_pass(c("username", "username"), "password")
 res <- tools::assertError(
     .Call(git2r:::git2r_remote_fetch, repo_1, "origin", credentials,
           "fetch", FALSE, NULL))
-stopifnot(length(grep("'credentials' must be a S4 class with credentials",
+stopifnot(length(grep("'credentials' must be an S4 class with credentials",
                       res[[1]]$message)) > 0)
 
 credentials <- cred_user_pass("username", c("password", "passowrd"))
 res <- tools::assertError(
     .Call(git2r:::git2r_remote_fetch, repo_1, "origin", credentials,
           "fetch", FALSE, NULL))
-stopifnot(length(grep("'credentials' must be a S4 class with credentials",
+stopifnot(length(grep("'credentials' must be an S4 class with credentials",
                       res[[1]]$message)) > 0)
 
 credentials <- cred_token(c("GITHUB_PAT", "GITHUB_PAT"))
 res <- tools::assertError(
     .Call(git2r:::git2r_remote_fetch, repo_1, "origin", credentials,
           "fetch", FALSE, NULL))
-stopifnot(length(grep("'credentials' must be a S4 class with credentials",
+stopifnot(length(grep("'credentials' must be an S4 class with credentials",
                       res[[1]]$message)) > 0)
 
 credentials <- new("cred_ssh_key",
@@ -115,7 +115,7 @@ credentials <- new("cred_ssh_key",
 res <- tools::assertError(
     .Call(git2r:::git2r_remote_fetch, repo_1, "origin", credentials,
           "fetch", FALSE, NULL))
-stopifnot(length(grep("'credentials' must be a S4 class with credentials",
+stopifnot(length(grep("'credentials' must be an S4 class with credentials",
                       res[[1]]$message)) > 0)
 
 credentials <- new("cred_ssh_key",
@@ -125,7 +125,7 @@ credentials <- new("cred_ssh_key",
 res <- tools::assertError(
     .Call(git2r:::git2r_remote_fetch, repo_1, "origin", credentials,
           "fetch", FALSE, NULL))
-stopifnot(length(grep("'credentials' must be a S4 class with credentials",
+stopifnot(length(grep("'credentials' must be an S4 class with credentials",
                       res[[1]]$message)) > 0)
 
 credentials <- new("cred_ssh_key",
@@ -135,7 +135,7 @@ credentials <- new("cred_ssh_key",
 res <- tools::assertError(
     .Call(git2r:::git2r_remote_fetch, repo_1, "origin", credentials,
           "fetch", FALSE, NULL))
-stopifnot(length(grep("'credentials' must be a S4 class with credentials",
+stopifnot(length(grep("'credentials' must be an S4 class with credentials",
                       res[[1]]$message)) > 0)
 
 credentials <- new("cred_ssh_key",
@@ -145,7 +145,7 @@ credentials <- new("cred_ssh_key",
 res <- tools::assertError(
     .Call(git2r:::git2r_remote_fetch, repo_1, "origin", credentials,
           "fetch", FALSE, NULL))
-stopifnot(length(grep("'credentials' must be a S4 class with credentials",
+stopifnot(length(grep("'credentials' must be an S4 class with credentials",
                       res[[1]]$message)) > 0)
 
 ## Cleanup
