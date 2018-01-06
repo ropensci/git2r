@@ -369,3 +369,80 @@ setMethod("length",
 is_tree <- function(object) {
     is(object = object, class2 = "git_tree")
 }
+
+##' List the contents of a tree object
+##'
+##' Traverse the entries in a tree and its subtrees.  Akin to the 'git
+##' ls-tree' command.
+##' @param tree default (\code{NULL}) is the tree of the last commit
+##'     in \code{repo}. Can also be a \code{\linkS4class{git_tree}}
+##'     object or a character that identifies a tree in the repository
+##'     (see \sQuote{Examples}).
+##' @param repo never used if \code{tree} is a
+##'     \code{\linkS4class{git_tree}} object. A
+##'     \code{\linkS4class{git_repository}} object, or a path to a
+##'     repository, or \code{NULL}.  If the \code{repo} argument is
+##'     \code{NULL}, then the repository is searched for with
+##'     \code{\link{discover_repository}} in the current working
+##'     directory.
+##' @param recursive default is to recurse into sub-trees.
+##' @return A data.frame with the following columns:
+##' \describe{
+##'   \item{mode}{UNIX file attribute of the tree entry}
+##'   \item{type}{type of object}
+##'   \item{sha}{sha of the object}
+##'   \item{path}{path relative to the root tree}
+##'   \item{name}{filename of the tree entry}
+##'   \item{len}{object size of blob (file) entries. NA for other objects.}
+##' }
+##' @export
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' dir.create(file.path(path, "subfolder"))
+##' repo <- init(path)
+##'
+##' ## Create a user
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##'
+##' ## Create three files and commit
+##' writeLines("First file",  file.path(path, "example-1.txt"))
+##' writeLines("Second file", file.path(path, "subfolder/example-2.txt"))
+##' writeLines("Third file",  file.path(path, "example-3.txt"))
+##' add(repo, c("example-1.txt", "subfolder/example-2.txt", "example-3.txt"))
+##' commit(repo, "Commit message")
+##'
+##' ## Traverse tree entries and its subtrees.
+##' ## Various approaches that give identical result.
+##' ls_tree(tree = tree(last_commit(path)))
+##' ls_tree(tree = tree(last_commit(repo)))
+##' ls_tree(repo = path)
+##' ls_tree(repo = repo)
+##'
+##' ## Skip content in subfolder
+##' ls_tree(repo = repo, recursive = FALSE)
+##'
+##' ## Start in subfolder
+##' ls_tree(tree = "HEAD:subfolder", repo = repo)
+##' }
+ls_tree <- function(tree = NULL, repo = NULL, recursive = TRUE)
+{
+    if (is.null(tree) || is.character(tree)) {
+        if (is.null(repo)) {
+            repo <- lookup_repository()
+        } else if (is.character(repo)) {
+            repo <- repository(repo)
+        }
+
+        if (is.null(tree)) {
+            tree <- tree(last_commit(repo))
+        } else {
+            tree <- revparse_single(repo = repo, revision = tree)
+        }
+    }
+
+    data.frame(.Call(git2r_tree_walk, tree, recursive),
+               stringsAsFactors = FALSE)
+}
