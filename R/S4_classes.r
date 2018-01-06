@@ -840,3 +840,54 @@ setClass("git_merge_result",
                    conflicts    = "logical",
                    sha          = "character")
 )
+
+#' @importFrom methods setClassUnion
+setClassUnion("git_credentials", c("NULL", "cred_user_pass", "cred_ssh_key"))
+
+#' The git_connection class
+#'
+#' @section Slots:
+#'   \describe{
+#'    \item{\code{Repository}}{a git repository}
+#'    \item{\code{LocalPath}}{a subdirectory wihtin the repository}
+#'    \item{\code{Credentials}}{the credentials for the repository}
+#'    \item{\code{CommitUser}}{the name of the user how will commit}
+#'    \item{\code{CommitEmail}}{the email of the user how will commit}
+#'   }
+#' @name git_connection-class
+#' @rdname git_connection-class
+#' @exportClass git_connection
+#' @aliases git_connection-class
+#' @importFrom methods setClass
+#' @docType class
+#' @template thierry
+setClass(
+  Class = "git_connection",
+  representation = representation(
+    Repository = "git_repository",
+    LocalPath = "character",
+    Credentials = "git_credentials",
+    CommitUser = "character",
+    CommitEmail = "character"
+  )
+)
+
+#' @importFrom methods setValidity
+#' @importFrom assertthat assert_that is.string has_name
+#' @importFrom utils file_test
+setValidity(
+  "git_connection",
+  function(object){
+    assert_that(is.string(object@CommitUser))
+    assert_that(is.string(object@CommitEmail))
+    root <- normalizePath(object@Repository@path)
+    normalizePath(paste(root, object@LocalPath, sep = "/"))
+    repo <- repository(root)
+    repo.config <- config(repo)
+    assert_that(has_name(repo.config$local, "user.name"))
+    assert_that(has_name(repo.config$local, "user.email"))
+    assert_that(repo.config$local$user.name == object@CommitUser)
+    assert_that(repo.config$local$user.email == object@CommitEmail)
+    return(TRUE)
+  }
+)

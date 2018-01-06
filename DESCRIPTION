@@ -12,12 +12,15 @@ BugReports: https://github.com/ropensci/git2r/issues
 Maintainer: Stefan Widgren <stefan.widgren@gmail.com>
 Author: See AUTHORS file.
 Imports:
+    assertthat,
     graphics,
     utils
 Depends:
     R (>= 3.1),
     methods
 Suggests:
+    dplyr,
+    testthat,
     getPass
 Type: Package
 LazyData: true
@@ -26,7 +29,7 @@ NeedsCompilation: yes
 SystemRequirements: zlib headers and library. OpenSSL headers and
     library. LibSSH2 (optional on non-Windows) to enable the SSH
     transport.
-Collate:
+Collate: 
     'S4_classes.r'
     'blame.r'
     'blob.r'
@@ -40,8 +43,13 @@ Collate:
     'diff.r'
     'fetch.r'
     'git2r.r'
+    'git_connection.r'
+    'git_recent.r'
+    'git_sha.r'
     'index.r'
+    'is_git.R'
     'libgit2.r'
+    'list_files_git.r'
     'merge.r'
     'note.r'
     'odb.r'
@@ -50,9 +58,11 @@ Collate:
     'punch_card.r'
     'refspec.r'
     'push.r'
+    'read_delim_git.r'
     'reference.r'
     'reflog.r'
     'remote.r'
+    'remove_files_git.r'
     'repository.r'
     'reset.r'
     'revparse.r'
@@ -63,4 +73,5 @@ Collate:
     'time.r'
     'tree.r'
     'when.r'
+    'write_delim_git.r'
 RoxygenNote: 6.0.1

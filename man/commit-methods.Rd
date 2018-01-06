@@ -4,6 +4,7 @@
 \name{commit}
 \alias{commit}
 \alias{commit,git_repository-method}
+\alias{commit,git_connection-method}
 \title{Commit}
 \usage{
 commit(repo, message = NULL, all = FALSE, session = FALSE,
@@ -11,6 +12,10 @@ commit(repo, message = NULL, all = FALSE, session = FALSE,
   committer = default_signature(repo))
 
 \S4method{commit}{git_repository}(repo, message = NULL, all = FALSE,
+  session = FALSE, reference = "HEAD", author = default_signature(repo),
+  committer = default_signature(repo))
+
+\S4method{commit}{git_connection}(repo, message = NULL, all = FALSE,
   session = FALSE, reference = "HEAD", author = default_signature(repo),
   committer = default_signature(repo))
 }
