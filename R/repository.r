@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2016 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -568,14 +568,12 @@ is_shallow <- function(repo = NULL) {
 ##' Lookup
 ##'
 ##' Lookup one object in a repository.
-##' @rdname lookup-methods
-##' @docType methods
-##' @param repo The repository.
+##' @template repo-param
 ##' @param sha The identity of the object to lookup. Must be 4 to 40
 ##' characters long.
 ##' @return a \code{git_blob} or \code{git_commit} or \code{git_tag}
 ##' or \code{git_tree} object
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -617,21 +615,9 @@ is_shallow <- function(repo = NULL) {
 ##' lookup(repo, substr(sha_blob, 1, 7))
 ##' lookup(repo, substr(sha_tag, 1, 7))
 ##' }
-setGeneric("lookup",
-           signature = c("repo", "sha"),
-           function(repo, sha)
-           standardGeneric("lookup"))
-
-##' @rdname lookup-methods
-##' @export
-setMethod("lookup",
-          signature(repo = "git_repository",
-                    sha  = "character"),
-          function(repo, sha)
-          {
-              .Call(git2r_object_lookup, repo, sha)
-          }
-)
+lookup <- function(repo = NULL, sha = NULL) {
+    .Call(git2r_object_lookup, lookup_repository(repo), sha)
+}
 
 ##' Get the signature
 ##'
