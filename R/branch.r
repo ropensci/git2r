@@ -475,12 +475,9 @@ setMethod("branches",
 
 ##' Check if branch is head
 ##'
-##' @rdname is_head-methods
-##' @docType methods
-##' @param branch The branch \code{object} to check if it's head
-##' @return TRUE if branch is head, else FALSE
-##' @keywords methods
-##' @include S4_classes.r
+##' @param branch The branch \code{object} to check if it's head.
+##' @return \code{TRUE} if branch is head, else \code{FALSE}.
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -510,20 +507,9 @@ setMethod("branches",
 ##' ## Check that 'master' is no longer head
 ##' is_head(master)
 ##' }
-setGeneric("is_head",
-           signature = "branch",
-           function(branch)
-           standardGeneric("is_head"))
-
-##' @rdname is_head-methods
-##' @export
-setMethod("is_head",
-          signature(branch = "git_branch"),
-          function(branch)
-          {
-              .Call(git2r_branch_is_head, branch)
-          }
-)
+is_head <- function(branch = NULL) {
+    .Call(git2r_branch_is_head, branch)
+}
 
 ##' Check if branch is local
 ##'
