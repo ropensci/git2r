@@ -430,11 +430,9 @@ is_commit <- function(object) {
 ##'
 ##' Determine if a commit is a merge commit, i.e. has more than one
 ##' parent.
-##' @rdname is_merge-methods
-##' @docType methods
 ##' @param commit a S4 class git_commit \code{object}.
 ##' @return TRUE if commit has more than one parent, else FALSE
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -481,20 +479,10 @@ is_commit <- function(object) {
 ##' ## Check that last commit is a merge
 ##' is_merge(lookup(repo, branch_target(head(repo))))
 ##' }
-setGeneric("is_merge",
-           signature = c("commit"),
-           function(commit)
-           standardGeneric("is_merge"))
-
-##' @rdname is_merge-methods
-##' @export
-setMethod("is_merge",
-          signature(commit = "git_commit"),
-          function(commit)
-          {
-              length(parents(commit)) > 1
-          }
-)
+is_merge <- function(commit = NULL)
+{
+    length(parents(commit)) > 1
+}
 
 ##' Parents
 ##'
