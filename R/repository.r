@@ -437,15 +437,9 @@ is_detached <- function(repo = NULL) {
 
 ##' Check if repository is empty
 ##'
-##' @rdname is_empty-methods
-##' @docType methods
-##' @param repo The repository \code{object}
-##' \code{\linkS4class{git_repository}} to check if it's empty. If the
-##' \code{repo} argument is missing, the repository is searched for
-##' with \code{\link{discover_repository}} in the current working
-##' directory.
-##' @return TRUE if empty else FALSE
-##' @keywords methods
+##' @template repo-param
+##' @return \code{TRUE} if repository is empty else \code{FALSE}.
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -467,31 +461,9 @@ is_detached <- function(repo = NULL) {
 ##' ## Check if it's an empty repository
 ##' is_empty(repo)
 ##' }
-setGeneric("is_empty",
-           signature = "repo",
-           function(repo)
-           standardGeneric("is_empty"))
-
-
-##' @rdname is_empty-methods
-##' @export
-setMethod("is_empty",
-          signature(repo = "missing"),
-          function()
-          {
-              callGeneric(repo = lookup_repository())
-          }
-)
-
-##' @rdname is_empty-methods
-##' @export
-setMethod("is_empty",
-          signature(repo = "git_repository"),
-          function(repo)
-          {
-              .Call(git2r_repository_is_empty, repo)
-          }
-)
+is_empty <- function(repo = NULL) {
+    .Call(git2r_repository_is_empty, lookup_repository(repo))
+}
 
 ##' Determine if a directory is in a git repository
 ##'
