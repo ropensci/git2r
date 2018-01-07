@@ -17,13 +17,11 @@
 ##' Ahead Behind
 ##'
 ##' Count the number of unique commits between two commit objects.
-##' @rdname ahead_behind-methods
-##' @docType methods
-##' @param local a S4 class git_commit \code{object}.
-##' @param upstream a S4 class git_commit \code{object}.
+##' @param local an S4 class git_commit object.
+##' @param upstream an S4 class git_commit object.
 ##' @return An integer vector of length 2 with number of commits that
 ##' the upstream commit is ahead and behind the local commit
-##' @keywords methods
+##' @export
 ##' @examples \dontrun{
 ##' ## Create a directory in tempdir
 ##' path <- tempfile(pattern="git2r-")
@@ -48,21 +46,10 @@
 ##'
 ##' ahead_behind(commit_1, commit_2)
 ##' }
-setGeneric("ahead_behind",
-           signature = c("local", "upstream"),
-           function(local, upstream)
-           standardGeneric("ahead_behind"))
-
-##' @rdname ahead_behind-methods
-##' @export
-setMethod("ahead_behind",
-          signature(local = "git_commit", upstream = "git_commit"),
-          function(local, upstream)
-          {
-              stopifnot(identical(local@repo, upstream@repo))
-              .Call(git2r_graph_ahead_behind, local, upstream)
-          }
-)
+ahead_behind <- function(local = NULL, upstream = NULL)
+{
+    .Call(git2r_graph_ahead_behind, local, upstream)
+}
 
 ##' Add sessionInfo to message
 ##'

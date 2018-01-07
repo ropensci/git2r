@@ -35,11 +35,11 @@
 SEXP git2r_graph_ahead_behind(SEXP local, SEXP upstream)
 {
     size_t ahead, behind;
-    int err;
+    int err, nprotect = 0;
     SEXP result = R_NilValue;
-    SEXP slot;
-    git_oid local_oid;
-    git_oid upstream_oid;
+    SEXP local_path, local_repo, local_sha;
+    SEXP upstream_path, upstream_repo, upstream_sha;
+    git_oid local_oid, upstream_oid;
     git_repository *repository = NULL;
 
     if (git2r_arg_check_commit(local))
@@ -47,16 +47,22 @@ SEXP git2r_graph_ahead_behind(SEXP local, SEXP upstream)
     if (git2r_arg_check_commit(upstream))
         git2r_error(__func__, NULL, "'upstream'", git2r_err_commit_arg);
 
-    slot = GET_SLOT(local, Rf_install("repo"));
-    repository = git2r_repository_open(slot);
+    local_repo = GET_SLOT(local, Rf_install("repo"));
+    upstream_repo = GET_SLOT(upstream, Rf_install("repo"));
+    local_path = GET_SLOT(local_repo, Rf_install("path"));
+    upstream_path = GET_SLOT(upstream_repo, Rf_install("path"));
+    if (strcmp(CHAR(STRING_ELT(local_path, 0)), CHAR(STRING_ELT(upstream_path, 0))))
+        git2r_error(__func__, NULL, "'local' and 'upstream' not from same repository", NULL);
+
+    repository = git2r_repository_open(local_repo);
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    slot = GET_SLOT(local, Rf_install("sha"));
-    git2r_oid_from_sha_sexp(slot, &local_oid);
+    local_sha = GET_SLOT(local, Rf_install("sha"));
+    git2r_oid_from_sha_sexp(local_sha, &local_oid);
 
-    slot = GET_SLOT(upstream, Rf_install("sha"));
-    git2r_oid_from_sha_sexp(slot, &upstream_oid);
+    upstream_sha = GET_SLOT(upstream, Rf_install("sha"));
+    git2r_oid_from_sha_sexp(upstream_sha, &upstream_oid);
 
     err = git_graph_ahead_behind(&ahead, &behind, repository, &local_oid,
                                  &upstream_oid);
@@ -64,6 +70,7 @@ SEXP git2r_graph_ahead_behind(SEXP local, SEXP upstream)
         goto cleanup;
 
     PROTECT(result = allocVector(INTSXP, 2));
+    nprotect++;
     INTEGER(result)[0] = ahead;
     INTEGER(result)[1] = behind;
 
@@ -71,8 +78,8 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (!isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     if (err)
         git2r_error(__func__, giterr_last(), NULL, NULL);
