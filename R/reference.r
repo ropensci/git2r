@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -15,16 +15,9 @@
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 ##' Get all references that can be found in a repository.
-##'
-##' @rdname references-methods
-##' @docType methods
-##' @param repo The repository \code{object}
-##' \code{\linkS4class{git_repository}}. If the \code{repo} argument
-##' is missing, the repository is searched for with
-##' \code{\link{discover_repository}} in the current working
-##' directory.
+##' @template repo-param
 ##' @return Character vector with references
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize two temporary repositories
@@ -58,31 +51,9 @@
 ##' references(repo)
 ##' }
 ##'
-setGeneric("references",
-           signature = "repo",
-           function(repo) standardGeneric("references"))
-
-##' @rdname references-methods
-##' @include S4_classes.r
-##' @export
-setMethod("references",
-          signature(repo = "missing"),
-          function()
-          {
-              callGeneric(repo = lookup_repository())
-          }
-)
-
-##' @rdname references-methods
-##' @include S4_classes.r
-##' @export
-setMethod("references",
-          signature(repo = "git_repository"),
-          function(repo)
-          {
-              .Call(git2r_reference_list, repo)
-          }
-)
+references <- function(repo = NULL) {
+    .Call(git2r_reference_list, lookup_repository(repo))
+}
 
 ##' Brief summary of reference
 ##'
