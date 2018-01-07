@@ -196,11 +196,9 @@ setMethod("hashfile",
 
 ##' Is blob binary
 ##'
-##' @rdname is_binary-methods
-##' @docType methods
 ##' @param blob The blob \code{object}.
 ##' @return TRUE if binary data, FALSE if not.
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -233,20 +231,9 @@ setMethod("hashfile",
 ##' b_png <- tree(commit_2)["plot.png"]
 ##' is_binary(b_png)
 ##' }
-setGeneric("is_binary",
-           signature = "blob",
-           function(blob)
-           standardGeneric("is_binary"))
-
-##' @rdname is_binary-methods
-##' @export
-setMethod("is_binary",
-          signature(blob = "git_blob"),
-          function(blob)
-          {
-              .Call(git2r_blob_is_binary, blob)
-          }
-)
+is_binary <- function(blob = NULL) {
+    .Call(git2r_blob_is_binary, blob)
+}
 
 ##' Check if object is S4 class git_blob
 ##'
