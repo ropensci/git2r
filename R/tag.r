@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -165,15 +165,9 @@ setMethod("tag_delete",
 
 ##' Tags
 ##'
-##' @rdname tags-methods
-##' @docType methods
-##' @param repo The repository \code{object}
-##' \code{\linkS4class{git_repository}}. If the \code{repo} argument
-##' is missing, the repository is searched for with
-##' \code{\link{discover_repository}} in the current working
-##' directory.
+##' @template repo-param
 ##' @return list of tags in repository
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -195,30 +189,9 @@ setMethod("tag_delete",
 ##' ## List tags
 ##' tags(repo)
 ##' }
-setGeneric("tags",
-           signature = "repo",
-           function(repo)
-           standardGeneric("tags"))
-
-##' @rdname tags-methods
-##' @export
-setMethod("tags",
-          signature(repo = "missing"),
-          function()
-          {
-              callGeneric(repo = lookup_repository())
-          }
-)
-
-##' @rdname tags-methods
-##' @export
-setMethod("tags",
-          signature(repo = "git_repository"),
-          function(repo)
-          {
-              .Call(git2r_tag_list, repo)
-          }
-)
+tags <- function(repo = NULL) {
+    .Call(git2r_tag_list, lookup_repository(repo))
+}
 
 ##' Brief summary of a tag
 ##'
