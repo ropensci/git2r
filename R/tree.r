@@ -429,18 +429,10 @@ is_tree <- function(object) {
 ##' }
 ls_tree <- function(tree = NULL, repo = NULL, recursive = TRUE)
 {
-    if (is.null(tree) || is.character(tree)) {
-        if (is.null(repo)) {
-            repo <- lookup_repository()
-        } else if (is.character(repo)) {
-            repo <- repository(repo)
-        }
-
-        if (is.null(tree)) {
-            tree <- tree(last_commit(repo))
-        } else {
-            tree <- revparse_single(repo = repo, revision = tree)
-        }
+    if (is.null(tree)) {
+        tree <- tree(last_commit(lookup_repository(repo)))
+    } else if (is.character(tree)) {
+        tree <- revparse_single(repo = lookup_repository(repo), revision = tree)
     }
 
     data.frame(.Call(git2r_tree_walk, tree, recursive),
