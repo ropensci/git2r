@@ -391,21 +391,16 @@ setMethod("head",
 ##' repo_bare <- init(path_bare, bare = TRUE)
 ##' is_bare(repo_bare)
 ##' }
-is_bare <- function(repo) {
+is_bare <- function(repo = NULL) {
     .Call(git2r_repository_is_bare, lookup_repository(repo))
 }
 
 ##' Check if HEAD of repository is detached
 ##'
-##' @rdname is_detached-methods
-##' @docType methods
-##' @param repo The repository \code{object}
-##' \code{\linkS4class{git_repository}}. If the \code{repo} argument
-##' is missing, the repository is searched for with
-##' \code{\link{discover_repository}} in the current working
-##' directory.
-##' @return TRUE if repository HEAD is detached, else FALSE
-##' @keywords methods
+##' @template repo-param
+##' @return \code{TRUE} if repository HEAD is detached, else
+##'     \code{FALSE}.
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Create and initialize a repository in a temporary directory
@@ -436,31 +431,9 @@ is_bare <- function(repo) {
 ##' ## HEAD of repository is detached
 ##' is_detached(repo)
 ##' }
-setGeneric("is_detached",
-           signature = "repo",
-           function(repo)
-           standardGeneric("is_detached"))
-
-
-##' @rdname is_detached-methods
-##' @export
-setMethod("is_detached",
-          signature(repo = "missing"),
-          function()
-          {
-              callGeneric(repo = lookup_repository())
-          }
-)
-
-##' @rdname is_detached-methods
-##' @export
-setMethod("is_detached",
-          signature(repo = "git_repository"),
-          function(repo)
-          {
-              .Call(git2r_repository_head_detached, repo)
-          }
-)
+is_detached <- function(repo = NULL) {
+    .Call(git2r_repository_head_detached, lookup_repository(repo))
+}
 
 ##' Check if repository is empty
 ##'

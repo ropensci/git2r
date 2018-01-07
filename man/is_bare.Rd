@@ -4,7 +4,7 @@
 \alias{is_bare}
 \title{Check if repository is bare}
 \usage{
-is_bare(repo)
+is_bare(repo = NULL)
 }
 \arguments{
 \item{repo}{a \code{\linkS4class{git_repository}} object, or a
