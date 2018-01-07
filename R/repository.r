@@ -581,11 +581,9 @@ lookup <- function(repo = NULL, sha = NULL) {
 ##' Get the signature
 ##'
 ##' Get the signature according to the repository's configuration
-##' @rdname default_signature-methods
-##' @docType methods
-##' @param repo The repository \code{object} to check signature
+##' @template repo-param
 ##' @return S4 class git_signature
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -605,20 +603,9 @@ lookup <- function(repo = NULL, sha = NULL) {
 ##' ## Get the default signature
 ##' default_signature(repo)
 ##' }
-setGeneric("default_signature",
-           signature = "repo",
-           function(repo)
-           standardGeneric("default_signature"))
-
-##' @rdname default_signature-methods
-##' @export
-setMethod("default_signature",
-          signature(repo = "git_repository"),
-          function(repo)
-          {
-              .Call(git2r_signature_default, repo)
-          }
-)
+default_signature <- function(repo = NULL) {
+    .Call(git2r_signature_default, lookup_repository(repo))
+}
 
 ##' Brief summary of repository
 ##'
