@@ -70,7 +70,7 @@ setMethod("ahead_behind",
 ##' @return message with appended sessionInfo
 ##' @importFrom utils capture.output
 ##' @importFrom utils sessionInfo
-##' @keywords internal
+##' @noRd
 add_session_info <- function(message)
 {
     paste0(message, "\n\nsessionInfo:\n",

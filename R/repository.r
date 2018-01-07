@@ -1085,7 +1085,7 @@ setMethod("discover_repository",
 ##' Lookup repository for methods with missing repo argument
 ##'
 ##' @return S4 class git_repository
-##' @keywords internal
+##' @noRd
 lookup_repository <- function()
 {
     ## Try current working directory

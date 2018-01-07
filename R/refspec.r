@@ -22,7 +22,7 @@
 ##' @param opts List with push options. Default is NULL.
 ##' @return List with remote (character vector) and refspec (character
 ##' vector).
-##' @keywords internal
+##' @noRd
 get_refspec <- function(repo = NULL, remote = NULL, spec = NULL, opts = NULL)
 {
     stopifnot(is(object = repo, class2 = "git_repository"))

@@ -78,7 +78,7 @@ setMethod("merge_base",
 ##' index, the merge commit will be committed.
 ##' @param merger Who made the merge.
 ##' @return A \code{\linkS4class{git_merge_result}} object.
-##' @keywords internal
+##' @noRd
 merge_branch <- function(branch, commit_on_success, merger)
 {
     .Call(git2r_merge_branch, branch, merger, commit_on_success)
@@ -92,7 +92,7 @@ merge_branch <- function(branch, commit_on_success, merger)
 ##' index, the merge commit will be committed.
 ##' @param merger Who made the merge.
 ##' @return A \code{\linkS4class{git_merge_result}} object.
-##' @keywords internal
+##' @noRd
 merge_named_branch <- function(repo, branch, commit_on_success, merger)
 {
     ## Check branch argument

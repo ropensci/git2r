@@ -26,7 +26,7 @@ NULL
 ##'
 ##' @param libpath A character string giving the complete path to the
 ##' package.
-##' @keywords internal
+##' @noRd
 .onUnload <- function(libpath)
 {
     library.dynam.unload("git2r", libpath)

@@ -160,7 +160,7 @@ cred_ssh_key <-  function (publickey = "~/.ssh/id_rsa.pub",
 ##' Check if private key is passphrase protected
 ##' @param privatekey The path to the private key of the
 ##' credential. Default is \code{'~/.ssh/id_rsa'}
-##' @keywords internal
+##' @noRd
 ssh_key_needs_passphrase <- function(privatekey = "~/.ssh/id_rsa"){
   private_content    <- readLines(privatekey, n=3)
   contains_encrypted <- grepl("encrypted",  private_content , ignore.case = TRUE)
