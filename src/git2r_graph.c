@@ -96,11 +96,10 @@ cleanup:
  */
 SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor)
 {
-    int err;
-    SEXP slot;
-    SEXP result = R_NilValue;
-    git_oid commit_oid;
-    git_oid ancestor_oid;
+    int err, descendant_of = 0;
+    SEXP commit_path, commit_repo, commit_sha;
+    SEXP ancestor_path, ancestor_repo, ancestor_sha;
+    git_oid commit_oid, ancestor_oid;
     git_repository *repository = NULL;
 
     if (git2r_arg_check_commit(commit))
@@ -108,34 +107,35 @@ SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor)
     if (git2r_arg_check_commit(ancestor))
         git2r_error(__func__, NULL, "'ancestor'", git2r_err_commit_arg);
 
-    slot = GET_SLOT(commit, Rf_install("repo"));
-    repository = git2r_repository_open(slot);
+    commit_repo = GET_SLOT(commit, Rf_install("repo"));
+    ancestor_repo = GET_SLOT(ancestor, Rf_install("repo"));
+    commit_path = GET_SLOT(commit_repo, Rf_install("path"));
+    ancestor_path = GET_SLOT(ancestor_repo, Rf_install("path"));
+    if (strcmp(CHAR(STRING_ELT(commit_path, 0)), CHAR(STRING_ELT(ancestor_path, 0))))
+        git2r_error(__func__, NULL, "'commit' and 'ancestor' not from same repository", NULL);
+
+    repository = git2r_repository_open(commit_repo);
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    slot = GET_SLOT(commit, Rf_install("sha"));
-    git2r_oid_from_sha_sexp(slot, &commit_oid);
+    commit_sha = GET_SLOT(commit, Rf_install("sha"));
+    git2r_oid_from_sha_sexp(commit_sha, &commit_oid);
 
-    slot = GET_SLOT(ancestor, Rf_install("sha"));
-    git2r_oid_from_sha_sexp(slot, &ancestor_oid);
+    ancestor_sha = GET_SLOT(ancestor, Rf_install("sha"));
+    git2r_oid_from_sha_sexp(ancestor_sha, &ancestor_oid);
 
     err = git_graph_descendant_of(repository, &commit_oid, &ancestor_oid);
     if (0 > err || 1 < err)
         goto cleanup;
-
-    PROTECT(result = allocVector(LGLSXP, 1));
-    LOGICAL(result)[0] = err;
-    err = GIT_OK;
+    descendant_of = err;
+    err = 0;
 
 cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (!isNull(result))
-        UNPROTECT(1);
-
     if (err)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
-    return result;
+    return ScalarLogical(descendant_of);
 }

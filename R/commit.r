@@ -330,14 +330,12 @@ last_commit <- function(repo = NULL) {
 ##' Descendant
 ##'
 ##' Determine if a commit is the descendant of another commit
-##' @rdname descendant_of-methods
-##' @docType methods
-##' @param commit a S4 class git_commit \code{object}.
-##' @param ancestor a S4 class git_commit \code{object} to check if
-##' ancestor to \code{commit}.
-##' @return TRUE if commit is descendant of \code{ancestor}, else
-##' FALSE
-##' @keywords methods
+##' @param commit an S4 class git_commit object.
+##' @param ancestor an S4 class git_commit object to check if ancestor
+##'     to \code{commit}.
+##' @return TRUE if \code{commit} is descendant of \code{ancestor},
+##'     else FALSE
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Create a directory in tempdir
@@ -364,21 +362,10 @@ last_commit <- function(repo = NULL) {
 ##' descendant_of(commit_1, commit_2)
 ##' descendant_of(commit_2, commit_1)
 ##' }
-setGeneric("descendant_of",
-           signature = c("commit", "ancestor"),
-           function(commit, ancestor)
-           standardGeneric("descendant_of"))
-
-##' @rdname descendant_of-methods
-##' @export
-setMethod("descendant_of",
-          signature(commit = "git_commit", ancestor = "git_commit"),
-          function(commit, ancestor)
-          {
-              stopifnot(identical(commit@repo, ancestor@repo))
-              .Call(git2r_graph_descendant_of, commit, ancestor)
-          }
-)
+descendant_of <- function(commit = NULL, ancestor = NULL)
+{
+    .Call(git2r_graph_descendant_of, commit, ancestor)
+}
 
 ##' Check if object is S4 class git_commit
 ##'
