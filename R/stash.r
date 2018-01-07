@@ -178,16 +178,9 @@ setMethod("stash",
 
 ##' List stashes in repository
 ##'
-##' @rdname stash_list-methods
-##' @docType methods
-##' @param repo The repository \code{object}
-##' \code{\linkS4class{git_repository}}. If the \code{repo} argument
-##' is missing, the repository is searched for with
-##' \code{\link{discover_repository}} in the current working
-##' directory.
+##' @template repo-param
 ##' @return list of stashes in repository
-##' @keywords methods
-##' @include S4_classes.r
+##' @export
 ##' @examples \dontrun{
 ##' ## Initialize a temporary repository
 ##' path <- tempfile(pattern="git2r-")
@@ -225,30 +218,9 @@ setMethod("stash",
 ##' # View stash
 ##' stash_list(repo)
 ##' }
-setGeneric("stash_list",
-           signature = "repo",
-           function(repo)
-           standardGeneric("stash_list"))
-
-##' @rdname stash_list-methods
-##' @export
-setMethod("stash_list",
-          signature(repo = "missing"),
-          function()
-          {
-              callGeneric(repo = lookup_repository())
-          }
-)
-
-##' @rdname stash_list-methods
-##' @export
-setMethod("stash_list",
-          signature(repo = "git_repository"),
-          function(repo)
-          {
-              .Call(git2r_stash_list, repo)
-          }
-)
+stash_list <- function(repo = NULL) {
+    .Call(git2r_stash_list, lookup_repository(repo))
+}
 
 ##' Brief summary of a stash
 ##'

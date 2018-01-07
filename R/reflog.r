@@ -56,7 +56,8 @@
 ##' reflog(repo)
 ##' }
 reflog <- function(repo = NULL, refname = "HEAD") {
-    structure(.Call(git2r_reflog_list, repo, refname), class = "git_reflog")
+    structure(.Call(git2r_reflog_list, lookup_repository(repo), refname),
+              class = "git_reflog")
 }
 
 ##' @export
