@@ -1082,16 +1082,26 @@ setMethod("discover_repository",
           }
 )
 
-##' Lookup repository for methods with missing repo argument
+##' Internal utility function to lookup repository for methods
 ##'
+##' @param repo repository \code{object}
+##'     \code{\linkS4class{git_repository}}, or a path to a
+##'     repository, or \code{NULL}.  If the \code{repo} argument is
+##'     \code{NULL}, the repository is searched for with
+##'     \code{\link{discover_repository}} in the current working
+##'     directory.
 ##' @return S4 class git_repository
 ##' @noRd
-lookup_repository <- function()
+lookup_repository <- function(repo = NULL)
 {
-    ## Try current working directory
-    repo <- discover_repository(getwd())
-    if (is.null(repo))
-        stop("The working directory is not in a git repository")
+    if (is.null(repo)) {
+        ## Try current working directory
+        repo <- discover_repository(getwd())
+        if (is.null(repo))
+            stop("The working directory is not in a git repository")
+    } else if (is(object = repo, class2 = "git_repository")) {
+        return(repo)
+    }
 
     repository(repo)
 }
