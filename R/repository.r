@@ -599,17 +599,11 @@ setMethod("in_repository",
           }
 )
 
-##' Determine if the repository was a shallow clone
+##' Determine if the repository is a shallow clone
 ##'
-##' @rdname is_shallow-methods
-##' @docType methods
-##' @param repo The repository \code{object}
-##' \code{\linkS4class{git_repository}}. If the \code{repo} argument
-##' is missing, the repository is searched for with
-##' \code{\link{discover_repository}} in the current working
-##' directory.
-##' @return TRUE if shallow clone, else FALSE
-##' @keywords methods
+##' @template repo-param
+##' @return \code{TRUE} if shallow clone, else \code{FALSE}
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize repository
@@ -649,31 +643,9 @@ setMethod("in_repository",
 ##' ## Check if it's a shallow clone
 ##' is_shallow(repo_2)
 ##' }
-setGeneric("is_shallow",
-           signature = "repo",
-           function(repo)
-           standardGeneric("is_shallow"))
-
-
-##' @rdname is_shallow-methods
-##' @export
-setMethod("is_shallow",
-          signature(repo = "missing"),
-          function()
-          {
-              callGeneric(repo = lookup_repository())
-          }
-)
-
-##' @rdname is_shallow-methods
-##' @export
-setMethod("is_shallow",
-          signature(repo = "git_repository"),
-          function(repo)
-          {
-              .Call(git2r_repository_is_shallow, repo)
-          }
-)
+is_shallow <- function(repo = NULL) {
+    .Call(git2r_repository_is_shallow, lookup_repository(repo))
+}
 
 ##' Lookup
 ##'
