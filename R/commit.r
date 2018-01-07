@@ -337,7 +337,7 @@ setMethod("commits",
 ##' last_commit(path)
 ##' }
 last_commit <- function(repo = NULL) {
-    commits(lookup_repository(repoI, n = 1)[[1]]
+    commits(lookup_repository(repo), n = 1)[[1]]
 }
 
 ##' Descendant
