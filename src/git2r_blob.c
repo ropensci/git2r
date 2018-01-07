@@ -82,10 +82,8 @@ cleanup:
 SEXP git2r_blob_create_fromdisk(SEXP repo, SEXP path)
 {
     SEXP result = R_NilValue;
-    int err = GIT_OK;
+    int err = 0, nprotect = 0;
     size_t len, i;
-    git_oid oid;
-    git_blob *blob = NULL;
     git_repository *repository = NULL;
 
     if (git2r_arg_check_string_vec(path))
@@ -97,8 +95,11 @@ SEXP git2r_blob_create_fromdisk(SEXP repo, SEXP path)
 
     len = length(path);
     PROTECT(result = allocVector(VECSXP, len));
+    nprotect++;
     for (i = 0; i < len; i++) {
         if (NA_STRING != STRING_ELT(path, i)) {
+            git_oid oid;
+            git_blob *blob = NULL;
             SEXP item;
 
             err = git_blob_create_fromdisk(
@@ -122,8 +123,8 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (!isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     if (err)
         git2r_error(__func__, giterr_last(), NULL, NULL);
@@ -146,10 +147,8 @@ cleanup:
 SEXP git2r_blob_create_fromworkdir(SEXP repo, SEXP relative_path)
 {
     SEXP result = R_NilValue;
-    int err = GIT_OK;
+    int err = 0, nprotect = 0;
     size_t len, i;
-    git_oid oid;
-    git_blob *blob = NULL;
     git_repository *repository = NULL;
 
     if (git2r_arg_check_string_vec(relative_path))
@@ -161,8 +160,11 @@ SEXP git2r_blob_create_fromworkdir(SEXP repo, SEXP relative_path)
 
     len = length(relative_path);
     PROTECT(result = allocVector(VECSXP, len));
+    nprotect++;
     for (i = 0; i < len; i++) {
         if (NA_STRING != STRING_ELT(relative_path, i)) {
+            git_oid oid;
+            git_blob *blob = NULL;
             SEXP item;
 
             err = git_blob_create_fromworkdir(
@@ -186,8 +188,8 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (!isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     if (err)
         git2r_error(__func__, giterr_last(), NULL, NULL);
