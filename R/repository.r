@@ -373,16 +373,10 @@ setMethod("head",
 
 ##' Check if repository is bare
 ##'
-##' @rdname is_bare-methods
-##' @docType methods
-##' @param repo The repository \code{object}
-##' \code{\linkS4class{git_repository}} to check if it's bare. If the
-##' \code{repo} argument is missing, the repository is searched for
-##' with \code{\link{discover_repository}} in the current working
-##' directory.
-##' @return TRUE if bare repository, else FALSE
-##' @keywords methods
+##' @template repo-param
+##' @return \code{TRUE} if bare repository, else \code{FALSE}
 ##' @seealso \link{init}
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a repository
@@ -397,30 +391,9 @@ setMethod("head",
 ##' repo_bare <- init(path_bare, bare = TRUE)
 ##' is_bare(repo_bare)
 ##' }
-setGeneric("is_bare",
-           signature = "repo",
-           function(repo)
-           standardGeneric("is_bare"))
-
-##' @rdname is_bare-methods
-##' @export
-setMethod("is_bare",
-          signature(repo = "git_repository"),
-          function(repo)
-          {
-              .Call(git2r_repository_is_bare, repo)
-          }
-)
-
-##' @rdname is_bare-methods
-##' @export
-setMethod("is_bare",
-          signature(repo = "missing"),
-          function()
-          {
-              callGeneric(repo = lookup_repository())
-          }
-)
+is_bare <- function(repo) {
+    .Call(git2r_repository_is_bare, lookup_repository(repo))
+}
 
 ##' Check if HEAD of repository is detached
 ##'
