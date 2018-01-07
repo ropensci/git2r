@@ -59,12 +59,10 @@ blob_create <- function(repo = NULL, path = NULL, relative = TRUE) {
 
 ##' Content of blob
 ##'
-##' @rdname content-methods
-##' @docType methods
-##' @param blob The blob \code{object}.
+##' @param blob The blob object.
 ##' @param split Split blob content to text lines. Default TRUE.
 ##' @return The content of the blob. NA_character_ if the blob is binary.
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -81,27 +79,15 @@ blob_create <- function(repo = NULL, path = NULL, relative = TRUE) {
 ##' ## Display content of blob.
 ##' content(tree(commits(repo)[[1]])["example.txt"])
 ##' }
-setGeneric("content",
-           signature = "blob",
-           function(blob,
-                    split = TRUE)
-           standardGeneric("content"))
+content <- function(blob = NULL, split = TRUE) {
+    if (is_binary(blob))
+        return(NA_character_)
 
-##' @rdname content-methods
-##' @export
-setMethod("content",
-          signature(blob = "git_blob"),
-          function(blob, split)
-          {
-              if (is_binary(blob))
-                  return(NA_character_)
-
-              ret <- .Call(git2r_blob_content, blob)
-              if (isTRUE(split))
-                  ret <- strsplit(ret, "\n")[[1]]
-              ret
-          }
-)
+    ret <- .Call(git2r_blob_content, blob)
+    if (isTRUE(split))
+        ret <- strsplit(ret, "\n")[[1]]
+    ret
+}
 
 ##' Determine the sha from a blob string
 ##'
