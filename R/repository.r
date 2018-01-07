@@ -469,12 +469,10 @@ is_empty <- function(repo = NULL) {
 ##'
 ##' The lookup start from path and walk across parent directories if
 ##' nothing has been found.
-##' @rdname in_repository-methods
-##' @docType methods
 ##' @param path The path to the directory. The working directory is
-##' used if path is missing.
+##'     used if path is \code{NULL}.
 ##' @return TRUE if directory is in a git repository else FALSE
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -492,30 +490,11 @@ is_empty <- function(repo = NULL) {
 ##' setwd(path)
 ##' in_repository()
 ##' }
-setGeneric("in_repository",
-           signature = "path",
-           function(path)
-           standardGeneric("in_repository"))
-
-##' @rdname in_repository-methods
-##' @export
-setMethod("in_repository",
-          signature(path = "missing"),
-          function()
-          {
-              callGeneric(path = getwd())
-          }
-)
-
-##' @rdname in_repository-methods
-##' @export
-setMethod("in_repository",
-          signature(path = "character"),
-          function(path)
-          {
-              !is.null(discover_repository(path))
-          }
-)
+in_repository <- function(path = NULL) {
+    if (is.null(path))
+        path = getwd()
+    !is.null(discover_repository(path))
+}
 
 ##' Determine if the repository is a shallow clone
 ##'
