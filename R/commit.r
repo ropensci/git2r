@@ -499,11 +499,9 @@ setMethod("is_merge",
 ##' Parents
 ##'
 ##' Get parents of a commit.
-##' @rdname parents-methods
-##' @docType methods
 ##' @param object a S4 class git_commit \code{object}.
 ##' @return list of S4 git_commit objects
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -530,20 +528,10 @@ setMethod("is_merge",
 ##' ## commit_2 has commit_1 as parent
 ##' parents(commit_2)
 ##' }
-setGeneric("parents",
-           signature = "object",
-           function(object)
-           standardGeneric("parents"))
-
-##' @rdname parents-methods
-##' @export
-setMethod("parents",
-          signature(object = "git_commit"),
-          function(object)
-          {
-              .Call(git2r_commit_parent_list, object)
-          }
-)
+parents <- function(object = NULL)
+{
+    .Call(git2r_commit_parent_list, object)
+}
 
 ##' Brief summary of commit
 ##'
