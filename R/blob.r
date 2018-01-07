@@ -133,11 +133,9 @@ hash <- function(data = NULL)
 ##' Determine the sha from a blob in a file
 ##'
 ##' The blob is not written to the object database.
-##' @rdname hashfile-methods
-##' @docType methods
 ##' @param path The path vector with files to hash.
 ##' @return A vector with the sha for each file in path.
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Create a file. NOTE: The line endings from writeLines gives
@@ -152,21 +150,10 @@ hash <- function(data = NULL)
 ##' hashfile(path)
 ##' identical(hashfile(path), hash("Hello, world!\n"))
 ##' }
-setGeneric("hashfile",
-           signature = "path",
-           function(path)
-           standardGeneric("hashfile"))
-
-##' @rdname hashfile-methods
-##' @export
-setMethod("hashfile",
-          signature(path = "character"),
-          function(path)
-          {
-              path <- normalizePath(path, mustWork = TRUE)
-              .Call(git2r_odb_hashfile, path)
-          }
-)
+hashfile <- function(path = NULL)
+{
+    .Call(git2r_odb_hashfile, normalizePath(path, mustWork = TRUE))
+}
 
 ##' Is blob binary
 ##'
