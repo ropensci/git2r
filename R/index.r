@@ -143,15 +143,12 @@ setMethod("add",
 
 ##' Remove files from the working tree and from the index
 ##'
-##' @rdname rm_file-methods
-##' @docType methods
-##' @param repo The repository \code{object}.
+##' @template repo-param
 ##' @param path character vector with filenames to remove. The path
-##' must be relative to the repository's working folder. Only files
-##' known to Git are removed.
+##'     must be relative to the repository's working folder. Only
+##'     files known to Git are removed.
 ##' @return invisible(NULL)
-##' @keywords methods
-##' @include S4_classes.r
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a repository
@@ -175,58 +172,50 @@ setMethod("add",
 ##' ## View status of repository
 ##' status(repo)
 ##' }
-##'
-setGeneric("rm_file",
-           signature = c("repo", "path"),
-           function(repo, path)
-           standardGeneric("rm_file"))
+rm_file <- function(repo = NULL, path = NULL) {
+    if (is.null(path) || !is.character(path))
+        stop("'path' must be a character vector")
 
-##' @rdname rm_file-methods
-##' @export
-setMethod("rm_file",
-          signature(repo = "git_repository",
-                    path = "character"),
-          function(repo, path)
-          {
-              if (length(path)) {
-                  ## Check that files exists and are known to Git
-                  if (!all(file.exists(paste0(workdir(repo), path)))) {
-                      stop(sprintf("pathspec '%s' did not match any files. ",
-                                   path[!file.exists(paste0(workdir(repo), path))]))
-                  }
+    repo <- lookup_repository(repo)
 
-                  if (any(file.info(paste0(workdir(repo), path))$isdir)) {
-                      stop(sprintf("pathspec '%s' did not match any files. ",
-                                   path[exists(paste0(workdir(repo), path))]))
-                  }
+    if (length(path)) {
+        ## Check that files exists and are known to Git
+        if (!all(file.exists(paste0(workdir(repo), path)))) {
+            stop(sprintf("pathspec '%s' did not match any files. ",
+                         path[!file.exists(paste0(workdir(repo), path))]))
+        }
 
-                  s <- status(repo, staged = TRUE, unstaged = TRUE,
-                              untracked = TRUE, ignored = TRUE)
-                  if (any(path %in% c(s$ignored, s$untracked))) {
-                      stop(sprintf("pathspec '%s' did not match any files. ",
-                                   path[path %in% c(s$ignored, s$untracked)]))
-                  }
+        if (any(file.info(paste0(workdir(repo), path))$isdir)) {
+            stop(sprintf("pathspec '%s' did not match any files. ",
+                         path[exists(paste0(workdir(repo), path))]))
+        }
 
-                  if (any(path %in% s$staged)) {
-                      stop(sprintf("'%s' has changes staged in the index. ",
-                                   path[path %in% s$staged]))
-                  }
+        s <- status(repo, staged = TRUE, unstaged = TRUE,
+                    untracked = TRUE, ignored = TRUE)
+        if (any(path %in% c(s$ignored, s$untracked))) {
+            stop(sprintf("pathspec '%s' did not match any files. ",
+                         path[path %in% c(s$ignored, s$untracked)]))
+        }
 
-                  if (any(path %in% s$unstaged)) {
-                      stop(sprintf("'%s' has local modifications. ",
-                                   path[path %in% s$unstaged]))
-                  }
+        if (any(path %in% s$staged)) {
+            stop(sprintf("'%s' has changes staged in the index. ",
+                         path[path %in% s$staged]))
+        }
 
-                  ## Remove and stage files
-                  lapply(path, function(x) {
-                      file.remove(paste0(workdir(repo), x))
-                      .Call(git2r_index_remove_bypath, repo, x)
-                  })
-              }
+        if (any(path %in% s$unstaged)) {
+            stop(sprintf("'%s' has local modifications. ",
+                         path[path %in% s$unstaged]))
+        }
 
-              invisible(NULL)
-          }
-)
+        ## Remove and stage files
+        lapply(path, function(x) {
+            file.remove(paste0(workdir(repo), x))
+            .Call(git2r_index_remove_bypath, repo, x)
+        })
+    }
+
+    invisible(NULL)
+}
 
 ##' Remove an index entry corresponding to a file on disk
 ##'
