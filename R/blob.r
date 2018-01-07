@@ -19,16 +19,18 @@
 ##' Read a file from the filesystem and write its content to the
 ##' Object Database as a loose blob. The method is vectorized and
 ##' accepts a vector of files to create blobs from.
-##' @rdname blob_create-methods
-##' @docType methods
 ##' @param repo The repository where the blob(s) will be written. Can
-##' be a bare repository.
+##'     be a bare repository. A \code{\linkS4class{git_repository}}
+##'     object, or a path to a repository, or \code{NULL}.  If the
+##'     \code{repo} argument is \code{NULL}, the repository is
+##'     searched for with \code{\link{discover_repository}} in the
+##'     current working directory.
 ##' @param path The file(s) from which the blob will be created.
 ##' @param relative TRUE if the file(s) from which the blob will be
-##' created is relative to the repository's working dir. Default is
-##' TRUE.
+##'     created is relative to the repository's working dir. Default
+##'     is TRUE.
 ##' @return list of S4 class git_blob \code{objects}
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -49,36 +51,13 @@
 ##' writeLines("test content", temp_file_2)
 ##' blob_list_2 <- blob_create(repo, c(temp_file_1, temp_file_2), relative = FALSE)
 ##' }
-setGeneric("blob_create",
-           signature = c("repo", "path"),
-           function(repo, path, relative = TRUE)
-           standardGeneric("blob_create"))
-
-##' @rdname blob_create-methods
-##' @export
-setMethod("blob_create",
-          signature(repo = "git_repository",
-                    path = "character"),
-          function(repo, path, relative)
-          {
-              ## Argument checking
-              stopifnot(is.logical(relative),
-                        identical(length(relative), 1L))
-
-              if (relative) {
-                  result <- .Call(git2r_blob_create_fromworkdir,
-                                  repo,
-                                  path)
-              } else {
-                  path <- normalizePath(path, mustWork = TRUE)
-                  result <- .Call(git2r_blob_create_fromdisk,
-                                  repo,
-                                  path)
-              }
-
-              result
-          }
-)
+blob_create <- function(repo = NULL, path = NULL, relative = TRUE) {
+    repo <- lookup_repository(repo)
+    if (isTRUE(relative))
+        return(.Call(git2r_blob_create_fromworkdir, repo, path))
+    path <- normalizePath(path, mustWork = TRUE)
+    .Call(git2r_blob_create_fromdisk, repo, path)
+}
 
 ##' Content of blob
 ##'
