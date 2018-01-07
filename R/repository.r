@@ -944,16 +944,10 @@ setMethod("summary",
 
 ##' Workdir of repository
 ##'
-##' @rdname workdir-methods
-##' @docType methods
-##' @param repo The repository \code{object}
-##' \code{\linkS4class{git_repository}}. If the \code{repo} argument
-##' is missing, the repository is searched for with
-##' \code{\link{discover_repository}} in the current working
-##' directory.
+##' @template repo-param
 ##' @return Character vector with the path of the workdir. If the
 ##' repository is bare, \code{NULL} will be returned.
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Create a directory in tempdir
@@ -966,30 +960,9 @@ setMethod("summary",
 ##' ## Get the path of the workdir for repository
 ##' workdir(repo)
 ##' }
-setGeneric("workdir",
-           signature = "repo",
-           function(repo)
-           standardGeneric("workdir"))
-
-##' @rdname workdir-methods
-##' @export
-setMethod("workdir",
-          signature(repo = "missing"),
-          function()
-          {
-              callGeneric(repo = lookup_repository())
-          }
-)
-
-##' @rdname workdir-methods
-##' @export
-setMethod("workdir",
-          signature(repo = "git_repository"),
-          function(repo)
-          {
-              .Call(git2r_repository_workdir, repo)
-          }
-)
+workdir <- function(repo = NULL) {
+    .Call(git2r_repository_workdir, lookup_repository(repo))
+}
 
 ##' Find path to repository for any file
 ##'
