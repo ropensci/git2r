@@ -16,13 +16,11 @@
 
 ##' List and view reflog information
 ##'
-##' @rdname reflog-methods
-##' @docType methods
-##' @param repo S4 class git_repository \code{object}.
+##' @template repo-param
 ##' @param refname The name of the reference to list. 'HEAD' by
 ##'     default.
 ##' @return S3 class \code{git_reflog} with git_reflog_entry objects.
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a repository
@@ -57,33 +55,9 @@
 ##' ## View reflog
 ##' reflog(repo)
 ##' }
-setGeneric("reflog",
-           signature = c("repo", "refname"),
-           function(repo, refname)
-           standardGeneric("reflog"))
-
-##' @rdname reflog-methods
-##' @export
-setMethod("reflog",
-          signature(repo    = "git_repository",
-                    refname = "missing"),
-          function(repo)
-          {
-              callGeneric(repo = repo, refname = "HEAD")
-          }
-)
-
-##' @rdname reflog-methods
-##' @export
-setMethod("reflog",
-          signature(repo    = "git_repository",
-                    refname = "character"),
-          function(repo, refname)
-          {
-              structure(.Call(git2r_reflog_list, repo, refname),
-                        class = "git_reflog")
-          }
-)
+reflog <- function(repo = NULL, refname = "HEAD") {
+    structure(.Call(git2r_reflog_list, repo, refname), class = "git_reflog")
+}
 
 ##' @export
 print.git_reflog <- function(x, ...)
