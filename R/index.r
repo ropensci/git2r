@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2016 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -16,18 +16,15 @@
 
 ##' Add file(s) to index
 ##'
-##' @rdname add-methods
-##' @docType methods
-##' @param repo The repository \code{object}.
+##' @template repo-param
 ##' @param path Character vector with file names or shell glob
-##' patterns that will matched against files in the repository's
-##' working directory. Each file that matches will be added to the
-##' index (either updating an existing entry or adding a new entry).
-##' @param ... Additional arguments to the method
+##'     patterns that will matched against files in the repository's
+##'     working directory. Each file that matches will be added to the
+##'     index (either updating an existing entry or adding a new
+##'     entry).
 ##' @param force Add ignored files. Default is FALSE.
 ##' @return invisible(NULL)
-##' @keywords methods
-##' @include S4_classes.r
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a repository
@@ -80,66 +77,52 @@
 ##' add(repo, "./glob_dir/*md")
 ##' status(repo)
 ##' }
-setGeneric("add",
-           signature = c("repo", "path"),
-           function(repo, path, ...)
-           standardGeneric("add"))
+add <- function(repo = NULL, path = NULL, force = FALSE)
+{
+    ## Documentation for the pathspec argument in the libgit2 function
+    ## 'git_index_add_all' that git2r use internally:
+    ##
+    ## The pathspec is a list of file names or shell glob patterns
+    ## that will matched against files in the repository's working
+    ## directory. Each file that matches will be added to the index
+    ## (either updating an existing entry or adding a new entry).
 
-##' @rdname add-methods
-##' @export
-setMethod("add",
-          signature(repo = "git_repository",
-                    path = "character"),
-          function(repo, path, force = FALSE)
-          {
-              ## Documentation for the pathspec argument in the
-              ## libgit2 function 'git_index_add_all' that git2r use
-              ## internally:
-              ##
-              ## The pathspec is a list of file names or shell glob
-              ## patterns that will matched against files in the
-              ## repository's working directory. Each file that
-              ## matches will be added to the index (either updating
-              ## an existing entry or adding a new entry).
+    if (is.null(path) || !is.character(path))
+        stop("'path' must be a character vector")
 
-              repo_wd <- normalizePath(workdir(repo), winslash = "/")
-              if (!length(grep("/$", repo_wd)))
-                  repo_wd <- paste0(repo_wd, "/")
+    repo <- lookup_repository(repo)
+    repo_wd <- normalizePath(workdir(repo), winslash = "/")
+    if (!length(grep("/$", repo_wd)))
+        repo_wd <- paste0(repo_wd, "/")
 
-              path <- vapply(path, function(p) {
-                  np <- suppressWarnings(normalizePath(p, winslash = "/"))
+    path <- vapply(path, function(p) {
+        np <- suppressWarnings(normalizePath(p, winslash = "/"))
 
-                  ## Check if the normalized path is a non-file e.g. a
-                  ## glob.
-                  if (!file.exists(np)) {
-                      ## Check if the normalized path starts with a
-                      ## leading './'
-                      if (length(grep("^[.]/", np))) {
-                          nd <- suppressWarnings(normalizePath(dirname(p),
-                                                               winslash = "/"))
-                          if (!length(grep("/$", nd)))
-                              nd <- paste0(nd, "/")
-                          np <- paste0(nd, basename(np))
-                      }
-                  }
+        ## Check if the normalized path is a non-file e.g. a glob.
+        if (!file.exists(np)) {
+            ## Check if the normalized path starts with a leading './'
+            if (length(grep("^[.]/", np))) {
+                nd <- suppressWarnings(normalizePath(dirname(p), winslash = "/"))
+                if (!length(grep("/$", nd)))
+                    nd <- paste0(nd, "/")
+                np <- paste0(nd, basename(np))
+            }
+        }
 
-                  ## Check if the file is in the repository's working
-                  ## directory, else let libgit2 handle this path
-                  ## unmodified.
-                  if (!length(grep(paste0("^", repo_wd), np)))
-                      return(p)
+        ## Check if the file is in the repository's working directory,
+        ## else let libgit2 handle this path unmodified.
+        if (!length(grep(paste0("^", repo_wd), np)))
+            return(p)
 
-                  ## Change the path to be relative to the repository's
-                  ## working directory. Substitute common prefix with ""
-                  sub(paste0("^", repo_wd), "", np)
-              },
-              character(1))
+        ## Change the path to be relative to the repository's working
+        ## directory. Substitute common prefix with ""
+        sub(paste0("^", repo_wd), "", np)
+    }, character(1))
 
-              .Call(git2r_index_add_all, repo, path, force)
+    .Call(git2r_index_add_all, repo, path, isTRUE(force))
 
-              invisible(NULL)
-          }
-)
+    invisible(NULL)
+}
 
 ##' Remove files from the working tree and from the index
 ##'
