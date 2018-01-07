@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -115,11 +115,9 @@ content <- function(blob = NULL, split = TRUE) {
 ##' Determine the sha from a blob string
 ##'
 ##' The blob is not written to the object database.
-##' @rdname hash-methods
-##' @docType methods
 ##' @param data The string vector to hash.
 ##' @return A string vector with the sha for each string in data.
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' identical(hash(c("Hello, world!\n",
@@ -127,20 +125,10 @@ content <- function(blob = NULL, split = TRUE) {
 ##'                c("af5626b4a114abcb82d63db7c8082c3c4756e51b",
 ##'                  "d670460b4b4aece5915caf5c68d12f560a9fe3e4"))
 ##' }
-setGeneric("hash",
-           signature = "data",
-           function(data)
-           standardGeneric("hash"))
-
-##' @rdname hash-methods
-##' @export
-setMethod("hash",
-          signature(data = "character"),
-          function(data)
-          {
-              .Call(git2r_odb_hash, data)
-          }
-)
+hash <- function(data = NULL)
+{
+    .Call(git2r_odb_hash, data)
+}
 
 ##' Determine the sha from a blob in a file
 ##'
