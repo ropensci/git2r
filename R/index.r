@@ -230,9 +230,7 @@ setMethod("rm_file",
 
 ##' Remove an index entry corresponding to a file on disk
 ##'
-##' @rdname index_remove_bypath-methods
-##' @docType methods
-##' @param repo The repository \code{object}.
+##' @template repo-param
 ##' @param path character vector with filenames to remove. The path
 ##'     must be relative to the repository's working folder. It may
 ##'     exist. If this file currently is the result of a merge
@@ -240,8 +238,7 @@ setMethod("rm_file",
 ##'     conflicting. The data about the conflict will be moved to the
 ##'     "resolve undo" (REUC) section.
 ##' @return invisible(NULL)
-##' @keywords methods
-##' @include S4_classes.r
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a repository
@@ -267,23 +264,7 @@ setMethod("rm_file",
 ##' ## View status of repository
 ##' status(repo)
 ##' }
-##'
-setGeneric("index_remove_bypath",
-           signature = c("repo", "path"),
-           function(repo, path)
-           standardGeneric("index_remove_bypath"))
-
-##' @rdname index_remove_bypath-methods
-##' @export
-setMethod("index_remove_bypath",
-          signature(repo = "git_repository",
-                    path = "character"),
-          function(repo, path)
-          {
-              if (length(path)) {
-                  .Call(git2r_index_remove_bypath, repo, path)
-              }
-
-              invisible(NULL)
-          }
-)
+index_remove_bypath <- function(repo = NULL, path = NULL) {
+    .Call(git2r_index_remove_bypath, lookup_repository(repo), path)
+    invisible(NULL)
+}

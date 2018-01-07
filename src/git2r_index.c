@@ -92,13 +92,17 @@ cleanup:
  */
 SEXP git2r_index_remove_bypath(SEXP repo, SEXP path)
 {
-    int err;
+    int err = 0;
     size_t i, len;
     git_index *index = NULL;
     git_repository *repository = NULL;
 
     if (git2r_arg_check_string_vec(path))
         git2r_error(__func__, NULL, "'path'", git2r_err_string_vec_arg);
+
+    len = length(path);
+    if (!len)
+        goto cleanup;
 
     repository= git2r_repository_open(repo);
     if (!repository)
@@ -108,7 +112,6 @@ SEXP git2r_index_remove_bypath(SEXP repo, SEXP path)
     if (err)
         goto cleanup;
 
-    len = length(path);
     for (i = 0; i < len; i++) {
         if (NA_STRING != STRING_ELT(path, i)) {
             err = git_index_remove_bypath(index, CHAR(STRING_ELT(path, i)));
