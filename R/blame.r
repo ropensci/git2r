@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -16,12 +16,10 @@
 
 ##' Get blame for file
 ##'
-##' @rdname blame-methods
-##' @docType methods
-##' @param repo The repository
+##' @template repo-param
 ##' @param path Path to the file to consider
 ##' @return S4 class git_blame object
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -45,20 +43,7 @@
 ##' ## Check blame
 ##' blame(repo, "example.txt")
 ##' }
-setGeneric("blame",
-           signature = c("repo", "path"),
-           function(repo,
-                    path)
-           standardGeneric("blame"))
-
-##' @rdname blame-methods
-##' @export
-setMethod("blame",
-          signature(repo = "git_repository",
-                    path = "character"),
-          function(repo,
-                   path)
-          {
-              .Call(git2r_blame_file, repo, path)
-          }
-)
+blame <- function(repo = NULL, path = NULL)
+{
+    .Call(git2r_blame_file, lookup_repository(repo), path)
+}
