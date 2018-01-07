@@ -251,8 +251,6 @@ setMethod("init",
 
 ##' Clone a remote repository
 ##'
-##' @rdname clone-methods
-##' @docType methods
 ##' @param url The remote repository to clone
 ##' @param local_path Local directory to clone to.
 ##' @param bare Create a bare repository. Default is FALSE.
@@ -266,7 +264,7 @@ setMethod("init",
 ##' @return A S4 \code{\linkS4class{git_repository}} object
 ##' @seealso \code{\linkS4class{cred_user_pass}},
 ##' \code{\linkS4class{cred_ssh_key}}
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize repository
@@ -307,36 +305,18 @@ setMethod("init",
 ##' commits(repo_1)
 ##' commits(repo_2)
 ##' }
-setGeneric("clone",
-           signature = c("url", "local_path"),
-           function(url,
-                    local_path,
-                    bare        = FALSE,
-                    branch      = NULL,
-                    checkout    = TRUE,
-                    credentials = NULL,
-                    progress    = TRUE)
-           standardGeneric("clone"))
-
-##' @rdname clone-methods
-##' @export
-setMethod("clone",
-          signature(url        = "character",
-                    local_path = "character"),
-          function(url,
-                   local_path,
-                   bare,
-                   branch,
-                   checkout,
-                   credentials,
-                   progress)
-          {
-              .Call(git2r_clone, url, local_path, bare,
-                    branch, checkout, credentials, progress)
-
-              repository(local_path)
-          }
-)
+clone <- function(url         = NULL,
+                  local_path  = NULL,
+                  bare        = FALSE,
+                  branch      = NULL,
+                  checkout    = TRUE,
+                  credentials = NULL,
+                  progress    = TRUE)
+{
+    .Call(git2r_clone, url, local_path, bare,
+          branch, checkout, credentials, progress)
+    repository(local_path)
+}
 
 ##' Get HEAD for a repository
 ##'
