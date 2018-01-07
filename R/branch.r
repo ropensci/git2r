@@ -513,12 +513,9 @@ is_head <- function(branch = NULL) {
 
 ##' Check if branch is local
 ##'
-##' @rdname is_local-methods
-##' @docType methods
 ##' @param branch The branch \code{object} to check if it's local
-##' @return TRUE if branch is local, else FALSE
-##' @keywords methods
-##' @include S4_classes.r
+##' @return \code{TRUE} if branch is local, else \code{FALSE}.
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize repositories
@@ -551,20 +548,12 @@ is_head <- function(branch = NULL) {
 ##' ## Check if second branch is_local
 ##' is_local(branches(repo)[[2]])
 ##' }
-setGeneric("is_local",
-           signature = "branch",
-           function(branch)
-           standardGeneric("is_local"))
-
-##' @rdname is_local-methods
-##' @export
-setMethod("is_local",
-          signature(branch = "git_branch"),
-          function(branch)
-          {
-              identical(branch@type, 1L)
-          }
-)
+is_local <- function(branch)
+{
+    if (!is_branch(branch))
+        stop("argument 'branch' must be a 'git_branch' object")
+    identical(branch@type, 1L)
+}
 
 ##' Brief summary of branch
 ##'
