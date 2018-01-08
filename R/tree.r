@@ -123,12 +123,9 @@ setAs(from = "git_tree",
 ##' Tree
 ##'
 ##' Get the tree pointed to by a commit or stash.
-##' @rdname tree-methods
-##' @docType methods
 ##' @param object the \code{commit} or \code{stash} object
 ##' @return A S4 class git_tree object
-##' @keywords methods
-##' @include S4_classes.r
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -145,29 +142,10 @@ setAs(from = "git_tree",
 ##' tree(commits(repo)[[1]])
 ##' summary(tree(commits(repo)[[1]]))
 ##' }
-setGeneric("tree",
-           signature = "object",
-           function(object) standardGeneric("tree"))
-
-##' @rdname tree-methods
-##' @export
-setMethod("tree",
-          signature(object = "git_commit"),
-          function(object)
-          {
-              .Call(git2r_commit_tree, object)
-          }
-)
-
-##' @rdname tree-methods
-##' @export
-setMethod("tree",
-          signature(object = "git_stash"),
-          function(object)
-          {
-              .Call(git2r_commit_tree, object)
-          }
-)
+tree <- function(object = NULL)
+{
+    .Call(git2r_commit_tree, object)
+}
 
 ##' Brief summary of tree
 ##'

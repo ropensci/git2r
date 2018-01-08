@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -47,6 +47,7 @@ extern const char git2r_err_unable_to_authenticate[];
 extern const char git2r_err_blob_arg[];
 extern const char git2r_err_branch_arg[];
 extern const char git2r_err_commit_arg[];
+extern const char git2r_err_commit_stash_arg[];
 extern const char git2r_err_credentials_arg[];
 extern const char git2r_err_diff_arg[];
 extern const char git2r_err_fetch_heads_arg[];

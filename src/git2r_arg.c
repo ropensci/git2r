@@ -104,6 +104,30 @@ int git2r_arg_check_commit(SEXP arg)
 }
 
 /**
+ * Check commit or stash argument
+ *
+ * @param arg the arg to check
+ * @return 0 if OK, else -1
+ */
+int git2r_arg_check_commit_stash(SEXP arg)
+{
+    SEXP class_name;
+
+    if (!isS4(arg))
+        return -1;
+
+    class_name = getAttrib(arg, R_ClassSymbol);
+    if (strcmp(CHAR(STRING_ELT(class_name, 0)), "git_commit") &&
+        strcmp(CHAR(STRING_ELT(class_name, 0)), "git_stash"))
+        return -1;
+
+    if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("sha"))))
+        return -1;
+
+    return 0;
+}
+
+/**
  * Check credentials argument
  *
  * @param arg the arg to check

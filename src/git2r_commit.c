@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2017 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -398,8 +398,8 @@ SEXP git2r_commit_tree(SEXP commit)
     git_repository *repository = NULL;
     git_tree *tree = NULL;
 
-    if (git2r_arg_check_commit(commit))
-        git2r_error(__func__, NULL, "'commit'", git2r_err_commit_arg);
+    if (git2r_arg_check_commit_stash(commit))
+        git2r_error(__func__, NULL, "'commit'", git2r_err_commit_stash_arg);
 
     repo = GET_SLOT(commit, Rf_install("repo"));
     repository = git2r_repository_open(repo);

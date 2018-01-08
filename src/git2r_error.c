@@ -50,6 +50,8 @@ const char git2r_err_branch_arg[] =
     "must be an S4 class git_branch";
 const char git2r_err_commit_arg[] =
     "must be an S4 class git_commit";
+const char git2r_err_commit_stash_arg[] =
+    "must be an S4 class git_commit or an S4 class git_stash";
 const char git2r_err_credentials_arg[] =
     "must be an S4 class with credentials";
 const char git2r_err_diff_arg[] =
