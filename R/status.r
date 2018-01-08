@@ -18,13 +18,7 @@
 ##'
 ##' Display state of the repository working directory and the staging
 ##' area.
-##' @rdname status-methods
-##' @docType methods
-##' @param repo The repository \code{object}
-##'     \code{\linkS4class{git_repository}} to get status from. If the
-##'     \code{repo} argument is missing, the repository is searched
-##'     for with \code{\link{discover_repository}} in the current
-##'     working directory.
+##' @template repo-param
 ##' @param staged Include staged files. Default TRUE.
 ##' @param unstaged Include unstaged files. Default TRUE.
 ##' @param untracked Include untracked files and directories. Default
@@ -32,10 +26,8 @@
 ##' @param ignored Include ignored files. Default FALSE.
 ##' @param all_untracked Shows individual files in untracked
 ##'     directories if \code{untracked} is \code{TRUE}.
-##' @param ... Additional arguments to status.
-##' @return S3 class \code{git_status} with repository status
-##' @keywords methods
-##' @include S4_classes.r
+##' @return \code{git_status} with repository status
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a repository
@@ -78,45 +70,17 @@
 ##' ## Check status; clean
 ##' status(repo)
 ##'}
-setGeneric("status",
-           signature = "repo",
-           function(repo,
-                    staged    = TRUE,
-                    unstaged  = TRUE,
-                    untracked = TRUE,
-                    ignored   = FALSE,
-                    all_untracked = FALSE,
-                    ...)
-           standardGeneric("status"))
-
-##' @rdname status-methods
-##' @export
-setMethod("status",
-          signature(repo = "missing"),
-          function(staged, unstaged, untracked, ignored, all_untracked, ...)
-          {
-              callGeneric(repo          = lookup_repository(),
-                          staged        = staged,
-                          unstaged      = unstaged,
-                          untracked     = untracked,
-                          ignored       = ignored,
-                          all_untracked = all_untracked,
-                          ...)
-          }
-)
-
-##' @rdname status-methods
-##' @export
-setMethod("status",
-          signature(repo = "git_repository"),
-          function(repo, staged, unstaged, untracked, ignored, all_untracked, ...)
-          {
-              structure(.Call(git2r_status_list, repo, staged,
-                              unstaged, untracked, all_untracked,
-                              ignored),
-                        class = "git_status")
-          }
-)
+status <- function(repo      = NULL,
+                   staged    = TRUE,
+                   unstaged  = TRUE,
+                   untracked = TRUE,
+                   ignored   = FALSE,
+                   all_untracked = FALSE)
+{
+    structure(.Call(git2r_status_list, lookup_repository(repo), staged,
+                    unstaged, untracked, all_untracked, ignored),
+              class = "git_status")
+}
 
 ##' @export
 print.git_status <- function(x, ...)
