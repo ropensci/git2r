@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -18,12 +18,10 @@
 ##'
 ##' Clone the package git repository as a bare repository to
 ##' \code{pkg/inst/pkg.git}
-##' @rdname bundle_r_package-methods
-##' @docType methods
-##' @param repo The repository with package to bundle.
+##' @template repo-param
 ##' @return Invisible bundled S4 \code{\linkS4class{git_repository}}
-##' object
-##' @keywords methods
+##'     object
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize repository
@@ -53,27 +51,18 @@
 ##' ## Plot content of bundled repo
 ##' plot(repo)
 ##' }
-setGeneric("bundle_r_package",
-           signature = "repo",
-           function(repo)
-           standardGeneric("bundle_r_package"))
+bundle_r_package <- function(repo = NULL) {
+    repo <- lookup_repository(repo)
 
-##' @rdname bundle_r_package-methods
-##' @export
-setMethod("bundle_r_package",
-          signature(repo = "git_repository"),
-          function(repo)
-          {
-              ## Check for 'inst' folder
-              inst <- paste0(workdir(repo), "inst", sep = "")
-              if (!isTRUE(file.info(inst)$isdir))
-                  dir.create(inst)
+    ## Check for 'inst' folder
+    inst <- paste0(workdir(repo), "inst", sep = "")
+    if (!isTRUE(file.info(inst)$isdir))
+        dir.create(inst)
 
-              ## Check for 'pkg.git' folder
-              local_path <- paste0(basename(workdir(repo)), ".git", sep = "")
-              local_path <- file.path(inst, local_path)
-              if (file.exists(local_path))
-                  stop("Repo already exists:", local_path)
-              invisible(clone(workdir(repo), local_path, bare = TRUE))
-          }
-)
+    ## Check for 'pkg.git' folder
+    local_path <- paste0(basename(workdir(repo)), ".git", sep = "")
+    local_path <- file.path(inst, local_path)
+    if (file.exists(local_path))
+        stop("Repo already exists:", local_path)
+    invisible(clone(workdir(repo), local_path, bare = TRUE))
+}
