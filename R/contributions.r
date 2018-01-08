@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -17,19 +17,12 @@
 ##' Contributions
 ##'
 ##' See contributions to a Git repo
-##' @rdname contributions-methods
-##' @docType methods
-##' @param repo The repository \code{object}
-##' \code{\linkS4class{git_repository}}. If the \code{repo} argument
-##' is missing, the repository is searched for with
-##' \code{\link{discover_repository}} in the current working
-##' directory.
+##' @template repo-param
 ##' @param breaks Default is \code{month}. Change to year, quarter,
 ##' week or day as necessary.
 ##' @param by Contributions by "commits" or "author". Default is "commits".
 ##' @return A \code{data.frame} with contributions.
-##' @keywords methods
-##' @include S4_classes.r
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Create directories and initialize repositories
@@ -85,69 +78,37 @@
 ##' ## View contributions by author and day
 ##' contributions(repo_1, by = "author")
 ##' }
-setGeneric("contributions",
-           signature = "repo",
-           function(repo,
-                    breaks = c("month", "year", "quarter", "week", "day"),
-                    by = c("commits", "author"))
-           standardGeneric("contributions"))
+contributions <- function(repo = NULL,
+                          breaks = c("month", "year", "quarter", "week", "day"),
+                          by = c("commits", "author"))
+{
+    breaks <- match.arg(breaks)
+    by <- match.arg(by)
 
-##' @rdname contributions-methods
-##' @export
-setMethod("contributions",
-          signature(repo = "missing"),
-          function(breaks, by)
-          {
-              callGeneric(repo   = lookup_repository(),
-                          breaks = breaks,
-                          by     = by)
-          }
-)
+    ctbs <- .Call(git2r_revwalk_contributions, lookup_repository(repo),
+                  TRUE, TRUE, FALSE)
+    ctbs$when <- as.POSIXct(ctbs$when, origin="1970-01-01", tz="GMT")
+    ctbs$when <- as.POSIXct(cut(ctbs$when, breaks = breaks))
 
-##' @rdname contributions-methods
-##' @export
-setMethod("contributions",
-          signature(repo = "character"),
-          function(repo, breaks, by)
-          {
-              contributions(repository(repo), breaks = breaks, by = by)
-          }
-)
+    if (identical(by, "commits")) {
+        ctbs <- as.data.frame(table(ctbs$when))
+        names(ctbs) <- c("when", "n")
+        ctbs$when <- as.Date(ctbs$when)
+    } else {
+        ## Create an index and tabulate
+        ctbs$index <- paste0(ctbs$when, ctbs$author, ctbs$email)
+        count <- as.data.frame(table(ctbs$index),
+                               stringsAsFactors=FALSE)
+        names(count) <- c("index", "n")
 
-##' @rdname contributions-methods
-##' @export
-setMethod("contributions",
-          signature(repo = "git_repository"),
-          function(repo, breaks, by)
-          {
-              breaks <- match.arg(breaks)
-              by <- match.arg(by)
+        ## Match counts and clean result
+        ctbs <- as.data.frame(ctbs)
+        ctbs$n <- count$n[match(ctbs$index, count$index)]
+        ctbs <- unique(ctbs[, c("when", "author", "n")])
+        ctbs$when <- as.Date(substr(as.character(ctbs$when), 1, 10))
+        ctbs <- ctbs[order(ctbs$when, ctbs$author),]
+        row.names(ctbs) <- NULL
+    }
 
-              ctbs <- .Call(
-                  git2r_revwalk_contributions, repo, TRUE, TRUE, FALSE)
-              ctbs$when <- as.POSIXct(ctbs$when, origin="1970-01-01", tz="GMT")
-              ctbs$when <- as.POSIXct(cut(ctbs$when, breaks = breaks))
-
-              if (identical(by, "commits")) {
-                  ctbs <- as.data.frame(table(ctbs$when))
-                  names(ctbs) <- c("when", "n")
-                  ctbs$when <- as.Date(ctbs$when)
-              } else {
-                  ## Create an index and tabulate
-                  ctbs$index <- paste0(ctbs$when, ctbs$author, ctbs$email)
-                  count <- as.data.frame(table(ctbs$index),
-                                         stringsAsFactors=FALSE)
-                  names(count) <- c("index", "n")
-
-                  ## Match counts and clean result
-                  ctbs <- as.data.frame(ctbs)
-                  ctbs$n <- count$n[match(ctbs$index, count$index)]
-                  ctbs <- unique(ctbs[, c("when", "author", "n")])
-                  ctbs$when <- as.Date(substr(as.character(ctbs$when), 1, 10))
-                  ctbs <- ctbs[order(ctbs$when, ctbs$author),]
-                  row.names(ctbs) <- NULL
-              }
-
-              ctbs
-          }
-)
+    ctbs
+}
