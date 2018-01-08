@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2016 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -16,9 +16,7 @@
 
 ##' Fetch new data and update tips
 ##'
-##' @rdname fetch-methods
-##' @docType methods
-##' @param repo the repository
+##' @template repo-param
 ##' @param name the remote's name
 ##' @param credentials The credentials for remote repository
 ##'     access. Default is NULL. To use and query an ssh-agent for the
@@ -31,8 +29,7 @@
 ##'     \code{NULL}.
 ##' @return invisible \code{\linkS4class{git_transfer_progress}}
 ##'     object
-##' @keywords methods
-##' @include S4_classes.r
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize three temporary repositories
@@ -73,33 +70,12 @@
 ##' checkout(repo, "BRANCHNAME")
 ##' summary(repo)
 ##' }
-setGeneric("fetch",
-           signature = "repo",
-           function(repo,
-                    name,
-                    credentials = NULL,
-                    verbose     = TRUE,
-                    refspec     = NULL)
-           standardGeneric("fetch"))
-
-##' @rdname fetch-methods
-##' @export
-setMethod("fetch",
-          signature(repo = "git_repository"),
-          function(repo, name, credentials, verbose, refspec)
-          {
-              result <- .Call(
-                  git2r_remote_fetch,
-                  repo,
-                  name,
-                  credentials,
-                  "fetch",
-                  verbose,
-                  refspec)
-
-              invisible(result)
-          }
-)
+fetch <- function(repo = NULL, name = NULL, credentials = NULL,
+                  verbose = TRUE, refspec = NULL)
+{
+    invisible(.Call(git2r_remote_fetch, lookup_repository(repo),
+                    name, credentials, "fetch", verbose, refspec))
+}
 
 ##' Get updated heads during the last fetch.
 ##'
