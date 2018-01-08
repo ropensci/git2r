@@ -79,13 +79,10 @@ fetch <- function(repo = NULL, name = NULL, credentials = NULL,
 
 ##' Get updated heads during the last fetch.
 ##'
-##' @rdname fetch_heads-methods
-##' @docType methods
-##' @param repo the repository
-##' @return list with the S4 class \code{\linkS4class{git_fetch_head}}
-##' entries. NULL if there is no FETCH_HEAD file.
-##' @keywords methods
-##' @include S4_classes.r
+##' @template repo-param
+##' @return list with the \code{\linkS4class{git_fetch_head}}
+##'     entries. NULL if there is no FETCH_HEAD file.
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize three temporary repositories
@@ -119,17 +116,6 @@ fetch <- function(repo = NULL, name = NULL, credentials = NULL,
 ##' ## List updated heads
 ##' fetch_heads(repo_2)
 ##' }
-setGeneric("fetch_heads",
-           signature = "repo",
-           function(repo)
-           standardGeneric("fetch_heads"))
-
-##' @rdname fetch_heads-methods
-##' @export
-setMethod("fetch_heads",
-          signature(repo = "git_repository"),
-          function(repo)
-          {
-              .Call(git2r_repository_fetch_heads, repo)
-          }
-)
+fetch_heads <- function(repo = NULL)  {
+    .Call(git2r_repository_fetch_heads, lookup_repository(repo))
+}
