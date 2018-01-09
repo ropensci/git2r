@@ -212,13 +212,11 @@ remote_set_url <- function(repo = NULL, name = NULL, url = NULL) {
 
 ##' Get the remote url for remotes in a repo
 ##'
-##' @rdname remote_url-methods
-##' @docType methods
-##' @param repo The repository to get remote urls from
+##' @template repo-param
 ##' @param remote Character vector with the remotes to get the url
-##' from. Default is the remotes of the repository.
+##'     from. Default is the remotes of the repository.
 ##' @return Character vector with remote_url for each of the remote
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -246,21 +244,12 @@ remote_set_url <- function(repo = NULL, name = NULL, url = NULL) {
 ##' remote_remove(repo, "foobar")
 ##' remotes(repo)
 ##' }
-setGeneric("remote_url",
-           signature = "repo",
-           function(repo, remote = remotes(repo))
-           standardGeneric("remote_url"))
-
-##' @rdname remote_url-methods
-##' @export
-setMethod("remote_url",
-          signature(repo = "git_repository"),
-          function(repo, remote)
-          {
-              .Call(git2r_remote_url, repo, remote)
-          }
-)
-
+remote_url <- function(repo = NULL, remote = NULL) {
+    repo <- lookup_repository(repo)
+    if (is.null(remote))
+        remote <- remotes(repo)
+    .Call(git2r_remote_url, repo, remote)
+}
 
 ##' List references in a remote repository
 ##'
