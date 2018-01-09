@@ -19,33 +19,7 @@
 ##' @template repo-param
 ##' @return Character vector with remotes
 ##' @export
-##' @examples
-##' \dontrun{
-##' ## Initialize a temporary repository
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##'
-##' ## Create a user and commit a file
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
-##' writeLines("Hello world!", file.path(path, "example.txt"))
-##' add(repo, "example.txt")
-##' commit(repo, "First commit message")
-##'
-##' ## Add a remote
-##' remote_add(repo, "playground", "https://example.org/git2r/playground")
-##' remotes(repo)
-##' remote_url(repo, "playground")
-##'
-##' ## Rename a remote
-##' remote_rename(repo, "playground", "foobar")
-##' remotes(repo)
-##' remote_url(repo, "foobar")
-##'
-##' ## Remove a remote
-##' remote_remove(repo, "foobar")
-##' remotes(repo)
-##' }
+##' @template remote-example
 remotes <- function(repo = NULL) {
     .Call(git2r_remote_list, lookup_repository(repo))
 }
@@ -57,33 +31,7 @@ remotes <- function(repo = NULL) {
 ##' @param url URL of the remote repository
 ##' @return NULL, invisibly
 ##' @export
-##' @examples
-##' \dontrun{
-##' ## Initialize a temporary repository
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##'
-##' ## Create a user and commit a file
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
-##' writeLines("Hello world!", file.path(path, "example.txt"))
-##' add(repo, "example.txt")
-##' commit(repo, "First commit message")
-##'
-##' ## Add a remote
-##' remote_add(repo, "playground", "https://example.org/git2r/playground")
-##' remotes(repo)
-##' remote_url(repo, "playground")
-##'
-##' ## Rename a remote
-##' remote_rename(repo, "playground", "foobar")
-##' remotes(repo)
-##' remote_url(repo, "foobar")
-##'
-##' ## Remove a remote
-##' remote_remove(repo, "foobar")
-##' remotes(repo)
-##' }
+##' @template remote-example
 remote_add <- function(repo = NULL, name = NULL, url = NULL) {
     invisible(.Call(git2r_remote_add, lookup_repository(repo), name, url))
 }
@@ -95,33 +43,7 @@ remote_add <- function(repo = NULL, name = NULL, url = NULL) {
 ##' @param newname New name of the remote
 ##' @return NULL, invisibly
 ##' @export
-##' @examples
-##' \dontrun{
-##' ## Initialize a temporary repository
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##'
-##' ## Create a user and commit a file
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
-##' writeLines("Hello world!", file.path(path, "example.txt"))
-##' add(repo, "example.txt")
-##' commit(repo, "First commit message")
-##'
-##' ## Add a remote
-##' remote_add(repo, "playground", "https://example.org/git2r/playground")
-##' remotes(repo)
-##' remote_url(repo, "playground")
-##'
-##' ## Rename a remote
-##' remote_rename(repo, "playground", "foobar")
-##' remotes(repo)
-##' remote_url(repo, "foobar")
-##'
-##' ## Remove a remote
-##' remote_remove(repo, "foobar")
-##' remotes(repo)
-##' }
+##' @template remote-example
 remote_rename <- function(repo = NULL, oldname = NULL, newname = NULL) {
     invisible(.Call(git2r_remote_rename, lookup_repository(repo), oldname, newname))
 }
@@ -134,33 +56,7 @@ remote_rename <- function(repo = NULL, oldname = NULL, newname = NULL) {
 ##' @param name The name of the remote to remove
 ##' @return NULL, invisibly
 ##' @export
-##' @examples
-##' \dontrun{
-##' ## Initialize a temporary repository
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##'
-##' ## Create a user and commit a file
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
-##' writeLines("Hello world!", file.path(path, "example.txt"))
-##' add(repo, "example.txt")
-##' commit(repo, "First commit message")
-##'
-##' ## Add a remote
-##' remote_add(repo, "playground", "https://example.org/git2r/playground")
-##' remotes(repo)
-##' remote_url(repo, "playground")
-##'
-##' ## Rename a remote
-##' remote_rename(repo, "playground", "foobar")
-##' remotes(repo)
-##' remote_url(repo, "foobar")
-##'
-##' ## Remove a remote
-##' remote_remove(repo, "foobar")
-##' remotes(repo)
-##' }
+##' @template remote-example
 remote_remove <- function(repo = NULL, name = NULL) {
     invisible(.Call(git2r_remote_remove, lookup_repository(repo), name))
 }
@@ -174,38 +70,7 @@ remote_remove <- function(repo = NULL, name = NULL) {
 ##' @param url The \code{url} to set
 ##' @return NULL, invisibly
 ##' @export
-##' @examples
-##' \dontrun{
-##' ## Initialize a temporary repository
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##'
-##' ## Create a user and commit a file
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
-##' writeLines("Hello world!", file.path(path, "example.txt"))
-##' add(repo, "example.txt")
-##' commit(repo, "First commit message")
-##'
-##' ## Add a remote
-##' remote_add(repo, "playground", "https://example.org/git2r/playground")
-##' remotes(repo)
-##' remote_url(repo, "playground")
-##'
-##' ## Rename a remote
-##' remote_rename(repo, "playground", "foobar")
-##' remotes(repo)
-##' remote_url(repo, "foobar")
-##'
-##' ## Set remote url
-##' remote_set_url(repo, "foobar", "https://example.org/git2r/foobar")
-##' remotes(repo)
-##' remote_url(repo, "foobar")
-##'
-##' ## Remove a remote
-##' remote_remove(repo, "foobar")
-##' remotes(repo)
-##' }
+##' @template remote-example
 remote_set_url <- function(repo = NULL, name = NULL, url = NULL) {
     invisible(.Call(git2r_remote_set_url, lookup_repository(repo), name, url))
 }
@@ -217,33 +82,7 @@ remote_set_url <- function(repo = NULL, name = NULL, url = NULL) {
 ##'     from. Default is the remotes of the repository.
 ##' @return Character vector with remote_url for each of the remote
 ##' @export
-##' @examples
-##' \dontrun{
-##' ## Initialize a temporary repository
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##'
-##' ## Create a user and commit a file
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
-##' writeLines("Hello world!", file.path(path, "example.txt"))
-##' add(repo, "example.txt")
-##' commit(repo, "First commit message")
-##'
-##' ## Add a remote
-##' remote_add(repo, "playground", "https://example.org/git2r/playground")
-##' remotes(repo)
-##' remote_url(repo, "playground")
-##'
-##' ## Rename a remote
-##' remote_rename(repo, "playground", "foobar")
-##' remotes(repo)
-##' remote_url(repo, "foobar")
-##'
-##' ## Remove a remote
-##' remote_remove(repo, "foobar")
-##' remotes(repo)
-##' }
+##' @template remote-example
 remote_url <- function(repo = NULL, remote = NULL) {
     repo <- lookup_repository(repo)
     if (is.null(remote))

@@ -45,6 +45,11 @@ remote_rename(repo, "playground", "foobar")
 remotes(repo)
 remote_url(repo, "foobar")
 
+## Set remote url
+remote_set_url(repo, "foobar", "https://example.org/git2r/foobar")
+remotes(repo)
+remote_url(repo, "foobar")
+
 ## Remove a remote
 remote_remove(repo, "foobar")
 remotes(repo)
