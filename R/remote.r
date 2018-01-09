@@ -130,12 +130,10 @@ remote_rename <- function(repo = NULL, oldname = NULL, newname = NULL) {
 ##'
 ##' All remote-tracking branches and configuration settings for the
 ##' remote will be removed.
-##' @rdname remote_remove-methods
-##' @docType methods
-##' @param repo The repository to work on
+##' @template repo-param
 ##' @param name The name of the remote to remove
 ##' @return NULL, invisibly
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -163,22 +161,9 @@ remote_rename <- function(repo = NULL, oldname = NULL, newname = NULL) {
 ##' remote_remove(repo, "foobar")
 ##' remotes(repo)
 ##' }
-setGeneric("remote_remove",
-           signature = c("repo", "name"),
-           function(repo, name)
-           standardGeneric("remote_remove"))
-
-##' @rdname remote_remove-methods
-##' @export
-setMethod("remote_remove",
-          signature(repo = "git_repository",
-                    name = "character"),
-          function(repo, name)
-          {
-              ret <- .Call(git2r_remote_remove, repo, name)
-              invisible(ret)
-          }
-)
+remote_remove <- function(repo = NULL, name = NULL) {
+    invisible(.Call(git2r_remote_remove, lookup_repository(repo), name))
+}
 
 ##' Set the remote's url in the configuration
 ##'
