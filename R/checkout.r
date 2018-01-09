@@ -39,29 +39,52 @@ previous_branch_name <- function(repo)
     branch
 }
 
+checkout_branch <- function(object, force) {
+    ref_name <- paste0("refs/heads/", object@name)
+    .Call(git2r_checkout_tree, object@repo, ref_name, force)
+    .Call(git2r_repository_set_head, object@repo, ref_name)
+}
+
+checkout_commit <- function(object, force) {
+    .Call(git2r_checkout_tree, object@repo, object@sha, force)
+    .Call(git2r_repository_set_head_detached, object)
+}
+
+checkout_tag <- function(object, force) {
+    .Call(git2r_checkout_tree, object@repo, object@target, force)
+    .Call(git2r_repository_set_head_detached, lookup(object@repo, object@target))
+}
+
+is_tag <- function(object) {
+    is(object = object, class2 = "git_tag")
+}
+
 ##' Checkout
 ##'
 ##' Update files in the index and working tree to match the content of
 ##' the tree pointed at by the treeish object (commit, tag or tree).
-##' Checkout using the default GIT_CHECKOUT_SAFE_CREATE strategy
-##' (force = FALSE) or GIT_CHECKOUT_FORCE (force = TRUE).
-##' @rdname checkout-methods
-##' @docType methods
-##' @param object A repository, commit, tag or tree which content will
-##' be used to update the working directory.
-##' @param ... Additional arguments affecting the checkout
-##' @param branch If object is a repository, the name of the branch to
-##' check out. Default is NULL.
-##' @param create If object is a repository, then branch is created if
-##' doesn't exist.
-##' @param force If TRUE, then make working directory match
-##' target. This will throw away local changes. Default is FALSE.
+##' The default checkout strategy (\code{force = FALSE}) will only
+##' make modifications that will not lose changes. Use \code{force =
+##' TRUE} to force working directory to look like index.
+##' @param object A path to a repository, or a
+##'     \code{\linkS4class{git_repository}} object, or a
+##'     \code{\linkS4class{git_commit}} object, or a
+##'     \code{\linkS4class{git_tag}} object, or a
+##'     \code{\linkS4class{git_tree}} object.
+##' @param branch name of the branch to check out. Only used if object
+##'     is a path to a repository or a
+##'     \code{\linkS4class{git_repository}} object.
+##' @param create create branch if it doesn't exist. Only used if
+##'     object is a path to a repository or a
+##'     \code{\linkS4class{git_repository}} object.
+##' @param force If \code{TRUE}, then make working directory match
+##'     target. This will throw away local changes. Default is
+##'     \code{FALSE}.
 ##' @param path Limit the checkout operation to only certain
-##' paths. This argument is only used if branch is NULL. Default is
-##' NULL.
+##'     paths. This argument is only used if branch is NULL. Default
+##'     is \code{NULL}.
 ##' @return invisible NULL
-##' @keywords methods
-##' @include S4_classes.r
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Create directories and initialize repositories
@@ -120,113 +143,82 @@ previous_branch_name <- function(repo)
 ##' ## Check status
 ##' status(repo_2)
 ##' }
-setGeneric("checkout",
-           signature = "object",
-           function(object, ...)
-           standardGeneric("checkout")
-)
+checkout <- function(object = NULL,
+                     branch = NULL,
+                     create = FALSE,
+                     force  = FALSE,
+                     path   = NULL)
+{
+    if (is_branch(object)) {
+        checkout_branch(object, force)
+        return(invisible(NULL))
+    }
 
-##' @rdname checkout-methods
-##' @export
-setMethod("checkout",
-          signature(object = "git_repository"),
-          function(object,
-                   branch = NULL,
-                   create = FALSE,
-                   force = FALSE,
-                   path = NULL,
-                   ...)
-          {
-              if (!is.null(branch)) {
-                  if (any(!is.character(branch), !identical(length(branch), 1L)))
-                      stop("'branch' must be a character vector of length one")
+    if (is_commit(object)) {
+        checkout_commit(object, force)
+        return(invisible(NULL))
+    }
 
-                  if (is_empty(object)) {
-                      if (!isTRUE(create))
-                          stop(sprintf("'%s' did not match any branch", branch))
-                      ref_name <- paste0("refs/heads/", branch)
-                      .Call(git2r_repository_set_head, object, ref_name)
-                  } else {
-                      if (identical(branch, "-"))
-                          branch <- previous_branch_name(object)
+    if (is_tag(object)) {
+        checkout_tag(object, force)
+        return(invisible(NULL))
+    }
 
-                      ## Check if branch exists in a local branch
-                      lb <- branches(object, "local")
-                      lb <- lb[vapply(lb, slot, character(1), "name") == branch]
-                      if (length(lb)) {
-                          checkout(lb[[1]], force = force)
-                      } else {
-                          ## Check if there exists exactly one remote
-                          ## branch with a matching name.
-                          rb <- branches(object, "remote")
+    object <- lookup_repository(object)
+    if (is.null(branch)) {
+        if (is.null(path))
+            stop("missing 'branch' or 'path' argument")
+        .Call(git2r_checkout_path, object, path)
+        return(invisible(NULL))
+    }
 
-                          ## Split remote/name to check for a unique name
-                          name <- vapply(rb, function(x) {
-                                      remote <- strsplit(x@name, "/")[[1]][1]
-                                      sub(paste0("^", remote, "/"), "", x@name)
-                                  },
-                                  character(1))
-                          i <- which(name == branch)
-                          if (identical(length(i), 1L)) {
-                              ## Create branch and track remote
-                              commit <- lookup(object, branch_target(rb[[i]]))
-                              branch <- branch_create(commit, branch)
-                              branch_set_upstream(branch, rb[[i]]@name)
-                              checkout(branch, force = force)
-                          } else {
-                              if (!isTRUE(create))
-                                  stop(sprintf("'%s' did not match any branch", branch))
+    if (!is.character(branch) || !identical(length(branch), 1L))
+        stop("'branch' must be a character vector of length one")
 
-                              ## Create branch
-                              commit <- lookup(object, branch_target(head(object)))
-                              checkout(branch_create(commit, branch), force = force)
-                          }
-                      }
-                  }
-              } else if (!is.null(path)) {
-                  .Call(git2r_checkout_path, object, path)
-              } else {
-                  stop("missing 'branch' or 'path' argument")
-              }
+    if (is_empty(object)) {
+        if (!isTRUE(create))
+            stop(sprintf("'%s' did not match any branch", branch))
+        ref_name <- paste0("refs/heads/", branch)
+        .Call(git2r_repository_set_head, object, ref_name)
+        return(invisible(NULL))
+    }
 
-              invisible(NULL)
-          }
-)
+    if (identical(branch, "-"))
+        branch <- previous_branch_name(object)
 
-##' @rdname checkout-methods
-##' @export
-setMethod("checkout",
-          signature(object = "git_branch"),
-          function(object, force = FALSE)
-          {
-              ref_name <- paste0("refs/heads/", object@name)
-              .Call(git2r_checkout_tree, object@repo, ref_name, force)
-              .Call(git2r_repository_set_head, object@repo, ref_name)
-              invisible(NULL)
-          }
-)
+    ## Check if branch exists in a local branch
+    lb <- branches(object, "local")
+    lb <- lb[vapply(lb, slot, character(1), "name") == branch]
+    if (length(lb)) {
+        checkout_branch(lb[[1]], force = force)
+        return(invisible(NULL))
+    }
 
-##' @rdname checkout-methods
-##' @export
-setMethod("checkout",
-          signature(object = "git_commit"),
-          function(object, force = FALSE)
-          {
-              .Call(git2r_checkout_tree, object@repo, object@sha, force)
-              .Call(git2r_repository_set_head_detached, object)
-              invisible(NULL)
-          }
-)
+    ## Check if there exists exactly one remote branch with a matching
+    ## name.
+    rb <- branches(object, "remote")
 
-##' @rdname checkout-methods
-##' @export
-setMethod("checkout",
-          signature(object = "git_tag"),
-          function(object, force = FALSE)
-          {
-              .Call(git2r_checkout_tree, object@repo, object@target, force)
-              .Call(git2r_repository_set_head_detached,
-                    lookup(object@repo, object@target))
-              invisible(NULL)
-          }
-)
+    ## Split remote/name to check for a unique name
+    name <- vapply(rb, function(x) {
+        remote <- strsplit(x@name, "/")[[1]][1]
+        sub(paste0("^", remote, "/"), "", x@name)
+    }, character(1))
+    i <- which(name == branch)
+    if (identical(length(i), 1L)) {
+        ## Create branch and track remote
+        commit <- lookup(object, branch_target(rb[[i]]))
+        branch <- branch_create(commit, branch)
+        branch_set_upstream(branch, rb[[i]]@name)
+        checkout_branch(branch, force = force)
+        return(invisible(NULL))
+    }
+
+    if (!isTRUE(create))
+        stop(sprintf("'%s' did not match any branch", branch))
+
+    ## Create branch
+    commit <- lookup(object, branch_target(head(object)))
+    checkout_branch(branch_create(commit, branch), force = force)
+
+    invisible(NULL)
+}
