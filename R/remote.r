@@ -92,45 +92,33 @@ remote_url <- function(repo = NULL, remote = NULL) {
 
 ##' List references in a remote repository
 ##'
-##' Displays references available in a remote repository along with the
-##' associated commit IDs.  Akin to the 'git ls-remote' command.
-##' @rdname remote_ls-methods
-##' @docType methods
-##' @param name Character vector with the "remote" repository URL to query or
-##' the name of the remote if a \code{repo} argument is given.
+##' Displays references available in a remote repository along with
+##' the associated commit IDs.  Akin to the 'git ls-remote' command.
+##' @param name Character vector with the "remote" repository URL to
+##'     query or the name of the remote if a \code{repo} argument is
+##'     given.
 ##' @param repo an optional repository object used if remotes are
-##' specified by name.
+##'     specified by name.
 ##' @param credentials The credentials for remote repository
-##' access. Default is NULL. To use and query an ssh-agent for the ssh
-##' key credentials, let this parameter be NULL (the default).
-##' @keywords methods
-##' @return Character vector for each reference with the associated commit IDs.
+##'     access. Default is NULL. To use and query an ssh-agent for the
+##'     ssh key credentials, let this parameter be NULL (the default).
+##' @return Character vector for each reference with the associated
+##'     commit IDs.
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' remote_ls("https://github.com/ropensci/git2r")
 ##' }
-##' @export
-setGeneric("remote_ls",
-           signature = c("name"),
-           function(name,
-                    repo = NULL,
-                    credentials = NULL)
-           standardGeneric("remote_ls"))
+remote_ls <- function(name = NULL, repo = NULL, credentials = NULL) {
+    ## FIXME: When updating to libgit 0.26 + 1, remove this and allow
+    ## repo to be NULL, see 'git2r_remote_ls'.
+    if (is.null(repo)) {
+        path <- tempdir()
+        repo <- git2r::init(path)
+        on.exit(unlink(file.path(path, ".git"), recursive = TRUE))
+    } else {
+        repo <- lookup_repository(repo)
+    }
 
-##' @rdname remote_ls-methods
-##' @export
-setMethod("remote_ls",
-          signature(name = "character"),
-          function(name, repo, credentials)
-          {
-              ## FIXME: When updating to libgit 0.26 + 1, remove this
-              ## and allow repo to be NULL, see 'git2r_remote_ls'.
-              if (is.null(repo)) {
-                  path <- tempdir()
-                  repo <- git2r::init(path)
-                  on.exit(unlink(file.path(path, ".git"), recursive = TRUE))
-              }
-
-              .Call(git2r_remote_ls, name, repo, credentials)
-          }
-)
+    .Call(git2r_remote_ls, name, repo, credentials)
+}
