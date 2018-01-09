@@ -15,6 +15,7 @@
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 ##' Get the configured remotes for a repo
+##'
 ##' @template repo-param
 ##' @return Character vector with remotes
 ##' @export
@@ -51,13 +52,11 @@ remotes <- function(repo = NULL) {
 
 ##' Add a remote to a repo
 ##'
-##' @rdname remote_add-methods
-##' @docType methods
-##' @param repo The repository to add the remote to
+##' @template repo-param
 ##' @param name Short name of the remote repository
 ##' @param url URL of the remote repository
 ##' @return NULL, invisibly
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -85,23 +84,9 @@ remotes <- function(repo = NULL) {
 ##' remote_remove(repo, "foobar")
 ##' remotes(repo)
 ##' }
-setGeneric("remote_add",
-           signature = c("repo", "name", "url"),
-           function(repo, name, url)
-           standardGeneric("remote_add"))
-
-##' @rdname remote_add-methods
-##' @export
-setMethod("remote_add",
-          signature(repo = "git_repository",
-                    name = "character",
-                    url  = "character"),
-          function(repo, name, url)
-          {
-              ret <- .Call(git2r_remote_add, repo, name, url)
-              invisible(ret)
-          }
-)
+remote_add <- function(repo = NULL, name = NULL, url = NULL) {
+    invisible(.Call(git2r_remote_add, lookup_repository(repo), name, url))
+}
 
 ##' Rename a remote
 ##'
