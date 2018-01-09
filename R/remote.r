@@ -90,13 +90,11 @@ remote_add <- function(repo = NULL, name = NULL, url = NULL) {
 
 ##' Rename a remote
 ##'
-##' @rdname remote_rename-methods
-##' @docType methods
-##' @param repo The repository in which the remote should be renamed.
+##' @template repo-param
 ##' @param oldname Old name of the remote
 ##' @param newname New name of the remote
 ##' @return NULL, invisibly
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -124,23 +122,9 @@ remote_add <- function(repo = NULL, name = NULL, url = NULL) {
 ##' remote_remove(repo, "foobar")
 ##' remotes(repo)
 ##' }
-setGeneric("remote_rename",
-           signature = c("repo", "oldname", "newname"),
-           function(repo, oldname, newname)
-           standardGeneric("remote_rename"))
-
-##' @rdname remote_rename-methods
-##' @export
-setMethod("remote_rename",
-          signature(repo    = "git_repository",
-                    oldname = "character",
-                    newname = "character"),
-          function(repo, oldname, newname)
-          {
-              ret <- .Call(git2r_remote_rename, repo, oldname, newname)
-              invisible(ret)
-          }
-)
+remote_rename <- function(repo = NULL, oldname = NULL, newname = NULL) {
+    invisible(.Call(git2r_remote_rename, lookup_repository(repo), oldname, newname))
+}
 
 ##' Remove a remote
 ##'
