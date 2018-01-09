@@ -169,13 +169,11 @@ remote_remove <- function(repo = NULL, name = NULL) {
 ##'
 ##' This assumes the common case of a single-url remote and will
 ##' otherwise raise an error.
-##' @rdname remote_set_url-methods
-##' @docType methods
-##' @param repo The repository in which to perform the change
+##' @template repo-param
 ##' @param name The name of the remote
 ##' @param url The \code{url} to set
 ##' @return NULL, invisibly
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -208,23 +206,9 @@ remote_remove <- function(repo = NULL, name = NULL) {
 ##' remote_remove(repo, "foobar")
 ##' remotes(repo)
 ##' }
-setGeneric("remote_set_url",
-           signature = c("repo", "name", "url"),
-           function(repo, name, url)
-           standardGeneric("remote_set_url"))
-
-##' @rdname remote_set_url-methods
-##' @export
-setMethod("remote_set_url",
-          signature(repo = "git_repository",
-                    name = "character",
-                    url  = "character"),
-          function(repo, name, url)
-          {
-              ret <- .Call(git2r_remote_set_url, repo, name, url)
-              invisible(ret)
-          }
-)
+remote_set_url <- function(repo = NULL, name = NULL, url = NULL) {
+    invisible(.Call(git2r_remote_set_url, lookup_repository(repo), name, url))
+}
 
 ##' Get the remote url for remotes in a repo
 ##'
