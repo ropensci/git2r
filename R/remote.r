@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -15,16 +15,9 @@
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 ##' Get the configured remotes for a repo
-##'
-##' @rdname remotes-methods
-##' @docType methods
-##' @param repo The repository \code{object}
-##' \code{\linkS4class{git_repository}}. If the \code{repo} argument
-##' is missing, the repository is searched for with
-##' \code{\link{discover_repository}} in the current working
-##' directory.
+##' @template repo-param
 ##' @return Character vector with remotes
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -52,30 +45,9 @@
 ##' remote_remove(repo, "foobar")
 ##' remotes(repo)
 ##' }
-setGeneric("remotes",
-           signature = "repo",
-           function(repo)
-           standardGeneric("remotes"))
-
-##' @rdname remotes-methods
-##' @export
-setMethod("remotes",
-          signature(repo = "missing"),
-          function()
-          {
-              callGeneric(repo = lookup_repository())
-          }
-)
-
-##' @rdname remotes-methods
-##' @export
-setMethod("remotes",
-          signature(repo = "git_repository"),
-          function(repo)
-          {
-              .Call(git2r_remote_list, repo)
-          }
-)
+remotes <- function(repo = NULL) {
+    .Call(git2r_remote_list, lookup_repository(repo))
+}
 
 ##' Add a remote to a repo
 ##'
