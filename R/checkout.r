@@ -55,6 +55,25 @@ checkout_tag <- function(object, force) {
     .Call(git2r_repository_set_head_detached, lookup(object@repo, object@target))
 }
 
+checkout_git_object <- function(object, force) {
+    if (is_branch(object)) {
+        checkout_branch(object, force)
+        return(TRUE)
+    }
+
+    if (is_commit(object)) {
+        checkout_commit(object, force)
+        return(TRUE)
+    }
+
+    if (is_tag(object)) {
+        checkout_tag(object, force)
+        return(TRUE)
+    }
+
+    FALSE
+}
+
 is_tag <- function(object) {
     is(object = object, class2 = "git_tag")
 }
@@ -149,20 +168,8 @@ checkout <- function(object = NULL,
                      force  = FALSE,
                      path   = NULL)
 {
-    if (is_branch(object)) {
-        checkout_branch(object, force)
+    if (checkout_git_object(object, force))
         return(invisible(NULL))
-    }
-
-    if (is_commit(object)) {
-        checkout_commit(object, force)
-        return(invisible(NULL))
-    }
-
-    if (is_tag(object)) {
-        checkout_tag(object, force)
-        return(invisible(NULL))
-    }
 
     object <- lookup_repository(object)
     if (is.null(branch)) {
@@ -190,7 +197,7 @@ checkout <- function(object = NULL,
     lb <- branches(object, "local")
     lb <- lb[vapply(lb, slot, character(1), "name") == branch]
     if (length(lb)) {
-        checkout_branch(lb[[1]], force = force)
+        checkout_branch(lb[[1]], force)
         return(invisible(NULL))
     }
 
@@ -209,16 +216,20 @@ checkout <- function(object = NULL,
         commit <- lookup(object, branch_target(rb[[i]]))
         branch <- branch_create(commit, branch)
         branch_set_upstream(branch, rb[[i]]@name)
-        checkout_branch(branch, force = force)
+        checkout_branch(branch, force)
         return(invisible(NULL))
     }
 
-    if (!isTRUE(create))
-        stop(sprintf("'%s' did not match any branch", branch))
+    if (isTRUE(create)) {
+        ## Create branch
+        commit <- lookup(object, branch_target(head(object)))
+        checkout_branch(branch_create(commit, branch), force)
+        return(invisible(NULL))
+    }
 
-    ## Create branch
-    commit <- lookup(object, branch_target(head(object)))
-    checkout_branch(branch_create(commit, branch), force = force)
+    ## Check if branch object is specified by revision.
+    if (checkout_git_object(revparse_single(object, branch), force))
+        return(invisible(NULL))
 
-    invisible(NULL)
+    stop(sprintf("'%s' did not match any branch", branch))
 }

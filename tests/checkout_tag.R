@@ -53,5 +53,9 @@ stopifnot(identical(list.files(path), "test-1.txt"))
 checkout(tag_2)
 stopifnot(identical(list.files(path), c("test-1.txt", "test-2.txt")))
 
+## Checkout "Tag1" and check files
+checkout(repo, "Tag1")
+stopifnot(identical(list.files(path), "test-1.txt"))
+
 ## Cleanup
 unlink(path, recursive=TRUE)
