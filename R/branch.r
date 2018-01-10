@@ -213,12 +213,10 @@ branch_target <- function(branch = NULL) {
 ##' Get remote tracking branch
 ##'
 ##' Get remote tracking branch, given a local branch.
-##' @rdname branch_get_upstream-methods
-##' @docType methods
 ##' @param branch The branch
-##' @return S4 class git_branch or NULL if no remote tracking branch.
-##' @keywords methods
-##' @include S4_classes.r
+##' @return \code{git_branch} object or NULL if no remote tracking
+##'     branch.
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize two temporary repositories
@@ -245,20 +243,9 @@ branch_target <- function(branch = NULL) {
 ##' ## Get remote tracking branch
 ##' branch_get_upstream(head(repo))
 ##' }
-setGeneric("branch_get_upstream",
-           signature = "branch",
-           function(branch)
-           standardGeneric("branch_get_upstream"))
-
-##' @rdname branch_get_upstream-methods
-##' @export
-setMethod("branch_get_upstream",
-          signature = "git_branch",
-          function(branch)
-          {
-              .Call(git2r_branch_get_upstream, branch)
-          }
-)
+branch_get_upstream <- function(branch = NULL) {
+    .Call(git2r_branch_get_upstream, branch)
+}
 
 ##' Set remote tracking branch
 ##'
