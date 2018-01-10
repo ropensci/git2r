@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2017 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -23,8 +23,7 @@
 ##' @return List with remote (character vector) and refspec (character
 ##' vector).
 ##' @noRd
-get_refspec <- function(repo = NULL, remote = NULL, spec = NULL, opts = NULL)
-{
+get_refspec <- function(repo = NULL, remote = NULL, spec = NULL, opts = NULL) {
     stopifnot(is(object = repo, class2 = "git_repository"))
 
     if (is_detached(repo))

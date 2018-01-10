@@ -887,8 +887,7 @@ setMethod("discover_repository",
 ##'     directory.
 ##' @return S4 class git_repository
 ##' @noRd
-lookup_repository <- function(repo = NULL)
-{
+lookup_repository <- function(repo = NULL) {
     if (is.null(repo)) {
         ## Try current working directory
         repo <- discover_repository(getwd())

@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -59,8 +59,7 @@ libgit2_sha <- function() "15e119375018fba121cf58e02a9f17fe22df0df8"
 ##' @return invisible(NULL)
 ##' @keywords methods
 ##' @export
-ssl_cert_locations <- function(filename = NULL, path = NULL)
-{
+ssl_cert_locations <- function(filename = NULL, path = NULL) {
     .Call(git2r_ssl_cert_locations, filename, path)
     invisible(NULL)
 }

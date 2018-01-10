@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -79,8 +79,7 @@ setMethod("merge_base",
 ##' @param merger Who made the merge.
 ##' @return A \code{\linkS4class{git_merge_result}} object.
 ##' @noRd
-merge_branch <- function(branch, commit_on_success, merger)
-{
+merge_branch <- function(branch, commit_on_success, merger) {
     .Call(git2r_merge_branch, branch, merger, commit_on_success)
 }
 
@@ -93,8 +92,7 @@ merge_branch <- function(branch, commit_on_success, merger)
 ##' @param merger Who made the merge.
 ##' @return A \code{\linkS4class{git_merge_result}} object.
 ##' @noRd
-merge_named_branch <- function(repo, branch, commit_on_success, merger)
-{
+merge_named_branch <- function(repo, branch, commit_on_success, merger) {
     ## Check branch argument
     if (missing(branch))
         stop("missing 'branch' argument")
