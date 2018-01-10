@@ -156,14 +156,11 @@ branch_remote_url <- function(branch = NULL) {
 
 ##' Rename a branch
 ##'
-##' @rdname branch_rename-methods
-##' @docType methods
 ##' @param branch Branch to rename
 ##' @param name The new name for the branch
 ##' @param force Overwrite existing branch. Default is FALSE
-##' @return invisible renamed S4 class git_branch
-##' @keywords methods
-##' @include S4_classes.r
+##' @return invisible renamed \code{git_branch} object
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -183,20 +180,9 @@ branch_remote_url <- function(branch = NULL) {
 ##' branch_rename(head(repo), "dev")
 ##' branches(repo)
 ##' }
-setGeneric("branch_rename",
-           signature = "branch",
-           function(branch, name, force = FALSE)
-           standardGeneric("branch_rename"))
-
-##' @rdname branch_rename-methods
-##' @export
-setMethod("branch_rename",
-          signature = "git_branch",
-          function(branch, name, force)
-          {
-              invisible(.Call(git2r_branch_rename, branch, name, force))
-          }
-)
+branch_rename <- function(branch = NULL, name = NULL, force = FALSE) {
+    invisible(.Call(git2r_branch_rename, branch, name, force))
+}
 
 ##' Get target (sha) pointed to by a branch
 ##'
@@ -516,11 +502,10 @@ setMethod("show",
           }
 )
 
-##' Check if object is S4 class git_branch
+##' Check if object is \code{git_branch}
 ##'
-##' @param object Check if object is S4 class git_branch
-##' @return TRUE if object is S4 class git_branch, else FALSE
-##' @keywords methods
+##' @param object Check if object is of class \code{git_branch}
+##' @return TRUE if object is class \code{git_branch}, else FALSE
 ##' @export
 ##' @examples
 ##' \dontrun{

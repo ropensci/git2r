@@ -2,18 +2,18 @@
 % Please edit documentation in R/branch.r
 \name{is_branch}
 \alias{is_branch}
-\title{Check if object is S4 class git_branch}
+\title{Check if object is \code{git_branch}}
 \usage{
 is_branch(object)
 }
 \arguments{
-\item{object}{Check if object is S4 class git_branch}
+\item{object}{Check if object is of class \code{git_branch}}
 }
 \value{
-TRUE if object is S4 class git_branch, else FALSE
+TRUE if object is class \code{git_branch}, else FALSE
 }
 \description{
-Check if object is S4 class git_branch
+Check if object is \code{git_branch}
 }
 \examples{
 \dontrun{
@@ -36,4 +36,3 @@ branch <- branches(repo)[[1]]
 is_branch(branch)
 }
 }
-\keyword{methods}
