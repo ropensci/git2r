@@ -33,7 +33,8 @@ remotes <- function(repo = NULL) {
 ##' @export
 ##' @template remote-example
 remote_add <- function(repo = NULL, name = NULL, url = NULL) {
-    invisible(.Call(git2r_remote_add, lookup_repository(repo), name, url))
+    .Call(git2r_remote_add, lookup_repository(repo), name, url)
+    invisible(NULL)
 }
 
 ##' Rename a remote
@@ -45,7 +46,8 @@ remote_add <- function(repo = NULL, name = NULL, url = NULL) {
 ##' @export
 ##' @template remote-example
 remote_rename <- function(repo = NULL, oldname = NULL, newname = NULL) {
-    invisible(.Call(git2r_remote_rename, lookup_repository(repo), oldname, newname))
+    .Call(git2r_remote_rename, lookup_repository(repo), oldname, newname)
+    invisible(NULL)
 }
 
 ##' Remove a remote
@@ -58,7 +60,8 @@ remote_rename <- function(repo = NULL, oldname = NULL, newname = NULL) {
 ##' @export
 ##' @template remote-example
 remote_remove <- function(repo = NULL, name = NULL) {
-    invisible(.Call(git2r_remote_remove, lookup_repository(repo), name))
+    .Call(git2r_remote_remove, lookup_repository(repo), name)
+    invisible(NULL)
 }
 
 ##' Set the remote's url in the configuration
@@ -72,7 +75,8 @@ remote_remove <- function(repo = NULL, name = NULL) {
 ##' @export
 ##' @template remote-example
 remote_set_url <- function(repo = NULL, name = NULL, url = NULL) {
-    invisible(.Call(git2r_remote_set_url, lookup_repository(repo), name, url))
+    .Call(git2r_remote_set_url, lookup_repository(repo), name, url)
+    invisible(NULL)
 }
 
 ##' Get the remote url for remotes in a repo

@@ -61,5 +61,6 @@ libgit2_sha <- function() "15e119375018fba121cf58e02a9f17fe22df0df8"
 ##' @export
 ssl_cert_locations <- function(filename = NULL, path = NULL)
 {
-    invisible(.Call(git2r_ssl_cert_locations, filename, path))
+    .Call(git2r_ssl_cert_locations, filename, path)
+    invisible(NULL)
 }
