@@ -250,14 +250,11 @@ branch_get_upstream <- function(branch = NULL) {
 ##' Set remote tracking branch
 ##'
 ##' Set the upstream configuration for a given local branch
-##' @rdname branch_set_upstream-methods
-##' @docType methods
 ##' @param branch The branch to configure
 ##' @param name remote-tracking or local branch to set as
 ##' upstream. Pass NULL to unset.
 ##' @return invisible NULL
-##' @keywords methods
-##' @include S4_classes.r
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize two temporary repositories
@@ -290,23 +287,12 @@ branch_get_upstream <- function(branch = NULL) {
 ##' branch_set_upstream(head(repo), "origin/master")
 ##' branch_get_upstream(head(repo))
 ##' }
-setGeneric("branch_set_upstream",
-           signature = "branch",
-           function(branch, name)
-           standardGeneric("branch_set_upstream"))
-
-##' @rdname branch_set_upstream-methods
-##' @export
-setMethod("branch_set_upstream",
-          signature(branch = "git_branch"),
-          function(branch, name)
-          {
-              if (missing(name)) {
-                  stop("Missing argument name")
-              }
-              invisible(.Call(git2r_branch_set_upstream, branch, name))
-          }
-)
+branch_set_upstream <- function(branch = NULL, name) {
+    if (missing(name))
+        stop("Missing argument name")
+    .Call(git2r_branch_set_upstream, branch, name)
+    invisible(NULL)
+}
 
 ##' Branches
 ##'
