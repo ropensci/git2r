@@ -99,12 +99,9 @@ branch_delete <- function(branch = NULL) {
 ##' Remote name of a branch
 ##'
 ##' The name of remote that the remote tracking branch belongs to
-##' @rdname branch_remote_name-methods
-##' @docType methods
 ##' @param branch The branch
 ##' @return character string with remote name
-##' @keywords methods
-##' @include S4_classes.r
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize two temporary repositories
@@ -131,20 +128,9 @@ branch_delete <- function(branch = NULL) {
 ##' ## Get remote name
 ##' branch_remote_name(branches(repo)[[2]])
 ##' }
-setGeneric("branch_remote_name",
-           signature = "branch",
-           function(branch)
-           standardGeneric("branch_remote_name"))
-
-##' @rdname branch_remote_name-methods
-##' @export
-setMethod("branch_remote_name",
-          signature = "git_branch",
-          function(branch)
-          {
-              .Call(git2r_branch_remote_name, branch)
-          }
-)
+branch_remote_name <- function(branch = NULL) {
+    .Call(git2r_branch_remote_name, branch)
+}
 
 ##' Remote url of a branch
 ##'
