@@ -379,18 +379,11 @@ setMethod("branch_set_upstream",
 ##' Branches
 ##'
 ##' List branches in repository
-##' @rdname branches-methods
-##' @docType methods
-##' @param repo The repository \code{object}
-##' \code{\linkS4class{git_repository}}. If the \code{repo} argument
-##' is missing, the repository is searched for with
-##' \code{\link{discover_repository}} in the current working
-##' directory.
+##' @template repo-param
 ##' @param flags Filtering flags for the branch listing. Valid values
-##' are 'all', 'local' or 'remote'
+##'     are 'all', 'local' or 'remote'
 ##' @return list of branches in repository
-##' @keywords methods
-##' @include S4_classes.r
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize repositories
@@ -417,35 +410,14 @@ setMethod("branch_set_upstream",
 ##' ## List branches
 ##' branches(repo)
 ##' }
-setGeneric("branches",
-           signature = "repo",
-           function(repo, flags=c("all", "local", "remote"))
-           standardGeneric("branches"))
+branches <- function(repo = NULL, flags=c("all", "local", "remote")) {
+    flags <- switch(match.arg(flags),
+                    local  = 1L,
+                    remote = 2L,
+                    all    = 3L)
 
-##' @rdname branches-methods
-##' @export
-setMethod("branches",
-          signature(repo = "missing"),
-          function(flags)
-          {
-              callGeneric(repo = lookup_repository(), flags = flags)
-          }
-)
-
-##' @rdname branches-methods
-##' @export
-setMethod("branches",
-          signature(repo = "git_repository"),
-          function(repo, flags)
-          {
-              flags <- switch(match.arg(flags),
-                              local  = 1L,
-                              remote = 2L,
-                              all    = 3L)
-
-              .Call(git2r_branch_list, repo, flags)
-          }
-)
+    .Call(git2r_branch_list, lookup_repository(repo), flags)
+}
 
 ##' Check if branch is head
 ##'
@@ -522,8 +494,7 @@ is_head <- function(branch = NULL) {
 ##' ## Check if second branch is_local
 ##' is_local(branches(repo)[[2]])
 ##' }
-is_local <- function(branch)
-{
+is_local <- function(branch) {
     if (!is_branch(branch))
         stop("argument 'branch' must be a 'git_branch' object")
     identical(branch@type, 1L)
