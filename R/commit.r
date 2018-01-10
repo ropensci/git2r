@@ -46,8 +46,7 @@
 ##'
 ##' ahead_behind(commit_1, commit_2)
 ##' }
-ahead_behind <- function(local = NULL, upstream = NULL)
-{
+ahead_behind <- function(local = NULL, upstream = NULL) {
     .Call(git2r_graph_ahead_behind, local, upstream)
 }
 
@@ -58,8 +57,7 @@ ahead_behind <- function(local = NULL, upstream = NULL)
 ##' @importFrom utils capture.output
 ##' @importFrom utils sessionInfo
 ##' @noRd
-add_session_info <- function(message)
-{
+add_session_info <- function(message) {
     paste0(message, "\n\nsessionInfo:\n",
            paste0(utils::capture.output(utils::sessionInfo()),
                   collapse="\n"))
@@ -362,8 +360,7 @@ last_commit <- function(repo = NULL) {
 ##' descendant_of(commit_1, commit_2)
 ##' descendant_of(commit_2, commit_1)
 ##' }
-descendant_of <- function(commit = NULL, ancestor = NULL)
-{
+descendant_of <- function(commit = NULL, ancestor = NULL) {
     .Call(git2r_graph_descendant_of, commit, ancestor)
 }
 
@@ -448,8 +445,7 @@ is_commit <- function(object) {
 ##' ## Check that last commit is a merge
 ##' is_merge(lookup(repo, branch_target(head(repo))))
 ##' }
-is_merge <- function(commit = NULL)
-{
+is_merge <- function(commit = NULL) {
     length(parents(commit)) > 1
 }
 
@@ -485,8 +481,7 @@ is_merge <- function(commit = NULL)
 ##' ## commit_2 has commit_1 as parent
 ##' parents(commit_2)
 ##' }
-parents <- function(object = NULL)
-{
+parents <- function(object = NULL) {
     .Call(git2r_commit_parent_list, object)
 }
 
