@@ -27,7 +27,7 @@
 ##' repository workdir basename. Supply a new title if you desire one.
 ##' @param ... Additional arguments affecting the plot
 ##' @keywords methods
-##' @include S4_classes.r
+##' @include S4_classes.R
 ##' @importFrom graphics axis
 ##' @importFrom graphics barplot
 ##' @export

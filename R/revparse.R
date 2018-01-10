@@ -25,7 +25,7 @@
 ##' @return a \code{git_commit} or \code{git_tag} or \code{git_tree}
 ##' object
 ##' @keywords methods
-##' @include S4_classes.r
+##' @include S4_classes.R
 ##' @examples
 ##' \dontrun{
 ##' ## Create a directory in tempdir

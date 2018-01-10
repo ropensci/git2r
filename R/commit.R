@@ -237,7 +237,7 @@ setMethod("commits",
 )
 
 ##' @rdname commits-methods
-##' @include S4_classes.r
+##' @include S4_classes.R
 ##' @export
 setMethod("commits",
           signature(repo = "git_repository"),
@@ -495,7 +495,7 @@ parents <- function(object = NULL) {
 ##' @param object The commit \code{object}
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
-##' @include S4_classes.r
+##' @include S4_classes.R
 ##' @export
 ##' @examples
 ##' \dontrun{

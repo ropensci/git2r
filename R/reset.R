@@ -39,7 +39,7 @@
 ##'     entries for all paths to their state at HEAD.
 ##' @return invisible NULL
 ##' @keywords methods
-##' @include S4_classes.r
+##' @include S4_classes.R
 ##' @examples \dontrun{
 ##' ## Initialize a temporary repository
 ##' path <- tempfile(pattern="git2r-")

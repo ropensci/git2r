@@ -22,7 +22,7 @@
 ##' @param two The other commit
 ##' @return S4 class git_commit
 ##' @keywords methods
-##' @include S4_classes.r
+##' @include S4_classes.R
 ##' @examples \dontrun{
 ##' ## Create a directory in tempdir
 ##' path <- tempfile(pattern="git2r-")
@@ -121,7 +121,7 @@ merge_named_branch <- function(repo, branch, commit_on_success, merger) {
 ##' @param merger Who made the merge.
 ##' @return A \code{\linkS4class{git_merge_result}} object.
 ##' @keywords methods
-##' @include S4_classes.r
+##' @include S4_classes.R
 ##' @examples \dontrun{
 ##' ## Create a temporary repository
 ##' path <- tempfile(pattern="git2r-")
@@ -218,7 +218,7 @@ setMethod("merge",
 ##' @param object The \code{\linkS4class{git_merge_result}} \code{object}
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
-##' @include S4_classes.r
+##' @include S4_classes.R
 ##' @export
 ##' @examples
 ##' \dontrun{

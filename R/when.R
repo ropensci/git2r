@@ -24,7 +24,7 @@
 ##' @param object the \code{object} to extract the time slot from.
 ##' @return A \code{character} vector of length one.
 ##' @keywords methods
-##' @include S4_classes.r
+##' @include S4_classes.R
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository

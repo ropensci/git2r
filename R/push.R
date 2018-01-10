@@ -29,8 +29,8 @@
 ##' @seealso \code{\linkS4class{cred_user_pass}},
 ##' \code{\linkS4class{cred_ssh_key}}
 ##' @keywords methods
-##' @include refspec.r
-##' @include S4_classes.r
+##' @include refspec.R
+##' @include S4_classes.R
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize two temporary repositories

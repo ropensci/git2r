@@ -26,7 +26,7 @@
 ##' merge that creates a merge commit.
 ##' @return invisible(NULL)
 ##' @keywords methods
-##' @include S4_classes.r
+##' @include S4_classes.R
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize repositories

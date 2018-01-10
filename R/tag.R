@@ -25,7 +25,7 @@
 ##' @param tagger The tagger (author) of the tag
 ##' @return invisible(\code{git_tag}) object
 ##' @keywords methods
-##' @include commit.r
+##' @include commit.R
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository

@@ -69,7 +69,7 @@ setGeneric("stash_drop",
            standardGeneric("stash_drop"))
 
 ##' @rdname stash_drop-methods
-##' @include S4_classes.r
+##' @include S4_classes.R
 ##' @export
 setMethod("stash_drop",
           signature(object = "git_repository"),
@@ -155,7 +155,7 @@ setGeneric("stash",
            standardGeneric("stash"))
 
 ##' @rdname stash-methods
-##' @include S4_classes.r
+##' @include S4_classes.R
 ##' @export
 setMethod("stash",
           signature(object = "git_repository"),

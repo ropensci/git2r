@@ -425,7 +425,7 @@ is_local <- function(branch) {
 ##' @param object The branch \code{object}
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
-##' @include S4_classes.r
+##' @include S4_classes.R
 ##' @export
 ##' @examples
 ##' \dontrun{
