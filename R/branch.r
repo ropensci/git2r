@@ -67,11 +67,9 @@ setMethod("branch_create",
 
 ##' Delete a branch
 ##'
-##' @rdname branch_delete-methods
-##' @docType methods
 ##' @param branch The branch
 ##' @return invisible NULL
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -93,20 +91,10 @@ setMethod("branch_create",
 ##' branch_delete(dev)
 ##' branches(repo)
 ##' }
-setGeneric("branch_delete",
-           signature = "branch",
-           function(branch)
-           standardGeneric("branch_delete"))
-
-##' @rdname branch_delete-methods
-##' @export
-setMethod("branch_delete",
-          signature = "git_branch",
-          function(branch)
-          {
-              invisible(.Call(git2r_branch_delete, branch))
-          }
-)
+branch_delete <- function(branch = NULL) {
+    .Call(git2r_branch_delete, branch)
+    invisible(NULL)
+}
 
 ##' Remote name of a branch
 ##'
