@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -16,13 +16,11 @@
 
 ##' Create a branch
 ##'
-##' @rdname branch_create-methods
-##' @docType methods
 ##' @param commit Commit to which branch should point.
 ##' @param name Name for the branch
 ##' @param force Overwrite existing branch. Default = FALSE
 ##' @return invisible S4 class git_branch object
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -50,20 +48,9 @@
 ##' ## Force it
 ##' branch_2 <- branch_create(commit_2, name = "test-branch", force = TRUE)
 ##' }
-setGeneric("branch_create",
-           signature = "commit",
-           function(commit, name, force = FALSE)
-           standardGeneric("branch_create"))
-
-##' @rdname branch_create-methods
-##' @export
-setMethod("branch_create",
-          signature = "git_commit",
-          function(commit, name, force)
-          {
-              invisible(.Call(git2r_branch_create, name, commit, force))
-          }
-)
+branch_create <- function(commit = NULL, name = NULL, force = FALSE) {
+    invisible(.Call(git2r_branch_create, name, commit, force))
+}
 
 ##' Delete a branch
 ##'

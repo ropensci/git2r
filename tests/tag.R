@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -26,7 +26,7 @@ tagger <- new("git_signature",
               name = "Alice",
               email = "alice@example.org",
               when = when)
-
+tagger
 tools::assertError(validObject(new("git_tag",
                                    message = character(0),
                                    name = "name1",
