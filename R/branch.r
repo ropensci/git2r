@@ -121,12 +121,9 @@ branch_remote_name <- function(branch = NULL) {
 
 ##' Remote url of a branch
 ##'
-##' @rdname branch_remote_url-methods
-##' @docType methods
 ##' @param branch The branch
 ##' @return character string with remote url
-##' @keywords methods
-##' @include S4_classes.r
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize two temporary repositories
@@ -153,20 +150,9 @@ branch_remote_name <- function(branch = NULL) {
 ##' ## Get remote url of tracking branch to branch 'master'
 ##' branch_remote_url(branch_get_upstream(head(repo)))
 ##' }
-setGeneric("branch_remote_url",
-           signature = "branch",
-           function(branch)
-           standardGeneric("branch_remote_url"))
-
-##' @rdname branch_remote_url-methods
-##' @export
-setMethod("branch_remote_url",
-          signature = "git_branch",
-          function(branch)
-          {
-              .Call(git2r_branch_remote_url, branch)
-          }
-)
+branch_remote_url <- function(branch = NULL) {
+    .Call(git2r_branch_remote_url, branch)
+}
 
 ##' Rename a branch
 ##'
