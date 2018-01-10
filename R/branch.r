@@ -214,12 +214,9 @@ setMethod("branch_rename",
 
 ##' Get target (sha) pointed to by a branch
 ##'
-##' @rdname branch_target-methods
-##' @docType methods
 ##' @param branch The branch
 ##' @return sha or NA if not a direct reference
-##' @keywords methods
-##' @include S4_classes.r
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -237,20 +234,9 @@ setMethod("branch_rename",
 ##' ## Get target (sha) pointed to by 'master' branch
 ##' branch_target(head(repo))
 ##' }
-setGeneric("branch_target",
-           signature = "branch",
-           function(branch)
-           standardGeneric("branch_target"))
-
-##' @rdname branch_target-methods
-##' @export
-setMethod("branch_target",
-          signature = "git_branch",
-          function(branch)
-          {
-              .Call(git2r_branch_target, branch)
-          }
-)
+branch_target <- function(branch = NULL) {
+    .Call(git2r_branch_target, branch)
+}
 
 ##' Get remote tracking branch
 ##'
