@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2017 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -49,9 +49,7 @@ SEXP git2r_graph_ahead_behind(SEXP local, SEXP upstream)
 
     local_repo = GET_SLOT(local, Rf_install("repo"));
     upstream_repo = GET_SLOT(upstream, Rf_install("repo"));
-    local_path = GET_SLOT(local_repo, Rf_install("path"));
-    upstream_path = GET_SLOT(upstream_repo, Rf_install("path"));
-    if (strcmp(CHAR(STRING_ELT(local_path, 0)), CHAR(STRING_ELT(upstream_path, 0))))
+    if (git2r_arg_check_same_repo(local_repo, upstream_repo))
         git2r_error(__func__, NULL, "'local' and 'upstream' not from same repository", NULL);
 
     repository = git2r_repository_open(local_repo);
@@ -109,9 +107,7 @@ SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor)
 
     commit_repo = GET_SLOT(commit, Rf_install("repo"));
     ancestor_repo = GET_SLOT(ancestor, Rf_install("repo"));
-    commit_path = GET_SLOT(commit_repo, Rf_install("path"));
-    ancestor_path = GET_SLOT(ancestor_repo, Rf_install("path"));
-    if (strcmp(CHAR(STRING_ELT(commit_path, 0)), CHAR(STRING_ELT(ancestor_path, 0))))
+    if (git2r_arg_check_same_repo(commit_repo, ancestor_repo))
         git2r_error(__func__, NULL, "'commit' and 'ancestor' not from same repository", NULL);
 
     repository = git2r_repository_open(commit_repo);

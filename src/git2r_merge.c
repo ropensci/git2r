@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2017 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -47,11 +47,9 @@ SEXP git2r_merge_base(SEXP one, SEXP two)
 {
     int err;
     SEXP result = R_NilValue;
-    SEXP repo;
+    SEXP repo_one, repo_two;
     SEXP sha;
-    git_oid oid;
-    git_oid oid_one;
-    git_oid oid_two;
+    git_oid oid, oid_one, oid_two;
     git_commit *commit = NULL;
     git_repository *repository = NULL;
 
@@ -60,8 +58,12 @@ SEXP git2r_merge_base(SEXP one, SEXP two)
     if (git2r_arg_check_commit(two))
         git2r_error(__func__, NULL, "'two'", git2r_err_commit_arg);
 
-    repo = GET_SLOT(one, Rf_install("repo"));
-    repository = git2r_repository_open(repo);
+    repo_one = GET_SLOT(one, Rf_install("repo"));
+    repo_two = GET_SLOT(two, Rf_install("repo"));
+    if (git2r_arg_check_same_repo(repo_one, repo_two))
+        git2r_error(__func__, NULL, "'one' and 'two' not from same repository", NULL);
+
+    repository = git2r_repository_open(repo_one);
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
@@ -87,7 +89,7 @@ SEXP git2r_merge_base(SEXP one, SEXP two)
         goto cleanup;
 
     PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_commit")));
-    git2r_commit_init(commit, repo, result);
+    git2r_commit_init(commit, repo_one, result);
 
 cleanup:
     if (commit)

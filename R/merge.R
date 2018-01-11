@@ -16,13 +16,10 @@
 
 ##' Find a merge base between two commits
 ##'
-##' @rdname merge_base-methods
-##' @docType methods
 ##' @param one One of the commits
 ##' @param two The other commit
-##' @return S4 class git_commit
-##' @keywords methods
-##' @include S4_classes.R
+##' @return git_commit
+##' @export
 ##' @examples \dontrun{
 ##' ## Create a directory in tempdir
 ##' path <- tempfile(pattern="git2r-")
@@ -54,22 +51,9 @@
 ##' ## Check that merge base equals commit_1
 ##' stopifnot(identical(merge_base(commit_2, commit_3), commit_1))
 ##' }
-setGeneric("merge_base",
-           signature = c("one", "two"),
-           function(one, two)
-           standardGeneric("merge_base"))
-
-##' @rdname merge_base-methods
-##' @export
-setMethod("merge_base",
-          signature(one = "git_commit",
-                    two = "git_commit"),
-          function(one, two)
-          {
-              stopifnot(identical(one@repo, two@repo))
-              .Call(git2r_merge_base, one, two)
-          }
-)
+merge_base <- function(one = NULL, two = NULL) {
+    .Call(git2r_merge_base, one, two)
+}
 
 ##' Merge branch into HEAD
 ##'
