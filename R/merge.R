@@ -78,9 +78,7 @@ merge_branch <- function(branch, commit_on_success, merger) {
 ##' @noRd
 merge_named_branch <- function(repo, branch, commit_on_success, merger) {
     ## Check branch argument
-    if (missing(branch))
-        stop("missing 'branch' argument")
-    if (any(!is.character(branch), !identical(length(branch), 1L)))
+    if (missing(branch) || !is.character(branch) || !identical(length(branch), 1L))
         stop("'branch' must be a character vector of length one")
 
     b <- branches(repo)
@@ -91,21 +89,16 @@ merge_named_branch <- function(repo, branch, commit_on_success, merger) {
 
 ##' Merge a branch into HEAD
 ##'
-##' @rdname merge-methods
-##' @export
-##' @docType methods
 ##' @param x A \code{\linkS4class{git_branch}} or
-##' \code{\linkS4class{git_repository}} object.
+##'     \code{\linkS4class{git_repository}} object.
 ##' @param y If \code{x} is a \code{\linkS4class{git_repository}}, the
-##' name of the branch to merge into HEAD. Not used if \code{x} is a
-##' \code{\linkS4class{git_branch}}.
-##' @param ... Additional arguments affecting the merge
+##'     name of the branch to merge into HEAD. Not used if \code{x} is
+##'     a \code{\linkS4class{git_branch}}.
 ##' @param commit_on_success If there are no conflicts written to the
-##' index, the merge commit will be committed. Default is TRUE.
+##'     index, the merge commit will be committed. Default is TRUE.
 ##' @param merger Who made the merge.
 ##' @return A \code{\linkS4class{git_merge_result}} object.
-##' @keywords methods
-##' @include S4_classes.R
+##' @export
 ##' @examples \dontrun{
 ##' ## Create a temporary repository
 ##' path <- tempfile(pattern="git2r-")
@@ -170,30 +163,14 @@ merge_named_branch <- function(repo, branch, commit_on_success, merger) {
 ##' ## Check status; Expect to have one unstaged unmerged conflict.
 ##' status(repo)
 ##' }
-setMethod("merge",
-          signature(x = "git_repository", y = "character"),
-          function(x,
-                   y,
-                   ...,
-                   commit_on_success = TRUE,
-                   merger = default_signature(x))
-          {
-              merge_named_branch(x, y, commit_on_success, merger)
-          }
-)
-
-##' @rdname merge-methods
-##' @export
-setMethod("merge",
-          signature(x = "git_branch", y = "missing"),
-          function(x,
-                   ...,
-                   commit_on_success = TRUE,
-                   merger = default_signature(x@repo))
-          {
-              merge_branch(x, commit_on_success, merger)
-          }
-)
+merge <- function(x = NULL, y = NULL, commit_on_success = TRUE,
+                  merger = default_signature(x@repo))
+{
+    if (is.null(y))
+        return(merge_branch(x, commit_on_success, merger))
+    x <- lookup_repository(x)
+    merge_named_branch(x, y, commit_on_success, merger)
+}
 
 ##' Brief summary of merge result
 ##'
