@@ -69,34 +69,19 @@ cred_token <- function(token = "GITHUB_PAT") {
 
 ##' Create a new plain-text username and password credential object
 ##'
-##' @rdname cred_user_pass-methods
 ##' @family git credential functions
 ##' @param username The username of the credential
 ##' @param password The password of the credential
-##' @return A S4 \code{cred_user_pass} object
-##' @keywords methods
+##' @return A \code{cred_user_pass} object
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Create a plain-text username and password credential object
 ##' cred_user_pass("Random Developer", "SecretPassword")
 ##' }
-setGeneric("cred_user_pass",
-           signature = c("username", "password"),
-           function(username, password)
-           standardGeneric("cred_user_pass"))
-
-##' @rdname cred_user_pass-methods
-##' @export
-setMethod("cred_user_pass",
-          signature(username = "character",
-                    password = "character"),
-          function(username, password)
-          {
-              new("cred_user_pass",
-                  username = username,
-                  password = password)
-          }
-)
+cred_user_pass <- function(username = NULL, password = NULL) {
+    new("cred_user_pass", username = username, password = password)
+}
 
 ##' Create a new passphrase-protected ssh key credential object
 ##'
@@ -145,10 +130,8 @@ cred_ssh_key <-  function (publickey = "~/.ssh/id_rsa.pub",
 ##' @param privatekey The path to the private key of the
 ##' credential. Default is \code{'~/.ssh/id_rsa'}
 ##' @noRd
-ssh_key_needs_passphrase <- function(privatekey = "~/.ssh/id_rsa"){
-  private_content    <- readLines(privatekey, n=3)
-  contains_encrypted <- grepl("encrypted",  private_content , ignore.case = TRUE)
-  return(
+ssh_key_needs_passphrase <- function(privatekey = "~/.ssh/id_rsa") {
+    private_content <- readLines(privatekey, n = 3)
+    contains_encrypted <- grepl("encrypted", private_content, ignore.case = TRUE)
     any(contains_encrypted)
-  )
 }
