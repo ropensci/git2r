@@ -65,20 +65,17 @@ add_session_info <- function(message) {
 
 ##' Commit
 ##'
-##' @rdname commit-methods
-##' @docType methods
-##' @param repo The repository \code{object}.
+##' @template repo-param
 ##' @param message The commit message.
 ##' @param all Stage modified and deleted files. Files not added to
-##' Git are not affected.
+##'     Git are not affected.
 ##' @param session Add sessionInfo to commit message. Default is
-##' FALSE.
-##' @param reference Name of the reference that will be updated to
-##' point to this commit.
+##'     FALSE.
 ##' @param author Signature with author and author time of commit.
-##' @param committer Signature with committer and commit time of commit.
+##' @param committer Signature with committer and commit time of
+##'     commit.
 ##' @return \code{\linkS4class{git_commit}} object
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a repository
@@ -95,67 +92,49 @@ add_session_info <- function(message) {
 ##' add(repo, "example.txt")
 ##' commit(repo, "First commit message")
 ##' }
-setGeneric("commit",
-           signature = "repo",
-           function(repo,
-                    message   = NULL,
-                    all       = FALSE,
-                    session   = FALSE,
-                    reference = "HEAD",
-                    author    = default_signature(repo),
-                    committer = default_signature(repo))
-           standardGeneric("commit"))
+commit <- function(repo      = NULL,
+                   message   = NULL,
+                   all       = FALSE,
+                   session   = FALSE,
+                   author    = NULL,
+                   committer = NULL)
+{
+    repo <- lookup_repository(repo)
+    if (is.null(author))
+        author <- default_signature(repo)
+    if (is.null(committer))
+        committer <- default_signature(repo)
 
-##' @rdname commit-methods
-##' @export
-setMethod("commit",
-          signature(repo = "git_repository"),
-          function(repo,
-                   message,
-                   all,
-                   session,
-                   reference,
-                   author,
-                   committer)
-          {
-              ## Argument checking
-              stopifnot(is.character(message),
-                        identical(length(message), 1L),
-                        is.logical(all),
-                        identical(length(all), 1L),
-                        is.logical(session),
-                        identical(length(session), 1L))
+    stopifnot(is.character(message), identical(length(message), 1L))
+    if (!nchar(message[1]))
+        stop("Aborting commit due to empty commit message.")
 
-              if (!nchar(message[1]))
-                  stop("Aborting commit due to empty commit message.")
+    if (isTRUE(all)) {
+        s <- status(repo,
+                    unstaged  = TRUE,
+                    staged    = FALSE,
+                    untracked = FALSE,
+                    ignored   = FALSE)
 
-              if (all) {
-                  s <- status(repo,
-                              unstaged  = TRUE,
-                              staged    = FALSE,
-                              untracked = FALSE,
-                              ignored   = FALSE)
+        ## Convert list of lists to character vector
+        unstaged <- unlist(s$unstaged)
+        for (i in seq_along(unstaged)) {
+            if (names(unstaged)[i] == "modified") {
+                ## Stage modified files
+                add(repo, unstaged[i])
+            } else if (names(unstaged)[i] == "deleted") {
+                ## Stage deleted files
+                .Call(git2r_index_remove_bypath, repo, unstaged[i])
+            }
+        }
 
-                  # Convert list of lists to character vector
-                  unstaged <- unlist(s$unstaged)
-                  for (i in seq_along(unstaged)) {
-                    if (names(unstaged)[i] == "modified") {
-                      ## Stage modified files
-                      add(repo, unstaged[i])
-                    } else if (names(unstaged)[i] == "deleted") {
-                      ## Stage deleted files
-                      .Call(git2r_index_remove_bypath, repo, unstaged[i])
-                    }
-                  }
+    }
 
-              }
+    if (isTRUE(session))
+        message <- add_session_info(message)
 
-              if (session)
-                  message <- add_session_info(message)
-
-              .Call(git2r_commit, repo, message, author, committer)
-          }
-)
+    .Call(git2r_commit, repo, message, author, committer)
+}
 
 ##' Commits
 ##'
