@@ -19,9 +19,7 @@
 ##' List all blobs reachable from the commits in the object
 ##' database. For each commit, list blob's in the commit tree and
 ##' sub-trees.
-##' @rdname odb_blobs-methods
-##' @docType methods
-##' @param repo The repository
+##' @template repo-param
 ##' @return A data.frame with the following columns:
 ##' \describe{
 ##'   \item{sha}{The sha of the blob}
@@ -33,7 +31,7 @@
 ##'   \item{when}{The timestamp of the author signature in the commit}
 ##' }
 ##' @note A blob sha can have several entries
-##' @keywords methods
+##' @export
 ##' @examples \dontrun{
 ##' ## Create a directory in tempdir
 ##' path <- tempfile(pattern="git2r-")
@@ -65,37 +63,16 @@
 ##' ## List blobs
 ##' odb_blobs(repo)
 ##' }
-setGeneric("odb_blobs",
-           signature = "repo",
-           function(repo)
-           standardGeneric("odb_blobs"))
-
-##' @rdname odb_blobs-methods
-##' @export
-setMethod("odb_blobs",
-          signature(repo = "missing"),
-          function()
-          {
-              callGeneric(repo = lookup_repository())
-          }
-)
-
-##' @rdname odb_blobs-methods
-##' @export
-setMethod("odb_blobs",
-          signature(repo = "git_repository"),
-          function(repo)
-          {
-              blobs <- data.frame(.Call(git2r_odb_blobs, repo),
-                                   stringsAsFactors = FALSE)
-              blobs <- blobs[order(blobs$when),]
-              index <- paste0(blobs$sha, ":", blobs$path, "/", blobs$name)
-              blobs <- blobs[!duplicated(index),]
-              rownames(blobs) <- NULL
-              blobs$when <- as.POSIXct(blobs$when, origin="1970-01-01", tz="GMT")
-              blobs
-          }
-)
+odb_blobs <- function(repo = NULL) {
+    blobs <- .Call(git2r_odb_blobs, lookup_repository(repo))
+    blobs <- data.frame(blobs, stringsAsFactors = FALSE)
+    blobs <- blobs[order(blobs$when),]
+    index <- paste0(blobs$sha, ":", blobs$path, "/", blobs$name)
+    blobs <- blobs[!duplicated(index),]
+    rownames(blobs) <- NULL
+    blobs$when <- as.POSIXct(blobs$when, origin="1970-01-01", tz="GMT")
+    blobs
+}
 
 ##' List all objects available in the database
 ##'
