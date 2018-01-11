@@ -37,15 +37,10 @@
  */
 git_repository* git2r_repository_open(SEXP repo)
 {
-    SEXP class_name;
     SEXP path;
     git_repository *repository;
 
-    if (isNull(repo) || !isS4(repo))
-        return NULL;
-
-    class_name = getAttrib(repo, R_ClassSymbol);
-    if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_repository"))
+    if (git2r_arg_check_repository(repo))
         return NULL;
 
     path = GET_SLOT(repo, Rf_install("path"));

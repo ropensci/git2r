@@ -395,6 +395,50 @@ int git2r_arg_check_real(SEXP arg)
 }
 
 /**
+ * Check repository argument
+ *
+ * @param arg the arg to check
+ * @return 0 if OK, else -1
+ */
+int git2r_arg_check_repository(SEXP arg)
+{
+    SEXP class_name;
+
+    if (!isS4(arg))
+        return -1;
+
+    class_name = getAttrib(arg, R_ClassSymbol);
+    if (0 != strcmp(CHAR(STRING_ELT(class_name, 0)), "git_repository"))
+        return -1;
+
+    if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("path"))))
+        return -1;
+
+    return 0;
+}
+
+/**
+ * Check if the two repositories have the same path
+ *
+ * @param arg the arg to check
+ * @return 0 if OK, else -1
+ */
+int git2r_arg_check_same_repo(SEXP arg1, SEXP arg2)
+{
+    SEXP path1, path2;
+
+    if (git2r_arg_check_repository(arg1) || git2r_arg_check_repository(arg2))
+        return -1;
+
+    path1 = GET_SLOT(arg1, Rf_install("path"));
+    path2 = GET_SLOT(arg2, Rf_install("path"));
+    if (strcmp(CHAR(STRING_ELT(path1, 0)), CHAR(STRING_ELT(path2, 0))))
+        return -1;
+
+    return 0;
+}
+
+/**
  * Check signature argument
  *
  * @param arg the arg to check
