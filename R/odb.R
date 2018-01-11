@@ -76,16 +76,14 @@ odb_blobs <- function(repo = NULL) {
 
 ##' List all objects available in the database
 ##'
-##' @rdname odb_objects-methods
-##' @docType methods
-##' @param repo The repository
+##' @template repo-param
 ##' @return A data.frame with the following columns:
 ##' \describe{
 ##'   \item{sha}{The sha of the object}
 ##'   \item{type}{The type of the object}
 ##'   \item{len}{The length of the object}
 ##' }
-##' @keywords methods
+##' @export
 ##' @examples \dontrun{
 ##' ## Create a directory in tempdir
 ##' path <- tempfile(pattern="git2r-")
@@ -107,28 +105,7 @@ odb_blobs <- function(repo = NULL) {
 ##' ## List objects in repository
 ##' odb_objects(repo)
 ##' }
-setGeneric("odb_objects",
-           signature = "repo",
-           function(repo)
-           standardGeneric("odb_objects"))
-
-##' @rdname odb_objects-methods
-##' @export
-setMethod("odb_objects",
-          signature(repo = "missing"),
-          function()
-          {
-              callGeneric(repo = lookup_repository())
-          }
-)
-
-##' @rdname odb_objects-methods
-##' @export
-setMethod("odb_objects",
-          signature(repo = "git_repository"),
-          function(repo)
-          {
-              data.frame(.Call(git2r_odb_objects, repo),
-                         stringsAsFactors = FALSE)
-          }
-)
+odb_objects <- function(repo = NULL) {
+    data.frame(.Call(git2r_odb_objects, lookup_repository(repo)),
+               stringsAsFactors = FALSE)
+}
