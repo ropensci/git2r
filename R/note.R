@@ -174,13 +174,11 @@ setMethod("note_create",
 ##' List notes
 ##'
 ##' List all the notes within a specified namespace.
-##' @rdname notes-methods
-##' @docType methods
-##' @param repo The repository
-##' @param ref Reference to read from. Default is
-##' "refs/notes/commits".
-##' @return list with S4 class git_note objects
-##' @keywords methods
+##' @template repo-param
+##' @param ref Reference to read from. Default (ref = NULL) is to call
+##'     \code{note_default_ref}.
+##' @return list with git_note objects
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Create and initialize a repository in a temporary directory
@@ -219,24 +217,15 @@ setMethod("note_create",
 ##' ## List notes in 'review' namespace
 ##' notes(repo, "review")
 ##' }
-setGeneric("notes",
-           signature = c("repo", "ref"),
-           function(repo,
-                    ref = note_default_ref(repo))
-           standardGeneric("notes"))
-
-##' @rdname notes-methods
-##' @export
-setMethod("notes",
-          signature = "git_repository",
-          function(repo, ref)
-          {
-              stopifnot(is.character(ref), identical(length(ref), 1L))
-              if (!length(grep("^refs/notes/", ref)))
-                  ref <- paste0("refs/notes/", ref)
-              .Call(git2r_notes, repo, ref)
-          }
-)
+notes <- function(repo = NULL, ref = NULL) {
+    repo <- lookup_repository(repo)
+    if (is.null(ref))
+        ref = note_default_ref(repo)
+    stopifnot(is.character(ref), identical(length(ref), 1L))
+    if (!length(grep("^refs/notes/", ref)))
+        ref <- paste0("refs/notes/", ref)
+    .Call(git2r_notes, repo, ref)
+}
 
 ##' Remove the note for an object
 ##'
