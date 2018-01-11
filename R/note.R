@@ -17,12 +17,10 @@
 ##' Default notes reference
 ##'
 ##' Get the default notes reference for a repository
-##' @rdname note_default_ref-methods
-##' @docType methods
-##' @param repo The repository
+##' @template repo-param
 ##' @return Character vector of length one with name of default notes
-##' reference
-##' @keywords methods
+##'     reference
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Create and initialize a repository in a temporary directory
@@ -34,20 +32,9 @@
 ##' ## View default notes reference
 ##' note_default_ref(repo)
 ##' }
-setGeneric("note_default_ref",
-           signature = "repo",
-           function(repo)
-           standardGeneric("note_default_ref"))
-
-##' @rdname note_default_ref-methods
-##' @export
-setMethod("note_default_ref",
-          signature = "git_repository",
-          function(repo)
-          {
-              .Call(git2r_note_default_ref, repo)
-          }
-)
+note_default_ref <- function(repo = NULL) {
+    .Call(git2r_note_default_ref, lookup_repository(repo))
+}
 
 ##' Add note for a object
 ##'
