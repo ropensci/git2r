@@ -38,17 +38,16 @@ note_default_ref <- function(repo = NULL) {
 
 ##' Add note for a object
 ##'
-##' @rdname note_create-methods
-##' @docType methods
-##' @param object The object to annotate
+##' @param object The object to annotate (git_blob, git_commit or
+##'     git_tree).
 ##' @param message Content of the note to add
 ##' @param ref Canonical name of the reference to use. Default is
-##' \code{note_default_ref}.
+##'     \code{note_default_ref}.
 ##' @param author Signature of the notes note author
 ##' @param committer Signature of the notes note committer
 ##' @param force Overwrite existing note. Default is FALSE
-##' @return S4 class git_note
-##' @keywords methods
+##' @return git_note
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Create and initialize a repository in a temporary directory
@@ -83,93 +82,29 @@ note_default_ref <- function(repo = NULL) {
 ##' note_create(tree(commit_1), "Note-4")
 ##' note_create(tree(commit_1)["example.txt"], "Note-5")
 ##' }
-setGeneric("note_create",
-           signature = "object",
-           function(object,
-                    message,
-                    ref       = note_default_ref(object@repo),
-                    author    = default_signature(object@repo),
-                    committer = default_signature(object@repo),
-                    force     = FALSE)
-           standardGeneric("note_create"))
-
-##' @rdname note_create-methods
-##' @export
-setMethod("note_create",
-          signature = "git_blob",
-          function(object,
-                   message,
-                   ref,
-                   author,
-                   committer,
-                   force)
-          {
-              stopifnot(is.character(ref))
-              stopifnot(identical(length(ref), 1L))
-              if (!length(grep("^refs/notes/", ref)))
-                  ref <- paste0("refs/notes/", ref)
-              .Call(git2r_note_create,
-                    object@repo,
-                    object@sha,
-                    message,
-                    ref,
-                    author,
-                    committer,
-                    force)
-          }
-)
-
-##' @rdname note_create-methods
-##' @export
-setMethod("note_create",
-          signature = "git_commit",
-          function(object,
-                   message,
-                   ref,
-                   author,
-                   committer,
-                   force)
-          {
-              stopifnot(is.character(ref))
-              stopifnot(identical(length(ref), 1L))
-              if (!length(grep("^refs/notes/", ref)))
-                  ref <- paste0("refs/notes/", ref)
-              .Call(git2r_note_create,
-                    object@repo,
-                    object@sha,
-                    message,
-                    ref,
-                    author,
-                    committer,
-                    force)
-          }
-)
-
-##' @rdname note_create-methods
-##' @export
-setMethod("note_create",
-          signature = "git_tree",
-          function(object,
-                   message,
-                   ref,
-                   author,
-                   committer,
-                   force)
-          {
-              stopifnot(is.character(ref))
-              stopifnot(identical(length(ref), 1L))
-              if (!length(grep("^refs/notes/", ref)))
-                  ref <- paste0("refs/notes/", ref)
-              .Call(git2r_note_create,
-                    object@repo,
-                    object@sha,
-                    message,
-                    ref,
-                    author,
-                    committer,
-                    force)
-          }
-)
+note_create <- function(object    = NULL,
+                        message   = NULL,
+                        ref       = NULL,
+                        author    = NULL,
+                        committer = NULL,
+                        force     = FALSE)
+{
+    if (is.null(object))
+        stop("'object' is missing")
+    if (!any(is_blob(object), is_commit(object), is_tree(object)))
+        stop("'object' must be a 'git_blob', 'git_commit' or 'git_tree' object")
+    if (is.null(ref))
+        ref <- note_default_ref(object@repo)
+    stopifnot(is.character(ref), identical(length(ref), 1L))
+    if (!length(grep("^refs/notes/", ref)))
+        ref <- paste0("refs/notes/", ref)
+    if(is.null(author))
+        author <- default_signature(object@repo)
+    if (is.null(committer))
+        committer <- default_signature(object@repo)
+    .Call(git2r_note_create, object@repo, object@sha,
+          message, ref, author, committer, force)
+}
 
 ##' List notes
 ##'
