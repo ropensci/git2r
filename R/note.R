@@ -240,13 +240,11 @@ setMethod("notes",
 
 ##' Remove the note for an object
 ##'
-##' @rdname note_remove-methods
-##' @docType methods
 ##' @param note The note to remove
 ##' @param author Signature of the notes commit author.
 ##' @param committer Signature of the notes commit committer.
 ##' @return invisible NULL
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Create and initialize a repository in a temporary directory
@@ -283,24 +281,19 @@ setMethod("notes",
 ##' ## List notes in 'review' namespace
 ##' notes(repo, "review")
 ##' }
-setGeneric("note_remove",
-           signature = "note",
-           function(note,
-                    author    = default_signature(note@repo),
-                    committer = default_signature(note@repo))
-           standardGeneric("note_remove"))
-
-##' @rdname note_remove-methods
-##' @export
-setMethod("note_remove",
-          signature = "git_note",
-          function(note,
-                   author,
-                   committer)
-          {
-              invisible(.Call(git2r_note_remove, note, author, committer))
-          }
-)
+note_remove <- function(note      = NULL,
+                        author    = NULL,
+                        committer = NULL)
+{
+    if (!is(object = note, class2 = "git_note"))
+        stop("'note' is not a git_note")
+    if (is.null(author))
+        author <- default_signature(note@repo)
+    if (is.null(committer))
+        committer <- default_signature(note@repo)
+    .Call(git2r_note_remove, note, author, committer)
+    invisible(NULL)
+}
 
 ##' Brief summary of note
 ##'
