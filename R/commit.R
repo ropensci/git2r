@@ -138,25 +138,18 @@ commit <- function(repo      = NULL,
 
 ##' Commits
 ##'
-##' @rdname commits-methods
-##' @docType methods
-##' @param repo The repository \code{object}
-##' \code{\linkS4class{git_repository}}. If the \code{repo} argument
-##' is missing, the repository is searched for with
-##' \code{\link{discover_repository}} in the current working
-##' directory.
-##' @param ... Additional arguments to commits.
+##' @template repo-param
 ##' @param topological Sort the commits in topological order (parents
-##' before children); can be combined with time sorting. Default is
-##' TRUE.
+##'     before children); can be combined with time sorting. Default
+##'     is TRUE.
 ##' @param time Sort the commits by commit time; Can be combined with
-##' topological sorting. Default is TRUE.
+##'     topological sorting. Default is TRUE.
 ##' @param reverse Sort the commits in reverse order; can be combined
-##' with topological and/or time sorting. Default is FALSE.
+##'     with topological and/or time sorting. Default is FALSE.
 ##' @param n The upper limit of the number of commits to output. The
-##' defualt is NULL for unlimited number of commits.
+##'     defualt is NULL for unlimited number of commits.
 ##' @return list of commits in repository
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a repository
@@ -191,89 +184,58 @@ commit <- function(repo      = NULL,
 ##' ## List commits in repository
 ##' commits(repo)
 ##' }
-setGeneric("commits",
-           signature = "repo",
-           function(repo, ...)
-           standardGeneric("commits"))
+commits <- function(repo        = NULL,
+                    topological = TRUE,
+                    time        = TRUE,
+                    reverse     = FALSE,
+                    n           = NULL)
+{
+    ## Check limit in number of commits
+    if (is.null(n)) {
+        n <- -1L
+    } else if (is.numeric(n)) {
+        if (!identical(length(n), 1L))
+            stop("'n' must be integer")
+        if (abs(n - round(n)) >= .Machine$double.eps^0.5)
+            stop("'n' must be integer")
+        n <- as.integer(n)
+    } else {
+        stop("'n' must be integer")
+    }
 
-##' @rdname commits-methods
-##' @export
-setMethod("commits",
-          signature(repo = "missing"),
-          function(topological = TRUE,
-                   time        = TRUE,
-                   reverse     = FALSE,
-                   n           = NULL,
-                   ...)
-          {
-              callGeneric(repo        = lookup_repository(),
-                          topological = topological,
-                          time        = time,
-                          reverse     = reverse,
-                          n           = n,
-                          ...)
-          }
-)
+    repo <- lookup_repository(repo)
+    if (is_shallow(repo)) {
+        ## FIXME: Remove this if-statement when libgit2 supports
+        ## shallow clones, see #219.  Note: This workaround does not
+        ## use the 'topological', 'time' and 'reverse' flags.
 
-##' @rdname commits-methods
-##' @include S4_classes.R
-##' @export
-setMethod("commits",
-          signature(repo = "git_repository"),
-          function(repo,
-                   topological = TRUE,
-                   time        = TRUE,
-                   reverse     = FALSE,
-                   n           = NULL,
-                   ...)
-          {
-              ## Check limit in number of commits
-              if (is.null(n)) {
-                  n <- -1L
-              } else if (is.numeric(n)) {
-                  if (!identical(length(n), 1L))
-                      stop("'n' must be integer")
-                  if (abs(n - round(n)) >= .Machine$double.eps^0.5)
-                      stop("'n' must be integer")
-                  n <- as.integer(n)
-              } else {
-                  stop("'n' must be integer")
-              }
+        ## List to hold result
+        result <- list()
 
-              if (is_shallow(repo)) {
-                  ## FIXME: Remove this if-statement when libgit2
-                  ## supports shallow clones, see #219.  Note: This
-                  ## workaround does not use the 'topological', 'time'
-                  ## and 'reverse' flags.
+        ## Get latest commit
+        x <- lookup(repo, branch_target(head(repo)))
 
-                  ## List to hold result
-                  result <- list()
+        ## Repeat until no more parent commits
+        repeat {
+            if (n == 0) {
+                break
+            } else if (n > 0) {
+                n <- n - 1
+            }
 
-                  ## Get latest commit
-                  x <- lookup(repo, branch_target(head(repo)))
+            if (is.null(x))
+                break
+            result <- append(result, x)
 
-                  ## Repeat until no more parent commits
-                  repeat {
-                      if (n == 0) {
-                          break
-                      } else if (n > 0) {
-                          n <- n - 1
-                      }
+            ## Get parent to commit
+            x <- tryCatch(parents(x)[[1]], error = function(e) NULL)
+        }
 
-                      if (is.null(x))
-                          break
-                      result <- append(result, x)
+        return(result)
+    }
 
-                      ## Get parent to commit
-                      x <- tryCatch(parents(x)[[1]], error = function(e) NULL)
-                  }
-
-                  return(result)
-              }
-
-              .Call(git2r_revwalk_list, repo, topological, time, reverse, n)
-          }
-)
+    .Call(git2r_revwalk_list, repo, topological, time, reverse, n)
+}
 
 ##' Last commit
 ##'
