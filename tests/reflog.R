@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2016 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -45,6 +45,9 @@ stopifnot(identical(reflog_entry@refname, "HEAD"))
 stopifnot(identical(reflog_entry@index, 0L))
 stopifnot(identical(reflog_entry@committer@email, "alice@example.org"))
 stopifnot(identical(reflog_entry@message, "commit (initial): Commit message"))
+
+## Check printing
+reflog(repo)
 
 ## Cleanup
 unlink(path, recursive=TRUE)
