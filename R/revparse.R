@@ -49,6 +49,6 @@
 ##' revparse_single(repo, "HEAD^")
 ##' revparse_single(repo, "HEAD:test.txt")
 ##' }
-revparse_single <- function(repo = NULL, revision = NULL) {
+revparse_single <- function(repo = ".", revision = NULL) {
     .Call(git2r_revparse_single, lookup_repository(repo), revision)
 }

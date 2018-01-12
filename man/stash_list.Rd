@@ -4,14 +4,11 @@
 \alias{stash_list}
 \title{List stashes in repository}
 \usage{
-stash_list(repo = NULL)
+stash_list(repo = ".")
 }
 \arguments{
-\item{repo}{a \code{\linkS4class{git_repository}} object, or a
-path to a repository, or \code{NULL}.  If the \code{repo}
-argument is \code{NULL}, the repository is searched for with
-\code{\link{discover_repository}} in the current working
-directory.}
+\item{repo}{a path to a repository or a
+\code{\linkS4class{git_repository}} object. Default is '.'}
 }
 \value{
 list of stashes in repository

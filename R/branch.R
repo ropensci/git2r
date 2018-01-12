@@ -328,7 +328,7 @@ branch_set_upstream <- function(branch = NULL, name) {
 ##' ## List branches
 ##' branches(repo)
 ##' }
-branches <- function(repo = NULL, flags=c("all", "local", "remote")) {
+branches <- function(repo = ".", flags=c("all", "local", "remote")) {
     flags <- switch(match.arg(flags),
                     local  = 1L,
                     remote = 2L,

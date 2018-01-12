@@ -319,7 +319,7 @@ setMethod("head",
 ##' repo_bare <- init(path_bare, bare = TRUE)
 ##' is_bare(repo_bare)
 ##' }
-is_bare <- function(repo = NULL) {
+is_bare <- function(repo = ".") {
     .Call(git2r_repository_is_bare, lookup_repository(repo))
 }
 
@@ -359,7 +359,7 @@ is_bare <- function(repo = NULL) {
 ##' ## HEAD of repository is detached
 ##' is_detached(repo)
 ##' }
-is_detached <- function(repo = NULL) {
+is_detached <- function(repo = ".") {
     .Call(git2r_repository_head_detached, lookup_repository(repo))
 }
 
@@ -389,7 +389,7 @@ is_detached <- function(repo = NULL) {
 ##' ## Check if it's an empty repository
 ##' is_empty(repo)
 ##' }
-is_empty <- function(repo = NULL) {
+is_empty <- function(repo = ".") {
     .Call(git2r_repository_is_empty, lookup_repository(repo))
 }
 
@@ -397,8 +397,7 @@ is_empty <- function(repo = NULL) {
 ##'
 ##' The lookup start from path and walk across parent directories if
 ##' nothing has been found.
-##' @param path The path to the directory. The working directory is
-##'     used if path is \code{NULL}.
+##' @param path The path to the directory.
 ##' @return TRUE if directory is in a git repository else FALSE
 ##' @export
 ##' @examples
@@ -418,7 +417,7 @@ is_empty <- function(repo = NULL) {
 ##' setwd(path)
 ##' in_repository()
 ##' }
-in_repository <- function(path = NULL) {
+in_repository <- function(path = ".") {
     if (is.null(path))
         path = getwd()
     !is.null(discover_repository(path))
@@ -468,7 +467,7 @@ in_repository <- function(path = NULL) {
 ##' ## Check if it's a shallow clone
 ##' is_shallow(repo_2)
 ##' }
-is_shallow <- function(repo = NULL) {
+is_shallow <- function(repo = ".") {
     .Call(git2r_repository_is_shallow, lookup_repository(repo))
 }
 
@@ -522,7 +521,7 @@ is_shallow <- function(repo = NULL) {
 ##' lookup(repo, substr(sha_blob, 1, 7))
 ##' lookup(repo, substr(sha_tag, 1, 7))
 ##' }
-lookup <- function(repo = NULL, sha = NULL) {
+lookup <- function(repo = ".", sha = NULL) {
     .Call(git2r_object_lookup, lookup_repository(repo), sha)
 }
 
@@ -551,7 +550,7 @@ lookup <- function(repo = NULL, sha = NULL) {
 ##' ## Get the default signature
 ##' default_signature(repo)
 ##' }
-default_signature <- function(repo = NULL) {
+default_signature <- function(repo = ".") {
     .Call(git2r_signature_default, lookup_repository(repo))
 }
 
@@ -730,7 +729,7 @@ setMethod("summary",
 ##' ## Get the path of the workdir for repository
 ##' workdir(repo)
 ##' }
-workdir <- function(repo = NULL) {
+workdir <- function(repo = ".") {
     .Call(git2r_repository_workdir, lookup_repository(repo))
 }
 

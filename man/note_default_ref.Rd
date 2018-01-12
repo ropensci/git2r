@@ -4,14 +4,11 @@
 \alias{note_default_ref}
 \title{Default notes reference}
 \usage{
-note_default_ref(repo = NULL)
+note_default_ref(repo = ".")
 }
 \arguments{
-\item{repo}{a \code{\linkS4class{git_repository}} object, or a
-path to a repository, or \code{NULL}.  If the \code{repo}
-argument is \code{NULL}, the repository is searched for with
-\code{\link{discover_repository}} in the current working
-directory.}
+\item{repo}{a path to a repository or a
+\code{\linkS4class{git_repository}} object. Default is '.'}
 }
 \value{
 Character vector of length one with name of default notes

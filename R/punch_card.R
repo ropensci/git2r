@@ -38,7 +38,7 @@
 ##' ## Plot
 ##' punch_card(repo)
 ##' }
-punch_card <- function(repo = NULL, main = NULL, ...) {
+punch_card <- function(repo = ".", main = NULL, ...) {
     savepar <- graphics::par(las = 1, mar = c(2.2, 6, 2, 0))
     on.exit(par(savepar))
 

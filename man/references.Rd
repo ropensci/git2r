@@ -4,14 +4,11 @@
 \alias{references}
 \title{Get all references that can be found in a repository.}
 \usage{
-references(repo = NULL)
+references(repo = ".")
 }
 \arguments{
-\item{repo}{a \code{\linkS4class{git_repository}} object, or a
-path to a repository, or \code{NULL}.  If the \code{repo}
-argument is \code{NULL}, the repository is searched for with
-\code{\link{discover_repository}} in the current working
-directory.}
+\item{repo}{a path to a repository or a
+\code{\linkS4class{git_repository}} object. Default is '.'}
 }
 \value{
 Character vector with references

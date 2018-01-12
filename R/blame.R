@@ -43,6 +43,6 @@
 ##' ## Check blame
 ##' blame(repo, "example.txt")
 ##' }
-blame <- function(repo = NULL, path = NULL) {
+blame <- function(repo = ".", path = NULL) {
     .Call(git2r_blame_file, lookup_repository(repo), path)
 }

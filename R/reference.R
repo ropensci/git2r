@@ -51,7 +51,7 @@
 ##' references(repo)
 ##' }
 ##'
-references <- function(repo = NULL) {
+references <- function(repo = ".") {
     .Call(git2r_reference_list, lookup_repository(repo))
 }
 

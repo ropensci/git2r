@@ -4,14 +4,11 @@
 \alias{remote_url}
 \title{Get the remote url for remotes in a repo}
 \usage{
-remote_url(repo = NULL, remote = NULL)
+remote_url(repo = ".", remote = NULL)
 }
 \arguments{
-\item{repo}{a \code{\linkS4class{git_repository}} object, or a
-path to a repository, or \code{NULL}.  If the \code{repo}
-argument is \code{NULL}, the repository is searched for with
-\code{\link{discover_repository}} in the current working
-directory.}
+\item{repo}{a path to a repository or a
+\code{\linkS4class{git_repository}} object. Default is '.'}
 
 \item{remote}{Character vector with the remotes to get the url
 from. Default is the remotes of the repository.}

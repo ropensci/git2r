@@ -4,14 +4,11 @@
 \alias{remote_set_url}
 \title{Set the remote's url in the configuration}
 \usage{
-remote_set_url(repo = NULL, name = NULL, url = NULL)
+remote_set_url(repo = ".", name = NULL, url = NULL)
 }
 \arguments{
-\item{repo}{a \code{\linkS4class{git_repository}} object, or a
-path to a repository, or \code{NULL}.  If the \code{repo}
-argument is \code{NULL}, the repository is searched for with
-\code{\link{discover_repository}} in the current working
-directory.}
+\item{repo}{a path to a repository or a
+\code{\linkS4class{git_repository}} object. Default is '.'}
 
 \item{name}{The name of the remote}
 

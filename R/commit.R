@@ -262,7 +262,7 @@ commits <- function(repo        = NULL,
 ##' last_commit(repo)
 ##' last_commit(path)
 ##' }
-last_commit <- function(repo = NULL) {
+last_commit <- function(repo = ".") {
     commits(lookup_repository(repo), n = 1)[[1]]
 }
 

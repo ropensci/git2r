@@ -4,14 +4,11 @@
 \alias{is_empty}
 \title{Check if repository is empty}
 \usage{
-is_empty(repo = NULL)
+is_empty(repo = ".")
 }
 \arguments{
-\item{repo}{a \code{\linkS4class{git_repository}} object, or a
-path to a repository, or \code{NULL}.  If the \code{repo}
-argument is \code{NULL}, the repository is searched for with
-\code{\link{discover_repository}} in the current working
-directory.}
+\item{repo}{a path to a repository or a
+\code{\linkS4class{git_repository}} object. Default is '.'}
 }
 \value{
 \code{TRUE} if repository is empty else \code{FALSE}.

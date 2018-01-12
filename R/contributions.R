@@ -78,7 +78,7 @@
 ##' ## View contributions by author and day
 ##' contributions(repo_1, by = "author")
 ##' }
-contributions <- function(repo = NULL,
+contributions <- function(repo = ".",
                           breaks = c("month", "year", "quarter", "week", "day"),
                           by = c("commits", "author"))
 {

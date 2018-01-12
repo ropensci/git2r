@@ -63,7 +63,7 @@
 ##' ## List blobs
 ##' odb_blobs(repo)
 ##' }
-odb_blobs <- function(repo = NULL) {
+odb_blobs <- function(repo = ".") {
     blobs <- .Call(git2r_odb_blobs, lookup_repository(repo))
     blobs <- data.frame(blobs, stringsAsFactors = FALSE)
     blobs <- blobs[order(blobs$when),]
@@ -105,7 +105,7 @@ odb_blobs <- function(repo = NULL) {
 ##' ## List objects in repository
 ##' odb_objects(repo)
 ##' }
-odb_objects <- function(repo = NULL) {
+odb_objects <- function(repo = ".") {
     data.frame(.Call(git2r_odb_objects, lookup_repository(repo)),
                stringsAsFactors = FALSE)
 }

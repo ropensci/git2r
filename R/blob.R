@@ -51,7 +51,7 @@
 ##' writeLines("test content", temp_file_2)
 ##' blob_list_2 <- blob_create(repo, c(temp_file_1, temp_file_2), relative = FALSE)
 ##' }
-blob_create <- function(repo = NULL, path = NULL, relative = TRUE) {
+blob_create <- function(repo = ".", path = NULL, relative = TRUE) {
     repo <- lookup_repository(repo)
     if (isTRUE(relative))
         return(.Call(git2r_blob_create_fromworkdir, repo, path))

@@ -77,7 +77,7 @@
 ##' add(repo, "./glob_dir/*md")
 ##' status(repo)
 ##' }
-add <- function(repo = NULL, path = NULL, force = FALSE)
+add <- function(repo = ".", path = NULL, force = FALSE)
 {
     ## Documentation for the pathspec argument in the libgit2 function
     ## 'git_index_add_all' that git2r use internally:
@@ -155,7 +155,7 @@ add <- function(repo = NULL, path = NULL, force = FALSE)
 ##' ## View status of repository
 ##' status(repo)
 ##' }
-rm_file <- function(repo = NULL, path = NULL) {
+rm_file <- function(repo = ".", path = NULL) {
     if (is.null(path) || !is.character(path))
         stop("'path' must be a character vector")
 
@@ -236,7 +236,7 @@ rm_file <- function(repo = NULL, path = NULL) {
 ##' ## View status of repository
 ##' status(repo)
 ##' }
-index_remove_bypath <- function(repo = NULL, path = NULL) {
+index_remove_bypath <- function(repo = ".", path = NULL) {
     .Call(git2r_index_remove_bypath, lookup_repository(repo), path)
     invisible(NULL)
 }

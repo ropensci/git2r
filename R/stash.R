@@ -127,7 +127,7 @@ stash_drop <- function(object = ".", index = 0) {
 ##' # View stash
 ##' stash_list(repo)
 ##' }
-stash <- function(repo = NULL,
+stash <- function(repo = ".",
                   message   = as.character(Sys.time()),
                   index     = FALSE,
                   untracked = FALSE,
@@ -183,7 +183,7 @@ stash <- function(repo = NULL,
 ##' # View stash
 ##' stash_list(repo)
 ##' }
-stash_list <- function(repo = NULL) {
+stash_list <- function(repo = ".") {
     .Call(git2r_stash_list, lookup_repository(repo))
 }
 

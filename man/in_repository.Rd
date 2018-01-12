@@ -4,11 +4,10 @@
 \alias{in_repository}
 \title{Determine if a directory is in a git repository}
 \usage{
-in_repository(path = NULL)
+in_repository(path = ".")
 }
 \arguments{
-\item{path}{The path to the directory. The working directory is
-used if path is \code{NULL}.}
+\item{path}{The path to the directory.}
 }
 \value{
 TRUE if directory is in a git repository else FALSE

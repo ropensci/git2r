@@ -4,14 +4,11 @@
 \alias{is_detached}
 \title{Check if HEAD of repository is detached}
 \usage{
-is_detached(repo = NULL)
+is_detached(repo = ".")
 }
 \arguments{
-\item{repo}{a \code{\linkS4class{git_repository}} object, or a
-path to a repository, or \code{NULL}.  If the \code{repo}
-argument is \code{NULL}, the repository is searched for with
-\code{\link{discover_repository}} in the current working
-directory.}
+\item{repo}{a path to a repository or a
+\code{\linkS4class{git_repository}} object. Default is '.'}
 }
 \value{
 \code{TRUE} if repository HEAD is detached, else

@@ -20,7 +20,7 @@
 ##' @return Character vector with remotes
 ##' @export
 ##' @template remote-example
-remotes <- function(repo = NULL) {
+remotes <- function(repo = ".") {
     .Call(git2r_remote_list, lookup_repository(repo))
 }
 
@@ -32,7 +32,7 @@ remotes <- function(repo = NULL) {
 ##' @return NULL, invisibly
 ##' @export
 ##' @template remote-example
-remote_add <- function(repo = NULL, name = NULL, url = NULL) {
+remote_add <- function(repo = ".", name = NULL, url = NULL) {
     .Call(git2r_remote_add, lookup_repository(repo), name, url)
     invisible(NULL)
 }
@@ -45,7 +45,7 @@ remote_add <- function(repo = NULL, name = NULL, url = NULL) {
 ##' @return NULL, invisibly
 ##' @export
 ##' @template remote-example
-remote_rename <- function(repo = NULL, oldname = NULL, newname = NULL) {
+remote_rename <- function(repo = ".", oldname = NULL, newname = NULL) {
     .Call(git2r_remote_rename, lookup_repository(repo), oldname, newname)
     invisible(NULL)
 }
@@ -59,7 +59,7 @@ remote_rename <- function(repo = NULL, oldname = NULL, newname = NULL) {
 ##' @return NULL, invisibly
 ##' @export
 ##' @template remote-example
-remote_remove <- function(repo = NULL, name = NULL) {
+remote_remove <- function(repo = ".", name = NULL) {
     .Call(git2r_remote_remove, lookup_repository(repo), name)
     invisible(NULL)
 }
@@ -74,7 +74,7 @@ remote_remove <- function(repo = NULL, name = NULL) {
 ##' @return NULL, invisibly
 ##' @export
 ##' @template remote-example
-remote_set_url <- function(repo = NULL, name = NULL, url = NULL) {
+remote_set_url <- function(repo = ".", name = NULL, url = NULL) {
     .Call(git2r_remote_set_url, lookup_repository(repo), name, url)
     invisible(NULL)
 }
@@ -87,7 +87,7 @@ remote_set_url <- function(repo = NULL, name = NULL, url = NULL) {
 ##' @return Character vector with remote_url for each of the remote
 ##' @export
 ##' @template remote-example
-remote_url <- function(repo = NULL, remote = NULL) {
+remote_url <- function(repo = ".", remote = NULL) {
     repo <- lookup_repository(repo)
     if (is.null(remote))
         remote <- remotes(repo)

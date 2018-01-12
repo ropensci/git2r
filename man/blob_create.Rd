@@ -4,7 +4,7 @@
 \alias{blob_create}
 \title{Create blob from file on disk}
 \usage{
-blob_create(repo = NULL, path = NULL, relative = TRUE)
+blob_create(repo = ".", path = NULL, relative = TRUE)
 }
 \arguments{
 \item{repo}{The repository where the blob(s) will be written. Can

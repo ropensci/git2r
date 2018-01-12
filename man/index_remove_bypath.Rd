@@ -4,14 +4,11 @@
 \alias{index_remove_bypath}
 \title{Remove an index entry corresponding to a file on disk}
 \usage{
-index_remove_bypath(repo = NULL, path = NULL)
+index_remove_bypath(repo = ".", path = NULL)
 }
 \arguments{
-\item{repo}{a \code{\linkS4class{git_repository}} object, or a
-path to a repository, or \code{NULL}.  If the \code{repo}
-argument is \code{NULL}, the repository is searched for with
-\code{\link{discover_repository}} in the current working
-directory.}
+\item{repo}{a path to a repository or a
+\code{\linkS4class{git_repository}} object. Default is '.'}
 
 \item{path}{character vector with filenames to remove. The path
 must be relative to the repository's working folder. It may

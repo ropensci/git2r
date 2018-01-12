@@ -32,7 +32,7 @@
 ##' ## View default notes reference
 ##' note_default_ref(repo)
 ##' }
-note_default_ref <- function(repo = NULL) {
+note_default_ref <- function(repo = ".") {
     .Call(git2r_note_default_ref, lookup_repository(repo))
 }
 
@@ -152,7 +152,7 @@ note_create <- function(object    = NULL,
 ##' ## List notes in 'review' namespace
 ##' notes(repo, "review")
 ##' }
-notes <- function(repo = NULL, ref = NULL) {
+notes <- function(repo = ".", ref = NULL) {
     repo <- lookup_repository(repo)
     if (is.null(ref))
         ref = note_default_ref(repo)

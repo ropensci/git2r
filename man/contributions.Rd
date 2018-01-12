@@ -4,15 +4,12 @@
 \alias{contributions}
 \title{Contributions}
 \usage{
-contributions(repo = NULL, breaks = c("month", "year", "quarter", "week",
+contributions(repo = ".", breaks = c("month", "year", "quarter", "week",
   "day"), by = c("commits", "author"))
 }
 \arguments{
-\item{repo}{a \code{\linkS4class{git_repository}} object, or a
-path to a repository, or \code{NULL}.  If the \code{repo}
-argument is \code{NULL}, the repository is searched for with
-\code{\link{discover_repository}} in the current working
-directory.}
+\item{repo}{a path to a repository or a
+\code{\linkS4class{git_repository}} object. Default is '.'}
 
 \item{breaks}{Default is \code{month}. Change to year, quarter,
 week or day as necessary.}

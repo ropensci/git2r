@@ -51,7 +51,7 @@
 ##' ## Plot content of bundled repo
 ##' plot(repo)
 ##' }
-bundle_r_package <- function(repo = NULL) {
+bundle_r_package <- function(repo = ".") {
     repo <- lookup_repository(repo)
 
     ## Check for 'inst' folder

@@ -70,7 +70,7 @@
 ##' checkout(repo, "BRANCHNAME")
 ##' summary(repo)
 ##' }
-fetch <- function(repo = NULL, name = NULL, credentials = NULL,
+fetch <- function(repo = ".", name = NULL, credentials = NULL,
                   verbose = TRUE, refspec = NULL)
 {
     invisible(.Call(git2r_remote_fetch, lookup_repository(repo),
@@ -116,6 +116,6 @@ fetch <- function(repo = NULL, name = NULL, credentials = NULL,
 ##' ## List updated heads
 ##' fetch_heads(repo_2)
 ##' }
-fetch_heads <- function(repo = NULL)  {
+fetch_heads <- function(repo = ".")  {
     .Call(git2r_repository_fetch_heads, lookup_repository(repo))
 }

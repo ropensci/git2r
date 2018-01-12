@@ -4,14 +4,11 @@
 \alias{revparse_single}
 \title{Revparse}
 \usage{
-revparse_single(repo = NULL, revision = NULL)
+revparse_single(repo = ".", revision = NULL)
 }
 \arguments{
-\item{repo}{a \code{\linkS4class{git_repository}} object, or a
-path to a repository, or \code{NULL}.  If the \code{repo}
-argument is \code{NULL}, the repository is searched for with
-\code{\link{discover_repository}} in the current working
-directory.}
+\item{repo}{a path to a repository or a
+\code{\linkS4class{git_repository}} object. Default is '.'}
 
 \item{revision}{The revision string, see
 http://git-scm.com/docs/git-rev-parse.html#_specifying_revisions}

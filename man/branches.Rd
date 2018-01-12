@@ -4,14 +4,11 @@
 \alias{branches}
 \title{Branches}
 \usage{
-branches(repo = NULL, flags = c("all", "local", "remote"))
+branches(repo = ".", flags = c("all", "local", "remote"))
 }
 \arguments{
-\item{repo}{a \code{\linkS4class{git_repository}} object, or a
-path to a repository, or \code{NULL}.  If the \code{repo}
-argument is \code{NULL}, the repository is searched for with
-\code{\link{discover_repository}} in the current working
-directory.}
+\item{repo}{a path to a repository or a
+\code{\linkS4class{git_repository}} object. Default is '.'}
 
 \item{flags}{Filtering flags for the branch listing. Valid values
 are 'all', 'local' or 'remote'}

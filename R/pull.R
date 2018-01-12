@@ -87,7 +87,7 @@
 ##' commits(repo_2)
 ##' commits(repo_bare)
 ##' }
-pull <- function(repo = NULL, credentials = NULL, merger = NULL) {
+pull <- function(repo = ".", credentials = NULL, merger = NULL) {
     repo <- lookup_repository(repo)
     if (is.null(merger))
         merger <- default_signature(repo)

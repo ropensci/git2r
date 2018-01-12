@@ -141,7 +141,7 @@ tag_delete <- function(object = ".", name = NULL) {
 ##' ## List tags
 ##' tags(repo)
 ##' }
-tags <- function(repo = NULL) {
+tags <- function(repo = ".") {
     .Call(git2r_tag_list, lookup_repository(repo))
 }
 
