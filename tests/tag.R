@@ -14,7 +14,7 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library(git2r)
+library("git2r")
 
 ## For debugging
 sessionInfo()
@@ -114,10 +114,10 @@ stopifnot(identical(length(tags(repo)), 0L))
 ## Create tag
 tag(repo, "Tagname", "Tag message")
 
-## Check tags method with missing repo argument
+## Check tags method with default repo argument
 wd <- setwd(path)
 stopifnot(identical(length(tags()), 1L))
-tag_delete("Tagname")
+tag_delete(name = "Tagname")
 stopifnot(identical(length(tags()), 0L))
 if (!is.null(wd))
     setwd(wd)
