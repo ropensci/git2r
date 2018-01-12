@@ -102,19 +102,18 @@ setMethod("stash_drop",
 
 ##' Stash
 ##'
-##' @rdname stash-methods
-##' @docType methods
-##' @param object The repository \code{object}.
+##' @template repo-param
 ##' @param message Optional description. Defaults to current time.
 ##' @param index All changes already added to the index are left
-##' intact in the working directory. Default is FALSE
+##'     intact in the working directory. Default is FALSE
 ##' @param untracked All untracked files are also stashed and then
-##' cleaned up from the working directory. Default is FALSE
+##'     cleaned up from the working directory. Default is FALSE
 ##' @param ignored All ignored files are also stashed and then cleaned
-##' up from the working directory. Default is FALSE
+##'     up from the working directory. Default is FALSE
 ##' @param stasher Signature with stasher and time of stash
-##' @return invisible S4 class git_stash if anything to stash else NULL
-##' @keywords methods
+##' @return invisible \code{git_stash} object if anything to stash
+##'     else NULL
+##' @export
 ##' @examples \dontrun{
 ##' ## Initialize a temporary repository
 ##' path <- tempfile(pattern="git2r-")
@@ -144,37 +143,19 @@ setMethod("stash_drop",
 ##' # View stash
 ##' stash_list(repo)
 ##' }
-setGeneric("stash",
-           signature = "object",
-           function(object,
-                    message   = as.character(Sys.time()),
-                    index     = FALSE,
-                    untracked = FALSE,
-                    ignored   = FALSE,
-                    stasher   = default_signature(object))
-           standardGeneric("stash"))
-
-##' @rdname stash-methods
-##' @include S4_classes.R
-##' @export
-setMethod("stash",
-          signature(object = "git_repository"),
-          function(object,
-                   message,
-                   index,
-                   untracked,
-                   ignored,
-                   stasher)
-          {
-              invisible(.Call(git2r_stash_save,
-                              object,
-                              message,
-                              index,
-                              untracked,
-                              ignored,
-                              stasher))
-          }
-)
+stash <- function(repo = NULL,
+                  message   = as.character(Sys.time()),
+                  index     = FALSE,
+                  untracked = FALSE,
+                  ignored   = FALSE,
+                  stasher   = NULL)
+{
+    repo <- lookup_repository(repo)
+    if (is.null(stasher))
+        stasher <- default_signature(repo)
+    invisible(.Call(git2r_stash_save, repo, message, index,
+                    untracked, ignored, stasher))
+}
 
 ##' List stashes in repository
 ##'
