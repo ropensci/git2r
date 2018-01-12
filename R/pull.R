@@ -16,17 +16,16 @@
 
 ##' Pull
 ##'
-##' @rdname pull-methods
-##' @docType methods
-##' @param repo the repository
+##' @template repo-param
 ##' @param credentials The credentials for remote repository
-##' access. Default is NULL. To use and query an ssh-agent for the ssh
-##' key credentials, let this parameter be NULL (the default).
+##'     access. Default is NULL. To use and query an ssh-agent for the
+##'     ssh key credentials, let this parameter be NULL (the default).
 ##' @param merger Who made the merge, if the merge is non-fast forward
-##' merge that creates a merge commit.
+##'     merge that creates a merge commit. The
+##'     \code{default_signature} for \code{repo} is used if this
+##'     parameter is \code{NULL}.
 ##' @return invisible(NULL)
-##' @keywords methods
-##' @include S4_classes.R
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize repositories
@@ -88,42 +87,30 @@
 ##' commits(repo_2)
 ##' commits(repo_bare)
 ##' }
-setGeneric("pull",
-           signature = "repo",
-           function(repo,
-                    credentials = NULL,
-                    merger      = default_signature(repo))
-           standardGeneric("pull"))
+pull <- function(repo = NULL, credentials = NULL, merger = NULL) {
+    repo <- lookup_repository(repo)
+    if (is.null(merger))
+        merger <- default_signature(repo)
+    current_branch <- head(repo)
 
-##' @rdname pull-methods
-##' @export
-setMethod("pull",
-          signature(repo = "git_repository"),
-          function(repo,
-                   credentials,
-                   merger)
-          {
-              current_branch <- head(repo)
+    if (is.null(current_branch))
+        stop("'branch' is NULL")
+    if (!is_local(current_branch))
+        stop("'branch' is not local")
+    upstream_branch <- branch_get_upstream(current_branch)
+    if (is.null(upstream_branch))
+        stop("'branch' is not tracking a remote branch")
 
-              if (is.null(current_branch))
-                  stop("'branch' is NULL")
-              if (!is_local(current_branch))
-                  stop("'branch' is not local")
-              upstream_branch <- branch_get_upstream(current_branch)
-              if (is.null(upstream_branch))
-                  stop("'branch' is not tracking a remote branch")
+    fetch(repo        = repo,
+          name        = branch_remote_name(upstream_branch),
+          credentials = credentials)
 
-              fetch(repo        = repo,
-                    name        = branch_remote_name(upstream_branch),
-                    credentials = credentials)
+    ## fetch heads marked for merge
+    fh <- fetch_heads(repo)
+    fh <- fh[vapply(fh, slot, logical(1), "is_merge")]
 
-              ## fetch heads marked for merge
-              fh <- fetch_heads(repo)
-              fh <- fh[vapply(fh, slot, logical(1), "is_merge")]
+    if (identical(length(fh), 0L))
+        stop("Remote ref was not feteched")
 
-              if (identical(length(fh), 0L))
-                  stop("Remote ref was not feteched")
-
-              .Call(git2r_merge_fetch_heads, fh, merger)
-          }
-)
+    .Call(git2r_merge_fetch_heads, fh, merger)
+}
