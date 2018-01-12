@@ -736,20 +736,17 @@ workdir <- function(repo = NULL) {
 
 ##' Find path to repository for any file
 ##'
-##' libgit's git_discover_repository is used to identify the location
-##' of the repository. The path will therefore be terminated by a file
-##' separator.
-##' @rdname discover_repository-methods
-##' @docType methods
-##' @param path A character vector specifying the path to a file or folder
+##' @param path A character vector specifying the path to a file or
+##'     folder
 ##' @param ceiling The defult is to not use the ceiling argument and
-##' start the lookup from path and walk across parent
-##' directories. When ceiling is 0, the lookup is only in path. When
-##' ceiling is 1, the lookup is in both the path and the parent to
-##' path.
-##' @return Character vector with path to repository or NULL if this
-##' cannot be established.
-##' @keywords methods
+##'     start the lookup from path and walk across parent
+##'     directories. When ceiling is 0, the lookup is only in
+##'     path. When ceiling is 1, the lookup is in both the path and
+##'     the parent to path.
+##' @return Character vector with path (terminated by a file
+##'     separator) to repository or NULL if this cannot be
+##'     established.
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -784,46 +781,22 @@ workdir <- function(repo = NULL) {
 ##' ## Should not return NULL
 ##' discover_repository(file.path(wd, "temp"), ceiling = 1)
 ##' }
-setGeneric("discover_repository",
-           signature = c("path", "ceiling"),
-           function(path, ceiling)
-           standardGeneric("discover_repository"))
+discover_repository <- function(path = ".", ceiling = NULL) {
+    path <- normalizePath(path)
 
-##' @rdname discover_repository-methods
-##' @export
-setMethod("discover_repository",
-          signature(path = "character", ceiling = "missing"),
-          function(path)
-          {
-              callGeneric(path = path, ceiling = as.numeric(NA))
-          }
-)
+    if (!is.null(ceiling)) {
+        ceiling <- as.integer(ceiling)
+        if (identical(ceiling, 0L)) {
+            ceiling <- dirname(path)
+        } else if (identical(ceiling, 1L)) {
+            ceiling <- dirname(dirname(path))
+        } else {
+            stop("'ceiling' must be either 0 or 1")
+        }
+    }
 
-##' @rdname discover_repository-methods
-##' @export
-setMethod("discover_repository",
-          signature(path = "character", ceiling = "numeric"),
-          function(path, ceiling)
-          {
-              path <- normalizePath(path)
-
-              if (is.na(ceiling)) {
-                  ceiling <- NULL
-              } else {
-                  ceiling <- as.integer(ceiling)
-                  if (identical(ceiling, 0L)) {
-                      ceiling <- dirname(path)
-                  } else if (identical(ceiling, 1L)) {
-                      ceiling <- dirname(dirname(path))
-                  } else {
-                      stop("'ceiling' must be either 0 or 1")
-                  }
-              }
-
-
-              .Call(git2r_repository_discover, path, ceiling)
-          }
-)
+    .Call(git2r_repository_discover, path, ceiling)
+}
 
 ##' Internal utility function to lookup repository for methods
 ##'
