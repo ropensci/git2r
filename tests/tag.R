@@ -83,6 +83,8 @@ stopifnot(identical(tags(repo), structure(list(), .Names = character(0))))
 
 ## Create tag
 new_tag <- tag(repo, "Tagname", "Tag message")
+new_tag
+summary(new_tag)
 
 ## Check tag
 stopifnot(identical(lookup(repo, new_tag@sha), new_tag))

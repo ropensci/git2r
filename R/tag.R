@@ -16,16 +16,13 @@
 
 ##' Create tag targeting HEAD commit in repository
 ##'
-##' @rdname tag-methods
-##' @docType methods
 ##' @param object The repository \code{object}.
 ##' @param name Name for the tag.
 ##' @param message The tag message.
 ##' @param session Add sessionInfo to tag message. Default is FALSE.
 ##' @param tagger The tagger (author) of the tag
 ##' @return invisible(\code{git_tag}) object
-##' @keywords methods
-##' @include commit.R
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -47,42 +44,25 @@
 ##' ## List tags
 ##' tags(repo)
 ##' }
-setGeneric("tag",
-           signature = "object",
-           function(object,
-                    name,
-                    message,
-                    session = FALSE,
-                    tagger  = default_signature(object))
-           standardGeneric("tag"))
+tag <- function(object = ".",
+                name    = NULL,
+                message = NULL,
+                session = FALSE,
+                tagger  = NULL)
+{
+    object <- lookup_repository(object)
 
-##' @rdname tag-methods
-##' @export
-setMethod("tag",
-          signature(object = "git_repository"),
-          function(object,
-                   name,
-                   message,
-                   session,
-                   tagger)
-          {
-              ## Argument checking
-              stopifnot(is.character(name),
-                        identical(length(name), 1L),
-                        nchar(name[1]) > 0,
-                        is.character(message),
-                        identical(length(message), 1L),
-                        nchar(message[1]) > 0,
-                        is.logical(session),
-                        identical(length(session), 1L),
-                        is(tagger, "git_signature"))
+    stopifnot(is.character(message),
+              identical(length(message), 1L),
+              nchar(message[1]) > 0)
+    if (isTRUE(session))
+        message <- add_session_info(message)
 
-              if (session)
-                  message <- add_session_info(message)
+    if (is.null(tagger))
+        tagger <- default_signature(object)
 
-              invisible(.Call(git2r_tag_create, object, name, message, tagger))
-          }
-)
+    invisible(.Call(git2r_tag_create, object, name, message, tagger))
+}
 
 ##' Delete an existing tag reference
 ##'
