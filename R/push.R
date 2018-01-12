@@ -16,21 +16,19 @@
 
 ##' Push
 ##'
-##' @rdname push-methods
-##' @docType methods
-##' @param object S4 class \code{git_repository} or \code{git_branch}.
-##' @param ... Additional arguments affecting the push.
+##' @param object path to repository, or a \code{git_repository} or
+##'     \code{git_branch}.
+##' @param name The remote's name. Default is NULL.
+##' @param refspec The refspec to be pushed. Default is NULL.
 ##' @param force Force your local revision to the remote repo. Use it
-##' with care. Default is FALSE.
+##'     with care. Default is FALSE.
 ##' @param credentials The credentials for remote repository
-##' access. Default is NULL. To use and query an ssh-agent for the ssh
-##' key credentials, let this parameter be NULL (the default).
+##'     access. Default is NULL. To use and query an ssh-agent for the
+##'     ssh key credentials, let this parameter be NULL (the default).
 ##' @return invisible(NULL)
 ##' @seealso \code{\linkS4class{cred_user_pass}},
-##' \code{\linkS4class{cred_ssh_key}}
-##' @keywords methods
-##' @include refspec.R
-##' @include S4_classes.R
+##'     \code{\linkS4class{cred_ssh_key}}
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize two temporary repositories
@@ -68,72 +66,49 @@
 ##' commits(repo)
 ##' commits(repo_bare)
 ##' }
-setGeneric("push",
-           signature = "object",
-           function(object, ...)
-           standardGeneric("push"))
+push <- function(object      = ".",
+                 name        = NULL,
+                 refspec     = NULL,
+                 force       = FALSE,
+                 credentials = NULL)
+{
+    if (is_branch(object)) {
+        upstream <- branch_get_upstream(object)
+        if (is.null(upstream)) {
+            stop("The branch '", object@name, "' that you are ",
+                 "trying to push does not track an upstream branch.")
+        }
+        name <- branch_remote_name(upstream)
 
-##' @rdname push-methods
-##' @export
-setMethod("push",
-          signature(object = "git_branch"),
-          function(object,
-                   force       = FALSE,
-                   credentials = NULL)
-          {
-              upstream <- branch_get_upstream(object)
-              if (is.null(upstream)) {
-                  stop("The branch '", object@name, "' that you are ",
-                       "trying to push does not track an upstream branch.")
-              }
+        src <- .Call(git2r_branch_canonical_name, object)
+        dst <- .Call(git2r_branch_upstream_canonical_name, object)
+        refspec <- paste0(src, ":", dst)
+        object <- object@repo
+    } else {
+        object <- lookup_repository(object)
+    }
 
-              src <- .Call(git2r_branch_canonical_name, object)
-              dst <- .Call(git2r_branch_upstream_canonical_name, object)
+    if (all(is.null(name), is.null(refspec))) {
+        b <- head(object)
+        upstream <- branch_get_upstream(b)
+        if (is.null(upstream)) {
+            stop("The branch '", b@name, "' that you are ",
+                 "trying to push does not track an upstream branch.")
+        }
 
-              push(object      = object@repo,
-                   name        = branch_remote_name(upstream),
-                   refspec     = paste0(src, ":", dst),
-                   force       = force,
-                   credentials = credentials)
-          }
-)
+        src <- .Call(git2r_branch_canonical_name, b)
+        dst <- .Call(git2r_branch_upstream_canonical_name, b)
+        name <- branch_remote_name(upstream)
+        refspec <- paste0(src, ":", dst)
 
-##' @rdname push-methods
-##' @param name The remote's name. Default is NULL.
-##' @param refspec The refspec to be pushed. Default is NULL.
-##' @export
-setMethod("push",
-          signature(object = "git_repository"),
-          function(object,
-                   name        = NULL,
-                   refspec     = NULL,
-                   force       = FALSE,
-                   credentials = NULL)
-          {
-              if (all(is.null(name), is.null(refspec))) {
-                  b <- head(object)
-                  upstream <- branch_get_upstream(b)
-                  if (is.null(upstream)) {
-                      stop("The branch '", b@name, "' that you are ",
-                           "trying to push does not track an upstream branch.")
-                  }
+        if (isTRUE(force))
+            refspec <- paste0("+", refspec)
+    } else {
+        opts <- list(force = force)
+        tmp <- get_refspec(object, name, refspec, opts)
+        name <- tmp$remote
+        refspec <- tmp$refspec
+    }
 
-                  src <- .Call(git2r_branch_canonical_name, b)
-                  dst <- .Call(git2r_branch_upstream_canonical_name, b)
-                  name <- branch_remote_name(upstream)
-                  refspec <- paste0(src, ":", dst)
-
-                  if (isTRUE(force))
-                      refspec <- paste0("+", refspec)
-              } else {
-                  opts <- list(force = force)
-                  tmp <- get_refspec(object, name, refspec, opts)
-                  name <- tmp$remote
-                  refspec <- tmp$refspec
-              }
-
-              result <- .Call(git2r_push, object, name, refspec, credentials)
-
-              invisible(result)
-          }
-)
+    invisible(.Call(git2r_push, object, name, refspec, credentials))
+}
