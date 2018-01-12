@@ -16,15 +16,14 @@
 
 ##' Drop stash
 ##'
-##' @rdname stash_drop-methods
-##' @docType methods
-##' @param object The stash \code{object} to drop or a zero-based
-##' integer to the stash to drop. The last stash has index 0.
-##' @param ... Additional arguments affecting the stash_drop
+##' @param object path to a repository, or a \code{git_repository}
+##'     object, or the stash \code{object} to drop. Default is a
+##'     \code{path = '.'} to a reposiory.
 ##' @param index Zero based index to the stash to drop. Only used when
-##' \code{object} is a \code{git_repository}.
+##'     \code{object} is a path to a repository or a
+##'     \code{git_repository} object. Default is \code{index = 0}.
 ##' @return invisible NULL
-##' @keywords methods
+##' @export
 ##' @examples \dontrun{
 ##' ## Initialize a temporary repository
 ##' path <- tempfile(pattern="git2r-")
@@ -63,42 +62,27 @@
 ##' # View stashes
 ##' stash_list(repo)
 ##' }
-setGeneric("stash_drop",
-           signature = "object",
-           function(object, ...)
-           standardGeneric("stash_drop"))
+stash_drop <- function(object = ".", index = 0) {
+    if (is(object, "git_stash")) {
+        ## Determine the index of the stash in the stash list
+        i <- match(object@sha, vapply(stash_list(object@repo),
+                                      slot, character(1), "sha"))
 
-##' @rdname stash_drop-methods
-##' @include S4_classes.R
-##' @export
-setMethod("stash_drop",
-          signature(object = "git_repository"),
-          function(object, index)
-          {
-              if (missing(index))
-                  stop("missing argument 'index'")
-              if (abs(index - round(index)) >= .Machine$double.eps^0.5)
-                  stop("'index' must be an integer")
-              index <- as.integer(index)
-              .Call(git2r_stash_drop, object, index)
-              invisible(NULL)
-          }
-)
+        ## The stash list is zero-based
+        index <- i - 1L
 
-##' @rdname stash_drop-methods
-##' @export
-setMethod("stash_drop",
-          signature(object = "git_stash"),
-          function(object)
-          {
-              ## Determine the index of the stash in the stash list
-              i <- match(object@sha, vapply(stash_list(object@repo), slot, character(1), "sha"))
+        object <- object@repo
+    } else {
+        object <- lookup_repository(object)
+    }
 
-              ## The stash list is zero-based
-              .Call(git2r_stash_drop, object@repo, i - 1L)
-              invisible(NULL)
-          }
-)
+    if (abs(index - round(index)) >= .Machine$double.eps^0.5)
+        stop("'index' must be an integer")
+    index <- as.integer(index)
+
+    .Call(git2r_stash_drop, object, index)
+    invisible(NULL)
+}
 
 ##' Stash
 ##'
