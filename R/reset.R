@@ -16,8 +16,6 @@
 
 ##' Reset current HEAD to the specified state
 ##'
-##' @rdname reset-methods
-##' @docType methods
 ##' @param object Either a \code{\linkS4class{git_commit}}, a
 ##'     \code{\linkS4class{git_repository}} or a character vector. If
 ##'     \code{object} is a \code{git_commit}, HEAD is moved to the
@@ -27,7 +25,6 @@
 ##'     is a character vector with paths, resets the index entries in
 ##'     \code{object} to their state at HEAD if the current working
 ##'     directory is in a repository.
-##' @param ... Additional arguments affecting the reset.
 ##' @param reset_type If object is a 'git_commit', the kind of reset
 ##'     operation to perform. 'soft' means the HEAD will be moved to
 ##'     the commit. 'mixed' reset will trigger a 'soft' reset, plus
@@ -38,8 +35,7 @@
 ##' @param path If object is a 'git_repository', resets the index
 ##'     entries for all paths to their state at HEAD.
 ##' @return invisible NULL
-##' @keywords methods
-##' @include S4_classes.R
+##' @export
 ##' @examples \dontrun{
 ##' ## Initialize a temporary repository
 ##' path <- tempfile(pattern="git2r-")
@@ -85,48 +81,22 @@
 ##' reset(commit_1, "hard")
 ##' status(repo)
 ##' }
-setGeneric("reset",
-           signature = c("object"),
-           function(object, ...)
-           standardGeneric("reset"))
+reset <- function(object, reset_type = c("soft", "mixed", "hard"), path = NULL) {
+    if (is_commit(object)) {
+        reset_type <- switch(match.arg(reset_type),
+                             soft  = 1L,
+                             mixed = 2L,
+                             hard  = 3L)
 
-##' @rdname reset-methods
-##' @export
-setMethod("reset",
-          signature(object = "git_commit"),
-          function(object, reset_type = c("soft", "mixed", "hard"))
-          {
-              reset_type <- switch(match.arg(reset_type),
-                                   soft  = 1L,
-                                   mixed = 2L,
-                                   hard  = 3L)
+        .Call(git2r_reset, object, reset_type)
+    } else {
+        object <- lookup_repository(object)
+        if (is_empty(object)) {
+            .Call(git2r_index_remove_bypath, object, path)
+        } else {
+            .Call(git2r_reset_default, object, path)
+        }
+    }
 
-              invisible(.Call(git2r_reset, object, reset_type))
-          }
-)
-
-##' @rdname reset-methods
-##' @export
-setMethod("reset",
-          signature(object = "git_repository"),
-          function(object, path)
-          {
-              if (is_empty(object)) {
-                  .Call(git2r_index_remove_bypath, object, path)
-              } else {
-                  .Call(git2r_reset_default, object, path)
-              }
-
-              invisible(NULL)
-          }
-)
-
-##' @rdname reset-methods
-##' @export
-setMethod("reset",
-          signature(object = "character"),
-          function(object)
-          {
-              callGeneric(lookup_repository(), path = object)
-          }
-)
+    invisible(NULL)
+}
