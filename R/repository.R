@@ -88,13 +88,10 @@ setAs(from="git_repository",
 
 ##' Open a repository
 ##'
-##' @rdname repository-methods
-##' @docType methods
-##' @param path A path to an existing local git repository
-##' @param ... Additional arguments to \code{repository} method.
-##' @param discover Discover repository from path. Default is FALSE.
+##' @param path A path to an existing local git repository.
+##' @param discover Discover repository from path. Default is TRUE.
 ##' @return A S4 \code{\linkS4class{git_repository}} object
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -154,46 +151,19 @@ setAs(from="git_repository",
 ##' ## List all tags in repository
 ##' tags(repo)
 ##' }
-setGeneric("repository",
-           signature = "path",
-           function(path, ...)
-           standardGeneric("repository"))
+repository <- function(path = ".", discover = TRUE) {
+    if (isTRUE(discover)) {
+        path <- discover_repository(path)
+        if (is.null(path))
+            stop("The 'path' is not in a git repository")
+    } else {
+        path <- normalizePath(path, winslash = "/", mustWork = TRUE)
+        if (!file.info(path)$isdir)
+            stop("'path' is not a directory")
+    }
 
-##' @rdname repository-methods
-##' @export
-setMethod("repository",
-          signature(path = "missing"),
-          function()
-          {
-              callGeneric(path = getwd(), discover = TRUE)
-          }
-)
-
-##' @rdname repository-methods
-##' @export
-setMethod("repository",
-          signature(path = "character"),
-          function(path, discover = FALSE, ...)
-          {
-              ## Argument checking
-              stopifnot(identical(length(path), 1L),
-                        nchar(path) > 0,
-                        is.logical(discover),
-                        identical(length(discover), 1L))
-
-              if (discover) {
-                  path <- discover_repository(path)
-                  if (is.null(path))
-                      stop("The 'path' is not in a git repository")
-              } else {
-                  path <- normalizePath(path, winslash = "/", mustWork = TRUE)
-                  if (!file.info(path)$isdir)
-                      stop("'path' is not a directory")
-              }
-
-              new("git_repository", path = path)
-          }
-)
+    new("git_repository", path = path)
+}
 
 ##' Init a repository
 ##'
