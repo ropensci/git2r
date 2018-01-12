@@ -17,15 +17,12 @@
 ##' Revparse
 ##'
 ##' Find object specified by revision.
-##' @rdname revparse_single-methods
-##' @docType methods
-##' @param repo The repository
+##' @template repo-param
 ##' @param revision The revision string, see
 ##' http://git-scm.com/docs/git-rev-parse.html#_specifying_revisions
 ##' @return a \code{git_commit} or \code{git_tag} or \code{git_tree}
 ##' object
-##' @keywords methods
-##' @include S4_classes.R
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Create a directory in tempdir
@@ -52,18 +49,6 @@
 ##' revparse_single(repo, "HEAD^")
 ##' revparse_single(repo, "HEAD:test.txt")
 ##' }
-setGeneric("revparse_single",
-           signature = c("repo", "revision"),
-           function(repo, revision)
-           standardGeneric("revparse_single")
-)
-
-##' @rdname revparse_single-methods
-##' @export
-setMethod("revparse_single",
-          signature(repo = "git_repository", revision = "character"),
-          function(repo, revision)
-          {
-              .Call(git2r_revparse_single, repo, revision)
-          }
-)
+revparse_single <- function(repo = NULL, revision = NULL) {
+    .Call(git2r_revparse_single, lookup_repository(repo), revision)
+}
