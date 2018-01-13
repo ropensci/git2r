@@ -312,7 +312,7 @@ int git2r_arg_check_list(SEXP arg)
  */
 int git2r_arg_check_logical(SEXP arg)
 {
-    if (!isLogical(arg) || 1 != Rf_length(arg) || NA_LOGICAL == LOGICAL(arg)[0])
+    if (!Rf_isLogical(arg) || 1 != Rf_length(arg) || NA_LOGICAL == LOGICAL(arg)[0])
         return -1;
     return 0;
 }
