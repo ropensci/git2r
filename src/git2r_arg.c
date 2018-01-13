@@ -270,7 +270,7 @@ int git2r_arg_check_sha(SEXP arg)
  */
 int git2r_arg_check_integer(SEXP arg)
 {
-    if (!isInteger(arg) || 1 != Rf_length(arg) || NA_INTEGER == INTEGER(arg)[0])
+    if (!Rf_isInteger(arg) || 1 != Rf_length(arg) || NA_INTEGER == INTEGER(arg)[0])
         return -1;
     return 0;
 }
