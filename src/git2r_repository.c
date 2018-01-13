@@ -506,7 +506,7 @@ SEXP git2r_repository_workdir(SEXP repo)
         const char *wd = git_repository_workdir(repository);
         PROTECT(result = Rf_allocVector(STRSXP, 1));
         nprotect++;
-        SET_STRING_ELT(result, 0, mkChar(wd));
+        SET_STRING_ELT(result, 0, Rf_mkChar(wd));
     }
 
     git_repository_free(repository);
@@ -557,7 +557,7 @@ SEXP git2r_repository_discover(SEXP path, SEXP ceiling)
     }
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
-    SET_STRING_ELT(result, 0, mkChar(buf.ptr));
+    SET_STRING_ELT(result, 0, Rf_mkChar(buf.ptr));
 
 cleanup:
     git_buf_free(&buf);

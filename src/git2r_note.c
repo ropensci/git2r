@@ -211,7 +211,7 @@ SEXP git2r_note_default_ref(SEXP repo)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
-    SET_STRING_ELT(result, 0, mkChar(buf.ptr));
+    SET_STRING_ELT(result, 0, Rf_mkChar(buf.ptr));
 
 cleanup:
     git_buf_free(&buf);

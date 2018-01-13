@@ -372,7 +372,7 @@ SEXP git2r_branch_canonical_name(SEXP branch)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
-    SET_STRING_ELT(result, 0, mkChar(git_reference_name(reference)));
+    SET_STRING_ELT(result, 0, Rf_mkChar(git_reference_name(reference)));
 
 cleanup:
     if (reference)
@@ -438,7 +438,7 @@ SEXP git2r_branch_upstream_canonical_name(SEXP branch)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
-    SET_STRING_ELT(result, 0, mkChar(name));
+    SET_STRING_ELT(result, 0, Rf_mkChar(name));
 
 cleanup:
     git_buf_free(&buf);
@@ -498,7 +498,7 @@ SEXP git2r_branch_remote_name(SEXP branch)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
-    SET_STRING_ELT(result, 0, mkChar(buf.ptr));
+    SET_STRING_ELT(result, 0, Rf_mkChar(buf.ptr));
     git_buf_free(&buf);
 
 cleanup:
@@ -568,7 +568,7 @@ SEXP git2r_branch_remote_url(SEXP branch)
     git_buf_free(&buf);
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
-    SET_STRING_ELT(result, 0, mkChar(git_remote_url(remote)));
+    SET_STRING_ELT(result, 0, Rf_mkChar(git_remote_url(remote)));
 
 cleanup:
     if (remote)
@@ -696,7 +696,7 @@ SEXP git2r_branch_target(SEXP branch)
     if (GIT_REF_OID == git_reference_type(reference)) {
         git_oid_fmt(sha, git_reference_target(reference));
         sha[GIT_OID_HEXSZ] = '\0';
-        SET_STRING_ELT(result, 0, mkChar(sha));
+        SET_STRING_ELT(result, 0, Rf_mkChar(sha));
     } else {
         SET_STRING_ELT(result, 0, NA_STRING);
     }

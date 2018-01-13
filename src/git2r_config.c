@@ -117,7 +117,7 @@ static size_t git2r_config_list_init(
             item = Rf_allocVector(VECSXP, n_level[level]));
         setAttrib(item, R_NamesSymbol, Rf_allocVector(STRSXP, n_level[level]));
         names = getAttrib(list, R_NamesSymbol);
-        SET_STRING_ELT(names, i_list[level] , mkChar(name));
+        SET_STRING_ELT(names, i_list[level] , Rf_mkChar(name));
     }
 
     return i;
@@ -147,7 +147,7 @@ static void git2r_config_list_add_entry(
 
         if (i_level[level] < (size_t)LENGTH(sub_list)) {
             SEXP names = getAttrib(sub_list, R_NamesSymbol);
-            SET_STRING_ELT(names, i_level[level], mkChar(entry->name));
+            SET_STRING_ELT(names, i_level[level], Rf_mkChar(entry->name));
             SET_VECTOR_ELT(sub_list, i_level[level], Rf_mkString(entry->value));
             i_level[level]++;
             return;
@@ -415,7 +415,7 @@ SEXP git2r_config_get_string(SEXP repo, SEXP name)
     }
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
-    SET_STRING_ELT(result, 0, mkChar(value));
+    SET_STRING_ELT(result, 0, Rf_mkChar(value));
 
 cleanup:
     if (cfg)

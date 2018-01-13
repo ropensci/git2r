@@ -66,9 +66,9 @@ void git2r_tree_init(const git_tree *source, SEXP repo, SEXP dest)
         entry = git_tree_entry_byindex(source, i);
         git_oid_tostr(sha, sizeof(sha), git_tree_entry_id(entry));
         filemode_ptr[i] = git_tree_entry_filemode(entry);
-        SET_STRING_ELT(id,   i, mkChar(sha));
-        SET_STRING_ELT(type, i, mkChar(git_object_type2string(git_tree_entry_type(entry))));
-        SET_STRING_ELT(name, i, mkChar(git_tree_entry_name(entry)));
+        SET_STRING_ELT(id,   i, Rf_mkChar(sha));
+        SET_STRING_ELT(type, i, Rf_mkChar(git_object_type2string(git_tree_entry_type(entry))));
+        SET_STRING_ELT(name, i, Rf_mkChar(git_tree_entry_name(entry)));
     }
 
     SET_SLOT(dest, s_repo, repo);
@@ -110,22 +110,22 @@ static int git2r_tree_walk_cb(
         if (err)
             goto cleanup;
         SET_STRING_ELT(VECTOR_ELT(p->list, 0), p->n,
-                       mkChar(git_buf_cstr(&mode)));
+                       Rf_mkChar(git_buf_cstr(&mode)));
 
         /* type */
         SET_STRING_ELT(VECTOR_ELT(p->list, 1), p->n,
-                       mkChar(git_object_type2string(git_tree_entry_type(entry))));
+                       Rf_mkChar(git_object_type2string(git_tree_entry_type(entry))));
 
         /* sha */
         git_oid_tostr(sha, sizeof(sha), git_tree_entry_id(entry));
-        SET_STRING_ELT(VECTOR_ELT(p->list, 2), p->n, mkChar(sha));
+        SET_STRING_ELT(VECTOR_ELT(p->list, 2), p->n, Rf_mkChar(sha));
 
         /* path */
-        SET_STRING_ELT(VECTOR_ELT(p->list, 3), p->n, mkChar(root));
+        SET_STRING_ELT(VECTOR_ELT(p->list, 3), p->n, Rf_mkChar(root));
 
         /* name */
         SET_STRING_ELT(VECTOR_ELT(p->list, 4), p->n,
-                       mkChar(git_tree_entry_name(entry)));
+                       Rf_mkChar(git_tree_entry_name(entry)));
 
         /* length */
         if (git_tree_entry_type(entry) == GIT_OBJ_BLOB) {
@@ -196,17 +196,17 @@ SEXP git2r_tree_walk(SEXP tree, SEXP recursive)
     setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, 6));
 
     SET_VECTOR_ELT(result, 0,   Rf_allocVector(STRSXP,  cb_data.n));
-    SET_STRING_ELT(names,  0, mkChar("mode"));
+    SET_STRING_ELT(names,  0, Rf_mkChar("mode"));
     SET_VECTOR_ELT(result, 1,   Rf_allocVector(STRSXP,  cb_data.n));
-    SET_STRING_ELT(names,  1, mkChar("type"));
+    SET_STRING_ELT(names,  1, Rf_mkChar("type"));
     SET_VECTOR_ELT(result, 2,   Rf_allocVector(STRSXP,  cb_data.n));
-    SET_STRING_ELT(names,  2, mkChar("sha"));
+    SET_STRING_ELT(names,  2, Rf_mkChar("sha"));
     SET_VECTOR_ELT(result, 3,   Rf_allocVector(STRSXP,  cb_data.n));
-    SET_STRING_ELT(names,  3, mkChar("path"));
+    SET_STRING_ELT(names,  3, Rf_mkChar("path"));
     SET_VECTOR_ELT(result, 4,   Rf_allocVector(STRSXP,  cb_data.n));
-    SET_STRING_ELT(names,  4, mkChar("name"));
+    SET_STRING_ELT(names,  4, Rf_mkChar("name"));
     SET_VECTOR_ELT(result, 5,   Rf_allocVector(INTSXP,  cb_data.n));
-    SET_STRING_ELT(names,  5, mkChar("len"));
+    SET_STRING_ELT(names,  5, Rf_mkChar("len"));
 
     cb_data.list = result;
     cb_data.n = 0;

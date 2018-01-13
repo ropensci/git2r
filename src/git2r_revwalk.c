@@ -223,11 +223,11 @@ SEXP git2r_revwalk_contributions(
     PROTECT(result = Rf_allocVector(VECSXP, 3));
     setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, 3));
     SET_VECTOR_ELT(result, 0, when = Rf_allocVector(REALSXP, n));
-    SET_STRING_ELT(names, 0, mkChar("when"));
+    SET_STRING_ELT(names, 0, Rf_mkChar("when"));
     SET_VECTOR_ELT(result, 1, author = Rf_allocVector(STRSXP, n));
-    SET_STRING_ELT(names, 1, mkChar("author"));
+    SET_STRING_ELT(names, 1, Rf_mkChar("author"));
     SET_VECTOR_ELT(result, 2, email = Rf_allocVector(STRSXP, n));
-    SET_STRING_ELT(names, 2, mkChar("email"));
+    SET_STRING_ELT(names, 2, Rf_mkChar("email"));
 
     git_revwalk_reset(walker);
     err = git_revwalk_push_head(walker);
@@ -255,8 +255,8 @@ SEXP git2r_revwalk_contributions(
         REAL(when)[i] =
             (double)(c_author->when.time) +
             60.0 * (double)(c_author->when.offset);
-        SET_STRING_ELT(author, i, mkChar(c_author->name));
-        SET_STRING_ELT(author, i, mkChar(c_author->email));
+        SET_STRING_ELT(author, i, Rf_mkChar(c_author->name));
+        SET_STRING_ELT(author, i, Rf_mkChar(c_author->email));
         git_commit_free(commit);
     }
 

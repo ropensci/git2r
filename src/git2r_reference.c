@@ -54,7 +54,7 @@ SEXP git2r_reference_dwim(SEXP repo, SEXP shorthand)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
-    SET_STRING_ELT(result, 0, mkChar(git_reference_name(reference)));
+    SET_STRING_ELT(result, 0, Rf_mkChar(git_reference_name(reference)));
 
 cleanup:
     if (reference)
@@ -149,7 +149,7 @@ SEXP git2r_reference_list(SEXP repo)
             i,
             reference = NEW_OBJECT(MAKE_CLASS("git_reference")));
         git2r_reference_init(ref, reference);
-        SET_STRING_ELT(names, i, mkChar(ref_list.strings[i]));
+        SET_STRING_ELT(names, i, Rf_mkChar(ref_list.strings[i]));
 
         if (ref)
             git_reference_free(ref);

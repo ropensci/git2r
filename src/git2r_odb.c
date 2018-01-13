@@ -58,7 +58,7 @@ SEXP git2r_odb_hash(SEXP data)
 
             git_oid_fmt(sha, &oid);
             sha[GIT_OID_HEXSZ] = '\0';
-            SET_STRING_ELT(result, i, mkChar(sha));
+            SET_STRING_ELT(result, i, Rf_mkChar(sha));
         }
     }
 
@@ -102,7 +102,7 @@ SEXP git2r_odb_hashfile(SEXP path)
 
             git_oid_fmt(sha, &oid);
             sha[GIT_OID_HEXSZ] = '\0';
-            SET_STRING_ELT(result, i, mkChar(sha));
+            SET_STRING_ELT(result, i, Rf_mkChar(sha));
         }
     }
 
@@ -147,10 +147,10 @@ static void git2r_add_object(
     /* Sha */
     git_oid_fmt(sha, oid);
     sha[GIT_OID_HEXSZ] = '\0';
-    SET_STRING_ELT(VECTOR_ELT(list, j++), i, mkChar(sha));
+    SET_STRING_ELT(VECTOR_ELT(list, j++), i, Rf_mkChar(sha));
 
     /* Type */
-    SET_STRING_ELT(VECTOR_ELT(list, j++), i, mkChar(type));
+    SET_STRING_ELT(VECTOR_ELT(list, j++), i, Rf_mkChar(type));
 
     /* Length */
     INTEGER(VECTOR_ELT(list, j++))[i] = len;
@@ -234,11 +234,11 @@ SEXP git2r_odb_objects(SEXP repo)
 
     i = 0;
     SET_VECTOR_ELT(result, i,   Rf_allocVector(STRSXP,  cb_data.n));
-    SET_STRING_ELT(names,  i++, mkChar("sha"));
+    SET_STRING_ELT(names,  i++, Rf_mkChar("sha"));
     SET_VECTOR_ELT(result, i,   Rf_allocVector(STRSXP,  cb_data.n));
-    SET_STRING_ELT(names,  i++, mkChar("type"));
+    SET_STRING_ELT(names,  i++, Rf_mkChar("type"));
     SET_VECTOR_ELT(result, i,   Rf_allocVector(INTSXP,  cb_data.n));
-    SET_STRING_ELT(names,  i++, mkChar("len"));
+    SET_STRING_ELT(names,  i++, Rf_mkChar("len"));
 
     cb_data.list = result;
     cb_data.n = 0;
@@ -302,13 +302,13 @@ static int git2r_odb_add_blob(
     /* Sha */
     git_oid_fmt(sha, git_tree_entry_id(entry));
     sha[GIT_OID_HEXSZ] = '\0';
-    SET_STRING_ELT(VECTOR_ELT(list, j++), i, mkChar(sha));
+    SET_STRING_ELT(VECTOR_ELT(list, j++), i, Rf_mkChar(sha));
 
     /* Path */
-    SET_STRING_ELT(VECTOR_ELT(list, j++), i, mkChar(path));
+    SET_STRING_ELT(VECTOR_ELT(list, j++), i, Rf_mkChar(path));
 
     /* Name */
-    SET_STRING_ELT(VECTOR_ELT(list, j++), i, mkChar(git_tree_entry_name(entry)));
+    SET_STRING_ELT(VECTOR_ELT(list, j++), i, Rf_mkChar(git_tree_entry_name(entry)));
 
     /* Length */
     err = git_odb_read_header(&len, &type, odb, git_tree_entry_id(entry));
@@ -317,10 +317,10 @@ static int git2r_odb_add_blob(
     INTEGER(VECTOR_ELT(list, j++))[i] = len;
 
     /* Commit sha */
-    SET_STRING_ELT(VECTOR_ELT(list, j++), i, mkChar(commit));
+    SET_STRING_ELT(VECTOR_ELT(list, j++), i, Rf_mkChar(commit));
 
     /* Author */
-    SET_STRING_ELT(VECTOR_ELT(list, j++), i, mkChar(author));
+    SET_STRING_ELT(VECTOR_ELT(list, j++), i, Rf_mkChar(author));
 
     /* When */
     REAL(VECTOR_ELT(list, j++))[i] = when;
@@ -509,19 +509,19 @@ SEXP git2r_odb_blobs(SEXP repo)
 
     i = 0;
     SET_VECTOR_ELT(result, i,   Rf_allocVector(STRSXP,  cb_data.n));
-    SET_STRING_ELT(names,  i++, mkChar("sha"));
+    SET_STRING_ELT(names,  i++, Rf_mkChar("sha"));
     SET_VECTOR_ELT(result, i,   Rf_allocVector(STRSXP,  cb_data.n));
-    SET_STRING_ELT(names,  i++, mkChar("path"));
+    SET_STRING_ELT(names,  i++, Rf_mkChar("path"));
     SET_VECTOR_ELT(result, i,   Rf_allocVector(STRSXP,  cb_data.n));
-    SET_STRING_ELT(names,  i++, mkChar("name"));
+    SET_STRING_ELT(names,  i++, Rf_mkChar("name"));
     SET_VECTOR_ELT(result, i,   Rf_allocVector(INTSXP,  cb_data.n));
-    SET_STRING_ELT(names,  i++, mkChar("len"));
+    SET_STRING_ELT(names,  i++, Rf_mkChar("len"));
     SET_VECTOR_ELT(result, i,   Rf_allocVector(STRSXP,  cb_data.n));
-    SET_STRING_ELT(names,  i++, mkChar("commit"));
+    SET_STRING_ELT(names,  i++, Rf_mkChar("commit"));
     SET_VECTOR_ELT(result, i,   Rf_allocVector(STRSXP,  cb_data.n));
-    SET_STRING_ELT(names,  i++, mkChar("author"));
+    SET_STRING_ELT(names,  i++, Rf_mkChar("author"));
     SET_VECTOR_ELT(result, i,   Rf_allocVector(REALSXP, cb_data.n));
-    SET_STRING_ELT(names,  i++, mkChar("when"));
+    SET_STRING_ELT(names,  i++, Rf_mkChar("when"));
 
     cb_data.list = result;
     cb_data.n = 0;

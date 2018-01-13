@@ -161,7 +161,7 @@ static void git2r_status_list_ignored(
         const git_status_entry *s = git_status_byindex(status_list, i);
 
         if (s->status == GIT_STATUS_IGNORED) {
-            SET_STRING_ELT(names, j, mkChar("ignored"));
+            SET_STRING_ELT(names, j, Rf_mkChar("ignored"));
             SET_VECTOR_ELT(item, j, Rf_mkString(s->index_to_workdir->old_file.path));
             j++;
         }
@@ -213,7 +213,7 @@ static void git2r_status_list_staged(
 
         if (!istatus)
             continue;
-        SET_STRING_ELT(sub_list_names, j, mkChar(istatus));
+        SET_STRING_ELT(sub_list_names, j, Rf_mkChar(istatus));
 
         old_path = s->head_to_index->old_file.path;
         new_path = s->head_to_index->new_file.path;
@@ -221,12 +221,12 @@ static void git2r_status_list_staged(
         if (old_path && new_path && strcmp(old_path, new_path)) {
             SEXP item;
             SET_VECTOR_ELT(sub_list, j, item = Rf_allocVector(STRSXP, 2));
-            SET_STRING_ELT(item, 0, mkChar(old_path));
-            SET_STRING_ELT(item, 1, mkChar(new_path));
+            SET_STRING_ELT(item, 0, Rf_mkChar(old_path));
+            SET_STRING_ELT(item, 1, Rf_mkChar(new_path));
         } else {
             SEXP item;
             SET_VECTOR_ELT(sub_list, j, item = Rf_allocVector(STRSXP, 1));
-            SET_STRING_ELT(item, 0, mkChar(old_path ? old_path : new_path));
+            SET_STRING_ELT(item, 0, Rf_mkChar(old_path ? old_path : new_path));
         }
 
         j++;
@@ -280,7 +280,7 @@ static void git2r_status_list_unstaged(
 
         if (!wstatus)
             continue;
-        SET_STRING_ELT(sub_list_names, j, mkChar(wstatus));
+        SET_STRING_ELT(sub_list_names, j, Rf_mkChar(wstatus));
 
         old_path = s->index_to_workdir->old_file.path;
         new_path = s->index_to_workdir->new_file.path;
@@ -288,12 +288,12 @@ static void git2r_status_list_unstaged(
         if (old_path && new_path && strcmp(old_path, new_path)) {
             SEXP item;
             SET_VECTOR_ELT(sub_list, j, item = Rf_allocVector(STRSXP, 2));
-            SET_STRING_ELT(item, 0, mkChar(old_path));
-            SET_STRING_ELT(item, 1, mkChar(new_path));
+            SET_STRING_ELT(item, 0, Rf_mkChar(old_path));
+            SET_STRING_ELT(item, 1, Rf_mkChar(new_path));
         } else {
             SEXP item;
             SET_VECTOR_ELT(sub_list, j, item = Rf_allocVector(STRSXP, 1));
-            SET_STRING_ELT(item, 0, mkChar(old_path ? old_path : new_path));
+            SET_STRING_ELT(item, 0, Rf_mkChar(old_path ? old_path : new_path));
         }
 
         j++;
@@ -332,7 +332,7 @@ static void git2r_status_list_untracked(
                 sub_list,
                 j,
                 Rf_mkString(s->index_to_workdir->old_file.path));
-            SET_STRING_ELT(sub_list_names, j, mkChar("untracked"));
+            SET_STRING_ELT(sub_list_names, j, Rf_mkChar("untracked"));
             j++;
         }
     }
@@ -405,25 +405,25 @@ SEXP git2r_status_list(
     setAttrib(list, R_NamesSymbol, list_names = Rf_allocVector(STRSXP, count));
 
     if (LOGICAL(staged)[0]) {
-        SET_STRING_ELT(list_names, i, mkChar("staged"));
+        SET_STRING_ELT(list_names, i, Rf_mkChar("staged"));
         git2r_status_list_staged(list, i, status_list);
         i++;
     }
 
     if (LOGICAL(unstaged)[0]) {
-        SET_STRING_ELT(list_names, i, mkChar("unstaged"));
+        SET_STRING_ELT(list_names, i, Rf_mkChar("unstaged"));
         git2r_status_list_unstaged(list, i, status_list);
         i++;
     }
 
     if (LOGICAL(untracked)[0]) {
-        SET_STRING_ELT(list_names, i, mkChar("untracked"));
+        SET_STRING_ELT(list_names, i, Rf_mkChar("untracked"));
         git2r_status_list_untracked(list, i, status_list);
         i++;
     }
 
     if (LOGICAL(ignored)[0]) {
-        SET_STRING_ELT(list_names, i, mkChar("ignored"));
+        SET_STRING_ELT(list_names, i, Rf_mkChar("ignored"));
         git2r_status_list_ignored(list, i, status_list);
     }
 

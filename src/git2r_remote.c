@@ -248,7 +248,7 @@ SEXP git2r_remote_list(SEXP repo)
 
     PROTECT(list = Rf_allocVector(STRSXP, rem_list.count));
     for (i = 0; i < rem_list.count; i++)
-        SET_STRING_ELT(list, i, mkChar(rem_list.strings[i]));
+        SET_STRING_ELT(list, i, Rf_mkChar(rem_list.strings[i]));
 
 cleanup:
     git_strarray_free(&rem_list);
@@ -417,7 +417,7 @@ SEXP git2r_remote_url(SEXP repo, SEXP remote)
             if (err)
                 goto cleanup;
 
-            SET_STRING_ELT(url, i, mkChar(git_remote_url(tmp_remote)));
+            SET_STRING_ELT(url, i, Rf_mkChar(git_remote_url(tmp_remote)));
             git_remote_free(tmp_remote);
         }
     }
@@ -494,8 +494,8 @@ SEXP git2r_remote_ls(SEXP name, SEXP repo, SEXP credentials)
     for (i = 0; i < refs_len; i++) {
         char oid[GIT_OID_HEXSZ + 1] = {0};
         git_oid_fmt(oid, &refs[i]->oid);
-        SET_STRING_ELT(result, i, mkChar(oid));
-        SET_STRING_ELT(names, i, mkChar(refs[i]->name));
+        SET_STRING_ELT(result, i, Rf_mkChar(oid));
+        SET_STRING_ELT(names, i, Rf_mkChar(refs[i]->name));
     }
 
 cleanup:

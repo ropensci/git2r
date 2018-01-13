@@ -53,7 +53,7 @@ SEXP git2r_blob_content(SEXP blob)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
-    SET_STRING_ELT(result, 0, mkChar(git_blob_rawcontent(blob_obj)));
+    SET_STRING_ELT(result, 0, Rf_mkChar(git_blob_rawcontent(blob_obj)));
 
 cleanup:
     if (blob_obj)
