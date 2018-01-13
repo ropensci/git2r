@@ -298,7 +298,7 @@ int git2r_arg_check_integer_gte_zero(SEXP arg)
  */
 int git2r_arg_check_list(SEXP arg)
 {
-    if (!isNewList(arg))
+    if (!Rf_isNewList(arg))
         return -1;
     return 0;
 }
