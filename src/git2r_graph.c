@@ -37,8 +37,8 @@ SEXP git2r_graph_ahead_behind(SEXP local, SEXP upstream)
     size_t ahead, behind;
     int err, nprotect = 0;
     SEXP result = R_NilValue;
-    SEXP local_path, local_repo, local_sha;
-    SEXP upstream_path, upstream_repo, upstream_sha;
+    SEXP local_repo, local_sha;
+    SEXP upstream_repo, upstream_sha;
     git_oid local_oid, upstream_oid;
     git_repository *repository = NULL;
 
@@ -95,8 +95,8 @@ cleanup:
 SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor)
 {
     int err, descendant_of = 0;
-    SEXP commit_path, commit_repo, commit_sha;
-    SEXP ancestor_path, ancestor_repo, ancestor_sha;
+    SEXP commit_repo, commit_sha;
+    SEXP ancestor_repo, ancestor_sha;
     git_oid commit_oid, ancestor_oid;
     git_repository *repository = NULL;
 
