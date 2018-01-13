@@ -137,7 +137,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (!isNull(result))
+    if (!Rf_isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -201,7 +201,7 @@ static int git2r_tag_foreach_cb(const char *name, git_oid *oid, void *payload)
     git2r_tag_foreach_cb_data *cb_data = (git2r_tag_foreach_cb_data*)payload;
 
     /* Check if we have a list to populate */
-    if (!isNull(cb_data->tags)) {
+    if (!Rf_isNull(cb_data->tags)) {
         int skip = 0;
         SEXP item, tag;
 
@@ -308,7 +308,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (!isNull(result))
+    if (!Rf_isNull(result))
         UNPROTECT(1);
 
     if (err)

@@ -247,7 +247,7 @@ static int git2r_config_open(git_config **out, SEXP repo, int snapshot)
 {
     int err;
 
-    if (!isNull(repo)) {
+    if (!Rf_isNull(repo)) {
         git_repository *repository = git2r_repository_open(repo);
         if (!repository)
             git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
@@ -314,7 +314,7 @@ cleanup:
     if (cfg)
         git_config_free(cfg);
 
-    if (!isNull(result))
+    if (!Rf_isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -352,7 +352,7 @@ SEXP git2r_config_set(SEXP repo, SEXP variables)
             const char *key = CHAR(STRING_ELT(names, i));
             const char *value = NULL;
 
-            if (!isNull(VECTOR_ELT(variables, i)))
+            if (!Rf_isNull(VECTOR_ELT(variables, i)))
                 value = CHAR(STRING_ELT(VECTOR_ELT(variables, i), 0));
 
             if (value)
@@ -421,7 +421,7 @@ cleanup:
     if (cfg)
         git_config_free(cfg);
 
-    if (!isNull(result))
+    if (!Rf_isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -469,7 +469,7 @@ cleanup:
     if (cfg)
         git_config_free(cfg);
 
-    if (!isNull(result))
+    if (!Rf_isNull(result))
         UNPROTECT(1);
 
     if (err)

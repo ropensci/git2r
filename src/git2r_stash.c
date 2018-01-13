@@ -114,7 +114,7 @@ static int git2r_stash_list_cb(
     GIT_UNUSED(message);
 
     /* Check if we have a list to populate */
-    if (!isNull(cb_data->list)) {
+    if (!Rf_isNull(cb_data->list)) {
         int err;
         SEXP stash;
 
@@ -169,7 +169,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (!isNull(list))
+    if (!Rf_isNull(list))
         UNPROTECT(1);
 
     if (err)
@@ -257,7 +257,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (!isNull(result))
+    if (!Rf_isNull(result))
         UNPROTECT(1);
 
     if (err)

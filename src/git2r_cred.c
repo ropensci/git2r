@@ -229,7 +229,7 @@ int git2r_cred_acquire_cb(
         return -1;
 
     credentials = ((git2r_transfer_data*)payload)->credentials;
-    if (isNull(credentials)) {
+    if (Rf_isNull(credentials)) {
         if (GIT_CREDTYPE_SSH_KEY & allowed_types) {
 	    if (((git2r_transfer_data*)payload)->ssh_key_agent_tried)
 	        return -1;

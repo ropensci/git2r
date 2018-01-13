@@ -115,7 +115,7 @@ int git2r_arg_check_commit_stash(SEXP arg)
 int git2r_arg_check_credentials(SEXP arg)
 {
     /* It's ok if the credentials is R_NilValue */
-    if (isNull(arg))
+    if (Rf_isNull(arg))
         return 0;
 
     if (!isS4(arg))
@@ -185,7 +185,7 @@ int git2r_arg_check_fetch_heads(SEXP arg)
     SEXP s_repo = Rf_install("repo");
     SEXP s_path = Rf_install("path");
 
-    if (isNull(arg) || VECSXP != TYPEOF(arg))
+    if (Rf_isNull(arg) || VECSXP != TYPEOF(arg))
         return -1;
 
     /* Check that the repository paths are identical for each item */
@@ -222,7 +222,7 @@ int git2r_arg_check_fetch_heads(SEXP arg)
  */
 int git2r_arg_check_filename(SEXP arg)
 {
-    if (isNull(arg))
+    if (Rf_isNull(arg))
         return 0;
     if (!isString(arg))
         return -1;

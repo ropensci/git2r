@@ -176,19 +176,19 @@ static int git2r_odb_objects_cb(const git_oid *oid, void *payload)
 
     switch(type) {
     case GIT_OBJ_COMMIT:
-        if (!isNull(p->list))
+        if (!Rf_isNull(p->list))
             git2r_add_object(oid, p->list, p->n, "commit", len);
         break;
     case GIT_OBJ_TREE:
-        if (!isNull(p->list))
+        if (!Rf_isNull(p->list))
             git2r_add_object(oid, p->list, p->n, "tree", len);
         break;
     case GIT_OBJ_BLOB:
-        if (!isNull(p->list))
+        if (!Rf_isNull(p->list))
             git2r_add_object(oid, p->list, p->n, "blob", len);
         break;
     case GIT_OBJ_TAG:
-        if (!isNull(p->list))
+        if (!Rf_isNull(p->list))
             git2r_add_object(oid, p->list, p->n, "tag", len);
         break;
     default:
@@ -251,7 +251,7 @@ cleanup:
     if (odb)
         git_odb_free(odb);
 
-    if (!isNull(result))
+    if (!Rf_isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -391,7 +391,7 @@ static int git2r_odb_tree_blobs(
             break;
         }
         case GIT_OBJ_BLOB:
-            if (!isNull(data->list)) {
+            if (!Rf_isNull(data->list)) {
                 err = git2r_odb_add_blob(
                     entry,
                     data->odb,
@@ -534,7 +534,7 @@ cleanup:
     if (odb)
         git_odb_free(odb);
 
-    if (!isNull(result))
+    if (!Rf_isNull(result))
         UNPROTECT(1);
 
     if (err)

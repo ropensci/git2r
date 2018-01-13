@@ -178,7 +178,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (!isNull(result))
+    if (!Rf_isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -219,7 +219,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (!isNull(result))
+    if (!Rf_isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -244,7 +244,7 @@ static int git2r_note_foreach_cb(
     git2r_note_foreach_cb_data *cb_data = (git2r_note_foreach_cb_data*)payload;
 
     /* Check if we have a list to populate */
-    if (!isNull(cb_data->list)) {
+    if (!Rf_isNull(cb_data->list)) {
         int err;
         SEXP note;
 
@@ -284,7 +284,7 @@ SEXP git2r_notes(SEXP repo, SEXP ref)
     git2r_note_foreach_cb_data cb_data = {0, R_NilValue, R_NilValue, NULL, NULL};
     git_repository *repository = NULL;
 
-    if (!isNull(ref)) {
+    if (!Rf_isNull(ref)) {
         if (git2r_arg_check_string(ref))
             git2r_error(__func__, NULL, "'ref'", git2r_err_string_arg);
     }
@@ -293,7 +293,7 @@ SEXP git2r_notes(SEXP repo, SEXP ref)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    if (!isNull(ref)) {
+    if (!Rf_isNull(ref)) {
         git_buf_sets(&buf, CHAR(STRING_ELT(ref, 0)));
     } else {
         err = git_note_default_ref(&buf, repository);
@@ -331,7 +331,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (!isNull(result))
+    if (!Rf_isNull(result))
         UNPROTECT(1);
 
     if (err)

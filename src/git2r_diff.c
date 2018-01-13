@@ -79,24 +79,24 @@ SEXP git2r_diff(SEXP repo, SEXP tree1, SEXP tree2, SEXP index, SEXP filename)
 
     c_index = LOGICAL(index)[0];
 
-    if (isNull(tree1) && ! c_index) {
-	if (!isNull(tree2))
+    if (Rf_isNull(tree1) && ! c_index) {
+	if (!Rf_isNull(tree2))
 	    git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
 	return git2r_diff_index_to_wd(repo, filename);
-    } else if (isNull(tree1) && c_index) {
-	if (!isNull(tree2))
+    } else if (Rf_isNull(tree1) && c_index) {
+	if (!Rf_isNull(tree2))
 	    git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
 	return git2r_diff_head_to_index(repo, filename);
-    } else if (!isNull(tree1) && isNull(tree2) && ! c_index) {
-	if (!isNull(repo))
+    } else if (!Rf_isNull(tree1) && Rf_isNull(tree2) && ! c_index) {
+	if (!Rf_isNull(repo))
 	    git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
 	return git2r_diff_tree_to_wd(tree1, filename);
-    } else if (!isNull(tree1) && isNull(tree2) && c_index) {
-	if (!isNull(repo))
+    } else if (!Rf_isNull(tree1) && Rf_isNull(tree2) && c_index) {
+	if (!Rf_isNull(repo))
 	    git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
 	return git2r_diff_tree_to_index(tree1, filename);
     } else {
-	if (!isNull(repo))
+	if (!Rf_isNull(repo))
 	    git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
 	return git2r_diff_tree_to_tree(tree1, tree2, filename);
     }
@@ -138,7 +138,7 @@ SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename)
     if (err)
 	goto cleanup;
 
-    if (isNull(filename)) {
+    if (Rf_isNull(filename)) {
         SEXP s_new = Rf_install("new");
         SEXP s_old = Rf_install("old");
 
@@ -236,7 +236,7 @@ SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
     if (err)
 	goto cleanup;
 
-    if (isNull(filename)) {
+    if (Rf_isNull(filename)) {
         SEXP s_new = Rf_install("new");
         SEXP s_old = Rf_install("old");
 
@@ -342,7 +342,7 @@ SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
     if (err)
 	goto cleanup;
 
-    if (isNull(filename)) {
+    if (Rf_isNull(filename)) {
         SEXP s_new = Rf_install("new");
 
         PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
@@ -451,7 +451,7 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
     if (err)
 	goto cleanup;
 
-    if (isNull(filename)) {
+    if (Rf_isNull(filename)) {
         SEXP s_new = Rf_install("new");
 
         PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
@@ -573,7 +573,7 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
     if (err)
 	goto cleanup;
 
-    if (isNull(filename)) {
+    if (Rf_isNull(filename)) {
         PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
         nprotect++;
         SET_SLOT(result, Rf_install("old"), tree1);

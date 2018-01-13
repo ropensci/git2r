@@ -97,7 +97,7 @@ SEXP git2r_clone(
         git2r_error(__func__, NULL, "'local_path'", git2r_err_string_arg);
     if (git2r_arg_check_logical(bare))
         git2r_error(__func__, NULL, "'bare'", git2r_err_logical_arg);
-    if ((!isNull(branch)) && git2r_arg_check_string(branch))
+    if ((!Rf_isNull(branch)) && git2r_arg_check_string(branch))
         git2r_error(__func__, NULL, "'branch'", git2r_err_string_arg);
     if (git2r_arg_check_logical(checkout))
         git2r_error(__func__, NULL, "'checkout'", git2r_err_logical_arg);
@@ -119,7 +119,7 @@ SEXP git2r_clone(
     if (LOGICAL(bare)[0])
         clone_opts.bare = 1;
 
-    if (!isNull(branch))
+    if (!Rf_isNull(branch))
         clone_opts.checkout_branch = CHAR(STRING_ELT(branch, 0));
 
     if (LOGICAL(progress)[0]) {

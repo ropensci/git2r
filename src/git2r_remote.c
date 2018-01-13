@@ -148,7 +148,7 @@ SEXP git2r_remote_fetch(
         git2r_error(__func__, NULL, "'msg'", git2r_err_string_arg);
     if (git2r_arg_check_logical(verbose))
         git2r_error(__func__, NULL, "'verbose'", git2r_err_logical_arg);
-    if ((!isNull(refspecs)) && git2r_arg_check_string_vec(refspecs))
+    if ((!Rf_isNull(refspecs)) && git2r_arg_check_string_vec(refspecs))
         git2r_error(__func__, NULL, "'refspecs'", git2r_err_string_vec_arg);
 
     repository = git2r_repository_open(repo);
@@ -159,7 +159,7 @@ SEXP git2r_remote_fetch(
     if (err)
         goto cleanup;
 
-    if (!isNull(refspecs)) {
+    if (!Rf_isNull(refspecs)) {
         size_t i, len;
 
         /* Count number of non NA values */
@@ -211,7 +211,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (!isNull(result))
+    if (!Rf_isNull(result))
         UNPROTECT(1);
 
     if (err)
@@ -256,7 +256,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (!isNull(list))
+    if (!Rf_isNull(list))
         UNPROTECT(1);
 
     if (err)
@@ -502,7 +502,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (!isNull(result))
+    if (!Rf_isNull(result))
         UNPROTECT(1);
 
     if (err)

@@ -435,7 +435,7 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (!isNull(list))
+    if (!Rf_isNull(list))
         UNPROTECT(1);
 
     if (err)

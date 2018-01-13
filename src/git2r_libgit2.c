@@ -97,13 +97,13 @@ SEXP git2r_ssl_cert_locations(SEXP filename, SEXP path)
     const char *f = NULL;
     const char *p = NULL;
 
-    if (!isNull(filename)) {
+    if (!Rf_isNull(filename)) {
         if (git2r_arg_check_string(filename))
             git2r_error(__func__, NULL, "'filename'", git2r_err_string_arg);
         f = CHAR(STRING_ELT(filename, 0));
     }
 
-    if (!isNull(path)) {
+    if (!Rf_isNull(path)) {
         if (git2r_arg_check_string(path))
             git2r_error(__func__, NULL, "'path'", git2r_err_string_arg);
         p = CHAR(STRING_ELT(path, 0));

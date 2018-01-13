@@ -100,7 +100,7 @@ static int git2r_tree_walk_cb(
     if (!p->recursive && *root)
         return 1;
 
-    if (!isNull(p->list)) {
+    if (!Rf_isNull(p->list)) {
         git_buf mode = GIT_BUF_INIT;
         git_object *blob = NULL, *obj = NULL;
         char sha[GIT_OID_HEXSZ + 1];
