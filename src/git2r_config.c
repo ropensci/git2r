@@ -114,8 +114,8 @@ static size_t git2r_config_list_init(
         SET_VECTOR_ELT(
             list,
             i_list[level],
-            item = allocVector(VECSXP, n_level[level]));
-        setAttrib(item, R_NamesSymbol, allocVector(STRSXP, n_level[level]));
+            item = Rf_allocVector(VECSXP, n_level[level]));
+        setAttrib(item, R_NamesSymbol, Rf_allocVector(STRSXP, n_level[level]));
         names = getAttrib(list, R_NamesSymbol);
         SET_STRING_ELT(names, i_list[level] , mkChar(name));
     }
@@ -304,8 +304,8 @@ SEXP git2r_config_get(SEXP repo)
             n++;
     }
 
-    PROTECT(result = allocVector(VECSXP, n));
-    setAttrib(result, R_NamesSymbol, allocVector(STRSXP, n));
+    PROTECT(result = Rf_allocVector(VECSXP, n));
+    setAttrib(result, R_NamesSymbol, Rf_allocVector(STRSXP, n));
 
     if (git2r_config_list_variables(cfg, result, n_level))
         goto cleanup;
@@ -414,7 +414,7 @@ SEXP git2r_config_get_string(SEXP repo, SEXP name)
         goto cleanup;
     }
 
-    PROTECT(result = allocVector(STRSXP, 1));
+    PROTECT(result = Rf_allocVector(STRSXP, 1));
     SET_STRING_ELT(result, 0, mkChar(value));
 
 cleanup:
@@ -459,7 +459,7 @@ SEXP git2r_config_get_logical(SEXP repo, SEXP name)
         goto cleanup;
     }
 
-    PROTECT(result = allocVector(LGLSXP, 1));
+    PROTECT(result = Rf_allocVector(LGLSXP, 1));
     if (value)
         LOGICAL(result)[0] = 1;
     else

@@ -801,7 +801,7 @@ int git2r_diff_get_file_cb(const git_diff_delta *delta,
 	SET_SLOT(
             VECTOR_ELT(p->result, p->file_ptr-1),
             s_hunks,
-            hunks = allocVector(VECSXP, p->hunk_ptr));
+            hunks = Rf_allocVector(VECSXP, p->hunk_ptr));
 	for (i = 0; i < len ; i++)
 	    SET_VECTOR_ELT(hunks, i, VECTOR_ELT(p->hunk_tmp, i));
     }
@@ -852,7 +852,7 @@ int git2r_diff_get_hunk_cb(const git_diff_delta *delta,
 	size_t len=p->line_ptr, i;
         SEXP s_lines = Rf_install("lines");
 
-        PROTECT(lines = allocVector(VECSXP, p->line_ptr));
+        PROTECT(lines = Rf_allocVector(VECSXP, p->line_ptr));
 	SET_SLOT(VECTOR_ELT(p->hunk_tmp, p->hunk_ptr-1), s_lines, lines);
 	for (i = 0; i < len; i++)
 	    SET_VECTOR_ELT(lines, i, VECTOR_ELT(p->line_tmp, i));
@@ -973,10 +973,10 @@ int git2r_diff_format_to_r(git_diff *diff, SEXP dest)
     if (err)
         return err;
 
-    PROTECT(payload.result = allocVector(VECSXP, num_files));
+    PROTECT(payload.result = Rf_allocVector(VECSXP, num_files));
     SET_SLOT(dest, Rf_install("files"), payload.result);
-    PROTECT(payload.hunk_tmp = allocVector(VECSXP, max_hunks));
-    PROTECT(payload.line_tmp = allocVector(VECSXP, max_lines));
+    PROTECT(payload.hunk_tmp = Rf_allocVector(VECSXP, max_hunks));
+    PROTECT(payload.line_tmp = Rf_allocVector(VECSXP, max_lines));
 
     err = git_diff_foreach(
         diff,

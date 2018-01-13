@@ -44,7 +44,7 @@ SEXP git2r_odb_hash(SEXP data)
         git2r_error(__func__, NULL, "'data'", git2r_err_string_vec_arg);
 
     len = length(data);
-    PROTECT(result = allocVector(STRSXP, len));
+    PROTECT(result = Rf_allocVector(STRSXP, len));
     for (i = 0; i < len; i++) {
         if (NA_STRING == STRING_ELT(data, i)) {
             SET_STRING_ELT(result, i, NA_STRING);
@@ -89,7 +89,7 @@ SEXP git2r_odb_hashfile(SEXP path)
         git2r_error(__func__, NULL, "'path'", git2r_err_string_vec_arg);
 
     len = length(path);
-    PROTECT(result = allocVector(STRSXP, len));
+    PROTECT(result = Rf_allocVector(STRSXP, len));
     for (i = 0; i < len; i++) {
         if (NA_STRING == STRING_ELT(path, i)) {
             SET_STRING_ELT(result, i, NA_STRING);
@@ -229,15 +229,15 @@ SEXP git2r_odb_objects(SEXP repo)
     if (err)
         goto cleanup;
 
-    PROTECT(result = allocVector(VECSXP, 3));
-    setAttrib(result, R_NamesSymbol, names = allocVector(STRSXP, 3));
+    PROTECT(result = Rf_allocVector(VECSXP, 3));
+    setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, 3));
 
     i = 0;
-    SET_VECTOR_ELT(result, i,   allocVector(STRSXP,  cb_data.n));
+    SET_VECTOR_ELT(result, i,   Rf_allocVector(STRSXP,  cb_data.n));
     SET_STRING_ELT(names,  i++, mkChar("sha"));
-    SET_VECTOR_ELT(result, i,   allocVector(STRSXP,  cb_data.n));
+    SET_VECTOR_ELT(result, i,   Rf_allocVector(STRSXP,  cb_data.n));
     SET_STRING_ELT(names,  i++, mkChar("type"));
-    SET_VECTOR_ELT(result, i,   allocVector(INTSXP,  cb_data.n));
+    SET_VECTOR_ELT(result, i,   Rf_allocVector(INTSXP,  cb_data.n));
     SET_STRING_ELT(names,  i++, mkChar("len"));
 
     cb_data.list = result;
@@ -504,23 +504,23 @@ SEXP git2r_odb_blobs(SEXP repo)
     if (err)
         goto cleanup;
 
-    PROTECT(result = allocVector(VECSXP, 7));
-    setAttrib(result, R_NamesSymbol, names = allocVector(STRSXP, 7));
+    PROTECT(result = Rf_allocVector(VECSXP, 7));
+    setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, 7));
 
     i = 0;
-    SET_VECTOR_ELT(result, i,   allocVector(STRSXP,  cb_data.n));
+    SET_VECTOR_ELT(result, i,   Rf_allocVector(STRSXP,  cb_data.n));
     SET_STRING_ELT(names,  i++, mkChar("sha"));
-    SET_VECTOR_ELT(result, i,   allocVector(STRSXP,  cb_data.n));
+    SET_VECTOR_ELT(result, i,   Rf_allocVector(STRSXP,  cb_data.n));
     SET_STRING_ELT(names,  i++, mkChar("path"));
-    SET_VECTOR_ELT(result, i,   allocVector(STRSXP,  cb_data.n));
+    SET_VECTOR_ELT(result, i,   Rf_allocVector(STRSXP,  cb_data.n));
     SET_STRING_ELT(names,  i++, mkChar("name"));
-    SET_VECTOR_ELT(result, i,   allocVector(INTSXP,  cb_data.n));
+    SET_VECTOR_ELT(result, i,   Rf_allocVector(INTSXP,  cb_data.n));
     SET_STRING_ELT(names,  i++, mkChar("len"));
-    SET_VECTOR_ELT(result, i,   allocVector(STRSXP,  cb_data.n));
+    SET_VECTOR_ELT(result, i,   Rf_allocVector(STRSXP,  cb_data.n));
     SET_STRING_ELT(names,  i++, mkChar("commit"));
-    SET_VECTOR_ELT(result, i,   allocVector(STRSXP,  cb_data.n));
+    SET_VECTOR_ELT(result, i,   Rf_allocVector(STRSXP,  cb_data.n));
     SET_STRING_ELT(names,  i++, mkChar("author"));
-    SET_VECTOR_ELT(result, i,   allocVector(REALSXP, cb_data.n));
+    SET_VECTOR_ELT(result, i,   Rf_allocVector(REALSXP, cb_data.n));
     SET_STRING_ELT(names,  i++, mkChar("when"));
 
     cb_data.list = result;

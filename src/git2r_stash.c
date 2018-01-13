@@ -158,7 +158,7 @@ SEXP git2r_stash_list(SEXP repo)
     if (err)
         goto cleanup;
 
-    PROTECT(list = allocVector(VECSXP, cb_data.n));
+    PROTECT(list = Rf_allocVector(VECSXP, cb_data.n));
     cb_data.n = 0;
     cb_data.list = list;
     cb_data.repo = repo;

@@ -509,7 +509,7 @@ SEXP git2r_commit_parent_list(SEXP commit)
         goto cleanup;
 
     n = git_commit_parentcount(commit_obj);
-    PROTECT(list = allocVector(VECSXP, n));
+    PROTECT(list = Rf_allocVector(VECSXP, n));
 
     for (i = 0; i < n; i++) {
         git_commit *parent = NULL;

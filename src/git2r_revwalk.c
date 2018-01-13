@@ -89,7 +89,7 @@ SEXP git2r_revwalk_list(
 
     if (git_repository_is_empty(repository)) {
         /* No commits, create empty list */
-        PROTECT(result = allocVector(VECSXP, 0));
+        PROTECT(result = Rf_allocVector(VECSXP, 0));
         goto cleanup;
     }
 
@@ -113,7 +113,7 @@ SEXP git2r_revwalk_list(
     n = git2r_revwalk_count(walker, INTEGER(max_n)[0]);
 
     /* Create list to store result */
-    PROTECT(result = allocVector(VECSXP, n));
+    PROTECT(result = Rf_allocVector(VECSXP, n));
 
     git_revwalk_reset(walker);
     err = git_revwalk_push_head(walker);
@@ -220,13 +220,13 @@ SEXP git2r_revwalk_contributions(
     n = git2r_revwalk_count(walker, -1);
 
     /* Create vectors to store result */
-    PROTECT(result = allocVector(VECSXP, 3));
-    setAttrib(result, R_NamesSymbol, names = allocVector(STRSXP, 3));
-    SET_VECTOR_ELT(result, 0, when = allocVector(REALSXP, n));
+    PROTECT(result = Rf_allocVector(VECSXP, 3));
+    setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, 3));
+    SET_VECTOR_ELT(result, 0, when = Rf_allocVector(REALSXP, n));
     SET_STRING_ELT(names, 0, mkChar("when"));
-    SET_VECTOR_ELT(result, 1, author = allocVector(STRSXP, n));
+    SET_VECTOR_ELT(result, 1, author = Rf_allocVector(STRSXP, n));
     SET_STRING_ELT(names, 1, mkChar("author"));
-    SET_VECTOR_ELT(result, 2, email = allocVector(STRSXP, n));
+    SET_VECTOR_ELT(result, 2, email = Rf_allocVector(STRSXP, n));
     SET_STRING_ELT(names, 2, mkChar("email"));
 
     git_revwalk_reset(walker);

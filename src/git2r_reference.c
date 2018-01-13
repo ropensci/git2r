@@ -53,7 +53,7 @@ SEXP git2r_reference_dwim(SEXP repo, SEXP shorthand)
     if (err)
         goto cleanup;
 
-    PROTECT(result = allocVector(STRSXP, 1));
+    PROTECT(result = Rf_allocVector(STRSXP, 1));
     SET_STRING_ELT(result, 0, mkChar(git_reference_name(reference)));
 
 cleanup:
@@ -130,11 +130,11 @@ SEXP git2r_reference_list(SEXP repo)
     if (err)
         goto cleanup;
 
-    PROTECT(result = allocVector(VECSXP, ref_list.count));
+    PROTECT(result = Rf_allocVector(VECSXP, ref_list.count));
     setAttrib(
         result,
         R_NamesSymbol,
-        names = allocVector(STRSXP, ref_list.count));
+        names = Rf_allocVector(STRSXP, ref_list.count));
 
     for (i = 0; i < ref_list.count; i++) {
         SEXP reference;

@@ -152,8 +152,8 @@ static void git2r_status_list_ignored(
 
     /* Create list with the correct number of entries */
     count = git2r_status_count_ignored(status_list);
-    SET_VECTOR_ELT(list, list_index, item = allocVector(VECSXP, count));
-    setAttrib(item, R_NamesSymbol, names = allocVector(STRSXP, count));
+    SET_VECTOR_ELT(list, list_index, item = Rf_allocVector(VECSXP, count));
+    setAttrib(item, R_NamesSymbol, names = Rf_allocVector(STRSXP, count));
 
     /* i index the entrycount. j index the added change in list */
     count = git_status_list_entrycount(status_list);
@@ -187,8 +187,8 @@ static void git2r_status_list_staged(
 
     /* Create list with the correct number of entries */
     n = git2r_status_count_staged(status_list);
-    SET_VECTOR_ELT(list, list_index, sub_list = allocVector(VECSXP, n));
-    setAttrib(sub_list, R_NamesSymbol, sub_list_names = allocVector(STRSXP, n));
+    SET_VECTOR_ELT(list, list_index, sub_list = Rf_allocVector(VECSXP, n));
+    setAttrib(sub_list, R_NamesSymbol, sub_list_names = Rf_allocVector(STRSXP, n));
 
     /* i index the entrycount. j index the added change in list */
     n = git_status_list_entrycount(status_list);
@@ -220,12 +220,12 @@ static void git2r_status_list_staged(
 
         if (old_path && new_path && strcmp(old_path, new_path)) {
             SEXP item;
-            SET_VECTOR_ELT(sub_list, j, item = allocVector(STRSXP, 2));
+            SET_VECTOR_ELT(sub_list, j, item = Rf_allocVector(STRSXP, 2));
             SET_STRING_ELT(item, 0, mkChar(old_path));
             SET_STRING_ELT(item, 1, mkChar(new_path));
         } else {
             SEXP item;
-            SET_VECTOR_ELT(sub_list, j, item = allocVector(STRSXP, 1));
+            SET_VECTOR_ELT(sub_list, j, item = Rf_allocVector(STRSXP, 1));
             SET_STRING_ELT(item, 0, mkChar(old_path ? old_path : new_path));
         }
 
@@ -252,8 +252,8 @@ static void git2r_status_list_unstaged(
 
     /* Create list with the correct number of entries */
     n = git2r_status_count_unstaged(status_list);
-    SET_VECTOR_ELT(list, list_index, sub_list = allocVector(VECSXP, n));
-    setAttrib(sub_list, R_NamesSymbol, sub_list_names = allocVector(STRSXP, n));
+    SET_VECTOR_ELT(list, list_index, sub_list = Rf_allocVector(VECSXP, n));
+    setAttrib(sub_list, R_NamesSymbol, sub_list_names = Rf_allocVector(STRSXP, n));
 
     /* i index the entrycount. j index the added change in list */
     n = git_status_list_entrycount(status_list);
@@ -287,12 +287,12 @@ static void git2r_status_list_unstaged(
 
         if (old_path && new_path && strcmp(old_path, new_path)) {
             SEXP item;
-            SET_VECTOR_ELT(sub_list, j, item = allocVector(STRSXP, 2));
+            SET_VECTOR_ELT(sub_list, j, item = Rf_allocVector(STRSXP, 2));
             SET_STRING_ELT(item, 0, mkChar(old_path));
             SET_STRING_ELT(item, 1, mkChar(new_path));
         } else {
             SEXP item;
-            SET_VECTOR_ELT(sub_list, j, item = allocVector(STRSXP, 1));
+            SET_VECTOR_ELT(sub_list, j, item = Rf_allocVector(STRSXP, 1));
             SET_STRING_ELT(item, 0, mkChar(old_path ? old_path : new_path));
         }
 
@@ -319,8 +319,8 @@ static void git2r_status_list_untracked(
 
     /* Create list with the correct number of entries */
     n = git2r_status_count_untracked(status_list);
-    SET_VECTOR_ELT(list, list_index, sub_list = allocVector(VECSXP, n));
-    setAttrib(sub_list, R_NamesSymbol, sub_list_names = allocVector(STRSXP, n));
+    SET_VECTOR_ELT(list, list_index, sub_list = Rf_allocVector(VECSXP, n));
+    setAttrib(sub_list, R_NamesSymbol, sub_list_names = Rf_allocVector(STRSXP, n));
 
     /* i index the entrycount. j index the added change in list */
     n = git_status_list_entrycount(status_list);
@@ -401,8 +401,8 @@ SEXP git2r_status_list(
         LOGICAL(untracked)[0] +
         LOGICAL(ignored)[0];
 
-    PROTECT(list = allocVector(VECSXP, count));
-    setAttrib(list, R_NamesSymbol, list_names = allocVector(STRSXP, count));
+    PROTECT(list = Rf_allocVector(VECSXP, count));
+    setAttrib(list, R_NamesSymbol, list_names = Rf_allocVector(STRSXP, count));
 
     if (LOGICAL(staged)[0]) {
         SET_STRING_ELT(list_names, i, mkChar("staged"));

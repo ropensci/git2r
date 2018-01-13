@@ -246,7 +246,7 @@ SEXP git2r_remote_list(SEXP repo)
     if (err)
         goto cleanup;
 
-    PROTECT(list = allocVector(STRSXP, rem_list.count));
+    PROTECT(list = Rf_allocVector(STRSXP, rem_list.count));
     for (i = 0; i < rem_list.count; i++)
         SET_STRING_ELT(list, i, mkChar(rem_list.strings[i]));
 
@@ -404,7 +404,7 @@ SEXP git2r_remote_url(SEXP repo, SEXP remote)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     len = LENGTH(remote);
-    PROTECT(url = allocVector(STRSXP, len));
+    PROTECT(url = Rf_allocVector(STRSXP, len));
 
     for (; i < len; i++) {
         if (NA_STRING == STRING_ELT(remote, i)) {
@@ -488,8 +488,8 @@ SEXP git2r_remote_ls(SEXP name, SEXP repo, SEXP credentials)
     if (err)
         goto cleanup;
 
-    PROTECT(result = allocVector(STRSXP, refs_len));
-    setAttrib(result, R_NamesSymbol, names = allocVector(STRSXP, refs_len));
+    PROTECT(result = Rf_allocVector(STRSXP, refs_len));
+    setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, refs_len));
 
     for (i = 0; i < refs_len; i++) {
         char oid[GIT_OID_HEXSZ + 1] = {0};

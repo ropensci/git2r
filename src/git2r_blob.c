@@ -52,7 +52,7 @@ SEXP git2r_blob_content(SEXP blob)
     if (err)
         goto cleanup;
 
-    PROTECT(result = allocVector(STRSXP, 1));
+    PROTECT(result = Rf_allocVector(STRSXP, 1));
     SET_STRING_ELT(result, 0, mkChar(git_blob_rawcontent(blob_obj)));
 
 cleanup:
@@ -94,7 +94,7 @@ SEXP git2r_blob_create_fromdisk(SEXP repo, SEXP path)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     len = length(path);
-    PROTECT(result = allocVector(VECSXP, len));
+    PROTECT(result = Rf_allocVector(VECSXP, len));
     nprotect++;
     for (i = 0; i < len; i++) {
         if (NA_STRING != STRING_ELT(path, i)) {
@@ -159,7 +159,7 @@ SEXP git2r_blob_create_fromworkdir(SEXP repo, SEXP relative_path)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     len = length(relative_path);
-    PROTECT(result = allocVector(VECSXP, len));
+    PROTECT(result = Rf_allocVector(VECSXP, len));
     nprotect++;
     for (i = 0; i < len; i++) {
         if (NA_STRING != STRING_ELT(relative_path, i)) {
@@ -247,7 +247,7 @@ SEXP git2r_blob_is_binary(SEXP blob)
     if (err)
         goto cleanup;
 
-    PROTECT(result = allocVector(LGLSXP, 1));
+    PROTECT(result = Rf_allocVector(LGLSXP, 1));
     if (git_blob_is_binary(blob_obj))
         LOGICAL(result)[0] = 1;
     else

@@ -243,7 +243,7 @@ SEXP git2r_branch_is_head(SEXP branch)
 
     err = git_branch_is_head(reference);
     if (0 == err || 1 == err) {
-        PROTECT(result = allocVector(LGLSXP, 1));
+        PROTECT(result = Rf_allocVector(LGLSXP, 1));
         LOGICAL(result)[0] = err;
         err = GIT_OK;
     }
@@ -294,8 +294,8 @@ SEXP git2r_branch_list(SEXP repo, SEXP flags)
     err = git2r_branch_count(repository, INTEGER(flags)[0], &n);
     if (err)
         goto cleanup;
-    PROTECT(result = allocVector(VECSXP, n));
-    setAttrib(result, R_NamesSymbol, names = allocVector(STRSXP, n));
+    PROTECT(result = Rf_allocVector(VECSXP, n));
+    setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, n));
 
     err = git_branch_iterator_new(&iter, repository,  INTEGER(flags)[0]);
     if (err)
@@ -371,7 +371,7 @@ SEXP git2r_branch_canonical_name(SEXP branch)
     if (err)
         goto cleanup;
 
-    PROTECT(result = allocVector(STRSXP, 1));
+    PROTECT(result = Rf_allocVector(STRSXP, 1));
     SET_STRING_ELT(result, 0, mkChar(git_reference_name(reference)));
 
 cleanup:
@@ -437,7 +437,7 @@ SEXP git2r_branch_upstream_canonical_name(SEXP branch)
     if (err)
         goto cleanup;
 
-    PROTECT(result = allocVector(STRSXP, 1));
+    PROTECT(result = Rf_allocVector(STRSXP, 1));
     SET_STRING_ELT(result, 0, mkChar(name));
 
 cleanup:
@@ -497,7 +497,7 @@ SEXP git2r_branch_remote_name(SEXP branch)
     if (err)
         goto cleanup;
 
-    PROTECT(result = allocVector(STRSXP, 1));
+    PROTECT(result = Rf_allocVector(STRSXP, 1));
     SET_STRING_ELT(result, 0, mkChar(buf.ptr));
     git_buf_free(&buf);
 
@@ -567,7 +567,7 @@ SEXP git2r_branch_remote_url(SEXP branch)
     }
     git_buf_free(&buf);
 
-    PROTECT(result = allocVector(STRSXP, 1));
+    PROTECT(result = Rf_allocVector(STRSXP, 1));
     SET_STRING_ELT(result, 0, mkChar(git_remote_url(remote)));
 
 cleanup:
@@ -692,7 +692,7 @@ SEXP git2r_branch_target(SEXP branch)
     if (err)
         goto cleanup;
 
-    PROTECT(result = allocVector(STRSXP, 1));
+    PROTECT(result = Rf_allocVector(STRSXP, 1));
     if (GIT_REF_OID == git_reference_type(reference)) {
         git_oid_fmt(sha, git_reference_target(reference));
         sha[GIT_OID_HEXSZ] = '\0';

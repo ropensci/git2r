@@ -67,7 +67,7 @@ SEXP git2r_graph_ahead_behind(SEXP local, SEXP upstream)
     if (err)
         goto cleanup;
 
-    PROTECT(result = allocVector(INTSXP, 2));
+    PROTECT(result = Rf_allocVector(INTSXP, 2));
     nprotect++;
     INTEGER(result)[0] = ahead;
     INTEGER(result)[1] = behind;

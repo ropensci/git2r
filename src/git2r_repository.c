@@ -138,7 +138,7 @@ SEXP git2r_repository_fetch_heads(SEXP repo)
         goto cleanup;
     }
 
-    PROTECT(result = allocVector(VECSXP, cb_data.n));
+    PROTECT(result = Rf_allocVector(VECSXP, cb_data.n));
     cb_data.n = 0;
     cb_data.list = result;
     cb_data.repo = repo;
@@ -274,7 +274,7 @@ SEXP git2r_repository_is_bare(SEXP repo)
     is_bare = git_repository_is_bare(repository);
     git_repository_free(repository);
 
-    PROTECT(result = allocVector(LGLSXP, 1));
+    PROTECT(result = Rf_allocVector(LGLSXP, 1));
     if (1 == is_bare)
         LOGICAL(result)[0] = 1;
     else
@@ -305,7 +305,7 @@ SEXP git2r_repository_is_shallow(SEXP repo)
     if (is_shallow < 0)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
-    PROTECT(result = allocVector(LGLSXP, 1));
+    PROTECT(result = Rf_allocVector(LGLSXP, 1));
     if (1 == is_shallow)
         LOGICAL(result)[0] = 1;
     else
@@ -336,7 +336,7 @@ SEXP git2r_repository_head_detached(SEXP repo)
     if (head_detached < 0)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
-    PROTECT(result = allocVector(LGLSXP, 1));
+    PROTECT(result = Rf_allocVector(LGLSXP, 1));
     if (1 == head_detached)
         LOGICAL(result)[0] = 1;
     else
@@ -367,7 +367,7 @@ SEXP git2r_repository_is_empty(SEXP repo)
     if (is_empty < 0)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
-    PROTECT(result = allocVector(LGLSXP, 1));
+    PROTECT(result = Rf_allocVector(LGLSXP, 1));
     if (1 == is_empty)
         LOGICAL(result)[0] = 1;
     else
@@ -396,7 +396,7 @@ SEXP git2r_repository_can_open(SEXP path)
     if (repository)
         git_repository_free(repository);
 
-    PROTECT(result = allocVector(LGLSXP, 1));
+    PROTECT(result = Rf_allocVector(LGLSXP, 1));
     if (0 != can_open)
         LOGICAL(result)[0] = 0;
     else
@@ -504,7 +504,7 @@ SEXP git2r_repository_workdir(SEXP repo)
 
     if (!git_repository_is_bare(repository)) {
         const char *wd = git_repository_workdir(repository);
-        PROTECT(result = allocVector(STRSXP, 1));
+        PROTECT(result = Rf_allocVector(STRSXP, 1));
         nprotect++;
         SET_STRING_ELT(result, 0, mkChar(wd));
     }
@@ -556,7 +556,7 @@ SEXP git2r_repository_discover(SEXP path, SEXP ceiling)
         goto cleanup;
     }
 
-    PROTECT(result = allocVector(STRSXP, 1));
+    PROTECT(result = Rf_allocVector(STRSXP, 1));
     SET_STRING_ELT(result, 0, mkChar(buf.ptr));
 
 cleanup:

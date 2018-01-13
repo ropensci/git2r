@@ -287,15 +287,15 @@ SEXP git2r_tag_list(SEXP repo)
     if (err) {
         if (GIT_ENOTFOUND == err) {
             err = 0;
-            PROTECT(result = allocVector(VECSXP, 0));
-            setAttrib(result, R_NamesSymbol, allocVector(STRSXP, 0));
+            PROTECT(result = Rf_allocVector(VECSXP, 0));
+            setAttrib(result, R_NamesSymbol, Rf_allocVector(STRSXP, 0));
         }
 
         goto cleanup;
     }
 
-    PROTECT(result = allocVector(VECSXP, cb_data.n));
-    setAttrib(result, R_NamesSymbol, allocVector(STRSXP, cb_data.n));
+    PROTECT(result = Rf_allocVector(VECSXP, cb_data.n));
+    setAttrib(result, R_NamesSymbol, Rf_allocVector(STRSXP, cb_data.n));
 
     cb_data.n = 0;
     cb_data.tags = result;

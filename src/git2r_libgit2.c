@@ -32,8 +32,8 @@ SEXP git2r_libgit2_features(void)
     int value;
 
     value = git_libgit2_features();
-    PROTECT(features = allocVector(VECSXP, 3));
-    setAttrib(features, R_NamesSymbol, names = allocVector(STRSXP, 3));
+    PROTECT(features = Rf_allocVector(VECSXP, 3));
+    setAttrib(features, R_NamesSymbol, names = Rf_allocVector(STRSXP, 3));
 
     SET_STRING_ELT(names, 0, mkChar("threads"));
     if (value & GIT_FEATURE_THREADS)
@@ -69,8 +69,8 @@ SEXP git2r_libgit2_version(void)
     int major, minor, rev;
 
     git_libgit2_version(&major, &minor, &rev);
-    PROTECT(version = allocVector(VECSXP, 3));
-    setAttrib(version, R_NamesSymbol, names = allocVector(STRSXP, 3));
+    PROTECT(version = Rf_allocVector(VECSXP, 3));
+    setAttrib(version, R_NamesSymbol, names = Rf_allocVector(STRSXP, 3));
     SET_VECTOR_ELT(version, 0, ScalarInteger(major));
     SET_VECTOR_ELT(version, 1, ScalarInteger(minor));
     SET_VECTOR_ELT(version, 2, ScalarInteger(rev));

@@ -52,13 +52,13 @@ void git2r_tree_init(const git_tree *source, SEXP repo, SEXP dest)
     SET_SLOT(dest, s_sha, mkString(sha));
 
     n = git_tree_entrycount(source);
-    PROTECT(filemode = allocVector(INTSXP, n));
+    PROTECT(filemode = Rf_allocVector(INTSXP, n));
     SET_SLOT(dest, s_filemode, filemode);
-    PROTECT(id = allocVector(STRSXP, n));
+    PROTECT(id = Rf_allocVector(STRSXP, n));
     SET_SLOT(dest, s_id, id);
-    PROTECT(type = allocVector(STRSXP, n));
+    PROTECT(type = Rf_allocVector(STRSXP, n));
     SET_SLOT(dest, s_type, type);
-    PROTECT(name = allocVector(STRSXP, n));
+    PROTECT(name = Rf_allocVector(STRSXP, n));
     SET_SLOT(dest, s_name, name);
 
     filemode_ptr = INTEGER(filemode);
@@ -191,21 +191,21 @@ SEXP git2r_tree_walk(SEXP tree, SEXP recursive)
     if (err)
         goto cleanup;
 
-    PROTECT(result = allocVector(VECSXP, 6));
+    PROTECT(result = Rf_allocVector(VECSXP, 6));
     nprotect++;
-    setAttrib(result, R_NamesSymbol, names = allocVector(STRSXP, 6));
+    setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, 6));
 
-    SET_VECTOR_ELT(result, 0,   allocVector(STRSXP,  cb_data.n));
+    SET_VECTOR_ELT(result, 0,   Rf_allocVector(STRSXP,  cb_data.n));
     SET_STRING_ELT(names,  0, mkChar("mode"));
-    SET_VECTOR_ELT(result, 1,   allocVector(STRSXP,  cb_data.n));
+    SET_VECTOR_ELT(result, 1,   Rf_allocVector(STRSXP,  cb_data.n));
     SET_STRING_ELT(names,  1, mkChar("type"));
-    SET_VECTOR_ELT(result, 2,   allocVector(STRSXP,  cb_data.n));
+    SET_VECTOR_ELT(result, 2,   Rf_allocVector(STRSXP,  cb_data.n));
     SET_STRING_ELT(names,  2, mkChar("sha"));
-    SET_VECTOR_ELT(result, 3,   allocVector(STRSXP,  cb_data.n));
+    SET_VECTOR_ELT(result, 3,   Rf_allocVector(STRSXP,  cb_data.n));
     SET_STRING_ELT(names,  3, mkChar("path"));
-    SET_VECTOR_ELT(result, 4,   allocVector(STRSXP,  cb_data.n));
+    SET_VECTOR_ELT(result, 4,   Rf_allocVector(STRSXP,  cb_data.n));
     SET_STRING_ELT(names,  4, mkChar("name"));
-    SET_VECTOR_ELT(result, 5,   allocVector(INTSXP,  cb_data.n));
+    SET_VECTOR_ELT(result, 5,   Rf_allocVector(INTSXP,  cb_data.n));
     SET_STRING_ELT(names,  5, mkChar("len"));
 
     cb_data.list = result;

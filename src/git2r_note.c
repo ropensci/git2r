@@ -210,7 +210,7 @@ SEXP git2r_note_default_ref(SEXP repo)
     if (err)
         goto cleanup;
 
-    PROTECT(result = allocVector(STRSXP, 1));
+    PROTECT(result = Rf_allocVector(STRSXP, 1));
     SET_STRING_ELT(result, 0, mkChar(buf.ptr));
 
 cleanup:
@@ -310,13 +310,13 @@ SEXP git2r_notes(SEXP repo, SEXP ref)
     if (err) {
         if (GIT_ENOTFOUND == err) {
             err = GIT_OK;
-            PROTECT(result = allocVector(VECSXP, 0));
+            PROTECT(result = Rf_allocVector(VECSXP, 0));
         }
 
         goto cleanup;
     }
 
-    PROTECT(result = allocVector(VECSXP, cb_data.n));
+    PROTECT(result = Rf_allocVector(VECSXP, cb_data.n));
     cb_data.n = 0;
     cb_data.list = result;
     cb_data.repo = repo;

@@ -57,7 +57,7 @@ void git2r_reflog_entry_init(
     sha[GIT_OID_HEXSZ] = '\0';
     SET_SLOT(dest, s_sha, mkString(sha));
 
-    SET_SLOT(dest, s_index, i = allocVector(INTSXP, 1));
+    SET_SLOT(dest, s_index, i = Rf_allocVector(INTSXP, 1));
     INTEGER(i)[0] = index;
 
     committer = git_reflog_entry_committer(source);
@@ -101,7 +101,7 @@ SEXP git2r_reflog_list(SEXP repo, SEXP ref)
         goto cleanup;
 
     n = git_reflog_entrycount(reflog);
-    PROTECT(result = allocVector(VECSXP, n));
+    PROTECT(result = Rf_allocVector(VECSXP, n));
     for (i = 0; i < n; i++) {
         const git_reflog_entry *entry = git_reflog_entry_byindex(reflog, i);
 
