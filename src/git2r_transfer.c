@@ -38,11 +38,11 @@ void git2r_transfer_progress_init(
     SEXP s_indexed_deltas = Rf_install("indexed_deltas");
     SEXP s_received_bytes = Rf_install("received_bytes");
 
-    SET_SLOT(dest, s_total_objects, ScalarInteger(source->total_objects));
-    SET_SLOT(dest, s_indexed_objects, ScalarInteger(source->indexed_objects));
-    SET_SLOT(dest, s_received_objects, ScalarInteger(source->received_objects));
-    SET_SLOT(dest, s_local_objects, ScalarInteger(source->local_objects));
-    SET_SLOT(dest, s_total_deltas, ScalarInteger(source->total_deltas));
-    SET_SLOT(dest, s_indexed_deltas, ScalarInteger(source->indexed_deltas));
-    SET_SLOT(dest, s_received_bytes, ScalarInteger(source->received_bytes));
+    SET_SLOT(dest, s_total_objects, Rf_ScalarInteger(source->total_objects));
+    SET_SLOT(dest, s_indexed_objects, Rf_ScalarInteger(source->indexed_objects));
+    SET_SLOT(dest, s_received_objects, Rf_ScalarInteger(source->received_objects));
+    SET_SLOT(dest, s_local_objects, Rf_ScalarInteger(source->local_objects));
+    SET_SLOT(dest, s_total_deltas, Rf_ScalarInteger(source->total_deltas));
+    SET_SLOT(dest, s_indexed_deltas, Rf_ScalarInteger(source->indexed_deltas));
+    SET_SLOT(dest, s_received_bytes, Rf_ScalarInteger(source->received_bytes));
 }

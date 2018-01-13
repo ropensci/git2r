@@ -870,10 +870,10 @@ int git2r_diff_get_hunk_cb(const git_diff_delta *delta,
 
         PROTECT(hunk_obj = NEW_OBJECT(MAKE_CLASS("git_diff_hunk")));
 	SET_VECTOR_ELT(p->hunk_tmp, p->hunk_ptr, hunk_obj);
-	SET_SLOT(hunk_obj, s_old_start, ScalarInteger(hunk->old_start));
-	SET_SLOT(hunk_obj, s_old_lines, ScalarInteger(hunk->old_lines));
-	SET_SLOT(hunk_obj, s_new_start, ScalarInteger(hunk->new_start));
-	SET_SLOT(hunk_obj, s_new_lines, ScalarInteger(hunk->new_lines));
+	SET_SLOT(hunk_obj, s_old_start, Rf_ScalarInteger(hunk->old_start));
+	SET_SLOT(hunk_obj, s_old_lines, Rf_ScalarInteger(hunk->old_lines));
+	SET_SLOT(hunk_obj, s_new_start, Rf_ScalarInteger(hunk->new_start));
+	SET_SLOT(hunk_obj, s_new_lines, Rf_ScalarInteger(hunk->new_lines));
 	SET_SLOT(hunk_obj, s_header, Rf_mkString(hunk->header));
         UNPROTECT(1);
 
@@ -918,10 +918,10 @@ int git2r_diff_get_line_cb(const git_diff_delta *delta,
     PROTECT(line_obj = NEW_OBJECT(MAKE_CLASS("git_diff_line")));
     SET_VECTOR_ELT(p->line_tmp, p->line_ptr++, line_obj);
 
-    SET_SLOT(line_obj, s_origin, ScalarInteger(line->origin));
-    SET_SLOT(line_obj, s_old_lineno, ScalarInteger(line->old_lineno));
-    SET_SLOT(line_obj, s_new_lineno, ScalarInteger(line->new_lineno));
-    SET_SLOT(line_obj, s_num_lines, ScalarInteger(line->num_lines));
+    SET_SLOT(line_obj, s_origin, Rf_ScalarInteger(line->origin));
+    SET_SLOT(line_obj, s_old_lineno, Rf_ScalarInteger(line->old_lineno));
+    SET_SLOT(line_obj, s_new_lineno, Rf_ScalarInteger(line->new_lineno));
+    SET_SLOT(line_obj, s_num_lines, Rf_ScalarInteger(line->num_lines));
 
     if (line->content_len > sizeof(buffer))
 	buffer = malloc(line->content_len+1);

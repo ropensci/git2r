@@ -103,6 +103,6 @@ void git2r_signature_init(const git_signature *source, SEXP dest)
     SET_SLOT(dest, s_email, Rf_mkString(source->email));
 
     when = GET_SLOT(dest, Rf_install("when"));
-    SET_SLOT(when, s_time, ScalarReal((double)source->when.time));
-    SET_SLOT(when, s_offset, ScalarReal((double)source->when.offset));
+    SET_SLOT(when, s_time, Rf_ScalarReal((double)source->when.time));
+    SET_SLOT(when, s_offset, Rf_ScalarReal((double)source->when.offset));
 }

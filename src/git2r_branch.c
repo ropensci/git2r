@@ -90,7 +90,7 @@ int git2r_branch_init(
     if (err)
         goto cleanup;
     SET_SLOT(dest, s_name, Rf_mkString(name));
-    SET_SLOT(dest, s_type, ScalarInteger(type));
+    SET_SLOT(dest, s_type, Rf_ScalarInteger(type));
     SET_SLOT(dest, s_repo, repo);
 
 cleanup:

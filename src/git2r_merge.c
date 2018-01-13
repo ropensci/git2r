@@ -178,12 +178,12 @@ static int git2r_fast_forward_merge(
     SET_SLOT(
         merge_result,
         Rf_install("fast_forward"),
-        ScalarLogical(1));
+        Rf_ScalarLogical(1));
 
     SET_SLOT(
         merge_result,
         Rf_install("conflicts"),
-        ScalarLogical(0));
+        Rf_ScalarLogical(0));
 
 cleanup:
     git_buf_free(&buf);
@@ -228,7 +228,7 @@ static int git2r_normal_merge(
     git_commit *commit = NULL;
     git_index *index = NULL;
 
-    SET_SLOT(merge_result, Rf_install("fast_forward"), ScalarLogical(0));
+    SET_SLOT(merge_result, Rf_install("fast_forward"), Rf_ScalarLogical(0));
 
     err = git_merge(
         repository,
@@ -244,9 +244,9 @@ static int git2r_normal_merge(
         goto cleanup;
 
     if (git_index_has_conflicts(index)) {
-        SET_SLOT(merge_result, Rf_install("conflicts"), ScalarLogical(1));
+        SET_SLOT(merge_result, Rf_install("conflicts"), Rf_ScalarLogical(1));
     } else {
-        SET_SLOT(merge_result, Rf_install("conflicts"), ScalarLogical(0));
+        SET_SLOT(merge_result, Rf_install("conflicts"), Rf_ScalarLogical(0));
 
         if (commit_on_success) {
             char sha[GIT_OID_HEXSZ + 1];
@@ -325,12 +325,12 @@ static int git2r_merge(
     if (merge_analysis & GIT_MERGE_ANALYSIS_UP_TO_DATE) {
         SET_SLOT(merge_result,
                  Rf_install("up_to_date"),
-                 ScalarLogical(1));
+                 Rf_ScalarLogical(1));
         return GIT_OK;
     } else {
         SET_SLOT(merge_result,
                  Rf_install("up_to_date"),
-                 ScalarLogical(0));
+                 Rf_ScalarLogical(0));
     }
 
     if (GIT_MERGE_PREFERENCE_NONE == preference)

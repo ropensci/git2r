@@ -98,7 +98,7 @@ static int git2r_repository_fetchhead_foreach_cb(
         SET_SLOT(fetch_head, s_remote_url, Rf_mkString(remote_url));
         git_oid_tostr(sha, sizeof(sha), oid);
         SET_SLOT(fetch_head, s_sha, Rf_mkString(sha));
-        SET_SLOT(fetch_head, s_is_merge, ScalarLogical(is_merge));
+        SET_SLOT(fetch_head, s_is_merge, Rf_ScalarLogical(is_merge));
         SET_SLOT(fetch_head, s_repo, cb_data->repo);
         UNPROTECT(1);
     }

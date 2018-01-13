@@ -68,7 +68,7 @@ void git2r_reflog_entry_init(
     if (message)
         SET_SLOT(dest, s_message, Rf_mkString(message));
     else
-        SET_SLOT(dest, s_message, ScalarString(NA_STRING));
+        SET_SLOT(dest, s_message, Rf_ScalarString(NA_STRING));
 
     SET_SLOT(dest, s_refname, ref);
     SET_SLOT(dest, s_repo, repo);

@@ -133,5 +133,5 @@ cleanup:
     if (err)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
-    return ScalarLogical(descendant_of);
+    return Rf_ScalarLogical(descendant_of);
 }

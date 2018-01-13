@@ -310,5 +310,5 @@ cleanup:
     if (err)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
-    return ScalarInteger(size);
+    return Rf_ScalarInteger(size);
 }

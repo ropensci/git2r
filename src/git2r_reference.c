@@ -93,13 +93,13 @@ void git2r_reference_init(git_reference *source, SEXP dest)
 
     switch (git_reference_type(source)) {
     case GIT_REF_OID:
-        SET_SLOT(dest, s_type, ScalarInteger(GIT_REF_OID));
+        SET_SLOT(dest, s_type, Rf_ScalarInteger(GIT_REF_OID));
         git_oid_fmt(sha, git_reference_target(source));
         sha[GIT_OID_HEXSZ] = '\0';
         SET_SLOT(dest, s_sha, Rf_mkString(sha));
         break;
     case GIT_REF_SYMBOLIC:
-        SET_SLOT(dest, s_type, ScalarInteger(GIT_REF_SYMBOLIC));
+        SET_SLOT(dest, s_type, Rf_ScalarInteger(GIT_REF_SYMBOLIC));
         SET_SLOT(dest, s_target, Rf_mkString(git_reference_symbolic_target(source)));
         break;
     default:

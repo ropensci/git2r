@@ -68,7 +68,7 @@ void git2r_blame_init(git_blame *source, SEXP repo, SEXP path, SEXP dest)
                 i,
                 item = NEW_OBJECT(MAKE_CLASS("git_blame_hunk")));
 
-            SET_SLOT(item, s_lines_in_hunk, ScalarInteger(hunk->lines_in_hunk));
+            SET_SLOT(item, s_lines_in_hunk, Rf_ScalarInteger(hunk->lines_in_hunk));
 
             git_oid_fmt(sha, &(hunk->final_commit_id));
             sha[GIT_OID_HEXSZ] = '\0';
@@ -77,7 +77,7 @@ void git2r_blame_init(git_blame *source, SEXP repo, SEXP path, SEXP dest)
             SET_SLOT(
                 item,
                 s_final_start_line_number,
-                ScalarInteger(hunk->final_start_line_number));
+                Rf_ScalarInteger(hunk->final_start_line_number));
 
             git2r_signature_init(
                 hunk->final_signature,
@@ -90,7 +90,7 @@ void git2r_blame_init(git_blame *source, SEXP repo, SEXP path, SEXP dest)
             SET_SLOT(
                 item,
                 s_orig_start_line_number,
-                ScalarInteger(hunk->orig_start_line_number));
+                Rf_ScalarInteger(hunk->orig_start_line_number));
 
             git2r_signature_init(
                 hunk->orig_signature,
@@ -99,9 +99,9 @@ void git2r_blame_init(git_blame *source, SEXP repo, SEXP path, SEXP dest)
             SET_SLOT(item, s_orig_path, Rf_mkString(hunk->orig_path));
 
             if (hunk->boundary)
-                SET_SLOT(item, s_boundary, ScalarLogical(1));
+                SET_SLOT(item, s_boundary, Rf_ScalarLogical(1));
             else
-                SET_SLOT(item, s_boundary, ScalarLogical(0));
+                SET_SLOT(item, s_boundary, Rf_ScalarLogical(0));
 
             SET_SLOT(item, s_repo, repo);
         }

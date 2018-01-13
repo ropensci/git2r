@@ -37,21 +37,21 @@ SEXP git2r_libgit2_features(void)
 
     SET_STRING_ELT(names, 0, mkChar("threads"));
     if (value & GIT_FEATURE_THREADS)
-        SET_VECTOR_ELT(features, 0, ScalarLogical(1));
+        SET_VECTOR_ELT(features, 0, Rf_ScalarLogical(1));
     else
-        SET_VECTOR_ELT(features, 0, ScalarLogical(0));
+        SET_VECTOR_ELT(features, 0, Rf_ScalarLogical(0));
 
     SET_STRING_ELT(names, 1, mkChar("https"));
     if (value & GIT_FEATURE_HTTPS)
-        SET_VECTOR_ELT(features, 1, ScalarLogical(1));
+        SET_VECTOR_ELT(features, 1, Rf_ScalarLogical(1));
     else
-        SET_VECTOR_ELT(features, 1, ScalarLogical(0));
+        SET_VECTOR_ELT(features, 1, Rf_ScalarLogical(0));
 
     SET_STRING_ELT(names, 2, mkChar("ssh"));
     if (value & GIT_FEATURE_SSH)
-        SET_VECTOR_ELT(features, 2, ScalarLogical(1));
+        SET_VECTOR_ELT(features, 2, Rf_ScalarLogical(1));
     else
-        SET_VECTOR_ELT(features, 2, ScalarLogical(0));
+        SET_VECTOR_ELT(features, 2, Rf_ScalarLogical(0));
 
     UNPROTECT(1);
 
@@ -71,9 +71,9 @@ SEXP git2r_libgit2_version(void)
     git_libgit2_version(&major, &minor, &rev);
     PROTECT(version = Rf_allocVector(VECSXP, 3));
     setAttrib(version, R_NamesSymbol, names = Rf_allocVector(STRSXP, 3));
-    SET_VECTOR_ELT(version, 0, ScalarInteger(major));
-    SET_VECTOR_ELT(version, 1, ScalarInteger(minor));
-    SET_VECTOR_ELT(version, 2, ScalarInteger(rev));
+    SET_VECTOR_ELT(version, 0, Rf_ScalarInteger(major));
+    SET_VECTOR_ELT(version, 1, Rf_ScalarInteger(minor));
+    SET_VECTOR_ELT(version, 2, Rf_ScalarInteger(rev));
     SET_STRING_ELT(names, 0, mkChar("major"));
     SET_STRING_ELT(names, 1, mkChar("minor"));
     SET_STRING_ELT(names, 2, mkChar("rev"));
