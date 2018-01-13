@@ -345,7 +345,7 @@ int git2r_arg_check_note(SEXP arg)
  */
 int git2r_arg_check_real(SEXP arg)
 {
-    if (!isReal(arg) || 1 != Rf_length(arg) || !R_finite(REAL(arg)[0]))
+    if (!Rf_isReal(arg) || 1 != Rf_length(arg) || !R_finite(REAL(arg)[0]))
         return -1;
     return 0;
 }
