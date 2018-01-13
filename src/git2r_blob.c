@@ -93,7 +93,7 @@ SEXP git2r_blob_create_fromdisk(SEXP repo, SEXP path)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    len = length(path);
+    len = Rf_length(path);
     PROTECT(result = Rf_allocVector(VECSXP, len));
     nprotect++;
     for (i = 0; i < len; i++) {
@@ -158,7 +158,7 @@ SEXP git2r_blob_create_fromworkdir(SEXP repo, SEXP relative_path)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    len = length(relative_path);
+    len = Rf_length(relative_path);
     PROTECT(result = Rf_allocVector(VECSXP, len));
     nprotect++;
     for (i = 0; i < len; i++) {

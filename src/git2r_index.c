@@ -100,7 +100,7 @@ SEXP git2r_index_remove_bypath(SEXP repo, SEXP path)
     if (git2r_arg_check_string_vec(path))
         git2r_error(__func__, NULL, "'path'", git2r_err_string_vec_arg);
 
-    len = length(path);
+    len = Rf_length(path);
     if (!len)
         goto cleanup;
 

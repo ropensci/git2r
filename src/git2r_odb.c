@@ -43,7 +43,7 @@ SEXP git2r_odb_hash(SEXP data)
     if (git2r_arg_check_string_vec(data))
         git2r_error(__func__, NULL, "'data'", git2r_err_string_vec_arg);
 
-    len = length(data);
+    len = Rf_length(data);
     PROTECT(result = Rf_allocVector(STRSXP, len));
     for (i = 0; i < len; i++) {
         if (NA_STRING == STRING_ELT(data, i)) {
@@ -88,7 +88,7 @@ SEXP git2r_odb_hashfile(SEXP path)
     if (git2r_arg_check_string_vec(path))
         git2r_error(__func__, NULL, "'path'", git2r_err_string_vec_arg);
 
-    len = length(path);
+    len = Rf_length(path);
     PROTECT(result = Rf_allocVector(STRSXP, len));
     for (i = 0; i < len; i++) {
         if (NA_STRING == STRING_ELT(path, i)) {

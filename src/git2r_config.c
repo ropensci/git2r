@@ -340,7 +340,7 @@ SEXP git2r_config_set(SEXP repo, SEXP variables)
     if (git2r_arg_check_list(variables))
         git2r_error(__func__, NULL, "'variables'", git2r_err_list_arg);
 
-    n = length(variables);
+    n = Rf_length(variables);
     if (n) {
         err = git2r_config_open(&cfg, repo, 0);
         if (err)

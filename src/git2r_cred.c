@@ -55,7 +55,7 @@ static int git2r_cred_ssh_key(
                                        Rf_install("privatekey")), 0));
 
         slot = GET_SLOT(credentials, Rf_install("passphrase"));
-        if (length(slot) && (NA_STRING != STRING_ELT(slot, 0)))
+        if (Rf_length(slot) && (NA_STRING != STRING_ELT(slot, 0)))
             passphrase = CHAR(STRING_ELT(slot, 0));
 
         if (git_cred_ssh_key_new(

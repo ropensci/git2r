@@ -153,7 +153,7 @@ int git2r_arg_check_credentials(SEXP arg)
 
         /* Check that length of passphrase < 2, i.e. it's either
          * character(0) or some "passphrase" */
-        switch (length(passphrase)) {
+        switch (Rf_length(passphrase)) {
         case 0:
             break;
         case 1:
@@ -226,7 +226,7 @@ int git2r_arg_check_filename(SEXP arg)
         return 0;
     if (!isString(arg))
         return -1;
-    switch (length(arg)) {
+    switch (Rf_length(arg)) {
     case 0:
         break;
     case 1:
@@ -270,7 +270,7 @@ int git2r_arg_check_sha(SEXP arg)
  */
 int git2r_arg_check_integer(SEXP arg)
 {
-    if (!isInteger(arg) || 1 != length(arg) || NA_INTEGER == INTEGER(arg)[0])
+    if (!isInteger(arg) || 1 != Rf_length(arg) || NA_INTEGER == INTEGER(arg)[0])
         return -1;
     return 0;
 }
@@ -312,7 +312,7 @@ int git2r_arg_check_list(SEXP arg)
  */
 int git2r_arg_check_logical(SEXP arg)
 {
-    if (!isLogical(arg) || 1 != length(arg) || NA_LOGICAL == LOGICAL(arg)[0])
+    if (!isLogical(arg) || 1 != Rf_length(arg) || NA_LOGICAL == LOGICAL(arg)[0])
         return -1;
     return 0;
 }
@@ -345,7 +345,7 @@ int git2r_arg_check_note(SEXP arg)
  */
 int git2r_arg_check_real(SEXP arg)
 {
-    if (!isReal(arg) || 1 != length(arg) || !R_finite(REAL(arg)[0]))
+    if (!isReal(arg) || 1 != Rf_length(arg) || !R_finite(REAL(arg)[0]))
         return -1;
     return 0;
 }
@@ -427,7 +427,7 @@ int git2r_arg_check_string(SEXP arg)
 {
     if (git2r_arg_check_string_vec(arg) < 0)
         return -1;
-    if (1 != length(arg) || NA_STRING == STRING_ELT(arg, 0))
+    if (1 != Rf_length(arg) || NA_STRING == STRING_ELT(arg, 0))
         return -1;
     return 0;
 }
@@ -460,7 +460,7 @@ int git2r_copy_string_vec(git_strarray *dst, SEXP src)
     size_t i, len;
 
     /* Count number of non NA values */
-    len = length(src);
+    len = Rf_length(src);
     for (i = 0; i < len; i++)
         if (NA_STRING != STRING_ELT(src, i))
             dst->count++;

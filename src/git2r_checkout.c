@@ -47,7 +47,7 @@ SEXP git2r_checkout_path(SEXP repo, SEXP path)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     /* Count number of non NA values */
-    len = length(path);
+    len = Rf_length(path);
     for (i = 0; i < len; i++)
         if (NA_STRING != STRING_ELT(path, i))
             opts.paths.count++;

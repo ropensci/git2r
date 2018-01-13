@@ -147,7 +147,7 @@ SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename)
         SET_SLOT(result, s_old, Rf_mkString("index"));
         SET_SLOT(result, s_new, Rf_mkString("workdir"));
         err = git2r_diff_format_to_r(diff, result);
-    } else if (0 == length(filename)) {
+    } else if (0 == Rf_length(filename)) {
         git_buf buf = GIT_BUF_INIT;
 
         err = git_diff_print(
@@ -246,7 +246,7 @@ SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
         SET_SLOT(result, s_old, Rf_mkString("HEAD"));
         SET_SLOT(result, s_new, Rf_mkString("index"));
         err = git2r_diff_format_to_r(diff, result);
-    } else if (0 == length(filename)) {
+    } else if (0 == Rf_length(filename)) {
         git_buf buf = GIT_BUF_INIT;
 
         err = git_diff_print(
@@ -350,7 +350,7 @@ SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
         SET_SLOT(result, Rf_install("old"), tree);
         SET_SLOT(result, s_new, Rf_mkString("workdir"));
         err = git2r_diff_format_to_r(diff, result);
-    } else if (0 == length(filename)) {
+    } else if (0 == Rf_length(filename)) {
         git_buf buf = GIT_BUF_INIT;
 
         err = git_diff_print(
@@ -459,7 +459,7 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
         SET_SLOT(result, Rf_install("old"), tree);
         SET_SLOT(result, s_new, Rf_mkString("index"));
         err = git2r_diff_format_to_r(diff, result);
-    } else if (0 == length(filename)) {
+    } else if (0 == Rf_length(filename)) {
         git_buf buf = GIT_BUF_INIT;
 
         err = git_diff_print(
@@ -579,7 +579,7 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
         SET_SLOT(result, Rf_install("old"), tree1);
         SET_SLOT(result, Rf_install("new"), tree2);
         err = git2r_diff_format_to_r(diff, result);
-    } else if (0 == length(filename)) {
+    } else if (0 == Rf_length(filename)) {
         git_buf buf = GIT_BUF_INIT;
 
         err = git_diff_print(

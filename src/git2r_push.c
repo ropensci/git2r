@@ -37,7 +37,7 @@ static int git2r_nothing_to_push(SEXP refspec)
 {
     size_t i, n;
 
-    n = length(refspec);
+    n = Rf_length(refspec);
     if (0 == n)
         return 1; /* Nothing to push */
 

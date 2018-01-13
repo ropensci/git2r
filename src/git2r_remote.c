@@ -163,7 +163,7 @@ SEXP git2r_remote_fetch(
         size_t i, len;
 
         /* Count number of non NA values */
-        len = length(refspecs);
+        len = Rf_length(refspecs);
         for (i = 0; i < len; i++)
             if (NA_STRING != STRING_ELT(refspecs, i))
                 refs.count++;
