@@ -242,7 +242,7 @@ int git2r_cred_acquire_cb(
         return -1;
     }
 
-    class_name = getAttrib(credentials, R_ClassSymbol);
+    class_name = Rf_getAttrib(credentials, R_ClassSymbol);
     if (strcmp(CHAR(STRING_ELT(class_name, 0)), "cred_ssh_key") == 0) {
         return git2r_cred_ssh_key(
             cred, username_from_url, allowed_types, credentials);

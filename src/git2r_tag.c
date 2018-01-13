@@ -246,7 +246,7 @@ static int git2r_tag_foreach_cb(const char *name, git_oid *oid, void *payload)
             skip = strlen("refs/tags/");
         PROTECT(tag = Rf_mkChar(name + skip));
         SET_STRING_ELT(
-            getAttrib(cb_data->tags, R_NamesSymbol),
+            Rf_getAttrib(cb_data->tags, R_NamesSymbol),
             cb_data->n,
             tag);
         UNPROTECT(1);
