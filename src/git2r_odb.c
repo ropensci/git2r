@@ -230,7 +230,7 @@ SEXP git2r_odb_objects(SEXP repo)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(VECSXP, 3));
-    setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, 3));
+    Rf_setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, 3));
 
     i = 0;
     SET_VECTOR_ELT(result, i,   Rf_allocVector(STRSXP,  cb_data.n));
@@ -505,7 +505,7 @@ SEXP git2r_odb_blobs(SEXP repo)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(VECSXP, 7));
-    setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, 7));
+    Rf_setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, 7));
 
     i = 0;
     SET_VECTOR_ELT(result, i,   Rf_allocVector(STRSXP,  cb_data.n));

@@ -153,7 +153,7 @@ static void git2r_status_list_ignored(
     /* Create list with the correct number of entries */
     count = git2r_status_count_ignored(status_list);
     SET_VECTOR_ELT(list, list_index, item = Rf_allocVector(VECSXP, count));
-    setAttrib(item, R_NamesSymbol, names = Rf_allocVector(STRSXP, count));
+    Rf_setAttrib(item, R_NamesSymbol, names = Rf_allocVector(STRSXP, count));
 
     /* i index the entrycount. j index the added change in list */
     count = git_status_list_entrycount(status_list);
@@ -188,7 +188,7 @@ static void git2r_status_list_staged(
     /* Create list with the correct number of entries */
     n = git2r_status_count_staged(status_list);
     SET_VECTOR_ELT(list, list_index, sub_list = Rf_allocVector(VECSXP, n));
-    setAttrib(sub_list, R_NamesSymbol, sub_list_names = Rf_allocVector(STRSXP, n));
+    Rf_setAttrib(sub_list, R_NamesSymbol, sub_list_names = Rf_allocVector(STRSXP, n));
 
     /* i index the entrycount. j index the added change in list */
     n = git_status_list_entrycount(status_list);
@@ -253,7 +253,7 @@ static void git2r_status_list_unstaged(
     /* Create list with the correct number of entries */
     n = git2r_status_count_unstaged(status_list);
     SET_VECTOR_ELT(list, list_index, sub_list = Rf_allocVector(VECSXP, n));
-    setAttrib(sub_list, R_NamesSymbol, sub_list_names = Rf_allocVector(STRSXP, n));
+    Rf_setAttrib(sub_list, R_NamesSymbol, sub_list_names = Rf_allocVector(STRSXP, n));
 
     /* i index the entrycount. j index the added change in list */
     n = git_status_list_entrycount(status_list);
@@ -320,7 +320,7 @@ static void git2r_status_list_untracked(
     /* Create list with the correct number of entries */
     n = git2r_status_count_untracked(status_list);
     SET_VECTOR_ELT(list, list_index, sub_list = Rf_allocVector(VECSXP, n));
-    setAttrib(sub_list, R_NamesSymbol, sub_list_names = Rf_allocVector(STRSXP, n));
+    Rf_setAttrib(sub_list, R_NamesSymbol, sub_list_names = Rf_allocVector(STRSXP, n));
 
     /* i index the entrycount. j index the added change in list */
     n = git_status_list_entrycount(status_list);
@@ -402,7 +402,7 @@ SEXP git2r_status_list(
         LOGICAL(ignored)[0];
 
     PROTECT(list = Rf_allocVector(VECSXP, count));
-    setAttrib(list, R_NamesSymbol, list_names = Rf_allocVector(STRSXP, count));
+    Rf_setAttrib(list, R_NamesSymbol, list_names = Rf_allocVector(STRSXP, count));
 
     if (LOGICAL(staged)[0]) {
         SET_STRING_ELT(list_names, i, Rf_mkChar("staged"));

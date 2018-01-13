@@ -221,7 +221,7 @@ SEXP git2r_revwalk_contributions(
 
     /* Create vectors to store result */
     PROTECT(result = Rf_allocVector(VECSXP, 3));
-    setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, 3));
+    Rf_setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, 3));
     SET_VECTOR_ELT(result, 0, when = Rf_allocVector(REALSXP, n));
     SET_STRING_ELT(names, 0, Rf_mkChar("when"));
     SET_VECTOR_ELT(result, 1, author = Rf_allocVector(STRSXP, n));

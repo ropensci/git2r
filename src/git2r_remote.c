@@ -489,7 +489,7 @@ SEXP git2r_remote_ls(SEXP name, SEXP repo, SEXP credentials)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(STRSXP, refs_len));
-    setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, refs_len));
+    Rf_setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, refs_len));
 
     for (i = 0; i < refs_len; i++) {
         char oid[GIT_OID_HEXSZ + 1] = {0};

@@ -295,7 +295,7 @@ SEXP git2r_branch_list(SEXP repo, SEXP flags)
     if (err)
         goto cleanup;
     PROTECT(result = Rf_allocVector(VECSXP, n));
-    setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, n));
+    Rf_setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, n));
 
     err = git_branch_iterator_new(&iter, repository,  INTEGER(flags)[0]);
     if (err)

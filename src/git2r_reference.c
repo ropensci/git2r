@@ -131,7 +131,7 @@ SEXP git2r_reference_list(SEXP repo)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(VECSXP, ref_list.count));
-    setAttrib(
+    Rf_setAttrib(
         result,
         R_NamesSymbol,
         names = Rf_allocVector(STRSXP, ref_list.count));

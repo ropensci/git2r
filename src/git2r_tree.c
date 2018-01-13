@@ -193,7 +193,7 @@ SEXP git2r_tree_walk(SEXP tree, SEXP recursive)
 
     PROTECT(result = Rf_allocVector(VECSXP, 6));
     nprotect++;
-    setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, 6));
+    Rf_setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, 6));
 
     SET_VECTOR_ELT(result, 0,   Rf_allocVector(STRSXP,  cb_data.n));
     SET_STRING_ELT(names,  0, Rf_mkChar("mode"));
