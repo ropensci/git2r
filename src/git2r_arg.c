@@ -224,7 +224,7 @@ int git2r_arg_check_filename(SEXP arg)
 {
     if (Rf_isNull(arg))
         return 0;
-    if (!isString(arg))
+    if (!Rf_isString(arg))
         return -1;
     switch (Rf_length(arg)) {
     case 0:
@@ -442,7 +442,7 @@ int git2r_arg_check_string(SEXP arg)
  */
 int git2r_arg_check_string_vec(SEXP arg)
 {
-    if (!isString(arg))
+    if (!Rf_isString(arg))
         return -1;
     return 0;
 }
