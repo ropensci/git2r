@@ -30,7 +30,7 @@
  */
 int git2r_arg_check_blob(SEXP arg)
 {
-    if (!isS4(arg) || !Rf_inherits(arg, "git_blob"))
+    if (!Rf_isS4(arg) || !Rf_inherits(arg, "git_blob"))
         return -1;
 
     if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("sha"))))
@@ -49,7 +49,7 @@ int git2r_arg_check_branch(SEXP arg)
 {
     SEXP slot;
 
-    if (!isS4(arg) || !Rf_inherits(arg, "git_branch"))
+    if (!Rf_isS4(arg) || !Rf_inherits(arg, "git_branch"))
         return -1;
 
     if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("name"))))
@@ -77,7 +77,7 @@ int git2r_arg_check_branch(SEXP arg)
  */
 int git2r_arg_check_commit(SEXP arg)
 {
-    if (!isS4(arg) || !Rf_inherits(arg, "git_commit"))
+    if (!Rf_isS4(arg) || !Rf_inherits(arg, "git_commit"))
         return -1;
 
     if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("sha"))))
@@ -94,7 +94,7 @@ int git2r_arg_check_commit(SEXP arg)
  */
 int git2r_arg_check_commit_stash(SEXP arg)
 {
-    if (!isS4(arg))
+    if (!Rf_isS4(arg))
         return -1;
 
     if (!Rf_inherits(arg, "git_commit") && !Rf_inherits(arg, "git_stash"))
@@ -118,7 +118,7 @@ int git2r_arg_check_credentials(SEXP arg)
     if (Rf_isNull(arg))
         return 0;
 
-    if (!isS4(arg))
+    if (!Rf_isS4(arg))
         return -1;
 
     if (Rf_inherits(arg, "cred_env")) {
@@ -194,7 +194,7 @@ int git2r_arg_check_fetch_heads(SEXP arg)
         SEXP path;
         SEXP item = VECTOR_ELT(arg, i);
 
-        if (!isS4(item) || !Rf_inherits(item, "git_fetch_head"))
+        if (!Rf_isS4(item) || !Rf_inherits(item, "git_fetch_head"))
             return -1;
 
         path = GET_SLOT(GET_SLOT(item, s_repo), s_path);
@@ -325,7 +325,7 @@ int git2r_arg_check_logical(SEXP arg)
  */
 int git2r_arg_check_note(SEXP arg)
 {
-    if (!isS4(arg) || !Rf_inherits(arg, "git_note"))
+    if (!Rf_isS4(arg) || !Rf_inherits(arg, "git_note"))
         return -1;
 
     if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("sha"))))
@@ -358,7 +358,7 @@ int git2r_arg_check_real(SEXP arg)
  */
 int git2r_arg_check_repository(SEXP arg)
 {
-    if (!isS4(arg) || !Rf_inherits(arg, "git_repository"))
+    if (!Rf_isS4(arg) || !Rf_inherits(arg, "git_repository"))
         return -1;
 
     if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("path"))))
@@ -398,7 +398,7 @@ int git2r_arg_check_signature(SEXP arg)
 {
     SEXP when;
 
-    if (!isS4(arg) || !Rf_inherits(arg, "git_signature"))
+    if (!Rf_isS4(arg) || !Rf_inherits(arg, "git_signature"))
         return -1;
 
     if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("name"))))
@@ -492,7 +492,7 @@ int git2r_copy_string_vec(git_strarray *dst, SEXP src)
  */
 int git2r_arg_check_tag(SEXP arg)
 {
-    if (!isS4(arg) || !Rf_inherits(arg, "git_tag"))
+    if (!Rf_isS4(arg) || !Rf_inherits(arg, "git_tag"))
         return -1;
 
     if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("target"))))
@@ -509,7 +509,7 @@ int git2r_arg_check_tag(SEXP arg)
  */
 int git2r_arg_check_tree(SEXP arg)
 {
-    if (!isS4(arg) || !Rf_inherits(arg, "git_tree"))
+    if (!Rf_isS4(arg) || !Rf_inherits(arg, "git_tree"))
         return -1;
 
     if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("sha"))))
