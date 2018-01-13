@@ -214,7 +214,7 @@ void git2r_blob_init(const git_blob *source, SEXP repo, SEXP dest)
 
     oid = git_blob_id(source);
     git_oid_tostr(sha, sizeof(sha), oid);
-    SET_SLOT(dest, s_sha, mkString(sha));
+    SET_SLOT(dest, s_sha, Rf_mkString(sha));
     SET_SLOT(dest, s_repo, repo);
 }
 

@@ -88,19 +88,19 @@ void git2r_reference_init(git_reference *source, SEXP dest)
     SEXP s_sha = Rf_install("sha");
     SEXP s_target = Rf_install("target");
 
-    SET_SLOT(dest, s_name, mkString(git_reference_name(source)));
-    SET_SLOT(dest, s_shorthand, mkString(git_reference_shorthand(source)));
+    SET_SLOT(dest, s_name, Rf_mkString(git_reference_name(source)));
+    SET_SLOT(dest, s_shorthand, Rf_mkString(git_reference_shorthand(source)));
 
     switch (git_reference_type(source)) {
     case GIT_REF_OID:
         SET_SLOT(dest, s_type, ScalarInteger(GIT_REF_OID));
         git_oid_fmt(sha, git_reference_target(source));
         sha[GIT_OID_HEXSZ] = '\0';
-        SET_SLOT(dest, s_sha, mkString(sha));
+        SET_SLOT(dest, s_sha, Rf_mkString(sha));
         break;
     case GIT_REF_SYMBOLIC:
         SET_SLOT(dest, s_type, ScalarInteger(GIT_REF_SYMBOLIC));
-        SET_SLOT(dest, s_target, mkString(git_reference_symbolic_target(source)));
+        SET_SLOT(dest, s_target, Rf_mkString(git_reference_symbolic_target(source)));
         break;
     default:
         git2r_error(__func__, NULL, git2r_err_reference, NULL);

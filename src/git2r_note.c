@@ -71,12 +71,12 @@ static int git2r_note_init(
 
     git_oid_fmt(sha, blob_id);
     sha[GIT_OID_HEXSZ] = '\0';
-    SET_SLOT(dest, s_sha, mkString(sha));
+    SET_SLOT(dest, s_sha, Rf_mkString(sha));
     git_oid_fmt(sha, annotated_object_id);
     sha[GIT_OID_HEXSZ] = '\0';
-    SET_SLOT(dest, s_annotated, mkString(sha));
-    SET_SLOT(dest, s_message, mkString(git_note_message(note)));
-    SET_SLOT(dest, s_refname, mkString(notes_ref));
+    SET_SLOT(dest, s_annotated, Rf_mkString(sha));
+    SET_SLOT(dest, s_message, Rf_mkString(git_note_message(note)));
+    SET_SLOT(dest, s_refname, Rf_mkString(notes_ref));
     SET_SLOT(dest, s_repo, repo);
 
     if (note)

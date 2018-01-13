@@ -460,7 +460,7 @@ void git2r_commit_init(git_commit *source, SEXP repo, SEXP dest)
 
     git_oid_fmt(sha, git_commit_id(source));
     sha[GIT_OID_HEXSZ] = '\0';
-    SET_SLOT(dest, s_sha, mkString(sha));
+    SET_SLOT(dest, s_sha, Rf_mkString(sha));
 
     author = git_commit_author(source);
     if (author)
@@ -472,11 +472,11 @@ void git2r_commit_init(git_commit *source, SEXP repo, SEXP dest)
 
     summary = git_commit_summary(source);
     if (summary)
-        SET_SLOT(dest, s_summary, mkString(summary));
+        SET_SLOT(dest, s_summary, Rf_mkString(summary));
 
     message = git_commit_message(source);
     if (message)
-        SET_SLOT(dest, s_message, mkString(message));
+        SET_SLOT(dest, s_message, Rf_mkString(message));
 
     SET_SLOT(dest, s_repo, repo);
 }

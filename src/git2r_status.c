@@ -162,7 +162,7 @@ static void git2r_status_list_ignored(
 
         if (s->status == GIT_STATUS_IGNORED) {
             SET_STRING_ELT(names, j, mkChar("ignored"));
-            SET_VECTOR_ELT(item, j, mkString(s->index_to_workdir->old_file.path));
+            SET_VECTOR_ELT(item, j, Rf_mkString(s->index_to_workdir->old_file.path));
             j++;
         }
     }
@@ -331,7 +331,7 @@ static void git2r_status_list_untracked(
             SET_VECTOR_ELT(
                 sub_list,
                 j,
-                mkString(s->index_to_workdir->old_file.path));
+                Rf_mkString(s->index_to_workdir->old_file.path));
             SET_STRING_ELT(sub_list_names, j, mkChar("untracked"));
             j++;
         }

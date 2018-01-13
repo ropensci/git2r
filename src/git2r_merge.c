@@ -265,7 +265,7 @@ static int git2r_normal_merge(
 
             git_oid_fmt(sha, &oid);
             sha[GIT_OID_HEXSZ] = '\0';
-            SET_SLOT(merge_result, s_sha, mkString(sha));
+            SET_SLOT(merge_result, s_sha, Rf_mkString(sha));
         }
     }
 

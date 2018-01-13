@@ -52,10 +52,10 @@ void git2r_tag_init(git_tag *source, SEXP repo, SEXP dest)
 
     oid = git_tag_id(source);
     git_oid_tostr(sha, sizeof(sha), oid);
-    SET_SLOT(dest, s_sha, mkString(sha));
+    SET_SLOT(dest, s_sha, Rf_mkString(sha));
 
-    SET_SLOT(dest, s_message, mkString(git_tag_message(source)));
-    SET_SLOT(dest, s_name, mkString(git_tag_name(source)));
+    SET_SLOT(dest, s_message, Rf_mkString(git_tag_message(source)));
+    SET_SLOT(dest, s_name, Rf_mkString(git_tag_name(source)));
 
     tagger = git_tag_tagger(source);
     if (tagger)
@@ -63,7 +63,7 @@ void git2r_tag_init(git_tag *source, SEXP repo, SEXP dest)
 
     oid = git_tag_target_id(source);
     git_oid_tostr(target, sizeof(target), oid);;
-    SET_SLOT(dest, s_target, mkString(target));
+    SET_SLOT(dest, s_target, Rf_mkString(target));
 
     SET_SLOT(dest, s_repo, repo);
 }

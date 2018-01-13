@@ -49,7 +49,7 @@ void git2r_tree_init(const git_tree *source, SEXP repo, SEXP dest)
 
     oid = git_tree_id(source);
     git_oid_tostr(sha, sizeof(sha), oid);
-    SET_SLOT(dest, s_sha, mkString(sha));
+    SET_SLOT(dest, s_sha, Rf_mkString(sha));
 
     n = git_tree_entrycount(source);
     PROTECT(filemode = Rf_allocVector(INTSXP, n));

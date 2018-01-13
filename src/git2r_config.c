@@ -148,7 +148,7 @@ static void git2r_config_list_add_entry(
         if (i_level[level] < (size_t)LENGTH(sub_list)) {
             SEXP names = getAttrib(sub_list, R_NamesSymbol);
             SET_STRING_ELT(names, i_level[level], mkChar(entry->name));
-            SET_VECTOR_ELT(sub_list, i_level[level], mkString(entry->value));
+            SET_VECTOR_ELT(sub_list, i_level[level], Rf_mkString(entry->value));
             i_level[level]++;
             return;
         }

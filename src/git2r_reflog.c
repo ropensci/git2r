@@ -55,7 +55,7 @@ void git2r_reflog_entry_init(
 
     git_oid_fmt(sha, git_reflog_entry_id_new(source));
     sha[GIT_OID_HEXSZ] = '\0';
-    SET_SLOT(dest, s_sha, mkString(sha));
+    SET_SLOT(dest, s_sha, Rf_mkString(sha));
 
     SET_SLOT(dest, s_index, i = Rf_allocVector(INTSXP, 1));
     INTEGER(i)[0] = index;
@@ -66,7 +66,7 @@ void git2r_reflog_entry_init(
 
     message = git_reflog_entry_message(source);
     if (message)
-        SET_SLOT(dest, s_message, mkString(message));
+        SET_SLOT(dest, s_message, Rf_mkString(message));
     else
         SET_SLOT(dest, s_message, ScalarString(NA_STRING));
 
