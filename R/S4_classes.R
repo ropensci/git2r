@@ -123,25 +123,6 @@ setClass("git_signature",
          }
 )
 
-##' Class \code{"cred_token"}
-##'
-##' @title S4 class to handle a personal access token credential
-##' object
-##' @section Slots:
-##' \describe{
-##'   \item{token}{
-##'     The name of the environmental variable that holds
-##'     the personal access token for the authentication.
-##'   }
-##' }
-##' @rdname cred_token-class
-##' @keywords classes
-##' @keywords methods
-##' @export
-setClass("cred_token",
-         slots = c(token = "character")
-)
-
 ##' Class \code{"cred_user_pass"}
 ##'
 ##' @title S4 class to handle plain-text username and password

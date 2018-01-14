@@ -12,7 +12,13 @@ personal access token for the authentication. Defualt is
 \code{GITHUB_PAT}.}
 }
 \value{
-A S4 \code{cred_token} object
+A list of class \code{cred_token} with entry:
+\describe{
+  \item{token}{
+    The name of the environmental variable that holds
+    the personal access token for the authentication.
+  }
+}
 }
 \description{
 The personal access token is stored in an envrionmental variable.

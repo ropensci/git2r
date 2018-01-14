@@ -126,11 +126,11 @@ static int git2r_cred_env(
 }
 
 /**
- * Create credential object from S4 class 'cred_token'.
+ * Create credential object from S3 class 'cred_token'.
  *
  * @param cred The newly created credential object.
  * @param allowed_types A bitmask stating which cred types are OK to return.
- * @param credentials The S4 class object with credentials.
+ * @param credentials The S3 class object with credentials.
  * @return 0 on success, else -1.
  */
 static int git2r_cred_token(
@@ -144,9 +144,9 @@ static int git2r_cred_token(
 
         /* Read value of the personal access token from the
          * environment variable */
-        err = git__getenv(&token,
-                          CHAR(STRING_ELT(GET_SLOT(credentials,
-                                                   Rf_install("token")), 0)));
+        err = git__getenv(
+            &token,
+            CHAR(STRING_ELT(git2r_get_list_element(credentials, "token"), 0)));
         if (err)
             goto cleanup;
 
