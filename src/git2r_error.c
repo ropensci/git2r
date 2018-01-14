@@ -53,7 +53,7 @@ const char git2r_err_commit_arg[] =
 const char git2r_err_commit_stash_arg[] =
     "must be an S4 class git_commit or an S4 class git_stash";
 const char git2r_err_credentials_arg[] =
-    "must be an S4 class with credentials";
+    "must be an S3 class with credentials";
 const char git2r_err_diff_arg[] =
     "Invalid diff parameters";
 const char git2r_err_fetch_heads_arg[] =
