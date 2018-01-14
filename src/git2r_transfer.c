@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2017 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -17,32 +17,47 @@
  */
 
 #include <Rdefines.h>
+
+#include "git2r_objects.h"
 #include "git2r_transfer.h"
 
 /**
- * Init slots in S4 class git_transfer_progress
+ * Init slots in S3 class git_transfer_progress
  *
  * @param source A git_transfer_progress object
- * @param dest S4 class git_transfer_progress to initialize
+ * @param dest S3 class git_transfer_progress to initialize
  * @return void
  */
 void git2r_transfer_progress_init(
     const git_transfer_progress *source,
     SEXP dest)
 {
-    SEXP s_total_objects = Rf_install("total_objects");
-    SEXP s_indexed_objects = Rf_install("indexed_objects");
-    SEXP s_received_objects = Rf_install("received_objects");
-    SEXP s_local_objects = Rf_install("local_objects");
-    SEXP s_total_deltas = Rf_install("total_deltas");
-    SEXP s_indexed_deltas = Rf_install("indexed_deltas");
-    SEXP s_received_bytes = Rf_install("received_bytes");
-
-    SET_SLOT(dest, s_total_objects, Rf_ScalarInteger(source->total_objects));
-    SET_SLOT(dest, s_indexed_objects, Rf_ScalarInteger(source->indexed_objects));
-    SET_SLOT(dest, s_received_objects, Rf_ScalarInteger(source->received_objects));
-    SET_SLOT(dest, s_local_objects, Rf_ScalarInteger(source->local_objects));
-    SET_SLOT(dest, s_total_deltas, Rf_ScalarInteger(source->total_deltas));
-    SET_SLOT(dest, s_indexed_deltas, Rf_ScalarInteger(source->indexed_deltas));
-    SET_SLOT(dest, s_received_bytes, Rf_ScalarInteger(source->received_bytes));
+    SET_VECTOR_ELT(
+        dest,
+        git2r_S3_item__git_transfer_progress__total_objects,
+        Rf_ScalarInteger(source->total_objects));
+    SET_VECTOR_ELT(
+        dest,
+        git2r_S3_item__git_transfer_progress__indexed_objects,
+        Rf_ScalarInteger(source->indexed_objects));
+    SET_VECTOR_ELT(
+        dest,
+        git2r_S3_item__git_transfer_progress__received_objects,
+        Rf_ScalarInteger(source->received_objects));
+    SET_VECTOR_ELT(
+        dest,
+        git2r_S3_item__git_transfer_progress__local_objects,
+        Rf_ScalarInteger(source->local_objects));
+    SET_VECTOR_ELT(
+        dest,
+        git2r_S3_item__git_transfer_progress__total_deltas,
+        Rf_ScalarInteger(source->total_deltas));
+    SET_VECTOR_ELT(
+        dest,
+        git2r_S3_item__git_transfer_progress__indexed_deltas,
+        Rf_ScalarInteger(source->indexed_deltas));
+    SET_VECTOR_ELT(
+        dest,
+        git2r_S3_item__git_transfer_progress__received_bytes,
+        Rf_ScalarInteger(source->received_bytes));
 }

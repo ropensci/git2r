@@ -24,6 +24,12 @@ const char *git2r_S3_class__git_merge_result = "git_merge_result";
 const char *git2r_S3_items__git_merge_result[] = {
     "up_to_date", "fast_forward", "conflicts", "sha", ""};
 
+const char *git2r_S3_class__git_transfer_progress = "git_transfer_progress";
+const char *git2r_S3_items__git_transfer_progress[] = {
+    "total_objects", "indexed_objects", "received_objects",
+    "local_objects", "total_deltas", "indexed_deltas",
+    "received_bytes", ""};
+
 /**
  * Get the list element named str, or return NULL.
  *

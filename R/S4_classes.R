@@ -735,47 +735,6 @@ setClass("git_tree",
          }
 )
 
-##' Class \code{"git_transfer_progress"}
-##'
-##' Statistics from the fetch operation.
-##' @section Slots:
-##' \describe{
-##'   \item{total_objects}{
-##'     Number of objects in the packfile being downloaded
-##'   }
-##'   \item{indexed_objects}{
-##'     Received objects that have been hashed
-##'   }
-##'   \item{received_objects}{
-##'     Objects which have been downloaded
-##'   }
-##'   \item{total_deltas}{
-##'     Total number of deltas in the pack
-##'   }
-##'   \item{indexed_deltas}{
-##'     Deltas which have been indexed
-##'   }
-##'   \item{local_objects}{
-##'     Locally-available objects that have been injected in order to
-##'     fix a thin pack
-##'   }
-##'   \item{received_bytes}{
-##'     Size of the packfile received up to now
-##'   }
-##' }
-##' @name git_transfer_progress-class
-##' @keywords classes
-##' @keywords methods
-##' @export
-setClass("git_transfer_progress",
-         slots = c(total_objects    = "integer",
-                   indexed_objects  = "integer",
-                   received_objects = "integer",
-                   local_objects    = "integer",
-                   total_deltas     = "integer",
-                   indexed_deltas   = "integer",
-                   received_bytes   = "integer"))
-
 ##' Class \code{"git_fetch_head"}
 ##'
 ##' @title S4 class to handle a fetch head

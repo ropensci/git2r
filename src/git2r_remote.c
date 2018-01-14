@@ -23,6 +23,7 @@
 #include "git2r_arg.h"
 #include "git2r_cred.h"
 #include "git2r_error.h"
+#include "git2r_objects.h"
 #include "git2r_remote.h"
 #include "git2r_repository.h"
 #include "git2r_signature.h"
@@ -131,7 +132,7 @@ SEXP git2r_remote_fetch(
     SEXP verbose,
     SEXP refspecs)
 {
-    int err;
+    int err, nprotect = 0;
     SEXP result = R_NilValue;
     const git_transfer_progress *stats;
     git_remote *remote = NULL;
@@ -195,7 +196,10 @@ SEXP git2r_remote_fetch(
         goto cleanup;
 
     stats = git_remote_stats(remote);
-    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_transfer_progress")));
+    PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_transfer_progress));
+    nprotect++;
+    Rf_setAttrib(result, R_ClassSymbol,
+                 Rf_mkString(git2r_S3_class__git_transfer_progress));
     git2r_transfer_progress_init(stats, result);
 
 cleanup:
@@ -211,8 +215,8 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     if (err)
         git2r_error(

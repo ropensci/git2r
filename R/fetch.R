@@ -27,8 +27,32 @@
 ##'     see examples. Pass NULL to use the
 ##'     \code{remote.<repository>.fetch} variable. Default is
 ##'     \code{NULL}.
-##' @return invisible \code{\linkS4class{git_transfer_progress}}
-##'     object
+##' @return invisible list of class \code{git_transfer_progress}
+##'     with statistics from the fetch operation:
+##' \describe{
+##'   \item{total_objects}{
+##'     Number of objects in the packfile being downloaded
+##'   }
+##'   \item{indexed_objects}{
+##'     Received objects that have been hashed
+##'   }
+##'   \item{received_objects}{
+##'     Objects which have been downloaded
+##'   }
+##'   \item{total_deltas}{
+##'     Total number of deltas in the pack
+##'   }
+##'   \item{indexed_deltas}{
+##'     Deltas which have been indexed
+##'   }
+##'   \item{local_objects}{
+##'     Locally-available objects that have been injected in order to
+##'     fix a thin pack
+##'   }
+##'   \item{received_bytes}{
+##'     Size of the packfile received up to now
+##'   }
+##' }
 ##' @export
 ##' @examples
 ##' \dontrun{
