@@ -89,14 +89,16 @@ merge_named_branch <- function(repo, branch, commit_on_success, merger) {
 
 ##' Merge a branch into HEAD
 ##'
-##' @param x A \code{\linkS4class{git_branch}} or
-##'     \code{\linkS4class{git_repository}} object.
+##' @param x A path (default '.') to a repository, or a
+##'     \code{\linkS4class{git_repository}} object, or a
+##'     \code{\linkS4class{git_branch}}.
 ##' @param y If \code{x} is a \code{\linkS4class{git_repository}}, the
 ##'     name of the branch to merge into HEAD. Not used if \code{x} is
 ##'     a \code{\linkS4class{git_branch}}.
 ##' @param commit_on_success If there are no conflicts written to the
 ##'     index, the merge commit will be committed. Default is TRUE.
-##' @param merger Who made the merge.
+##' @param merger Who made the merge. The default (\code{NULL}) is to
+##'     use \code{default_signature} for the repository.
 ##' @return A \code{\linkS4class{git_merge_result}} object.
 ##' @export
 ##' @examples \dontrun{
@@ -163,12 +165,17 @@ merge_named_branch <- function(repo, branch, commit_on_success, merger) {
 ##' ## Check status; Expect to have one unstaged unmerged conflict.
 ##' status(repo)
 ##' }
-merge <- function(x = NULL, y = NULL, commit_on_success = TRUE,
-                  merger = default_signature(x@repo))
+merge <- function(x = ".", y = NULL, commit_on_success = TRUE, merger = NULL)
 {
-    if (is.null(y))
+    if (is_branch(x)) {
+        if (is.null(merger))
+            merger <- default_signature(x@repo)
         return(merge_branch(x, commit_on_success, merger))
+    }
+
     x <- lookup_repository(x)
+    if (is.null(merger))
+        merger <- default_signature(x)
     merge_named_branch(x, y, commit_on_success, merger)
 }
 

@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -14,7 +14,7 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library(git2r)
+library("git2r")
 
 ## For debugging
 sessionInfo()
@@ -60,21 +60,13 @@ b <- branches(repo)
 checkout(b[sapply(b, slot, "name") == "master"][[1]], force=TRUE)
 
 ## Merge branch 1
-m_1 <- git2r:::merge_branch(
-    b[sapply(b, slot, "name") == "branch1"][[1]],
-    commit_on_success = TRUE,
-    merger = default_signature(repo))
-
+m_1 <- merge(b[sapply(b, slot, "name") == "branch1"][[1]])
 stopifnot(identical(m_1@fast_forward, TRUE))
 stopifnot(identical(m_1@conflicts, FALSE))
 stopifnot(identical(m_1@sha, character(0)))
 
 ## Merge branch 2
-m_2 <- git2r:::merge_branch(
-    b[sapply(b, slot, "name") == "branch2"][[1]],
-    commit_on_success = TRUE,
-    merger = default_signature(repo))
-
+m_2 <- merge(b[sapply(b, slot, "name") == "branch2"][[1]])
 stopifnot(identical(m_2@fast_forward, FALSE))
 stopifnot(identical(m_2@conflicts, FALSE))
 stopifnot(identical(m_2@sha, commits(repo)[[1]]@sha))
@@ -99,11 +91,7 @@ add(repo, "test.txt")
 commit(repo, "Some commit message branch 1")
 
 ## Merge branch 3
-m_3 <- git2r:::merge_branch(
-    b[sapply(b, slot, "name") == "branch3"][[1]],
-    commit_on_success = TRUE,
-    merger = default_signature(repo))
-
+m_3 <- merge(b[sapply(b, slot, "name") == "branch3"][[1]])
 stopifnot(identical(m_3@up_to_date, FALSE))
 stopifnot(identical(m_3@fast_forward, FALSE))
 stopifnot(identical(m_3@conflicts, TRUE))

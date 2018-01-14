@@ -4,12 +4,12 @@
 \alias{merge}
 \title{Merge a branch into HEAD}
 \usage{
-merge(x = NULL, y = NULL, commit_on_success = TRUE,
-  merger = default_signature(x@repo))
+merge(x = ".", y = NULL, commit_on_success = TRUE, merger = NULL)
 }
 \arguments{
-\item{x}{A \code{\linkS4class{git_branch}} or
-\code{\linkS4class{git_repository}} object.}
+\item{x}{A path (default '.') to a repository, or a
+\code{\linkS4class{git_repository}} object, or a
+\code{\linkS4class{git_branch}}.}
 
 \item{y}{If \code{x} is a \code{\linkS4class{git_repository}}, the
 name of the branch to merge into HEAD. Not used if \code{x} is
@@ -18,7 +18,8 @@ a \code{\linkS4class{git_branch}}.}
 \item{commit_on_success}{If there are no conflicts written to the
 index, the merge commit will be committed. Default is TRUE.}
 
-\item{merger}{Who made the merge.}
+\item{merger}{Who made the merge. The default (\code{NULL}) is to
+use \code{default_signature} for the repository.}
 }
 \value{
 A \code{\linkS4class{git_merge_result}} object.
