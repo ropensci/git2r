@@ -60,15 +60,15 @@ checkout(b[sapply(b, slot, "name") == "master"][[1]], force=TRUE)
 
 ## Merge branch 1
 m_1 <- merge(repo, "branch1")
-stopifnot(identical(m_1@fast_forward, TRUE))
-stopifnot(identical(m_1@conflicts, FALSE))
-stopifnot(identical(m_1@sha, character(0)))
+stopifnot(identical(m_1$fast_forward, TRUE))
+stopifnot(identical(m_1$conflicts, FALSE))
+stopifnot(identical(m_1$sha, NA_character_))
 
 ## Merge branch 2
 m_2 <- merge(path, "branch2")
-stopifnot(identical(m_2@fast_forward, FALSE))
-stopifnot(identical(m_2@conflicts, FALSE))
-stopifnot(identical(m_2@sha, commits(repo)[[1]]@sha))
+stopifnot(identical(m_2$fast_forward, FALSE))
+stopifnot(identical(m_2$conflicts, FALSE))
+stopifnot(identical(m_2$sha, commits(repo)[[1]]@sha))
 
 ## Create third branch, checkout, change file and commit
 checkout(repo, "branch3", create=TRUE)
@@ -88,10 +88,10 @@ commit(repo, "Some commit message branch 1")
 
 ## Merge branch 3
 m_3 <- merge(repo, "branch3")
-stopifnot(identical(m_3@up_to_date, FALSE))
-stopifnot(identical(m_3@fast_forward, FALSE))
-stopifnot(identical(m_3@conflicts, TRUE))
-stopifnot(identical(m_3@sha, character(0)))
+stopifnot(identical(m_3$up_to_date, FALSE))
+stopifnot(identical(m_3$fast_forward, FALSE))
+stopifnot(identical(m_3$conflicts, TRUE))
+stopifnot(identical(m_3$sha, NA_character_))
 
 ## Check status; Expect to have one unstaged unmerged conflict.
 stopifnot(identical(status(repo),

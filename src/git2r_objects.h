@@ -22,6 +22,14 @@
 #include <R.h>
 #include <Rinternals.h>
 
+extern const char *git2r_S3_class__git_merge_result;
+extern const char *git2r_S3_items__git_merge_result[];
+enum {
+    git2r_S3_item__git_merge_result__up_to_date,
+    git2r_S3_item__git_merge_result__fast_forward,
+    git2r_S3_item__git_merge_result__conflicts,
+    git2r_S3_item__git_merge_result__sha};
+
 SEXP getListElement(SEXP list, const char *str);
 
 #endif

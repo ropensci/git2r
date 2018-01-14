@@ -59,9 +59,9 @@ merge_base <- function(one = NULL, two = NULL) {
 ##'
 ##' @param branch The branch
 ##' @param commit_on_success If there are no conflicts written to the
-##' index, the merge commit will be committed.
+##'     index, the merge commit will be committed.
 ##' @param merger Who made the merge.
-##' @return A \code{\linkS4class{git_merge_result}} object.
+##' @return A git_merge_result object.
 ##' @noRd
 merge_branch <- function(branch, commit_on_success, merger) {
     .Call(git2r_merge_branch, branch, merger, commit_on_success)
@@ -72,9 +72,9 @@ merge_branch <- function(branch, commit_on_success, merger) {
 ##' @param repo The repository
 ##' @param branch Name of branch
 ##' @param commit_on_success If there are no conflicts written to the
-##' index, the merge commit will be committed.
+##'     index, the merge commit will be committed.
 ##' @param merger Who made the merge.
-##' @return A \code{\linkS4class{git_merge_result}} object.
+##' @return A git_merge_result object.
 ##' @noRd
 merge_named_branch <- function(repo, branch, commit_on_success, merger) {
     ## Check branch argument
@@ -99,74 +99,26 @@ merge_named_branch <- function(repo, branch, commit_on_success, merger) {
 ##'     index, the merge commit will be committed. Default is TRUE.
 ##' @param merger Who made the merge. The default (\code{NULL}) is to
 ##'     use \code{default_signature} for the repository.
-##' @return A \code{\linkS4class{git_merge_result}} object.
-##' @export
-##' @examples \dontrun{
-##' ## Create a temporary repository
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##' config(repo, user.name="Alice", user.email = "alice@@example.org")
-##'
-##' ## Create a file, add and commit
-##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-##'            con = file.path(path, "test.txt"))
-##' add(repo, "test.txt")
-##' commit_1 <- commit(repo, "Commit message 1")
-##'
-##' ## Create first branch, checkout, add file and commit
-##' checkout(repo, "branch1", create = TRUE)
-##' writeLines("Branch 1", file.path(path, "branch-1.txt"))
-##' add(repo, "branch-1.txt")
-##' commit(repo, "Commit message branch 1")
-##'
-##' ## Create second branch, checkout, add file and commit
-##' b_2 <- branch_create(commit_1, "branch2")
-##' checkout(b_2)
-##' writeLines("Branch 2", file.path(path, "branch-2.txt"))
-##' add(repo, "branch-2.txt")
-##' commit(repo, "Commit message branch 2")
-##'
-##' ## Make a change to 'test.txt'
-##' writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-##'              "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
-##'            con = file.path(path, "test.txt"))
-##' add(repo, "test.txt")
-##' commit(repo, "Second commit message branch 2")
-##'
-##' ## Checkout master
-##' checkout(repo, "master", force = TRUE)
-##'
-##' ## Merge branch 1
-##' merge(repo, "branch1")
-##'
-##' ## Merge branch 2
-##' merge(repo, "branch2")
-##'
-##' ## Create third branch, checkout, change file and commit
-##' checkout(repo, "branch3", create=TRUE)
-##' writeLines(c("Lorem ipsum dolor amet sit, consectetur adipisicing elit, sed do",
-##'              "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
-##'            con = file.path(path, "test.txt"))
-##' add(repo, "test.txt")
-##' commit(repo, "Commit message branch 3")
-##'
-##' ## Checkout master and create a change that creates a merge conflict
-##' checkout(repo, "master", force=TRUE)
-##' writeLines(c("Lorem ipsum dolor sit amet, adipisicing consectetur elit, sed do",
-##'              "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
-##'            con = file.path(path, "test.txt"))
-##' add(repo, "test.txt")
-##' commit(repo, "Some commit message branch 1")
-##'
-##' ## Merge branch 3
-##' merge(repo, "branch3")
-##'
-##' ## Check status; Expect to have one unstaged unmerged conflict.
-##' status(repo)
+##' @return A list of class \code{git_merge_result} with entries:
+##' \describe{
+##'   \item{up_to_date}{
+##'     TRUE if the merge is already up-to-date, else FALSE.
+##'   }
+##'   \item{fast_forward}{
+##'     TRUE if a fast-forward merge, else FALSE.
+##'   }
+##'   \item{conflicts}{
+##'     TRUE if the index contain entries representing file conflicts,
+##'     else FALSE.
+##'   }
+##'   \item{sha}{
+##'     If the merge created a merge commit, the sha of the merge
+##'     commit. NA if no merge commit created.
+##'   }
 ##' }
-merge <- function(x = ".", y = NULL, commit_on_success = TRUE, merger = NULL)
-{
+##' @export
+##' @template merge-example
+merge <- function(x = ".", y = NULL, commit_on_success = TRUE, merger = NULL) {
     if (is_branch(x)) {
         if (is.null(merger))
             merger <- default_signature(x@repo)
@@ -179,62 +131,18 @@ merge <- function(x = ".", y = NULL, commit_on_success = TRUE, merger = NULL)
     merge_named_branch(x, y, commit_on_success, merger)
 }
 
-##' Brief summary of merge result
-##'
-##' @aliases show,git_merge_result-methods
-##' @docType methods
-##' @param object The \code{\linkS4class{git_merge_result}} \code{object}
-##' @return None (invisible 'NULL').
-##' @keywords methods
-##' @include S4_classes.R
 ##' @export
-##' @examples
-##' \dontrun{
-##' ## Initialize a temporary repository
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##'
-##' ## Create a user and commit a file
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
-##' writeLines("First line.",
-##'            file.path(path, "example.txt"))
-##' add(repo, "example.txt")
-##' commit(repo, "First commit message")
-##'
-##' ## Create and checkout a new branch. Update 'example.txt' and commit
-##' checkout(repo, "new_branch", create=TRUE)
-##' writeLines(c("First line.", "Second line."),
-##'            file.path(path, "example.txt"))
-##' add(repo, "example.txt")
-##' commit(repo, "Second commit message")
-##'
-##' ## Checkout 'master' branch
-##' checkout(repo, "master", force = TRUE)
-##'
-##' ## Display 'example.txt'
-##' readLines(file.path(path, "example.txt"))
-##'
-##' ## Merge and display brief summary of the fast-forward merge
-##' merge(repo, "new_branch")
-##'
-##' ## Display 'example.txt'
-##' readLines(file.path(path, "example.txt"))
-##' }
-setMethod("show",
-          signature(object = "git_merge_result"),
-          function(object)
-          {
-              if (isTRUE(object@up_to_date)) {
-                  cat("Already up-to-date")
-              } else if (isTRUE(object@conflicts)) {
-                  cat("Merge: Conflicts")
-              } else if (isTRUE(object@fast_forward)) {
-                  cat("Merge: Fast-forward")
-              } else {
-                  cat("Merge")
-              }
+format.git_merge_result <- function(x, ...) {
+    if (isTRUE(x$up_to_date))
+        return("Already up-to-date")
+    if (isTRUE(x$conflicts))
+        return("Merge: Conflicts")
+    if (isTRUE(x$fast_forward))
+        return("Merge: Fast-forward")
+    return("Merge")
+}
 
-              cat("\n")
-          }
-)
+##' @export
+print.git_merge_result <- function(x, ...) {
+    cat(format(x, ...), "\n", sep = "")
+}

@@ -809,34 +809,3 @@ setClass("git_fetch_head",
                    is_merge   = "logical",
                    repo       = "git_repository")
 )
-
-##' Class \code{"git_merge_result"}
-##'
-##' @title S4 class to handle the merge result
-##' @section Slots:
-##' \describe{
-##'   \item{up_to_date}{
-##'     TRUE if the merge is already up-to-date, else FALSE.
-##'   }
-##'   \item{fast_forward}{
-##'     TRUE if a fast-forward merge, else FALSE.
-##'   }
-##'   \item{conflicts}{
-##'     TRUE if the index contain entries representing file conflicts,
-##'     else FALSE.
-##'   }
-##'   \item{sha}{
-##'     If the merge created a merge commit, the sha of the merge
-##'     commit. NA if no merge commit created.
-##'   }
-##' }
-##' @rdname git_merge_result
-##' @keywords classes
-##' @keywords methods
-##' @export
-setClass("git_merge_result",
-         slots = c(up_to_date   = "logical",
-                   fast_forward = "logical",
-                   conflicts    = "logical",
-                   sha          = "character")
-)

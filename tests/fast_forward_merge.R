@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -14,7 +14,7 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library(git2r)
+library("git2r")
 
 ## For debugging
 sessionInfo()
@@ -46,15 +46,14 @@ commit_2 <- commit(repo, "Second commit message")
 # Checkout master and merge
 b <- branches(repo)
 checkout(b[sapply(b, slot, "name") == "master"][[1]], force=TRUE)
-m <- git2r:::merge_branch(
-    branch = b[sapply(b, slot, "name") == "test"][[1]],
-    commit_on_success = TRUE,
-    merger = default_signature(repo))
+m <- merge(b[sapply(b, slot, "name") == "test"][[1]])
 
 # Check merge
 stopifnot(is(object = m, class2 = "git_merge_result"))
-stopifnot(identical(m@fast_forward, TRUE))
-stopifnot(identical(m@conflicts, FALSE))
+stopifnot(identical(m$up_to_date, FALSE))
+stopifnot(identical(m$fast_forward, TRUE))
+stopifnot(identical(m$conflicts, FALSE))
+stopifnot(identical(m$sha, NA_character_))
 stopifnot(identical(length(commits(repo)), 2L))
 
 # Check reflog

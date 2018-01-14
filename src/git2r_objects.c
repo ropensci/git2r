@@ -20,6 +20,10 @@
 
 #include "git2r_objects.h"
 
+const char *git2r_S3_class__git_merge_result = "git_merge_result";
+const char *git2r_S3_items__git_merge_result[] = {
+    "up_to_date", "fast_forward", "conflicts", "sha", ""};
+
 /**
  * Get the list element named str, or return NULL.
  *

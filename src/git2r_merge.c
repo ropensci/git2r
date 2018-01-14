@@ -24,6 +24,7 @@
 #include "git2r_commit.h"
 #include "git2r_error.h"
 #include "git2r_merge.h"
+#include "git2r_objects.h"
 #include "git2r_repository.h"
 #include "git2r_signature.h"
 
@@ -175,15 +176,20 @@ static int git2r_fast_forward_merge(
             git_reference_free(target_ref);
     }
 
-    SET_SLOT(
+    SET_VECTOR_ELT(
         merge_result,
-        Rf_install("fast_forward"),
+        git2r_S3_item__git_merge_result__fast_forward,
         Rf_ScalarLogical(1));
 
-    SET_SLOT(
+    SET_VECTOR_ELT(
         merge_result,
-        Rf_install("conflicts"),
+        git2r_S3_item__git_merge_result__conflicts,
         Rf_ScalarLogical(0));
+
+    SET_VECTOR_ELT(
+        merge_result,
+        git2r_S3_item__git_merge_result__sha,
+        Rf_ScalarString(NA_STRING));
 
 cleanup:
     git_buf_free(&buf);
@@ -203,7 +209,7 @@ cleanup:
 /**
  * Perform a normal merge
  *
- * @param merge_result S4 class git_merge_result
+ * @param merge_result S3 class git_merge_result
  * @param merge_heads The merge heads to merge
  * @param n The number of merge heads
  * @param repository The repository
@@ -228,7 +234,10 @@ static int git2r_normal_merge(
     git_commit *commit = NULL;
     git_index *index = NULL;
 
-    SET_SLOT(merge_result, Rf_install("fast_forward"), Rf_ScalarLogical(0));
+    SET_VECTOR_ELT(
+        merge_result,
+        git2r_S3_item__git_merge_result__fast_forward,
+        Rf_ScalarLogical(0));
 
     err = git_merge(
         repository,
@@ -244,14 +253,24 @@ static int git2r_normal_merge(
         goto cleanup;
 
     if (git_index_has_conflicts(index)) {
-        SET_SLOT(merge_result, Rf_install("conflicts"), Rf_ScalarLogical(1));
+        SET_VECTOR_ELT(
+            merge_result,
+            git2r_S3_item__git_merge_result__conflicts,
+            Rf_ScalarLogical(1));
+
+        SET_VECTOR_ELT(
+            merge_result,
+            git2r_S3_item__git_merge_result__sha,
+            Rf_ScalarString(NA_STRING));
     } else {
-        SET_SLOT(merge_result, Rf_install("conflicts"), Rf_ScalarLogical(0));
+        SET_VECTOR_ELT(
+            merge_result,
+            git2r_S3_item__git_merge_result__conflicts,
+            Rf_ScalarLogical(0));
 
         if (commit_on_success) {
             char sha[GIT_OID_HEXSZ + 1];
             git_oid oid;
-            SEXP s_sha = Rf_install("sha");
 
             err = git2r_commit_create(
                 &oid,
@@ -265,7 +284,10 @@ static int git2r_normal_merge(
 
             git_oid_fmt(sha, &oid);
             sha[GIT_OID_HEXSZ] = '\0';
-            SET_SLOT(merge_result, s_sha, Rf_mkString(sha));
+            SET_VECTOR_ELT(
+                merge_result,
+                git2r_S3_item__git_merge_result__sha,
+                Rf_mkString(sha));
         }
     }
 
@@ -323,14 +345,20 @@ static int git2r_merge(
         return err;
 
     if (merge_analysis & GIT_MERGE_ANALYSIS_UP_TO_DATE) {
-        SET_SLOT(merge_result,
-                 Rf_install("up_to_date"),
-                 Rf_ScalarLogical(1));
-        return GIT_OK;
+        SET_VECTOR_ELT(
+            merge_result,
+            git2r_S3_item__git_merge_result__up_to_date,
+            Rf_ScalarLogical(1));
+        SET_VECTOR_ELT(
+            merge_result,
+            git2r_S3_item__git_merge_result__sha,
+            Rf_ScalarString(NA_STRING));
+        return 0;
     } else {
-        SET_SLOT(merge_result,
-                 Rf_install("up_to_date"),
-                 Rf_ScalarLogical(0));
+        SET_VECTOR_ELT(
+            merge_result,
+            git2r_S3_item__git_merge_result__up_to_date,
+            Rf_ScalarLogical(0));
     }
 
     if (GIT_MERGE_PREFERENCE_NONE == preference)
@@ -440,7 +468,7 @@ static void git2r_merge_heads_free(git_annotated_commit **merge_heads, size_t n)
  */
 SEXP git2r_merge_branch(SEXP branch, SEXP merger, SEXP commit_on_success)
 {
-    int err;
+    int err, nprotect = 0;
     SEXP result = R_NilValue;
     const char *name;
     git_buf buf = GIT_BUF_INIT;
@@ -488,7 +516,10 @@ SEXP git2r_merge_branch(SEXP branch, SEXP merger, SEXP commit_on_success)
     if (err)
         goto cleanup;
 
-    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_merge_result")));
+    PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_merge_result));
+    nprotect++;
+    Rf_setAttrib(result, R_ClassSymbol,
+                 Rf_mkString(git2r_S3_class__git_merge_result));
     err = git2r_merge(
         result,
         repository,
@@ -514,8 +545,8 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     if (err)
         git2r_error(__func__, giterr_last(), NULL, NULL);
@@ -589,7 +620,7 @@ cleanup:
  */
 SEXP git2r_merge_fetch_heads(SEXP fetch_heads, SEXP merger)
 {
-    int err;
+    int err, nprotect = 0;
     size_t n;
     SEXP result = R_NilValue;
     git_annotated_commit **merge_heads = NULL;
@@ -621,7 +652,10 @@ SEXP git2r_merge_fetch_heads(SEXP fetch_heads, SEXP merger)
     if (err)
         goto cleanup;
 
-    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_merge_result")));
+    PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_merge_result));
+    nprotect++;
+    Rf_setAttrib(result, R_ClassSymbol,
+                 Rf_mkString(git2r_S3_class__git_merge_result));
     err = git2r_merge(
         result,
         repository,
@@ -644,8 +678,8 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     if (err)
         git2r_error(__func__, giterr_last(), NULL, NULL);
