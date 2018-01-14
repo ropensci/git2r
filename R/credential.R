@@ -81,7 +81,7 @@ cred_env <- function(username = NULL, password = NULL) {
 ##' push(repo, credentials = cred)
 ##' }
 cred_token <- function(token = "GITHUB_PAT") {
-    new("cred_token", token = token)
+    structure(list(token = token), class = "cred_token")
 }
 
 ##' Create a new plain-text username and password credential object
@@ -105,7 +105,8 @@ cred_token <- function(token = "GITHUB_PAT") {
 ##' cred_user_pass("Random Developer", "SecretPassword")
 ##' }
 cred_user_pass <- function(username = NULL, password = NULL) {
-    new("cred_user_pass", username = username, password = password)
+    structure(list(username = username, password = password),
+              class = "cred_user_pass")
 }
 
 ##' Create a new passphrase-protected ssh key credential object
@@ -156,10 +157,10 @@ cred_ssh_key <-  function (publickey = "~/.ssh/id_rsa.pub",
         }
     }
 
-    new("cred_ssh_key",
-        publickey  = publickey,
-        privatekey = privatekey,
-        passphrase = passphrase)
+    structure(list(publickey  = publickey,
+                   privatekey = privatekey,
+                   passphrase = passphrase),
+              class = "cred_ssh_key")
 }
 
 ##' Check if private key is passphrase protected
