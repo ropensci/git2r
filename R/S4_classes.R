@@ -188,32 +188,6 @@ setClass("cred_user_pass",
                    password = "character")
 )
 
-##' Class \code{"cred_ssh_key"}
-##'
-##' @title S4 class to handle a passphrase-protected ssh key
-##' credential object
-##' @section Slots:
-##' \describe{
-##'   \item{publickey}{
-##'     The path to the public key of the credential
-##'   }
-##'   \item{privatekey}{
-##'     The path to the private key of the credential
-##'   }
-##'   \item{passphrase}{
-##'     The passphrase of the credential
-##'   }
-##' }
-##' @rdname cred_ssh_key-class
-##' @keywords classes
-##' @keywords methods
-##' @export
-setClass("cred_ssh_key",
-         slots = c(publickey  = "character",
-                   privatekey = "character",
-                   passphrase = "character")
-)
-
 ##' Class \code{"git_blame"}
 ##'
 ##' @title  S4 class to handle a git blame for a single file

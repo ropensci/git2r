@@ -42,6 +42,6 @@ enum {
     git2r_S3_item__git_transfer_progress__indexed_deltas,
     git2r_S3_item__git_transfer_progress__received_bytes};
 
-SEXP getListElement(SEXP list, const char *str);
+SEXP git2r_get_list_element(SEXP list, const char *str);
 
 #endif

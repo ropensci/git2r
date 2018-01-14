@@ -87,15 +87,26 @@ cred_user_pass <- function(username = NULL, password = NULL) {
 ##'
 ##' @family git credential functions
 ##' @param publickey The path to the public key of the
-##' credential. Default is \code{'~/.ssh/id_rsa.pub'}
+##'     credential. Default is \code{'~/.ssh/id_rsa.pub'}
 ##' @param privatekey The path to the private key of the
-##' credential. Default is \code{'~/.ssh/id_rsa'}
+##'     credential. Default is \code{'~/.ssh/id_rsa'}
 ##' @param passphrase The passphrase of the credential. Default is
-##' \code{character(0)}. If getPass is installed and private key is
-##' passphrase protected \code{getPass::getPass()} will be called
-##' to allow for interactive and obfuscated interactive input of
-##' the passphrase.
-##' @return A S4 \code{cred_ssh_key} object
+##'     \code{character(0)}. If getPass is installed and private key
+##'     is passphrase protected \code{getPass::getPass()} will be
+##'     called to allow for interactive and obfuscated interactive
+##'     input of the passphrase.
+##' @return A list of class \code{cred_ssh_key} with entries:
+##' \describe{
+##'   \item{publickey}{
+##'     The path to the public key of the credential
+##'   }
+##'   \item{privatekey}{
+##'     The path to the private key of the credential
+##'   }
+##'   \item{passphrase}{
+##'     The passphrase of the credential
+##'   }
+##' }
 ##' @export
 ##' @examples
 ##' \dontrun{

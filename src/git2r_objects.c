@@ -36,7 +36,7 @@ const char *git2r_S3_items__git_transfer_progress[] = {
  * From the manual 'Writing R Extensions'
  * (https://cran.r-project.org/doc/manuals/r-release/R-exts.html)
  */
-SEXP getListElement(SEXP list, const char *str)
+SEXP git2r_get_list_element(SEXP list, const char *str)
 {
     int i = 0;
     SEXP elmt = R_NilValue, names = Rf_getAttrib(list, R_NamesSymbol);

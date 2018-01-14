@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2017 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -18,21 +18,22 @@
 
 #include <R.h>
 #include <Rinternals.h>
-#include <Rdefines.h>
+/* #include <Rdefines.h> */
 
 #include "buffer.h"
 #include "common.h"
 
 #include "git2r_cred.h"
+#include "git2r_objects.h"
 #include "git2r_transfer.h"
 
 /**
- * Create credential object from S4 class 'cred_ssh_key'.
+ * Create credential object from S3 class 'cred_ssh_key'.
  *
  * @param cred The newly created credential object.
  * @param user_from_url The username that was embedded in a "user@host"
  * @param allowed_types A bitmask stating which cred types are OK to return.
- * @param credentials The S4 class object with credentials.
+ * @param credentials The S3 class object with credentials.
  * @return 0 on success, else -1.
  */
 static int git2r_cred_ssh_key(
@@ -42,21 +43,17 @@ static int git2r_cred_ssh_key(
     SEXP credentials)
 {
     if (GIT_CREDTYPE_SSH_KEY & allowed_types) {
-        SEXP slot;
+        SEXP elem;
         const char *publickey;
         const char *privatekey = NULL;
         const char *passphrase = NULL;
 
-        publickey = CHAR(STRING_ELT(
-                             GET_SLOT(credentials,
-                                      Rf_install("publickey")), 0));
-        privatekey = CHAR(STRING_ELT(
-                              GET_SLOT(credentials,
-                                       Rf_install("privatekey")), 0));
+        publickey = CHAR(STRING_ELT(git2r_get_list_element(credentials, "publickey"), 0));
+        privatekey = CHAR(STRING_ELT(git2r_get_list_element(credentials, "privatekey"), 0));
 
-        slot = GET_SLOT(credentials, Rf_install("passphrase"));
-        if (Rf_length(slot) && (NA_STRING != STRING_ELT(slot, 0)))
-            passphrase = CHAR(STRING_ELT(slot, 0));
+        elem = git2r_get_list_element(credentials, "passphrase");
+        if (Rf_length(elem) && (NA_STRING != STRING_ELT(elem, 0)))
+            passphrase = CHAR(STRING_ELT(elem, 0));
 
         if (git_cred_ssh_key_new(
                 cred, username_from_url, publickey, privatekey, passphrase))
@@ -69,11 +66,11 @@ static int git2r_cred_ssh_key(
 }
 
 /**
- * Create credential object from S4 class 'cred_env'.
+ * Create credential object from S3 class 'cred_env'.
  *
  * @param cred The newly created credential object.
  * @param allowed_types A bitmask stating which cred types are OK to return.
- * @param credentials The S4 class object with credentials.
+ * @param credentials The S3 class object with credentials.
  * @return 0 on success, else -1.
  */
 static int git2r_cred_env(
@@ -221,7 +218,7 @@ int git2r_cred_acquire_cb(
     unsigned int allowed_types,
     void *payload)
 {
-    SEXP credentials, class_name;
+    SEXP credentials;
 
     GIT_UNUSED(url);
 
@@ -242,15 +239,14 @@ int git2r_cred_acquire_cb(
         return -1;
     }
 
-    class_name = Rf_getAttrib(credentials, R_ClassSymbol);
-    if (strcmp(CHAR(STRING_ELT(class_name, 0)), "cred_ssh_key") == 0) {
+    if (Rf_inherits(credentials, "cred_ssh_key")) {
         return git2r_cred_ssh_key(
             cred, username_from_url, allowed_types, credentials);
-    } else if (strcmp(CHAR(STRING_ELT(class_name, 0)), "cred_env") == 0) {
+    } else if (Rf_inherits(credentials, "cred_env")) {
         return git2r_cred_env(cred, allowed_types, credentials);
-    } else if (strcmp(CHAR(STRING_ELT(class_name, 0)), "cred_token") == 0) {
+    } else if (Rf_inherits(credentials, "cred_token")) {
         return git2r_cred_token(cred, allowed_types, credentials);
-    } else if (strcmp(CHAR(STRING_ELT(class_name, 0)), "cred_user_pass") == 0) {
+    } else if (Rf_inherits(credentials, "cred_user_pass")) {
         return git2r_cred_user_pass(cred, allowed_types, credentials);
     }
 

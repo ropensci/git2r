@@ -15,13 +15,24 @@ credential. Default is \code{'~/.ssh/id_rsa.pub'}}
 credential. Default is \code{'~/.ssh/id_rsa'}}
 
 \item{passphrase}{The passphrase of the credential. Default is
-\code{character(0)}. If getPass is installed and private key is
-passphrase protected \code{getPass::getPass()} will be called
-to allow for interactive and obfuscated interactive input of
-the passphrase.}
+\code{character(0)}. If getPass is installed and private key
+is passphrase protected \code{getPass::getPass()} will be
+called to allow for interactive and obfuscated interactive
+input of the passphrase.}
 }
 \value{
-A S4 \code{cred_ssh_key} object
+A list of class \code{cred_ssh_key} with entries:
+\describe{
+  \item{publickey}{
+    The path to the public key of the credential
+  }
+  \item{privatekey}{
+    The path to the private key of the credential
+  }
+  \item{passphrase}{
+    The passphrase of the credential
+  }
+}
 }
 \description{
 Create a new passphrase-protected ssh key credential object

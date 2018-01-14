@@ -21,6 +21,7 @@
 
 #include "git2r_arg.h"
 #include "git2r_error.h"
+#include "git2r_objects.h"
 
 /**
  * Check blob argument
@@ -118,36 +119,36 @@ int git2r_arg_check_credentials(SEXP arg)
     if (Rf_isNull(arg))
         return 0;
 
-    if (!Rf_isS4(arg))
+    if (!Rf_isNewList(arg))
         return -1;
 
     if (Rf_inherits(arg, "cred_env")) {
         /* Check username and password */
-        if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("username"))))
+        if (git2r_arg_check_string(git2r_get_list_element(arg, "username")))
             return -1;
-        if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("password"))))
+        if (git2r_arg_check_string(git2r_get_list_element(arg, "password")))
             return -1;
     } else if (Rf_inherits(arg, "cred_token")) {
         /* Check token */
-        if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("token"))))
+        if (git2r_arg_check_string(git2r_get_list_element(arg, "token")))
             return -1;
     } else if (Rf_inherits(arg, "cred_user_pass")) {
         /* Check username and password */
-        if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("username"))))
+        if (git2r_arg_check_string(git2r_get_list_element(arg, "username")))
             return -1;
-        if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("password"))))
+        if (git2r_arg_check_string(git2r_get_list_element(arg, "password")))
             return -1;
     } else if (Rf_inherits(arg, "cred_ssh_key")) {
         SEXP passphrase;
 
         /* Check public and private key */
-        if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("publickey"))))
+        if (git2r_arg_check_string(git2r_get_list_element(arg, "publickey")))
             return -1;
-        if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("privatekey"))))
+        if (git2r_arg_check_string(git2r_get_list_element(arg, "privatekey")))
             return -1;
 
         /* Check that passphrase is a character vector */
-        passphrase = GET_SLOT(arg, Rf_install("passphrase"));
+        passphrase = git2r_get_list_element(arg, "passphrase");
         if (git2r_arg_check_string_vec(passphrase))
             return -1;
 
