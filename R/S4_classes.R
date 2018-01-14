@@ -123,30 +123,6 @@ setClass("git_signature",
          }
 )
 
-##' Class \code{"cred_env"}
-##'
-##' @title S4 class to handle environmental variables credential
-##' object
-##' @section Slots:
-##' \describe{
-##'   \item{username}{
-##'     The name of the environmental variable that holds
-##'     the username for the authentication.
-##'   }
-##'   \item{password}{
-##'     The name of the environmental variable that holds
-##'     the password for the authentication.
-##'   }
-##' }
-##' @rdname cred_env-class
-##' @keywords classes
-##' @keywords methods
-##' @export
-setClass("cred_env",
-         slots = c(username = "character",
-                   password = "character")
-)
-
 ##' Class \code{"cred_token"}
 ##'
 ##' @title S4 class to handle a personal access token credential

@@ -84,10 +84,9 @@ static int git2r_cred_env(
         git_buf password = GIT_BUF_INIT;
 
         /* Read value of the username environment variable */
-        err = git__getenv(&username,
-                          CHAR(STRING_ELT(
-                                   GET_SLOT(credentials,
-                                            Rf_install("username")), 0)));
+        err = git__getenv(
+            &username,
+            CHAR(STRING_ELT(git2r_get_list_element(credentials, "username"), 0)));
         if (err)
             goto cleanup;
 
@@ -97,10 +96,9 @@ static int git2r_cred_env(
         }
 
         /* Read value of the password environment variable */
-        err = git__getenv(&password,
-                          CHAR(STRING_ELT(
-                                   GET_SLOT(credentials,
-                                            Rf_install("password")), 0)));
+        err = git__getenv(
+            &password,
+            CHAR(STRING_ELT(git2r_get_list_element(credentials, "password"), 0)));
         if (err)
             goto cleanup;
 

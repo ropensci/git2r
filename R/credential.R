@@ -21,10 +21,20 @@
 ##' see \code{\link[base]{Startup}}.
 ##' @family git credential functions
 ##' @param username The name of the environmental variable that holds
-##' the username for the authentication.
+##'     the username for the authentication.
 ##' @param password The name of the environmental variable that holds
-##' the password for the authentication.
-##' @return A \code{cred_env} object
+##'     the password for the authentication.
+##' @return A list of class \code{cred_env} with entries:
+##' \describe{
+##'   \item{username}{
+##'     The name of the environmental variable that holds
+##'     the username for the authentication.
+##'   }
+##'   \item{password}{
+##'     The name of the environmental variable that holds
+##'     the password for the authentication.
+##'   }
+##' }
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -36,7 +46,8 @@
 ##' push(repo, credentials = cred)
 ##' }
 cred_env <- function(username = NULL, password = NULL) {
-    new("cred_env", username = username, password = password)
+    structure(list(username = username, password = password),
+              class = "cred_env")
 }
 
 ##' Create a new personal access token credential object

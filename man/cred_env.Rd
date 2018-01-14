@@ -14,7 +14,17 @@ the username for the authentication.}
 the password for the authentication.}
 }
 \value{
-A \code{cred_env} object
+A list of class \code{cred_env} with entries:
+\describe{
+  \item{username}{
+    The name of the environmental variable that holds
+    the username for the authentication.
+  }
+  \item{password}{
+    The name of the environmental variable that holds
+    the password for the authentication.
+  }
+}
 }
 \description{
 Environmental variables can be written to the file
