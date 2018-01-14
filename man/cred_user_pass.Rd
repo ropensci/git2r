@@ -12,7 +12,15 @@ cred_user_pass(username = NULL, password = NULL)
 \item{password}{The password of the credential}
 }
 \value{
-A \code{cred_user_pass} object
+A list of class \code{cred_user_pass} with entries:
+\describe{
+  \item{username}{
+    The username of the credential
+  }
+  \item{password}{
+    The password of the credential
+  }
+}
 }
 \description{
 Create a new plain-text username and password credential object

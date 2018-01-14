@@ -89,7 +89,15 @@ cred_token <- function(token = "GITHUB_PAT") {
 ##' @family git credential functions
 ##' @param username The username of the credential
 ##' @param password The password of the credential
-##' @return A \code{cred_user_pass} object
+##' @return A list of class \code{cred_user_pass} with entries:
+##' \describe{
+##'   \item{username}{
+##'     The username of the credential
+##'   }
+##'   \item{password}{
+##'     The password of the credential
+##'   }
+##' }
 ##' @export
 ##' @examples
 ##' \dontrun{

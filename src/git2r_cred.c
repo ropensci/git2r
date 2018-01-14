@@ -165,11 +165,11 @@ static int git2r_cred_token(
 }
 
 /**
- * Create credential object from S4 class 'cred_user_pass'.
+ * Create credential object from S3 class 'cred_user_pass'.
  *
  * @param cred The newly created credential object.
  * @param allowed_types A bitmask stating which cred types are OK to return.
- * @param credentials The S4 class object with credentials.
+ * @param credentials The S3 class object with credentials.
  * @return 0 on success, else -1.
  */
 static int git2r_cred_user_pass(
@@ -181,13 +181,8 @@ static int git2r_cred_user_pass(
         const char *username;
         const char *password;
 
-        username = CHAR(STRING_ELT(
-                            GET_SLOT(credentials,
-                                     Rf_install("username")), 0));
-        password = CHAR(STRING_ELT(
-                            GET_SLOT(credentials,
-                                     Rf_install("password")), 0));
-
+        username = CHAR(STRING_ELT(git2r_get_list_element(credentials, "username"), 0));
+        password = CHAR(STRING_ELT(git2r_get_list_element(credentials, "password"), 0));
         if (git_cred_userpass_plaintext_new(cred, username, password))
             return -1;
 

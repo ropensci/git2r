@@ -123,28 +123,6 @@ setClass("git_signature",
          }
 )
 
-##' Class \code{"cred_user_pass"}
-##'
-##' @title S4 class to handle plain-text username and password
-##' credential object
-##' @section Slots:
-##' \describe{
-##'   \item{username}{
-##'     The username of the credential
-##'   }
-##'   \item{password}{
-##'     The password of the credential
-##'   }
-##' }
-##' @rdname cred_user_pass-class
-##' @keywords classes
-##' @keywords methods
-##' @export
-setClass("cred_user_pass",
-         slots = c(username = "character",
-                   password = "character")
-)
-
 ##' Class \code{"git_blame"}
 ##'
 ##' @title  S4 class to handle a git blame for a single file
