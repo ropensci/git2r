@@ -17,11 +17,12 @@ clone(url = NULL, local_path = NULL, bare = FALSE, branch = NULL,
 \item{branch}{The name of the branch to checkout. Default is NULL
 which means to use the remote's default branch.}
 
-\item{checkout}{Checkout HEAD after the clone is complete. Default is TRUE.}
+\item{checkout}{Checkout HEAD after the clone is complete. Default
+is TRUE.}
 
 \item{credentials}{The credentials for remote repository
-access. Default is NULL. To use and query an ssh-agent for the ssh
-key credentials, let this parameter be NULL (the default).}
+access. Default is NULL. To use and query an ssh-agent for the
+ssh key credentials, let this parameter be NULL (the default).}
 
 \item{progress}{Show progress. Default is TRUE.}
 }
@@ -73,6 +74,5 @@ commits(repo_2)
 }
 }
 \seealso{
-\code{\linkS4class{cred_user_pass}},
-\code{\linkS4class{cred_ssh_key}}
+\code{\link{cred_user_pass}}, \code{\link{cred_ssh_key}}
 }

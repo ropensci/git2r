@@ -203,15 +203,15 @@ init <- function(path = ".", bare = FALSE) {
 ##' @param local_path Local directory to clone to.
 ##' @param bare Create a bare repository. Default is FALSE.
 ##' @param branch The name of the branch to checkout. Default is NULL
-##' which means to use the remote's default branch.
-##' @param checkout Checkout HEAD after the clone is complete. Default is TRUE.
+##'     which means to use the remote's default branch.
+##' @param checkout Checkout HEAD after the clone is complete. Default
+##'     is TRUE.
 ##' @param credentials The credentials for remote repository
-##' access. Default is NULL. To use and query an ssh-agent for the ssh
-##' key credentials, let this parameter be NULL (the default).
+##'     access. Default is NULL. To use and query an ssh-agent for the
+##'     ssh key credentials, let this parameter be NULL (the default).
 ##' @param progress Show progress. Default is TRUE.
 ##' @return A S4 \code{\linkS4class{git_repository}} object
-##' @seealso \code{\linkS4class{cred_user_pass}},
-##' \code{\linkS4class{cred_ssh_key}}
+##' @seealso \code{\link{cred_user_pass}}, \code{\link{cred_ssh_key}}
 ##' @export
 ##' @examples
 ##' \dontrun{

@@ -26,8 +26,7 @@
 ##'     access. Default is NULL. To use and query an ssh-agent for the
 ##'     ssh key credentials, let this parameter be NULL (the default).
 ##' @return invisible(NULL)
-##' @seealso \code{\linkS4class{cred_user_pass}},
-##'     \code{\linkS4class{cred_ssh_key}}
+##' @seealso \code{\link{cred_user_pass}}, \code{\link{cred_ssh_key}}
 ##' @export
 ##' @examples
 ##' \dontrun{

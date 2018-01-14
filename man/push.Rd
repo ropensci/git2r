@@ -67,6 +67,5 @@ commits(repo_bare)
 }
 }
 \seealso{
-\code{\linkS4class{cred_user_pass}},
-    \code{\linkS4class{cred_ssh_key}}
+\code{\link{cred_user_pass}}, \code{\link{cred_ssh_key}}
 }
