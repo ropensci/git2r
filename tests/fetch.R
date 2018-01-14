@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2016 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -14,7 +14,7 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library(git2r)
+library("git2r")
 
 ## For debugging
 sessionInfo()
@@ -64,88 +64,88 @@ show(repo_2)
 ## Check that 'git2r_arg_check_credentials' raise error
 res <- tools::assertError(
     .Call(git2r:::git2r_remote_fetch, repo_1, "origin", 3, "fetch", FALSE, NULL))
-stopifnot(length(grep("'credentials' must be an S4 class with credentials",
+stopifnot(length(grep("'credentials' must be an S3 class with credentials",
                       res[[1]]$message)) > 0)
 
 res <- tools::assertError(
     .Call(git2r:::git2r_remote_fetch, repo_1, "origin", repo_1,
           "fetch", FALSE, NULL))
-stopifnot(length(grep("'credentials' must be an S4 class with credentials",
+stopifnot(length(grep("'credentials' must be an S3 class with credentials",
                       res[[1]]$message)) > 0)
 
 credentials <- cred_env(c("username", "username"), "password")
 res <- tools::assertError(
     .Call(git2r:::git2r_remote_fetch, repo_1, "origin", credentials,
           "fetch", FALSE, NULL))
-stopifnot(length(grep("'credentials' must be an S4 class with credentials",
+stopifnot(length(grep("'credentials' must be an S3 class with credentials",
                       res[[1]]$message)) > 0)
 
 credentials <- cred_env("username", c("password", "passowrd"))
 res <- tools::assertError(
     .Call(git2r:::git2r_remote_fetch, repo_1, "origin", credentials,
           "fetch", FALSE, NULL))
-stopifnot(length(grep("'credentials' must be an S4 class with credentials",
+stopifnot(length(grep("'credentials' must be an S3 class with credentials",
                       res[[1]]$message)) > 0)
 
 credentials <- cred_user_pass(c("username", "username"), "password")
 res <- tools::assertError(
     .Call(git2r:::git2r_remote_fetch, repo_1, "origin", credentials,
           "fetch", FALSE, NULL))
-stopifnot(length(grep("'credentials' must be an S4 class with credentials",
+stopifnot(length(grep("'credentials' must be an S3 class with credentials",
                       res[[1]]$message)) > 0)
 
 credentials <- cred_user_pass("username", c("password", "passowrd"))
 res <- tools::assertError(
     .Call(git2r:::git2r_remote_fetch, repo_1, "origin", credentials,
           "fetch", FALSE, NULL))
-stopifnot(length(grep("'credentials' must be an S4 class with credentials",
+stopifnot(length(grep("'credentials' must be an S3 class with credentials",
                       res[[1]]$message)) > 0)
 
 credentials <- cred_token(c("GITHUB_PAT", "GITHUB_PAT"))
 res <- tools::assertError(
     .Call(git2r:::git2r_remote_fetch, repo_1, "origin", credentials,
           "fetch", FALSE, NULL))
-stopifnot(length(grep("'credentials' must be an S4 class with credentials",
+stopifnot(length(grep("'credentials' must be an S3 class with credentials",
                       res[[1]]$message)) > 0)
 
-credentials <- new("cred_ssh_key",
-                   publickey  = c("id_rsa.pub", "id_rsa.pub"),
-                   privatekey = "id_rsa",
-                   passphrase = character(0))
+credentials <- structure(list(publickey  = c("id_rsa.pub", "id_rsa.pub"),
+                              privatekey = "id_rsa",
+                              passphrase = character(0)),
+                         class = "cred_ssh_key")
 res <- tools::assertError(
     .Call(git2r:::git2r_remote_fetch, repo_1, "origin", credentials,
           "fetch", FALSE, NULL))
-stopifnot(length(grep("'credentials' must be an S4 class with credentials",
+stopifnot(length(grep("'credentials' must be an S3 class with credentials",
                       res[[1]]$message)) > 0)
 
-credentials <- new("cred_ssh_key",
-                   publickey  = "id_rsa.pub",
-                   privatekey = c("id_rsa", "id_rsa"),
-                   passphrase = character(0))
+credentials <- structure(list(publickey  = "id_rsa.pub",
+                              privatekey = c("id_rsa", "id_rsa"),
+                              passphrase = character(0)),
+                         class = "cred_ssh_key")
 res <- tools::assertError(
     .Call(git2r:::git2r_remote_fetch, repo_1, "origin", credentials,
           "fetch", FALSE, NULL))
-stopifnot(length(grep("'credentials' must be an S4 class with credentials",
+stopifnot(length(grep("'credentials' must be an S3 class with credentials",
                       res[[1]]$message)) > 0)
 
-credentials <- new("cred_ssh_key",
-                   publickey  = "id_rsa.pub",
-                   privatekey = "id_rsa",
-                   passphrase = NA_character_)
+credentials <- structure(list(publickey  = "id_rsa.pub",
+                              privatekey = "id_rsa",
+                              passphrase = NA_character_),
+                         class = "cred_ssh_key")
 res <- tools::assertError(
     .Call(git2r:::git2r_remote_fetch, repo_1, "origin", credentials,
           "fetch", FALSE, NULL))
-stopifnot(length(grep("'credentials' must be an S4 class with credentials",
+stopifnot(length(grep("'credentials' must be an S3 class with credentials",
                       res[[1]]$message)) > 0)
 
-credentials <- new("cred_ssh_key",
-                   publickey  = "id_rsa.pub",
-                   privatekey = "id_rsa",
-                   passphrase = c("passphrase", "passphrase"))
+credentials <- structure(list(publickey  = "id_rsa.pub",
+                              privatekey = "id_rsa",
+                              passphrase = c("passphrase", "passphrase")),
+                         class = "cred_ssh_key")
 res <- tools::assertError(
     .Call(git2r:::git2r_remote_fetch, repo_1, "origin", credentials,
           "fetch", FALSE, NULL))
-stopifnot(length(grep("'credentials' must be an S4 class with credentials",
+stopifnot(length(grep("'credentials' must be an S3 class with credentials",
                       res[[1]]$message)) > 0)
 
 ## Cleanup
