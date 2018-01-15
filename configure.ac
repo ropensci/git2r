@@ -85,23 +85,16 @@ CFLAGS=`"${RBIN}" CMD config CFLAGS`
 CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
 CPICFLAGS=`"${RBIN}" CMD config CPICFLAGS`
 
-# Determine architecture of the machine
-AC_CHECK_SIZEOF([void*])
-if test "x$ac_cv_sizeof_voidp" = "x8"; then
+# Use R to determine architecture of the machine
+AC_MSG_CHECKING([size of void*])
+sizeof_voidp=`"${RBIN}" --slave --vanilla -e "cat(.Machine\\$sizeof.pointer)"`
+AC_MSG_RESULT([$sizeof_voidp])
+if test "x$sizeof_voidp" = "x8"; then
     CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_64"
-elif test "x$ac_cv_sizeof_voidp" = "x4"; then
+elif test "x$sizeof_voidp" = "x4"; then
     CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_32"
 else
-    AC_MSG_CHECKING([size of void*])
-    sizeof_voidp=`"${RBIN}" --slave -e "cat(.Machine\\$sizeof.pointer)"`
-    AC_MSG_RESULT([$sizeof_voidp])
-    if test "x$sizeof_voidp" = "x8"; then
-        CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_64"
-    elif test "x$sizeof_voidp" = "x4"; then
-        CPPFLAGS="${CPPFLAGS} -DGIT_ARCH_32"
-    else
-        AC_MSG_FAILURE([Unsupported architecture])
-    fi
+    AC_MSG_FAILURE([Unsupported architecture])
 fi
 
 # Check for zlib
@@ -364,45 +357,24 @@ esac
 # Checks for structures
 AC_CHECK_MEMBER([struct stat.st_mtim],
                 [CPPFLAGS="${CPPFLAGS} -DGIT_USE_STAT_MTIM"],
-                [],
-                [#ifdef HAVE_SYS_TYPES_H
-                 # include <sys/types.h>
-                 #endif
-                 #ifdef HAVE_SYS_STAT_H
-                 # include <sys/stat.h>
-                 #endif])
+                [], [AC_INCLUDES_DEFAULT])
 
 AC_CHECK_MEMBER([struct stat.st_mtimespec],
                 [CPPFLAGS="${CPPFLAGS} -DGIT_USE_STAT_MTIMESPEC"],
-                [],
-                [#ifdef HAVE_SYS_TYPES_H
-                 # include <sys/types.h>
-                 #endif
-                 #ifdef HAVE_SYS_STAT_H
-                 # include <sys/stat.h>
-                 #endif])
+                [], [AC_INCLUDES_DEFAULT])
 
 AC_CHECK_MEMBER([struct stat.st_mtime_nsec],
                 [CPPFLAGS="${CPPFLAGS} -DGIT_USE_STAT_MTIME_NSEC"],
-                [],
-                [#ifdef HAVE_SYS_STAT_H
-                 # include <sys/stat.h>
-                 #endif])
+                [], [AC_INCLUDES_DEFAULT])
 
 if test "x$ac_cv_member_struct_stat_st_mtim" = "xyes"; then
     AC_CHECK_MEMBER([struct stat.st_mtim.tv_nsec],
                     [CPPFLAGS="${CPPFLAGS} -DGIT_USE_NSEC"],
-                    [],
-                    [#ifdef HAVE_SYS_STAT_H
-                     # include <sys/stat.h>
-                     #endif])
+                    [], [AC_INCLUDES_DEFAULT])
 elif test "x$ac_cv_member_struct_stat_st_mtimespec" = "xyes"; then
     AC_CHECK_MEMBER([struct stat.st_mtimespec.tv_nsec],
                     [CPPFLAGS="${CPPFLAGS} -DGIT_USE_NSEC"],
-                    [],
-                    [#ifdef HAVE_SYS_STAT_H
-                     # include <sys/stat.h>
-                     #endif])
+                    [], [AC_INCLUDES_DEFAULT])
 else
     CPPFLAGS="${CPPFLAGS} -DGIT_USE_NSEC"
 fi
