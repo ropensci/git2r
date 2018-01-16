@@ -31,10 +31,10 @@
  */
 int git2r_arg_check_blob(SEXP arg)
 {
-    if (!Rf_isS4(arg) || !Rf_inherits(arg, "git_blob"))
+    if (!Rf_isNewList(arg) || !Rf_inherits(arg, "git_blob"))
         return -1;
 
-    if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("sha"))))
+    if (git2r_arg_check_sha(git2r_get_list_element(arg, "sha")))
         return -1;
 
     return 0;

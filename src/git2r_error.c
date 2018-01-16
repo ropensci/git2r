@@ -45,7 +45,7 @@ const char git2r_err_unable_to_authenticate[] = "Unable to authenticate with sup
  * Error messages specific to argument checking
  */
 const char git2r_err_blob_arg[] =
-    "must be an S4 class git_blob";
+    "must be an S3 class git_blob";
 const char git2r_err_branch_arg[] =
     "must be an S4 class git_branch";
 const char git2r_err_commit_arg[] =

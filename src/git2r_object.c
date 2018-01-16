@@ -23,6 +23,7 @@
 #include "git2r_blob.h"
 #include "git2r_commit.h"
 #include "git2r_error.h"
+#include "git2r_objects.h"
 #include "git2r_repository.h"
 #include "git2r_tag.h"
 #include "git2r_tree.h"
@@ -36,7 +37,7 @@
  */
 SEXP git2r_object_lookup(SEXP repo, SEXP sha)
 {
-    int err;
+    int err, nprotect = 0;
     size_t len;
     SEXP result = R_NilValue;
     git_object *object = NULL;
@@ -66,18 +67,24 @@ SEXP git2r_object_lookup(SEXP repo, SEXP sha)
     switch (git_object_type(object)) {
     case GIT_OBJ_COMMIT:
         PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_commit")));
+        nprotect++;
         git2r_commit_init((git_commit*)object, repo, result);
         break;
     case GIT_OBJ_TREE:
         PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_tree")));
+        nprotect++;
         git2r_tree_init((git_tree*)object, repo, result);
         break;
     case GIT_OBJ_BLOB:
-        PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_blob")));
+        PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_blob));
+        nprotect++;
+        Rf_setAttrib(result, R_ClassSymbol,
+                     Rf_mkString(git2r_S3_class__git_blob));
         git2r_blob_init((git_blob*)object, repo, result);
         break;
     case GIT_OBJ_TAG:
         PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_tag")));
+        nprotect++;
         git2r_tag_init((git_tag*)object, repo, result);
         break;
     default:
@@ -91,8 +98,8 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     if (err)
         git2r_error(__func__, giterr_last(), NULL, NULL);

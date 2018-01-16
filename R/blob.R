@@ -207,10 +207,8 @@ is_blob <- function(object) {
 
 ##' Size in bytes of the contents of a blob
 ##'
-##' @docType methods
 ##' @param x The blob \code{object}
 ##' @return a non-negative integer
-##' @keywords methods
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -231,79 +229,16 @@ is_blob <- function(object) {
 ##' ## Get length in size of bytes of the content of the blob
 ##' length(blob_1)
 ##' }
-setMethod("length",
-          signature(x = "git_blob"),
-          function(x)
-          {
-              .Call(git2r_blob_rawsize, x)
-          }
-)
+length.git_blob <- function(x) {
+    .Call(git2r_blob_rawsize, x)
+}
 
-##' Brief summary of blob
-##'
-##' @aliases show,git_blob-methods
-##' @docType methods
-##' @param object The blob \code{object}
-##' @return None (invisible 'NULL').
-##' @keywords methods
 ##' @export
-##' @examples
-##' \dontrun{
-##' ## Initialize a temporary repository
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##'
-##' ## Create a user and commit a file
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
-##' writeLines("Hello world!", file.path(path, "example.txt"))
-##' add(repo, "example.txt")
-##' commit(repo, "First commit message")
-##'
-##' ## Brief summary of the blob in the repository
-##' tree(commits(repo)[[1]])["example.txt"]
-##' }
-setMethod("show",
-          signature(object = "git_blob"),
-          function(object)
-          {
-              cat(sprintf("blob:  %s\n", object@sha))
-          }
-)
+format.git_blob <- function(x, ...) {
+    sprintf("blob:  %s\nsize:  %i bytes", x$sha, length(x))
+}
 
-##' Summary of blob
-##'
-##' @docType methods
-##' @param object The blob \code{object}
-##' @param ... Additional arguments affecting the summary produced.
-##' @return None (invisible 'NULL').
-##' @keywords methods
 ##' @export
-##' @examples
-##' \dontrun{
-##' ## Initialize a temporary repository
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##'
-##' ## Create a user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
-##'
-##' ## Commit a text file
-##' writeLines("Hello world!", file.path(path, "example.txt"))
-##' add(repo, "example.txt")
-##' commit_1 <- commit(repo, "First commit message")
-##' blob_1 <- tree(commit_1)["example.txt"]
-##'
-##' ## Get summary of the blob
-##' summary(blob_1)
-##' }
-setMethod("summary",
-          signature(object = "git_blob"),
-          function(object, ...)
-          {
-              cat(sprintf("blob:  %s\nsize:  %i bytes\n",
-                          object@sha,
-                          length(object)))
-          }
-)
+print.git_blob <- function(x, ...) {
+    cat(format(x, ...), "\n", sep = "")
+}

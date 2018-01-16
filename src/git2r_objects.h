@@ -22,6 +22,12 @@
 #include <R.h>
 #include <Rinternals.h>
 
+extern const char *git2r_S3_class__git_blob;
+extern const char *git2r_S3_items__git_blob[];
+enum {
+    git2r_S3_item__git_blob__sha,
+    git2r_S3_item__git_blob__repo};
+
 extern const char *git2r_S3_class__git_merge_result;
 extern const char *git2r_S3_items__git_merge_result[];
 enum {

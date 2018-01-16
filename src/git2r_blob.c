@@ -16,17 +16,16 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <Rdefines.h>
-
 #include "git2r_arg.h"
 #include "git2r_blob.h"
 #include "git2r_error.h"
+#include "git2r_objects.h"
 #include "git2r_repository.h"
 
 /**
  * Get content of a blob
  *
- * @param blob S4 class git_blob
+ * @param blob S3 class git_blob
  * @return content
  */
 SEXP git2r_blob_content(SEXP blob)
@@ -41,11 +40,11 @@ SEXP git2r_blob_content(SEXP blob)
     if (git2r_arg_check_blob(blob))
         git2r_error(__func__, NULL, "'blob'", git2r_err_blob_arg);
 
-    repository = git2r_repository_open(GET_SLOT(blob, Rf_install("repo")));
+    repository = git2r_repository_open(git2r_get_list_element(blob, "repo"));
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    sha = GET_SLOT(blob, Rf_install("sha"));
+    sha = git2r_get_list_element(blob, "sha");
     git_oid_fromstr(&oid, CHAR(STRING_ELT(sha, 0)));
 
     err = git_blob_lookup(&blob_obj, repository, &oid);
@@ -77,7 +76,7 @@ cleanup:
  * @param repo The repository where the blob will be written. Can be
  * a bare repository.
  * @param path The file from which the blob will be created.
- * @return list of S4 class git_blob objects
+ * @return list of S3 class git_blob objects
  */
 SEXP git2r_blob_create_fromdisk(SEXP repo, SEXP path)
 {
@@ -113,7 +112,10 @@ SEXP git2r_blob_create_fromdisk(SEXP repo, SEXP path)
             if (err)
                 goto cleanup;
 
-            SET_VECTOR_ELT(result, i, item = NEW_OBJECT(MAKE_CLASS("git_blob")));
+            SET_VECTOR_ELT(result, i,
+                           item = Rf_mkNamed(VECSXP, git2r_S3_items__git_blob));
+            Rf_setAttrib(item, R_ClassSymbol,
+                         Rf_mkString(git2r_S3_class__git_blob));
             git2r_blob_init(blob, repo, item);
             git_blob_free(blob);
         }
@@ -142,7 +144,7 @@ cleanup:
  * written. Cannot be a bare repository.
  * @param relative_path The file(s) from which the blob will be
  * created, relative to the repository's working dir.
- * @return list of S4 class git_blob objects
+ * @return list of S3 class git_blob objects
  */
 SEXP git2r_blob_create_fromworkdir(SEXP repo, SEXP relative_path)
 {
@@ -178,7 +180,10 @@ SEXP git2r_blob_create_fromworkdir(SEXP repo, SEXP relative_path)
             if (err)
                 goto cleanup;
 
-            SET_VECTOR_ELT(result, i, item = NEW_OBJECT(MAKE_CLASS("git_blob")));
+            SET_VECTOR_ELT(result, i,
+                           item = Rf_mkNamed(VECSXP, git2r_S3_items__git_blob));
+            Rf_setAttrib(item, R_ClassSymbol,
+                         Rf_mkString(git2r_S3_class__git_blob));
             git2r_blob_init(blob, repo, item);
             git_blob_free(blob);
         }
@@ -198,30 +203,34 @@ cleanup:
 }
 
 /**
- * Init slots in S4 class git_blob
+ * Init entries in a S3 class git_blob
  *
  * @param source a blob
  * @param repo S4 class git_repository that contains the blob
- * @param dest S4 class git_blob to initialize
+ * @param dest S3 class git_blob to initialize
  * @return void
  */
 void git2r_blob_init(const git_blob *source, SEXP repo, SEXP dest)
 {
     const git_oid *oid;
     char sha[GIT_OID_HEXSZ + 1];
-    SEXP s_sha = Rf_install("sha");
-    SEXP s_repo = Rf_install("repo");
 
     oid = git_blob_id(source);
     git_oid_tostr(sha, sizeof(sha), oid);
-    SET_SLOT(dest, s_sha, Rf_mkString(sha));
-    SET_SLOT(dest, s_repo, repo);
+    SET_VECTOR_ELT(
+        dest,
+        git2r_S3_item__git_blob__sha,
+        Rf_mkString(sha));
+    SET_VECTOR_ELT(
+        dest,
+        git2r_S3_item__git_blob__repo,
+        repo);
 }
 
 /**
  * Is blob binary
  *
- * @param blob S4 class git_blob
+ * @param blob S3 class git_blob
  * @return TRUE if binary data, FALSE if not
  */
 SEXP git2r_blob_is_binary(SEXP blob)
@@ -236,11 +245,11 @@ SEXP git2r_blob_is_binary(SEXP blob)
     if (git2r_arg_check_blob(blob))
         git2r_error(__func__, NULL, "'blob'", git2r_err_blob_arg);
 
-    repository= git2r_repository_open(GET_SLOT(blob, Rf_install("repo")));
+    repository = git2r_repository_open(git2r_get_list_element(blob, "repo"));
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    sha = GET_SLOT(blob, Rf_install("sha"));
+    sha = git2r_get_list_element(blob, "sha");
     git_oid_fromstr(&oid, CHAR(STRING_ELT(sha, 0)));
 
     err = git_blob_lookup(&blob_obj, repository, &oid);
@@ -272,7 +281,7 @@ cleanup:
 /**
  * Size in bytes of contents of a blob
  *
- * @param blob S4 class git_blob
+ * @param blob S3 class git_blob
  * @return size
  */
 SEXP git2r_blob_rawsize(SEXP blob)
@@ -287,11 +296,11 @@ SEXP git2r_blob_rawsize(SEXP blob)
     if (git2r_arg_check_blob(blob))
         git2r_error(__func__, NULL, "'blob'", git2r_err_blob_arg);
 
-    repository= git2r_repository_open(GET_SLOT(blob, Rf_install("repo")));
+    repository = git2r_repository_open(git2r_get_list_element(blob, "repo"));
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    sha = GET_SLOT(blob, Rf_install("sha"));
+    sha = git2r_get_list_element(blob, "sha");
     git_oid_fromstr(&oid, CHAR(STRING_ELT(sha, 0)));
 
     err = git_blob_lookup(&blob_obj, repository, &oid);

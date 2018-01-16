@@ -40,7 +40,7 @@ tag(repo, "Tagname", "Tag message")
 ## First, get SHAs to lookup in the repository
 sha_commit <- commit_1@sha
 sha_tree <- tree(commit_1)@sha
-sha_blob <- tree(commit_1)["example.txt"]@sha
+sha_blob <- tree(commit_1)["example.txt"]$sha
 sha_tag <- tags(repo)[[1]]@sha
 
 ## SHAs

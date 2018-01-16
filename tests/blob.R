@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -14,7 +14,7 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library(git2r)
+library("git2r")
 
 ## For debugging
 sessionInfo()
@@ -45,7 +45,6 @@ stopifnot(identical(blob, lookup(repo, "cd0875")))
 stopifnot(identical(length(blob), 13L))
 stopifnot(identical(content(blob), "Hello world!"))
 blob
-summary(blob)
 
 ## Add one more commit
 f <- file(file.path(path, "test.txt"), "wb")
@@ -105,7 +104,7 @@ close(f2)
 blob_list_1 <- blob_create(repo, c(tmp_file_1, tmp_file_2), relative = FALSE)
 unlink(tmp_file_1)
 unlink(tmp_file_2)
-stopifnot(identical(sapply(blob_list_1, slot, "sha"),
+stopifnot(identical(sapply(blob_list_1, "[[", "sha"),
                     c("af5626b4a114abcb82d63db7c8082c3c4756e51b",
                       "d670460b4b4aece5915caf5c68d12f560a9fe3e4")))
 
@@ -120,24 +119,24 @@ writeChar("test content\n", f4, eos = NULL)
 close(f4)
 blob_list_2 <- blob_create(repo, c("test-workdir-1.txt",
                                    "test-workdir-2.txt"))
-stopifnot(identical(sapply(blob_list_2, slot, "sha"),
+stopifnot(identical(sapply(blob_list_2, "[[", "sha"),
                     c("af5626b4a114abcb82d63db7c8082c3c4756e51b",
                       "d670460b4b4aece5915caf5c68d12f560a9fe3e4")))
 
 ## Test arguments
 res <- tools::assertError(.Call(git2r:::git2r_blob_content, NULL))
-stopifnot(length(grep("'blob' must be an S4 class git_blob",
+stopifnot(length(grep("'blob' must be an S3 class git_blob",
                       res[[1]]$message)) > 0)
 res <- tools::assertError(.Call(git2r:::git2r_blob_content, 3))
-stopifnot(length(grep("'blob' must be an S4 class git_blob",
+stopifnot(length(grep("'blob' must be an S3 class git_blob",
                       res[[1]]$message)) > 0)
 res <- tools::assertError(.Call(git2r:::git2r_blob_content, repo))
-stopifnot(length(grep("'blob' must be an S4 class git_blob",
+stopifnot(length(grep("'blob' must be an S3 class git_blob",
                       res[[1]]$message)) > 0)
 b <- blob_list_1[[1]]
-b@sha <- NA_character_
+b$sha <- NA_character_
 res <- tools::assertError(.Call(git2r:::git2r_blob_content, b))
-stopifnot(length(grep("'blob' must be an S4 class git_blob",
+stopifnot(length(grep("'blob' must be an S3 class git_blob",
                       res[[1]]$message)) > 0)
 
 ## Cleanup

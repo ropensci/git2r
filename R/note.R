@@ -93,17 +93,25 @@ note_create <- function(object    = NULL,
         stop("'object' is missing")
     if (!any(is_blob(object), is_commit(object), is_tree(object)))
         stop("'object' must be a 'git_blob', 'git_commit' or 'git_tree' object")
+
+    if (is_blob(object)) {
+        repo <- object$repo
+        sha <- object$sha
+    } else {
+        repo <- object@repo
+        sha <- object@sha
+    }
+
     if (is.null(ref))
-        ref <- note_default_ref(object@repo)
+        ref <- note_default_ref(repo)
     stopifnot(is.character(ref), identical(length(ref), 1L))
     if (!length(grep("^refs/notes/", ref)))
         ref <- paste0("refs/notes/", ref)
     if(is.null(author))
-        author <- default_signature(object@repo)
+        author <- default_signature(repo)
     if (is.null(committer))
-        committer <- default_signature(object@repo)
-    .Call(git2r_note_create, object@repo, object@sha,
-          message, ref, author, committer, force)
+        committer <- default_signature(repo)
+    .Call(git2r_note_create, repo, sha, message, ref, author, committer, force)
 }
 
 ##' List notes

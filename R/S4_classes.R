@@ -215,31 +215,22 @@ setClass("git_blame_hunk",
          }
 )
 
-##' Class \code{"git_blob"}
-##'
-##' @title  S4 class to handle a git blob
-##' @section Slots:
-##' \describe{
-##'   \item{sha}{
-##'     The 40 character hexadecimal string of the SHA-1
-##'   }
-##'   \item{repo}{
-##'     The S4 class git_repository that contains the blob
-##'   }
-##' }
-##' @rdname git_blob-class
-##' @keywords classes
-##' @keywords methods
-##' @export
-setClass("git_blob",
-         slots = c(sha  = "character",
-                   repo = "git_repository"),
-         validity = function(object) {
-             errors <- character()
-
-             if (length(errors) == 0) TRUE else errors
-         }
-)
+## Class \code{"git_blob"}
+##
+## @title  S4 class to handle a git blob
+## @section Slots:
+## \describe{
+##   \item{sha}{
+##     The 40 character hexadecimal string of the SHA-1
+##   }
+##   \item{repo}{
+##     The S4 class git_repository that contains the blob
+##   }
+## }
+## @rdname git_blob-class
+## @keywords classes
+## @keywords methods
+## @export
 
 ##' Class \code{git_branch}
 ##'

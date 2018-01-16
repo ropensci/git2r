@@ -22,6 +22,7 @@
 #include "git2r_blob.h"
 #include "git2r_commit.h"
 #include "git2r_error.h"
+#include "git2r_objects.h"
 #include "git2r_repository.h"
 #include "git2r_signature.h"
 #include "git2r_tag.h"
@@ -228,7 +229,9 @@ static int git2r_tag_foreach_cb(const char *name, git_oid *oid, void *payload)
             SET_VECTOR_ELT(
                 cb_data->tags,
                 cb_data->n,
-                item = NEW_OBJECT(MAKE_CLASS("git_blob")));
+                item = Rf_mkNamed(VECSXP, git2r_S3_items__git_blob));
+            Rf_setAttrib(item, R_ClassSymbol,
+                         Rf_mkString(git2r_S3_class__git_blob));
             git2r_blob_init((git_blob*)object, cb_data->repo, item);
             break;
         case GIT_OBJ_TAG:
