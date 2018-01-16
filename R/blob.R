@@ -104,8 +104,7 @@ content <- function(blob = NULL, split = TRUE) {
 ##'                c("af5626b4a114abcb82d63db7c8082c3c4756e51b",
 ##'                  "d670460b4b4aece5915caf5c68d12f560a9fe3e4"))
 ##' }
-hash <- function(data = NULL)
-{
+hash <- function(data = NULL) {
     .Call(git2r_odb_hash, data)
 }
 
@@ -129,8 +128,7 @@ hash <- function(data = NULL)
 ##' hashfile(path)
 ##' identical(hashfile(path), hash("Hello, world!\n"))
 ##' }
-hashfile <- function(path = NULL)
-{
+hashfile <- function(path = NULL) {
     .Call(git2r_odb_hashfile, normalizePath(path, mustWork = TRUE))
 }
 
