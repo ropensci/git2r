@@ -14,7 +14,7 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library(git2r)
+library("git2r")
 
 ## For debugging
 sessionInfo()
@@ -167,17 +167,17 @@ unlink(punch_card_plot_file)
 
 ## Check that 'git2r_arg_check_commit' raise error
 res <- tools::assertError(.Call(git2r:::git2r_commit_tree, NULL))
-stopifnot(length(grep("'commit' must be an S4 class git_commit",
+stopifnot(length(grep("'commit' must be an S3 class git_commit",
                       res[[1]]$message)) > 0)
 res <- tools::assertError(.Call(git2r:::git2r_commit_tree, 3))
-stopifnot(length(grep("'commit' must be an S4 class git_commit",
+stopifnot(length(grep("'commit' must be an S3 class git_commit",
                       res[[1]]$message)) > 0)
 res <- tools::assertError(.Call(git2r:::git2r_commit_tree, repo))
-stopifnot(length(grep("'commit' must be an S4 class git_commit",
+stopifnot(length(grep("'commit' must be an S3 class git_commit",
                       res[[1]]$message)) > 0)
 commit_1@sha <- NA_character_
 res <- tools::assertError(.Call(git2r:::git2r_commit_tree, commit_1))
-stopifnot(length(grep("'commit' must be an S4 class git_commit",
+stopifnot(length(grep("'commit' must be an S3 class git_commit",
                       res[[1]]$message)) > 0)
 
 ## Cleanup
