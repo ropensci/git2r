@@ -28,6 +28,13 @@ enum {
     git2r_S3_item__git_blob__sha,
     git2r_S3_item__git_blob__repo};
 
+extern const char *git2r_S3_class__git_branch;
+extern const char *git2r_S3_items__git_branch[];
+enum {
+    git2r_S3_item__git_branch__name,
+    git2r_S3_item__git_branch__type,
+    git2r_S3_item__git_branch__repo};
+
 extern const char *git2r_S3_class__git_merge_result;
 extern const char *git2r_S3_items__git_merge_result[];
 enum {
@@ -36,6 +43,28 @@ enum {
     git2r_S3_item__git_merge_result__conflicts,
     git2r_S3_item__git_merge_result__sha};
 
+extern const char *git2r_S3_class__git_signature;
+extern const char *git2r_S3_items__git_signature[];
+enum {
+    git2r_S3_item__git_signature__name,
+    git2r_S3_item__git_signature__email,
+    git2r_S3_item__git_signature__when};
+
+extern const char *git2r_S3_class__git_tag;
+extern const char *git2r_S3_items__git_tag[];
+enum {
+    git2r_S3_item__git_tag__sha,
+    git2r_S3_item__git_tag__message,
+    git2r_S3_item__git_tag__name,
+    git2r_S3_item__git_tag__tagger,
+    git2r_S3_item__git_tag__target,
+    git2r_S3_item__git_tag__repo};
+
+extern const char *git2r_S3_class__git_time;
+extern const char *git2r_S3_items__git_time[];
+enum {
+    git2r_S3_item__git_time__time,
+    git2r_S3_item__git_time__offset};
 
 extern const char *git2r_S3_class__git_transfer_progress;
 extern const char *git2r_S3_items__git_transfer_progress[];

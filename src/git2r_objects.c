@@ -24,9 +24,25 @@ const char *git2r_S3_class__git_blob = "git_blob";
 const char *git2r_S3_items__git_blob[] = {
     "sha", "repo", ""};
 
+const char *git2r_S3_class__git_branch = "git_branch";
+const char *git2r_S3_items__git_branch[] = {
+    "name", "type", "repo", ""};
+
 const char *git2r_S3_class__git_merge_result = "git_merge_result";
 const char *git2r_S3_items__git_merge_result[] = {
     "up_to_date", "fast_forward", "conflicts", "sha", ""};
+
+const char *git2r_S3_class__git_signature = "git_signature";
+const char *git2r_S3_items__git_signature[] = {
+    "name", "email", "when", ""};
+
+const char *git2r_S3_class__git_tag = "git_tag";
+const char *git2r_S3_items__git_tag[] = {
+    "sha", "message", "name", "tagger", "target", "repo", ""};
+
+const char *git2r_S3_class__git_time = "git_time";
+const char *git2r_S3_items__git_time[] = {
+    "time", "offset", ""};
 
 const char *git2r_S3_class__git_transfer_progress = "git_transfer_progress";
 const char *git2r_S3_items__git_transfer_progress[] = {

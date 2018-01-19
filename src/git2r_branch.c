@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2017 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,13 +16,13 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <Rdefines.h>
 #include "refs.h"
 
 #include "git2r_arg.h"
 #include "git2r_branch.h"
 #include "git2r_commit.h"
 #include "git2r_error.h"
+#include "git2r_objects.h"
 #include "git2r_reference.h"
 #include "git2r_repository.h"
 #include "git2r_signature.h"
@@ -30,7 +30,7 @@
 /**
  * Count number of branches.
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param flags Filtering flags for the branch listing. Valid values
  *        are 1 (LOCAL), 2 (REMOTE) and 3 (ALL)
  * @param n The number of branches
@@ -38,20 +38,20 @@
  */
 static int git2r_branch_count(git_repository *repo, int flags, size_t *n)
 {
-    int err;
+    int error;
     git_branch_iterator *iter;
     git_branch_t type;
     git_reference *ref;
 
     *n = 0;
 
-    err = git_branch_iterator_new(&iter, repo, flags);
-    if (err)
-        return err;
+    error = git_branch_iterator_new(&iter, repo, flags);
+    if (error)
+        return error;
 
     for (;;) {
-        err = git_branch_next(&ref, &type, iter);
-        if (err)
+        error = git_branch_next(&ref, &type, iter);
+        if (error)
             break;
         git_reference_free(ref);
         (*n)++;
@@ -59,19 +59,19 @@ static int git2r_branch_count(git_repository *repo, int flags, size_t *n)
 
     git_branch_iterator_free(iter);
 
-    if (GIT_ITEROVER != err)
-        return err;
+    if (GIT_ITEROVER != error)
+        return error;
     return 0;
 }
 
 /**
- * Init slots in S4 class git_branch
+ * Init slots in S3 class git_branch
  *
  * @param source a reference
  * @param repository the repository
  * @param type the branch type; local or remote
- * @param repo S4 class git_repository that contains the blob
- * @param dest S4 class git_branch to initialize
+ * @param repo S3 class git_repository that contains the blob
+ * @param dest S3 class git_branch to initialize
  * @return int; < 0 if error, else 0
  */
 int git2r_branch_init(
@@ -80,21 +80,18 @@ int git2r_branch_init(
     SEXP repo,
     SEXP dest)
 {
-    int err;
+    int error;
     const char *name;
-    SEXP s_name = Rf_install("name");
-    SEXP s_type = Rf_install("type");
-    SEXP s_repo = Rf_install("repo");
 
-    err = git_branch_name(&name, source);
-    if (err)
+    error = git_branch_name(&name, source);
+    if (error)
         goto cleanup;
-    SET_SLOT(dest, s_name, Rf_mkString(name));
-    SET_SLOT(dest, s_type, Rf_ScalarInteger(type));
-    SET_SLOT(dest, s_repo, repo);
+    SET_VECTOR_ELT(dest, git2r_S3_item__git_branch__name, Rf_mkString(name));
+    SET_VECTOR_ELT(dest, git2r_S3_item__git_branch__type, Rf_ScalarInteger(type));
+    SET_VECTOR_ELT(dest, git2r_S3_item__git_branch__repo, repo);
 
 cleanup:
-    return err;
+    return error;
 }
 
 /**
@@ -103,17 +100,15 @@ cleanup:
  * @param branch_name Name for the branch
  * @param commit Commit to which branch should point.
  * @param force Overwrite existing branch
- * @return S4 class git_branch
+ * @return S3 class git_branch
  */
 SEXP git2r_branch_create(
     SEXP branch_name,
     SEXP commit,
     SEXP force)
 {
-    SEXP repo;
-    SEXP result = R_NilValue;
-    int err;
-    int overwrite = 0;
+    SEXP repo, result = R_NilValue;
+    int error, nprotect = 0, overwrite = 0;
     git_commit *target = NULL;
     git_reference *reference = NULL;
     git_repository *repository = NULL;
@@ -125,44 +120,42 @@ SEXP git2r_branch_create(
     if (git2r_arg_check_logical(force))
         git2r_error(__func__, NULL, "'force'", git2r_err_logical_arg);
 
-    repo = GET_SLOT(commit, Rf_install("repo"));
+    repo = git2r_get_list_element(commit, "repo");
     repository = git2r_repository_open(repo);
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git2r_commit_lookup(&target, repository, commit);
-    if (err)
+    error = git2r_commit_lookup(&target, repository, commit);
+    if (error)
         goto cleanup;
 
     if (LOGICAL(force)[0])
         overwrite = 1;
 
-    err = git_branch_create(
+    error = git_branch_create(
         &reference,
         repository,
         CHAR(STRING_ELT(branch_name, 0)),
         target,
         overwrite);
-    if (err)
+    if (error)
         goto cleanup;
 
-    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_branch")));
-    err = git2r_branch_init(reference, GIT_BRANCH_LOCAL, repo, result);
+    PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_branch));
+    nprotect++;
+    Rf_setAttrib(result, R_ClassSymbol,
+                 Rf_mkString(git2r_S3_class__git_branch));
+    error = git2r_branch_init(reference, GIT_BRANCH_LOCAL, repo, result);
 
 cleanup:
-    if (reference)
-        git_reference_free(reference);
+    git_reference_free(reference);
+    git_commit_free(target);
+    git_repository_free(repository);
 
-    if (target)
-        git_commit_free(target);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
-    if (repository)
-        git_repository_free(repository);
-
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -171,12 +164,12 @@ cleanup:
 /**
  * Delete branch
  *
- * @param branch S4 class git_branch
+ * @param branch S3 class git_branch
  * @return R_NilValue
  */
 SEXP git2r_branch_delete(SEXP branch)
 {
-    int err;
+    int error;
     const char *name;
     git_branch_t type;
     git_reference *reference = NULL;
@@ -185,26 +178,23 @@ SEXP git2r_branch_delete(SEXP branch)
     if (git2r_arg_check_branch(branch))
         git2r_error(__func__, NULL, "'branch'", git2r_err_branch_arg);
 
-    repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
+    repository = git2r_repository_open(git2r_get_list_element(branch, "repo"));
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
-    type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
-    err = git_branch_lookup(&reference, repository, name, type);
-    if (err)
+    name = CHAR(STRING_ELT(git2r_get_list_element(branch, "name"), 0));
+    type = INTEGER(git2r_get_list_element(branch, "type"))[0];
+    error = git_branch_lookup(&reference, repository, name, type);
+    if (error)
         goto cleanup;
 
-    err = git_branch_delete(reference);
+    error = git_branch_delete(reference);
 
 cleanup:
-    if (reference)
-        git_reference_free(reference);
+    git_reference_free(reference);
+    git_repository_free(repository);
 
-    if (repository)
-        git_repository_free(repository);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return R_NilValue;
@@ -213,13 +203,13 @@ cleanup:
 /**
  * Determine if the current local branch is pointed at by HEAD
  *
- * @param branch S4 class git_branch
+ * @param branch S3 class git_branch
  * @return TRUE if head, FALSE if not
  */
 SEXP git2r_branch_is_head(SEXP branch)
 {
     SEXP result = R_NilValue;
-    int err;
+    int error;
     const char *name;
     git_reference *reference = NULL;
     git_repository *repository = NULL;
@@ -227,38 +217,35 @@ SEXP git2r_branch_is_head(SEXP branch)
     if (git2r_arg_check_branch(branch))
         git2r_error(__func__, NULL, "'branch'", git2r_err_branch_arg);
 
-    repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
+    repository = git2r_repository_open(git2r_get_list_element(branch, "repo"));
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
+    name = CHAR(STRING_ELT(git2r_get_list_element(branch, "name"), 0));
 
-    err = git_branch_lookup(
+    error = git_branch_lookup(
         &reference,
         repository,
         name,
-        INTEGER(GET_SLOT(branch, Rf_install("type")))[0]);
-    if (err)
+        INTEGER(git2r_get_list_element(branch, "type"))[0]);
+    if (error)
         goto cleanup;
 
-    err = git_branch_is_head(reference);
-    if (0 == err || 1 == err) {
+    error = git_branch_is_head(reference);
+    if (0 == error || 1 == error) {
         PROTECT(result = Rf_allocVector(LGLSXP, 1));
-        LOGICAL(result)[0] = err;
-        err = GIT_OK;
+        LOGICAL(result)[0] = error;
+        error = 0;
     }
 
 cleanup:
-    if (reference)
-        git_reference_free(reference);
-
-    if (repository)
-        git_repository_free(repository);
+    git_reference_free(reference);
+    git_repository_free(repository);
 
     if (!Rf_isNull(result))
         UNPROTECT(1);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -267,16 +254,15 @@ cleanup:
 /**
  * List branches in a repository
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param flags Filtering flags for the branch listing. Valid values
  *        are 1 (LOCAL), 2 (REMOTE) and 3 (ALL)
- * @return VECXSP with S4 objects of class git_branch
+ * @return VECXSP with S3 objects of class git_branch
  */
 SEXP git2r_branch_list(SEXP repo, SEXP flags)
 {
-    SEXP result = R_NilValue;
-    SEXP names;
-    int err;
+    SEXP names, result = R_NilValue;
+    int error;
     git_branch_iterator *iter = NULL;
     size_t i, n = 0;
     git_repository *repository = NULL;
@@ -291,53 +277,51 @@ SEXP git2r_branch_list(SEXP repo, SEXP flags)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     /* Count number of branches before creating the list */
-    err = git2r_branch_count(repository, INTEGER(flags)[0], &n);
-    if (err)
+    error = git2r_branch_count(repository, INTEGER(flags)[0], &n);
+    if (error)
         goto cleanup;
     PROTECT(result = Rf_allocVector(VECSXP, n));
     Rf_setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, n));
 
-    err = git_branch_iterator_new(&iter, repository,  INTEGER(flags)[0]);
-    if (err)
+    error = git_branch_iterator_new(&iter, repository,  INTEGER(flags)[0]);
+    if (error)
         goto cleanup;
 
     for (i = 0; i < n; i++) {
         SEXP branch;
 
-        err = git_branch_next(&reference, &type, iter);
-        if (err) {
-            if (GIT_ITEROVER == err)
-                err = GIT_OK;
+        error = git_branch_next(&reference, &type, iter);
+        if (error) {
+            if (GIT_ITEROVER == error)
+                error = GIT_OK;
             goto cleanup;
         }
 
-        SET_VECTOR_ELT(result, i, branch = NEW_OBJECT(MAKE_CLASS("git_branch")));
-        err = git2r_branch_init(reference, type, repo, branch);
-        if (err)
+        SET_VECTOR_ELT(result, i,
+                       branch = Rf_mkNamed(VECSXP, git2r_S3_items__git_branch));
+        Rf_setAttrib(branch, R_ClassSymbol,
+                     Rf_mkString(git2r_S3_class__git_branch));
+        error = git2r_branch_init(reference, type, repo, branch);
+        if (error)
             goto cleanup;
         SET_STRING_ELT(
             names,
             i,
-            STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
+            STRING_ELT(git2r_get_list_element(branch, "name"), 0));
         if (reference)
             git_reference_free(reference);
         reference = NULL;
     }
 
 cleanup:
-    if (iter)
-        git_branch_iterator_free(iter);
-
-    if (reference)
-        git_reference_free(reference);
-
-    if (repository)
-        git_repository_free(repository);
+    git_branch_iterator_free(iter);
+    git_reference_free(reference);
+    git_repository_free(repository);
 
     if (!Rf_isNull(result))
         UNPROTECT(1);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -346,12 +330,12 @@ cleanup:
 /**
  * Get the full name of a branch
  *
- * @param branch S4 class git_branch
+ * @param branch S3 class git_branch
  * @return character string with full name of branch.
  */
 SEXP git2r_branch_canonical_name(SEXP branch)
 {
-    int err;
+    int error;
     SEXP result = R_NilValue;
     const char *name;
     git_branch_t type;
@@ -361,30 +345,27 @@ SEXP git2r_branch_canonical_name(SEXP branch)
     if (git2r_arg_check_branch(branch))
         git2r_error(__func__, NULL, "'branch'", git2r_err_branch_arg);
 
-    repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
+    repository = git2r_repository_open(git2r_get_list_element(branch, "repo"));
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
-    type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
-    err = git_branch_lookup(&reference, repository, name, type);
-    if (err)
+    name = CHAR(STRING_ELT(git2r_get_list_element(branch, "name"), 0));
+    type = INTEGER(git2r_get_list_element(branch, "type"))[0];
+    error = git_branch_lookup(&reference, repository, name, type);
+    if (error)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
     SET_STRING_ELT(result, 0, Rf_mkChar(git_reference_name(reference)));
 
 cleanup:
-    if (reference)
-        git_reference_free(reference);
-
-    if (repository)
-        git_repository_free(repository);
+    git_reference_free(reference);
+    git_repository_free(repository);
 
     if (!Rf_isNull(result))
         UNPROTECT(1);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -394,12 +375,12 @@ cleanup:
  * local branch, i.e "branch.branch_name.merge" property of the config
  * file.
  *
- * @param branch S4 class git_branch.
+ * @param branch S3 class git_branch.
  * @return Character vector of length one with upstream canonical name.
  */
 SEXP git2r_branch_upstream_canonical_name(SEXP branch)
 {
-    int err;
+    int error;
     SEXP result = R_NilValue;
     SEXP repo;
     const char *name;
@@ -411,30 +392,30 @@ SEXP git2r_branch_upstream_canonical_name(SEXP branch)
     if (git2r_arg_check_branch(branch))
         git2r_error(__func__, NULL, "'branch'", git2r_err_branch_arg);
 
-    type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
+    type = INTEGER(git2r_get_list_element(branch, "type"))[0];
     if (GIT_BRANCH_LOCAL != type)
         git2r_error(__func__, NULL, git2r_err_branch_not_local, NULL);
 
-    repo = GET_SLOT(branch, Rf_install("repo"));
+    repo = git2r_get_list_element(branch, "repo");
     repository = git2r_repository_open(repo);
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git_repository_config_snapshot(&cfg, repository);
-    if (err)
+    error = git_repository_config_snapshot(&cfg, repository);
+    if (error)
         goto cleanup;
 
-    err = git_buf_join3(
+    error = git_buf_join3(
         &buf,
         '.',
         "branch",
-        CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0)),
+        CHAR(STRING_ELT(git2r_get_list_element(branch, "name"), 0)),
         "merge");
-    if (err)
+    if (error)
         goto cleanup;
 
-    err = git_config_get_string(&name, cfg, buf.ptr);
-    if (err)
+    error = git_config_get_string(&name, cfg, buf.ptr);
+    if (error)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
@@ -442,17 +423,13 @@ SEXP git2r_branch_upstream_canonical_name(SEXP branch)
 
 cleanup:
     git_buf_free(&buf);
-
-    if (cfg)
-        git_config_free(cfg);
-
-    if (repository)
-        git_repository_free(repository);
+    git_config_free(cfg);
+    git_repository_free(repository);
 
     if (!Rf_isNull(result))
         UNPROTECT(1);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -461,12 +438,12 @@ cleanup:
 /**
  * Get remote name of branch
  *
- * @param branch S4 class git_branch
+ * @param branch S3 class git_branch
  * @return character string with remote name.
  */
 SEXP git2r_branch_remote_name(SEXP branch)
 {
-    int err;
+    int error;
     SEXP result = R_NilValue;
     const char *name;
     git_buf buf = {0};
@@ -477,24 +454,24 @@ SEXP git2r_branch_remote_name(SEXP branch)
     if (git2r_arg_check_branch(branch))
         git2r_error(__func__, NULL, "'branch'", git2r_err_branch_arg);
 
-    type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
+    type = INTEGER(git2r_get_list_element(branch, "type"))[0];
     if (GIT_BRANCH_REMOTE != type)
         git2r_error(__func__, NULL, git2r_err_branch_not_remote, NULL);
 
-    repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
+    repository = git2r_repository_open(git2r_get_list_element(branch, "repo"));
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
-    err = git_branch_lookup(&reference, repository, name, type);
-    if (err)
+    name = CHAR(STRING_ELT(git2r_get_list_element(branch, "name"), 0));
+    error = git_branch_lookup(&reference, repository, name, type);
+    if (error)
         goto cleanup;
 
-    err = git_branch_remote_name(
+    error = git_branch_remote_name(
         &buf,
         repository,
         git_reference_name(reference));
-    if (err)
+    if (error)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
@@ -502,16 +479,13 @@ SEXP git2r_branch_remote_name(SEXP branch)
     git_buf_free(&buf);
 
 cleanup:
-    if (reference)
-        git_reference_free(reference);
-
-    if (repository)
-        git_repository_free(repository);
+    git_reference_free(reference);
+    git_repository_free(repository);
 
     if (!Rf_isNull(result))
         UNPROTECT(1);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -520,12 +494,12 @@ cleanup:
 /**
  * Get remote url of branch
  *
- * @param branch S4 class git_branch
+ * @param branch S3 class git_branch
  * @return character string with remote url.
  */
 SEXP git2r_branch_remote_url(SEXP branch)
 {
-    int err;
+    int error;
     SEXP result = R_NilValue;
     const char *name;
     git_buf buf = {0};
@@ -537,30 +511,30 @@ SEXP git2r_branch_remote_url(SEXP branch)
     if (git2r_arg_check_branch(branch))
         git2r_error(__func__, NULL, "'branch'", git2r_err_branch_arg);
 
-    type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
+    type = INTEGER(git2r_get_list_element(branch, "type"))[0];
     if (GIT_BRANCH_REMOTE != type)
         git2r_error(__func__, NULL, git2r_err_branch_not_remote, NULL);
 
-    repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
+    repository = git2r_repository_open(git2r_get_list_element(branch, "repo"));
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
-    err = git_branch_lookup(&reference, repository, name, type);
-    if (err)
+    name = CHAR(STRING_ELT(git2r_get_list_element(branch, "name"), 0));
+    error = git_branch_lookup(&reference, repository, name, type);
+    if (error)
         goto cleanup;
 
-    err = git_branch_remote_name(
+    error = git_branch_remote_name(
         &buf,
         repository,
         git_reference_name(reference));
-    if (err)
+    if (error)
         goto cleanup;
 
-    err = git_remote_lookup(&remote, repository, buf.ptr);
-    if (err) {
-        err = git_remote_create_anonymous(&remote, repository, buf.ptr);
-        if (err) {
+    error = git_remote_lookup(&remote, repository, buf.ptr);
+    if (error) {
+        error = git_remote_create_anonymous(&remote, repository, buf.ptr);
+        if (error) {
             git_buf_free(&buf);
             goto cleanup;
         }
@@ -571,19 +545,14 @@ SEXP git2r_branch_remote_url(SEXP branch)
     SET_STRING_ELT(result, 0, Rf_mkChar(git_remote_url(remote)));
 
 cleanup:
-    if (remote)
-        git_remote_free(remote);
-
-    if (reference)
-        git_reference_free(reference);
-
-    if (repository)
-        git_repository_free(repository);
+    git_remote_free(remote);
+    git_reference_free(reference);
+    git_repository_free(repository);
 
     if (!Rf_isNull(result))
         UNPROTECT(1);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -595,21 +564,18 @@ cleanup:
  * @param branch Branch to rename
  * @param new_branch_name The new name for the branch
  * @param force Overwrite existing branch
- * @return The renamed S4 class git_branch
+ * @return The renamed S3 class git_branch
  */
 SEXP git2r_branch_rename(
     SEXP branch,
     SEXP new_branch_name,
     SEXP force)
 {
-    SEXP repo;
-    SEXP result = R_NilValue;
-    int err;
-    int overwrite = 0;
+    SEXP repo, result = R_NilValue;
+    int error, nprotect = 0, overwrite = 0;
     const char *name = NULL;
     git_branch_t type;
-    git_reference *reference = NULL;
-    git_reference *new_reference = NULL;
+    git_reference *reference = NULL, *new_reference = NULL;
     git_repository *repository = NULL;
 
     if (git2r_arg_check_branch(branch))
@@ -619,45 +585,43 @@ SEXP git2r_branch_rename(
     if (git2r_arg_check_logical(force))
         git2r_error(__func__, NULL, "'force'", git2r_err_logical_arg);
 
-    repo = GET_SLOT(branch, Rf_install("repo"));
+    repo = git2r_get_list_element(branch, "repo");
     repository = git2r_repository_open(repo);
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
-    name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
-    err = git_branch_lookup(&reference, repository, name, type);
-    if (err)
+    type = INTEGER(git2r_get_list_element(branch, "type"))[0];
+    name = CHAR(STRING_ELT(git2r_get_list_element(branch, "name"), 0));
+    error = git_branch_lookup(&reference, repository, name, type);
+    if (error)
         goto cleanup;
 
     if (LOGICAL(force)[0])
         overwrite = 1;
 
-    err = git_branch_move(
+    error = git_branch_move(
         &new_reference,
         reference,
         CHAR(STRING_ELT(new_branch_name, 0)),
         overwrite);
-    if (err)
+    if (error)
         goto cleanup;
 
-    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_branch")));
-    err = git2r_branch_init(new_reference, type, repo, result);
+    PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_branch));
+    nprotect++;
+    Rf_setAttrib(result, R_ClassSymbol,
+                 Rf_mkString(git2r_S3_class__git_branch));
+    error = git2r_branch_init(new_reference, type, repo, result);
 
 cleanup:
-    if (reference)
-        git_reference_free(reference);
+    git_reference_free(reference);
+    git_reference_free(new_reference);
+    git_repository_free(repository);
 
-    if (new_reference)
-        git_reference_free(new_reference);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
-    if (repository)
-        git_repository_free(repository);
-
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -666,12 +630,12 @@ cleanup:
 /**
  * Get sha pointed to by a branch
  *
- * @param branch S4 class git_branch
+ * @param branch S3 class git_branch
  * @return The 40 character sha if the reference is direct, else NA
  */
 SEXP git2r_branch_target(SEXP branch)
 {
-    int err;
+    int error;
     SEXP result = R_NilValue;
     const char *name;
     char sha[GIT_OID_HEXSZ + 1];
@@ -682,14 +646,14 @@ SEXP git2r_branch_target(SEXP branch)
     if (git2r_arg_check_branch(branch))
         git2r_error(__func__, NULL, "'branch'", git2r_err_branch_arg);
 
-    repository = git2r_repository_open(GET_SLOT(branch, Rf_install("repo")));
+    repository = git2r_repository_open(git2r_get_list_element(branch, "repo"));
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
-    type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
-    err = git_branch_lookup(&reference, repository, name, type);
-    if (err)
+    name = CHAR(STRING_ELT(git2r_get_list_element(branch, "name"), 0));
+    type = INTEGER(git2r_get_list_element(branch, "type"))[0];
+    error = git_branch_lookup(&reference, repository, name, type);
+    if (error)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
@@ -702,16 +666,13 @@ SEXP git2r_branch_target(SEXP branch)
     }
 
 cleanup:
-    if (reference)
-        git_reference_free(reference);
-
-    if (repository)
-        git_repository_free(repository);
+    git_reference_free(reference);
+    git_repository_free(repository);
 
     if (!Rf_isNull(result))
         UNPROTECT(1);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -720,58 +681,54 @@ cleanup:
 /**
  * Get remote tracking branch, given a local branch.
  *
- * @param branch S4 class git_branch
- * @return S4 class git_branch or R_NilValue if no remote tracking branch.
+ * @param branch S3 class git_branch
+ * @return S3 class git_branch or R_NilValue if no remote tracking branch.
  */
 SEXP git2r_branch_get_upstream(SEXP branch)
 {
-    int err;
-    SEXP result = R_NilValue;
-    SEXP repo;
+    int error, nprotect = 0;
+    SEXP repo, result = R_NilValue;
     const char *name;
     git_branch_t type;
-    git_reference *reference = NULL;
-    git_reference *upstream = NULL;
+    git_reference *reference = NULL, *upstream = NULL;
     git_repository *repository = NULL;
 
     if (git2r_arg_check_branch(branch))
         git2r_error(__func__, NULL, "'branch'", git2r_err_branch_arg);
 
-    repo = GET_SLOT(branch, Rf_install("repo"));
+    repo = git2r_get_list_element(branch, "repo");
     repository = git2r_repository_open(repo);
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
-    type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
-    err = git_branch_lookup(&reference, repository, name, type);
-    if (err)
+    name = CHAR(STRING_ELT(git2r_get_list_element(branch, "name"), 0));
+    type = INTEGER(git2r_get_list_element(branch, "type"))[0];
+    error = git_branch_lookup(&reference, repository, name, type);
+    if (error)
         goto cleanup;
 
-    err = git_branch_upstream(&upstream, reference);
-    if (err) {
-        if (GIT_ENOTFOUND == err)
-            err = GIT_OK;
+    error = git_branch_upstream(&upstream, reference);
+    if (error) {
+        if (GIT_ENOTFOUND == error)
+            error = GIT_OK;
         goto cleanup;
     }
 
-    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_branch")));
-    err = git2r_branch_init(upstream, GIT_BRANCH_REMOTE, repo, result);
+    PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_branch));
+    nprotect++;
+    Rf_setAttrib(result, R_ClassSymbol,
+                 Rf_mkString(git2r_S3_class__git_branch));
+    error = git2r_branch_init(upstream, GIT_BRANCH_REMOTE, repo, result);
 
 cleanup:
-    if (reference)
-        git_reference_free(reference);
+    git_reference_free(reference);
+    git_reference_free(upstream);
+    git_repository_free(repository);
 
-    if (upstream)
-        git_reference_free(upstream);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
-    if (repository)
-        git_repository_free(repository);
-
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -788,7 +745,7 @@ cleanup:
  */
 SEXP git2r_branch_set_upstream(SEXP branch, SEXP upstream_name)
 {
-    int err;
+    int error;
     SEXP repo;
     const char *name;
     const char *u_name = NULL;
@@ -804,27 +761,24 @@ SEXP git2r_branch_set_upstream(SEXP branch, SEXP upstream_name)
         u_name = CHAR(STRING_ELT(upstream_name, 0));
     }
 
-    repo = GET_SLOT(branch, Rf_install("repo"));
+    repo = git2r_get_list_element(branch, "repo");
     repository = git2r_repository_open(repo);
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    name = CHAR(STRING_ELT(GET_SLOT(branch, Rf_install("name")), 0));
-    type = INTEGER(GET_SLOT(branch, Rf_install("type")))[0];
-    err = git_branch_lookup(&reference, repository, name, type);
-    if (err)
+    name = CHAR(STRING_ELT(git2r_get_list_element(branch, "name"), 0));
+    type = INTEGER(git2r_get_list_element(branch, "type"))[0];
+    error = git_branch_lookup(&reference, repository, name, type);
+    if (error)
         goto cleanup;
 
-    err = git_branch_set_upstream(reference, u_name);
+    error = git_branch_set_upstream(reference, u_name);
 
 cleanup:
-    if (reference)
-        git_reference_free(reference);
+    git_reference_free(reference);
+    git_repository_free(repository);
 
-    if (repository)
-        git_repository_free(repository);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return R_NilValue;
