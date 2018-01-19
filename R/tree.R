@@ -358,21 +358,15 @@ is_tree <- function(object) {
 ##'     (see \sQuote{Examples}).
 ##' @param repo never used if \code{tree} is a
 ##'     \code{\linkS4class{git_tree}} object. A
-##'     \code{\linkS4class{git_repository}} object, or a path to a
-##'     repository, or \code{NULL}.  If the \code{repo} argument is
-##'     \code{NULL}, then the repository is searched for with
-##'     \code{\link{discover_repository}} in the current working
-##'     directory.
+##'     \code{\linkS4class{git_repository}} object, or a path (default
+##'     = '.') to a repository.
 ##' @param recursive default is to recurse into sub-trees.
-##' @return A data.frame with the following columns:
-##' \describe{
-##'   \item{mode}{UNIX file attribute of the tree entry}
-##'   \item{type}{type of object}
-##'   \item{sha}{sha of the object}
-##'   \item{path}{path relative to the root tree}
-##'   \item{name}{filename of the tree entry}
-##'   \item{len}{object size of blob (file) entries. NA for other objects.}
-##' }
+##' @return A data.frame with the following columns: \describe{
+##'     \item{mode}{UNIX file attribute of the tree entry}
+##'     \item{type}{type of object} \item{sha}{sha of the object}
+##'     \item{path}{path relative to the root tree}
+##'     \item{name}{filename of the tree entry} \item{len}{object size
+##'     of blob (file) entries. NA for other objects.}  }
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -405,7 +399,7 @@ is_tree <- function(object) {
 ##' ## Start in subfolder
 ##' ls_tree(tree = "HEAD:subfolder", repo = repo)
 ##' }
-ls_tree <- function(tree = NULL, repo = NULL, recursive = TRUE)
+ls_tree <- function(tree = NULL, repo = ".", recursive = TRUE)
 {
     if (is.null(tree)) {
         tree <- tree(last_commit(lookup_repository(repo)))
