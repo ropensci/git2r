@@ -172,3 +172,34 @@ ssh_key_needs_passphrase <- function(privatekey = "~/.ssh/id_rsa") {
     contains_encrypted <- grepl("encrypted", private_content, ignore.case = TRUE)
     any(contains_encrypted)
 }
+
+##' Compose path to ssh keys
+##' 
+##' This function provides a consistent means across OS-types to access the
+##' \code{.ssh} directory.
+##' 
+##' On Windows based systems, 
+##' \code{path.expand("~")} returns \code{"C:/Users/username/Documents"}, 
+##' whereas the usual \code{.ssh} directory is \code{"C:/Users/username"}.
+##' 
+##' Calling \code{ssh_path()} with no arguments will return the path to the
+##' \code{.ssh} directory.
+##' 
+##' @param file basename of file for which path is requested
+##' @return full path to the file
+##' @keywords internal
+##' @export
+##' @examples 
+##' ssh_path()
+##' ssh_path("is_rsa.pub")
+ssh_path <- function(file = "") {
+  
+  if (.Platform$OS.type == "windows") {
+    home <- Sys.getenv("USERPROFILE")
+  } else {
+    home <- path.expand("~")
+  }
+  
+  file.path(home, ".ssh", file)
+}
+
