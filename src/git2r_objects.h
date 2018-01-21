@@ -22,6 +22,27 @@
 #include <R.h>
 #include <Rinternals.h>
 
+extern const char *git2r_S3_class__git_blame;
+extern const char *git2r_S3_items__git_blame[];
+enum {
+    git2r_S3_item__git_blame__path,
+    git2r_S3_item__git_blame__hunks,
+    git2r_S3_item__git_blame__repo};
+
+extern const char *git2r_S3_class__git_blame_hunk;
+extern const char *git2r_S3_items__git_blame_hunk[];
+enum {
+    git2r_S3_item__git_blame_hunk__lines_in_hunk,
+    git2r_S3_item__git_blame_hunk__final_commit_id,
+    git2r_S3_item__git_blame_hunk__final_start_line_number,
+    git2r_S3_item__git_blame_hunk__final_signature,
+    git2r_S3_item__git_blame_hunk__orig_commit_id,
+    git2r_S3_item__git_blame_hunk__orig_start_line_number,
+    git2r_S3_item__git_blame_hunk__orig_signature,
+    git2r_S3_item__git_blame_hunk__orig_path,
+    git2r_S3_item__git_blame_hunk__boundary,
+    git2r_S3_item__git_blame_hunk__repo};
+
 extern const char *git2r_S3_class__git_blob;
 extern const char *git2r_S3_items__git_blob[];
 enum {

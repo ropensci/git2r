@@ -20,6 +20,16 @@
 
 #include "git2r_objects.h"
 
+const char *git2r_S3_class__git_blame = "git_blame";
+const char *git2r_S3_items__git_blame[] = {
+    "path", "hunks", "repo", ""};
+
+const char *git2r_S3_class__git_blame_hunk;
+const char *git2r_S3_items__git_blame_hunk[] = {
+    "lines_in_hunk", "final_commit_id", "final_start_line_number",
+    "final_signature", "orig_commit_id", "orig_start_line_number",
+    "orig_signature", "orig_path", "boundary", "repo", ""};
+
 const char *git2r_S3_class__git_blob = "git_blob";
 const char *git2r_S3_items__git_blob[] = {
     "sha", "repo", ""};
