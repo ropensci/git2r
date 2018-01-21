@@ -42,6 +42,10 @@ const char *git2r_S3_class__git_merge_result = "git_merge_result";
 const char *git2r_S3_items__git_merge_result[] = {
     "up_to_date", "fast_forward", "conflicts", "sha", ""};
 
+const char *git2r_S3_class__git_repository = "git_repository";
+const char *git2r_S3_items__git_repository[] = {
+    "path", ""};
+
 const char *git2r_S3_class__git_signature = "git_signature";
 const char *git2r_S3_items__git_signature[] = {
     "name", "email", "when", ""};

@@ -90,7 +90,12 @@ setAs(from="git_repository",
 ##'
 ##' @param path A path to an existing local git repository.
 ##' @param discover Discover repository from path. Default is TRUE.
-##' @return A S4 \code{\linkS4class{git_repository}} object
+##' @return A \code{git_repository} object with entries:
+##' \describe{
+##'   \item{path}{
+##'     Path to a git repository
+##'   }
+##' }
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -162,17 +167,20 @@ repository <- function(path = ".", discover = TRUE) {
             stop("'path' is not a directory")
     }
 
-    new("git_repository", path = path)
+    if (!isTRUE(.Call(git2r_repository_can_open, path)))
+        stop("Unable to open repository at 'path'")
+
+    structure(list(path = path), class = "git_repository")
 }
 
 ##' Init a repository
 ##'
 ##' @param path A path to where to init a git repository
 ##' @param bare If TRUE, a Git repository without a working directory
-##' is created at the pointed path. If FALSE, provided path will be
-##' considered as the working directory into which the .git directory
-##' will be created.
-##' @return A \code{\linkS4class{git_repository}} object
+##'     is created at the pointed path. If FALSE, provided path will
+##'     be considered as the working directory into which the .git
+##'     directory will be created.
+##' @return A \code{git_repository} object
 ##' @export
 ##' @seealso \link{repository}
 ##' @examples
@@ -194,7 +202,7 @@ init <- function(path = ".", bare = FALSE) {
     if (!file.info(path)$isdir)
         stop("'path' is not a directory")
     .Call(git2r_repository_init, path, bare)
-    new("git_repository", path = path)
+    repository(path)
 }
 
 ##' Clone a remote repository
@@ -210,8 +218,9 @@ init <- function(path = ".", bare = FALSE) {
 ##'     access. Default is NULL. To use and query an ssh-agent for the
 ##'     ssh key credentials, let this parameter be NULL (the default).
 ##' @param progress Show progress. Default is TRUE.
-##' @return A S4 \code{\linkS4class{git_repository}} object
-##' @seealso \code{\link{cred_user_pass}}, \code{\link{cred_ssh_key}}
+##' @return A \code{git_repository} object.
+##' @seealso \link{repository}, \code{\link{cred_user_pass}},
+##'     \code{\link{cred_ssh_key}}
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -554,70 +563,40 @@ default_signature <- function(repo = ".") {
     .Call(git2r_signature_default, lookup_repository(repo))
 }
 
-##' Brief summary of repository
-##'
-##' @aliases show,git_repository-methods
-##' @docType methods
-##' @param object The repository \code{object}
-##' @return None (invisible 'NULL').
-##' @keywords methods
 ##' @export
-##' @examples
-##' \dontrun{
-##' ## Initialize a temporary repository
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
-##'
-##' ## Brief summary of the repository
-##' repo
-##'
-##' ## Create and commit a file
-##' writeLines("Hello world!", file.path(path, "example.txt"))
-##' add(repo, "example.txt")
-##' commit(repo, "First commit message")
-##'
-##' ## Brief summary of the repository
-##' repo
-##' }
-setMethod("show",
-          signature(object = "git_repository"),
-          function(object)
-          {
-              if (any(is_empty(object), is.null(head(object)))) {
-                  cat(sprintf("Local:    %s\n", workdir(object)))
-                  cat("Head:     nothing commited (yet)\n")
-              } else {
-                  if (is_detached(object)) {
-                      cat(sprintf("Local:    (detached) %s\n", workdir(object)))
+print.git_repository <- function(x, ...) {
+    if (any(is_empty(x), is.null(head(x)))) {
+        cat(sprintf("Local:    %s\n", workdir(x)))
+        cat("Head:     nothing commited (yet)\n")
+    } else {
+        if (is_detached(x)) {
+            cat(sprintf("Local:    (detached) %s\n", workdir(x)))
 
-                      h <- git2r::head(object)
-                  } else {
-                      cat(sprintf("Local:    %s %s\n",
-                                  head(object)@name,
-                                  workdir(object)))
+            h <- git2r::head(x)
+        } else {
+            cat(sprintf("Local:    %s %s\n",
+                        head(x)@name,
+                        workdir(x)))
 
-                      h <- head(object)
-                      u <- branch_get_upstream(h)
-                      if (!is.null(u)) {
-                          rn <- branch_remote_name(u)
-                          cat(sprintf("Remote:   %s @ %s (%s)\n",
-                                      substr(u@name, nchar(rn) + 2, nchar(u@name)),
-                                      rn,
-                                      branch_remote_url(u)))
-                      }
+            h <- head(x)
+            u <- branch_get_upstream(h)
+            if (!is.null(u)) {
+                rn <- branch_remote_name(u)
+                cat(sprintf("Remote:   %s @ %s (%s)\n",
+                            substr(u@name, nchar(rn) + 2, nchar(u@name)),
+                            rn,
+                            branch_remote_url(u)))
+            }
 
-                      h <- lookup(object, branch_target(head(object)))
-                  }
+            h <- lookup(x, branch_target(head(x)))
+        }
 
-                  cat(sprintf("Head:     [%s] %s: %s\n",
-                              substring(h@sha, 1, 7),
-                              substring(as(h@author@when, "character"), 1, 10),
-                              h@summary))
-              }
-          }
-)
+        cat(sprintf("Head:     [%s] %s: %s\n",
+                    substring(h@sha, 1, 7),
+                    substring(as(h@author@when, "character"), 1, 10),
+                    h@summary))
+    }
+}
 
 ##' Summary of repository
 ##'

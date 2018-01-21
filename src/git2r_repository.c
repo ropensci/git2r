@@ -23,6 +23,7 @@
 #include "git2r_branch.h"
 #include "git2r_commit.h"
 #include "git2r_error.h"
+#include "git2r_objects.h"
 #include "git2r_repository.h"
 #include "git2r_signature.h"
 #include "git2r_tag.h"
@@ -30,9 +31,9 @@
 #include "buffer.h"
 
 /**
- * Get repo slot from S4 class git_repository
+ * Get repo from S3 class git_repository
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @return a git_repository pointer on success else NULL
  */
 git_repository* git2r_repository_open(SEXP repo)
@@ -43,10 +44,7 @@ git_repository* git2r_repository_open(SEXP repo)
     if (git2r_arg_check_repository(repo))
         return NULL;
 
-    path = GET_SLOT(repo, Rf_install("path"));
-    if (git2r_arg_check_string(path))
-        return NULL;
-
+    path = git2r_get_list_element(repo, "path");
     if (git_repository_open(&repository, CHAR(STRING_ELT(path, 0))) < 0)
         return NULL;
 

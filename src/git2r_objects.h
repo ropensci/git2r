@@ -64,6 +64,11 @@ enum {
     git2r_S3_item__git_merge_result__conflicts,
     git2r_S3_item__git_merge_result__sha};
 
+extern const char *git2r_S3_class__git_repository;
+extern const char *git2r_S3_items__git_repository[];
+enum {
+    git2r_S3_item__git_repository__path};
+
 extern const char *git2r_S3_class__git_signature;
 extern const char *git2r_S3_items__git_signature[];
 enum {
