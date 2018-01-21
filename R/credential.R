@@ -113,9 +113,9 @@ cred_user_pass <- function(username = NULL, password = NULL) {
 ##'
 ##' @family git credential functions
 ##' @param publickey The path to the public key of the
-##'     credential. Default is \code{'~/.ssh/id_rsa.pub'}
+##'     credential. Default is \code{ssh_path("id_rsa.pub")}
 ##' @param privatekey The path to the private key of the
-##'     credential. Default is \code{'~/.ssh/id_rsa'}
+##'     credential. Default is \code{ssh_path("id_rsa")}
 ##' @param passphrase The passphrase of the credential. Default is
 ##'     \code{character(0)}. If getPass is installed and private key
 ##'     is passphrase protected \code{getPass::getPass()} will be
@@ -138,12 +138,12 @@ cred_user_pass <- function(username = NULL, password = NULL) {
 ##' \dontrun{
 ##' ## Create a ssh key credential object. It can optionally be
 ##' ## passphrase-protected
-##' cred <- cred_ssh_key("~/.ssh/id_rsa.pub", "~/.ssh/id_rsa")
+##' cred <- cred_ssh_key(ssh_path("id_rsa.pub"), ssh_path("id_rsa"))
 ##' repo <- repository("git2r")
 ##' push(repo, credentials = cred)
 ##' }
-cred_ssh_key <-  function (publickey = "~/.ssh/id_rsa.pub",
-                           privatekey = "~/.ssh/id_rsa",
+cred_ssh_key <-  function (publickey = ssh_path("id_rsa.pub"),
+                           privatekey = ssh_path("id_rsa"),
                            passphrase = character(0))
 {
     publickey = normalizePath(publickey, mustWork = TRUE)
@@ -165,9 +165,9 @@ cred_ssh_key <-  function (publickey = "~/.ssh/id_rsa.pub",
 
 ##' Check if private key is passphrase protected
 ##' @param privatekey The path to the private key of the
-##' credential. Default is \code{'~/.ssh/id_rsa'}
+##' credential. Default is \code{ssh_path("id_rsa")}
 ##' @noRd
-ssh_key_needs_passphrase <- function(privatekey = "~/.ssh/id_rsa") {
+ssh_key_needs_passphrase <- function(privatekey = ssh_path("id_rsa")) {
     private_content <- readLines(privatekey, n = 3)
     contains_encrypted <- grepl("encrypted", private_content, ignore.case = TRUE)
     any(contains_encrypted)
@@ -178,16 +178,18 @@ ssh_key_needs_passphrase <- function(privatekey = "~/.ssh/id_rsa") {
 ##' This function provides a consistent means across OS-types to access the
 ##' \code{.ssh} directory.
 ##' 
-##' On Windows based systems, 
+##' On Windows-based systems, 
 ##' \code{path.expand("~")} returns \code{"C:/Users/username/Documents"}, 
 ##' whereas the usual \code{.ssh} directory is \code{"C:/Users/username"}.
+##' 
+##' On other operating systems, \code{path.expand("~")} returns the usual
+##' code{.ssh} directory.
 ##' 
 ##' Calling \code{ssh_path()} with no arguments will return the path to the
 ##' \code{.ssh} directory.
 ##' 
 ##' @param file basename of file for which path is requested
-##' @return full path to the file
-##' @keywords internal
+##' @return Full path to the file
 ##' @export
 ##' @examples 
 ##' ssh_path()
