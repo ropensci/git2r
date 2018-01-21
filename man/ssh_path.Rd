@@ -10,16 +10,19 @@ ssh_path(file = "")
 \item{file}{basename of file for which path is requested}
 }
 \value{
-full path to the file
+Full path to the file
 }
 \description{
 This function provides a consistent means across OS-types to access the
 \code{.ssh} directory.
 }
 \details{
-On Windows based systems, 
+On Windows-based systems, 
 \code{path.expand("~")} returns \code{"C:/Users/username/Documents"}, 
 whereas the usual \code{.ssh} directory is \code{"C:/Users/username"}.
+
+On other operating systems, \code{path.expand("~")} returns the usual
+code{.ssh} directory.
 
 Calling \code{ssh_path()} with no arguments will return the path to the
 \code{.ssh} directory.
@@ -28,4 +31,3 @@ Calling \code{ssh_path()} with no arguments will return the path to the
 ssh_path()
 ssh_path("is_rsa.pub")
 }
-\keyword{internal}
