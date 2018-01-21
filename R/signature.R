@@ -14,13 +14,22 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-##' Brief summary of signature
+##' Get the signature
 ##'
-##' @aliases show,git_signature-methods
-##' @docType methods
-##' @param object The repository \code{object}
-##' @return None (invisible 'NULL').
-##' @keywords methods
+##' Get the signature according to the repository's configuration
+##' @template repo-param
+##' @return A \code{git_signature} object with entries:
+## \describe{
+##   \item{name}{
+##     The full name of the author.
+##   }
+##   \item{email}{
+##     Email of the author.
+##   }
+##   \item{when}{
+##     Time when the action happened.
+##   }
+## }
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -32,18 +41,26 @@
 ##' ## Create a user
 ##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
-##' ## Brief summary of default signature
+##' ## Get the default signature
+##' default_signature(repo)
+##'
+##' ## Change user
+##' config(repo, user.name="Bob", user.email="bob@@example.org")
+##'
+##' ## Get the default signature
 ##' default_signature(repo)
 ##' }
-setMethod("show",
-          signature(object = "git_signature"),
-          function(object)
-          {
-              cat(sprintf(paste0("name:  %s\n",
-                                 "email: %s\n",
-                                 "when:  %s\n"),
-                          object@name,
-                          object@email,
-                          as(object@when, "character")))
-          }
-)
+default_signature <- function(repo = ".") {
+    .Call(git2r_signature_default, lookup_repository(repo))
+}
+
+##' @export
+format.git_signature <- function(x, ...) {
+    sprintf("name:  %s\nemail: %s\nwhen:  %s",
+            x$name, x$email, as.character(x$when))
+}
+
+##' @export
+print.git_signature <- function(x, ...) {
+    cat(format(x, ...), "\n", sep = "")
+}
