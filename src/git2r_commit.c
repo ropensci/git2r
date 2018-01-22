@@ -16,7 +16,6 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <Rdefines.h>
 #include "git2.h"
 #include "buffer.h"
 #include "commit.h"
@@ -24,6 +23,7 @@
 #include "git2r_arg.h"
 #include "git2r_commit.h"
 #include "git2r_error.h"
+#include "git2r_objects.h"
 #include "git2r_oid.h"
 #include "git2r_repository.h"
 #include "git2r_signature.h"
@@ -37,15 +37,15 @@
  */
 static int git2r_any_changes_in_index(git_repository *repository)
 {
-    int err;
+    int error;
     int changes_in_index = 0;
     size_t i, count;
     git_status_list *status = NULL;
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
     opts.show  = GIT_STATUS_SHOW_INDEX_ONLY;
 
-    err = git_status_list_new(&status, repository, &opts);
-    if (err)
+    error = git_status_list_new(&status, repository, &opts);
+    if (error)
         goto cleanup;
 
     count = git_status_list_entrycount(status);
@@ -72,14 +72,12 @@ static int git2r_any_changes_in_index(git_repository *repository)
 
     if (!changes_in_index) {
         giterr_set_str(GITERR_NONE, git2r_err_nothing_added_to_commit);
-        err = GIT_ERROR;
+        error = GIT_ERROR;
     }
 
 cleanup:
-    if (status)
-        git_status_list_free(status);
-
-    return err;
+    git_status_list_free(status);
+    return error;
 }
 
 /**
@@ -124,18 +122,18 @@ static int git2r_repository_mergehead_foreach_cb(
     const git_oid *oid,
     void *payload)
 {
-    int err = 0;
+    int error = 0;
     git2r_merge_head_cb_data *cb_data = (git2r_merge_head_cb_data*)payload;
 
     if (cb_data->parents)
-        err = git_commit_lookup(
+        error = git_commit_lookup(
             &(cb_data->parents[cb_data->n]),
             cb_data->repository,
             oid);
 
     cb_data->n += 1;
 
-    return err;
+    return error;
 }
 
 /**
@@ -151,28 +149,28 @@ static int git2r_retrieve_parents(
     size_t *n_parents,
     git_repository *repository)
 {
-    int err;
+    int error;
     git_oid oid;
     git2r_merge_head_cb_data cb_data = {0, NULL, NULL};
     git_repository_state_t state;
 
-    err = git_repository_head_unborn(repository);
-    if (1 == err) {
+    error = git_repository_head_unborn(repository);
+    if (1 == error) {
         *n_parents = 0;
         return GIT_OK;
-    } else if (0 != err) {
-        return err;
+    } else if (0 != error) {
+        return error;
     }
 
     state = git_repository_state(repository);
     if (state == GIT_REPOSITORY_STATE_MERGE) {
         /* Count number of merge heads */
-        err = git_repository_mergehead_foreach(
+        error = git_repository_mergehead_foreach(
             repository,
             git2r_repository_mergehead_foreach_cb,
             &cb_data);
-        if (err)
-            return err;
+        if (error)
+            return error;
     }
 
     *parents = calloc(cb_data.n + 1, sizeof(git_commit*));
@@ -182,25 +180,25 @@ static int git2r_retrieve_parents(
     }
     *n_parents = cb_data.n + 1;
 
-    err = git_reference_name_to_id(&oid, repository, "HEAD");
-    if (err)
-        return err;
+    error = git_reference_name_to_id(&oid, repository, "HEAD");
+    if (error)
+        return error;
 
-    err = git_commit_lookup(&**parents, repository, &oid);
-    if (err)
-        return err;
+    error = git_commit_lookup(&**parents, repository, &oid);
+    if (error)
+        return error;
 
     if (state == GIT_REPOSITORY_STATE_MERGE) {
         /* Append merge heads to parents */
         cb_data.n = 0;
         cb_data.repository = repository;
         cb_data.parents = *parents + 1;
-        err = git_repository_mergehead_foreach(
+        error = git_repository_mergehead_foreach(
             repository,
             git2r_repository_mergehead_foreach_cb,
             &cb_data);
-        if (err)
-            return err;
+        if (error)
+            return error;
     }
 
     return GIT_OK;
@@ -225,25 +223,25 @@ int git2r_commit_create(
     git_signature *author,
     git_signature *committer)
 {
-    int err;
+    int error;
     git_oid oid;
     git_tree *tree = NULL;
     git_commit **parents = NULL;
     size_t n_parents = 0;
 
-    err = git_index_write_tree(&oid, index);
-    if (err)
+    error = git_index_write_tree(&oid, index);
+    if (error)
         goto cleanup;
 
-    err = git_tree_lookup(&tree, repository, &oid);
-    if (err)
+    error = git_tree_lookup(&tree, repository, &oid);
+    if (error)
         goto cleanup;
 
-    err = git2r_retrieve_parents(&parents, &n_parents, repository);
-    if (err)
+    error = git2r_retrieve_parents(&parents, &n_parents, repository);
+    if (error)
         goto cleanup;
 
-    err = git_commit_create(
+    error = git_commit_create(
         out,
         repository,
         "HEAD",
@@ -254,29 +252,25 @@ int git2r_commit_create(
         tree,
         n_parents,
         (const git_commit**)parents);
-    if (err)
+    if (error)
         goto cleanup;
 
-    err = git_repository_state_cleanup(repository);
+    error = git_repository_state_cleanup(repository);
 
 cleanup:
-    if (parents)
-        git2r_parents_free(parents, n_parents);
-
-    if (tree)
-        git_tree_free(tree);
-
-    return err;
+    git2r_parents_free(parents, n_parents);
+    git_tree_free(tree);
+    return error;
 }
 
 /**
  * Commit
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param message The message for the commit
- * @param author S4 class git_signature
- * @param committer S4 class git_signature
- * @return S4 class git_commit
+ * @param author S3 class git_signature
+ * @param committer S3 class git_signature
+ * @return S3 class git_commit
  */
 SEXP git2r_commit(
     SEXP repo,
@@ -284,7 +278,7 @@ SEXP git2r_commit(
     SEXP author,
     SEXP committer)
 {
-    int err;
+    int error, nprotect = 0;
     SEXP result = R_NilValue;
     git_signature *c_author = NULL;
     git_signature *c_committer = NULL;
@@ -304,70 +298,64 @@ SEXP git2r_commit(
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git2r_signature_from_arg(&c_author, author);
-    if (err)
+    error = git2r_signature_from_arg(&c_author, author);
+    if (error)
         goto cleanup;
 
-    err = git2r_signature_from_arg(&c_committer, committer);
-    if (err)
+    error = git2r_signature_from_arg(&c_committer, committer);
+    if (error)
         goto cleanup;
 
-    err = git2r_any_changes_in_index(repository);
-    if (err)
+    error = git2r_any_changes_in_index(repository);
+    if (error)
         goto cleanup;
 
-    err = git_repository_index(&index, repository);
-    if (err)
+    error = git_repository_index(&index, repository);
+    if (error)
         goto cleanup;
 
-    err = git2r_commit_create(
+    error = git2r_commit_create(
         &oid,
         repository,
         index,
         CHAR(STRING_ELT(message, 0)),
         c_author,
         c_committer);
-    if (err)
+    if (error)
         goto cleanup;
 
-    err = git_commit_lookup(&commit, repository, &oid);
-    if (err)
+    error = git_commit_lookup(&commit, repository, &oid);
+    if (error)
         goto cleanup;
 
-    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_commit")));
+    PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_commit));
+    nprotect++;
+    Rf_setAttrib(result, R_ClassSymbol,
+                 Rf_mkString(git2r_S3_class__git_commit));
     git2r_commit_init(commit, repo, result);
 
 cleanup:
-    if (c_author)
-        git_signature_free(c_author);
+    git_signature_free(c_author);
+    git_signature_free(c_committer);
+    git_index_free(index);
+    git_repository_free(repository);
+    git_commit_free(commit);
 
-    if (c_committer)
-        git_signature_free(c_committer);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
-    if (index)
-        git_index_free(index);
-
-    if (repository)
-        git_repository_free(repository);
-
-    if (commit)
-        git_commit_free(commit);
-
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }
 
 /**
- * Get commit object from S4 class git_commit
+ * Get commit object from S3 class git_commit
  *
  * @param out Pointer to the looked up commit
  * @param repository The repository
- * @param commit S4 class git_commit
+ * @param commit S3 class git_commit
  * @return 0 or an error code
  */
 int git2r_commit_lookup(
@@ -378,7 +366,7 @@ int git2r_commit_lookup(
     SEXP sha;
     git_oid oid;
 
-    sha = GET_SLOT(commit, Rf_install("sha"));
+    sha = git2r_get_list_element(commit, "sha");
     git_oid_fromstr(&oid, CHAR(STRING_ELT(sha, 0)));
     return git_commit_lookup(out, repository, &oid);
 }
@@ -386,12 +374,12 @@ int git2r_commit_lookup(
 /**
  * Get the tree pointed to by a commit
  *
- * @param commit S4 class git_commit or git_stash
- * @return S4 class git_tree
+ * @param commit S3 class git_commit or git_stash
+ * @return S3 class git_tree
  */
 SEXP git2r_commit_tree(SEXP commit)
 {
-    int err;
+    int error, nprotect = 0;
     SEXP result = R_NilValue;
     SEXP repo;
     git_commit *commit_obj = NULL;
@@ -401,95 +389,123 @@ SEXP git2r_commit_tree(SEXP commit)
     if (git2r_arg_check_commit_stash(commit))
         git2r_error(__func__, NULL, "'commit'", git2r_err_commit_stash_arg);
 
-    repo = GET_SLOT(commit, Rf_install("repo"));
+    repo = git2r_get_list_element(commit, "repo");
     repository = git2r_repository_open(repo);
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git2r_commit_lookup(&commit_obj, repository, commit);
-    if (err)
+    error = git2r_commit_lookup(&commit_obj, repository, commit);
+    if (error)
         goto cleanup;
 
-    err = git_commit_tree(&tree, commit_obj);
-    if (err)
+    error = git_commit_tree(&tree, commit_obj);
+    if (error)
         goto cleanup;
 
-    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_tree")));
+    PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_tree));
+    nprotect++;
+    Rf_setAttrib(result, R_ClassSymbol,
+                 Rf_mkString(git2r_S3_class__git_tree));
     git2r_tree_init((git_tree*)tree, repo, result);
 
 cleanup:
-    if (commit_obj)
-        git_commit_free(commit_obj);
+    git_commit_free(commit_obj);
+    git_tree_free(tree);
+    git_repository_free(repository);
 
-    if (tree)
-        git_tree_free(tree);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
-    if (repository)
-        git_repository_free(repository);
-
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
 }
 
 /**
- * Init slots in S4 class git_commit
+ * Init slots in S3 class git_commit
  *
  * @param source a commit object
- * @param repo S4 class git_repository that contains the blob
- * @param dest S4 class git_commit to initialize
+ * @param repo S3 class git_repository that contains the blob
+ * @param dest S3 class git_commit to initialize
  * @return void
  */
 void git2r_commit_init(git_commit *source, SEXP repo, SEXP dest)
 {
-    const char *message;
-    const char *summary;
-    const git_signature *author;
-    const git_signature *committer;
+    const char *str;
+    const git_signature *signature;
     char sha[GIT_OID_HEXSZ + 1];
-    SEXP s_sha = Rf_install("sha");
-    SEXP s_author = Rf_install("author");
-    SEXP s_committer = Rf_install("committer");
-    SEXP s_summary = Rf_install("summary");
-    SEXP s_message = Rf_install("message");
-    SEXP s_repo = Rf_install("repo");
 
     git_oid_fmt(sha, git_commit_id(source));
     sha[GIT_OID_HEXSZ] = '\0';
-    SET_SLOT(dest, s_sha, Rf_mkString(sha));
+    SET_VECTOR_ELT(
+        dest,
+        git2r_S3_item__git_commit__sha,
+        Rf_mkString(sha));
 
-    author = git_commit_author(source);
-    if (author)
-        git2r_signature_init(author, GET_SLOT(dest, s_author));
+    signature = git_commit_author(source);
+    if (signature) {
+        SEXP elem = VECTOR_ELT(dest, git2r_S3_item__git_commit__author);
 
-    committer = git_commit_committer(source);
-    if (committer)
-        git2r_signature_init(committer, GET_SLOT(dest, s_committer));
+        if (Rf_isNull(elem)) {
+            SET_VECTOR_ELT(
+                dest,
+                git2r_S3_item__git_commit__author,
+                elem = Rf_mkNamed(VECSXP, git2r_S3_items__git_signature));
+            Rf_setAttrib(elem, R_ClassSymbol,
+                         Rf_mkString(git2r_S3_class__git_signature));
+        }
 
-    summary = git_commit_summary(source);
-    if (summary)
-        SET_SLOT(dest, s_summary, Rf_mkString(summary));
+        git2r_signature_init(signature, elem);
+    }
 
-    message = git_commit_message(source);
-    if (message)
-        SET_SLOT(dest, s_message, Rf_mkString(message));
+    signature = git_commit_committer(source);
+    if (signature) {
+        SEXP elem = VECTOR_ELT(dest, git2r_S3_item__git_commit__committer);
 
-    SET_SLOT(dest, s_repo, repo);
+        if (Rf_isNull(elem)) {
+            SET_VECTOR_ELT(
+                dest,
+                git2r_S3_item__git_commit__author,
+                elem = Rf_mkNamed(VECSXP, git2r_S3_items__git_signature));
+            Rf_setAttrib(elem, R_ClassSymbol,
+                         Rf_mkString(git2r_S3_class__git_signature));
+        }
+
+        git2r_signature_init(signature, elem);
+    }
+
+    str = git_commit_summary(source);
+    if (str) {
+        SET_VECTOR_ELT(
+            dest,
+            git2r_S3_item__git_commit__summary,
+            Rf_mkString(str));
+    }
+
+    str = git_commit_message(source);
+    if (str) {
+        SET_VECTOR_ELT(
+            dest,
+            git2r_S3_item__git_commit__message,
+            Rf_mkString(str));
+    }
+
+    SET_VECTOR_ELT(
+        dest,
+        git2r_S3_item__git_commit__repo,
+        repo);
 }
 
 /**
  * Parents of a commit
  *
- * @param commit S4 class git_commit
- * @return list of S4 class git_commit objects
+ * @param commit S3 class git_commit
+ * @return list of S3 class git_commit objects
  */
 SEXP git2r_commit_parent_list(SEXP commit)
 {
-    int err;
+    int error, nprotect = 0;
     size_t i, n;
     SEXP repo;
     SEXP list = R_NilValue;
@@ -499,42 +515,45 @@ SEXP git2r_commit_parent_list(SEXP commit)
     if (git2r_arg_check_commit(commit))
         git2r_error(__func__, NULL, "'commit'", git2r_err_commit_arg);
 
-    repo = GET_SLOT(commit, Rf_install("repo"));
+    repo = git2r_get_list_element(commit, "repo");
     repository = git2r_repository_open(repo);
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git2r_commit_lookup(&commit_obj, repository, commit);
-    if (err)
+    error = git2r_commit_lookup(&commit_obj, repository, commit);
+    if (error)
         goto cleanup;
 
     n = git_commit_parentcount(commit_obj);
     PROTECT(list = Rf_allocVector(VECSXP, n));
+    nprotect++;
 
     for (i = 0; i < n; i++) {
         git_commit *parent = NULL;
         SEXP item;
 
-        err = git_commit_parent(&parent, commit_obj, i);
-        if (err)
+        error = git_commit_parent(&parent, commit_obj, i);
+        if (error)
             goto cleanup;
 
-        SET_VECTOR_ELT(list, i, item = NEW_OBJECT(MAKE_CLASS("git_commit")));
+        SET_VECTOR_ELT(
+            list,
+            i,
+            item = Rf_mkNamed(VECSXP, git2r_S3_items__git_commit));
+        Rf_setAttrib(item, R_ClassSymbol,
+                     Rf_mkString(git2r_S3_class__git_commit));
         git2r_commit_init(parent, repo, item);
         git_commit_free(parent);
     }
 
 cleanup:
-    if (commit_obj)
-        git_commit_free(commit_obj);
+    git_commit_free(commit_obj);
+    git_repository_free(repository);
 
-    if (repository)
-        git_repository_free(repository);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
-    if (!Rf_isNull(list))
-        UNPROTECT(1);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return list;

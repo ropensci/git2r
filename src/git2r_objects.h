@@ -56,6 +56,16 @@ enum {
     git2r_S3_item__git_branch__type,
     git2r_S3_item__git_branch__repo};
 
+extern const char *git2r_S3_class__git_commit;
+extern const char *git2r_S3_items__git_commit[];
+enum {
+    git2r_S3_item__git_commit__sha,
+    git2r_S3_item__git_commit__author,
+    git2r_S3_item__git_commit__committer,
+    git2r_S3_item__git_commit__summary,
+    git2r_S3_item__git_commit__message,
+    git2r_S3_item__git_commit__repo};
+
 extern const char *git2r_S3_class__git_merge_result;
 extern const char *git2r_S3_items__git_merge_result[];
 enum {
@@ -102,6 +112,16 @@ enum {
     git2r_S3_item__git_transfer_progress__total_deltas,
     git2r_S3_item__git_transfer_progress__indexed_deltas,
     git2r_S3_item__git_transfer_progress__received_bytes};
+
+extern const char *git2r_S3_class__git_tree;
+extern const char *git2r_S3_items__git_tree[];
+enum {
+    git2r_S3_item__git_tree__sha,
+    git2r_S3_item__git_tree__filemode,
+    git2r_S3_item__git_tree__type,
+    git2r_S3_item__git_tree__id,
+    git2r_S3_item__git_tree__name,
+    git2r_S3_item__git_tree__repo};
 
 SEXP git2r_get_list_element(SEXP list, const char *str);
 

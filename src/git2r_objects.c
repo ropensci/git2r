@@ -38,6 +38,10 @@ const char *git2r_S3_class__git_branch = "git_branch";
 const char *git2r_S3_items__git_branch[] = {
     "name", "type", "repo", ""};
 
+const char *git2r_S3_class__git_commit = "git_commit";
+const char *git2r_S3_items__git_commit[] = {
+    "sha", "author", "committer", "summary", "message", "repo", ""};
+
 const char *git2r_S3_class__git_merge_result = "git_merge_result";
 const char *git2r_S3_items__git_merge_result[] = {
     "up_to_date", "fast_forward", "conflicts", "sha", ""};
@@ -63,6 +67,10 @@ const char *git2r_S3_items__git_transfer_progress[] = {
     "total_objects", "indexed_objects", "received_objects",
     "local_objects", "total_deltas", "indexed_deltas",
     "received_bytes", ""};
+
+const char *git2r_S3_class__git_tree = "git_tree";
+const char *git2r_S3_items__git_tree[] = {
+    "sha", "filemode", "type", "id", "name", "repo", ""};
 
 /**
  * Get the list element named str, or return NULL.
