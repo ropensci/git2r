@@ -2,7 +2,7 @@
 % Please edit documentation in R/credential.R
 \name{ssh_path}
 \alias{ssh_path}
-\title{Compose path to ssh keys}
+\title{Compose usual path to ssh keys}
 \usage{
 ssh_path(file = "")
 }
