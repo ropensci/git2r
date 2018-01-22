@@ -173,7 +173,7 @@ ssh_key_needs_passphrase <- function(privatekey = ssh_path("id_rsa")) {
     any(contains_encrypted)
 }
 
-##' Compose path to ssh keys
+##' Compose usual path to ssh keys
 ##' 
 ##' This function provides a consistent means across OS-types to access the
 ##' \code{.ssh} directory.
