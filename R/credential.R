@@ -180,13 +180,14 @@ ssh_key_needs_passphrase <- function(privatekey = ssh_path("id_rsa")) {
 ##' 
 ##' On Windows-based systems, 
 ##' \code{path.expand("~")} returns \code{"C:/Users/username/Documents"}, 
-##' whereas the usual \code{.ssh} directory is \code{"C:/Users/username"}.
+##' whereas the usual path to the \code{.ssh} directory is 
+##' \code{"C:/Users/username"}.
 ##' 
-##' On other operating systems, \code{path.expand("~")} returns the usual
-##' code{.ssh} directory.
+##' On other operating systems, \code{path.expand("~")} returns the usual path
+##' to the \code{.ssh} directory.
 ##' 
-##' Calling \code{ssh_path()} with no arguments will return the path to the
-##' \code{.ssh} directory.
+##' Calling \code{ssh_path()} with no arguments will return the usual path to
+##' the \code{.ssh} directory.
 ##' 
 ##' @param file basename of file for which path is requested
 ##' @return Full path to the file
