@@ -16,20 +16,20 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <Rdefines.h>
 #include "buffer.h"
 
 #include "git2r_arg.h"
 #include "git2r_error.h"
+#include "git2r_objects.h"
 #include "git2r_repository.h"
 #include "git2r_tree.h"
 
 /**
- * Init slots in S4 class git_tree
+ * Init slots in S3 class git_tree
  *
  * @param source a tree
- * @param repo S4 class git_repository that contains the tree
- * @param dest S4 class git_tree to initialize
+ * @param repo S3 class git_repository that contains the tree
+ * @param dest S3 class git_tree to initialize
  * @return void
  */
 void git2r_tree_init(const git_tree *source, SEXP repo, SEXP dest)
@@ -40,26 +40,34 @@ void git2r_tree_init(const git_tree *source, SEXP repo, SEXP dest)
     const git_oid *oid;
     char sha[GIT_OID_HEXSZ + 1];
     const git_tree_entry *entry;
-    SEXP s_sha = Rf_install("sha");
-    SEXP s_filemode = Rf_install("filemode");
-    SEXP s_id = Rf_install("id");
-    SEXP s_type = Rf_install("type");
-    SEXP s_name = Rf_install("name");
-    SEXP s_repo = Rf_install("repo");
 
     oid = git_tree_id(source);
     git_oid_tostr(sha, sizeof(sha), oid);
-    SET_SLOT(dest, s_sha, Rf_mkString(sha));
+    SET_VECTOR_ELT(
+        dest,
+        git2r_S3_item__git_tree__sha,
+        Rf_mkString(sha));
 
     n = git_tree_entrycount(source);
-    PROTECT(filemode = Rf_allocVector(INTSXP, n));
-    SET_SLOT(dest, s_filemode, filemode);
-    PROTECT(id = Rf_allocVector(STRSXP, n));
-    SET_SLOT(dest, s_id, id);
-    PROTECT(type = Rf_allocVector(STRSXP, n));
-    SET_SLOT(dest, s_type, type);
-    PROTECT(name = Rf_allocVector(STRSXP, n));
-    SET_SLOT(dest, s_name, name);
+    SET_VECTOR_ELT(
+        dest,
+        git2r_S3_item__git_tree__filemode,
+        filemode = Rf_allocVector(INTSXP, n));
+
+    SET_VECTOR_ELT(
+        dest,
+        git2r_S3_item__git_tree__id,
+        id = Rf_allocVector(STRSXP, n));
+
+    SET_VECTOR_ELT(
+        dest,
+        git2r_S3_item__git_tree__type,
+        type = Rf_allocVector(STRSXP, n));
+
+    SET_VECTOR_ELT(
+        dest,
+        git2r_S3_item__git_tree__name,
+        name = Rf_allocVector(STRSXP, n));
 
     filemode_ptr = INTEGER(filemode);
     for (i = 0; i < n; ++i) {
@@ -71,8 +79,10 @@ void git2r_tree_init(const git_tree *source, SEXP repo, SEXP dest)
         SET_STRING_ELT(name, i, Rf_mkChar(git_tree_entry_name(entry)));
     }
 
-    SET_SLOT(dest, s_repo, repo);
-    UNPROTECT(4);
+    SET_VECTOR_ELT(
+        dest,
+        git2r_S3_item__git_tree__repo,
+        repo);
 }
 
 /**
@@ -94,7 +104,7 @@ static int git2r_tree_walk_cb(
     const git_tree_entry *entry,
     void *payload)
 {
-    int err = 0;
+    int error = 0;
     git2r_tree_walk_cb_data *p = (git2r_tree_walk_cb_data*)payload;
 
     if (!p->recursive && *root)
@@ -106,8 +116,8 @@ static int git2r_tree_walk_cb(
         char sha[GIT_OID_HEXSZ + 1];
 
         /* mode */
-        err = git_buf_printf(&mode, "%06o", git_tree_entry_filemode(entry));
-        if (err)
+        error = git_buf_printf(&mode, "%06o", git_tree_entry_filemode(entry));
+        if (error)
             goto cleanup;
         SET_STRING_ELT(VECTOR_ELT(p->list, 0), p->n,
                        Rf_mkChar(git_buf_cstr(&mode)));
@@ -129,11 +139,11 @@ static int git2r_tree_walk_cb(
 
         /* length */
         if (git_tree_entry_type(entry) == GIT_OBJ_BLOB) {
-            err = git_tree_entry_to_object(&obj, p->repository, entry);
-            if (err)
+            error = git_tree_entry_to_object(&obj, p->repository, entry);
+            if (error)
                 goto cleanup;
-            err = git_object_peel(&blob, obj, GIT_OBJ_BLOB);
-            if (err)
+            error = git_object_peel(&blob, obj, GIT_OBJ_BLOB);
+            if (error)
                 goto cleanup;
             INTEGER(VECTOR_ELT(p->list, 5))[p->n] = git_blob_rawsize((git_blob *)blob);
         } else {
@@ -148,19 +158,19 @@ static int git2r_tree_walk_cb(
 
     p->n += 1;
 
-    return err;
+    return error;
 }
 
 /**
  * Traverse the entries in a tree and its subtrees.
  *
- * @param tree S4 class git_tree
+ * @param tree S3 class git_tree
  * @param recursive recurse into sub-trees.
  * @return A list with entries
  */
 SEXP git2r_tree_walk(SEXP tree, SEXP recursive)
 {
-    int err, nprotect = 0;
+    int error, nprotect = 0;
     git_oid oid;
     git_tree *tree_obj = NULL;
     git_repository *repository = NULL;
@@ -172,23 +182,23 @@ SEXP git2r_tree_walk(SEXP tree, SEXP recursive)
     if (git2r_arg_check_logical(recursive))
         git2r_error(__func__, NULL, "'recursive'", git2r_err_logical_arg);
 
-    repo = GET_SLOT(tree, Rf_install("repo"));
+    repo = git2r_get_list_element(tree, "repo");
     repository = git2r_repository_open(repo);
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    sha = GET_SLOT(tree, Rf_install("sha"));
+    sha = git2r_get_list_element(tree, "sha");
     git_oid_fromstr(&oid, CHAR(STRING_ELT(sha, 0)));
-    err = git_tree_lookup(&tree_obj, repository, &oid);
-    if (err)
+    error = git_tree_lookup(&tree_obj, repository, &oid);
+    if (error)
         goto cleanup;
 
     /* Count number of entries before creating the list */
     cb_data.repository = repository;
     if (LOGICAL(recursive)[0])
         cb_data.recursive = 1;
-    err = git_tree_walk(tree_obj, 0, &git2r_tree_walk_cb, &cb_data);
-    if (err)
+    error = git_tree_walk(tree_obj, 0, &git2r_tree_walk_cb, &cb_data);
+    if (error)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(VECSXP, 6));
@@ -210,7 +220,7 @@ SEXP git2r_tree_walk(SEXP tree, SEXP recursive)
 
     cb_data.list = result;
     cb_data.n = 0;
-    err = git_tree_walk(tree_obj, 0, &git2r_tree_walk_cb, &cb_data);
+    error = git_tree_walk(tree_obj, 0, &git2r_tree_walk_cb, &cb_data);
 
 cleanup:
     if (repository)
@@ -222,7 +232,7 @@ cleanup:
     if (nprotect)
         UNPROTECT(nprotect);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
