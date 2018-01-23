@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2017 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,7 +16,6 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <Rdefines.h>
 #include "git2.h"
 
 #include "git2r_arg.h"
@@ -36,19 +35,19 @@ static int git2r_config_count_variables(
     const git_config *cfg,
     size_t *n_level)
 {
-    int err;
+    int error;
     git_config_iterator *iterator = NULL;
 
-    err = git_config_iterator_new(&iterator, cfg);
-    if (err)
-        return err;
+    error = git_config_iterator_new(&iterator, cfg);
+    if (error)
+        return error;
 
     for (;;) {
         git_config_entry *entry;
-        err = git_config_next(&entry, iterator);
-        if (err) {
-            if (GIT_ITEROVER == err)
-                err = GIT_OK;
+        error = git_config_next(&entry, iterator);
+        if (error) {
+            if (GIT_ITEROVER == error)
+                error = GIT_OK;
             goto cleanup;
         }
 
@@ -77,16 +76,14 @@ static int git2r_config_count_variables(
         default:
             giterr_set_str(GITERR_CONFIG,
                            git2r_err_unexpected_config_level);
-            err = GIT_ERROR;
+            error = GIT_ERROR;
             goto cleanup;
         }
     }
 
 cleanup:
-    if (iterator)
-        git_config_iterator_free(iterator);
-
-    return err;
+    git_config_iterator_free(iterator);
+    return error;
 }
 
 /**
@@ -169,14 +166,14 @@ static int git2r_config_list_variables(
     SEXP list,
     size_t *n_level)
 {
-    int err;
+    int error;
     size_t i_level[GIT2R_N_CONFIG_LEVELS] = {0}; /* Current index at level */
     size_t i_list[GIT2R_N_CONFIG_LEVELS] = {0};  /* Index of level in target list */
     git_config_iterator *iterator = NULL;
     size_t i = 0;
 
-    err = git_config_iterator_new(&iterator, cfg);
-    if (err)
+    error = git_config_iterator_new(&iterator, cfg);
+    if (error)
         goto cleanup;
 
     i = git2r_config_list_init(list, 0, n_level, i_list, i, "programdata");
@@ -189,10 +186,10 @@ static int git2r_config_list_variables(
 
     for (;;) {
         git_config_entry *entry;
-        err = git_config_next(&entry, iterator);
-        if (err) {
-            if (GIT_ITEROVER == err)
-                err = GIT_OK;
+        error = git_config_next(&entry, iterator);
+        if (error) {
+            if (GIT_ITEROVER == error)
+                error = GIT_OK;
             goto cleanup;
         }
 
@@ -221,16 +218,14 @@ static int git2r_config_list_variables(
         default:
             giterr_set_str(GITERR_CONFIG,
                            git2r_err_unexpected_config_level);
-            err = GIT_ERROR;
+            error = GIT_ERROR;
             goto cleanup;
         }
     }
 
 cleanup:
-    if (iterator)
-        git_config_iterator_free(iterator);
-
-    return err;
+    git_config_iterator_free(iterator);
+    return error;
 }
 
 /**
@@ -245,7 +240,7 @@ cleanup:
  */
 static int git2r_config_open(git_config **out, SEXP repo, int snapshot)
 {
-    int err;
+    int error;
 
     if (!Rf_isNull(repo)) {
         git_repository *repository = git2r_repository_open(repo);
@@ -253,28 +248,28 @@ static int git2r_config_open(git_config **out, SEXP repo, int snapshot)
             git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
         if (snapshot)
-            err = git_repository_config_snapshot(out, repository);
+            error = git_repository_config_snapshot(out, repository);
         else
-            err = git_repository_config(out, repository);
+            error = git_repository_config(out, repository);
 
         git_repository_free(repository);
     } else if (snapshot) {
         git_config *config = NULL;
 
-        err = git_config_open_default(&config);
-        if (err) {
+        error = git_config_open_default(&config);
+        if (error) {
             git_config_free(config);
-            return err;
+            return error;
         }
 
-        err = git_config_snapshot(out, config);
+        error = git_config_snapshot(out, config);
 
         git_config_free(config);
     } else {
-        err = git_config_open_default(out);
+        error = git_config_open_default(out);
     }
 
-    return err;
+    return error;
 }
 
 /**
@@ -285,17 +280,17 @@ static int git2r_config_open(git_config **out, SEXP repo, int snapshot)
  */
 SEXP git2r_config_get(SEXP repo)
 {
-    int err;
+    int error;
     SEXP result = R_NilValue;
     size_t i = 0, n = 0, n_level[GIT2R_N_CONFIG_LEVELS] = {0};
     git_config *cfg = NULL;
 
-    err = git2r_config_open(&cfg, repo, 0);
-    if (err)
+    error = git2r_config_open(&cfg, repo, 0);
+    if (error)
         goto cleanup;
 
-    err = git2r_config_count_variables(cfg, n_level);
-    if (err)
+    error = git2r_config_count_variables(cfg, n_level);
+    if (error)
         goto cleanup;
 
     /* Count levels with entries */
@@ -311,13 +306,12 @@ SEXP git2r_config_get(SEXP repo)
         goto cleanup;
 
 cleanup:
-    if (cfg)
-        git_config_free(cfg);
+    git_config_free(cfg);
 
     if (!Rf_isNull(result))
         UNPROTECT(1);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -332,7 +326,7 @@ cleanup:
  */
 SEXP git2r_config_set(SEXP repo, SEXP variables)
 {
-    int err = 0, nprotect = 0;
+    int error = 0, nprotect = 0;
     SEXP names;
     size_t i, n;
     git_config *cfg = NULL;
@@ -342,8 +336,8 @@ SEXP git2r_config_set(SEXP repo, SEXP variables)
 
     n = Rf_length(variables);
     if (n) {
-        err = git2r_config_open(&cfg, repo, 0);
-        if (err)
+        error = git2r_config_open(&cfg, repo, 0);
+        if (error)
             goto cleanup;
 
         PROTECT(names = Rf_getAttrib(variables, R_NamesSymbol));
@@ -356,14 +350,14 @@ SEXP git2r_config_set(SEXP repo, SEXP variables)
                 value = CHAR(STRING_ELT(VECTOR_ELT(variables, i), 0));
 
             if (value)
-                err = git_config_set_string(cfg, key, value);
+                error = git_config_set_string(cfg, key, value);
             else
-                err = git_config_delete_entry(cfg, key);
+                error = git_config_delete_entry(cfg, key);
 
-            if (err) {
-                if (err == GIT_EINVALIDSPEC) {
+            if (error) {
+                if (error == GIT_EINVALIDSPEC) {
                     Rf_warning("Variable was not in a valid format: '%s'", key);
-                    err = 0;
+                    error = 0;
                 } else {
                     goto cleanup;
                 }
@@ -373,13 +367,12 @@ SEXP git2r_config_set(SEXP repo, SEXP variables)
     }
 
 cleanup:
-    if (cfg)
-        git_config_free(cfg);
+    git_config_free(cfg);
 
     if (nprotect)
         UNPROTECT(nprotect);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return R_NilValue;
@@ -395,7 +388,7 @@ cleanup:
  */
 SEXP git2r_config_get_string(SEXP repo, SEXP name)
 {
-    int err;
+    int error, nprotect = 0;
     SEXP result = R_NilValue;
     const char *value;
     git_config *cfg = NULL;
@@ -403,28 +396,28 @@ SEXP git2r_config_get_string(SEXP repo, SEXP name)
     if (git2r_arg_check_string(name))
         git2r_error(__func__, NULL, "'name'", git2r_err_string_arg);
 
-    err = git2r_config_open(&cfg, repo, 1);
-    if (err)
+    error = git2r_config_open(&cfg, repo, 1);
+    if (error)
         goto cleanup;
 
-    err = git_config_get_string(&value, cfg, CHAR(STRING_ELT(name, 0)));
-    if (err) {
-        if (err == GIT_ENOTFOUND)
-            err = 0;
+    error = git_config_get_string(&value, cfg, CHAR(STRING_ELT(name, 0)));
+    if (error) {
+        if (error == GIT_ENOTFOUND)
+            error = 0;
         goto cleanup;
     }
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
+    nprotect++;
     SET_STRING_ELT(result, 0, Rf_mkChar(value));
 
 cleanup:
-    if (cfg)
-        git_config_free(cfg);
+    git_config_free(cfg);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -440,7 +433,7 @@ cleanup:
  */
 SEXP git2r_config_get_logical(SEXP repo, SEXP name)
 {
-    int err;
+    int error, nprotect = 0;
     SEXP result = R_NilValue;
     int value;
     git_config *cfg = NULL;
@@ -448,31 +441,31 @@ SEXP git2r_config_get_logical(SEXP repo, SEXP name)
     if (git2r_arg_check_string(name))
         git2r_error(__func__, NULL, "'name'", git2r_err_string_arg);
 
-    err = git2r_config_open(&cfg, repo, 1);
-    if (err)
+    error = git2r_config_open(&cfg, repo, 1);
+    if (error)
         goto cleanup;
 
-    err = git_config_get_bool(&value, cfg, CHAR(STRING_ELT(name, 0)));
-    if (err) {
-        if (err == GIT_ENOTFOUND)
-            err = 0;
+    error = git_config_get_bool(&value, cfg, CHAR(STRING_ELT(name, 0)));
+    if (error) {
+        if (error == GIT_ENOTFOUND)
+            error = 0;
         goto cleanup;
     }
 
     PROTECT(result = Rf_allocVector(LGLSXP, 1));
+    nprotect++;
     if (value)
         LOGICAL(result)[0] = 1;
     else
         LOGICAL(result)[0] = 0;
 
 cleanup:
-    if (cfg)
-        git_config_free(cfg);
+    git_config_free(cfg);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
