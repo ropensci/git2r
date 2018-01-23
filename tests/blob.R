@@ -38,8 +38,7 @@ new_commit <- commit(repo, "Commit message")
 
 ## Lookup blob
 blob <- lookup(repo, "cd0875583aabe89ee197ea133980a9085d08e497")
-stopifnot(is(blob, "git_blob"))
-stopifnot(identical(is_blob(blob), TRUE))
+stopifnot(isTRUE(is_blob(blob)))
 stopifnot(identical(is_binary(blob), FALSE))
 stopifnot(identical(blob, lookup(repo, "cd0875")))
 stopifnot(identical(length(blob), 13L))
@@ -51,7 +50,7 @@ f <- file(file.path(path, "test.txt"), "wb")
 writeChar("Hello world!\nHELLO WORLD!\nHeLlO wOrLd!\n", f, eos = NULL)
 close(f)
 add(repo, "test.txt")
-blob <- lookup(repo, tree(commit(repo, "New commit message"))@id[1])
+blob <- lookup(repo, tree(commit(repo, "New commit message"))$id[1])
 stopifnot(identical(content(blob),
                     c("Hello world!", "HELLO WORLD!", "HeLlO wOrLd!")))
 
