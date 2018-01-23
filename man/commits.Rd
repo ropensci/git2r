@@ -4,7 +4,7 @@
 \alias{commits}
 \title{Commits}
 \usage{
-commits(repo = NULL, topological = TRUE, time = TRUE, reverse = FALSE,
+commits(repo = ".", topological = TRUE, time = TRUE, reverse = FALSE,
   n = NULL)
 }
 \arguments{

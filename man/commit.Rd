@@ -4,7 +4,7 @@
 \alias{commit}
 \title{Commit}
 \usage{
-commit(repo = NULL, message = NULL, all = FALSE, session = FALSE,
+commit(repo = ".", message = NULL, all = FALSE, session = FALSE,
   author = NULL, committer = NULL)
 }
 \arguments{

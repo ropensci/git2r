@@ -92,7 +92,7 @@ add_session_info <- function(message) {
 ##' add(repo, "example.txt")
 ##' commit(repo, "First commit message")
 ##' }
-commit <- function(repo      = NULL,
+commit <- function(repo      = ".",
                    message   = NULL,
                    all       = FALSE,
                    session   = FALSE,
@@ -184,7 +184,7 @@ commit <- function(repo      = NULL,
 ##' ## List commits in repository
 ##' commits(repo)
 ##' }
-commits <- function(repo        = NULL,
+commits <- function(repo        = ".",
                     topological = TRUE,
                     time        = TRUE,
                     reverse     = FALSE,
@@ -336,7 +336,7 @@ descendant_of <- function(commit = NULL, ancestor = NULL) {
 ##' is_commit(commit_1)
 ##' }
 is_commit <- function(object) {
-    is(object = object, class2 = "git_commit")
+    inherits(object, "git_commit")
 }
 
 ##' Is merge
