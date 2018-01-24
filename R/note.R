@@ -231,7 +231,7 @@ note_remove <- function(note      = NULL,
 ##'
 ##' @aliases show,git_note-methods
 ##' @docType methods
-##' @param object The \linkS4class{git_note} \code{object}
+##' @param object The git_note \code{object}
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
 ##' @export

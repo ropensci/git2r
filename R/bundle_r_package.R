@@ -19,8 +19,7 @@
 ##' Clone the package git repository as a bare repository to
 ##' \code{pkg/inst/pkg.git}
 ##' @template repo-param
-##' @return Invisible bundled S4 \code{\linkS4class{git_repository}}
-##'     object
+##' @return Invisible bundled \code{git_repository} object
 ##' @export
 ##' @examples
 ##' \dontrun{

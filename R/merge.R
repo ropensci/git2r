@@ -90,11 +90,10 @@ merge_named_branch <- function(repo, branch, commit_on_success, merger) {
 ##' Merge a branch into HEAD
 ##'
 ##' @param x A path (default '.') to a repository, or a
-##'     \code{\linkS4class{git_repository}} object, or a
-##'     \code{\linkS4class{git_branch}}.
-##' @param y If \code{x} is a \code{\linkS4class{git_repository}}, the
-##'     name of the branch to merge into HEAD. Not used if \code{x} is
-##'     a \code{\linkS4class{git_branch}}.
+##'     \code{git_repository} object, or a \code{git_branch}.
+##' @param y If \code{x} is a \code{git_repository}, the name of the
+##'     branch to merge into HEAD. Not used if \code{x} is a
+##'     \code{git_branch}.
 ##' @param commit_on_success If there are no conflicts written to the
 ##'     index, the merge commit will be committed. Default is TRUE.
 ##' @param merger Who made the merge. The default (\code{NULL}) is to

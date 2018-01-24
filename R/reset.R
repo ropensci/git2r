@@ -16,15 +16,14 @@
 
 ##' Reset current HEAD to the specified state
 ##'
-##' @param object Either a \code{\linkS4class{git_commit}}, a
-##'     \code{\linkS4class{git_repository}} or a character vector. If
-##'     \code{object} is a \code{git_commit}, HEAD is moved to the
-##'     \code{git_commit}. If \code{object} is a
-##'     \code{git_repository}, resets the index entries in the
-##'     \code{path} argument to their state at HEAD. If \code{object}
-##'     is a character vector with paths, resets the index entries in
-##'     \code{object} to their state at HEAD if the current working
-##'     directory is in a repository.
+##' @param object Either a \code{git_commit}, a \code{git_repository}
+##'     or a character vector. If \code{object} is a
+##'     \code{git_commit}, HEAD is moved to the \code{git_commit}. If
+##'     \code{object} is a \code{git_repository}, resets the index
+##'     entries in the \code{path} argument to their state at HEAD. If
+##'     \code{object} is a character vector with paths, resets the
+##'     index entries in \code{object} to their state at HEAD if the
+##'     current working directory is in a repository.
 ##' @param reset_type If object is a 'git_commit', the kind of reset
 ##'     operation to perform. 'soft' means the HEAD will be moved to
 ##'     the commit. 'mixed' reset will trigger a 'soft' reset, plus

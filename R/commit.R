@@ -74,7 +74,7 @@ add_session_info <- function(message) {
 ##' @param author Signature with author and author time of commit.
 ##' @param committer Signature with committer and commit time of
 ##'     commit.
-##' @return \code{\linkS4class{git_commit}} object
+##' @return \code{git_commit} object
 ##' @export
 ##' @examples
 ##' \dontrun{

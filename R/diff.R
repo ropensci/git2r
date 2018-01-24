@@ -217,7 +217,7 @@ setMethod("summary",
 #' a file with name filename (the file is overwritten if it
 #' exists). Default is NULL.
 #' @param ... Additional arguments affecting the diff produced
-#' @return A \code{\linkS4class{git_diff}} object if as_char is
+#' @return A \code{git_diff} object if as_char is
 #' FALSE. If as_char is TRUE and filename is NULL, a character string,
 #' else NULL.
 #' @keywords methods

@@ -277,11 +277,9 @@ clone <- function(url         = NULL,
 
 ##' Get HEAD for a repository
 ##'
-##' @rdname head-methods
-##' @docType methods
 ##' @param x The repository \code{x} to check head
-##' @return NULL if unborn branch or not found. S4 class git_branch if
-##' not a detached head. S4 class git_commit if detached head
+##' @return NULL if unborn branch or not found. A git_branch if not a
+##'     detached head. A git_commit if detached head
 ##' @keywords methods
 ##' @export
 ##' @examples
@@ -300,13 +298,9 @@ clone <- function(url         = NULL,
 ##' ## Get HEAD of repository
 ##' head(repo)
 ##' }
-setMethod("head",
-          signature(x = "git_repository"),
-          function(x)
-          {
-              .Call(git2r_repository_head, x)
-          }
-)
+head.git_repository <- function(x) {
+    .Call(git2r_repository_head, x)
+}
 
 ##' Check if repository is bare
 ##'
@@ -534,35 +528,6 @@ lookup <- function(repo = ".", sha = NULL) {
     .Call(git2r_object_lookup, lookup_repository(repo), sha)
 }
 
-##' Get the signature
-##'
-##' Get the signature according to the repository's configuration
-##' @template repo-param
-##' @return S4 class git_signature
-##' @export
-##' @examples
-##' \dontrun{
-##' ## Initialize a temporary repository
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##'
-##' ## Create a user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
-##'
-##' ## Get the default signature
-##' default_signature(repo)
-##'
-##' ## Change user
-##' config(repo, user.name="Bob", user.email="bob@@example.org")
-##'
-##' ## Get the default signature
-##' default_signature(repo)
-##' }
-default_signature <- function(repo = ".") {
-    .Call(git2r_signature_default, lookup_repository(repo))
-}
-
 ##' @export
 print.git_repository <- function(x, ...) {
     if (any(is_empty(x), is.null(head(x)))) {
@@ -572,10 +537,10 @@ print.git_repository <- function(x, ...) {
         if (is_detached(x)) {
             cat(sprintf("Local:    (detached) %s\n", workdir(x)))
 
-            h <- git2r::head(x)
+            h <- head(x)
         } else {
             cat(sprintf("Local:    %s %s\n",
-                        head(x)@name,
+                        head(x)$name,
                         workdir(x)))
 
             h <- head(x)
@@ -583,7 +548,7 @@ print.git_repository <- function(x, ...) {
             if (!is.null(u)) {
                 rn <- branch_remote_name(u)
                 cat(sprintf("Remote:   %s @ %s (%s)\n",
-                            substr(u@name, nchar(rn) + 2, nchar(u@name)),
+                            substr(u$name, nchar(rn) + 2, nchar(u$name)),
                             rn,
                             branch_remote_url(u)))
             }
@@ -592,20 +557,17 @@ print.git_repository <- function(x, ...) {
         }
 
         cat(sprintf("Head:     [%s] %s: %s\n",
-                    substring(h@sha, 1, 7),
-                    substring(as(h@author@when, "character"), 1, 10),
-                    h@summary))
+                    substring(h$sha, 1, 7),
+                    substring(as(h$author$when, "character"), 1, 10),
+                    h$summary))
     }
 }
 
 ##' Summary of repository
 ##'
-##' @aliases summary,git_repository-methods
-##' @docType methods
 ##' @param object The repository \code{object}
 ##' @param ... Additional arguments affecting the summary produced.
 ##' @return None (invisible 'NULL').
-##' @keywords methods
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -639,56 +601,52 @@ print.git_repository <- function(x, ...) {
 ##' commit(repo, "Second commit message")
 ##' summary(repo)
 ##'}
-setMethod("summary",
-          signature(object = "git_repository"),
-          function(object, ...)
-          {
-              show(object)
-              cat("\n")
+summary.git_repository <- function(object, ...) {
+    show(object)
+    cat("\n")
 
-              n_branches <- sum(!is.na(unique(sapply(branches(object),
-                                                     branch_target))))
-              n_tags <- sum(!is.na(unique(vapply(tags(object), slot, character(1), "sha"))))
+    n_branches <- sum(!is.na(unique(sapply(branches(object),
+                                           branch_target))))
+    n_tags <- sum(!is.na(unique(vapply(tags(object), slot, character(1), "sha"))))
 
-              work <- commits(object)
-              n_commits <- length(work)
-              n_authors <- length(unique(vapply(lapply(work, slot, "author"),
-                                                slot, character(1), "name")))
+    work <- commits(object)
+    n_commits <- length(work)
+    n_authors <- length(unique(vapply(lapply(work, slot, "author"),
+                                      slot, character(1), "name")))
 
-              s <- .Call(git2r_status_list, object, TRUE, TRUE, TRUE, FALSE, TRUE)
-              n_ignored <- length(s$ignored)
-              n_untracked <- length(s$untracked)
-              n_unstaged <- length(s$unstaged)
-              n_staged <- length(s$staged)
+    s <- .Call(git2r_status_list, object, TRUE, TRUE, TRUE, FALSE, TRUE)
+    n_ignored <- length(s$ignored)
+    n_untracked <- length(s$untracked)
+    n_unstaged <- length(s$unstaged)
+    n_staged <- length(s$staged)
 
-              n_stashes <- length(stash_list(object))
+    n_stashes <- length(stash_list(object))
 
-              ## Determine max characters needed to display numbers
-              n <- max(vapply(c(n_branches, n_tags, n_commits, n_authors,
-                                n_stashes, n_ignored, n_untracked,
-                                n_unstaged, n_staged),
-                              nchar,
-                              numeric(1)))
+    ## Determine max characters needed to display numbers
+    n <- max(vapply(c(n_branches, n_tags, n_commits, n_authors,
+                      n_stashes, n_ignored, n_untracked,
+                      n_unstaged, n_staged),
+                    nchar,
+                    numeric(1)))
 
-              fmt <- paste0("Branches:        %", n, "i\n",
-                            "Tags:            %", n, "i\n",
-                            "Commits:         %", n, "i\n",
-                            "Contributors:    %", n, "i\n",
-                            "Stashes:         %", n, "i\n",
-                            "Ignored files:   %", n, "i\n",
-                            "Untracked files: %", n, "i\n",
-                            "Unstaged files:  %", n, "i\n",
-                            "Staged files:    %", n, "i\n")
-              cat(sprintf(fmt, n_branches, n_tags, n_commits, n_authors,
-                          n_stashes, n_ignored, n_untracked, n_unstaged,
-                          n_staged))
+    fmt <- paste0("Branches:        %", n, "i\n",
+                  "Tags:            %", n, "i\n",
+                  "Commits:         %", n, "i\n",
+                  "Contributors:    %", n, "i\n",
+                  "Stashes:         %", n, "i\n",
+                  "Ignored files:   %", n, "i\n",
+                  "Untracked files: %", n, "i\n",
+                  "Unstaged files:  %", n, "i\n",
+                  "Staged files:    %", n, "i\n")
+    cat(sprintf(fmt, n_branches, n_tags, n_commits, n_authors,
+                n_stashes, n_ignored, n_untracked, n_unstaged,
+                n_staged))
 
-              cat("\nLatest commits:\n")
-              lapply(commits(object, n = 5), show)
+    cat("\nLatest commits:\n")
+    lapply(commits(object, n = 5), show)
 
-              invisible(NULL)
-          }
-)
+    invisible(NULL)
+}
 
 ##' Workdir of repository
 ##'
@@ -778,13 +736,12 @@ discover_repository <- function(path = ".", ceiling = NULL) {
 
 ##' Internal utility function to lookup repository for methods
 ##'
-##' @param repo repository \code{object}
-##'     \code{\linkS4class{git_repository}}, or a path to a
-##'     repository, or \code{NULL}.  If the \code{repo} argument is
-##'     \code{NULL}, the repository is searched for with
+##' @param repo repository \code{object} \code{git_repository}, or a
+##'     path to a repository, or \code{NULL}.  If the \code{repo}
+##'     argument is \code{NULL}, the repository is searched for with
 ##'     \code{\link{discover_repository}} in the current working
 ##'     directory.
-##' @return S4 class git_repository
+##' @return git_repository
 ##' @noRd
 lookup_repository <- function(repo = NULL) {
     if (is.null(repo)) {

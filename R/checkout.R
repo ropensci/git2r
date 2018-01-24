@@ -85,17 +85,14 @@ is_tag <- function(object) {
 ##' The default checkout strategy (\code{force = FALSE}) will only
 ##' make modifications that will not lose changes. Use \code{force =
 ##' TRUE} to force working directory to look like index.
-##' @param object A path to a repository, or a
-##'     \code{\linkS4class{git_repository}} object, or a
-##'     \code{\linkS4class{git_commit}} object, or a
-##'     \code{\linkS4class{git_tag}} object, or a
-##'     \code{\linkS4class{git_tree}} object.
+##' @param object A path to a repository, or a \code{git_repository}
+##'     object, or a \code{git_commit} object, or a \code{git_tag}
+##'     object, or a \code{git_tree} object.
 ##' @param branch name of the branch to check out. Only used if object
-##'     is a path to a repository or a
-##'     \code{\linkS4class{git_repository}} object.
+##'     is a path to a repository or a \code{git_repository} object.
 ##' @param create create branch if it doesn't exist. Only used if
-##'     object is a path to a repository or a
-##'     \code{\linkS4class{git_repository}} object.
+##'     object is a path to a repository or a \code{git_repository}
+##'     object.
 ##' @param force If \code{TRUE}, then make working directory match
 ##'     target. This will throw away local changes. Default is
 ##'     \code{FALSE}.
