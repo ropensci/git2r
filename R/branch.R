@@ -19,7 +19,7 @@
 ##' @param commit Commit to which branch should point.
 ##' @param name Name for the branch
 ##' @param force Overwrite existing branch. Default = FALSE
-##' @return invisible S4 class git_branch object
+##' @return invisible git_branch object
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -415,65 +415,37 @@ is_head <- function(branch = NULL) {
 is_local <- function(branch) {
     if (!is_branch(branch))
         stop("argument 'branch' must be a 'git_branch' object")
-    identical(branch@type, 1L)
+    identical(branch$type, 1L)
 }
 
-##' Brief summary of branch
-##'
-##' @aliases show,git_branch-methods
-##' @docType methods
-##' @param object The branch \code{object}
-##' @return None (invisible 'NULL').
-##' @keywords methods
-##' @include S4_classes.R
 ##' @export
-##' @examples
-##' \dontrun{
-##' ## Initialize a temporary repository
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##'
-##' ## Create a user and commit a file
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
-##' writeLines("Hello world!", file.path(path, "example.txt"))
-##' add(repo, "example.txt")
-##' commit(repo, "First commit message")
-##'
-##' ## Brief summary of the branch in the repository
-##' branches(repo)[[1]]
-##' }
-setMethod("show",
-          signature(object = "git_branch"),
-          function(object)
-          {
-              sha <- branch_target(object)
-              if (!is.na(sha)) {
-                  cat(sprintf("[%s] ", substr(sha, 1 , 6)))
-              }
+print.git_branch <- function(x, ...) {
+    sha <- branch_target(x)
+    if (!is.na(sha)) {
+        cat(sprintf("[%s] ", substr(sha, 1 , 6)))
+    }
 
-              if (is_local(object)) {
-                  cat("(Local) ")
-              } else {
-                  cat(sprintf("(%s @ %s) ",
-                              branch_remote_name(object),
-                              branch_remote_url(object)))
-              }
+    if (is_local(x)) {
+        cat("(Local) ")
+    } else {
+        cat(sprintf("(%s @ %s) ",
+                    branch_remote_name(x),
+                    branch_remote_url(x)))
+    }
 
-              if (is_head(object)) {
-                  cat("(HEAD) ")
-              }
+    if (is_head(x)) {
+        cat("(HEAD) ")
+    }
 
-              if (is_local(object)) {
-                  cat(sprintf("%s\n", object@name))
-              } else {
-                  cat(sprintf("%s\n",
-                              substr(object@name,
-                                     start = nchar(branch_remote_name(object)) + 2,
-                                     stop = nchar(object@name))))
-              }
-          }
-)
+    if (is_local(x)) {
+        cat(sprintf("%s\n", x$name))
+    } else {
+        cat(sprintf("%s\n",
+                    substr(x$name,
+                           start = nchar(branch_remote_name(x)) + 2,
+                           stop = nchar(x$name))))
+    }
+}
 
 ##' Check if object is \code{git_branch}
 ##'
@@ -501,5 +473,5 @@ setMethod("show",
 ##' is_branch(branch)
 ##' }
 is_branch <- function(object) {
-    methods::is(object = object, class2 = "git_branch")
+    inherits(object, "git_branch")
 }

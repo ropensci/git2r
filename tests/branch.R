@@ -38,14 +38,14 @@ commit.1 <- commit(repo, "Commit message")
 stopifnot(identical(length(branches(repo)), 1L))
 stopifnot(identical(is_head(branches(repo)[[1]]), TRUE))
 stopifnot(identical(is_local(branches(repo)[[1]]), TRUE))
-stopifnot(identical(branches(repo)[[1]]@name, "master"))
+stopifnot(identical(branches(repo)[[1]]$name, "master"))
 stopifnot(identical(branches(repo)[[1]], head(repo)))
 stopifnot(identical(branches(repo)$master, head(repo)))
 
 ## Create a branch
 b <- branch_create(commit.1, name = "test")
-stopifnot(identical(b@name, "test"))
-stopifnot(identical(b@type, 1L))
+stopifnot(identical(b$name, "test"))
+stopifnot(identical(b$type, 1L))
 stopifnot(identical(length(branches(repo)), 2L))
 stopifnot(identical(branch_target(branches(repo)[[1]]),
                     branch_target(branches(repo)[[2]])))
@@ -82,16 +82,16 @@ res <- tools::assertError(.Call(git2r:::git2r_branch_delete, repo))
 stopifnot(length(grep("'branch' must be an S3 class git_branch",
                       res[[1]]$message)) > 0)
 b_tmp <- b
-b_tmp@name <- NA_character_
+b_tmp$name <- NA_character_
 res <- tools::assertError(.Call(git2r:::git2r_branch_delete, b_tmp))
 stopifnot(length(grep("'branch' must be an S3 class git_branch",
                       res[[1]]$message)) > 0)
 b_tmp <- b
-b_tmp@type <- NA_integer_
+b_tmp$type <- NA_integer_
 res <- tools::assertError(.Call(git2r:::git2r_branch_delete, b_tmp))
 stopifnot(length(grep("'branch' must be an S3 class git_branch",
                       res[[1]]$message)) > 0)
-b_tmp@type <- 3L
+b_tmp$type <- 3L
 res <- tools::assertError(.Call(git2r:::git2r_branch_delete, b_tmp))
 stopifnot(length(grep("'branch' must be an S3 class git_branch",
                       res[[1]]$message)) > 0)
@@ -113,7 +113,7 @@ b.3 <- branch_create(commit.3, name = "test-3")
 stopifnot(identical(length(branches(repo)), 4L))
 b.1 <- branch_rename(b.1, name = "test-1-new-name")
 stopifnot(identical(length(branches(repo)), 4L))
-stopifnot(identical(b.1@name, "test-1-new-name"))
+stopifnot(identical(b.1$name, "test-1-new-name"))
 tools::assertError(branch_rename(b.1, name = "test-2"))
 branch_rename(b.1, name = "test-2", force = TRUE)
 stopifnot(identical(length(branches(repo)), 3L))
