@@ -62,7 +62,6 @@ references <- function(repo = ".") {
 ##' @param object The reference \code{object}
 ##' @return None (invisible 'NULL').
 ##' @keywords methods
-##' @include S4_classes.R
 ##' @export
 ##' @examples
 ##' \dontrun{

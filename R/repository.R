@@ -278,9 +278,10 @@ clone <- function(url         = NULL,
 ##' Get HEAD for a repository
 ##'
 ##' @param x The repository \code{x} to check head
+##' @param ... Additional arguments. Unused.
 ##' @return NULL if unborn branch or not found. A git_branch if not a
 ##'     detached head. A git_commit if detached head
-##' @keywords methods
+##' @importFrom utils head
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -298,7 +299,7 @@ clone <- function(url         = NULL,
 ##' ## Get HEAD of repository
 ##' head(repo)
 ##' }
-head.git_repository <- function(x) {
+head.git_repository <- function(x, ...) {
     .Call(git2r_repository_head, x)
 }
 
