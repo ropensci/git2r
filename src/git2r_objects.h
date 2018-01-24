@@ -66,6 +66,15 @@ enum {
     git2r_S3_item__git_commit__message,
     git2r_S3_item__git_commit__repo};
 
+extern const char *git2r_S3_class__git_fetch_head;
+extern const char *git2r_S3_items__git_fetch_head[];
+enum {
+    git2r_S3_item__git_fetch_head__ref_name,
+    git2r_S3_item__git_fetch_head__remote_url,
+    git2r_S3_item__git_fetch_head__sha,
+    git2r_S3_item__git_fetch_head__is_merge,
+    git2r_S3_item__git_fetch_head__repo};
+
 extern const char *git2r_S3_class__git_merge_result;
 extern const char *git2r_S3_items__git_merge_result[];
 enum {

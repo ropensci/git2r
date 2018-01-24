@@ -104,8 +104,8 @@ fetch <- function(repo = ".", name = NULL, credentials = NULL,
 ##' Get updated heads during the last fetch.
 ##'
 ##' @template repo-param
-##' @return list with the \code{\linkS4class{git_fetch_head}}
-##'     entries. NULL if there is no FETCH_HEAD file.
+##' @return list with \code{git_fetch_head} entries. NULL if there is
+##'     no FETCH_HEAD file.
 ##' @export
 ##' @examples
 ##' \dontrun{

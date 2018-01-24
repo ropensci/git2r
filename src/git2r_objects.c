@@ -42,6 +42,10 @@ const char *git2r_S3_class__git_commit = "git_commit";
 const char *git2r_S3_items__git_commit[] = {
     "sha", "author", "committer", "summary", "message", "repo", ""};
 
+const char *git2r_S3_class__git_fetch_head = "git_fetch_head";
+const char *git2r_S3_items__git_fetch_head[] = {
+    "ref_name", "remote_url", "sha", "is_merge", "repo", ""};
+
 const char *git2r_S3_class__git_merge_result = "git_merge_result";
 const char *git2r_S3_items__git_merge_result[] = {
     "up_to_date", "fast_forward", "conflicts", "sha", ""};
