@@ -8,19 +8,16 @@ checkout(object = NULL, branch = NULL, create = FALSE, force = FALSE,
   path = NULL)
 }
 \arguments{
-\item{object}{A path to a repository, or a
-\code{\linkS4class{git_repository}} object, or a
-\code{\linkS4class{git_commit}} object, or a
-\code{\linkS4class{git_tag}} object, or a
-\code{\linkS4class{git_tree}} object.}
+\item{object}{A path to a repository, or a \code{git_repository}
+object, or a \code{git_commit} object, or a \code{git_tag}
+object, or a \code{git_tree} object.}
 
 \item{branch}{name of the branch to check out. Only used if object
-is a path to a repository or a
-\code{\linkS4class{git_repository}} object.}
+is a path to a repository or a \code{git_repository} object.}
 
 \item{create}{create branch if it doesn't exist. Only used if
-object is a path to a repository or a
-\code{\linkS4class{git_repository}} object.}
+object is a path to a repository or a \code{git_repository}
+object.}
 
 \item{force}{If \code{TRUE}, then make working directory match
 target. This will throw away local changes. Default is

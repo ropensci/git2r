@@ -41,7 +41,7 @@ If NULL, then we use the working directory or the index (see
 the \code{index} argument).}
 }
 \value{
-A \code{\linkS4class{git_diff}} object if as_char is
+A \code{git_diff} object if as_char is
 FALSE. If as_char is TRUE and filename is NULL, a character string,
 else NULL.
 }

@@ -25,7 +25,7 @@ FALSE.}
 commit.}
 }
 \value{
-\code{\linkS4class{git_commit}} object
+\code{git_commit} object
 }
 \description{
 Commit

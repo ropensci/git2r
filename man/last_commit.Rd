@@ -32,5 +32,11 @@ commit(repo, "First commit message")
 ## Get last commit
 last_commit(repo)
 last_commit(path)
+
+## Coerce the last commit to a data.frame
+as.data.frame(last_commit(path), "data.frame")
+
+## Summary of last commit in repository
+summary(last_commit(repo))
 }
 }
