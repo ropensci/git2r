@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2017 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,13 +16,13 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <Rdefines.h>
 #include "git2.h"
 #include "buffer.h"
 
 #include "git2r_arg.h"
 #include "git2r_error.h"
 #include "git2r_note.h"
+#include "git2r_objects.h"
 #include "git2r_repository.h"
 #include "git2r_signature.h"
 
@@ -39,13 +39,13 @@ typedef struct {
 } git2r_note_foreach_cb_data;
 
 /**
- * Init slots in S4 class git_note
+ * Init slots in S3 class git_note
  *
  * @param blob_id Oid of the blob containing the message
  * @param annotated_object_id Oid of the git object being annotated
  * @param repository
- * @param repo S4 class git_repository that contains the stash
- * @param dest S4 class git_note to initialize
+ * @param repo S3 class git_repository that contains the stash
+ * @param dest S3 class git_note to initialize
  * @return int 0 on success, or an error code.
  */
 static int git2r_note_init(
@@ -56,31 +56,44 @@ static int git2r_note_init(
     SEXP repo,
     SEXP dest)
 {
-    int err;
+    int error;
     git_note *note = NULL;
     char sha[GIT_OID_HEXSZ + 1];
-    SEXP s_sha = Rf_install("sha");
-    SEXP s_annotated = Rf_install("annotated");
-    SEXP s_message = Rf_install("message");
-    SEXP s_refname = Rf_install("refname");
-    SEXP s_repo = Rf_install("repo");
 
-    err = git_note_read(&note, repository, notes_ref, annotated_object_id);
-    if (err)
-        return err;
+    error = git_note_read(&note, repository, notes_ref, annotated_object_id);
+    if (error)
+        return error;
 
     git_oid_fmt(sha, blob_id);
     sha[GIT_OID_HEXSZ] = '\0';
-    SET_SLOT(dest, s_sha, Rf_mkString(sha));
+    SET_VECTOR_ELT(
+        dest,
+        git2r_S3_item__git_note__sha,
+        Rf_mkString(sha));
+
     git_oid_fmt(sha, annotated_object_id);
     sha[GIT_OID_HEXSZ] = '\0';
-    SET_SLOT(dest, s_annotated, Rf_mkString(sha));
-    SET_SLOT(dest, s_message, Rf_mkString(git_note_message(note)));
-    SET_SLOT(dest, s_refname, Rf_mkString(notes_ref));
-    SET_SLOT(dest, s_repo, repo);
+    SET_VECTOR_ELT(
+        dest,
+        git2r_S3_item__git_note__annotated,
+        Rf_mkString(sha));
 
-    if (note)
-        git_note_free(note);
+    SET_VECTOR_ELT(
+        dest,
+        git2r_S3_item__git_note__message,
+        Rf_mkString(git_note_message(note)));
+
+    SET_VECTOR_ELT(
+        dest,
+        git2r_S3_item__git_note__refname,
+        Rf_mkString(notes_ref));
+
+    SET_VECTOR_ELT(
+        dest,
+        git2r_S3_item__git_note__repo,
+        repo);
+
+    git_note_free(note);
 
     return 0;
 }
@@ -88,15 +101,15 @@ static int git2r_note_init(
 /**
  * Add a note for an object
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param sha The sha string of object
- * @param commit S4 class git_commit
+ * @param commit S3 class git_commit
  * @param message Content of the note to add
  * @param ref Canonical name of the reference to use
  * @param author Signature of the notes note author
  * @param committer Signature of the notes note committer
  * @param force Overwrite existing note
- * @return S4 class git_note
+ * @return S3 class git_note
  */
 SEXP git2r_note_create(
     SEXP repo,
@@ -107,7 +120,7 @@ SEXP git2r_note_create(
     SEXP committer,
     SEXP force)
 {
-    int err;
+    int error, nprotect = 0;
     SEXP result = R_NilValue;
     int overwrite = 0;
     git_oid note_oid;
@@ -133,22 +146,22 @@ SEXP git2r_note_create(
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git2r_signature_from_arg(&sig_author, author);
-    if (err)
+    error = git2r_signature_from_arg(&sig_author, author);
+    if (error)
         goto cleanup;
 
-    err = git2r_signature_from_arg(&sig_committer, committer);
-    if (err)
+    error = git2r_signature_from_arg(&sig_committer, committer);
+    if (error)
         goto cleanup;
 
-    err = git_oid_fromstr(&object_oid, CHAR(STRING_ELT(sha, 0)));
-    if (err)
+    error = git_oid_fromstr(&object_oid, CHAR(STRING_ELT(sha, 0)));
+    if (error)
         goto cleanup;
 
     if (LOGICAL(force)[0])
         overwrite = 1;
 
-    err = git_note_create(
+    error = git_note_create(
         &note_oid,
         repository,
         CHAR(STRING_ELT(ref, 0)),
@@ -157,11 +170,14 @@ SEXP git2r_note_create(
         &object_oid,
         CHAR(STRING_ELT(message, 0)),
         overwrite);
-    if (err)
+    if (error)
         goto cleanup;
 
-    PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_note")));
-    err = git2r_note_init(&note_oid,
+    PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_note));
+    nprotect++;
+    Rf_setAttrib(result, R_ClassSymbol,
+                 Rf_mkString(git2r_S3_class__git_note));
+    error = git2r_note_init(&note_oid,
                           &object_oid,
                           repository,
                           CHAR(STRING_ELT(ref, 0)),
@@ -169,19 +185,14 @@ SEXP git2r_note_create(
                           result);
 
 cleanup:
-    if (sig_author)
-        git_signature_free(sig_author);
+    git_signature_free(sig_author);
+    git_signature_free(sig_committer);
+    git_repository_free(repository);
 
-    if (sig_committer)
-        git_signature_free(sig_committer);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
-    if (repository)
-        git_repository_free(repository);
-
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -191,13 +202,13 @@ cleanup:
  * Default notes reference
  *
  * Get the default notes reference for a repository
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @return Character vector of length one with name of default
  * reference
  */
 SEXP git2r_note_default_ref(SEXP repo)
 {
-    int err;
+    int error;
     SEXP result = R_NilValue;
     git_buf buf = GIT_BUF_INIT;
     git_repository *repository = NULL;
@@ -206,8 +217,8 @@ SEXP git2r_note_default_ref(SEXP repo)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git_note_default_ref(&buf, repository);
-    if (err)
+    error = git_note_default_ref(&buf, repository);
+    if (error)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
@@ -215,14 +226,12 @@ SEXP git2r_note_default_ref(SEXP repo)
 
 cleanup:
     git_buf_free(&buf);
-
-    if (repository)
-        git_repository_free(repository);
+    git_repository_free(repository);
 
     if (!Rf_isNull(result))
         UNPROTECT(1);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -245,23 +254,25 @@ static int git2r_note_foreach_cb(
 
     /* Check if we have a list to populate */
     if (!Rf_isNull(cb_data->list)) {
-        int err;
+        int error;
         SEXP note;
 
         SET_VECTOR_ELT(
             cb_data->list,
             cb_data->n,
-            note = NEW_OBJECT(MAKE_CLASS("git_note")));
+            note = Rf_mkNamed(VECSXP, git2r_S3_items__git_note));
+        Rf_setAttrib(note, R_ClassSymbol,
+                     Rf_mkString(git2r_S3_class__git_note));
 
-        err = git2r_note_init(
+        error = git2r_note_init(
             blob_id,
             annotated_object_id,
             cb_data->repository,
             cb_data->notes_ref,
             cb_data->repo,
             note);
-        if (err)
-            return err;
+        if (error)
+            return error;
     }
 
     cb_data->n += 1;
@@ -272,13 +283,13 @@ static int git2r_note_foreach_cb(
 /**
  * List all the notes within a specified namespace.
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param ref Optional reference to read from.
- * @return VECXSP with S4 objects of class git_note
+ * @return VECXSP with S3 objects of class git_note
  */
 SEXP git2r_notes(SEXP repo, SEXP ref)
 {
-    int err;
+    int error;
     SEXP result = R_NilValue;
     git_buf buf = GIT_BUF_INIT;
     git2r_note_foreach_cb_data cb_data = {0, R_NilValue, R_NilValue, NULL, NULL};
@@ -296,20 +307,20 @@ SEXP git2r_notes(SEXP repo, SEXP ref)
     if (!Rf_isNull(ref)) {
         git_buf_sets(&buf, CHAR(STRING_ELT(ref, 0)));
     } else {
-        err = git_note_default_ref(&buf, repository);
-        if (err)
+        error = git_note_default_ref(&buf, repository);
+        if (error)
             goto cleanup;
     }
 
     /* Count number of notes before creating the list */
-    err = git_note_foreach(
+    error = git_note_foreach(
         repository,
         git_buf_cstr(&buf),
         &git2r_note_foreach_cb,
         &cb_data);
-    if (err) {
-        if (GIT_ENOTFOUND == err) {
-            err = GIT_OK;
+    if (error) {
+        if (GIT_ENOTFOUND == error) {
+            error = GIT_OK;
             PROTECT(result = Rf_allocVector(VECSXP, 0));
         }
 
@@ -322,19 +333,17 @@ SEXP git2r_notes(SEXP repo, SEXP ref)
     cb_data.repo = repo;
     cb_data.repository = repository;
     cb_data.notes_ref = git_buf_cstr(&buf);
-    err = git_note_foreach(repository, git_buf_cstr(&buf),
+    error = git_note_foreach(repository, git_buf_cstr(&buf),
                            &git2r_note_foreach_cb, &cb_data);
 
 cleanup:
     git_buf_free(&buf);
-
-    if (repository)
-        git_repository_free(repository);
+    git_repository_free(repository);
 
     if (!Rf_isNull(result))
         UNPROTECT(1);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -343,14 +352,14 @@ cleanup:
 /**
  * Remove the note for an object
  *
- * @param note S4 class git_note
+ * @param note S3 class git_note
  * @param author Signature of the notes commit author
  * @param committer Signature of the notes commit committer
  * @return R_NilValue
  */
 SEXP git2r_note_remove(SEXP note, SEXP author, SEXP committer)
 {
-    int err;
+    int error;
     SEXP repo;
     SEXP annotated;
     git_oid note_oid;
@@ -365,42 +374,37 @@ SEXP git2r_note_remove(SEXP note, SEXP author, SEXP committer)
     if (git2r_arg_check_signature(committer))
         git2r_error(__func__, NULL, "'committer'", git2r_err_signature_arg);
 
-    repo = GET_SLOT(note, Rf_install("repo"));
+    repo = git2r_get_list_element(note, "repo");
     repository = git2r_repository_open(repo);
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git2r_signature_from_arg(&sig_author, author);
-    if (err)
+    error = git2r_signature_from_arg(&sig_author, author);
+    if (error)
         goto cleanup;
 
-    err = git2r_signature_from_arg(&sig_committer, committer);
-    if (err)
+    error = git2r_signature_from_arg(&sig_committer, committer);
+    if (error)
         goto cleanup;
 
-    annotated = GET_SLOT(note, Rf_install("annotated"));
-    err = git_oid_fromstr(&note_oid, CHAR(STRING_ELT(annotated, 0)));
-    if (err)
+    annotated = git2r_get_list_element(note, "annotated");
+    error = git_oid_fromstr(&note_oid, CHAR(STRING_ELT(annotated, 0)));
+    if (error)
         goto cleanup;
 
-    err = git_note_remove(
+    error = git_note_remove(
         repository,
-        CHAR(STRING_ELT(GET_SLOT(note, Rf_install("refname")), 0)),
+        CHAR(STRING_ELT(git2r_get_list_element(note, "refname"), 0)),
         sig_author,
         sig_committer,
         &note_oid);
 
 cleanup:
-    if (sig_author)
-        git_signature_free(sig_author);
+    git_signature_free(sig_author);
+    git_signature_free(sig_committer);
+    git_repository_free(repository);
 
-    if (sig_committer)
-        git_signature_free(sig_committer);
-
-    if (repository)
-        git_repository_free(repository);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return R_NilValue;

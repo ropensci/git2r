@@ -200,7 +200,12 @@ is_binary <- function(blob = NULL) {
 ##' is_blob(blob_1)
 ##' }
 is_blob <- function(object) {
-    inherits(blob, "git_blob")
+    is.git_blob(object)
+}
+
+##' @export
+is.git_blob <- function(x) {
+    inherits(x, "git_blob")
 }
 
 ##' Size in bytes of the contents of a blob

@@ -83,6 +83,15 @@ enum {
     git2r_S3_item__git_merge_result__conflicts,
     git2r_S3_item__git_merge_result__sha};
 
+extern const char *git2r_S3_class__git_note;
+extern const char *git2r_S3_items__git_note[];
+enum {
+    git2r_S3_item__git_note__sha,
+    git2r_S3_item__git_note__annotated,
+    git2r_S3_item__git_note__message,
+    git2r_S3_item__git_note__refname,
+    git2r_S3_item__git_note__repo};
+
 extern const char *git2r_S3_class__git_repository;
 extern const char *git2r_S3_items__git_repository[];
 enum {
