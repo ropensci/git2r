@@ -90,7 +90,6 @@ SEXP git2r_object_lookup(SEXP repo, SEXP sha)
         nprotect++;
         Rf_setAttrib(result, R_ClassSymbol,
                      Rf_mkString(git2r_S3_class__git_tag));
-        nprotect++;
         git2r_tag_init((git_tag*)object, repo, result);
         break;
     default:

@@ -74,10 +74,6 @@ checkout_git_object <- function(object, force) {
     FALSE
 }
 
-is_tag <- function(object) {
-    is(object = object, class2 = "git_tag")
-}
-
 ##' Checkout
 ##'
 ##' Update files in the index and working tree to match the content of

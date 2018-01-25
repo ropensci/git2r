@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -14,34 +14,17 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library(git2r)
+library("git2r")
 
 ## For debugging
 sessionInfo()
 
-## Check validity of S4 class git_signature
-## Each slot must have length equal to one
-when <- new("git_time", time = 1395567947, offset = 60)
+## Check printing of a class git_signature
+when <- structure(list(time = 1395567947, offset = 60),
+                  class = "git_time")
 
-tools::assertError(validObject(new("git_signature",
-                                   when = when)))
-
-tools::assertError(validObject(new("git_signature",
-                                   name = character(0),
-                                   email = "email",
-                                   when = when)))
-
-tools::assertError(validObject(new("git_signature",
-                                   name = c("name1", "name2"),
-                                   email = "email",
-                                   when = when)))
-
-tools::assertError(validObject(new("git_signature",
-                                   name = "name",
-                                   email = character(0),
-                                   when = when)))
-
-tools::assertError(validObject(new("git_signature",
-                                   name = "name",
-                                   email = c("email1", "email2"),
-                                   when = when)))
+signature <- structure(list(name = "Alice",
+                            email = "alice@example.org",
+                            when = when),
+                       class = "git_signature")
+signature

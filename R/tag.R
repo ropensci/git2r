@@ -64,6 +64,10 @@ tag <- function(object = ".",
     invisible(.Call(git2r_tag_create, object, name, message, tagger))
 }
 
+is_tag <- function(object) {
+    inherits(object, "git_tag")
+}
+
 ##' Delete an existing tag reference
 ##'
 ##' @param object Can be either the path (default is ".") to a
@@ -105,8 +109,8 @@ tag <- function(object = ".",
 ##' }
 tag_delete <- function(object = ".", name = NULL) {
     if (is_tag(object)) {
-        name <- object@name
-        object <- object@repo
+        name <- object$name
+        object <- object$repo
     } else {
         object <- lookup_repository(object)
     }
@@ -145,89 +149,27 @@ tags <- function(repo = ".") {
     .Call(git2r_tag_list, lookup_repository(repo))
 }
 
-##' Brief summary of a tag
-##'
-##' @aliases show,git_tag-methods
-##' @docType methods
-##' @param object The tag \code{object}
-##' @return None (invisible 'NULL').
-##' @keywords methods
 ##' @export
-##' @examples
-##' \dontrun{
-##' ## Initialize a temporary repository
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##'
-##' ## Create a user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
-##'
-##' ## Commit a text file
-##' writeLines("Hello world!", file.path(path, "example.txt"))
-##' add(repo, "example.txt")
-##' commit(repo, "First commit message")
-##'
-##' ## Create tag
-##' tag(repo, "Tagname", "Tag message")
-##'
-##' ## View brief summary of tag
-##' tags(repo)[[1]]
-##' }
-setMethod("show",
-          signature(object = "git_tag"),
-          function(object)
-          {
-              cat(sprintf("[%s] %s\n",
-                          substr(object@target, 1 , 6),
-                          object@name))
-          }
-)
+format.git_tag <- function(x, ...) {
+    sprintf("[%s] %s", substr(x$target, 1 , 6), x$name)
+}
 
-##' Summary of a tag
-##'
-##' @aliases summary,git_tag-methods
-##' @docType methods
-##' @param object The tag \code{object}
-##' @param ... Additional arguments affecting the summary produced.
-##' @return None (invisible 'NULL').
-##' @keywords methods
 ##' @export
-##' @examples
-##' \dontrun{
-##' ## Initialize a temporary repository
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##'
-##' ## Create a user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
-##'
-##' ## Commit a text file
-##' writeLines("Hello world!", file.path(path, "example.txt"))
-##' add(repo, "example.txt")
-##' commit(repo, "First commit message")
-##'
-##' ## Create tag
-##' tag(repo, "Tagname", "Tag message")
-##'
-##' ## Summary of tag
-##' summary(tags(repo)[[1]])
-##' }
-setMethod("summary",
-          signature(object = "git_tag"),
-          function(object, ...)
-          {
-              cat(sprintf(paste0("name:    %s\n",
-                                 "target:  %s\n",
-                                 "tagger:  %s <%s>\n",
-                                 "when:    %s\n",
-                                 "message: %s\n"),
-                          object@name,
-                          object@target,
-                          object@tagger@name,
-                          object@tagger@email,
-                          as(object@tagger@when, "character"),
-                          object@message))
-          }
-)
+print.git_tag <- function(x, ...) {
+    cat(format(x, ...), "\n", sep = "")
+}
+
+##' @export
+summary.git_tag <- function(object, ...) {
+    cat(sprintf(paste0("name:    %s\n",
+                       "target:  %s\n",
+                       "tagger:  %s <%s>\n",
+                       "when:    %s\n",
+                       "message: %s\n"),
+                object$name,
+                object$target,
+                object$tagger$name,
+                object$tagger$email,
+                as.character(object$tagger$when),
+                object$message))
+}
