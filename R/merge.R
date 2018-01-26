@@ -82,7 +82,7 @@ merge_named_branch <- function(repo, branch, commit_on_success, merger) {
         stop("'branch' must be a character vector of length one")
 
     b <- branches(repo)
-    b <- b[vapply(b, slot, character(1), "name") == branch][[1]]
+    b <- b[vapply(b, "[[", character(1), "name") == branch][[1]]
 
     merge_branch(b, commit_on_success, merger)
 }

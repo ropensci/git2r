@@ -608,12 +608,12 @@ summary.git_repository <- function(object, ...) {
 
     n_branches <- sum(!is.na(unique(sapply(branches(object),
                                            branch_target))))
-    n_tags <- sum(!is.na(unique(vapply(tags(object), slot, character(1), "sha"))))
+    n_tags <- sum(!is.na(unique(vapply(tags(object), "[[", character(1), "sha"))))
 
     work <- commits(object)
     n_commits <- length(work)
-    n_authors <- length(unique(vapply(lapply(work, slot, "author"),
-                                      slot, character(1), "name")))
+    n_authors <- length(unique(vapply(lapply(work, "[[", "author"),
+                                      "[[", character(1), "name")))
 
     s <- .Call(git2r_status_list, object, TRUE, TRUE, TRUE, FALSE, TRUE)
     n_ignored <- length(s$ignored)

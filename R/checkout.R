@@ -20,15 +20,15 @@
 ##' @noRd
 previous_branch_name <- function(repo)
 {
-    branch <- revparse_single(repo, "@{-1}")@sha
+    branch <- revparse_single(repo, "@{-1}")$sha
 
     branch <- sapply(references(repo), function(x) {
-        ifelse(x@sha == branch, x@shorthand, NA_character_)
+        ifelse(x$sha == branch, x$shorthand, NA_character_)
     })
     branch <- branch[vapply(branch, Negate(is.na), logical(1))]
 
     branch <- sapply(branches(repo, "local"), function(x) {
-        ifelse(x@name %in% branch, x@name, NA_character_)
+        ifelse(x$name %in% branch, x$name, NA_character_)
     })
     branch <- branch[vapply(branch, Negate(is.na), logical(1))]
 
@@ -40,19 +40,19 @@ previous_branch_name <- function(repo)
 }
 
 checkout_branch <- function(object, force) {
-    ref_name <- paste0("refs/heads/", object@name)
-    .Call(git2r_checkout_tree, object@repo, ref_name, force)
-    .Call(git2r_repository_set_head, object@repo, ref_name)
+    ref_name <- paste0("refs/heads/", object$name)
+    .Call(git2r_checkout_tree, object$repo, ref_name, force)
+    .Call(git2r_repository_set_head, object$repo, ref_name)
 }
 
 checkout_commit <- function(object, force) {
-    .Call(git2r_checkout_tree, object@repo, object@sha, force)
+    .Call(git2r_checkout_tree, object$repo, object$sha, force)
     .Call(git2r_repository_set_head_detached, object)
 }
 
 checkout_tag <- function(object, force) {
-    .Call(git2r_checkout_tree, object@repo, object@target, force)
-    .Call(git2r_repository_set_head_detached, lookup(object@repo, object@target))
+    .Call(git2r_checkout_tree, object$repo, object$target, force)
+    .Call(git2r_repository_set_head_detached, lookup(object$repo, object$target))
 }
 
 checkout_git_object <- function(object, force) {
@@ -188,7 +188,7 @@ checkout <- function(object = NULL,
 
     ## Check if branch exists in a local branch
     lb <- branches(object, "local")
-    lb <- lb[vapply(lb, slot, character(1), "name") == branch]
+    lb <- lb[vapply(lb, "[[", character(1), "name") == branch]
     if (length(lb)) {
         checkout_branch(lb[[1]], force)
         return(invisible(NULL))
@@ -200,15 +200,15 @@ checkout <- function(object = NULL,
 
     ## Split remote/name to check for a unique name
     name <- vapply(rb, function(x) {
-        remote <- strsplit(x@name, "/")[[1]][1]
-        sub(paste0("^", remote, "/"), "", x@name)
+        remote <- strsplit(x$name, "/")[[1]][1]
+        sub(paste0("^", remote, "/"), "", x$name)
     }, character(1))
     i <- which(name == branch)
     if (identical(length(i), 1L)) {
         ## Create branch and track remote
         commit <- lookup(object, branch_target(rb[[i]]))
         branch <- branch_create(commit, branch)
-        branch_set_upstream(branch, rb[[i]]@name)
+        branch_set_upstream(branch, rb[[i]]$name)
         checkout_branch(branch, force)
         return(invisible(NULL))
     }

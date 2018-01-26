@@ -454,7 +454,7 @@ summary.git_commit <- function(object, ...)
     cat(sprintf("Commit:  %s\n", object$sha))
 
     if (is_merge_commit) {
-        sha <- vapply(po, slot, character(1), "sha")
+        sha <- vapply(po, "[[", character(1), "sha")
         cat(sprintf("Merge:   %s\n", sha[1]))
         cat(paste0("         ", sha[-1]), sep="\n")
     }
