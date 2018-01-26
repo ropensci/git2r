@@ -42,6 +42,22 @@ const char *git2r_S3_class__git_commit = "git_commit";
 const char *git2r_S3_items__git_commit[] = {
     "sha", "author", "committer", "summary", "message", "repo", ""};
 
+const char *git2r_S3_class__git_diff = "git_diff";
+const char *git2r_S3_items__git_diff[] = {
+    "old", "new", "files", ""};
+
+const char *git2r_S3_class__git_diff_file = "git_diff_file";
+const char *git2r_S3_items__git_diff_file[] = {
+    "old_file", "new_file", "hunks", ""};
+
+const char *git2r_S3_class__git_diff_hunk = "git_diff_hunk";
+const char *git2r_S3_items__git_diff_hunk[] = {
+    "old_start", "old_lines", "new_start", "new_lines", "header", "lines", ""};
+
+const char *git2r_S3_class__git_diff_line = "git_diff_line";
+const char *git2r_S3_items__git_diff_line[] = {
+    "origin", "old_lineno", "new_lineno", "num_lines", "content", ""};
+
 const char *git2r_S3_class__git_fetch_head = "git_fetch_head";
 const char *git2r_S3_items__git_fetch_head[] = {
     "ref_name", "remote_url", "sha", "is_merge", "repo", ""};

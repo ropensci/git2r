@@ -66,6 +66,39 @@ enum {
     git2r_S3_item__git_commit__message,
     git2r_S3_item__git_commit__repo};
 
+extern const char *git2r_S3_class__git_diff;
+extern const char *git2r_S3_items__git_diff[];
+enum {
+    git2r_S3_item__git_diff__old,
+    git2r_S3_item__git_diff__new,
+    git2r_S3_item__git_diff__files};
+
+extern const char *git2r_S3_class__git_diff_file;
+extern const char *git2r_S3_items__git_diff_file[];
+enum {
+    git2r_S3_item__git_diff_file__old_file,
+    git2r_S3_item__git_diff_file__new_file,
+    git2r_S3_item__git_diff_file__hunks};
+
+extern const char *git2r_S3_class__git_diff_hunk;
+extern const char *git2r_S3_items__git_diff_hunk[];
+enum {
+    git2r_S3_item__git_diff_hunk__old_start,
+    git2r_S3_item__git_diff_hunk__old_lines,
+    git2r_S3_item__git_diff_hunk__new_start,
+    git2r_S3_item__git_diff_hunk__new_lines,
+    git2r_S3_item__git_diff_hunk__header,
+    git2r_S3_item__git_diff_hunk__lines};
+
+extern const char *git2r_S3_class__git_diff_line;
+extern const char *git2r_S3_items__git_diff_line[];
+enum {
+    git2r_S3_item__git_diff_line__origin,
+    git2r_S3_item__git_diff_line__old_lineno,
+    git2r_S3_item__git_diff_line__new_lineno,
+    git2r_S3_item__git_diff_line__num_lines,
+    git2r_S3_item__git_diff_line__content};
+
 extern const char *git2r_S3_class__git_fetch_head;
 extern const char *git2r_S3_items__git_fetch_head[];
 enum {
