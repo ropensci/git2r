@@ -16,7 +16,6 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <Rdefines.h>
 #include "git2.h"
 
 #include "git2r_arg.h"
@@ -38,7 +37,7 @@
  */
 SEXP git2r_revparse_single(SEXP repo, SEXP revision)
 {
-    int err, nprotect = 0;
+    int error, nprotect = 0;
     SEXP result = R_NilValue;
     git_repository *repository = NULL;
     git_object *treeish = NULL;
@@ -50,11 +49,11 @@ SEXP git2r_revparse_single(SEXP repo, SEXP revision)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git_revparse_single(
+    error = git_revparse_single(
         &treeish,
         repository,
         CHAR(STRING_ELT(revision, 0)));
-    if (err)
+    if (error)
         goto cleanup;
 
     switch (git_object_type(treeish)) {
@@ -66,38 +65,41 @@ SEXP git2r_revparse_single(SEXP repo, SEXP revision)
         git2r_blob_init((git_blob*)treeish, repo, result);
         break;
     case GIT_OBJ_COMMIT:
-        PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_commit")));
+        PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_commit));
         nprotect++;
+        Rf_setAttrib(result, R_ClassSymbol,
+                     Rf_mkString(git2r_S3_class__git_commit));
         git2r_commit_init((git_commit*)treeish, repo, result);
         break;
     case GIT_OBJ_TAG:
-        PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_tag")));
+        PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_tag));
         nprotect++;
+        Rf_setAttrib(result, R_ClassSymbol,
+                     Rf_mkString(git2r_S3_class__git_tag));
         git2r_tag_init((git_tag*)treeish, repo, result);
         break;
     case GIT_OBJ_TREE:
-        PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_tree")));
+        PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_tree));
         nprotect++;
+        Rf_setAttrib(result, R_ClassSymbol,
+                     Rf_mkString(git2r_S3_class__git_tree));
         git2r_tree_init((git_tree*)treeish, repo, result);
         break;
     default:
         giterr_set_str(GITERR_NONE, git2r_err_revparse_single);
-        err = GIT_ERROR;
+        error = GIT_ERROR;
         break;
     }
 
 cleanup:
-    if (treeish)
-        git_object_free(treeish);
-
-    if (repository)
-        git_repository_free(repository);
+    git_object_free(treeish);
+    git_repository_free(repository);
 
     if (nprotect)
         UNPROTECT(nprotect);
 
-    if (err) {
-        if (GIT_ENOTFOUND == err) {
+    if (error) {
+        if (GIT_ENOTFOUND == error) {
             git2r_error(
                 __func__,
                 NULL,

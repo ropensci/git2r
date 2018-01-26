@@ -125,6 +125,15 @@ enum {
     git2r_S3_item__git_note__refname,
     git2r_S3_item__git_note__repo};
 
+extern const char *git2r_S3_class__git_reference;
+extern const char *git2r_S3_items__git_reference[];
+enum {
+    git2r_S3_item__git_reference__name,
+    git2r_S3_item__git_reference__type,
+    git2r_S3_item__git_reference__sha,
+    git2r_S3_item__git_reference__target,
+    git2r_S3_item__git_reference__shorthand};
+
 extern const char *git2r_S3_class__git_repository;
 extern const char *git2r_S3_items__git_repository[];
 enum {

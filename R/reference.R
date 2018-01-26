@@ -55,44 +55,17 @@ references <- function(repo = ".") {
     .Call(git2r_reference_list, lookup_repository(repo))
 }
 
-##' Brief summary of reference
-##'
-##' @aliases show,git_reference-methods
-##' @docType methods
-##' @param object The reference \code{object}
-##' @return None (invisible 'NULL').
-##' @keywords methods
 ##' @export
-##' @examples
-##' \dontrun{
-##' ## Create and initialize a repository in a temporary directory
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
-##'
-##' ## Create a file, add and commit
-##' writeLines("Hello world!", file.path(path, "example.txt"))
-##' add(repo, "example.txt")
-##' commit(repo, "First commit message")
-##'
-##' ## Brief summary of reference
-##' references(repo)[[1]]
-##' }
-setMethod("show",
-          signature(object = "git_reference"),
-          function(object)
-          {
-              if (identical(object@type, 1L)) {
-                  cat(sprintf("[%s] %s\n",
-                              substr(object@sha, 1 , 6),
-                              object@shorthand))
-              } else if (identical(object@type, 2L)) {
-                  cat(sprintf("%s => %s\n",
-                              object@name,
-                              object@target))
-              } else {
-                  stop("Unexpected reference type")
-              }
-          }
-)
+print.git_reference <- function(x, ...) {
+    if (identical(x$type, 1L)) {
+        cat(sprintf("[%s] %s\n",
+                    substr(x$sha, 1 , 6),
+                    x$shorthand))
+    } else if (identical(x$type, 2L)) {
+        cat(sprintf("%s => %s\n",
+                    x$name,
+                    x$target))
+    } else {
+        stop("Unexpected reference type")
+    }
+}

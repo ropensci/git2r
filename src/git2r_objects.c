@@ -70,6 +70,10 @@ const char *git2r_S3_class__git_note = "git_note";
 const char *git2r_S3_items__git_note[] = {
     "sha", "annotated", "message", "refname", "repo", ""};
 
+const char *git2r_S3_class__git_reference = "git_reference";
+const char *git2r_S3_items__git_reference[] = {
+    "name", "type", "sha", "target", "shorthand", ""};
+
 const char *git2r_S3_class__git_repository = "git_repository";
 const char *git2r_S3_items__git_repository[] = {
     "path", ""};
