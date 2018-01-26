@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2016 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -14,7 +14,7 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library(git2r)
+library("git2r")
 
 ## For debugging
 sessionInfo()
@@ -43,11 +43,11 @@ add(repo, "test.txt")
 commit_1 <- commit(repo, "Commit message")
 
 ## Check commit
-stopifnot(identical(commit_1@author@name, "Alice"))
-stopifnot(identical(commit_1@author@email, "alice@example.org"))
+stopifnot(identical(commit_1$author$name, "Alice"))
+stopifnot(identical(commit_1$author$email, "alice@example.org"))
 stopifnot(identical(length(commits(repo)), 1L))
-stopifnot(identical(commits(repo)[[1]]@author@name, "Alice"))
-stopifnot(identical(commits(repo)[[1]]@author@email, "alice@example.org"))
+stopifnot(identical(commits(repo)[[1]]$author$name, "Alice"))
+stopifnot(identical(commits(repo)[[1]]$author$email, "alice@example.org"))
 
 ## Check push arguments
 tools::assertError(push(repo, character(0), "refs/heads/master"))
@@ -69,23 +69,23 @@ push(repo, "origin", "refs/heads/master")
 r <- reflog(repo, "refs/remotes/origin/master")
 stopifnot(identical(length(r), 1L))
 r <- r[[1]]
-stopifnot(identical(r@sha, commit_1@sha))
-stopifnot(identical(r@message, "update by push"))
-stopifnot(identical(r@index, 0L))
-stopifnot(identical(r@committer@name, "Alice"))
-stopifnot(identical(r@committer@email, "alice@example.org"))
-stopifnot(identical(r@refname, "refs/remotes/origin/master"))
-stopifnot(identical(r@repo@path, repo@path))
+stopifnot(identical(r$sha, commit_1$sha))
+stopifnot(identical(r$message, "update by push"))
+stopifnot(identical(r$index, 0L))
+stopifnot(identical(r$committer$name, "Alice"))
+stopifnot(identical(r$committer$email, "alice@example.org"))
+stopifnot(identical(r$refname, "refs/remotes/origin/master"))
+stopifnot(identical(r$repo$path, repo$path))
 
 ## Check result in bare repository
 stopifnot(identical(length(commits(bare_repo)), 1L))
 bare_commit_1 <- commits(bare_repo)[[1]]
-stopifnot(identical(commit_1@sha, bare_commit_1@sha))
-stopifnot(identical(commit_1@author, bare_commit_1@author))
-stopifnot(identical(commit_1@committer, bare_commit_1@committer))
-stopifnot(identical(commit_1@summary, bare_commit_1@summary))
-stopifnot(identical(commit_1@message, bare_commit_1@message))
-stopifnot(!identical(commit_1@repo, bare_commit_1@repo))
+stopifnot(identical(commit_1$sha, bare_commit_1$sha))
+stopifnot(identical(commit_1$author, bare_commit_1$author))
+stopifnot(identical(commit_1$committer, bare_commit_1$committer))
+stopifnot(identical(commit_1$summary, bare_commit_1$summary))
+stopifnot(identical(commit_1$message, bare_commit_1$message))
+stopifnot(!identical(commit_1$repo, bare_commit_1$repo))
 
 ## Add changes to repo and push head
 writeLines(c("Hello world", "HELLO WORLD"),
@@ -93,13 +93,13 @@ writeLines(c("Hello world", "HELLO WORLD"),
 add(repo, "test.txt")
 commit_2 <- commit(repo, "Commit message 2")
 push(repo)
-bare_commit_2 <- lookup(bare_repo, commit_2@sha)
-stopifnot(identical(commit_2@sha, bare_commit_2@sha))
-stopifnot(identical(commit_2@author, bare_commit_2@author))
-stopifnot(identical(commit_2@committer, bare_commit_2@committer))
-stopifnot(identical(commit_2@summary, bare_commit_2@summary))
-stopifnot(identical(commit_2@message, bare_commit_2@message))
-stopifnot(!identical(commit_2@repo, bare_commit_2@repo))
+bare_commit_2 <- lookup(bare_repo, commit_2$sha)
+stopifnot(identical(commit_2$sha, bare_commit_2$sha))
+stopifnot(identical(commit_2$author, bare_commit_2$author))
+stopifnot(identical(commit_2$committer, bare_commit_2$committer))
+stopifnot(identical(commit_2$summary, bare_commit_2$summary))
+stopifnot(identical(commit_2$message, bare_commit_2$message))
+stopifnot(!identical(commit_2$repo, bare_commit_2$repo))
 
 ## Cleanup
 unlink(path_bare, recursive=TRUE)

@@ -41,12 +41,12 @@ add(repo, "test.txt")
 commit_1 <- commit(repo, "Commit message")
 
 ## Check commit
-stopifnot(identical(commit_1@author@name, "Alice"))
-stopifnot(identical(commit_1@author@email, "alice@example.org"))
-stopifnot(identical(lookup(repo, commit_1@sha), commit_1))
+stopifnot(identical(commit_1$author$name, "Alice"))
+stopifnot(identical(commit_1$author$email, "alice@example.org"))
+stopifnot(identical(lookup(repo, commit_1$sha), commit_1))
 stopifnot(identical(length(commits(repo)), 1L))
-stopifnot(identical(commits(repo)[[1]]@author@name, "Alice"))
-stopifnot(identical(commits(repo)[[1]]@author@email, "alice@example.org"))
+stopifnot(identical(commits(repo)[[1]]$author$name, "Alice"))
+stopifnot(identical(commits(repo)[[1]]$author$email, "alice@example.org"))
 stopifnot(identical(parents(commit_1), list()))
 
 ## Check is_commit
