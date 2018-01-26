@@ -7,8 +7,8 @@
 fetch_heads(repo = ".")
 }
 \arguments{
-\item{repo}{a path to a repository or a
-\code{\linkS4class{git_repository}} object. Default is '.'}
+\item{repo}{a path to a repository or a \code{git_repository}
+object. Default is '.'}
 }
 \value{
 list with \code{git_fetch_head} entries. NULL if there is

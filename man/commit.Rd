@@ -8,8 +8,8 @@ commit(repo = ".", message = NULL, all = FALSE, session = FALSE,
   author = NULL, committer = NULL)
 }
 \arguments{
-\item{repo}{a path to a repository or a
-\code{\linkS4class{git_repository}} object. Default is '.'}
+\item{repo}{a path to a repository or a \code{git_repository}
+object. Default is '.'}
 
 \item{message}{The commit message.}
 

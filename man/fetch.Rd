@@ -8,8 +8,8 @@ fetch(repo = ".", name = NULL, credentials = NULL, verbose = TRUE,
   refspec = NULL)
 }
 \arguments{
-\item{repo}{a path to a repository or a
-\code{\linkS4class{git_repository}} object. Default is '.'}
+\item{repo}{a path to a repository or a \code{git_repository}
+object. Default is '.'}
 
 \item{name}{the remote's name}
 

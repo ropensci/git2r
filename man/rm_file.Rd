@@ -7,8 +7,8 @@
 rm_file(repo = ".", path = NULL)
 }
 \arguments{
-\item{repo}{a path to a repository or a
-\code{\linkS4class{git_repository}} object. Default is '.'}
+\item{repo}{a path to a repository or a \code{git_repository}
+object. Default is '.'}
 
 \item{path}{character vector with filenames to remove. The path
 must be relative to the repository's working folder. Only

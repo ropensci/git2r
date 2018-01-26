@@ -7,8 +7,8 @@
 remote_add(repo = ".", name = NULL, url = NULL)
 }
 \arguments{
-\item{repo}{a path to a repository or a
-\code{\linkS4class{git_repository}} object. Default is '.'}
+\item{repo}{a path to a repository or a \code{git_repository}
+object. Default is '.'}
 
 \item{name}{Short name of the remote repository}
 

@@ -7,8 +7,8 @@
 reflog(repo = ".", refname = "HEAD")
 }
 \arguments{
-\item{repo}{a path to a repository or a
-\code{\linkS4class{git_repository}} object. Default is '.'}
+\item{repo}{a path to a repository or a \code{git_repository}
+object. Default is '.'}
 
 \item{refname}{The name of the reference to list. 'HEAD' by
 default.}

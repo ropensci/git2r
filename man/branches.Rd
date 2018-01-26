@@ -7,8 +7,8 @@
 branches(repo = ".", flags = c("all", "local", "remote"))
 }
 \arguments{
-\item{repo}{a path to a repository or a
-\code{\linkS4class{git_repository}} object. Default is '.'}
+\item{repo}{a path to a repository or a \code{git_repository}
+object. Default is '.'}
 
 \item{flags}{Filtering flags for the branch listing. Valid values
 are 'all', 'local' or 'remote'}

@@ -7,8 +7,8 @@
 notes(repo = ".", ref = NULL)
 }
 \arguments{
-\item{repo}{a path to a repository or a
-\code{\linkS4class{git_repository}} object. Default is '.'}
+\item{repo}{a path to a repository or a \code{git_repository}
+object. Default is '.'}
 
 \item{ref}{Reference to read from. Default (ref = NULL) is to call
 \code{note_default_ref}.}

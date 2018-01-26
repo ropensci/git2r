@@ -8,8 +8,8 @@ contributions(repo = ".", breaks = c("month", "year", "quarter", "week",
   "day"), by = c("commits", "author"))
 }
 \arguments{
-\item{repo}{a path to a repository or a
-\code{\linkS4class{git_repository}} object. Default is '.'}
+\item{repo}{a path to a repository or a \code{git_repository}
+object. Default is '.'}
 
 \item{breaks}{Default is \code{month}. Change to year, quarter,
 week or day as necessary.}

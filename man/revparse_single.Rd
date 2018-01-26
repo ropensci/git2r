@@ -7,8 +7,8 @@
 revparse_single(repo = ".", revision = NULL)
 }
 \arguments{
-\item{repo}{a path to a repository or a
-\code{\linkS4class{git_repository}} object. Default is '.'}
+\item{repo}{a path to a repository or a \code{git_repository}
+object. Default is '.'}
 
 \item{revision}{The revision string, see
 http://git-scm.com/docs/git-rev-parse.html#_specifying_revisions}

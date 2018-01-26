@@ -7,8 +7,8 @@
 remote_url(repo = ".", remote = NULL)
 }
 \arguments{
-\item{repo}{a path to a repository or a
-\code{\linkS4class{git_repository}} object. Default is '.'}
+\item{repo}{a path to a repository or a \code{git_repository}
+object. Default is '.'}
 
 \item{remote}{Character vector with the remotes to get the url
 from. Default is the remotes of the repository.}

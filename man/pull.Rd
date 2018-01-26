@@ -7,8 +7,8 @@
 pull(repo = ".", credentials = NULL, merger = NULL)
 }
 \arguments{
-\item{repo}{a path to a repository or a
-\code{\linkS4class{git_repository}} object. Default is '.'}
+\item{repo}{a path to a repository or a \code{git_repository}
+object. Default is '.'}
 
 \item{credentials}{The credentials for remote repository
 access. Default is NULL. To use and query an ssh-agent for the

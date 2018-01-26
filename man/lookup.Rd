@@ -7,8 +7,8 @@
 lookup(repo = ".", sha = NULL)
 }
 \arguments{
-\item{repo}{a path to a repository or a
-\code{\linkS4class{git_repository}} object. Default is '.'}
+\item{repo}{a path to a repository or a \code{git_repository}
+object. Default is '.'}
 
 \item{sha}{The identity of the object to lookup. Must be 4 to 40
 characters long.}

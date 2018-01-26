@@ -8,8 +8,8 @@ stash(repo = ".", message = as.character(Sys.time()), index = FALSE,
   untracked = FALSE, ignored = FALSE, stasher = NULL)
 }
 \arguments{
-\item{repo}{a path to a repository or a
-\code{\linkS4class{git_repository}} object. Default is '.'}
+\item{repo}{a path to a repository or a \code{git_repository}
+object. Default is '.'}
 
 \item{message}{Optional description. Defaults to current time.}
 

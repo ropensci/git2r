@@ -7,8 +7,8 @@
 remote_remove(repo = ".", name = NULL)
 }
 \arguments{
-\item{repo}{a path to a repository or a
-\code{\linkS4class{git_repository}} object. Default is '.'}
+\item{repo}{a path to a repository or a \code{git_repository}
+object. Default is '.'}
 
 \item{name}{The name of the remote to remove}
 }

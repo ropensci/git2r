@@ -7,8 +7,8 @@
 punch_card(repo = ".", main = NULL, ...)
 }
 \arguments{
-\item{repo}{a path to a repository or a
-\code{\linkS4class{git_repository}} object. Default is '.'}
+\item{repo}{a path to a repository or a \code{git_repository}
+object. Default is '.'}
 
 \item{main}{Default title for the plot is "Punch card on repo:"
 and repository workdir basename. Supply a new title if you
