@@ -84,23 +84,29 @@ SEXP git2r_diff(SEXP repo, SEXP tree1, SEXP tree2, SEXP index, SEXP filename)
 	if (!Rf_isNull(tree2))
 	    git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
 	return git2r_diff_index_to_wd(repo, filename);
-    } else if (Rf_isNull(tree1) && c_index) {
+    }
+
+    if (Rf_isNull(tree1) && c_index) {
 	if (!Rf_isNull(tree2))
 	    git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
 	return git2r_diff_head_to_index(repo, filename);
-    } else if (!Rf_isNull(tree1) && Rf_isNull(tree2) && ! c_index) {
+    }
+
+    if (!Rf_isNull(tree1) && Rf_isNull(tree2) && !c_index) {
 	if (!Rf_isNull(repo))
 	    git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
 	return git2r_diff_tree_to_wd(tree1, filename);
-    } else if (!Rf_isNull(tree1) && Rf_isNull(tree2) && c_index) {
+    }
+
+    if (!Rf_isNull(tree1) && Rf_isNull(tree2) && c_index) {
 	if (!Rf_isNull(repo))
 	    git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
 	return git2r_diff_tree_to_index(tree1, filename);
-    } else {
-	if (!Rf_isNull(repo))
-	    git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
-	return git2r_diff_tree_to_tree(tree1, tree2, filename);
     }
+
+    if (!Rf_isNull(repo))
+        git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
+    return git2r_diff_tree_to_tree(tree1, tree2, filename);
 }
 
 /**

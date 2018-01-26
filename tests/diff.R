@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2017 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -14,7 +14,7 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library(git2r)
+library("git2r")
 
 ## For debugging
 sessionInfo()
@@ -39,13 +39,13 @@ diff_1 <- diff(repo)
 diff(repo, as_char=TRUE)
 diff(repo, as_char=TRUE, filename = file.path(path, "test.diff"))
 
-stopifnot(identical(diff_1@old, "index"))
-stopifnot(identical(diff_1@new, "workdir"))
-stopifnot(identical(length(diff_1@files), 1L))
-stopifnot(identical(diff_1@files[[1]]@old_file, "test.txt"))
-stopifnot(identical(diff_1@files[[1]]@new_file, "test.txt"))
-stopifnot(identical(length(diff_1@files[[1]]@hunks), 1L))
-stopifnot(identical(length(diff_1@files[[1]]@hunks[[1]]@lines), 4L))
+stopifnot(identical(diff_1$old, "index"))
+stopifnot(identical(diff_1$new, "workdir"))
+stopifnot(identical(length(diff_1$files), 1L))
+stopifnot(identical(diff_1$files[[1]]$old_file, "test.txt"))
+stopifnot(identical(diff_1$files[[1]]$new_file, "test.txt"))
+stopifnot(identical(length(diff_1$files[[1]]$hunks), 1L))
+stopifnot(identical(length(diff_1$files[[1]]$hunks[[1]]$lines), 4L))
 ## TODO: check actual diff
 
 ## Diff between index and HEAD is empty
@@ -53,18 +53,18 @@ diff_2 <- diff(repo, index=TRUE)
 diff(repo, as_char=TRUE)
 diff(repo, as_char=TRUE, filename = file.path(path, "test.diff"))
 
-stopifnot(identical(diff_2@old, "HEAD"))
-stopifnot(identical(diff_2@new, "index"))
-stopifnot(identical(diff_2@files, list()))
+stopifnot(identical(diff_2$old, "HEAD"))
+stopifnot(identical(diff_2$new, "index"))
+stopifnot(identical(diff_2$files, list()))
 
 ## Diff between tree and working dir, same as diff_1
 diff_3 <- diff(tree(commits(repo)[[1]]))
 diff(repo, as_char=TRUE)
 diff(repo, as_char=TRUE, filename = file.path(path, "test.diff"))
 
-stopifnot(identical(diff_3@old, tree(commits(repo)[[1]])))
-stopifnot(identical(diff_3@new, "workdir"))
-stopifnot(identical(diff_3@files, diff_1@files))
+stopifnot(identical(diff_3$old, tree(commits(repo)[[1]])))
+stopifnot(identical(diff_3$new, "workdir"))
+stopifnot(identical(diff_3$files, diff_1$files))
 
 ## Add changes, diff between index and HEAD is the same as diff_1
 add(repo, "test.txt")
@@ -72,18 +72,18 @@ diff_4 <- diff(repo, index=TRUE)
 diff(repo, as_char=TRUE)
 diff(repo, as_char=TRUE, filename = file.path(path, "test.diff"))
 
-stopifnot(identical(diff_4@old, "HEAD"))
-stopifnot(identical(diff_4@new, "index"))
-stopifnot(identical(diff_4@files, diff_1@files))
+stopifnot(identical(diff_4$old, "HEAD"))
+stopifnot(identical(diff_4$new, "index"))
+stopifnot(identical(diff_4$files, diff_1$files))
 
 ## Diff between tree and index
 diff_5 <- diff(tree(commits(repo)[[1]]), index=TRUE)
 diff(repo, as_char=TRUE)
 diff(repo, as_char=TRUE, filename = file.path(path, "test.diff"))
 
-stopifnot(identical(diff_5@old, tree(commits(repo)[[1]])))
-stopifnot(identical(diff_5@new, "index"))
-stopifnot(identical(diff_5@files, diff_1@files))
+stopifnot(identical(diff_5$old, tree(commits(repo)[[1]])))
+stopifnot(identical(diff_5$new, "index"))
+stopifnot(identical(diff_5$files, diff_1$files))
 
 ## Diff between two trees
 commit(repo, "Second commit")
@@ -93,9 +93,9 @@ diff_6 <- diff(tree_1, tree_2)
 diff(repo, as_char=TRUE)
 diff(repo, as_char=TRUE, filename = file.path(path, "test.diff"))
 
-stopifnot(identical(diff_6@old, tree_1))
-stopifnot(identical(diff_6@new, tree_2))
-stopifnot(identical(diff_6@files, diff_1@files))
+stopifnot(identical(diff_6$old, tree_1))
+stopifnot(identical(diff_6$new, tree_2))
+stopifnot(identical(diff_6$files, diff_1$files))
 
 ## Length of a diff
 stopifnot(identical(length(diff_1), 1L))
