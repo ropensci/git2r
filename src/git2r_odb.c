@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2017 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,7 +16,6 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <Rdefines.h>
 #include "git2.h"
 #include "buffer.h"
 
@@ -35,7 +34,7 @@
 SEXP git2r_odb_hash(SEXP data)
 {
     SEXP result;
-    int err = GIT_OK;
+    int error = GIT_OK;
     size_t len, i;
     char sha[GIT_OID_HEXSZ + 1];
     git_oid oid;
@@ -49,11 +48,11 @@ SEXP git2r_odb_hash(SEXP data)
         if (NA_STRING == STRING_ELT(data, i)) {
             SET_STRING_ELT(result, i, NA_STRING);
         } else {
-            err = git_odb_hash(&oid,
+            error = git_odb_hash(&oid,
                                CHAR(STRING_ELT(data, i)),
                                LENGTH(STRING_ELT(data, i)),
                                GIT_OBJ_BLOB);
-            if (err)
+            if (error)
                 break;
 
             git_oid_fmt(sha, &oid);
@@ -64,7 +63,7 @@ SEXP git2r_odb_hash(SEXP data)
 
     UNPROTECT(1);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -80,7 +79,7 @@ SEXP git2r_odb_hash(SEXP data)
 SEXP git2r_odb_hashfile(SEXP path)
 {
     SEXP result;
-    int err = GIT_OK;
+    int error = GIT_OK;
     size_t len, i;
     char sha[GIT_OID_HEXSZ + 1];
     git_oid oid;
@@ -94,10 +93,10 @@ SEXP git2r_odb_hashfile(SEXP path)
         if (NA_STRING == STRING_ELT(path, i)) {
             SET_STRING_ELT(result, i, NA_STRING);
         } else {
-            err = git_odb_hashfile(&oid,
+            error = git_odb_hashfile(&oid,
                                    CHAR(STRING_ELT(path, i)),
                                    GIT_OBJ_BLOB);
-            if (err)
+            if (error)
                 break;
 
             git_oid_fmt(sha, &oid);
@@ -108,7 +107,7 @@ SEXP git2r_odb_hashfile(SEXP path)
 
     UNPROTECT(1);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -165,14 +164,14 @@ static void git2r_add_object(
  */
 static int git2r_odb_objects_cb(const git_oid *oid, void *payload)
 {
-    int err;
+    int error;
     size_t len;
     git_otype type;
     git2r_odb_objects_cb_data *p = (git2r_odb_objects_cb_data*)payload;
 
-    err = git_odb_read_header(&len, &type, p->odb, oid);
-    if (err)
-        return err;
+    error = git_odb_read_header(&len, &type, p->odb, oid);
+    if (error)
+        return error;
 
     switch(type) {
     case GIT_OBJ_COMMIT:
@@ -208,7 +207,7 @@ static int git2r_odb_objects_cb(const git_oid *oid, void *payload)
  */
 SEXP git2r_odb_objects(SEXP repo)
 {
-    int i, err;
+    int i, error;
     SEXP result = R_NilValue;
     SEXP names = R_NilValue;
     git2r_odb_objects_cb_data cb_data = {0, R_NilValue, NULL};
@@ -219,14 +218,14 @@ SEXP git2r_odb_objects(SEXP repo)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git_repository_odb(&odb, repository);
-    if (err)
+    error = git_repository_odb(&odb, repository);
+    if (error)
         goto cleanup;
     cb_data.odb = odb;
 
     /* Count number of objects before creating the list */
-    err = git_odb_foreach(odb, &git2r_odb_objects_cb, &cb_data);
-    if (err)
+    error = git_odb_foreach(odb, &git2r_odb_objects_cb, &cb_data);
+    if (error)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(VECSXP, 3));
@@ -242,19 +241,16 @@ SEXP git2r_odb_objects(SEXP repo)
 
     cb_data.list = result;
     cb_data.n = 0;
-    err = git_odb_foreach(odb, &git2r_odb_objects_cb, &cb_data);
+    error = git_odb_foreach(odb, &git2r_odb_objects_cb, &cb_data);
 
 cleanup:
-    if (repository)
-        git_repository_free(repository);
-
-    if (odb)
-        git_odb_free(odb);
+    git_repository_free(repository);
+    git_odb_free(odb);
 
     if (!Rf_isNull(result))
         UNPROTECT(1);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -293,7 +289,7 @@ static int git2r_odb_add_blob(
     const char *author,
     double when)
 {
-    int err;
+    int error;
     int j = 0;
     size_t len;
     git_otype type;
@@ -311,9 +307,9 @@ static int git2r_odb_add_blob(
     SET_STRING_ELT(VECTOR_ELT(list, j++), i, Rf_mkChar(git_tree_entry_name(entry)));
 
     /* Length */
-    err = git_odb_read_header(&len, &type, odb, git_tree_entry_id(entry));
-    if (err)
-        return err;
+    error = git_odb_read_header(&len, &type, odb, git_tree_entry_id(entry));
+    if (error)
+        return error;
     INTEGER(VECTOR_ELT(list, j++))[i] = len;
 
     /* Commit sha */
@@ -347,7 +343,7 @@ static int git2r_odb_tree_blobs(
     double when,
     git2r_odb_blobs_cb_data *data)
 {
-    int err;
+    int error;
     size_t i, n;
 
     n = git_tree_entrycount(tree);
@@ -361,17 +357,17 @@ static int git2r_odb_tree_blobs(
             git_buf buf = GIT_BUF_INIT;
             git_tree *sub_tree = NULL;
 
-            err = git_tree_lookup(
+            error = git_tree_lookup(
                 &sub_tree,
                 data->repository,
                 git_tree_entry_id(entry));
-            if (err)
-                return err;
+            if (error)
+                return error;
 
-            err = git_buf_joinpath(&buf, path, git_tree_entry_name(entry));
+            error = git_buf_joinpath(&buf, path, git_tree_entry_name(entry));
 
-            if (GIT_OK == err) {
-                err = git2r_odb_tree_blobs(
+            if (GIT_OK == error) {
+                error = git2r_odb_tree_blobs(
                     sub_tree,
                     buf.ptr,
                     commit,
@@ -381,18 +377,16 @@ static int git2r_odb_tree_blobs(
             }
 
             git_buf_free(&buf);
+            git_tree_free(sub_tree);
 
-            if (sub_tree)
-                git_tree_free(sub_tree);
-
-            if (err)
-                return err;
+            if (error)
+                return error;
 
             break;
         }
         case GIT_OBJ_BLOB:
             if (!Rf_isNull(data->list)) {
-                err = git2r_odb_add_blob(
+                error = git2r_odb_add_blob(
                     entry,
                     data->odb,
                     data->list,
@@ -401,8 +395,8 @@ static int git2r_odb_tree_blobs(
                     commit,
                     author,
                     when);
-                if (err)
-                    return err;
+                if (error)
+                    return error;
             }
             data->n += 1;
             break;
@@ -423,14 +417,14 @@ static int git2r_odb_tree_blobs(
  */
 static int git2r_odb_blobs_cb(const git_oid *oid, void *payload)
 {
-    int err = GIT_OK;
+    int error = GIT_OK;
     size_t len;
     git_otype type;
     git2r_odb_blobs_cb_data *p = (git2r_odb_blobs_cb_data*)payload;
 
-    err = git_odb_read_header(&len, &type, p->odb, oid);
-    if (err)
-        return err;
+    error = git_odb_read_header(&len, &type, p->odb, oid);
+    if (error)
+        return error;
 
     if (GIT_OBJ_COMMIT == type) {
         const git_signature *author;
@@ -438,12 +432,12 @@ static int git2r_odb_blobs_cb(const git_oid *oid, void *payload)
         git_tree *tree = NULL;
         char sha[GIT_OID_HEXSZ + 1];
 
-        err = git_commit_lookup(&commit, p->repository, oid);
-        if (err)
+        error = git_commit_lookup(&commit, p->repository, oid);
+        if (error)
             goto cleanup;
 
-        err = git_commit_tree(&tree, commit);
-        if (err)
+        error = git_commit_tree(&tree, commit);
+        if (error)
             goto cleanup;
 
         git_oid_fmt(sha, oid);
@@ -452,7 +446,7 @@ static int git2r_odb_blobs_cb(const git_oid *oid, void *payload)
         author = git_commit_author(commit);
 
         /* Recursively iterate over all tree's */
-        err = git2r_odb_tree_blobs(
+        error = git2r_odb_tree_blobs(
             tree,
             "",
             sha,
@@ -461,14 +455,11 @@ static int git2r_odb_blobs_cb(const git_oid *oid, void *payload)
             p);
 
     cleanup:
-        if (commit)
-            git_commit_free(commit);
-
-        if (tree)
-            git_tree_free(tree);
+        git_commit_free(commit);
+        git_tree_free(tree);
     }
 
-    return err;
+    return error;
 }
 
 /**
@@ -482,7 +473,7 @@ static int git2r_odb_blobs_cb(const git_oid *oid, void *payload)
  */
 SEXP git2r_odb_blobs(SEXP repo)
 {
-    int i, err;
+    int i, error;
     SEXP result = R_NilValue;
     SEXP names = R_NilValue;
     git2r_odb_blobs_cb_data cb_data = {0, R_NilValue, NULL, NULL};
@@ -493,15 +484,15 @@ SEXP git2r_odb_blobs(SEXP repo)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git_repository_odb(&odb, repository);
-    if (err)
+    error = git_repository_odb(&odb, repository);
+    if (error)
         goto cleanup;
     cb_data.odb = odb;
 
     /* Count number of blobs before creating the list */
     cb_data.repository = repository;
-    err = git_odb_foreach(odb, &git2r_odb_blobs_cb, &cb_data);
-    if (err)
+    error = git_odb_foreach(odb, &git2r_odb_blobs_cb, &cb_data);
+    if (error)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(VECSXP, 7));
@@ -525,19 +516,16 @@ SEXP git2r_odb_blobs(SEXP repo)
 
     cb_data.list = result;
     cb_data.n = 0;
-    err = git_odb_foreach(odb, &git2r_odb_blobs_cb, &cb_data);
+    error = git_odb_foreach(odb, &git2r_odb_blobs_cb, &cb_data);
 
 cleanup:
-    if (repository)
-        git_repository_free(repository);
-
-    if (odb)
-        git_odb_free(odb);
+    git_repository_free(repository);
+    git_odb_free(odb);
 
     if (!Rf_isNull(result))
         UNPROTECT(1);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;

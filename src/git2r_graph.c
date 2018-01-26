@@ -16,11 +16,11 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <Rdefines.h>
 #include "git2.h"
 
 #include "git2r_arg.h"
 #include "git2r_error.h"
+#include "git2r_objects.h"
 #include "git2r_oid.h"
 #include "git2r_repository.h"
 
@@ -35,7 +35,7 @@
 SEXP git2r_graph_ahead_behind(SEXP local, SEXP upstream)
 {
     size_t ahead, behind;
-    int err, nprotect = 0;
+    int error, nprotect = 0;
     SEXP result = R_NilValue;
     SEXP local_repo, local_sha;
     SEXP upstream_repo, upstream_sha;
@@ -47,8 +47,8 @@ SEXP git2r_graph_ahead_behind(SEXP local, SEXP upstream)
     if (git2r_arg_check_commit(upstream))
         git2r_error(__func__, NULL, "'upstream'", git2r_err_commit_arg);
 
-    local_repo = GET_SLOT(local, Rf_install("repo"));
-    upstream_repo = GET_SLOT(upstream, Rf_install("repo"));
+    local_repo = git2r_get_list_element(local, "repo");
+    upstream_repo = git2r_get_list_element(upstream, "repo");
     if (git2r_arg_check_same_repo(local_repo, upstream_repo))
         git2r_error(__func__, NULL, "'local' and 'upstream' not from same repository", NULL);
 
@@ -56,15 +56,15 @@ SEXP git2r_graph_ahead_behind(SEXP local, SEXP upstream)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    local_sha = GET_SLOT(local, Rf_install("sha"));
+    local_sha = git2r_get_list_element(local, "sha");
     git2r_oid_from_sha_sexp(local_sha, &local_oid);
 
-    upstream_sha = GET_SLOT(upstream, Rf_install("sha"));
+    upstream_sha = git2r_get_list_element(upstream, "sha");
     git2r_oid_from_sha_sexp(upstream_sha, &upstream_oid);
 
-    err = git_graph_ahead_behind(&ahead, &behind, repository, &local_oid,
+    error = git_graph_ahead_behind(&ahead, &behind, repository, &local_oid,
                                  &upstream_oid);
-    if (err)
+    if (error)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(INTSXP, 2));
@@ -73,13 +73,12 @@ SEXP git2r_graph_ahead_behind(SEXP local, SEXP upstream)
     INTEGER(result)[1] = behind;
 
 cleanup:
-    if (repository)
-        git_repository_free(repository);
+    git_repository_free(repository);
 
     if (nprotect)
         UNPROTECT(nprotect);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -94,7 +93,7 @@ cleanup:
  */
 SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor)
 {
-    int err, descendant_of = 0;
+    int error, descendant_of = 0;
     SEXP commit_repo, commit_sha;
     SEXP ancestor_repo, ancestor_sha;
     git_oid commit_oid, ancestor_oid;
@@ -105,8 +104,8 @@ SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor)
     if (git2r_arg_check_commit(ancestor))
         git2r_error(__func__, NULL, "'ancestor'", git2r_err_commit_arg);
 
-    commit_repo = GET_SLOT(commit, Rf_install("repo"));
-    ancestor_repo = GET_SLOT(ancestor, Rf_install("repo"));
+    commit_repo = git2r_get_list_element(commit, "repo");
+    ancestor_repo = git2r_get_list_element(ancestor, "repo");
     if (git2r_arg_check_same_repo(commit_repo, ancestor_repo))
         git2r_error(__func__, NULL, "'commit' and 'ancestor' not from same repository", NULL);
 
@@ -114,23 +113,22 @@ SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    commit_sha = GET_SLOT(commit, Rf_install("sha"));
+    commit_sha = git2r_get_list_element(commit, "sha");
     git2r_oid_from_sha_sexp(commit_sha, &commit_oid);
 
-    ancestor_sha = GET_SLOT(ancestor, Rf_install("sha"));
+    ancestor_sha = git2r_get_list_element(ancestor, "sha");
     git2r_oid_from_sha_sexp(ancestor_sha, &ancestor_oid);
 
-    err = git_graph_descendant_of(repository, &commit_oid, &ancestor_oid);
-    if (0 > err || 1 < err)
+    error = git_graph_descendant_of(repository, &commit_oid, &ancestor_oid);
+    if (0 > error || 1 < error)
         goto cleanup;
-    descendant_of = err;
-    err = 0;
+    descendant_of = error;
+    error = 0;
 
 cleanup:
-    if (repository)
-        git_repository_free(repository);
+    git_repository_free(repository);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return Rf_ScalarLogical(descendant_of);

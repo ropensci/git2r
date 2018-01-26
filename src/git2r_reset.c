@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2016 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,12 +16,12 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <Rdefines.h>
 #include "git2.h"
 
 #include "git2r_arg.h"
 #include "git2r_commit.h"
 #include "git2r_error.h"
+#include "git2r_objects.h"
 #include "git2r_repository.h"
 #include "git2r_reset.h"
 #include "git2r_signature.h"
@@ -39,7 +39,7 @@
  */
 SEXP git2r_reset(SEXP commit, SEXP reset_type)
 {
-    int err;
+    int error;
     SEXP repo;
     git_commit *target = NULL;
     git_repository *repository = NULL;
@@ -49,29 +49,26 @@ SEXP git2r_reset(SEXP commit, SEXP reset_type)
     if (git2r_arg_check_integer(reset_type))
         git2r_error(__func__, NULL, "'reset_type'", git2r_err_integer_arg);
 
-    repo = GET_SLOT(commit, Rf_install("repo"));
+    repo = git2r_get_list_element(commit, "repo");
     repository = git2r_repository_open(repo);
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git2r_commit_lookup(&target, repository, commit);
-    if (err)
+    error = git2r_commit_lookup(&target, repository, commit);
+    if (error)
         goto cleanup;
 
-    err = git_reset(
+    error = git_reset(
         repository,
         (git_object*)target,
         INTEGER(reset_type)[0],
         NULL);
 
 cleanup:
-    if (target)
-        git_commit_free(target);
+    git_commit_free(target);
+    git_repository_free(repository);
 
-    if (repository)
-        git_repository_free(repository);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return R_NilValue;
@@ -86,7 +83,7 @@ cleanup:
  */
 SEXP git2r_reset_default(SEXP repo, SEXP path)
 {
-    int err = 0;
+    int error = 0;
     git_strarray pathspec = {0};
     git_reference *head = NULL;
     git_object *head_commit = NULL;
@@ -99,34 +96,27 @@ SEXP git2r_reset_default(SEXP repo, SEXP path)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git2r_copy_string_vec(&pathspec, path);
-    if (err || !pathspec.count)
+    error = git2r_copy_string_vec(&pathspec, path);
+    if (error || !pathspec.count)
         goto cleanup;
 
-    err = git_repository_head(&head, repository);
-    if (err)
+    error = git_repository_head(&head, repository);
+    if (error)
         goto cleanup;
 
-    err = git_reference_peel(&head_commit, head, GIT_OBJ_COMMIT);
-    if (err)
+    error = git_reference_peel(&head_commit, head, GIT_OBJ_COMMIT);
+    if (error)
         goto cleanup;
 
-    err = git_reset_default(repository, head_commit, &pathspec);
+    error = git_reset_default(repository, head_commit, &pathspec);
 
 cleanup:
-    if (head)
-        git_reference_free(head);
+    git_reference_free(head);
+    git_object_free(head_commit);
+    free(pathspec.strings);
+    git_repository_free(repository);
 
-    if (head_commit)
-        git_object_free(head_commit);
-
-    if (pathspec.strings)
-        free(pathspec.strings);
-
-    if (repository)
-        git_repository_free(repository);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return R_NilValue;
