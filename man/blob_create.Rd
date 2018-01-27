@@ -21,7 +21,7 @@ created is relative to the repository's working dir. Default
 is TRUE.}
 }
 \value{
-list of S4 class git_blob \code{objects}
+list of S3 class git_blob \code{objects}
 }
 \description{
 Read a file from the filesystem and write its content to the

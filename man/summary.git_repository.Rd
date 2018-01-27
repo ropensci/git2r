@@ -4,7 +4,7 @@
 \alias{summary.git_repository}
 \title{Summary of repository}
 \usage{
-summary.git_repository(object, ...)
+\method{summary}{git_repository}(object, ...)
 }
 \arguments{
 \item{object}{The repository \code{object}}

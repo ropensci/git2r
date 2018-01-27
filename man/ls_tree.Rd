@@ -8,14 +8,13 @@ ls_tree(tree = NULL, repo = ".", recursive = TRUE)
 }
 \arguments{
 \item{tree}{default (\code{NULL}) is the tree of the last commit
-in \code{repo}. Can also be a \code{\linkS4class{git_tree}}
-object or a character that identifies a tree in the repository
-(see \sQuote{Examples}).}
+in \code{repo}. Can also be a \code{git_tree} object or a
+character that identifies a tree in the repository (see
+\sQuote{Examples}).}
 
-\item{repo}{never used if \code{tree} is a
-\code{\linkS4class{git_tree}} object. A
-\code{\linkS4class{git_repository}} object, or a path (default
-= '.') to a repository.}
+\item{repo}{never used if \code{tree} is a \code{git_tree}
+object. A \code{git_repository} object, or a path (default =
+'.') to a repository.}
 
 \item{recursive}{default is to recurse into sub-trees.}
 }
