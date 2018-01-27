@@ -29,7 +29,7 @@
 ##' @param relative TRUE if the file(s) from which the blob will be
 ##'     created is relative to the repository's working dir. Default
 ##'     is TRUE.
-##' @return list of S4 class git_blob \code{objects}
+##' @return list of S3 class git_blob \code{objects}
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -173,11 +173,10 @@ is_binary <- function(blob = NULL) {
     .Call(git2r_blob_is_binary, blob)
 }
 
-##' Check if object is S4 class git_blob
+##' Check if object is S3 class git_blob
 ##'
-##' @param object Check if object is S4 class git_blob
-##' @return TRUE if object is S4 class git_blob, else FALSE
-##' @keywords methods
+##' @param object Check if object is S3 class git_blob
+##' @return TRUE if object is S3 class git_blob, else FALSE
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -203,7 +202,31 @@ is_blob <- function(object) {
     is.git_blob(object)
 }
 
+##' Check if object is S3 class git_blob
+##'
+##' @param object Check if object is S3 class git_blob
+##' @return TRUE if object is S3 class git_blob, else FALSE
 ##' @export
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a user
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##'
+##' ## Commit a text file
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit_1 <- commit(repo, "First commit message")
+##' blob_1 <- tree(commit_1)["example.txt"]
+##'
+##' ## Check if blob
+##' is_blob(commit_1)
+##' is_blob(blob_1)
+##' }
 is.git_blob <- function(x) {
     inherits(x, "git_blob")
 }
