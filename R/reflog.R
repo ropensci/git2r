@@ -63,17 +63,15 @@ reflog <- function(repo = ".", refname = "HEAD") {
 ##' @export
 print.git_reflog <- function(x, ...)
 {
-    lapply(x, show)
+    lapply(x, print)
     invisible(NULL)
 }
 
-##' Brief summary of a reflog entry
+##' Print a reflog entry
 ##'
-##' @aliases show,git_reflog_entry-methods
-##' @docType methods
-##' @param object The reflog entry \code{object}
+##' @param x The reflog entry
+##' @param ... Unused
 ##' @return None (invisible 'NULL').
-##' @keywords methods
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -91,14 +89,10 @@ print.git_reflog <- function(x, ...)
 ##' ## View repository HEAD reflog
 ##' reflog(repo)
 ##' }
-setMethod("show",
-          signature(object = "git_reflog_entry"),
-          function(object)
-          {
-              cat(sprintf("[%s] %s@{%i}: %s\n",
-                          substring(object@sha, 1, 7),
-                          object@refname,
-                          object@index,
-                          object@message))
-          }
-)
+print.git_reflog_entry <- function(x, ...) {
+    cat(sprintf("[%s] %s@{%i}: %s\n",
+                substring(x$sha, 1, 7),
+                x$refname,
+                x$index,
+                x$message))
+}

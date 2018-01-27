@@ -29,19 +29,19 @@ print.git_diff <- function(x, ...) {
     if (is.character(x$old)) {
         cat(x$old, "\n")
     } else if (is.git_tree(x$old)) {
-        show(x$old)
+        print(x$old)
     } else {
         cat("\n")
-        show(x$old)
+        print(x$old)
     }
     cat("New:  ")
     if (is.character(x$new)) {
         cat(x$new, "\n")
     } else if (is.git_tree(x$new)) {
-        show(x$new)
+        print(x$new)
     } else {
         cat("\n")
-        show(x$new)
+        print(x$new)
     }
 }
 
@@ -75,7 +75,7 @@ hunks_per_file <- function(diff) {
 
 ##' @export
 summary.git_diff <- function(object, ...) {
-    show(object)
+    print(object)
     if (length(object) > 0) {
         plpf <- print_lines_per_file(object)
         hpf <- hunks_per_file(object)

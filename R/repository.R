@@ -47,12 +47,10 @@
 ##'   }
 ##'
 ##' }
-##' @name coerce-git_repository-method
-##' @aliases coerce,git_repository,data.frame-method
-##' @docType methods
-##' @param from The repository \code{object}
+##' @param x The repository \code{object}
+##' @param ... Additional arguments. Not used.
 ##' @return \code{data.frame}
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -78,13 +76,9 @@
 ##' df <- as(repo, "data.frame")
 ##' df
 ##' }
-setAs(from="git_repository",
-      to="data.frame",
-      def=function(from)
-      {
-          do.call("rbind", lapply(commits(from), as, "data.frame"))
-      }
-)
+as.data.frame.git_repository <- function(x, ...) {
+    do.call("rbind", lapply(commits(x), as.data.frame))
+}
 
 ##' Open a repository
 ##'
@@ -603,7 +597,7 @@ print.git_repository <- function(x, ...) {
 ##' summary(repo)
 ##'}
 summary.git_repository <- function(object, ...) {
-    show(object)
+    print(object)
     cat("\n")
 
     n_branches <- sum(!is.na(unique(sapply(branches(object),
@@ -644,7 +638,7 @@ summary.git_repository <- function(object, ...) {
                 n_staged))
 
     cat("\nLatest commits:\n")
-    lapply(commits(object, n = 5), show)
+    lapply(commits(object, n = 5), print)
 
     invisible(NULL)
 }
@@ -750,7 +744,7 @@ lookup_repository <- function(repo = NULL) {
         repo <- discover_repository(getwd())
         if (is.null(repo))
             stop("The working directory is not in a git repository")
-    } else if (is(object = repo, class2 = "git_repository")) {
+    } else if (is.git_repository(repo)) {
         return(repo)
     }
 

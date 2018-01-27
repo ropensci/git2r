@@ -48,31 +48,7 @@ setAs(from = "POSIXlt",
       }
 )
 
-##' Brief summary of \code{git_time}
-##'
-##' @aliases show,git_time-methods
-##' @docType methods
-##' @param object The time \code{object}
-##' @return None (invisible 'NULL').
-##' @keywords methods
 ##' @export
-##' @examples
-##' \dontrun{
-##' ## Initialize a temporary repository
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##'
-##' ## Create a user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
-##'
-##' ## Brief summary of git_time from the default signature
-##' default_signature(repo)@@when
-##' }
-setMethod("show",
-          signature(object = "git_time"),
-          function(object)
-          {
-              cat(sprintf("%s\n", as(object, "character")))
-          }
-)
+print.git_time <- function(x, ...) {
+    cat(sprintf("%s\n", as.character(x)))
+}
