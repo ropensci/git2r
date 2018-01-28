@@ -118,7 +118,7 @@ remote_ls <- function(name = NULL, repo = NULL, credentials = NULL) {
     ## repo to be NULL, see 'git2r_remote_ls'.
     if (is.null(repo)) {
         path <- tempdir()
-        repo <- git2r::init(path)
+        repo <- init(path)
         on.exit(unlink(file.path(path, ".git"), recursive = TRUE))
     } else {
         repo <- lookup_repository(repo)

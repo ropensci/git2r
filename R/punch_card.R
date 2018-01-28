@@ -27,6 +27,7 @@
 ##' @importFrom graphics plot.new
 ##' @importFrom graphics plot.window
 ##' @importFrom graphics symbols
+##' @importFrom graphics title
 ##' @export
 ##' @examples
 ##' \dontrun{

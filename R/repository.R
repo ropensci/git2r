@@ -553,7 +553,7 @@ print.git_repository <- function(x, ...) {
 
         cat(sprintf("Head:     [%s] %s: %s\n",
                     substring(h$sha, 1, 7),
-                    substring(as(h$author$when, "character"), 1, 10),
+                    substring(as.character(h$author$when), 1, 10),
                     h$summary))
     }
 }

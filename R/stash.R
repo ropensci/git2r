@@ -63,7 +63,7 @@
 ##' stash_list(repo)
 ##' }
 stash_drop <- function(object = ".", index = 0) {
-    if (is(object, "git_stash")) {
+    if (inherits(object, "git_stash")) {
         ## Determine the index of the stash in the stash list
         i <- match(object@sha, vapply(stash_list(object@repo),
                                       "[[", character(1), "sha"))
