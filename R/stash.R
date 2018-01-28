@@ -65,13 +65,13 @@
 stash_drop <- function(object = ".", index = 0) {
     if (inherits(object, "git_stash")) {
         ## Determine the index of the stash in the stash list
-        i <- match(object@sha, vapply(stash_list(object@repo),
+        i <- match(object$sha, vapply(stash_list(object$repo),
                                       "[[", character(1), "sha"))
 
         ## The stash list is zero-based
         index <- i - 1L
 
-        object <- object@repo
+        object <- object$repo
     } else {
         object <- lookup_repository(object)
     }

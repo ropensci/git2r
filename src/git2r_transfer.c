@@ -16,8 +16,6 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <Rdefines.h>
-
 #include "git2r_objects.h"
 #include "git2r_transfer.h"
 
