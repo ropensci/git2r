@@ -135,14 +135,14 @@ tools::assertError(commits(repo, n = 2.2))
 tools::assertError(commits(repo, n = "2"))
 
 ## Check to coerce repository to data.frame
-df <- as(repo, "data.frame")
+df <- as.data.frame(repo)
 stopifnot(identical(dim(df), c(8L, 6L)))
 stopifnot(identical(names(df), c("sha", "summary", "message",
                                  "author", "email", "when")))
 
 ## Set working directory to path and check commits
 setwd(path)
-stopifnot(identical(last_commit()@sha, commits(repo, n = 1)[[1]]@sha))
+stopifnot(identical(last_commit()$sha, commits(repo, n = 1)[[1]]$sha))
 stopifnot(identical(length(commits()), 8L))
 stopifnot(identical(length(commits(n = -1)), 8L))
 stopifnot(identical(length(commits(n = 2)), 2L))
@@ -175,7 +175,7 @@ stopifnot(length(grep("'commit' must be an S3 class git_commit",
 res <- tools::assertError(.Call(git2r:::git2r_commit_tree, repo))
 stopifnot(length(grep("'commit' must be an S3 class git_commit",
                       res[[1]]$message)) > 0)
-commit_1@sha <- NA_character_
+commit_1$sha <- NA_character_
 res <- tools::assertError(.Call(git2r:::git2r_commit_tree, commit_1))
 stopifnot(length(grep("'commit' must be an S3 class git_commit",
                       res[[1]]$message)) > 0)
