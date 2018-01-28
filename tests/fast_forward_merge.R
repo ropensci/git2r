@@ -45,11 +45,11 @@ commit_2 <- commit(repo, "Second commit message")
 
 # Checkout master and merge
 b <- branches(repo)
-checkout(b[sapply(b, slot, "name") == "master"][[1]], force=TRUE)
-m <- merge(b[sapply(b, slot, "name") == "test"][[1]])
+checkout(b[sapply(b, "[", "name") == "master"][[1]], force=TRUE)
+m <- merge(b[sapply(b, "[", "name") == "test"][[1]])
 
 # Check merge
-stopifnot(is(object = m, class2 = "git_merge_result"))
+stopifnot(inherits(m, "git_merge_result"))
 stopifnot(identical(m$up_to_date, FALSE))
 stopifnot(identical(m$fast_forward, TRUE))
 stopifnot(identical(m$conflicts, FALSE))
@@ -58,7 +58,7 @@ stopifnot(identical(length(commits(repo)), 2L))
 
 # Check reflog
 r <- reflog(repo)
-stopifnot(identical(r[[1]]@message, "merge test: Fast-forward"))
+stopifnot(identical(r[[1]]$message, "merge test: Fast-forward"))
 
 ## Cleanup
 unlink(path, recursive=TRUE)
