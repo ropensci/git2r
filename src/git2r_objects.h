@@ -134,6 +134,16 @@ enum {
     git2r_S3_item__git_reference__target,
     git2r_S3_item__git_reference__shorthand};
 
+extern const char *git2r_S3_class__git_reflog_entry;
+extern const char *git2r_S3_items__git_reflog_entry[];
+enum {
+    git2r_S3_item__git_reflog_entry__sha,
+    git2r_S3_item__git_reflog_entry__message,
+    git2r_S3_item__git_reflog_entry__index,
+    git2r_S3_item__git_reflog_entry__committer,
+    git2r_S3_item__git_reflog_entry__refname,
+    git2r_S3_item__git_reflog_entry__repo};
+
 extern const char *git2r_S3_class__git_repository;
 extern const char *git2r_S3_items__git_repository[];
 enum {

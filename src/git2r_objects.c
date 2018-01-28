@@ -74,6 +74,10 @@ const char *git2r_S3_class__git_reference = "git_reference";
 const char *git2r_S3_items__git_reference[] = {
     "name", "type", "sha", "target", "shorthand", ""};
 
+const char *git2r_S3_class__git_reflog_entry = "git_reflog_entry";
+const char *git2r_S3_items__git_reflog_entry[] = {
+    "sha", "message", "index", "committer", "refname", "repo", ""};
+
 const char *git2r_S3_class__git_repository = "git_repository";
 const char *git2r_S3_items__git_repository[] = {
     "path", ""};
