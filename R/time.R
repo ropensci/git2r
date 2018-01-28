@@ -14,23 +14,15 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-setAs(from="git_time",
-      to="character",
-      def=function(from)
-      {
-          as.character(as(from, "POSIXct"))
-      }
-)
+##' @export
+as.character.git_time <- function(x, ...) {
+    as.character(as.POSIXct(x))
+}
 
-setAs(from="git_time",
-      to="POSIXct",
-      def=function(from)
-      {
-          as.POSIXct(from@time + from@offset*60,
-                     origin="1970-01-01",
-                     tz="GMT")
-      }
-)
+##' @export
+as.POSIXct.git_time <- function(x, ...) {
+    as.POSIXct(x$time + x$offset*60, origin = "1970-01-01", tz = "GMT")
+}
 
 setAs(from = "POSIXlt",
       to   = "git_time",
@@ -42,9 +34,8 @@ setAs(from = "POSIXlt",
               offset <- from$gmtoff / 60
           }
 
-          new("git_time",
-              time   = as.numeric(from),
-              offset = offset)
+          structure(list(time = as.numeric(from), offset = offset),
+                    class = "git_time")
       }
 )
 
