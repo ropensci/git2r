@@ -293,7 +293,7 @@ length.git_tree <- function(x) {
 ##' is_tree(tree_1)
 ##' }
 is_tree <- function(object) {
-    inherits(x, "git_tree")
+    inherits(object, "git_tree")
 }
 
 ##' List the contents of a tree object
