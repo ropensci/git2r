@@ -14,7 +14,7 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library(git2r)
+library("git2r")
 
 ## For debugging
 sessionInfo()
@@ -40,11 +40,11 @@ commit.1 <- commit(repo, "Commit message")
 ## Check that reflog is not empry
 stopifnot(identical(length(reflog(repo)), 1L))
 reflog_entry <- reflog(repo)[[1]]
-stopifnot(identical(reflog_entry@sha, commit.1@sha))
-stopifnot(identical(reflog_entry@refname, "HEAD"))
-stopifnot(identical(reflog_entry@index, 0L))
-stopifnot(identical(reflog_entry@committer@email, "alice@example.org"))
-stopifnot(identical(reflog_entry@message, "commit (initial): Commit message"))
+stopifnot(identical(reflog_entry$sha, commit.1$sha))
+stopifnot(identical(reflog_entry$refname, "HEAD"))
+stopifnot(identical(reflog_entry$index, 0L))
+stopifnot(identical(reflog_entry$committer$email, "alice@example.org"))
+stopifnot(identical(reflog_entry$message, "commit (initial): Commit message"))
 
 ## Check printing
 reflog(repo)

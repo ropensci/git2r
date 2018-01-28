@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -14,29 +14,10 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library(git2r)
+library("git2r")
 
 ## For debugging
 sessionInfo()
-
-## Check validity of S4 class git_time
-tools::assertError(validObject(new("git_time")))
-
-tools::assertError(validObject(new("git_time",
-                                   time = numeric(0),
-                                   offset = 1)))
-
-tools::assertError(validObject(new("git_time",
-                                   time = c(1, 2),
-                                   offset = 1)))
-
-tools::assertError(validObject(new("git_time",
-                                   time = 1,
-                                   offset = numeric(0))))
-
-tools::assertError(validObject(new("git_time",
-                                   time=1,
-                                   offset=c(1, 2))))
 
 ## Test to coerce
 git_t <- new("git_time", time=1395567947, offset=60)
