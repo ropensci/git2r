@@ -120,7 +120,7 @@ merge_named_branch <- function(repo, branch, commit_on_success, merger) {
 merge <- function(x = ".", y = NULL, commit_on_success = TRUE, merger = NULL) {
     if (is_branch(x)) {
         if (is.null(merger))
-            merger <- default_signature(x@repo)
+            merger <- default_signature(x$repo)
         return(merge_branch(x, commit_on_success, merger))
     }
 
