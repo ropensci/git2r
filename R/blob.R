@@ -199,36 +199,7 @@ is_binary <- function(blob = NULL) {
 ##' is_blob(blob_1)
 ##' }
 is_blob <- function(object) {
-    is.git_blob(object)
-}
-
-##' Check if object is S3 class git_blob
-##'
-##' @param object Check if object is S3 class git_blob
-##' @return TRUE if object is S3 class git_blob, else FALSE
-##' @export
-##' @examples
-##' \dontrun{
-##' ## Initialize a temporary repository
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##'
-##' ## Create a user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
-##'
-##' ## Commit a text file
-##' writeLines("Hello world!", file.path(path, "example.txt"))
-##' add(repo, "example.txt")
-##' commit_1 <- commit(repo, "First commit message")
-##' blob_1 <- tree(commit_1)["example.txt"]
-##'
-##' ## Check if blob
-##' is_blob(commit_1)
-##' is_blob(blob_1)
-##' }
-is.git_blob <- function(x) {
-    inherits(x, "git_blob")
+    inherits(object, "git_blob")
 }
 
 ##' Size in bytes of the contents of a blob

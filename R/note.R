@@ -211,7 +211,7 @@ note_remove <- function(note      = NULL,
                         author    = NULL,
                         committer = NULL)
 {
-    if (!is.git_note(note))
+    if (!inherits(x, "git_note"))
         stop("'note' is not a git_note")
     if (is.null(author))
         author <- default_signature(note$repo)
@@ -219,11 +219,6 @@ note_remove <- function(note      = NULL,
         committer <- default_signature(note$repo)
     .Call(git2r_note_remove, note, author, committer)
     invisible(NULL)
-}
-
-##' @export
-is.git_note <- function(x) {
-    inherits(x, "git_note")
 }
 
 ##' @export

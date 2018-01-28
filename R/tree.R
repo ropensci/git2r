@@ -293,35 +293,6 @@ length.git_tree <- function(x) {
 ##' is_tree(tree_1)
 ##' }
 is_tree <- function(object) {
-    is.git_tree(object)
-}
-
-##' Check if object is S3 class git_tree
-##'
-##' @param x Check if \code{x} is S3 class git_tree
-##' @return TRUE if \code{x} is S3 class git_tree, else FALSE
-##' @export
-##' @examples
-##' \dontrun{
-##' ## Initialize a temporary repository
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##'
-##' ## Create a user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
-##'
-##' ## Commit a text file
-##' writeLines("Hello world!", file.path(path, "example.txt"))
-##' add(repo, "example.txt")
-##' commit_1 <- commit(repo, "First commit message")
-##' tree_1 <- tree(commit_1)
-##'
-##' ## Check if tree
-##' is_tree(commit_1)
-##' is_tree(tree_1)
-##' }
-is.git_tree <- function(x) {
     inherits(x, "git_tree")
 }
 

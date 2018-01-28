@@ -744,7 +744,7 @@ lookup_repository <- function(repo = NULL) {
         repo <- discover_repository(getwd())
         if (is.null(repo))
             stop("The working directory is not in a git repository")
-    } else if (is.git_repository(repo)) {
+    } else if (inherits(repo, "git_repository")) {
         return(repo)
     }
 

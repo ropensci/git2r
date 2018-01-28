@@ -28,7 +28,7 @@ print.git_diff <- function(x, ...) {
     cat("Old:  ")
     if (is.character(x$old)) {
         cat(x$old, "\n")
-    } else if (is.git_tree(x$old)) {
+    } else if (inherits(x$old, "git_tree")) {
         print(x$old)
     } else {
         cat("\n")
@@ -37,7 +37,7 @@ print.git_diff <- function(x, ...) {
     cat("New:  ")
     if (is.character(x$new)) {
         cat(x$new, "\n")
-    } else if (is.git_tree(x$new)) {
+    } else if (inherits(x$new, "git_tree")) {
         print(x$new)
     } else {
         cat("\n")
@@ -229,7 +229,7 @@ diff.git_tree <- function(x,
     }
 
     if (!is.null(new_tree)) {
-        if (!is.git_tree(new_tree)) {
+        if (!inherits(new_tree, "git_tree")) {
             stop("Not a git tree")
         }
         if (x$repo$path != new_tree$repo$path) {

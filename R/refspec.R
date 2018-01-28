@@ -24,7 +24,7 @@
 ##' vector).
 ##' @noRd
 get_refspec <- function(repo = NULL, remote = NULL, spec = NULL, opts = NULL) {
-    stopifnot(is(object = repo, class2 = "git_repository"))
+    stopifnot(inherits(repo, "git_repository"))
 
     if (is_detached(repo))
         stop("You are not currently on a branch.")
