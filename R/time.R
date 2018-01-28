@@ -24,20 +24,20 @@ as.POSIXct.git_time <- function(x, ...) {
     as.POSIXct(x$time + x$offset*60, origin = "1970-01-01", tz = "GMT")
 }
 
-setAs(from = "POSIXlt",
-      to   = "git_time",
-      def=function(from)
-      {
-          if (is.null(from$gmtoff) || is.na(from$gmtoff)) {
-              offset <- 0
-          } else {
-              offset <- from$gmtoff / 60
-          }
+## setAs(from = "POSIXlt",
+##       to   = "git_time",
+##       def=function(from)
+##       {
+##           if (is.null(from$gmtoff) || is.na(from$gmtoff)) {
+##               offset <- 0
+##           } else {
+##               offset <- from$gmtoff / 60
+##           }
 
-          structure(list(time = as.numeric(from), offset = offset),
-                    class = "git_time")
-      }
-)
+##           structure(list(time = as.numeric(from), offset = offset),
+##                     class = "git_time")
+##       }
+## )
 
 ##' @export
 print.git_time <- function(x, ...) {

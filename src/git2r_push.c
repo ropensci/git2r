@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2016 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,7 +16,6 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <Rdefines.h>
 #include "git2.h"
 
 #include "git2r_arg.h"
@@ -53,7 +52,7 @@ static int git2r_nothing_to_push(SEXP refspec)
 /**
  * Push
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param name The remote to push to
  * @param refspec The string vector of refspec to push
  * @param credentials The credentials for remote repository access.
@@ -61,7 +60,7 @@ static int git2r_nothing_to_push(SEXP refspec)
  */
 SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP credentials)
 {
-    int err;
+    int error;
     git_remote *remote = NULL;
     git_repository *repository = NULL;
     git_strarray c_refspecs = {0};
@@ -82,23 +81,22 @@ SEXP git2r_push(SEXP repo, SEXP name, SEXP refspec, SEXP credentials)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git_remote_lookup(&remote, repository, CHAR(STRING_ELT(name, 0)));
-    if (err)
+    error = git_remote_lookup(&remote, repository, CHAR(STRING_ELT(name, 0)));
+    if (error)
         goto cleanup;
 
     payload.credentials = credentials;
     opts.callbacks.payload = &payload;
     opts.callbacks.credentials = &git2r_cred_acquire_cb;
 
-    err = git2r_copy_string_vec(&c_refspecs, refspec);
-    if (err)
+    error = git2r_copy_string_vec(&c_refspecs, refspec);
+    if (error)
         goto cleanup;
 
-    err = git_remote_push(remote, &c_refspecs, &opts);
+    error = git_remote_push(remote, &c_refspecs, &opts);
 
 cleanup:
-    if (c_refspecs.strings)
-        free(c_refspecs.strings);
+    free(c_refspecs.strings);
 
     if (remote) {
         if (git_remote_connected(remote))
@@ -106,10 +104,9 @@ cleanup:
         git_remote_free(remote);
     }
 
-    if (repository)
-        git_repository_free(repository);
+    git_repository_free(repository);
 
-    if (err)
+    if (error)
         git2r_error(
             __func__,
             giterr_last(),
