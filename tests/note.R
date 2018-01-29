@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -14,7 +14,7 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library(git2r)
+library("git2r")
 
 ## For debugging
 sessionInfo()
@@ -70,11 +70,11 @@ stopifnot(identical(length(notes(repo, ref="review")), 0L))
 ## Create note on blob and tree
 tree.1 <- tree(commit.1)
 note.7 <- note_create(tree.1, "Note-7")
-stopifnot(is(object = lookup(repo, note.7@annotated), class2 = "git_tree"))
+stopifnot(is(object = lookup(repo, note.7$annotated), class2 = "git_tree"))
 stopifnot(identical(length(notes(repo)), 2L))
-blob.1 <- lookup(repo, tree.1@id[1])
+blob.1 <- lookup(repo, tree.1$id[1])
 note.8 <- note_create(blob.1, "Note-8")
-stopifnot(is(object = lookup(repo, note.8@annotated), class2 = "git_blob"))
+stopifnot(is(object = lookup(repo, note.8$annotated), class2 = "git_blob"))
 stopifnot(identical(length(notes(repo)), 3L))
 
 ## Cleanup

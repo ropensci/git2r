@@ -57,19 +57,19 @@ stopifnot(identical(merge_base(commit_2, commit_3), commit_1))
 
 ## Checkout master
 b <- branches(repo)
-checkout(b[sapply(b, slot, "name") == "master"][[1]], force=TRUE)
+checkout(b[sapply(b, "[", "name") == "master"][[1]], force=TRUE)
 
 ## Merge branch 1
-m_1 <- merge(b[sapply(b, slot, "name") == "branch1"][[1]])
+m_1 <- merge(b[sapply(b, "[", "name") == "branch1"][[1]])
 stopifnot(identical(m_1$fast_forward, TRUE))
 stopifnot(identical(m_1$conflicts, FALSE))
 stopifnot(identical(m_1$sha, NA_character_))
 
 ## Merge branch 2
-m_2 <- merge(b[sapply(b, slot, "name") == "branch2"][[1]])
+m_2 <- merge(b[sapply(b, "[", "name") == "branch2"][[1]])
 stopifnot(identical(m_2$fast_forward, FALSE))
 stopifnot(identical(m_2$conflicts, FALSE))
-stopifnot(identical(m_2$sha, commits(repo)[[1]]@sha))
+stopifnot(identical(m_2$sha, commits(repo)[[1]]$sha))
 
 ## Create third branch, checkout, change file and commit
 b_3 <- branch_create(lookup(repo, m_2$sha), "branch3")
@@ -83,7 +83,7 @@ commit(repo, "Commit message branch 3")
 ## Checkout master and create a change that creates a conflict on
 ## merge
 b <- branches(repo)
-checkout(b[sapply(b, slot, "name") == "master"][[1]], force=TRUE)
+checkout(b[sapply(b, "[", "name") == "master"][[1]], force=TRUE)
 writeLines(c("Lorem ipsum dolor sit amet, adipisicing consectetur elit, sed do",
              "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
            con = file.path(path, "test.txt"))
@@ -91,7 +91,7 @@ add(repo, "test.txt")
 commit(repo, "Some commit message branch 1")
 
 ## Merge branch 3
-m_3 <- merge(b[sapply(b, slot, "name") == "branch3"][[1]])
+m_3 <- merge(b[sapply(b, "[", "name") == "branch3"][[1]])
 stopifnot(identical(m_3$up_to_date, FALSE))
 stopifnot(identical(m_3$fast_forward, FALSE))
 stopifnot(identical(m_3$conflicts, TRUE))

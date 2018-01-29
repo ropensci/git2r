@@ -74,7 +74,7 @@ commit.3 <- commit(repo, "Third commit message")
 
 ## Check HEAD
 stopifnot(identical(is_detached(repo), FALSE))
-stopifnot(identical(head(repo)@name, "master"))
+stopifnot(identical(head(repo)$name, "master"))
 
 ## Check show and summary
 repo

@@ -12,7 +12,12 @@ repository(path = ".", discover = TRUE)
 \item{discover}{Discover repository from path. Default is TRUE.}
 }
 \value{
-A S4 \code{\linkS4class{git_repository}} object
+A \code{git_repository} object with entries:
+\describe{
+  \item{path}{
+    Path to a git repository
+  }
+}
 }
 \description{
 Open a repository

@@ -56,7 +56,7 @@ stopifnot(identical(merge_base(commit_2, commit_3), commit_1))
 
 ## Checkout master
 b <- branches(repo)
-checkout(b[sapply(b, slot, "name") == "master"][[1]], force=TRUE)
+checkout(b[sapply(b, "[", "name") == "master"][[1]], force=TRUE)
 
 ## Merge branch 1
 m_1 <- merge(repo, "branch1")
@@ -68,7 +68,7 @@ stopifnot(identical(m_1$sha, NA_character_))
 m_2 <- merge(path, "branch2")
 stopifnot(identical(m_2$fast_forward, FALSE))
 stopifnot(identical(m_2$conflicts, FALSE))
-stopifnot(identical(m_2$sha, commits(repo)[[1]]@sha))
+stopifnot(identical(m_2$sha, commits(repo)[[1]]$sha))
 
 ## Create third branch, checkout, change file and commit
 checkout(repo, "branch3", create=TRUE)

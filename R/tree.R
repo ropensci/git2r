@@ -39,53 +39,46 @@
 ##'   }
 ##'
 ##' }
-##' @name coerce-git_tree-data.frame-method
-##' @aliases coerce,git_tree,data.frame-method
-##' @docType methods
-##' @param from The tree \code{object}
+##' @param x The tree \code{object}
+##' @param ... Additional arguments. Not used.
 ##' @return \code{data.frame}
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
-##' ## Initialize a temporary repository
+##' ##' Initialize a temporary repository
 ##' path <- tempfile(pattern="git2r-")
 ##' dir.create(path)
 ##' dir.create(file.path(path, "subfolder"))
 ##' repo <- init(path)
 ##'
-##' ## Create a user
+##' ##' Create a user
 ##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
-##' ## Create three files and commit
+##' ##' Create three files and commit
 ##' writeLines("First file",  file.path(path, "example-1.txt"))
 ##' writeLines("Second file", file.path(path, "subfolder/example-2.txt"))
 ##' writeLines("Third file",  file.path(path, "example-3.txt"))
 ##' add(repo, c("example-1.txt", "subfolder/example-2.txt", "example-3.txt"))
 ##' new_commit <- commit(repo, "Commit message")
 ##'
-##' ## Coerce tree to a data.frame
+##' ##' Coerce tree to a data.frame
 ##' df <- as(tree(new_commit), "data.frame")
 ##' df
 ##' }
-setAs(from = "git_tree",
-      to = "data.frame",
-      def = function(from)
-      {
-          data.frame(mode = sprintf("%06o", from@filemode),
-                     type = from@type,
-                     sha  = from@id,
-                     name = from@name,
-                     stringsAsFactors = FALSE)
-      }
-)
+as.data.frame.git_tree <- function(x, ...) {
+    data.frame(mode = sprintf("%06o", x$filemode),
+               type = x$type,
+               sha  = x$id,
+               name = x$name,
+               stringsAsFactors = FALSE)
+}
 
 ##' Coerce entries in a git_tree to a list of entry objects
 ##'
-##' @name coerce-git_tree-list-method
-##' @docType methods
-##' @param from The tree \code{object}
+##' @param x The tree \code{object}
+##' @param ... Unused
 ##' @return list of entry objects
-##' @keywords methods
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -112,19 +105,15 @@ setAs(from = "git_tree",
 ##'     NULL
 ##'   }))
 ##' }
-setAs(from = "git_tree",
-      to = "list",
-      def = function(from)
-      {
-          lapply(from@id, function(sha) lookup(from@repo, sha))
-      }
-)
+as.list.git_tree <- function(x, ...) {
+    lapply(x$id, function(sha) lookup(x$repo, sha))
+}
 
 ##' Tree
 ##'
 ##' Get the tree pointed to by a commit or stash.
 ##' @param object the \code{commit} or \code{stash} object
-##' @return A S4 class git_tree object
+##' @return A S3 class git_tree object
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -142,51 +131,20 @@ setAs(from = "git_tree",
 ##' tree(commits(repo)[[1]])
 ##' summary(tree(commits(repo)[[1]]))
 ##' }
-tree <- function(object = NULL)
-{
+tree <- function(object = NULL) {
     .Call(git2r_commit_tree, object)
 }
 
-##' Brief summary of tree
-##'
-##' @aliases show,git_tree-methods
-##' @docType methods
-##' @param object The tree \code{object}
-##' @return None (invisible 'NULL').
-##' @keywords methods
 ##' @export
-##' @examples
-##' \dontrun{
-##' ## Initialize a temporary repository
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##'
-##' ## Create a user and commit a file
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
-##' writeLines("Hello world!", file.path(path, "example.txt"))
-##' add(repo, "example.txt")
-##' commit(repo, "First commit message")
-##'
-##' ## Brief summary of the tree in the repository
-##' tree(commits(repo)[[1]])
-##' }
-setMethod("show",
-          signature(object = "git_tree"),
-          function(object)
-          {
-              cat(sprintf("tree:  %s\n", object@sha))
-          }
-)
+print.git_tree <- function(x, ...) {
+    cat(sprintf("tree:  %s\n", x$sha))
+}
 
 ##' Summary of tree
 ##'
-##' @aliases summary,git_tree-methods
-##' @docType methods
 ##' @param object The tree \code{object}
 ##' @param ... Additional arguments affecting the summary produced.
 ##' @return None (invisible 'NULL').
-##' @keywords methods
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -203,125 +161,87 @@ setMethod("show",
 ##'
 ##' summary(tree(commits(repo)[[1]]))
 ##' }
-setMethod("summary",
-          signature(object = "git_tree"),
-          function(object, ...)
-          {
-              show(as(object, "data.frame"))
-          }
-)
+summary.git_tree <- function(object, ...) {
+    print(as.data.frame(object))
+}
 
 ##' Extract object from tree
 ##'
 ##' Lookup a tree entry by its position in the tree
-##' @rdname tree-index-methods
-##' @docType methods
 ##' @param x The tree \code{object}
 ##' @param i The index (integer or logical) of the tree object to
 ##' extract. If negative values, all elements except those indicated
 ##' are selected. A character vector to match against the names of
 ##' objects to extract.
 ##' @return Git object
-##' @keywords methods
 ##' @export
 ##' @examples
 ##' \dontrun{
-##' ## Initialize a temporary repository
+##' ##' Initialize a temporary repository
 ##' path <- tempfile(pattern="git2r-")
 ##' dir.create(path)
 ##' dir.create(file.path(path, "subfolder"))
 ##' repo <- init(path)
 ##'
-##' ## Create a user
+##' ##' Create a user
 ##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
-##' ## Create three files and commit
+##' ##' Create three files and commit
 ##' writeLines("First file",  file.path(path, "example-1.txt"))
 ##' writeLines("Second file", file.path(path, "subfolder/example-2.txt"))
 ##' writeLines("Third file",  file.path(path, "example-3.txt"))
 ##' add(repo, c("example-1.txt", "subfolder/example-2.txt", "example-3.txt"))
 ##' new_commit <- commit(repo, "Commit message")
 ##'
-##' ## Pick a tree in the repository
+##' ##' Pick a tree in the repository
 ##' tree_object <- tree(new_commit)
 ##'
-##' ## Summarize tree
+##' ##' Summarize tree
 ##' summary(tree_object)
 ##'
-##' ## Select item by name
+##' ##' Select item by name
 ##' tree_object["example-1.txt"]
 ##'
-##' ## Select first item in tree
+##' ##' Select first item in tree
 ##' tree_object[1]
 ##'
-##' ## Select first three items in tree
+##' ##' Select first three items in tree
 ##' tree_object[1:3]
 ##'
-##' ## Select all blobs in tree
+##' ##' Select all blobs in tree
 ##' tree_object[vapply(as(tree_object, 'list'), is_blob, logical(1))]
 ##' }
-setMethod("[",
-          signature(x = "git_tree", i = "integer", j = "missing"),
-          function(x, i)
-          {
-              i <- seq_len(length(x))[i]
-              ret <- lapply(i, function(j) lookup(x@repo, x@id[j]))
-              if (identical(length(ret), 1L))
-                  ret <- ret[[1]]
-              ret
-          }
-)
+"[.git_tree" <- function(x, i) {
+    if (is.logical(i))
+        return(x[seq_along(x)[i]])
 
-##' @rdname tree-index-methods
-##' @export
-setMethod("[",
-          signature(x = "git_tree", i = "numeric", j = "missing"),
-          function(x, i)
-          {
-              x[as.integer(i)]
-          }
-)
+    if (is.character(i))
+        return(x[which(x$name %in% i)])
 
-##' @rdname tree-index-methods
-##' @export
-setMethod("[",
-          signature(x = "git_tree", i = "logical", j = "missing"),
-          function(x, i)
-          {
-              x[seq_along(x)[i]]
-          }
-)
+    if (!is.numeric(i))
+        stop("Invalid index")
 
-##' @rdname tree-index-methods
-##' @export
-setMethod("[",
-          signature(x = "git_tree", i = "character", j = "missing"),
-          function(x, i)
-          {
-              x[which(x@name %in% i)]
-          }
-)
+    i <- seq_len(length(x))[as.integer(i)]
+    ret <- lapply(i, function(j) lookup(x$repo, x$id[j]))
+    if (identical(length(ret), 1L))
+        ret <- ret[[1]]
+    ret
+}
 
 ##' Number of entries in tree
 ##'
-##' @docType methods
 ##' @param x The tree \code{object}
 ##' @return a non-negative integer or double (which will be rounded
 ##' down)
-##' @keywords methods
 ##' @export
-setMethod("length",
-          signature(x = "git_tree"),
-          function(x)
-          {
-              length(x@id)
-          }
-)
+length.git_tree <- function(x) {
+    length(x$id)
+}
 
-##' Check if object is S4 class git_tree
+##' Check if object is S3 class git_tree
 ##'
-##' @param object Check if object is S4 class git_tree
-##' @return TRUE if object is S4 class git_tree, else FALSE
+##' @param object Check if object is S3 class git_tree
+##' @return TRUE if object is S3 class git_tree, else FALSE
 ##' @keywords methods
 ##' @export
 ##' @examples
@@ -345,7 +265,7 @@ setMethod("length",
 ##' is_tree(tree_1)
 ##' }
 is_tree <- function(object) {
-    is(object = object, class2 = "git_tree")
+    inherits(object, "git_tree")
 }
 
 ##' List the contents of a tree object
@@ -353,26 +273,19 @@ is_tree <- function(object) {
 ##' Traverse the entries in a tree and its subtrees.  Akin to the 'git
 ##' ls-tree' command.
 ##' @param tree default (\code{NULL}) is the tree of the last commit
-##'     in \code{repo}. Can also be a \code{\linkS4class{git_tree}}
-##'     object or a character that identifies a tree in the repository
-##'     (see \sQuote{Examples}).
-##' @param repo never used if \code{tree} is a
-##'     \code{\linkS4class{git_tree}} object. A
-##'     \code{\linkS4class{git_repository}} object, or a path to a
-##'     repository, or \code{NULL}.  If the \code{repo} argument is
-##'     \code{NULL}, then the repository is searched for with
-##'     \code{\link{discover_repository}} in the current working
-##'     directory.
+##'     in \code{repo}. Can also be a \code{git_tree} object or a
+##'     character that identifies a tree in the repository (see
+##'     \sQuote{Examples}).
+##' @param repo never used if \code{tree} is a \code{git_tree}
+##'     object. A \code{git_repository} object, or a path (default =
+##'     '.') to a repository.
 ##' @param recursive default is to recurse into sub-trees.
-##' @return A data.frame with the following columns:
-##' \describe{
-##'   \item{mode}{UNIX file attribute of the tree entry}
-##'   \item{type}{type of object}
-##'   \item{sha}{sha of the object}
-##'   \item{path}{path relative to the root tree}
-##'   \item{name}{filename of the tree entry}
-##'   \item{len}{object size of blob (file) entries. NA for other objects.}
-##' }
+##' @return A data.frame with the following columns: \describe{
+##'     \item{mode}{UNIX file attribute of the tree entry}
+##'     \item{type}{type of object} \item{sha}{sha of the object}
+##'     \item{path}{path relative to the root tree}
+##'     \item{name}{filename of the tree entry} \item{len}{object size
+##'     of blob (file) entries. NA for other objects.}  }
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -405,7 +318,7 @@ is_tree <- function(object) {
 ##' ## Start in subfolder
 ##' ls_tree(tree = "HEAD:subfolder", repo = repo)
 ##' }
-ls_tree <- function(tree = NULL, repo = NULL, recursive = TRUE)
+ls_tree <- function(tree = NULL, repo = ".", recursive = TRUE)
 {
     if (is.null(tree)) {
         tree <- tree(last_commit(lookup_repository(repo)))

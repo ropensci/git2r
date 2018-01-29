@@ -8,8 +8,8 @@ tag_delete(object = ".", name = NULL)
 }
 \arguments{
 \item{object}{Can be either the path (default is ".") to a
-repository, or a \code{\linkS4class{git_repository}} object,
-or a \code{\linkS4class{git_tag}} object. or the tag name.}
+repository, or a \code{git_repository} object, or a
+\code{git_tag} object. or the tag name.}
 
 \item{name}{If the \code{object} argument is a path to a
 repository or a \code{git_repository}, the name of the tag to

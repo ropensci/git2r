@@ -10,12 +10,12 @@ init(path = ".", bare = FALSE)
 \item{path}{A path to where to init a git repository}
 
 \item{bare}{If TRUE, a Git repository without a working directory
-is created at the pointed path. If FALSE, provided path will be
-considered as the working directory into which the .git directory
-will be created.}
+is created at the pointed path. If FALSE, provided path will
+be considered as the working directory into which the .git
+directory will be created.}
 }
 \value{
-A \code{\linkS4class{git_repository}} object
+A \code{git_repository} object
 }
 \description{
 Init a repository

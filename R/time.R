@@ -14,65 +14,32 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-setAs(from="git_time",
-      to="character",
-      def=function(from)
-      {
-          as.character(as(from, "POSIXct"))
-      }
-)
-
-setAs(from="git_time",
-      to="POSIXct",
-      def=function(from)
-      {
-          as.POSIXct(from@time + from@offset*60,
-                     origin="1970-01-01",
-                     tz="GMT")
-      }
-)
-
-setAs(from = "POSIXlt",
-      to   = "git_time",
-      def=function(from)
-      {
-          if (is.null(from$gmtoff) || is.na(from$gmtoff)) {
-              offset <- 0
-          } else {
-              offset <- from$gmtoff / 60
-          }
-
-          new("git_time",
-              time   = as.numeric(from),
-              offset = offset)
-      }
-)
-
-##' Brief summary of \code{git_time}
-##'
-##' @aliases show,git_time-methods
-##' @docType methods
-##' @param object The time \code{object}
-##' @return None (invisible 'NULL').
-##' @keywords methods
 ##' @export
-##' @examples
-##' \dontrun{
-##' ## Initialize a temporary repository
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##'
-##' ## Create a user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
-##'
-##' ## Brief summary of git_time from the default signature
-##' default_signature(repo)@@when
-##' }
-setMethod("show",
-          signature(object = "git_time"),
-          function(object)
-          {
-              cat(sprintf("%s\n", as(object, "character")))
-          }
-)
+as.character.git_time <- function(x, ...) {
+    as.character(as.POSIXct(x))
+}
+
+##' @export
+as.POSIXct.git_time <- function(x, ...) {
+    as.POSIXct(x$time + x$offset*60, origin = "1970-01-01", tz = "GMT")
+}
+
+## setAs(from = "POSIXlt",
+##       to   = "git_time",
+##       def=function(from)
+##       {
+##           if (is.null(from$gmtoff) || is.na(from$gmtoff)) {
+##               offset <- 0
+##           } else {
+##               offset <- from$gmtoff / 60
+##           }
+
+##           structure(list(time = as.numeric(from), offset = offset),
+##                     class = "git_time")
+##       }
+## )
+
+##' @export
+print.git_time <- function(x, ...) {
+    cat(sprintf("%s\n", as.character(x)))
+}

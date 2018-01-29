@@ -4,34 +4,27 @@
 \alias{ls_tree}
 \title{List the contents of a tree object}
 \usage{
-ls_tree(tree = NULL, repo = NULL, recursive = TRUE)
+ls_tree(tree = NULL, repo = ".", recursive = TRUE)
 }
 \arguments{
 \item{tree}{default (\code{NULL}) is the tree of the last commit
-in \code{repo}. Can also be a \code{\linkS4class{git_tree}}
-object or a character that identifies a tree in the repository
-(see \sQuote{Examples}).}
+in \code{repo}. Can also be a \code{git_tree} object or a
+character that identifies a tree in the repository (see
+\sQuote{Examples}).}
 
-\item{repo}{never used if \code{tree} is a
-\code{\linkS4class{git_tree}} object. A
-\code{\linkS4class{git_repository}} object, or a path to a
-repository, or \code{NULL}.  If the \code{repo} argument is
-\code{NULL}, then the repository is searched for with
-\code{\link{discover_repository}} in the current working
-directory.}
+\item{repo}{never used if \code{tree} is a \code{git_tree}
+object. A \code{git_repository} object, or a path (default =
+'.') to a repository.}
 
 \item{recursive}{default is to recurse into sub-trees.}
 }
 \value{
-A data.frame with the following columns:
-\describe{
-  \item{mode}{UNIX file attribute of the tree entry}
-  \item{type}{type of object}
-  \item{sha}{sha of the object}
-  \item{path}{path relative to the root tree}
-  \item{name}{filename of the tree entry}
-  \item{len}{object size of blob (file) entries. NA for other objects.}
-}
+A data.frame with the following columns: \describe{
+    \item{mode}{UNIX file attribute of the tree entry}
+    \item{type}{type of object} \item{sha}{sha of the object}
+    \item{path}{path relative to the root tree}
+    \item{name}{filename of the tree entry} \item{len}{object size
+    of blob (file) entries. NA for other objects.}  }
 }
 \description{
 Traverse the entries in a tree and its subtrees.  Akin to the 'git

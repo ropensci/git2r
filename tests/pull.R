@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2015 The git2r contributors
+## Copyright (C) 2013-2018 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -14,7 +14,7 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library(git2r)
+library("git2r")
 
 ## For debugging
 sessionInfo()
@@ -91,18 +91,18 @@ stopifnot(identical(length(references(repo_1)), 2L))
 stopifnot(identical(references(repo_1), references(repo_2)))
 
 ref_1 <- references(repo_1)[["refs/heads/master"]]
-stopifnot(identical(ref_1@name, "refs/heads/master"))
-stopifnot(identical(ref_1@type, 1L))
-stopifnot(identical(ref_1@sha, commit_3@sha))
-stopifnot(identical(ref_1@target, NA_character_))
-stopifnot(identical(ref_1@shorthand, "master"))
+stopifnot(identical(ref_1$name, "refs/heads/master"))
+stopifnot(identical(ref_1$type, 1L))
+stopifnot(identical(ref_1$sha, commit_3$sha))
+stopifnot(identical(ref_1$target, NA_character_))
+stopifnot(identical(ref_1$shorthand, "master"))
 
 ref_2 <- references(repo_1)[["refs/remotes/origin/master"]]
-stopifnot(identical(ref_2@name, "refs/remotes/origin/master"))
-stopifnot(identical(ref_2@type, 1L))
-stopifnot(identical(ref_2@sha, commit_3@sha))
-stopifnot(identical(ref_2@target, NA_character_))
-stopifnot(identical(ref_2@shorthand, "origin/master"))
+stopifnot(identical(ref_2$name, "refs/remotes/origin/master"))
+stopifnot(identical(ref_2$type, 1L))
+stopifnot(identical(ref_2$sha, commit_3$sha))
+stopifnot(identical(ref_2$target, NA_character_))
+stopifnot(identical(ref_2$shorthand, "origin/master"))
 
 ## Check references with missing repo argument
 wd <- setwd(path_repo_1)

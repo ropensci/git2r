@@ -74,7 +74,7 @@ add_session_info <- function(message) {
 ##' @param author Signature with author and author time of commit.
 ##' @param committer Signature with committer and commit time of
 ##'     commit.
-##' @return \code{\linkS4class{git_commit}} object
+##' @return \code{git_commit} object
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -92,7 +92,7 @@ add_session_info <- function(message) {
 ##' add(repo, "example.txt")
 ##' commit(repo, "First commit message")
 ##' }
-commit <- function(repo      = NULL,
+commit <- function(repo      = ".",
                    message   = NULL,
                    all       = FALSE,
                    session   = FALSE,
@@ -184,7 +184,7 @@ commit <- function(repo      = NULL,
 ##' ## List commits in repository
 ##' commits(repo)
 ##' }
-commits <- function(repo        = NULL,
+commits <- function(repo        = ".",
                     topological = TRUE,
                     time        = TRUE,
                     reverse     = FALSE,
@@ -261,6 +261,12 @@ commits <- function(repo        = NULL,
 ##' ## Get last commit
 ##' last_commit(repo)
 ##' last_commit(path)
+##'
+##' ## Coerce the last commit to a data.frame
+##' as.data.frame(last_commit(path), "data.frame")
+##'
+##' ## Summary of last commit in repository
+##' summary(last_commit(repo))
 ##' }
 last_commit <- function(repo = ".") {
     commits(lookup_repository(repo), n = 1)[[1]]
@@ -330,7 +336,7 @@ descendant_of <- function(commit = NULL, ancestor = NULL) {
 ##' is_commit(commit_1)
 ##' }
 is_commit <- function(object) {
-    is(object = object, class2 = "git_commit")
+    inherits(object, "git_commit")
 }
 
 ##' Is merge
@@ -426,207 +432,87 @@ parents <- function(object = NULL) {
     .Call(git2r_commit_parent_list, object)
 }
 
-##' Brief summary of commit
-##'
-##' Displays the first seven characters of the sha, the date and the
-##' summary of the commit message:
-##' \code{[shortened sha] yyyy-mm-dd: summary}
-##' @aliases show,git_commit-methods
-##' @docType methods
-##' @param object The commit \code{object}
-##' @return None (invisible 'NULL').
-##' @keywords methods
-##' @include S4_classes.R
 ##' @export
-##' @examples
-##' \dontrun{
-##' ## Initialize a repository
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##'
-##' ## Config user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
-##'
-##' ## Write to a file and commit
-##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-##'            file.path(path, "example.txt"))
-##' add(repo, "example.txt")
-##' commit(repo, "First commit message")
-##'
-##' ## Brief summary of commit in repository
-##' show(commits(repo)[[1]])
-##' }
-setMethod("show",
-          signature(object = "git_commit"),
-          function(object)
-          {
-              cat(sprintf("[%s] %s: %s\n",
-                          substring(object@sha, 1, 7),
-                          substring(as(object@author@when, "character"), 1, 10),
-                          object@summary))
-          }
-)
+format.git_commit <- function(x, ...) {
+    sprintf("[%s] %s: %s\n",
+            substring(x$sha, 1, 7),
+            substring(as.character(x$author$when), 1, 10),
+            x$summary)
+}
 
-##' Summary of commit
-##'
-##' @aliases summary,git_commit-methods
-##' @docType methods
-##' @param object The commit \code{object}
-##' @param ... Additional arguments affecting the summary produced.
-##' @return None (invisible 'NULL').
-##' @keywords methods
 ##' @export
-##' @examples
-##' \dontrun{
-##' ## Initialize a repository
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##'
-##' ## Config user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
-##'
-##' ## Write to a file and commit
-##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-##'            file.path(path, "example.txt"))
-##' add(repo, "example.txt")
-##' commit(repo, "First commit message")
-##'
-##' ## Summary of commit in repository
-##' summary(commits(repo)[[1]])
-##' }
-setMethod("summary",
-          signature(object = "git_commit"),
-          function(object, ...)
-          {
-              is_merge_commit <- is_merge(object)
-              po <- parents(object)
+print.git_commit <- function(x, ...) {
+    cat(format(x, ...), "\n", sep = "")
+}
 
-              cat(sprintf("Commit:  %s\n", object@sha))
+##' @export
+summary.git_commit <- function(object, ...)
+{
+    is_merge_commit <- is_merge(object)
+    po <- parents(object)
 
-              if (is_merge_commit) {
-                  sha <- vapply(po, slot, character(1), "sha")
-                  cat(sprintf("Merge:   %s\n", sha[1]))
-                  cat(paste0("         ", sha[-1]), sep="\n")
-              }
+    cat(sprintf("Commit:  %s\n", object$sha))
 
-              cat(sprintf(paste0("Author:  %s <%s>\n",
-                                 "When:    %s\n\n"),
-                          object@author@name,
-                          object@author@email,
-                          as(object@author@when, "character")))
+    if (is_merge_commit) {
+        sha <- vapply(po, "[[", character(1), "sha")
+        cat(sprintf("Merge:   %s\n", sha[1]))
+        cat(paste0("         ", sha[-1]), sep="\n")
+    }
 
-              msg <- paste0("    ", readLines(textConnection(object@message)))
-              cat("", sprintf("%s\n", msg))
+    cat(sprintf(paste0("Author:  %s <%s>\n",
+                       "When:    %s\n\n"),
+                object$author$name,
+                object$author$email,
+                as.character(object$author$when)))
 
-              if (is_merge_commit) {
-                  cat("\n")
-                  lapply(po, function(parent) {
-                      cat("Commit message: ", parent@sha, "\n")
-                      msg <- paste0("    ",
-                                    readLines(textConnection(parent@message)))
-                      cat("", sprintf("%s\n", msg), "\n")
-                  })
-              }
+    msg <- paste0("    ", readLines(textConnection(object$message)))
+    cat("", sprintf("%s\n", msg))
 
-              if (identical(length(po), 1L)) {
-                  df <- diff(tree(po[[1]]), tree(object))
-                  if (length(df) > 0) {
-                      if (length(df) > 1) {
-                          cat(sprintf("%i files changed, ", length(df)))
-                      } else {
-                          cat("1 file changed, ")
-                      }
+    if (is_merge_commit) {
+        cat("\n")
+        lapply(po, function(parent) {
+            cat("Commit message: ", parent$sha, "\n")
+            msg <- paste0("    ",
+                          readLines(textConnection(parent$message)))
+            cat("", sprintf("%s\n", msg), "\n")
+        })
+    }
 
-                      cat(sprintf("%i insertions, %i deletions\n",
-                                  sum(vapply(lines_per_file(df), "[[", numeric(1), "add")),
-                                  sum(vapply(lines_per_file(df), "[[", numeric(1), "del"))))
+    if (identical(length(po), 1L)) {
+        df <- diff(tree(po[[1]]), tree(object))
+        if (length(df) > 0) {
+            if (length(df) > 1) {
+                cat(sprintf("%i files changed, ", length(df)))
+            } else {
+                cat("1 file changed, ")
+            }
 
-                      plpf <- print_lines_per_file(df)
-                      hpf <- hunks_per_file(df)
-                      hunk_txt <- ifelse(hpf > 1, " hunks",
-                                         ifelse(hpf > 0, " hunk",
-                                                " hunk (binary file)"))
-                      phpf <- paste0("  in ", format(hpf), hunk_txt)
-                      cat(paste0(plpf, phpf), sep="\n")
-                  }
+            cat(sprintf("%i insertions, %i deletions\n",
+                        sum(vapply(lines_per_file(df), "[[", numeric(1), "add")),
+                        sum(vapply(lines_per_file(df), "[[", numeric(1), "del"))))
 
-                  cat("\n")
-              }
+            plpf <- print_lines_per_file(df)
+            hpf <- hunks_per_file(df)
+            hunk_txt <- ifelse(hpf > 1, " hunks",
+                        ifelse(hpf > 0, " hunk",
+                               " hunk (binary file)"))
+            phpf <- paste0("  in ", format(hpf), hunk_txt)
+            cat(paste0(plpf, phpf), sep="\n")
+        }
 
-              invisible(NULL)
-          }
-)
+        cat("\n")
+    }
 
-##' Coerce a commit to a \code{data.frame}
-##'
-##' The commit is coerced to a \code{data.frame}
-##'
-##'
-##' The \code{data.frame} have the following columns:
-##' \describe{
-##'
-##'   \item{sha}{
-##'     The 40 character hexadecimal string of the SHA-1
-##'   }
-##'
-##'   \item{summary}{
-##'     the short "summary" of the git commit message.
-##'   }
-##'
-##'   \item{message}{
-##'     the full message of a commit
-##'   }
-##'
-##'   \item{author}{
-##'     full name of the author
-##'   }
-##'
-##'   \item{email}{
-##'     email of the author
-##'   }
-##'
-##'   \item{when}{
-##'     time when the commit happened
-##'   }
-##'
-##' }
-##' @name coerce-git_commit-method
-##' @aliases coerce,git_commit,data.frame-method
-##' @docType methods
-##' @param from The commit \code{object}
-##' @return \code{data.frame}
-##' @keywords methods
-##' @examples
-##' \dontrun{
-##' ## Initialize a temporary repository
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##'
-##' ## Create a user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
-##'
-##' ## Create a file and commit
-##' writeLines("Example file",  file.path(path, "example.txt"))
-##' add(repo, "example.txt")
-##' c1 <- commit(repo, "Commit message")
-##'
-##' ## Coerce the commit to a data.frame
-##' df <- as(c1, "data.frame")
-##' df
-##' }
-setAs(from = "git_commit",
-      to   = "data.frame",
-      def  = function(from)
-      {
-          data.frame(sha              = from@sha,
-                     summary          = from@summary,
-                     message          = from@message,
-                     author           = from@author@name,
-                     email            = from@author@email,
-                     when             = as(from@author@when, "POSIXct"),
-                     stringsAsFactors = FALSE)
-      }
-)
+    invisible(NULL)
+}
+
+##' @export
+as.data.frame.git_commit <- function(x, ...) {
+    data.frame(sha              = x$sha,
+               summary          = x$summary,
+               message          = x$message,
+               author           = x$author$name,
+               email            = x$author$email,
+               when             = as.POSIXct(x$author$when),
+               stringsAsFactors = FALSE)
+}

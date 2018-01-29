@@ -7,12 +7,12 @@
 fetch_heads(repo = ".")
 }
 \arguments{
-\item{repo}{a path to a repository or a
-\code{\linkS4class{git_repository}} object. Default is '.'}
+\item{repo}{a path to a repository or a \code{git_repository}
+object. Default is '.'}
 }
 \value{
-list with the \code{\linkS4class{git_fetch_head}}
-    entries. NULL if there is no FETCH_HEAD file.
+list with \code{git_fetch_head} entries. NULL if there is
+    no FETCH_HEAD file.
 }
 \description{
 Get updated heads during the last fetch.

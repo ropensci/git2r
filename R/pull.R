@@ -107,7 +107,7 @@ pull <- function(repo = ".", credentials = NULL, merger = NULL) {
 
     ## fetch heads marked for merge
     fh <- fetch_heads(repo)
-    fh <- fh[vapply(fh, slot, logical(1), "is_merge")]
+    fh <- fh[vapply(fh, "[[", logical(1), "is_merge")]
 
     if (identical(length(fh), 0L))
         stop("Remote ref was not feteched")

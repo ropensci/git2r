@@ -8,11 +8,11 @@ blob_create(repo = ".", path = NULL, relative = TRUE)
 }
 \arguments{
 \item{repo}{The repository where the blob(s) will be written. Can
-be a bare repository. A \code{\linkS4class{git_repository}}
-object, or a path to a repository, or \code{NULL}.  If the
-\code{repo} argument is \code{NULL}, the repository is
-searched for with \code{\link{discover_repository}} in the
-current working directory.}
+be a bare repository. A \code{git_repository} object, or a
+path to a repository, or \code{NULL}.  If the \code{repo}
+argument is \code{NULL}, the repository is searched for with
+\code{\link{discover_repository}} in the current working
+directory.}
 
 \item{path}{The file(s) from which the blob will be created.}
 
@@ -21,7 +21,7 @@ created is relative to the repository's working dir. Default
 is TRUE.}
 }
 \value{
-list of S4 class git_blob \code{objects}
+list of S3 class git_blob \code{objects}
 }
 \description{
 Read a file from the filesystem and write its content to the

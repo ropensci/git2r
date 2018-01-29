@@ -27,6 +27,7 @@
 ##' @importFrom graphics plot.new
 ##' @importFrom graphics plot.window
 ##' @importFrom graphics symbols
+##' @importFrom graphics title
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -47,7 +48,7 @@ punch_card <- function(repo = ".", main = NULL, ...) {
 
     ## Extract information from repository
     repo <- lookup_repository(repo)
-    df <- as(repo, "data.frame")
+    df <- as.data.frame(repo)
     df$when <- as.POSIXlt(df$when)
     df$hour <- df$when$hour
     df$weekday <- df$when$wday
@@ -66,15 +67,15 @@ punch_card <- function(repo = ".", main = NULL, ...) {
     ## Scale
     df$Commits <- sqrt((df$Commits / max(df$Commits)) / pi)
 
-    graphics::plot.new()
-    graphics::plot.window(xlim = c(0, 23), ylim = c(0.8, 7.2))
-    graphics::symbols(df$ Hour, df$Weekday, circles = df$Commits,
-                      xaxt = "n", yaxt = "n", inches = FALSE,
-                      fg = "white", bg = "black", add = TRUE, ...)
+    plot.new()
+    plot.window(xlim = c(0, 23), ylim = c(0.8, 7.2))
+    symbols(df$ Hour, df$Weekday, circles = df$Commits,
+            xaxt = "n", yaxt = "n", inches = FALSE,
+            fg = "white", bg = "black", add = TRUE, ...)
     h <- 0:23
     h <- paste0(ifelse(h > 9, as.character(h), paste0("0", as.character(h))), ":00")
-    graphics::axis(1, at = 0:23, labels = h)
-    graphics::axis(2, at = 1:7, labels = wd)
+    axis(1, at = 0:23, labels = h)
+    axis(2, at = 1:7, labels = wd)
 
     if (is.null(main)) {
         if (is_bare(repo)) {
@@ -85,7 +86,7 @@ punch_card <- function(repo = ".", main = NULL, ...) {
         }
     }
 
-    graphics::title(main)
+    title(main)
 
     invisible(NULL)
 }

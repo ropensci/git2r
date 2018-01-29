@@ -18,7 +18,6 @@
 ##'
 ##' @docType package
 ##' @name git2r
-##' @import methods
 ##' @useDynLib git2r, .registration=TRUE
 NULL
 

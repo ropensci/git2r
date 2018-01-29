@@ -20,16 +20,16 @@
 ##' Object Database as a loose blob. The method is vectorized and
 ##' accepts a vector of files to create blobs from.
 ##' @param repo The repository where the blob(s) will be written. Can
-##'     be a bare repository. A \code{\linkS4class{git_repository}}
-##'     object, or a path to a repository, or \code{NULL}.  If the
-##'     \code{repo} argument is \code{NULL}, the repository is
-##'     searched for with \code{\link{discover_repository}} in the
-##'     current working directory.
+##'     be a bare repository. A \code{git_repository} object, or a
+##'     path to a repository, or \code{NULL}.  If the \code{repo}
+##'     argument is \code{NULL}, the repository is searched for with
+##'     \code{\link{discover_repository}} in the current working
+##'     directory.
 ##' @param path The file(s) from which the blob will be created.
 ##' @param relative TRUE if the file(s) from which the blob will be
 ##'     created is relative to the repository's working dir. Default
 ##'     is TRUE.
-##' @return list of S4 class git_blob \code{objects}
+##' @return list of S3 class git_blob \code{objects}
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -173,11 +173,10 @@ is_binary <- function(blob = NULL) {
     .Call(git2r_blob_is_binary, blob)
 }
 
-##' Check if object is S4 class git_blob
+##' Check if object is S3 class git_blob
 ##'
-##' @param object Check if object is S4 class git_blob
-##' @return TRUE if object is S4 class git_blob, else FALSE
-##' @keywords methods
+##' @param object Check if object is S3 class git_blob
+##' @return TRUE if object is S3 class git_blob, else FALSE
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -200,7 +199,7 @@ is_binary <- function(blob = NULL) {
 ##' is_blob(blob_1)
 ##' }
 is_blob <- function(object) {
-    is(object = object, class2 = "git_blob")
+    inherits(object, "git_blob")
 }
 
 ##' Size in bytes of the contents of a blob

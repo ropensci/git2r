@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2017 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,12 +16,12 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <Rdefines.h>
 #include "git2.h"
 
 #include "git2r_arg.h"
 #include "git2r_commit.h"
 #include "git2r_error.h"
+#include "git2r_objects.h"
 #include "git2r_repository.h"
 
 /**
@@ -50,7 +50,7 @@ static int git2r_revwalk_count(git_revwalk *walker, int max_n)
 /**
  * List revisions
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param topological Sort the commits by topological order; Can be
  * combined with time.
  * @param time Sort the commits by commit time; can be combined with
@@ -58,7 +58,7 @@ static int git2r_revwalk_count(git_revwalk *walker, int max_n)
  * @param reverse Sort the commits in reverse order
  * @param max_n n The upper limit of the number of commits to
  * output. Use max_n < 0 for unlimited number of commits.
- * @return list with S4 class git_commit objects
+ * @return list with S3 class git_commit objects
  */
 SEXP git2r_revwalk_list(
     SEXP repo,
@@ -67,7 +67,7 @@ SEXP git2r_revwalk_list(
     SEXP reverse,
     SEXP max_n)
 {
-    int err = GIT_OK;
+    int error = GIT_OK, nprotect = 0;
     SEXP result = R_NilValue;
     int i, n;
     unsigned int sort_mode = GIT_SORT_NONE;
@@ -90,6 +90,7 @@ SEXP git2r_revwalk_list(
     if (git_repository_is_empty(repository)) {
         /* No commits, create empty list */
         PROTECT(result = Rf_allocVector(VECSXP, 0));
+        nprotect++;
         goto cleanup;
     }
 
@@ -100,12 +101,12 @@ SEXP git2r_revwalk_list(
     if (LOGICAL(reverse)[0])
         sort_mode |= GIT_SORT_REVERSE;
 
-    err = git_revwalk_new(&walker, repository);
-    if (err)
+    error = git_revwalk_new(&walker, repository);
+    if (error)
         goto cleanup;
 
-    err = git_revwalk_push_head(walker);
-    if (err)
+    error = git_revwalk_push_head(walker);
+    if (error)
         goto cleanup;
     git_revwalk_sorting(walker, sort_mode);
 
@@ -114,10 +115,11 @@ SEXP git2r_revwalk_list(
 
     /* Create list to store result */
     PROTECT(result = Rf_allocVector(VECSXP, n));
+    nprotect++;
 
     git_revwalk_reset(walker);
-    err = git_revwalk_push_head(walker);
-    if (err)
+    error = git_revwalk_push_head(walker);
+    if (error)
         goto cleanup;
     git_revwalk_sorting(walker, sort_mode);
 
@@ -126,33 +128,35 @@ SEXP git2r_revwalk_list(
         SEXP item;
         git_oid oid;
 
-        err = git_revwalk_next(&oid, walker);
-        if (err) {
-            if (GIT_ITEROVER == err)
-                err = GIT_OK;
+        error = git_revwalk_next(&oid, walker);
+        if (error) {
+            if (GIT_ITEROVER == error)
+                error = GIT_OK;
             goto cleanup;
         }
 
-        err = git_commit_lookup(&commit, repository, &oid);
-        if (err)
+        error = git_commit_lookup(&commit, repository, &oid);
+        if (error)
             goto cleanup;
 
-        SET_VECTOR_ELT(result, i, item = NEW_OBJECT(MAKE_CLASS("git_commit")));
+        SET_VECTOR_ELT(
+            result,
+            i,
+            item = Rf_mkNamed(VECSXP, git2r_S3_items__git_commit));
+        Rf_setAttrib(item, R_ClassSymbol,
+                     Rf_mkString(git2r_S3_class__git_commit));
         git2r_commit_init(commit, repo, item);
         git_commit_free(commit);
     }
 
 cleanup:
-    if (walker)
-        git_revwalk_free(walker);
+    git_revwalk_free(walker);
+    git_repository_free(repository);
 
-    if (repository)
-        git_repository_free(repository);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -161,13 +165,13 @@ cleanup:
 /**
  * Get list with contributions.
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param topological Sort the commits by topological order; Can be
  * combined with time.
  * @param time Sort the commits by commit time; can be combined with
  * topological.
  * @param reverse Sort the commits in reverse order
- * @return list with S4 class git_commit objects
+ * @return list with S3 class git_commit objects
  */
 SEXP git2r_revwalk_contributions(
     SEXP repo,
@@ -175,7 +179,7 @@ SEXP git2r_revwalk_contributions(
     SEXP time,
     SEXP reverse)
 {
-    int err = GIT_OK;
+    int error = GIT_OK, nprotect = 0;
     SEXP result = R_NilValue;
     SEXP names = R_NilValue;
     SEXP when = R_NilValue;
@@ -207,12 +211,12 @@ SEXP git2r_revwalk_contributions(
     if (LOGICAL(reverse)[0])
         sort_mode |= GIT_SORT_REVERSE;
 
-    err = git_revwalk_new(&walker, repository);
-    if (err)
+    error = git_revwalk_new(&walker, repository);
+    if (error)
         goto cleanup;
 
-    err = git_revwalk_push_head(walker);
-    if (err)
+    error = git_revwalk_push_head(walker);
+    if (error)
         goto cleanup;
     git_revwalk_sorting(walker, sort_mode);
 
@@ -221,6 +225,7 @@ SEXP git2r_revwalk_contributions(
 
     /* Create vectors to store result */
     PROTECT(result = Rf_allocVector(VECSXP, 3));
+    nprotect++;
     Rf_setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, 3));
     SET_VECTOR_ELT(result, 0, when = Rf_allocVector(REALSXP, n));
     SET_STRING_ELT(names, 0, Rf_mkChar("when"));
@@ -230,8 +235,8 @@ SEXP git2r_revwalk_contributions(
     SET_STRING_ELT(names, 2, Rf_mkChar("email"));
 
     git_revwalk_reset(walker);
-    err = git_revwalk_push_head(walker);
-    if (err)
+    error = git_revwalk_push_head(walker);
+    if (error)
         goto cleanup;
     git_revwalk_sorting(walker, sort_mode);
 
@@ -240,15 +245,15 @@ SEXP git2r_revwalk_contributions(
         const git_signature *c_author;
         git_oid oid;
 
-        err = git_revwalk_next(&oid, walker);
-        if (err) {
-            if (GIT_ITEROVER == err)
-                err = GIT_OK;
+        error = git_revwalk_next(&oid, walker);
+        if (error) {
+            if (GIT_ITEROVER == error)
+                error = GIT_OK;
             goto cleanup;
         }
 
-        err = git_commit_lookup(&commit, repository, &oid);
-        if (err)
+        error = git_commit_lookup(&commit, repository, &oid);
+        if (error)
             goto cleanup;
 
         c_author = git_commit_author(commit);
@@ -261,16 +266,13 @@ SEXP git2r_revwalk_contributions(
     }
 
 cleanup:
-    if (walker)
-        git_revwalk_free(walker);
+    git_revwalk_free(walker);
+    git_repository_free(repository);
 
-    if (repository)
-        git_repository_free(repository);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;

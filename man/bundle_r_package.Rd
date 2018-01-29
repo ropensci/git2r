@@ -7,12 +7,11 @@
 bundle_r_package(repo = ".")
 }
 \arguments{
-\item{repo}{a path to a repository or a
-\code{\linkS4class{git_repository}} object. Default is '.'}
+\item{repo}{a path to a repository or a \code{git_repository}
+object. Default is '.'}
 }
 \value{
-Invisible bundled S4 \code{\linkS4class{git_repository}}
-    object
+Invisible bundled \code{git_repository} object
 }
 \description{
 Clone the package git repository as a bare repository to

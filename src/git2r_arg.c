@@ -16,7 +16,6 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <Rdefines.h>
 #include "git2.h"
 
 #include "git2r_arg.h"
@@ -50,13 +49,13 @@ int git2r_arg_check_branch(SEXP arg)
 {
     SEXP slot;
 
-    if (!Rf_isS4(arg) || !Rf_inherits(arg, "git_branch"))
+    if (!Rf_isNewList(arg) || !Rf_inherits(arg, "git_branch"))
         return -1;
 
-    if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("name"))))
+    if (git2r_arg_check_string(git2r_get_list_element(arg, "name")))
         return -1;
 
-    slot = GET_SLOT(arg, Rf_install("type"));
+    slot = git2r_get_list_element(arg, "type");
     if (git2r_arg_check_integer(slot))
         return -1;
     switch (INTEGER(slot)[0]) {
@@ -78,10 +77,10 @@ int git2r_arg_check_branch(SEXP arg)
  */
 int git2r_arg_check_commit(SEXP arg)
 {
-    if (!Rf_isS4(arg) || !Rf_inherits(arg, "git_commit"))
+    if (!Rf_isNewList(arg) || !Rf_inherits(arg, "git_commit"))
         return -1;
 
-    if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("sha"))))
+    if (git2r_arg_check_sha(git2r_get_list_element(arg, "sha")))
         return -1;
 
     return 0;
@@ -95,13 +94,13 @@ int git2r_arg_check_commit(SEXP arg)
  */
 int git2r_arg_check_commit_stash(SEXP arg)
 {
-    if (!Rf_isS4(arg))
+    if (!Rf_isNewList(arg))
         return -1;
 
     if (!Rf_inherits(arg, "git_commit") && !Rf_inherits(arg, "git_stash"))
         return -1;
 
-    if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("sha"))))
+    if (git2r_arg_check_sha(git2r_get_list_element(arg, "sha")))
         return -1;
 
     return 0;
@@ -183,8 +182,6 @@ int git2r_arg_check_fetch_heads(SEXP arg)
 {
     const char *repo = NULL;
     size_t i,n;
-    SEXP s_repo = Rf_install("repo");
-    SEXP s_path = Rf_install("path");
 
     if (Rf_isNull(arg) || VECSXP != TYPEOF(arg))
         return -1;
@@ -195,10 +192,10 @@ int git2r_arg_check_fetch_heads(SEXP arg)
         SEXP path;
         SEXP item = VECTOR_ELT(arg, i);
 
-        if (!Rf_isS4(item) || !Rf_inherits(item, "git_fetch_head"))
+        if (!Rf_isNewList(item) || !Rf_inherits(item, "git_fetch_head"))
             return -1;
 
-        path = GET_SLOT(GET_SLOT(item, s_repo), s_path);
+        path = git2r_get_list_element(git2r_get_list_element(item, "repo"), "path");
         if (git2r_arg_check_string(path))
             return -1;
 
@@ -326,13 +323,13 @@ int git2r_arg_check_logical(SEXP arg)
  */
 int git2r_arg_check_note(SEXP arg)
 {
-    if (!Rf_isS4(arg) || !Rf_inherits(arg, "git_note"))
+    if (!Rf_isNewList(arg) || !Rf_inherits(arg, "git_note"))
         return -1;
 
-    if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("sha"))))
+    if (git2r_arg_check_sha(git2r_get_list_element(arg, "sha")))
         return -1;
 
-    if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("refname"))))
+    if (git2r_arg_check_string(git2r_get_list_element(arg, "refname")))
         return -1;
 
     return 0;
@@ -359,10 +356,10 @@ int git2r_arg_check_real(SEXP arg)
  */
 int git2r_arg_check_repository(SEXP arg)
 {
-    if (!Rf_isS4(arg) || !Rf_inherits(arg, "git_repository"))
+    if (!Rf_isNewList(arg) || !Rf_inherits(arg, "git_repository"))
         return -1;
 
-    if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("path"))))
+    if (git2r_arg_check_string(git2r_get_list_element(arg, "path")))
         return -1;
 
     return 0;
@@ -381,8 +378,8 @@ int git2r_arg_check_same_repo(SEXP arg1, SEXP arg2)
     if (git2r_arg_check_repository(arg1) || git2r_arg_check_repository(arg2))
         return -1;
 
-    path1 = GET_SLOT(arg1, Rf_install("path"));
-    path2 = GET_SLOT(arg2, Rf_install("path"));
+    path1 = git2r_get_list_element(arg1, "path");
+    path2 = git2r_get_list_element(arg2, "path");
     if (strcmp(CHAR(STRING_ELT(path1, 0)), CHAR(STRING_ELT(path2, 0))))
         return -1;
 
@@ -399,18 +396,18 @@ int git2r_arg_check_signature(SEXP arg)
 {
     SEXP when;
 
-    if (!Rf_isS4(arg) || !Rf_inherits(arg, "git_signature"))
+    if (!Rf_isNewList(arg) || !Rf_inherits(arg, "git_signature"))
         return -1;
 
-    if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("name"))))
+    if (git2r_arg_check_string(git2r_get_list_element(arg, "name")))
         return -1;
-    if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("email"))))
+    if (git2r_arg_check_string(git2r_get_list_element(arg, "email")))
         return -1;
 
-    when = GET_SLOT(arg, Rf_install("when"));
-    if (git2r_arg_check_real(GET_SLOT(when, Rf_install("time"))))
+    when = git2r_get_list_element(arg, "when");
+    if (git2r_arg_check_real(git2r_get_list_element(when, "time")))
         return -1;
-    if (git2r_arg_check_real(GET_SLOT(when, Rf_install("offset"))))
+    if (git2r_arg_check_real(git2r_get_list_element(when, "offset")))
         return -1;
 
     return 0;
@@ -493,10 +490,10 @@ int git2r_copy_string_vec(git_strarray *dst, SEXP src)
  */
 int git2r_arg_check_tag(SEXP arg)
 {
-    if (!Rf_isS4(arg) || !Rf_inherits(arg, "git_tag"))
+    if (!Rf_isNewList(arg) || !Rf_inherits(arg, "git_tag"))
         return -1;
 
-    if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("target"))))
+    if (git2r_arg_check_string(git2r_get_list_element(arg, "target")))
         return -1;
 
     return 0;
@@ -510,10 +507,10 @@ int git2r_arg_check_tag(SEXP arg)
  */
 int git2r_arg_check_tree(SEXP arg)
 {
-    if (!Rf_isS4(arg) || !Rf_inherits(arg, "git_tree"))
+    if (!Rf_isNewList(arg) || !Rf_inherits(arg, "git_tree"))
         return -1;
 
-    if (git2r_arg_check_string(GET_SLOT(arg, Rf_install("sha"))))
+    if (git2r_arg_check_sha(git2r_get_list_element(arg, "sha")))
         return -1;
 
     return 0;

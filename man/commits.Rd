@@ -4,12 +4,12 @@
 \alias{commits}
 \title{Commits}
 \usage{
-commits(repo = NULL, topological = TRUE, time = TRUE, reverse = FALSE,
+commits(repo = ".", topological = TRUE, time = TRUE, reverse = FALSE,
   n = NULL)
 }
 \arguments{
-\item{repo}{a path to a repository or a
-\code{\linkS4class{git_repository}} object. Default is '.'}
+\item{repo}{a path to a repository or a \code{git_repository}
+object. Default is '.'}
 
 \item{topological}{Sort the commits in topological order (parents
 before children); can be combined with time sorting. Default

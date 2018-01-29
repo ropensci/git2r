@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,7 +16,6 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <Rdefines.h>
 #include "git2.h"
 #include "refs.h"
 
@@ -28,13 +27,13 @@
 /**
  * Checkout path
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param path The paths to checkout
  * @return R_NilValue
  */
 SEXP git2r_checkout_path(SEXP repo, SEXP path)
 {
-    int err = 0;
+    int error = 0;
     size_t i, len;
     git_repository *repository = NULL;
     git_checkout_options opts = GIT_CHECKOUT_OPTIONS_INIT;
@@ -60,7 +59,7 @@ SEXP git2r_checkout_path(SEXP repo, SEXP path)
     opts.paths.strings = malloc(opts.paths.count * sizeof(char*));
     if (!opts.paths.strings) {
         giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
-        err = GIT_ERROR;
+        error = GIT_ERROR;
         goto cleanup;
     }
 
@@ -70,16 +69,13 @@ SEXP git2r_checkout_path(SEXP repo, SEXP path)
             opts.paths.strings[i] = (char *)CHAR(STRING_ELT(path, i));
 
     opts.checkout_strategy = GIT_CHECKOUT_FORCE;
-    err = git_checkout_head(repository, &opts);
+    error = git_checkout_head(repository, &opts);
 
 cleanup:
-    if (opts.paths.strings)
-        free(opts.paths.strings);
+    free(opts.paths.strings);
+    git_repository_free(repository);
 
-    if (repository)
-        git_repository_free(repository);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return R_NilValue;
@@ -88,7 +84,7 @@ cleanup:
 /**
  * Checkout tree
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param revision The revision string, see
  * http://git-scm.com/docs/git-rev-parse.html#_specifying_revisions
  * @param force Using checkout strategy GIT_CHECKOUT_SAFE (force =
@@ -97,7 +93,7 @@ cleanup:
  */
 SEXP git2r_checkout_tree(SEXP repo, SEXP revision, SEXP force)
 {
-    int err;
+    int error;
     git_repository *repository = NULL;
     git_object *treeish = NULL;
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
@@ -111,22 +107,22 @@ SEXP git2r_checkout_tree(SEXP repo, SEXP revision, SEXP force)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git_revparse_single(&treeish, repository, CHAR(STRING_ELT(revision, 0)));
-    if (err)
+    error = git_revparse_single(&treeish, repository, CHAR(STRING_ELT(revision, 0)));
+    if (error)
         goto cleanup;
 
     switch (git_object_type(treeish)) {
     case GIT_OBJ_COMMIT:
     case GIT_OBJ_TAG:
     case GIT_OBJ_TREE:
-        err = GIT_OK;
+        error = GIT_OK;
         break;
     default:
         giterr_set_str(GITERR_NONE, git2r_err_checkout_tree);
-        err = GIT_ERROR;
+        error = GIT_ERROR;
         break;
     }
-    if (err)
+    if (error)
         goto cleanup;
 
     if (LOGICAL(force)[0])
@@ -134,16 +130,13 @@ SEXP git2r_checkout_tree(SEXP repo, SEXP revision, SEXP force)
     else
         checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE;
 
-    err = git_checkout_tree(repository, treeish, &checkout_opts);
+    error = git_checkout_tree(repository, treeish, &checkout_opts);
 
 cleanup:
-    if (treeish)
-        git_object_free(treeish);
+    git_object_free(treeish);
+    git_repository_free(repository);
 
-    if (repository)
-        git_repository_free(repository);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return R_NilValue;

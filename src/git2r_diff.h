@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -18,10 +18,6 @@
 
 #ifndef INCLUDE_git2r_diff_h
 #define INCLUDE_git2r_diff_h
-
-#include <Rdefines.h>
-
-#include "git2.h"
 
 SEXP git2r_diff(SEXP repo, SEXP tree1, SEXP tree2, SEXP index, SEXP filename);
 

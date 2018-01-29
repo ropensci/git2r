@@ -19,50 +19,6 @@ library("git2r")
 ## For debugging
 sessionInfo()
 
-## Check validity of S4 class git_tag
-## Each slot must have length equal to one
-when <- new("git_time", time = 1395567947, offset = 60)
-tagger <- new("git_signature",
-              name = "Alice",
-              email = "alice@example.org",
-              when = when)
-tagger
-tools::assertError(validObject(new("git_tag",
-                                   message = character(0),
-                                   name = "name1",
-                                   tagger = tagger,
-                                   target = "target1")))
-
-tools::assertError(validObject(new("git_tag",
-                                   message = c("message1", "message2"),
-                                   name = "name1",
-                                   tagger = tagger,
-                                   target = "target1")))
-
-tools::assertError(validObject(new("git_tag",
-                                   message = "message1",
-                                   name = character(0),
-                                   tagger = tagger,
-                                   target = "target1")))
-
-tools::assertError(validObject(new("git_tag",
-                                   message = "message1",
-                                   name = c("name1", "name2"),
-                                   tagger = tagger,
-                                   target = "target1")))
-
-tools::assertError(validObject(new("git_tag",
-                                   message = "message1",
-                                   name = "name1",
-                                   tagger = tagger,
-                                   target = character(0))))
-
-tools::assertError(validObject(new("git_tag",
-                                   message = "message1",
-                                   name = "name1",
-                                   tagger = tagger,
-                                   target = c("target1", "target2"))))
-
 ## Create a directory in tempdir
 path <- tempfile(pattern="git2r-")
 dir.create(path)
@@ -87,16 +43,16 @@ new_tag
 summary(new_tag)
 
 ## Check tag
-stopifnot(identical(lookup(repo, new_tag@sha), new_tag))
-stopifnot(identical(new_tag@name, "Tagname"))
-stopifnot(identical(new_tag@message, "Tag message"))
-stopifnot(identical(new_tag@tagger@name, "Alice"))
-stopifnot(identical(new_tag@tagger@email, "alice@example.org"))
+stopifnot(identical(lookup(repo, new_tag$sha), new_tag))
+stopifnot(identical(new_tag$name, "Tagname"))
+stopifnot(identical(new_tag$message, "Tag message"))
+stopifnot(identical(new_tag$tagger$name, "Alice"))
+stopifnot(identical(new_tag$tagger$email, "alice@example.org"))
 stopifnot(identical(length(tags(repo)), 1L))
-stopifnot(identical(tags(repo)[[1]]@name, "Tagname"))
-stopifnot(identical(tags(repo)[[1]]@message, "Tag message"))
-stopifnot(identical(tags(repo)[[1]]@tagger@name, "Alice"))
-stopifnot(identical(tags(repo)[[1]]@tagger@email, "alice@example.org"))
+stopifnot(identical(tags(repo)[[1]]$name, "Tagname"))
+stopifnot(identical(tags(repo)[[1]]$message, "Tag message"))
+stopifnot(identical(tags(repo)[[1]]$tagger$name, "Alice"))
+stopifnot(identical(tags(repo)[[1]]$tagger$email, "alice@example.org"))
 
 ## Check objects in object database
 stopifnot(identical(table(odb_objects(repo)$type),

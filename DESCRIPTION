@@ -15,8 +15,7 @@ Imports:
     graphics,
     utils
 Depends:
-    R (>= 3.1),
-    methods
+    R (>= 3.1)
 Suggests:
     getPass
 Type: Package
@@ -27,7 +26,6 @@ SystemRequirements: zlib headers and library. OpenSSL headers and
     library. LibSSH2 (optional on non-Windows) to enable the SSH
     transport.
 Collate:
-    'S4_classes.R'
     'blame.R'
     'blob.R'
     'branch.R'

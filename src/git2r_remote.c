@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2017 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,7 +16,6 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <Rdefines.h>
 #include "git2.h"
 #include "common.h"
 
@@ -33,14 +32,14 @@
  * Add a remote with the default fetch refspec to the repository's
  * configuration.
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param name The name of the remote
  * @param url The url of the remote
  * @return R_NilValue
  */
 SEXP git2r_remote_add(SEXP repo, SEXP name, SEXP url)
 {
-    int err;
+    int error;
     git_repository *repository = NULL;
     git_remote *remote = NULL;
 
@@ -56,19 +55,16 @@ SEXP git2r_remote_add(SEXP repo, SEXP name, SEXP url)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git_remote_create(
+    error = git_remote_create(
         &remote,
         repository,
         CHAR(STRING_ELT(name, 0)),
         CHAR(STRING_ELT(url, 0)));
 
-    if (remote)
-	git_remote_free(remote);
+    git_remote_free(remote);
+    git_repository_free(repository);
 
-    if (repository)
-	git_repository_free(repository);
-
-    if (err)
+    if (error)
 	git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return R_NilValue;
@@ -115,7 +111,7 @@ static int git2r_update_tips_cb(
 /**
  * Fetch new data and update tips
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param name The name of the remote to fetch from
  * @param credentials The credentials for remote repository access.
  * @param msg The one line long message to be appended to the reflog
@@ -132,7 +128,7 @@ SEXP git2r_remote_fetch(
     SEXP verbose,
     SEXP refspecs)
 {
-    int err, nprotect = 0;
+    int error, nprotect = 0;
     SEXP result = R_NilValue;
     const git_transfer_progress *stats;
     git_remote *remote = NULL;
@@ -156,8 +152,8 @@ SEXP git2r_remote_fetch(
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git_remote_lookup(&remote, repository, CHAR(STRING_ELT(name, 0)));
-    if (err)
+    error = git_remote_lookup(&remote, repository, CHAR(STRING_ELT(name, 0)));
+    if (error)
         goto cleanup;
 
     if (!Rf_isNull(refspecs)) {
@@ -174,7 +170,7 @@ SEXP git2r_remote_fetch(
             refs.strings = malloc(refs.count * sizeof(char*));
             if (!refs.strings) {
                 giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
-                err = GIT_ERROR;
+                error = GIT_ERROR;
                 goto cleanup;
             }
 
@@ -191,8 +187,8 @@ SEXP git2r_remote_fetch(
     fetch_opts.callbacks.payload = &payload;
     fetch_opts.callbacks.credentials = &git2r_cred_acquire_cb;
     fetch_opts.callbacks.update_tips = &git2r_update_tips_cb;
-    err = git_remote_fetch(remote, &refs, &fetch_opts, CHAR(STRING_ELT(msg, 0)));
-    if (err)
+    error = git_remote_fetch(remote, &refs, &fetch_opts, CHAR(STRING_ELT(msg, 0)));
+    if (error)
         goto cleanup;
 
     stats = git_remote_stats(remote);
@@ -203,22 +199,17 @@ SEXP git2r_remote_fetch(
     git2r_transfer_progress_init(stats, result);
 
 cleanup:
-    if (refs.strings)
-        free(refs.strings);
+    free(refs.strings);
 
-    if (remote) {
-        if (git_remote_connected(remote))
-            git_remote_disconnect(remote);
-        git_remote_free(remote);
-    }
-
-    if (repository)
-        git_repository_free(repository);
+    if (remote && git_remote_connected(remote))
+        git_remote_disconnect(remote);
+    git_remote_free(remote);
+    git_repository_free(repository);
 
     if (nprotect)
         UNPROTECT(nprotect);
 
-    if (err)
+    if (error)
         git2r_error(
             __func__,
             giterr_last(),
@@ -231,12 +222,12 @@ cleanup:
 /**
  * Get the configured remotes for a repo
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @return Character vector with name of the remotes
  */
 SEXP git2r_remote_list(SEXP repo)
 {
-    int err;
+    int error, nprotect = 0;
     size_t i;
     git_strarray rem_list;
     SEXP list = R_NilValue;
@@ -246,24 +237,23 @@ SEXP git2r_remote_list(SEXP repo)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git_remote_list(&rem_list, repository);
-    if (err)
+    error = git_remote_list(&rem_list, repository);
+    if (error)
         goto cleanup;
 
     PROTECT(list = Rf_allocVector(STRSXP, rem_list.count));
+    nprotect++;
     for (i = 0; i < rem_list.count; i++)
         SET_STRING_ELT(list, i, Rf_mkChar(rem_list.strings[i]));
 
 cleanup:
     git_strarray_free(&rem_list);
+    git_repository_free(repository);
 
-    if (repository)
-        git_repository_free(repository);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
-    if (!Rf_isNull(list))
-        UNPROTECT(1);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return list;
@@ -274,13 +264,13 @@ cleanup:
  *
  * All remote-tracking branches and configuration settings for the
  * remote will be removed.
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param name The name of the remote to remove
  * @return R_NilValue
  */
 SEXP git2r_remote_remove(SEXP repo, SEXP name)
 {
-    int err;
+    int error;
     git_repository *repository = NULL;
 
     if (git2r_arg_check_string(name))
@@ -290,12 +280,11 @@ SEXP git2r_remote_remove(SEXP repo, SEXP name)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git_remote_delete(repository, CHAR(STRING_ELT(name, 0)));
+    error = git_remote_delete(repository, CHAR(STRING_ELT(name, 0)));
 
-    if (repository)
-	git_repository_free(repository);
+    git_repository_free(repository);
 
-    if (err)
+    if (error)
 	git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return R_NilValue;
@@ -304,14 +293,14 @@ SEXP git2r_remote_remove(SEXP repo, SEXP name)
 /**
  * Give the remote a new name
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param oldname The old name of the remote
  * @param newname The new name of the remote
  * @return R_NilValue
  */
 SEXP git2r_remote_rename(SEXP repo, SEXP oldname, SEXP newname)
 {
-    int err;
+    int error;
     git_strarray problems = {0};
     git_repository *repository = NULL;
 
@@ -324,21 +313,20 @@ SEXP git2r_remote_rename(SEXP repo, SEXP oldname, SEXP newname)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git_remote_rename(
+    error = git_remote_rename(
         &problems,
         repository,
         CHAR(STRING_ELT(oldname, 0)),
         CHAR(STRING_ELT(newname, 0)));
-    if (err)
+    if (error)
 	goto cleanup;
 
     git_strarray_free(&problems);
 
 cleanup:
-    if (repository)
-	git_repository_free(repository);
+    git_repository_free(repository);
 
-    if (err)
+    if (error)
 	git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return R_NilValue;
@@ -349,14 +337,14 @@ cleanup:
  *
  * This assumes the common case of a single-url remote and
  * will otherwise raise an error.
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param name The name of the remote
  * @param url The url to set
  * @return R_NilValue
  */
 SEXP git2r_remote_set_url(SEXP repo, SEXP name, SEXP url)
 {
-    int err;
+    int error;
     git_repository *repository = NULL;
 
     if (git2r_arg_check_string(name))
@@ -368,15 +356,14 @@ SEXP git2r_remote_set_url(SEXP repo, SEXP name, SEXP url)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git_remote_set_url(
+    error = git_remote_set_url(
         repository,
         CHAR(STRING_ELT(name, 0)),
         CHAR(STRING_ELT(url, 0)));
 
-    if (repository)
-	git_repository_free(repository);
+    git_repository_free(repository);
 
-    if (err)
+    if (error)
 	git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return R_NilValue;
@@ -385,7 +372,7 @@ SEXP git2r_remote_set_url(SEXP repo, SEXP name, SEXP url)
 /**
  * Get the remote's url
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param remote Character vector with name of remote. NA values are
  * ok and give NA values as result at corresponding index in url
  * vector
@@ -393,7 +380,7 @@ SEXP git2r_remote_set_url(SEXP repo, SEXP name, SEXP url)
  */
 SEXP git2r_remote_url(SEXP repo, SEXP remote)
 {
-    int err = GIT_OK;
+    int error = GIT_OK;
     SEXP url;
     size_t len;
     size_t i = 0;
@@ -414,11 +401,11 @@ SEXP git2r_remote_url(SEXP repo, SEXP remote)
         if (NA_STRING == STRING_ELT(remote, i)) {
             SET_STRING_ELT(url, i, NA_STRING);
         } else {
-            err = git_remote_lookup(
+            error = git_remote_lookup(
                 &tmp_remote,
                 repository,
                 CHAR(STRING_ELT(remote, i)));
-            if (err)
+            if (error)
                 goto cleanup;
 
             SET_STRING_ELT(url, i, Rf_mkChar(git_remote_url(tmp_remote)));
@@ -427,12 +414,11 @@ SEXP git2r_remote_url(SEXP repo, SEXP remote)
     }
 
 cleanup:
-    if (repository)
-        git_repository_free(repository);
+    git_repository_free(repository);
 
     UNPROTECT(1);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return url;
@@ -442,7 +428,7 @@ cleanup:
  * Get the remote's url
  *
  * Based on https://github.com/libgit2/libgit2/blob/babdc376c7/examples/network/ls-remote.c
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param name Character vector with URL of remote.
  * @return Character vector for each reference with the associated commit IDs.
  *
@@ -456,7 +442,7 @@ SEXP git2r_remote_ls(SEXP name, SEXP repo, SEXP credentials)
     SEXP result = R_NilValue;
     SEXP names = R_NilValue;
     git_remote *remote = NULL;
-    int err;
+    int error, nprotect = 0;
     const git_remote_head **refs;
     size_t refs_len, i;
     git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
@@ -473,10 +459,10 @@ SEXP git2r_remote_ls(SEXP name, SEXP repo, SEXP credentials)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     name_ = CHAR(STRING_ELT(name, 0));
-    err = git_remote_lookup(&remote, repository, name_);
-    if (err) {
-        err = git_remote_create_anonymous(&remote, repository, name_);
-        if (err)
+    error = git_remote_lookup(&remote, repository, name_);
+    if (error) {
+        error = git_remote_create_anonymous(&remote, repository, name_);
+        if (error)
             goto cleanup;
     }
 
@@ -484,15 +470,16 @@ SEXP git2r_remote_ls(SEXP name, SEXP repo, SEXP credentials)
     callbacks.payload = &payload;
     callbacks.credentials = &git2r_cred_acquire_cb;
 
-    err = git_remote_connect(remote, GIT_DIRECTION_FETCH, &callbacks, NULL, NULL);
-    if (err)
+    error = git_remote_connect(remote, GIT_DIRECTION_FETCH, &callbacks, NULL, NULL);
+    if (error)
         goto cleanup;
 
-    err = git_remote_ls(&refs, &refs_len, remote);
-    if (err)
+    error = git_remote_ls(&refs, &refs_len, remote);
+    if (error)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(STRSXP, refs_len));
+    nprotect++;
     Rf_setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, refs_len));
 
     for (i = 0; i < refs_len; i++) {
@@ -503,13 +490,12 @@ SEXP git2r_remote_ls(SEXP name, SEXP repo, SEXP credentials)
     }
 
 cleanup:
-    if (repository)
-        git_repository_free(repository);
+    git_repository_free(repository);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;

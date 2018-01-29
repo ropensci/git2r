@@ -24,7 +24,7 @@
 ##' vector).
 ##' @noRd
 get_refspec <- function(repo = NULL, remote = NULL, spec = NULL, opts = NULL) {
-    stopifnot(is(object = repo, class2 = "git_repository"))
+    stopifnot(inherits(repo, "git_repository"))
 
     if (is_detached(repo))
         stop("You are not currently on a branch.")
@@ -51,7 +51,7 @@ get_refspec <- function(repo = NULL, remote = NULL, spec = NULL, opts = NULL) {
     if (is.null(remote)) {
         remote <- .Call(git2r_config_get_string,
                         repo,
-                        paste0("branch.", git2r::head(repo)@name, ".remote"))
+                        paste0("branch.", head(repo)$name, ".remote"))
         if (is.null(remote))
             remote <- "origin"
     }

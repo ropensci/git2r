@@ -16,13 +16,12 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <Rdefines.h>
-
 #include "git2r_arg.h"
 #include "git2r_blob.h"
 #include "git2r_branch.h"
 #include "git2r_commit.h"
 #include "git2r_error.h"
+#include "git2r_objects.h"
 #include "git2r_repository.h"
 #include "git2r_signature.h"
 #include "git2r_tag.h"
@@ -30,9 +29,9 @@
 #include "buffer.h"
 
 /**
- * Get repo slot from S4 class git_repository
+ * Get repo from S3 class git_repository
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @return a git_repository pointer on success else NULL
  */
 git_repository* git2r_repository_open(SEXP repo)
@@ -43,10 +42,7 @@ git_repository* git2r_repository_open(SEXP repo)
     if (git2r_arg_check_repository(repo))
         return NULL;
 
-    path = GET_SLOT(repo, Rf_install("path"));
-    if (git2r_arg_check_string(path))
-        return NULL;
-
+    path = git2r_get_list_element(repo, "path");
     if (git_repository_open(&repository, CHAR(STRING_ELT(path, 0))) < 0)
         return NULL;
 
@@ -86,21 +82,34 @@ static int git2r_repository_fetchhead_foreach_cb(
     if (!Rf_isNull(cb_data->list)) {
         char sha[GIT_OID_HEXSZ + 1];
         SEXP fetch_head;
-        SEXP s_ref_name = Rf_install("ref_name");
-        SEXP s_remote_url = Rf_install("remote_url");
-        SEXP s_sha = Rf_install("sha");
-        SEXP s_is_merge = Rf_install("is_merge");
-        SEXP s_repo = Rf_install("repo");
 
-        PROTECT(fetch_head = NEW_OBJECT(MAKE_CLASS("git_fetch_head")));
-        SET_VECTOR_ELT(cb_data->list, cb_data->n, fetch_head);
-        SET_SLOT(fetch_head, s_ref_name, Rf_mkString(ref_name));
-        SET_SLOT(fetch_head, s_remote_url, Rf_mkString(remote_url));
+        SET_VECTOR_ELT(
+            cb_data->list,
+            cb_data->n,
+            fetch_head = Rf_mkNamed(VECSXP, git2r_S3_items__git_fetch_head));
+        Rf_setAttrib(fetch_head, R_ClassSymbol,
+                     Rf_mkString(git2r_S3_class__git_fetch_head));
+        SET_VECTOR_ELT(
+            fetch_head,
+            git2r_S3_item__git_fetch_head__ref_name,
+            Rf_mkString(ref_name));
+        SET_VECTOR_ELT(
+            fetch_head,
+            git2r_S3_item__git_fetch_head__remote_url,
+            Rf_mkString(remote_url));
         git_oid_tostr(sha, sizeof(sha), oid);
-        SET_SLOT(fetch_head, s_sha, Rf_mkString(sha));
-        SET_SLOT(fetch_head, s_is_merge, Rf_ScalarLogical(is_merge));
-        SET_SLOT(fetch_head, s_repo, cb_data->repo);
-        UNPROTECT(1);
+        SET_VECTOR_ELT(
+            fetch_head,
+            git2r_S3_item__git_fetch_head__sha,
+            Rf_mkString(sha));
+        SET_VECTOR_ELT(
+            fetch_head,
+            git2r_S3_item__git_fetch_head__is_merge,
+            Rf_ScalarLogical(is_merge));
+        SET_VECTOR_ELT(
+            fetch_head,
+            git2r_S3_item__git_fetch_head__repo,
+            cb_data->repo);
     }
 
     cb_data->n += 1;
@@ -111,13 +120,13 @@ static int git2r_repository_fetchhead_foreach_cb(
 /**
  * Get entries in FETCH_HEAD file
  *
- * @param repo S4 class git_repository
- * @return list with the S4 class git_fetch_head entries. R_NilValue
+ * @param repo S3 class git_repository
+ * @return list with the S3 class git_fetch_head entries. R_NilValue
  * if there is no FETCH_HEAD file.
  */
 SEXP git2r_repository_fetch_heads(SEXP repo)
 {
-    int err;
+    int error, nprotect = 0;
     SEXP result = R_NilValue;
     git2r_fetch_head_cb_data cb_data = {0, R_NilValue, R_NilValue};
     git_repository *repository = NULL;
@@ -127,34 +136,34 @@ SEXP git2r_repository_fetch_heads(SEXP repo)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     /* Count number of fetch heads before creating the list */
-    err = git_repository_fetchhead_foreach(
+    error = git_repository_fetchhead_foreach(
         repository,
         git2r_repository_fetchhead_foreach_cb,
         &cb_data);
 
-    if (err) {
-        if (GIT_ENOTFOUND == err)
-            err = GIT_OK;
+    if (error) {
+        if (GIT_ENOTFOUND == error)
+            error = GIT_OK;
         goto cleanup;
     }
 
     PROTECT(result = Rf_allocVector(VECSXP, cb_data.n));
+    nprotect++;
     cb_data.n = 0;
     cb_data.list = result;
     cb_data.repo = repo;
-    err = git_repository_fetchhead_foreach(
+    error = git_repository_fetchhead_foreach(
         repository,
         git2r_repository_fetchhead_foreach_cb,
         &cb_data);
 
 cleanup:
-    if (repository)
-        git_repository_free(repository);
+    git_repository_free(repository);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -163,14 +172,14 @@ cleanup:
 /**
  * Get head of repository
  *
- * @param repo S4 class git_repository
- * @return R_NilValue if unborn branch or not found. S4 class
- * git_branch if not a detached head. S4 class git_commit if detached
+ * @param repo S3 class git_repository
+ * @return R_NilValue if unborn branch or not found. S3 class
+ * git_branch if not a detached head. S3 class git_commit if detached
  * head
  */
 SEXP git2r_repository_head(SEXP repo)
 {
-    int err;
+    int error, nprotect = 0;
     SEXP result = R_NilValue;
     git_commit *commit = NULL;
     git_reference *reference = NULL;
@@ -180,10 +189,10 @@ SEXP git2r_repository_head(SEXP repo)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git_repository_head(&reference, repository);
-    if (err) {
-        if (GIT_EUNBORNBRANCH == err || GIT_ENOTFOUND == err)
-            err = GIT_OK;
+    error = git_repository_head(&reference, repository);
+    if (error) {
+        if (GIT_EUNBORNBRANCH == error || GIT_ENOTFOUND == error)
+            error = GIT_OK;
         goto cleanup;
     }
 
@@ -191,33 +200,34 @@ SEXP git2r_repository_head(SEXP repo)
         git_branch_t type = GIT_BRANCH_LOCAL;
         if (git_reference_is_remote(reference))
             type = GIT_BRANCH_REMOTE;
-        PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_branch")));
-        err = git2r_branch_init(reference, type, repo, result);
+        PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_branch));
+        nprotect++;
+        Rf_setAttrib(result, R_ClassSymbol,
+                     Rf_mkString(git2r_S3_class__git_branch));
+        error = git2r_branch_init(reference, type, repo, result);
     } else {
-        err = git_commit_lookup(
+        error = git_commit_lookup(
             &commit,
             repository,
             git_reference_target(reference));
-        if (err)
+        if (error)
             goto cleanup;
-        PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_commit")));
+        PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_commit));
+        nprotect++;
+        Rf_setAttrib(result, R_ClassSymbol,
+                     Rf_mkString(git2r_S3_class__git_commit));
         git2r_commit_init(commit, repo, result);
     }
 
 cleanup:
-    if (commit)
-        git_commit_free(commit);
+    git_commit_free(commit);
+    git_reference_free(reference);
+    git_repository_free(repository);
 
-    if (reference)
-        git_reference_free(reference);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
-    if (repository)
-        git_repository_free(repository);
-
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -235,7 +245,7 @@ cleanup:
  */
 SEXP git2r_repository_init(SEXP path, SEXP bare)
 {
-    int err;
+    int error;
     git_repository *repository = NULL;
 
     if (git2r_arg_check_string(path))
@@ -243,14 +253,13 @@ SEXP git2r_repository_init(SEXP path, SEXP bare)
     if (git2r_arg_check_logical(bare))
         git2r_error(__func__, NULL, "'bare'", git2r_err_logical_arg);
 
-    err = git_repository_init(&repository,
+    error = git_repository_init(&repository,
                               CHAR(STRING_ELT(path, 0)),
                               LOGICAL(bare)[0]);
-    if (err)
+    if (error)
         git2r_error(__func__, NULL, git2r_err_repo_init, NULL);
 
-    if (repository)
-        git_repository_free(repository);
+    git_repository_free(repository);
 
     return R_NilValue;
 }
@@ -258,12 +267,11 @@ SEXP git2r_repository_init(SEXP path, SEXP bare)
 /**
  * Check if repository is bare.
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @return TRUE if bare else FALSE
  */
 SEXP git2r_repository_is_bare(SEXP repo)
 {
-    SEXP result;
     int is_bare;
     git_repository *repository;
 
@@ -274,25 +282,19 @@ SEXP git2r_repository_is_bare(SEXP repo)
     is_bare = git_repository_is_bare(repository);
     git_repository_free(repository);
 
-    PROTECT(result = Rf_allocVector(LGLSXP, 1));
     if (1 == is_bare)
-        LOGICAL(result)[0] = 1;
-    else
-        LOGICAL(result)[0] = 0;
-    UNPROTECT(1);
-
-    return result;
+        return Rf_ScalarLogical(1);
+    return Rf_ScalarLogical(0);
 }
 
 /**
  * Determine if the repository was a shallow clone.
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @return TRUE if shallow else FALSE
  */
 SEXP git2r_repository_is_shallow(SEXP repo)
 {
-    SEXP result;
     int is_shallow;
     git_repository *repository;
 
@@ -305,25 +307,19 @@ SEXP git2r_repository_is_shallow(SEXP repo)
     if (is_shallow < 0)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
-    PROTECT(result = Rf_allocVector(LGLSXP, 1));
     if (1 == is_shallow)
-        LOGICAL(result)[0] = 1;
-    else
-        LOGICAL(result)[0] = 0;
-    UNPROTECT(1);
-
-    return result;
+        return Rf_ScalarLogical(1);
+    return Rf_ScalarLogical(0);
 }
 
 /**
  * Check if head of repository is detached
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @return TRUE if detached else FALSE
  */
 SEXP git2r_repository_head_detached(SEXP repo)
 {
-    SEXP result;
     int head_detached;
     git_repository *repository;
 
@@ -336,25 +332,19 @@ SEXP git2r_repository_head_detached(SEXP repo)
     if (head_detached < 0)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
-    PROTECT(result = Rf_allocVector(LGLSXP, 1));
     if (1 == head_detached)
-        LOGICAL(result)[0] = 1;
-    else
-        LOGICAL(result)[0] = 0;
-    UNPROTECT(1);
-
-    return result;
+        return Rf_ScalarLogical(1);
+    return Rf_ScalarLogical(0);
 }
 
 /**
  * Check if repository is empty.
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @return TRUE if empty else FALSE
  */
 SEXP git2r_repository_is_empty(SEXP repo)
 {
-    SEXP result;
     int is_empty;
     git_repository *repository;
 
@@ -367,14 +357,9 @@ SEXP git2r_repository_is_empty(SEXP repo)
     if (is_empty < 0)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
-    PROTECT(result = Rf_allocVector(LGLSXP, 1));
     if (1 == is_empty)
-        LOGICAL(result)[0] = 1;
-    else
-        LOGICAL(result)[0] = 0;
-    UNPROTECT(1);
-
-    return result;
+        return Rf_ScalarLogical(1);
+    return Rf_ScalarLogical(0);
 }
 
 /**
@@ -385,7 +370,6 @@ SEXP git2r_repository_is_empty(SEXP repo)
  */
 SEXP git2r_repository_can_open(SEXP path)
 {
-    SEXP result;
     int can_open;
     git_repository *repository = NULL;
 
@@ -393,29 +377,23 @@ SEXP git2r_repository_can_open(SEXP path)
         git2r_error(__func__, NULL, "'path'", git2r_err_string_arg);
 
     can_open = git_repository_open(&repository, CHAR(STRING_ELT(path, 0)));
-    if (repository)
-        git_repository_free(repository);
+    git_repository_free(repository);
 
-    PROTECT(result = Rf_allocVector(LGLSXP, 1));
     if (0 != can_open)
-        LOGICAL(result)[0] = 0;
-    else
-        LOGICAL(result)[0] = 1;
-    UNPROTECT(1);
-
-    return result;
+        return Rf_ScalarLogical(0);
+    return Rf_ScalarLogical(1);
 }
 
 /**
  * Make the repository HEAD point to the specified reference.
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param ref_name Canonical name of the reference the HEAD should point at
  * @return R_NilValue
  */
 SEXP git2r_repository_set_head(SEXP repo, SEXP ref_name)
 {
-    int err;
+    int error;
     git_repository *repository = NULL;
 
     if (git2r_arg_check_string(ref_name))
@@ -427,12 +405,11 @@ SEXP git2r_repository_set_head(SEXP repo, SEXP ref_name)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git_repository_set_head(repository, CHAR(STRING_ELT(ref_name, 0)));
+    error = git_repository_set_head(repository, CHAR(STRING_ELT(ref_name, 0)));
 
-    if (repository)
-        git_repository_free(repository);
+    git_repository_free(repository);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return R_NilValue;
@@ -441,12 +418,12 @@ SEXP git2r_repository_set_head(SEXP repo, SEXP ref_name)
 /**
  * Make the repository HEAD directly point to the commit.
  *
- * @param commit S4 class git_commit
+ * @param commit S3 class git_commit
  * @return R_NilValue
  */
 SEXP git2r_repository_set_head_detached(SEXP commit)
 {
-    int err;
+    int error;
     SEXP sha;
     git_oid oid;
     git_commit *treeish = NULL;
@@ -455,31 +432,28 @@ SEXP git2r_repository_set_head_detached(SEXP commit)
     if (git2r_arg_check_commit(commit))
         git2r_error(__func__, NULL, "'commit'", git2r_err_commit_arg);
 
-    repository = git2r_repository_open(GET_SLOT(commit, Rf_install("repo")));
+    repository = git2r_repository_open(git2r_get_list_element(commit, "repo"));
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    sha = GET_SLOT(commit, Rf_install("sha"));
-    err = git_oid_fromstr(&oid, CHAR(STRING_ELT(sha, 0)));
-    if (err)
+    sha = git2r_get_list_element(commit, "sha");
+    error = git_oid_fromstr(&oid, CHAR(STRING_ELT(sha, 0)));
+    if (error)
         goto cleanup;
 
-    err = git_commit_lookup(&treeish, repository, &oid);
-    if (err)
+    error = git_commit_lookup(&treeish, repository, &oid);
+    if (error)
         goto cleanup;
 
-    err = git_repository_set_head_detached(
+    error = git_repository_set_head_detached(
         repository,
         git_commit_id(treeish));
 
 cleanup:
-    if (treeish)
-        git_commit_free(treeish);
+    git_commit_free(treeish);
+    git_repository_free(repository);
 
-    if (repository)
-        git_repository_free(repository);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return R_NilValue;
@@ -488,7 +462,7 @@ cleanup:
 /**
  * Get workdir of repository.
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @return R_NilValue if bare repository, else character vector
  * of length one with path.
  */
@@ -528,7 +502,7 @@ SEXP git2r_repository_workdir(SEXP repo)
  */
 SEXP git2r_repository_discover(SEXP path, SEXP ceiling)
 {
-    int err;
+    int error, nprotect = 0;
     SEXP result = R_NilValue;
     git_buf buf = GIT_BUF_INIT;
     const char *ceiling_dirs = NULL;
@@ -544,28 +518,29 @@ SEXP git2r_repository_discover(SEXP path, SEXP ceiling)
     /* note that across_fs (arg #3) is set to 0 so this will stop when
      * a filesystem device change is detected while exploring parent
      * directories */
-    err = git_repository_discover(
+    error = git_repository_discover(
         &buf,
         CHAR(STRING_ELT(path, 0)),
         0,
         ceiling_dirs);
-    if (err) {
+    if (error) {
         /* NB just return R_NilValue if we can't discover the repo */
-        if (GIT_ENOTFOUND == err)
-            err = GIT_OK;
+        if (GIT_ENOTFOUND == error)
+            error = GIT_OK;
         goto cleanup;
     }
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
+    nprotect++;
     SET_STRING_ELT(result, 0, Rf_mkChar(buf.ptr));
 
 cleanup:
     git_buf_free(&buf);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;

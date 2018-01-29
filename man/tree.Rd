@@ -10,7 +10,7 @@ tree(object = NULL)
 \item{object}{the \code{commit} or \code{stash} object}
 }
 \value{
-A S4 class git_tree object
+A S3 class git_tree object
 }
 \description{
 Get the tree pointed to by a commit or stash.

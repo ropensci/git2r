@@ -8,8 +8,8 @@ status(repo = NULL, staged = TRUE, unstaged = TRUE, untracked = TRUE,
   ignored = FALSE, all_untracked = FALSE)
 }
 \arguments{
-\item{repo}{a path to a repository or a
-\code{\linkS4class{git_repository}} object. Default is '.'}
+\item{repo}{a path to a repository or a \code{git_repository}
+object. Default is '.'}
 
 \item{staged}{Include staged files. Default TRUE.}
 

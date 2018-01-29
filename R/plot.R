@@ -16,18 +16,12 @@
 
 ##' Plot commits over time
 ##'
-##' @rdname plot-methods
-##' @aliases plot
-##' @aliases plot-methods
-##' @docType methods
 ##' @param x The repository to plot
 ##' @param breaks Default is \code{month}. Change to year, quarter,
 ##' week or day as necessary.
 ##' @param main Default title for the plot is "Commits on repo:" and
 ##' repository workdir basename. Supply a new title if you desire one.
 ##' @param ... Additional arguments affecting the plot
-##' @keywords methods
-##' @include S4_classes.R
 ##' @importFrom graphics axis
 ##' @importFrom graphics barplot
 ##' @export
@@ -41,38 +35,33 @@
 ##' ## Plot commits
 ##' plot(repo)
 ##' }
-setMethod("plot",
-          signature(x = "git_repository"),
-          function(x,
-                   breaks = c("month", "year", "quarter", "week", "day"),
-                   main = NULL,
-                   ...)
-          {
-              breaks = match.arg(breaks)
+plot.git_repository <- function(x,
+                                breaks = c("month", "year", "quarter", "week", "day"),
+                                main = NULL,
+                                ...)
+{
+    breaks = match.arg(breaks)
 
-              df <- contributions(x, breaks = breaks, by = "commits")
-              tmp <- data.frame(when = seq(from = min(df$when),
-                                           to   = max(df$when),
-                                           by   = breaks),
-                                n = 0)
-              i <- match(df$when, tmp$when)
-              tmp$n[i] <- df$n
-              df <- tmp
+    df <- contributions(x, breaks = breaks, by = "commits")
+    tmp <- data.frame(when = seq(from = min(df$when),
+                                 to   = max(df$when),
+                                 by   = breaks),
+                      n = 0)
+    i <- match(df$when, tmp$when)
+    tmp$n[i] <- df$n
+    df <- tmp
 
-              xlab <- sprintf("Time [%s]", breaks)
-              ylab <- "Number of commits"
-              if (is.null(main)) {
-                  if (is_bare(x)) {
-                      main <- "Commits"
-                  } else {
-                      main <- sprintf("Commits on repository: %s",
-                                      basename(workdir(x)))
-                  }
-              }
+    xlab <- sprintf("Time [%s]", breaks)
+    ylab <- "Number of commits"
+    if (is.null(main)) {
+        if (is_bare(x)) {
+            main <- "Commits"
+        } else {
+            main <- sprintf("Commits on repository: %s",
+                            basename(workdir(x)))
+        }
+    }
 
-              mp <- graphics::barplot(df$n, xlab = xlab, ylab = ylab,
-                                      main = main, ...)
-              graphics::axis(1, at = mp, labels = seq(min(df$when),
-                                             max(df$when), breaks))
-          }
-)
+    mp <- barplot(df$n, xlab = xlab, ylab = ylab, main = main, ...)
+    axis(1, at = mp, labels = seq(min(df$when), max(df$when), breaks))
+}

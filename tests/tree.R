@@ -44,7 +44,7 @@ stopifnot(identical(lookup(repo, "a0b0b9e615e9e433eb5f11859e9feac4564c58c5"),
 stopifnot(identical(length(tree(commits(repo)[[1]])), 1L))
 
 ## Coerce to a data.frame and check column names
-stopifnot(identical(names(as(tree(commits(repo)[[1]]), "data.frame")),
+stopifnot(identical(names(as.data.frame(tree(commits(repo)[[1]]))),
                     c("mode", "type", "sha", "name")))
 
 ## Check ls_tree

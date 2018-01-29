@@ -19,12 +19,9 @@
 ##' Help method to extract the time as a character string from the S4
 ##' classes \code{git_commit}, \code{git_signature}, \code{git_tag}
 ##' and \code{git_time}.
-##' @rdname when-methods
-##' @docType methods
 ##' @param object the \code{object} to extract the time slot from.
 ##' @return A \code{character} vector of length one.
-##' @keywords methods
-##' @include S4_classes.R
+##' @export
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -44,57 +41,16 @@
 ##' when(commits(repo)[[1]])
 ##' when(tags(repo)[[1]])
 ##' }
-setGeneric("when",
-           signature = "object",
-           function(object)
-           standardGeneric("when"))
-
-##' @rdname when-methods
-##' @export
-setMethod("when",
-          signature(object = "git_commit"),
-          function(object)
-          {
-              as(object@author@when, "character")
-          }
-)
-
-##' @rdname when-methods
-##' @export
-setMethod("when",
-          signature(object = "git_signature"),
-          function(object)
-          {
-              as(object@when, "character")
-          }
-)
-
-##' @rdname when-methods
-##' @export
-setMethod("when",
-          signature(object = "git_stash"),
-          function(object)
-          {
-              as(object@stasher@when, "character")
-          }
-)
-
-##' @rdname when-methods
-##' @export
-setMethod("when",
-          signature(object = "git_tag"),
-          function(object)
-          {
-              as(object@tagger@when, "character")
-          }
-)
-
-##' @rdname when-methods
-##' @export
-setMethod("when",
-          signature(object = "git_time"),
-          function(object)
-          {
-              as(object, "character")
-          }
-)
+when <- function(object) {
+    if (inherits(object, "git_commit"))
+        return(as.character(object$author$when))
+    if (inherits(object, "git_signature"))
+        return(as.character(object$when))
+    if (inherits(object, "git_stash"))
+        return(as.character(object$stasher$when))
+    if (inherits(object, "git_tag"))
+        return(as.character(object$tagger$when))
+    if (inherits(object, "git_time"))
+        return(as.character(object))
+    stop("Invalid 'object'")
+}

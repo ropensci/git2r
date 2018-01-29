@@ -7,8 +7,8 @@
 last_commit(repo = ".")
 }
 \arguments{
-\item{repo}{a path to a repository or a
-\code{\linkS4class{git_repository}} object. Default is '.'}
+\item{repo}{a path to a repository or a \code{git_repository}
+object. Default is '.'}
 }
 \description{
 Get last commit in the current branch.
@@ -32,5 +32,11 @@ commit(repo, "First commit message")
 ## Get last commit
 last_commit(repo)
 last_commit(path)
+
+## Coerce the last commit to a data.frame
+as.data.frame(last_commit(path), "data.frame")
+
+## Summary of last commit in repository
+summary(last_commit(repo))
 }
 }

@@ -7,8 +7,8 @@
 add(repo = ".", path = NULL, force = FALSE)
 }
 \arguments{
-\item{repo}{a path to a repository or a
-\code{\linkS4class{git_repository}} object. Default is '.'}
+\item{repo}{a path to a repository or a \code{git_repository}
+object. Default is '.'}
 
 \item{path}{Character vector with file names or shell glob
 patterns that will matched against files in the repository's

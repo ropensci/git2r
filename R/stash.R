@@ -63,15 +63,15 @@
 ##' stash_list(repo)
 ##' }
 stash_drop <- function(object = ".", index = 0) {
-    if (is(object, "git_stash")) {
+    if (inherits(object, "git_stash")) {
         ## Determine the index of the stash in the stash list
-        i <- match(object@sha, vapply(stash_list(object@repo),
-                                      slot, character(1), "sha"))
+        i <- match(object$sha, vapply(stash_list(object$repo),
+                                      "[[", character(1), "sha"))
 
         ## The stash list is zero-based
         index <- i - 1L
 
-        object <- object@repo
+        object <- object$repo
     } else {
         object <- lookup_repository(object)
     }
@@ -187,53 +187,16 @@ stash_list <- function(repo = ".") {
     .Call(git2r_stash_list, lookup_repository(repo))
 }
 
-##' Brief summary of a stash
-##'
-##' @aliases show,git_stash-methods
-##' @docType methods
-##' @param object The stash \code{object}
-##' @return None (invisible 'NULL').
-##' @keywords methods
-##' @export
-##' @examples \dontrun{
-##' ## Initialize a temporary repository
-##' path <- tempfile(pattern="git2r-")
-##' dir.create(path)
-##' repo <- init(path)
-##'
-##' # Configure a user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
-##'
-##' # Create a file, add and commit
-##' writeLines("Hello world!", file.path(path, "test.txt"))
-##' add(repo, 'test.txt')
-##' commit(repo, "Commit message")
-##'
-##' # Change file
-##' writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test.txt"))
-##'
-##' # Create stash in repository
-##' stash(repo, "Stash message")
-##'
-##' # View brief summary of stash
-##' stash_list(repo)[[1]]
-##' }
-setMethod("show",
-          signature(object = "git_stash"),
-          function(object)
-          {
-              cat(sprintf("%s\n", object@message))
-          }
-)
+## @export
+print.git_stash <- function(x, ...) {
+    cat(sprintf("%s\n", x$message))
+}
 
 ##' Summary of a stash
 ##'
-##' @aliases summary,git_stash-methods
-##' @docType methods
 ##' @param object The stash \code{object}
 ##' @param ... Additional arguments affecting the summary produced.
 ##' @return None (invisible 'NULL').
-##' @keywords methods
 ##' @export
 ##' @examples \dontrun{
 ##' ## Initialize a temporary repository
@@ -258,18 +221,14 @@ setMethod("show",
 ##' # View summary of stash
 ##' summary(stash_list(repo)[[1]])
 ##' }
-setMethod("summary",
-          signature(object = "git_stash"),
-          function(object, ...)
-          {
-              cat(sprintf(paste0("message: %s\n",
-                                 "stasher: %s <%s>\n",
-                                 "when:    %s\n",
-                                 "sha:     %s\n\n"),
-                          object@summary,
-                          object@author@name,
-                          object@author@email,
-                          as(object@author@when, "character"),
-                          object@sha))
-          }
-)
+summary.git_stash <- function(object, ...) {
+    cat(sprintf(paste0("message: %s\n",
+                       "stasher: %s <%s>\n",
+                       "when:    %s\n",
+                       "sha:     %s\n\n"),
+                object$summary,
+                object$author$name,
+                object$author$email,
+                as.character(object$author$when),
+                object$sha))
+}

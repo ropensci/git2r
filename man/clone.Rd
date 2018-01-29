@@ -27,7 +27,7 @@ ssh key credentials, let this parameter be NULL (the default).}
 \item{progress}{Show progress. Default is TRUE.}
 }
 \value{
-A S4 \code{\linkS4class{git_repository}} object
+A \code{git_repository} object.
 }
 \description{
 Clone a remote repository
@@ -74,5 +74,6 @@ commits(repo_2)
 }
 }
 \seealso{
-\code{\link{cred_user_pass}}, \code{\link{cred_ssh_key}}
+\link{repository}, \code{\link{cred_user_pass}},
+    \code{\link{cred_ssh_key}}
 }

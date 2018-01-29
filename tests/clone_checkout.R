@@ -14,7 +14,7 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library(git2r)
+library("git2r")
 
 ## For debugging
 sessionInfo()
@@ -51,13 +51,13 @@ stopifnot(identical(list.files(path_tgt), character(0)))
 ## Compare commits
 stopifnot(identical(length(commits(repo_tgt)), 1L))
 commit_tgt <- last_commit(repo_tgt)
-stopifnot(identical(last_commit(path_tgt)@sha, commit_tgt@sha))
-stopifnot(identical(commit_src@sha, commit_tgt@sha))
-stopifnot(identical(commit_src@author, commit_tgt@author))
-stopifnot(identical(commit_src@committer, commit_tgt@committer))
-stopifnot(identical(commit_src@summary, commit_tgt@summary))
-stopifnot(identical(commit_src@message, commit_tgt@message))
-stopifnot(!identical(commit_src@repo, commit_tgt@repo))
+stopifnot(identical(last_commit(path_tgt)$sha, commit_tgt$sha))
+stopifnot(identical(commit_src$sha, commit_tgt$sha))
+stopifnot(identical(commit_src$author, commit_tgt$author))
+stopifnot(identical(commit_src$committer, commit_tgt$committer))
+stopifnot(identical(commit_src$summary, commit_tgt$summary))
+stopifnot(identical(commit_src$message, commit_tgt$message))
+stopifnot(!identical(commit_src$repo, commit_tgt$repo))
 
 ## Cleanup
 unlink(path_tgt, recursive=TRUE)

@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2017 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -19,6 +19,7 @@
 #include "git2r_arg.h"
 #include "git2r_diff.h"
 #include "git2r_error.h"
+#include "git2r_objects.h"
 #include "git2r_tree.h"
 #include "git2r_repository.h"
 
@@ -62,12 +63,12 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename);
  * @param tree2 The second tree to compare.
  * @param index Whether to compare to the index.
  * @param filename Determines where to write the diff. If filename is
- * R_NilValue, then the diff is written to a S4 class git_diff
+ * R_NilValue, then the diff is written to a S3 class git_diff
  * object. If filename is a character vector of length 0, then the
  * diff is written to a character vector. If filename is a character
  * vector of length one with non-NA value, the diff is written to a
  * file with name filename (the file is overwritten if it exists).
- * @return A S4 class git_diff object if filename equals R_NilValue. A
+ * @return A S3 class git_diff object if filename equals R_NilValue. A
  * character vector with diff if filename has length 0. Oterwise NULL.
  */
 SEXP git2r_diff(SEXP repo, SEXP tree1, SEXP tree2, SEXP index, SEXP filename)
@@ -83,42 +84,48 @@ SEXP git2r_diff(SEXP repo, SEXP tree1, SEXP tree2, SEXP index, SEXP filename)
 	if (!Rf_isNull(tree2))
 	    git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
 	return git2r_diff_index_to_wd(repo, filename);
-    } else if (Rf_isNull(tree1) && c_index) {
+    }
+
+    if (Rf_isNull(tree1) && c_index) {
 	if (!Rf_isNull(tree2))
 	    git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
 	return git2r_diff_head_to_index(repo, filename);
-    } else if (!Rf_isNull(tree1) && Rf_isNull(tree2) && ! c_index) {
+    }
+
+    if (!Rf_isNull(tree1) && Rf_isNull(tree2) && !c_index) {
 	if (!Rf_isNull(repo))
 	    git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
 	return git2r_diff_tree_to_wd(tree1, filename);
-    } else if (!Rf_isNull(tree1) && Rf_isNull(tree2) && c_index) {
+    }
+
+    if (!Rf_isNull(tree1) && Rf_isNull(tree2) && c_index) {
 	if (!Rf_isNull(repo))
 	    git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
 	return git2r_diff_tree_to_index(tree1, filename);
-    } else {
-	if (!Rf_isNull(repo))
-	    git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
-	return git2r_diff_tree_to_tree(tree1, tree2, filename);
     }
+
+    if (!Rf_isNull(repo))
+        git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
+    return git2r_diff_tree_to_tree(tree1, tree2, filename);
 }
 
 /**
  * Create a diff between the repository index and the workdir
  * directory.
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param filename Determines where to write the diff. If filename is
- * R_NilValue, then the diff is written to a S4 class git_diff
+ * R_NilValue, then the diff is written to a S3 class git_diff
  * object. If filename is a character vector of length 0, then the
  * diff is written to a character vector. If filename is a character
  * vector of length one with non-NA value, the diff is written to a
  * file with name filename (the file is overwritten if it exists).
- * @return A S4 class git_diff object if filename equals R_NilValue. A
+ * @return A S3 class git_diff object if filename equals R_NilValue. A
  * character vector with diff if filename has length 0. Oterwise NULL.
  */
 SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename)
 {
-    int err, nprotect = 0;
+    int error, nprotect = 0;
     git_repository *repository = NULL;
     git_diff *diff = NULL;
     SEXP result = R_NilValue;
@@ -130,32 +137,40 @@ SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git_diff_index_to_workdir(&diff,
+    error = git_diff_index_to_workdir(&diff,
 				    repository,
 				    /*index=*/ NULL,
 				    /*opts=*/ NULL);
 
-    if (err)
+    if (error)
 	goto cleanup;
 
     if (Rf_isNull(filename)) {
-        SEXP s_new = Rf_install("new");
-        SEXP s_old = Rf_install("old");
-
-        PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
+        PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_diff));
         nprotect++;
-        SET_SLOT(result, s_old, Rf_mkString("index"));
-        SET_SLOT(result, s_new, Rf_mkString("workdir"));
-        err = git2r_diff_format_to_r(diff, result);
+        Rf_setAttrib(result, R_ClassSymbol,
+                     Rf_mkString(git2r_S3_class__git_diff));
+
+        SET_VECTOR_ELT(
+            result,
+            git2r_S3_item__git_diff__old,
+            Rf_mkString("index"));
+
+        SET_VECTOR_ELT(
+            result,
+            git2r_S3_item__git_diff__new,
+            Rf_mkString("workdir"));
+
+        error = git2r_diff_format_to_r(diff, result);
     } else if (0 == Rf_length(filename)) {
         git_buf buf = GIT_BUF_INIT;
 
-        err = git_diff_print(
+        error = git_diff_print(
             diff,
             GIT_DIFF_FORMAT_PATCH,
             git_diff_print_callback__to_buf,
             &buf);
-        if (0 == err) {
+        if (!error) {
             PROTECT(result = Rf_mkString(buf.ptr));
             nprotect++;
         }
@@ -164,7 +179,7 @@ SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename)
     } else {
         FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
 
-        err = git_diff_print(
+        error = git_diff_print(
             diff,
             GIT_DIFF_FORMAT_PATCH,
             git_diff_print_callback__to_file_handle,
@@ -175,16 +190,13 @@ SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename)
     }
 
 cleanup:
-    if (diff)
-	git_diff_free(diff);
-
-    if (repository)
-        git_repository_free(repository);
+    git_diff_free(diff);
+    git_repository_free(repository);
 
     if (nprotect)
         UNPROTECT(nprotect);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -193,19 +205,19 @@ cleanup:
 /**
  * Create a diff between head and repository index
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param filename Determines where to write the diff. If filename is
- * R_NilValue, then the diff is written to a S4 class git_diff
+ * R_NilValue, then the diff is written to a S3 class git_diff
  * object. If filename is a character vector of length 0, then the
  * diff is written to a character vector. If filename is a character
  * vector of length one with non-NA value, the diff is written to a
  * file with name filename (the file is overwritten if it exists).
- * @return A S4 class git_diff object if filename equals R_NilValue. A
+ * @return A S3 class git_diff object if filename equals R_NilValue. A
  * character vector with diff if filename has length 0. Oterwise NULL.
  */
 SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
 {
-    int err, nprotect = 0;
+    int error, nprotect = 0;
     git_repository *repository = NULL;
     git_diff *diff = NULL;
     git_object *obj = NULL;
@@ -219,42 +231,50 @@ SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git_revparse_single(&obj, repository, "HEAD^{tree}");
-    if (err)
+    error = git_revparse_single(&obj, repository, "HEAD^{tree}");
+    if (error)
 	goto cleanup;
 
-    err = git_tree_lookup(&head, repository, git_object_id(obj));
-    if (err)
+    error = git_tree_lookup(&head, repository, git_object_id(obj));
+    if (error)
 	goto cleanup;
 
-    err = git_diff_tree_to_index(
+    error = git_diff_tree_to_index(
         &diff,
         repository,
         head,
         /* index= */ NULL,
         /* opts = */ NULL);
-    if (err)
+    if (error)
 	goto cleanup;
 
     if (Rf_isNull(filename)) {
-        SEXP s_new = Rf_install("new");
-        SEXP s_old = Rf_install("old");
-
         /* TODO: object instead of HEAD string */
-        PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
+        PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_diff));
         nprotect++;
-        SET_SLOT(result, s_old, Rf_mkString("HEAD"));
-        SET_SLOT(result, s_new, Rf_mkString("index"));
-        err = git2r_diff_format_to_r(diff, result);
+        Rf_setAttrib(result, R_ClassSymbol,
+                     Rf_mkString(git2r_S3_class__git_diff));
+
+        SET_VECTOR_ELT(
+            result,
+            git2r_S3_item__git_diff__old,
+            Rf_mkString("HEAD"));
+
+        SET_VECTOR_ELT(
+            result,
+            git2r_S3_item__git_diff__new,
+            Rf_mkString("index"));
+
+        error = git2r_diff_format_to_r(diff, result);
     } else if (0 == Rf_length(filename)) {
         git_buf buf = GIT_BUF_INIT;
 
-        err = git_diff_print(
+        error = git_diff_print(
             diff,
             GIT_DIFF_FORMAT_PATCH,
             git_diff_print_callback__to_buf,
             &buf);
-        if (0 == err) {
+        if (!error) {
             PROTECT(result = Rf_mkString(buf.ptr));
             nprotect++;
         }
@@ -263,7 +283,7 @@ SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
     } else {
         FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
 
-        err = git_diff_print(
+        error = git_diff_print(
             diff,
             GIT_DIFF_FORMAT_PATCH,
             git_diff_print_callback__to_file_handle,
@@ -274,22 +294,15 @@ SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
     }
 
 cleanup:
-    if (head)
-	git_tree_free(head);
-
-    if (obj)
-	git_object_free(obj);
-
-    if (diff)
-	git_diff_free(diff);
-
-    if (repository)
-        git_repository_free(repository);
+    git_tree_free(head);
+    git_object_free(obj);
+    git_diff_free(diff);
+    git_repository_free(repository);
 
     if (nprotect)
         UNPROTECT(nprotect);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -298,19 +311,19 @@ cleanup:
 /**
  * Create a diff between a tree and the working directory
  *
- * @param tree S4 class git_tree
+ * @param tree S3 class git_tree
  * @param filename Determines where to write the diff. If filename is
- * R_NilValue, then the diff is written to a S4 class git_diff
+ * R_NilValue, then the diff is written to a S3 class git_diff
  * object. If filename is a character vector of length 0, then the
  * diff is written to a character vector. If filename is a character
  * vector of length one with non-NA value, the diff is written to a
  * file with name filename (the file is overwritten if it exists).
- * @return A S4 class git_diff object if filename equals R_NilValue. A
+ * @return A S3 class git_diff object if filename equals R_NilValue. A
  * character vector with diff if filename has length 0. Oterwise NULL.
  */
 SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
 {
-    int err, nprotect = 0;
+    int error, nprotect = 0;
     git_repository *repository = NULL;
     git_diff *diff = NULL;
     git_object *obj = NULL;
@@ -324,41 +337,50 @@ SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
     if (git2r_arg_check_filename(filename))
         git2r_error(__func__, NULL, "'filename'", git2r_err_filename_arg);
 
-    repo = GET_SLOT(tree, Rf_install("repo"));
+    repo = git2r_get_list_element(tree, "repo");
     repository = git2r_repository_open(repo);
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    sha = GET_SLOT(tree, Rf_install("sha"));
-    err = git_revparse_single(&obj, repository, CHAR(STRING_ELT(sha, 0)));
-    if (err)
+    sha = git2r_get_list_element(tree, "sha");
+    error = git_revparse_single(&obj, repository, CHAR(STRING_ELT(sha, 0)));
+    if (error)
 	goto cleanup;
 
-    err = git_tree_lookup(&c_tree, repository, git_object_id(obj));
-    if (err)
+    error = git_tree_lookup(&c_tree, repository, git_object_id(obj));
+    if (error)
 	goto cleanup;
 
-    err = git_diff_tree_to_workdir(&diff, repository, c_tree, /* opts = */ NULL);
-    if (err)
+    error = git_diff_tree_to_workdir(&diff, repository, c_tree, /* opts = */ NULL);
+    if (error)
 	goto cleanup;
 
     if (Rf_isNull(filename)) {
-        SEXP s_new = Rf_install("new");
-
-        PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
+        PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_diff));
         nprotect++;
-        SET_SLOT(result, Rf_install("old"), tree);
-        SET_SLOT(result, s_new, Rf_mkString("workdir"));
-        err = git2r_diff_format_to_r(diff, result);
+        Rf_setAttrib(result, R_ClassSymbol,
+                     Rf_mkString(git2r_S3_class__git_diff));
+
+        SET_VECTOR_ELT(
+            result,
+            git2r_S3_item__git_diff__old,
+            tree);
+
+        SET_VECTOR_ELT(
+            result,
+            git2r_S3_item__git_diff__new,
+            Rf_mkString("workdir"));
+
+        error = git2r_diff_format_to_r(diff, result);
     } else if (0 == Rf_length(filename)) {
         git_buf buf = GIT_BUF_INIT;
 
-        err = git_diff_print(
+        error = git_diff_print(
             diff,
             GIT_DIFF_FORMAT_PATCH,
             git_diff_print_callback__to_buf,
             &buf);
-        if (0 == err) {
+        if (!error) {
             PROTECT(result = Rf_mkString(buf.ptr));
             nprotect++;
         }
@@ -367,7 +389,7 @@ SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
     } else {
         FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
 
-        err = git_diff_print(
+        error = git_diff_print(
             diff,
             GIT_DIFF_FORMAT_PATCH,
             git_diff_print_callback__to_file_handle,
@@ -378,22 +400,15 @@ SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
     }
 
 cleanup:
-    if (diff)
-        git_diff_free(diff);
-
-    if (c_tree)
-	git_tree_free(c_tree);
-
-    if (obj)
-	git_object_free(obj);
-
-    if (repository)
-	git_repository_free(repository);
+    git_diff_free(diff);
+    git_tree_free(c_tree);
+    git_object_free(obj);
+    git_repository_free(repository);
 
     if (nprotect)
         UNPROTECT(nprotect);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -402,19 +417,19 @@ cleanup:
 /**
  * Create a diff between a tree and repository index
  *
- * @param tree S4 class git_tree
+ * @param tree S3 class git_tree
  * @param filename Determines where to write the diff. If filename is
- * R_NilValue, then the diff is written to a S4 class git_diff
+ * R_NilValue, then the diff is written to a S3 class git_diff
  * object. If filename is a character vector of length 0, then the
  * diff is written to a character vector. If filename is a character
  * vector of length one with non-NA value, the diff is written to a
  * file with name filename (the file is overwritten if it exists).
- * @return A S4 class git_diff object if filename equals R_NilValue. A
+ * @return A S3 class git_diff object if filename equals R_NilValue. A
  * character vector with diff if filename has length 0. Oterwise NULL.
  */
 SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
 {
-    int err, nprotect = 0;
+    int error, nprotect = 0;
     git_repository *repository = NULL;
     git_diff *diff = NULL;
     git_object *obj = NULL;
@@ -428,46 +443,55 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
     if (git2r_arg_check_filename(filename))
         git2r_error(__func__, NULL, "'filename'", git2r_err_filename_arg);
 
-    repo = GET_SLOT(tree, Rf_install("repo"));
+    repo = git2r_get_list_element(tree, "repo");
     repository = git2r_repository_open(repo);
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    sha = GET_SLOT(tree, Rf_install("sha"));
-    err = git_revparse_single(&obj, repository, CHAR(STRING_ELT(sha, 0)));
-    if (err)
+    sha = git2r_get_list_element(tree, "sha");
+    error = git_revparse_single(&obj, repository, CHAR(STRING_ELT(sha, 0)));
+    if (error)
 	goto cleanup;
 
-    err = git_tree_lookup(&c_tree, repository, git_object_id(obj));
-    if (err)
+    error = git_tree_lookup(&c_tree, repository, git_object_id(obj));
+    if (error)
 	goto cleanup;
 
-    err = git_diff_tree_to_index(
+    error = git_diff_tree_to_index(
         &diff,
         repository,
         c_tree,
         /* index= */ NULL,
         /* opts= */ NULL);
-    if (err)
+    if (error)
 	goto cleanup;
 
     if (Rf_isNull(filename)) {
-        SEXP s_new = Rf_install("new");
-
-        PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
+        PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_diff));
         nprotect++;
-        SET_SLOT(result, Rf_install("old"), tree);
-        SET_SLOT(result, s_new, Rf_mkString("index"));
-        err = git2r_diff_format_to_r(diff, result);
+        Rf_setAttrib(result, R_ClassSymbol,
+                     Rf_mkString(git2r_S3_class__git_diff));
+
+        SET_VECTOR_ELT(
+            result,
+            git2r_S3_item__git_diff__old,
+            tree);
+
+        SET_VECTOR_ELT(
+            result,
+            git2r_S3_item__git_diff__new,
+            Rf_mkString("index"));
+
+        error = git2r_diff_format_to_r(diff, result);
     } else if (0 == Rf_length(filename)) {
         git_buf buf = GIT_BUF_INIT;
 
-        err = git_diff_print(
+        error = git_diff_print(
             diff,
             GIT_DIFF_FORMAT_PATCH,
             git_diff_print_callback__to_buf,
             &buf);
-        if (0 == err) {
+        if (!error) {
             PROTECT(result = Rf_mkString(buf.ptr));
             nprotect++;
         }
@@ -476,7 +500,7 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
     } else {
         FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
 
-        err = git_diff_print(
+        error = git_diff_print(
             diff,
             GIT_DIFF_FORMAT_PATCH,
             git_diff_print_callback__to_file_handle,
@@ -487,22 +511,15 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
     }
 
 cleanup:
-    if (diff)
-        git_diff_free(diff);
-
-    if (c_tree)
-	git_tree_free(c_tree);
-
-    if (obj)
-	git_object_free(obj);
-
-    if (repository)
-	git_repository_free(repository);
+    git_diff_free(diff);
+    git_tree_free(c_tree);
+    git_object_free(obj);
+    git_repository_free(repository);
 
     if (nprotect)
         UNPROTECT(nprotect);
 
-    if (err)
+    if (error)
 	git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -511,26 +528,26 @@ cleanup:
 /**
  * Create a diff with the difference between two tree objects
  *
- * @param tree1 S4 class git_tree
- * @param tree2 S4 class git_tree
+ * @param tree1 S3 class git_tree
+ * @param tree2 S3 class git_tree
  * @param filename Determines where to write the diff. If filename is
- * R_NilValue, then the diff is written to a S4 class git_diff
+ * R_NilValue, then the diff is written to a S3 class git_diff
  * object. If filename is a character vector of length 0, then the
  * diff is written to a character vector. If filename is a character
  * vector of length one with non-NA value, the diff is written to a
  * file with name filename (the file is overwritten if it exists).
- * @return A S4 class git_diff object if filename equals R_NilValue. A
+ * @return A S3 class git_diff object if filename equals R_NilValue. A
  * character vector with diff if filename has length 0. Oterwise NULL.
  */
 SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
 {
-    int err, nprotect = 0;
+    int error, nprotect = 0;
     git_repository *repository = NULL;
     git_diff *diff = NULL;
     git_object *obj1 = NULL, *obj2 = NULL;
     git_tree *c_tree1 = NULL, *c_tree2 = NULL;
     SEXP result = R_NilValue;
-    SEXP repo;
+    SEXP tree1_repo, tree2_repo;
     SEXP sha1, sha2;
 
     if (git2r_arg_check_tree(tree1))
@@ -540,54 +557,68 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
     if (git2r_arg_check_filename(filename))
         git2r_error(__func__, NULL, "'filename'", git2r_err_filename_arg);
 
-    /* We already checked that tree2 is from the same repo, in R */
-    repo = GET_SLOT(tree1, Rf_install("repo"));
-    repository = git2r_repository_open(repo);
+    tree1_repo = git2r_get_list_element(tree1, "repo");
+    tree2_repo = git2r_get_list_element(tree2, "repo");
+    if (git2r_arg_check_same_repo(tree1_repo, tree2_repo))
+        git2r_error(__func__, NULL, "'tree1' and 'tree2' not from same repository", NULL);
+
+    repository = git2r_repository_open(tree1_repo);
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    sha1 = GET_SLOT(tree1, Rf_install("sha"));
-    err = git_revparse_single(&obj1, repository, CHAR(STRING_ELT(sha1, 0)));
-    if (err)
+    sha1 = git2r_get_list_element(tree1, "sha");
+    error = git_revparse_single(&obj1, repository, CHAR(STRING_ELT(sha1, 0)));
+    if (error)
 	goto cleanup;
 
-    sha2 = GET_SLOT(tree2, Rf_install("sha"));
-    err = git_revparse_single(&obj2, repository, CHAR(STRING_ELT(sha2, 0)));
-    if (err)
+    sha2 = git2r_get_list_element(tree2, "sha");
+    error = git_revparse_single(&obj2, repository, CHAR(STRING_ELT(sha2, 0)));
+    if (error)
 	goto cleanup;
 
-    err = git_tree_lookup(&c_tree1, repository, git_object_id(obj1));
-    if (err)
+    error = git_tree_lookup(&c_tree1, repository, git_object_id(obj1));
+    if (error)
 	goto cleanup;
 
-    err = git_tree_lookup(&c_tree2, repository, git_object_id(obj2));
-    if (err)
+    error = git_tree_lookup(&c_tree2, repository, git_object_id(obj2));
+    if (error)
 	goto cleanup;
 
-    err = git_diff_tree_to_tree(
+    error = git_diff_tree_to_tree(
         &diff,
         repository,
         c_tree1,
         c_tree2,
         /* opts= */ NULL);
-    if (err)
+    if (error)
 	goto cleanup;
 
     if (Rf_isNull(filename)) {
-        PROTECT(result = NEW_OBJECT(MAKE_CLASS("git_diff")));
+        PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_diff));
         nprotect++;
-        SET_SLOT(result, Rf_install("old"), tree1);
-        SET_SLOT(result, Rf_install("new"), tree2);
-        err = git2r_diff_format_to_r(diff, result);
+        Rf_setAttrib(result, R_ClassSymbol,
+                     Rf_mkString(git2r_S3_class__git_diff));
+
+        SET_VECTOR_ELT(
+            result,
+            git2r_S3_item__git_diff__old,
+            tree1);
+
+        SET_VECTOR_ELT(
+            result,
+            git2r_S3_item__git_diff__new,
+            tree2);
+
+        error = git2r_diff_format_to_r(diff, result);
     } else if (0 == Rf_length(filename)) {
         git_buf buf = GIT_BUF_INIT;
 
-        err = git_diff_print(
+        error = git_diff_print(
             diff,
             GIT_DIFF_FORMAT_PATCH,
             git_diff_print_callback__to_buf,
             &buf);
-        if (0 == err) {
+        if (!error) {
             PROTECT(result = Rf_mkString(buf.ptr));
             nprotect++;
         }
@@ -596,7 +627,7 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
     } else {
         FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
 
-        err = git_diff_print(
+        error = git_diff_print(
             diff,
             GIT_DIFF_FORMAT_PATCH,
             git_diff_print_callback__to_file_handle,
@@ -607,28 +638,17 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
     }
 
 cleanup:
-    if (diff)
-        git_diff_free(diff);
-
-    if (c_tree1)
-	git_tree_free(c_tree1);
-
-    if (c_tree2)
-	git_tree_free(c_tree2);
-
-    if (obj1)
-	git_object_free(obj1);
-
-    if (obj2)
-	git_object_free(obj2);
-
-    if (repository)
-	git_repository_free(repository);
+    git_diff_free(diff);
+    git_tree_free(c_tree1);
+    git_tree_free(c_tree2);
+    git_object_free(obj1);
+    git_object_free(obj2);
+    git_repository_free(repository);
 
     if (nprotect)
         UNPROTECT(nprotect);
 
-    if (err)
+    if (error)
 	git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -712,7 +732,8 @@ int git2r_diff_count_line_cb(const git_diff_delta *delta,
     GIT_UNUSED(line);
 
     n->num_lines += 1;
-    if (n->num_lines > n->max_lines) { n->max_lines = n->num_lines; }
+    if (n->num_lines > n->max_lines)
+        n->max_lines = n->num_lines;
     return 0;
 }
 
@@ -731,17 +752,17 @@ int git2r_diff_count(git_diff *diff,
 		     size_t *max_hunks,
                      size_t *max_lines)
 {
-    int err;
+    int error;
     git2r_diff_count_payload n = { 0, 0, 0 };
 
-    err = git_diff_foreach(diff,
+    error = git_diff_foreach(diff,
 			   git2r_diff_count_file_cb,
                            /* binary_cb */ NULL,
 			   git2r_diff_count_hunk_cb,
 			   git2r_diff_count_line_cb,
 			   /* payload= */ (void*) &n);
 
-    if (err)
+    if (error)
 	return -1;
 
     *num_files = n.num_files;
@@ -795,12 +816,11 @@ int git2r_diff_get_file_cb(const git_diff_delta *delta,
        temporary storage. */
     if (p->file_ptr != 0) {
         SEXP hunks;
-        SEXP s_hunks = Rf_install("hunks");
 	size_t len=p->hunk_ptr, i;
 
-	SET_SLOT(
-            VECTOR_ELT(p->result, p->file_ptr-1),
-            s_hunks,
+	SET_VECTOR_ELT(
+            VECTOR_ELT(p->result, p->file_ptr - 1),
+            git2r_S3_item__git_diff_file__hunks,
             hunks = Rf_allocVector(VECSXP, p->hunk_ptr));
 	for (i = 0; i < len ; i++)
 	    SET_VECTOR_ELT(hunks, i, VECTOR_ELT(p->hunk_tmp, i));
@@ -809,14 +829,23 @@ int git2r_diff_get_file_cb(const git_diff_delta *delta,
     /* OK, ready for next file, if any */
     if (delta) {
 	SEXP file_obj;
-        SEXP s_new_file = Rf_install("new_file");
-        SEXP s_old_file = Rf_install("old_file");
 
-        PROTECT(file_obj = NEW_OBJECT(MAKE_CLASS("git_diff_file")));
-	SET_VECTOR_ELT(p->result, p->file_ptr, file_obj);
-	SET_SLOT(file_obj, s_old_file, Rf_mkString(delta->old_file.path));
-	SET_SLOT(file_obj, s_new_file, Rf_mkString(delta->new_file.path));
-        UNPROTECT(1);
+	SET_VECTOR_ELT(
+            p->result,
+            p->file_ptr,
+            file_obj = Rf_mkNamed(VECSXP, git2r_S3_items__git_diff_file));
+        Rf_setAttrib(file_obj, R_ClassSymbol,
+                     Rf_mkString(git2r_S3_class__git_diff_file));
+
+	SET_VECTOR_ELT(
+            file_obj,
+            git2r_S3_item__git_diff_file__old_file,
+            Rf_mkString(delta->old_file.path));
+
+	SET_VECTOR_ELT(
+            file_obj,
+            git2r_S3_item__git_diff_file__new_file,
+            Rf_mkString(delta->new_file.path));
 
 	p->file_ptr++;
 	p->hunk_ptr = 0;
@@ -850,32 +879,50 @@ int git2r_diff_get_hunk_cb(const git_diff_delta *delta,
     if (p->hunk_ptr != 0) {
 	SEXP lines;
 	size_t len=p->line_ptr, i;
-        SEXP s_lines = Rf_install("lines");
 
-        PROTECT(lines = Rf_allocVector(VECSXP, p->line_ptr));
-	SET_SLOT(VECTOR_ELT(p->hunk_tmp, p->hunk_ptr-1), s_lines, lines);
+	SET_VECTOR_ELT(
+            VECTOR_ELT(p->hunk_tmp, p->hunk_ptr-1),
+            git2r_S3_item__git_diff_hunk__lines,
+            lines = Rf_allocVector(VECSXP, p->line_ptr));
 	for (i = 0; i < len; i++)
 	    SET_VECTOR_ELT(lines, i, VECTOR_ELT(p->line_tmp, i));
-        UNPROTECT(1);
     }
 
     /* OK, ready for the next hunk, if any */
     if (hunk) {
 	SEXP hunk_obj;
-        SEXP s_old_start = Rf_install("old_start");
-        SEXP s_old_lines = Rf_install("old_lines");
-        SEXP s_new_start = Rf_install("new_start");
-        SEXP s_new_lines = Rf_install("new_lines");
-        SEXP s_header = Rf_install("header");
 
-        PROTECT(hunk_obj = NEW_OBJECT(MAKE_CLASS("git_diff_hunk")));
-	SET_VECTOR_ELT(p->hunk_tmp, p->hunk_ptr, hunk_obj);
-	SET_SLOT(hunk_obj, s_old_start, Rf_ScalarInteger(hunk->old_start));
-	SET_SLOT(hunk_obj, s_old_lines, Rf_ScalarInteger(hunk->old_lines));
-	SET_SLOT(hunk_obj, s_new_start, Rf_ScalarInteger(hunk->new_start));
-	SET_SLOT(hunk_obj, s_new_lines, Rf_ScalarInteger(hunk->new_lines));
-	SET_SLOT(hunk_obj, s_header, Rf_mkString(hunk->header));
-        UNPROTECT(1);
+	SET_VECTOR_ELT(
+            p->hunk_tmp,
+            p->hunk_ptr,
+            hunk_obj = Rf_mkNamed(VECSXP, git2r_S3_items__git_diff_hunk));
+        Rf_setAttrib(hunk_obj, R_ClassSymbol,
+                     Rf_mkString(git2r_S3_class__git_diff_hunk));
+
+        SET_VECTOR_ELT(
+            hunk_obj,
+            git2r_S3_item__git_diff_hunk__old_start,
+            Rf_ScalarInteger(hunk->old_start));
+
+	SET_VECTOR_ELT(
+            hunk_obj,
+            git2r_S3_item__git_diff_hunk__old_lines,
+            Rf_ScalarInteger(hunk->old_lines));
+
+        SET_VECTOR_ELT(
+            hunk_obj,
+            git2r_S3_item__git_diff_hunk__new_start,
+            Rf_ScalarInteger(hunk->new_start));
+
+	SET_VECTOR_ELT(
+            hunk_obj,
+            git2r_S3_item__git_diff_hunk__new_lines,
+            Rf_ScalarInteger(hunk->new_lines));
+
+	SET_VECTOR_ELT(
+            hunk_obj,
+            git2r_S3_item__git_diff_hunk__header,
+            Rf_mkString(hunk->header));
 
 	p->hunk_ptr += 1;
 	p->line_ptr = 0;
@@ -906,34 +953,49 @@ int git2r_diff_get_line_cb(const git_diff_delta *delta,
     static char short_buffer[200];
     char *buffer = short_buffer;
     SEXP line_obj;
-    SEXP s_origin = Rf_install("origin");
-    SEXP s_old_lineno = Rf_install("old_lineno");
-    SEXP s_new_lineno = Rf_install("new_lineno");
-    SEXP s_num_lines = Rf_install("num_lines");
-    SEXP s_content = Rf_install("content");
 
     GIT_UNUSED(delta);
     GIT_UNUSED(hunk);
 
-    PROTECT(line_obj = NEW_OBJECT(MAKE_CLASS("git_diff_line")));
-    SET_VECTOR_ELT(p->line_tmp, p->line_ptr++, line_obj);
+    SET_VECTOR_ELT(
+        p->line_tmp,
+        p->line_ptr++,
+        line_obj = Rf_mkNamed(VECSXP, git2r_S3_items__git_diff_line));
+    Rf_setAttrib(line_obj, R_ClassSymbol,
+                 Rf_mkString(git2r_S3_class__git_diff_line));
 
-    SET_SLOT(line_obj, s_origin, Rf_ScalarInteger(line->origin));
-    SET_SLOT(line_obj, s_old_lineno, Rf_ScalarInteger(line->old_lineno));
-    SET_SLOT(line_obj, s_new_lineno, Rf_ScalarInteger(line->new_lineno));
-    SET_SLOT(line_obj, s_num_lines, Rf_ScalarInteger(line->num_lines));
+    SET_VECTOR_ELT(
+        line_obj,
+        git2r_S3_item__git_diff_line__origin,
+        Rf_ScalarInteger(line->origin));
+
+    SET_VECTOR_ELT(
+        line_obj,
+        git2r_S3_item__git_diff_line__old_lineno,
+        Rf_ScalarInteger(line->old_lineno));
+
+    SET_VECTOR_ELT(
+        line_obj,
+        git2r_S3_item__git_diff_line__new_lineno,
+        Rf_ScalarInteger(line->new_lineno));
+
+    SET_VECTOR_ELT(
+        line_obj,
+        git2r_S3_item__git_diff_line__num_lines,
+        Rf_ScalarInteger(line->num_lines));
 
     if (line->content_len > sizeof(buffer))
 	buffer = malloc(line->content_len+1);
     memcpy(buffer, line->content, line->content_len);
     buffer[line->content_len] = 0;
 
-    SET_SLOT(line_obj, s_content, Rf_mkString(buffer));
+    SET_VECTOR_ELT(
+        line_obj,
+        git2r_S3_item__git_diff_line__content,
+        Rf_mkString(buffer));
 
     if (buffer != short_buffer)
 	free(buffer);
-
-    UNPROTECT(1);
 
     return 0;
 }
@@ -953,12 +1015,12 @@ int git2r_diff_get_line_cb(const git_diff_delta *delta,
  * list that we use for temporary storage.
  *
  * @param diff Pointer to the diff
- * @param dest The S4 class git_diff to hold the formated diff
+ * @param dest The S3 class git_diff to hold the formated diff
  * @return 0 if OK, else error code
  */
 int git2r_diff_format_to_r(git_diff *diff, SEXP dest)
 {
-    int err;
+    int error, nprotect = 0;
     git2r_diff_payload payload = { /* result=   */ R_NilValue,
                                    /* hunk_tmp= */ R_NilValue,
                                    /* line_tmp= */ R_NilValue,
@@ -968,32 +1030,37 @@ int git2r_diff_format_to_r(git_diff *diff, SEXP dest)
 
     size_t num_files, max_hunks, max_lines;
 
-    err = git2r_diff_count(diff, &num_files, &max_hunks, &max_lines);
+    error = git2r_diff_count(diff, &num_files, &max_hunks, &max_lines);
 
-    if (err)
-        return err;
+    if (error)
+        return error;
 
-    PROTECT(payload.result = Rf_allocVector(VECSXP, num_files));
-    SET_SLOT(dest, Rf_install("files"), payload.result);
+    SET_VECTOR_ELT(
+        dest,
+        git2r_S3_item__git_diff__files,
+        payload.result = Rf_allocVector(VECSXP, num_files));
     PROTECT(payload.hunk_tmp = Rf_allocVector(VECSXP, max_hunks));
+    nprotect++;
     PROTECT(payload.line_tmp = Rf_allocVector(VECSXP, max_lines));
+    nprotect++;
 
-    err = git_diff_foreach(
+    error = git_diff_foreach(
         diff,
         git2r_diff_get_file_cb,
         /* binary_cb */ NULL,
         git2r_diff_get_hunk_cb,
         git2r_diff_get_line_cb,
         &payload);
-    if (GIT_OK == err) {
+    if (!error) {
         /* Need to call them once more, to put in the last lines/hunks/files. */
-        err = git2r_diff_get_file_cb(
+        error = git2r_diff_get_file_cb(
             /* delta=    */ NULL,
             /* progress= */ 100,
             &payload);
     }
 
-    UNPROTECT(3);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
-    return err;
+    return error;
 }

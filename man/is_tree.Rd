@@ -2,18 +2,18 @@
 % Please edit documentation in R/tree.R
 \name{is_tree}
 \alias{is_tree}
-\title{Check if object is S4 class git_tree}
+\title{Check if object is S3 class git_tree}
 \usage{
 is_tree(object)
 }
 \arguments{
-\item{object}{Check if object is S4 class git_tree}
+\item{object}{Check if object is S3 class git_tree}
 }
 \value{
-TRUE if object is S4 class git_tree, else FALSE
+TRUE if object is S3 class git_tree, else FALSE
 }
 \description{
-Check if object is S4 class git_tree
+Check if object is S3 class git_tree
 }
 \examples{
 \dontrun{

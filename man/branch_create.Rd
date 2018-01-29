@@ -14,7 +14,7 @@ branch_create(commit = NULL, name = NULL, force = FALSE)
 \item{force}{Overwrite existing branch. Default = FALSE}
 }
 \value{
-invisible S4 class git_branch object
+invisible git_branch object
 }
 \description{
 Create a branch
