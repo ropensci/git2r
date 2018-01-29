@@ -119,6 +119,13 @@ void git2r_reference_init(git_reference *source, SEXP dest)
     default:
         git2r_error(__func__, NULL, git2r_err_reference, NULL);
     }
+
+    if (Rf_isNull(VECTOR_ELT(dest, git2r_S3_item__git_reference__target))) {
+        SET_VECTOR_ELT(
+            dest,
+            git2r_S3_item__git_reference__target,
+            Rf_ScalarString(NA_STRING));
+    }
 }
 
 /**
