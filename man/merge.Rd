@@ -7,13 +7,13 @@
 \title{Merge a branch into HEAD}
 \usage{
 \method{merge}{git_branch}(x, y = NULL, commit_on_success = TRUE,
-  merger = NULL, ...)
+  merger = NULL, fail = FALSE, ...)
 
 \method{merge}{git_repository}(x, y = NULL, commit_on_success = TRUE,
-  merger = NULL, ...)
+  merger = NULL, fail = FALSE, ...)
 
 \method{merge}{character}(x = ".", y = NULL, commit_on_success = TRUE,
-  merger = NULL, ...)
+  merger = NULL, fail = FALSE, ...)
 }
 \arguments{
 \item{x}{A path (default '.') to a repository, or a
@@ -28,6 +28,10 @@ index, the merge commit will be committed. Default is TRUE.}
 
 \item{merger}{Who made the merge. The default (\code{NULL}) is to
 use \code{default_signature} for the repository.}
+
+\item{fail}{If a conflict occurs, exit immediately instead of
+attempting to continue resolving conflicts. Default is
+\code{FALSE}.}
 
 \item{...}{Additional arguments (unused).}
 }

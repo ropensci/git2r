@@ -90,6 +90,22 @@ writeLines(c("Lorem ipsum dolor sit amet, adipisicing consectetur elit, sed do",
 add(repo, "test.txt")
 commit(repo, "Some commit message branch 1")
 
+## Merge branch 3 with fail = TRUE
+m_3 <- merge(b[sapply(b, "[", "name") == "branch3"][[1]], fail = TRUE)
+stopifnot(identical(m_3$up_to_date, FALSE))
+stopifnot(identical(m_3$fast_forward, FALSE))
+stopifnot(identical(m_3$conflicts, TRUE))
+stopifnot(identical(m_3$sha, NA_character_))
+m_3
+
+## Check status; Expect to have a clean working directory
+wd <- structure(list(staged = structure(list(), .Names = character(0)),
+                     unstaged = structure(list(), .Names = character(0)),
+                     untracked = structure(list(), .Names = character(0))),
+                .Names = c("staged", "unstaged", "untracked"),
+                class = "git_status")
+stopifnot(identical(status(repo), wd))
+
 ## Merge branch 3
 m_3 <- merge(b[sapply(b, "[", "name") == "branch3"][[1]])
 stopifnot(identical(m_3$up_to_date, FALSE))

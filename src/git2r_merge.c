@@ -238,8 +238,22 @@ static int git2r_normal_merge(
         n,
         merge_opts,
         checkout_opts);
-    if (error)
+    if (error) {
+        if (error == GIT_EMERGECONFLICT) {
+            SET_VECTOR_ELT(
+                merge_result,
+                git2r_S3_item__git_merge_result__conflicts,
+                Rf_ScalarLogical(1));
+
+            SET_VECTOR_ELT(
+                merge_result,
+                git2r_S3_item__git_merge_result__sha,
+                Rf_ScalarString(NA_STRING));
+
+            error = 0;
+        }
         goto cleanup;
+    }
 
     error = git_repository_index(&index, repository);
     if (error)
@@ -302,6 +316,8 @@ cleanup:
  * @param merger Who is performing the merge
  * @param commit_on_success Commit merge commit, if one was created
  * during a normal merge
+ * @param fail If a conflict occurs, exit immediately instead of attempting to
+ * continue resolving conflicts.
  * @return 0 on success, or error code
  */
 static int git2r_merge(
@@ -312,7 +328,8 @@ static int git2r_merge(
     git_merge_preference_t preference,
     const char *name,
     git_signature *merger,
-    int commit_on_success)
+    int commit_on_success,
+    int fail)
 {
     int error;
     git_merge_analysis_t merge_analysis;
@@ -322,6 +339,8 @@ static int git2r_merge(
 
     merge_opts.rename_threshold = 50;
     merge_opts.target_limit = 200;
+    if (fail)
+        merge_opts.flags |= GIT_MERGE_FAIL_ON_CONFLICT;
 
     checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE;
 
@@ -454,9 +473,11 @@ static void git2r_merge_heads_free(git_annotated_commit **merge_heads, size_t n)
  * @param merger Who is performing the merge
  * @param commit_on_success Commit merge commit, if one was created
  * during a normal merge
+ * @param fail If a conflict occurs, exit immediately instead of attempting to
+ * continue resolving conflicts.
  * @return S3 class git_merge_result
  */
-SEXP git2r_merge_branch(SEXP branch, SEXP merger, SEXP commit_on_success)
+SEXP git2r_merge_branch(SEXP branch, SEXP merger, SEXP commit_on_success, SEXP fail)
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;
@@ -518,7 +539,8 @@ SEXP git2r_merge_branch(SEXP branch, SEXP merger, SEXP commit_on_success)
         GIT_MERGE_PREFERENCE_NONE,
         buf.ptr,
         who,
-        LOGICAL(commit_on_success)[0]);
+        LOGICAL(commit_on_success)[0],
+        LOGICAL(fail)[0]);
 
 cleanup:
     git_buf_free(&buf);
@@ -645,7 +667,8 @@ SEXP git2r_merge_fetch_heads(SEXP fetch_heads, SEXP merger)
         GIT_MERGE_PREFERENCE_NONE,
         "pull",
         who,
-        1); /* Commit on success */
+        1,  /* Commit on success */
+        0); /* Don't fail on conflicts */
     if (error)
         goto cleanup;
 

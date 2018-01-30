@@ -55,38 +55,6 @@ merge_base <- function(one = NULL, two = NULL) {
     .Call(git2r_merge_base, one, two)
 }
 
-##' Merge branch into HEAD
-##'
-##' @param branch The branch
-##' @param commit_on_success If there are no conflicts written to the
-##'     index, the merge commit will be committed.
-##' @param merger Who made the merge.
-##' @return A git_merge_result object.
-##' @noRd
-merge_branch <- function(branch, commit_on_success, merger) {
-    .Call(git2r_merge_branch, branch, merger, commit_on_success)
-}
-
-##' Merge named branch into HEAD
-##'
-##' @param repo The repository
-##' @param branch Name of branch
-##' @param commit_on_success If there are no conflicts written to the
-##'     index, the merge commit will be committed.
-##' @param merger Who made the merge.
-##' @return A git_merge_result object.
-##' @noRd
-merge_named_branch <- function(repo, branch, commit_on_success, merger) {
-    ## Check branch argument
-    if (missing(branch) || !is.character(branch) || !identical(length(branch), 1L))
-        stop("'branch' must be a character vector of length one")
-
-    b <- branches(repo)
-    b <- b[vapply(b, "[[", character(1), "name") == branch][[1]]
-
-    merge_branch(b, commit_on_success, merger)
-}
-
 ##' Merge a branch into HEAD
 ##'
 ##' @rdname merge
@@ -99,6 +67,9 @@ merge_named_branch <- function(repo, branch, commit_on_success, merger) {
 ##'     index, the merge commit will be committed. Default is TRUE.
 ##' @param merger Who made the merge. The default (\code{NULL}) is to
 ##'     use \code{default_signature} for the repository.
+##' @param fail If a conflict occurs, exit immediately instead of
+##'     attempting to continue resolving conflicts. Default is
+##'     \code{FALSE}.
 ##' @param ... Additional arguments (unused).
 ##' @return A list of class \code{git_merge_result} with entries:
 ##' \describe{
@@ -119,24 +90,35 @@ merge_named_branch <- function(repo, branch, commit_on_success, merger) {
 ##' }
 ##' @export
 ##' @template merge-example
-merge.git_branch <- function(x, y = NULL, commit_on_success = TRUE, merger = NULL, ...) {
+merge.git_branch <- function(x, y = NULL, commit_on_success = TRUE,
+                             merger = NULL, fail = FALSE, ...)
+{
     if (is.null(merger))
         merger <- default_signature(x$repo)
-    merge_branch(x, commit_on_success, merger)
+    .Call(git2r_merge_branch, x, merger, commit_on_success, fail)
 }
 
 ##' @export
 ##' @rdname merge
-merge.git_repository <- function(x, y = NULL, commit_on_success = TRUE, merger = NULL, ...) {
-    if (is.null(merger))
-        merger <- default_signature(x)
-    merge_named_branch(x, y, commit_on_success, merger)
+merge.git_repository <- function(x, y = NULL, commit_on_success = TRUE,
+                                 merger = NULL, fail = FALSE, ...)
+{
+    ## Check branch argument
+    if (is.null(y) || !is.character(y) || !identical(length(y), 1L))
+        stop("'branch' must be a character vector of length one")
+    b <- branches(x)
+    b <- b[vapply(b, "[[", character(1), "name") == y][[1]]
+    merge.git_branch(b, commit_on_success = commit_on_success,
+                     merger = merger, fail = fail)
 }
 
 ##' @export
 ##' @rdname merge
-merge.character <- function(x = ".", y = NULL, commit_on_success = TRUE, merger = NULL, ...) {
-    merge.git_repository(lookup_repository(x), y, commit_on_success, merger)
+merge.character <- function(x = ".", y = NULL, commit_on_success = TRUE,
+                            merger = NULL, fail = FALSE, ...)
+{
+    x <- lookup_repository(x)
+    merge.git_repository(x, y, commit_on_success, merger, fail)
 }
 
 ##' @export

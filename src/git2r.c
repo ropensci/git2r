@@ -100,7 +100,7 @@ static const R_CallMethodDef callMethods[] =
     CALLDEF(git2r_libgit2_features, 0),
     CALLDEF(git2r_libgit2_version, 0),
     CALLDEF(git2r_merge_base, 2),
-    CALLDEF(git2r_merge_branch, 3),
+    CALLDEF(git2r_merge_branch, 4),
     CALLDEF(git2r_merge_fetch_heads, 2),
     CALLDEF(git2r_note_create, 7),
     CALLDEF(git2r_note_default_ref, 1),
