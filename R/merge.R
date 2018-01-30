@@ -89,6 +89,7 @@ merge_named_branch <- function(repo, branch, commit_on_success, merger) {
 
 ##' Merge a branch into HEAD
 ##'
+##' @rdname merge
 ##' @param x A path (default '.') to a repository, or a
 ##'     \code{git_repository} object, or a \code{git_branch}.
 ##' @param y If \code{x} is a \code{git_repository}, the name of the
@@ -98,6 +99,7 @@ merge_named_branch <- function(repo, branch, commit_on_success, merger) {
 ##'     index, the merge commit will be committed. Default is TRUE.
 ##' @param merger Who made the merge. The default (\code{NULL}) is to
 ##'     use \code{default_signature} for the repository.
+##' @param ... Additional arguments (unused).
 ##' @return A list of class \code{git_merge_result} with entries:
 ##' \describe{
 ##'   \item{up_to_date}{
@@ -117,17 +119,24 @@ merge_named_branch <- function(repo, branch, commit_on_success, merger) {
 ##' }
 ##' @export
 ##' @template merge-example
-merge <- function(x = ".", y = NULL, commit_on_success = TRUE, merger = NULL) {
-    if (is_branch(x)) {
-        if (is.null(merger))
-            merger <- default_signature(x$repo)
-        return(merge_branch(x, commit_on_success, merger))
-    }
+merge.git_branch <- function(x, y = NULL, commit_on_success = TRUE, merger = NULL, ...) {
+    if (is.null(merger))
+        merger <- default_signature(x$repo)
+    merge_branch(x, commit_on_success, merger)
+}
 
-    x <- lookup_repository(x)
+##' @export
+##' @rdname merge
+merge.git_repository <- function(x, y = NULL, commit_on_success = TRUE, merger = NULL, ...) {
     if (is.null(merger))
         merger <- default_signature(x)
     merge_named_branch(x, y, commit_on_success, merger)
+}
+
+##' @export
+##' @rdname merge
+merge.character <- function(x = ".", y = NULL, commit_on_success = TRUE, merger = NULL, ...) {
+    merge.git_repository(lookup_repository(x), y, commit_on_success, merger)
 }
 
 ##' @export
