@@ -4,15 +4,15 @@
 \alias{cred_ssh_key}
 \title{Create a new passphrase-protected ssh key credential object}
 \usage{
-cred_ssh_key(publickey = "~/.ssh/id_rsa.pub", privatekey = "~/.ssh/id_rsa",
-  passphrase = character(0))
+cred_ssh_key(publickey = ssh_path("id_rsa.pub"),
+  privatekey = ssh_path("id_rsa"), passphrase = character(0))
 }
 \arguments{
 \item{publickey}{The path to the public key of the
-credential. Default is \code{'~/.ssh/id_rsa.pub'}}
+credential. Default is \code{ssh_path("id_rsa.pub")}}
 
 \item{privatekey}{The path to the private key of the
-credential. Default is \code{'~/.ssh/id_rsa'}}
+credential. Default is \code{ssh_path("id_rsa")}}
 
 \item{passphrase}{The passphrase of the credential. Default is
 \code{character(0)}. If getPass is installed and private key
@@ -41,7 +41,7 @@ Create a new passphrase-protected ssh key credential object
 \dontrun{
 ## Create a ssh key credential object. It can optionally be
 ## passphrase-protected
-cred <- cred_ssh_key("~/.ssh/id_rsa.pub", "~/.ssh/id_rsa")
+cred <- cred_ssh_key(ssh_path("id_rsa.pub"), ssh_path("id_rsa"))
 repo <- repository("git2r")
 push(repo, credentials = cred)
 }
