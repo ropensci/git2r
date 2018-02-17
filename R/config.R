@@ -111,3 +111,16 @@ print.git_config <- function(x, ...) {
         })
     })
 }
+
+##' Locate the path to the global configuration file
+##'
+##' The user or global configuration file is usually located in
+##' '$HOME/.gitconfig'. This method will try to guess the full path to
+##' that file, if the file exists. This method will not guess the path
+##' to the xdg compatible config file (.config/git/config).
+##' @return path if a global configuration file has been found, else
+##'     NA.
+##' @export
+config_find_global <- function() {
+    .Call(git2r_config_find_global)
+}

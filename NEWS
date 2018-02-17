@@ -1,6 +1,10 @@
 git2r 0.21.0.9000
 -----------------
 
+NEW FEATURES
+
+* Added the 'config_find_global' method to locate the path to the
+  global configuration file.
 
 git2r 0.21.0
 ------------

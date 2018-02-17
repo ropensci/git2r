@@ -17,6 +17,7 @@
  */
 
 #include "git2.h"
+#include "buffer.h"
 
 #include "git2r_arg.h"
 #include "git2r_error.h"
@@ -467,6 +468,28 @@ cleanup:
 
     if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
+
+    return result;
+}
+
+/**
+ * Locate the path to the global configuration file
+ *
+ * @return path if a global configuration file has been found, else NA.
+ */
+SEXP git2r_config_find_global()
+{
+    SEXP result;
+    git_buf buf = GIT_BUF_INIT;
+
+    PROTECT(result = Rf_allocVector(STRSXP, 1));
+    if (git_config_find_global(&buf))
+        SET_STRING_ELT(result, 0, NA_STRING);
+    else
+        SET_STRING_ELT(result, 0, Rf_mkChar(git_buf_cstr(&buf)));
+
+    git_buf_free(&buf);
+    UNPROTECT(1);
 
     return result;
 }

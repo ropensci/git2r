@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -22,6 +22,7 @@
 #include <R.h>
 #include <Rinternals.h>
 
+SEXP git2r_config_find_global();
 SEXP git2r_config_get(SEXP repo);
 SEXP git2r_config_get_logical(SEXP repo, SEXP name);
 SEXP git2r_config_get_string(SEXP repo, SEXP name);
