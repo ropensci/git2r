@@ -137,7 +137,8 @@ tree <- function(object = NULL) {
 
 ##' @export
 print.git_tree <- function(x, ...) {
-    cat(sprintf("tree:  %s\n", x$sha))
+    cat(sprintf("tree: %s\n\n", x$sha))
+    print(as.data.frame(x))
 }
 
 ##' Summary of tree
