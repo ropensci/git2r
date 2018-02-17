@@ -119,7 +119,7 @@ print.git_config <- function(x, ...) {
 ##' that file, if the file exists. This method will not guess the path
 ##' to the xdg compatible config file (.config/git/config).
 ##' @return path if a global configuration file has been found, else
-##'     NA.
+##'     \code{NULL}.
 ##' @export
 config_find_global <- function() {
     .Call(git2r_config_find_global)

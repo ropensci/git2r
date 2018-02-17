@@ -8,7 +8,7 @@ config_find_global()
 }
 \value{
 path if a global configuration file has been found, else
-    NA.
+    \code{NULL}.
 }
 \description{
 The user or global configuration file is usually located in

@@ -33,10 +33,10 @@ writeLines("First file",  file.path(path, "example-1.txt"))
 writeLines("Second file", file.path(path, "subfolder/example-2.txt"))
 writeLines("Third file",  file.path(path, "example-3.txt"))
 add(repo, c("example-1.txt", "subfolder/example-2.txt", "example-3.txt"))
-new_commit <- commit(repo, "Commit message")
+commit(repo, "Commit message")
 
 ## Inspect size of each blob in tree
-invisible(lapply(as(tree(new_commit), "list"),
+invisible(lapply(as(tree(last_commit(repo)), "list"),
   function(obj) {
     if (is_blob(obj))
       summary(obj)

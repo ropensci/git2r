@@ -41,8 +41,8 @@ new_commit <- commit(repo, "Commit message")
 ##' Pick a tree in the repository
 tree_object <- tree(new_commit)
 
-##' Summarize tree
-summary(tree_object)
+##' Display tree
+tree_object
 
 ##' Select item by name
 tree_object["example-1.txt"]

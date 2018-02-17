@@ -45,24 +45,27 @@
 ##' @export
 ##' @examples
 ##' \dontrun{
-##' ##' Initialize a temporary repository
+##' ## Initialize a temporary repository
 ##' path <- tempfile(pattern="git2r-")
 ##' dir.create(path)
 ##' dir.create(file.path(path, "subfolder"))
 ##' repo <- init(path)
 ##'
-##' ##' Create a user
+##' ## Create a user
 ##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
-##' ##' Create three files and commit
+##' ## Create three files and commit
 ##' writeLines("First file",  file.path(path, "example-1.txt"))
 ##' writeLines("Second file", file.path(path, "subfolder/example-2.txt"))
 ##' writeLines("Third file",  file.path(path, "example-3.txt"))
 ##' add(repo, c("example-1.txt", "subfolder/example-2.txt", "example-3.txt"))
-##' new_commit <- commit(repo, "Commit message")
+##' commit(repo, "Commit message")
 ##'
-##' ##' Coerce tree to a data.frame
-##' df <- as(tree(new_commit), "data.frame")
+##' ## Display tree
+##' tree(last_commit(repo))
+##'
+##' ## Coerce tree to a data.frame
+##' df <- as(tree(last_commit(repo)), "data.frame")
 ##' df
 ##' }
 as.data.frame.git_tree <- function(x, ...) {
@@ -95,10 +98,10 @@ as.data.frame.git_tree <- function(x, ...) {
 ##' writeLines("Second file", file.path(path, "subfolder/example-2.txt"))
 ##' writeLines("Third file",  file.path(path, "example-3.txt"))
 ##' add(repo, c("example-1.txt", "subfolder/example-2.txt", "example-3.txt"))
-##' new_commit <- commit(repo, "Commit message")
+##' commit(repo, "Commit message")
 ##'
 ##' ## Inspect size of each blob in tree
-##' invisible(lapply(as(tree(new_commit), "list"),
+##' invisible(lapply(as(tree(last_commit(repo)), "list"),
 ##'   function(obj) {
 ##'     if (is_blob(obj))
 ##'       summary(obj)
@@ -128,8 +131,7 @@ as.list.git_tree <- function(x, ...) {
 ##' add(repo, "example.txt")
 ##' commit(repo, "First commit message")
 ##'
-##' tree(commits(repo)[[1]])
-##' summary(tree(commits(repo)[[1]]))
+##' tree(last_commit(repo))
 ##' }
 tree <- function(object = NULL) {
     .Call(git2r_commit_tree, object)
@@ -160,7 +162,7 @@ print.git_tree <- function(x, ...) {
 ##' add(repo, "example.txt")
 ##' commit(repo, "First commit message")
 ##'
-##' summary(tree(commits(repo)[[1]]))
+##' summary(tree(last_commit(repo)))
 ##' }
 summary.git_tree <- function(object, ...) {
     print(as.data.frame(object))
@@ -197,8 +199,8 @@ summary.git_tree <- function(object, ...) {
 ##' ##' Pick a tree in the repository
 ##' tree_object <- tree(new_commit)
 ##'
-##' ##' Summarize tree
-##' summary(tree_object)
+##' ##' Display tree
+##' tree_object
 ##'
 ##' ##' Select item by name
 ##' tree_object["example-1.txt"]

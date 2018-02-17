@@ -28,7 +28,6 @@ writeLines("Hello world!", file.path(path, "example.txt"))
 add(repo, "example.txt")
 commit(repo, "First commit message")
 
-tree(commits(repo)[[1]])
-summary(tree(commits(repo)[[1]]))
+tree(last_commit(repo))
 }
 }
