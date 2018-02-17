@@ -479,17 +479,20 @@ cleanup:
  */
 SEXP git2r_config_find_global()
 {
-    SEXP result;
+    int nprotect = 0;
+    SEXP result = R_NilValue;
     git_buf buf = GIT_BUF_INIT;
 
-    PROTECT(result = Rf_allocVector(STRSXP, 1));
-    if (git_config_find_global(&buf))
-        SET_STRING_ELT(result, 0, NA_STRING);
-    else
+    if (!git_config_find_global(&buf)) {
+        PROTECT(result = Rf_allocVector(STRSXP, 1));
+        nprotect++;
         SET_STRING_ELT(result, 0, Rf_mkChar(git_buf_cstr(&buf)));
+    }
 
     git_buf_free(&buf);
-    UNPROTECT(1);
+
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     return result;
 }
