@@ -88,7 +88,7 @@ static const R_CallMethodDef callMethods[] =
     CALLDEF(git2r_commit, 4),
     CALLDEF(git2r_commit_parent_list, 1),
     CALLDEF(git2r_commit_tree, 1),
-    CALLDEF(git2r_config_find_global, 0),
+    CALLDEF(git2r_config_find_file, 1),
     CALLDEF(git2r_config_get, 1),
     CALLDEF(git2r_config_get_logical, 2),
     CALLDEF(git2r_config_get_string, 2),

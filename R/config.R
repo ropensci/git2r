@@ -112,15 +112,78 @@ print.git_config <- function(x, ...) {
     })
 }
 
-##' Locate the path to the global configuration file
+##' Locate the path to configuration files
 ##'
-##' The user or global configuration file is usually located in
-##' '$HOME/.gitconfig'. This method will try to guess the full path to
-##' that file, if the file exists. This method will not guess the path
-##' to the xdg compatible config file (.config/git/config).
-##' @return path if a global configuration file has been found, else
-##'     \code{NULL}.
+##' Potential configuration files:
+##' \describe{
+##'   \item{programdata}{
+##'     Locate the path to the configuration file in '\%PROGRAMDATA\%'
+##'     used by portable git. System-wide on Windows, for
+##'     compatibility with portable git.
+##'   }
+##'   \item{system}{
+##'     Locate the path to the system configuration file. If
+##'     '/etc/gitconfig' doesn't exist, it will look for
+##'     '\%PROGRAMFILES\%'.
+##'   }
+##'   \item{xdg}{
+##'     Locate the path to the global xdg compatible configuration
+##'     file. The xdg compatible configuration file is usually located
+##'     in '$HOME/.config/git/config'. This method will try to guess
+##'     the full path to that file, if the file exists.
+##'   }
+##'   \item{global}{
+##'     The user or global configuration file is usually located in
+##'     '$HOME/.gitconfig'. This method will try to guess the full
+##'     path to that file, if the file exists.
+##'   }
+##'   \item{local}{
+##'     Locate the path to the repository specific configuration file,
+##'     if the file exists.
+##'   }
+##' }
+##' @template repo-param
+##' @return a \code{data.frame} with one row per potential
+##'     configuration file where \code{NA} means not found.
 ##' @export
-config_find_global <- function() {
-    .Call(git2r_config_find_global)
+git_config_files <- function(repo = ".") {
+    level <- c("programdata", "system", "xdg", "global")
+    path <- vapply(level, function(l) .Call(git2r_config_find_file, l),
+                   FUN.VALUE = character(1), USE.NAMES = FALSE)
+
+    if (is.null(repo)) {
+        ## Try current working directory
+        repo <- discover_repository(getwd())
+        if (is.null(repo))
+            stop("The working directory is not in a git repository")
+    } else if (inherits(repo, "git_repository")) {
+        return(repo)
+    }
+
+    ## Lookup repository
+    if (inherits(repo, "git_repository")) {
+        repo <- repo$path
+    } else if (is.null(repo)) {
+        repo <- discover_repository(getwd())
+    } else if (is.character(repo) && (length(repo) == 1) &&
+               !is.na(repo) && dir.exists(repo)) {
+        repo <- discover_repository(repo)
+    } else {
+        repo <- NULL
+    }
+
+    ## Add local configuration file
+    level <- c(level, "local")
+    if (is.null(repo)) {
+        path <- c(path, NA_character_)
+    } else {
+        cfg <- file.path(normalizePath(repo), "config")
+        if (isTRUE(!file.info(cfg)$isdir)) {
+            path <- c(path, cfg)
+        } else {
+            path <- c(path, NA_character_)
+        }
+    }
+
+    data.frame(level = level, path = path)
 }

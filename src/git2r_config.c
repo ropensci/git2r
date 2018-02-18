@@ -473,17 +473,30 @@ cleanup:
 }
 
 /**
- * Locate the path to the global configuration file
+ * Locate the path to the configuration file
  *
- * @return path if a global configuration file has been found, else NA.
+ * @return path if a configuration file has been found, else NA.
  */
-SEXP git2r_config_find_global()
+SEXP git2r_config_find_file(SEXP level)
 {
+    int not_found = 1;
     SEXP result;
     git_buf buf = GIT_BUF_INIT;
 
+    if (git2r_arg_check_string(level))
+        git2r_error(__func__, NULL, "'level'", git2r_err_string_arg);
+
+    if (strcmp(CHAR(STRING_ELT(level, 0)), "global") == 0)
+        not_found = git_config_find_global(&buf);
+    else if (strcmp(CHAR(STRING_ELT(level, 0)), "programdata") == 0)
+        not_found = git_config_find_programdata(&buf);
+    else if (strcmp(CHAR(STRING_ELT(level, 0)), "system") == 0)
+        not_found = git_config_find_system(&buf);
+    else if (strcmp(CHAR(STRING_ELT(level, 0)), "xdg") == 0)
+        not_found = git_config_find_xdg(&buf);
+
     PROTECT(result = Rf_allocVector(STRSXP, 1));
-    if (git_config_find_global(&buf))
+    if (not_found)
         SET_STRING_ELT(result, 0, NA_STRING);
     else
         SET_STRING_ELT(result, 0, Rf_mkChar(git_buf_cstr(&buf)));

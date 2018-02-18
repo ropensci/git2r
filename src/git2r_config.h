@@ -22,7 +22,7 @@
 #include <R.h>
 #include <Rinternals.h>
 
-SEXP git2r_config_find_global();
+SEXP git2r_config_find_file(SEXP level);
 SEXP git2r_config_get(SEXP repo);
 SEXP git2r_config_get_logical(SEXP repo, SEXP name);
 SEXP git2r_config_get_string(SEXP repo, SEXP name);
