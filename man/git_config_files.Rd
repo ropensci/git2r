@@ -17,11 +17,6 @@ a \code{data.frame} with one row per potential
 \description{
 Potential configuration files:
 \describe{
-  \item{programdata}{
-    Locate the path to the configuration file in '\%PROGRAMDATA\%'
-    used by portable git. System-wide on Windows, for
-    compatibility with portable git.
-  }
   \item{system}{
     Locate the path to the system configuration file. If
     '/etc/gitconfig' doesn't exist, it will look for

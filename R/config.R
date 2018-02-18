@@ -116,11 +116,6 @@ print.git_config <- function(x, ...) {
 ##'
 ##' Potential configuration files:
 ##' \describe{
-##'   \item{programdata}{
-##'     Locate the path to the configuration file in '\%PROGRAMDATA\%'
-##'     used by portable git. System-wide on Windows, for
-##'     compatibility with portable git.
-##'   }
 ##'   \item{system}{
 ##'     Locate the path to the system configuration file. If
 ##'     '/etc/gitconfig' doesn't exist, it will look for
@@ -147,18 +142,9 @@ print.git_config <- function(x, ...) {
 ##'     configuration file where \code{NA} means not found.
 ##' @export
 git_config_files <- function(repo = ".") {
-    level <- c("programdata", "system", "xdg", "global")
-    path <- vapply(level, function(l) .Call(git2r_config_find_file, l),
-                   FUN.VALUE = character(1), USE.NAMES = FALSE)
-
-    if (is.null(repo)) {
-        ## Try current working directory
-        repo <- discover_repository(getwd())
-        if (is.null(repo))
-            stop("The working directory is not in a git repository")
-    } else if (inherits(repo, "git_repository")) {
-        return(repo)
-    }
+    path <- c(.Call(git2r_config_find_file, "system"),
+              .Call(git2r_config_find_file, "xdg"),
+              .Call(git2r_config_find_file, "global"))
 
     ## Lookup repository
     if (inherits(repo, "git_repository")) {
@@ -173,7 +159,6 @@ git_config_files <- function(repo = ".") {
     }
 
     ## Add local configuration file
-    level <- c(level, "local")
     if (is.null(repo)) {
         path <- c(path, NA_character_)
     } else {
@@ -185,5 +170,5 @@ git_config_files <- function(repo = ".") {
         }
     }
 
-    data.frame(level = level, path = path)
+    data.frame(file = c("system", "xdg", "global", "local"), path = path)
 }
