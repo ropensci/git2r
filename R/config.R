@@ -170,5 +170,7 @@ git_config_files <- function(repo = ".") {
         }
     }
 
-    data.frame(file = c("system", "xdg", "global", "local"), path = path)
+    data.frame(file = c("system", "xdg", "global", "local"),
+               path = path,
+               stringsAsFactors = FALSE)
 }
