@@ -11,7 +11,7 @@ PKG_LIBS=-L. -lmygit \
 PKG_CFLAGS=-DWIN32 -D_WIN32_WINNT=0x0501 -D__USE_MINGW_ANSI_STDIO=1 \
            -DGIT_WINHTTP -D_FILE_OFFSET_BITS=64 -DGIT_SSH \
            -DGIT_USE_NSEC -DGIT_ARCH_$(WIN) -DLIBGIT2_NO_FEATURES_H \
-           -DR_NO_REMAP
+           -DR_NO_REMAP -DGIT_HTTPS=1
 
 LIBGIT=$(patsubst %.c,%.o,$(filter-out libgit2/src/transports/http.c,$(wildcard \
          libgit2/src/*.c libgit2/src/streams/*.c libgit2/src/transports/*.c \
