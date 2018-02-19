@@ -34,7 +34,7 @@
  */
 SEXP git2r_index_add_all(SEXP repo, SEXP path, SEXP force)
 {
-    int err = GIT_OK;
+    int error = 0;
     unsigned int flags = 0;
     git_strarray pathspec = {0};
     git_index *index = NULL;
@@ -49,34 +49,29 @@ SEXP git2r_index_add_all(SEXP repo, SEXP path, SEXP force)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git2r_copy_string_vec(&pathspec, path);
-    if (err || !pathspec.count)
+    error = git2r_copy_string_vec(&pathspec, path);
+    if (error || !pathspec.count)
         goto cleanup;
 
-    err = git_repository_index(&index, repository);
-    if (err)
+    error = git_repository_index(&index, repository);
+    if (error)
         goto cleanup;
 
     if (LOGICAL(force)[0])
         flags |= GIT_INDEX_ADD_FORCE;
 
-    err = git_index_add_all(index, &pathspec, flags, NULL, NULL);
-    if (err)
+    error = git_index_add_all(index, &pathspec, flags, NULL, NULL);
+    if (error)
         goto cleanup;
 
-    err = git_index_write(index);
+    error = git_index_write(index);
 
 cleanup:
-    if (pathspec.strings)
-        free(pathspec.strings);
+    free(pathspec.strings);
+    git_index_free(index);
+    git_repository_free(repository);
 
-    if (index)
-        git_index_free(index);
-
-    if (repository)
-        git_repository_free(repository);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return R_NilValue;
@@ -92,7 +87,7 @@ cleanup:
  */
 SEXP git2r_index_remove_bypath(SEXP repo, SEXP path)
 {
-    int err = 0;
+    int error = 0;
     size_t i, len;
     git_index *index = NULL;
     git_repository *repository = NULL;
@@ -108,28 +103,25 @@ SEXP git2r_index_remove_bypath(SEXP repo, SEXP path)
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    err = git_repository_index(&index, repository);
-    if (err)
+    error = git_repository_index(&index, repository);
+    if (error)
         goto cleanup;
 
     for (i = 0; i < len; i++) {
         if (NA_STRING != STRING_ELT(path, i)) {
-            err = git_index_remove_bypath(index, CHAR(STRING_ELT(path, i)));
-            if (err)
+            error = git_index_remove_bypath(index, CHAR(STRING_ELT(path, i)));
+            if (error)
                 goto cleanup;
         }
     }
 
-    err = git_index_write(index);
+    error = git_index_write(index);
 
 cleanup:
-    if (index)
-        git_index_free(index);
+    git_index_free(index);
+    git_repository_free(repository);
 
-    if (repository)
-        git_repository_free(repository);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return R_NilValue;
