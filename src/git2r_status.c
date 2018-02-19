@@ -341,7 +341,7 @@ static void git2r_status_list_untracked(
 /**
  * Get state of the repository working directory and the staging area.
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param staged Include staged files.
  * @param unstaged Include unstaged files.
  * @param untracked Include untracked files and directories.

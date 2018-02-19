@@ -2,18 +2,18 @@
 % Please edit documentation in R/commit.R
 \name{is_commit}
 \alias{is_commit}
-\title{Check if object is S4 class git_commit}
+\title{Check if object is a git_commit object}
 \usage{
 is_commit(object)
 }
 \arguments{
-\item{object}{Check if object is S4 class git_commit}
+\item{object}{Check if object is a git_commit object}
 }
 \value{
-TRUE if object is S4 class git_commit, else FALSE
+TRUE if object is a git_commit, else FALSE
 }
 \description{
-Check if object is S4 class git_commit
+Check if object is a git_commit object
 }
 \examples{
 \dontrun{
@@ -34,4 +34,3 @@ commit_1 <- commit(repo, "First commit message")
 is_commit(commit_1)
 }
 }
-\keyword{methods}

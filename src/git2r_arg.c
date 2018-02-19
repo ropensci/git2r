@@ -174,7 +174,7 @@ int git2r_arg_check_credentials(SEXP arg)
  * Check fetch_heads argument
  *
  * It's OK:
- *  - A list with S4 class git_fetch_head objects
+ *  - A list with S3 class git_fetch_head objects
  * @param arg the arg to check
  * @return 0 if OK, else -1
  */

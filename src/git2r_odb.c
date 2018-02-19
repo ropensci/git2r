@@ -126,11 +126,11 @@ typedef struct {
  * Add object
  *
  * @param oid Oid of the object
- * @param list The list to hold the S4 class git_object
+ * @param list The list to hold the S3 class git_object
  * @param i The index to the list item
  * @param type The type of the object
  * @param len The length of the object
- * @param repo The S4 class that contains the object
+ * @param repo The S3 class that contains the object
  * @return void
  */
 static void git2r_add_object(
@@ -202,7 +202,7 @@ static int git2r_odb_objects_cb(const git_oid *oid, void *payload)
 /**
  * List all objects available in the database
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @return list with sha's for commit's, tree's, blob's and tag's
  */
 SEXP git2r_odb_objects(SEXP repo)
@@ -468,7 +468,7 @@ static int git2r_odb_blobs_cb(const git_oid *oid, void *payload)
  * List all blobs reachable from the commits in the object
  * database. First list all commits. Then iterate over each blob from
  * the tree and sub-trees of each commit.
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @return A list with blob entries
  */
 SEXP git2r_odb_blobs(SEXP repo)

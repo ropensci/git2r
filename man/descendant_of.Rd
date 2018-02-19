@@ -7,10 +7,10 @@
 descendant_of(commit = NULL, ancestor = NULL)
 }
 \arguments{
-\item{commit}{an S4 class git_commit object.}
+\item{commit}{a git_commit object.}
 
-\item{ancestor}{an S4 class git_commit object to check if ancestor
-to \code{commit}.}
+\item{ancestor}{a git_commit object to check if ancestor to
+\code{commit}.}
 }
 \value{
 TRUE if \code{commit} is descendant of \code{ancestor},

@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2016 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -27,7 +27,7 @@
  * Add or update index entries matching files in the working
  * directory.
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param path array of path patterns
  * @param force if TRUE, add ignored files.
  * @return R_NilValue
@@ -86,7 +86,7 @@ cleanup:
  * Remove an index entry corresponding to a file relative to the
  * repository's working folder.
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param path array of path patterns
  * @return R_NilValue
  */

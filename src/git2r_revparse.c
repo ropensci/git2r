@@ -30,10 +30,10 @@
 /**
  * Find object specified by revision
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param revision The revision string, see
  * http://git-scm.com/docs/git-rev-parse.html#_specifying_revisions
- * @return S4 object of class git_commit, git_tag or git_tree.
+ * @return S3 object of class git_commit, git_tag or git_tree.
  */
 SEXP git2r_revparse_single(SEXP repo, SEXP revision)
 {

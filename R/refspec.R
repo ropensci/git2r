@@ -16,7 +16,7 @@
 
 ##' Create push refspec from arguments
 ##'
-##' @param repo S4 class \code{git_repository}
+##' @param repo a \code{git_repository} object.
 ##' @param name The remote's name. Default is NULL.
 ##' @param refspec The refspec to be pushed. Default is NULL.
 ##' @param opts List with push options. Default is NULL.

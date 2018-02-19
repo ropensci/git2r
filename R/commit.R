@@ -17,8 +17,8 @@
 ##' Ahead Behind
 ##'
 ##' Count the number of unique commits between two commit objects.
-##' @param local an S4 class git_commit object.
-##' @param upstream an S4 class git_commit object.
+##' @param local a git_commit object.
+##' @param upstream a git_commit object.
 ##' @return An integer vector of length 2 with number of commits that
 ##' the upstream commit is ahead and behind the local commit
 ##' @export
@@ -275,9 +275,9 @@ last_commit <- function(repo = ".") {
 ##' Descendant
 ##'
 ##' Determine if a commit is the descendant of another commit
-##' @param commit an S4 class git_commit object.
-##' @param ancestor an S4 class git_commit object to check if ancestor
-##'     to \code{commit}.
+##' @param commit a git_commit object.
+##' @param ancestor a git_commit object to check if ancestor to
+##'     \code{commit}.
 ##' @return TRUE if \code{commit} is descendant of \code{ancestor},
 ##'     else FALSE
 ##' @export
@@ -311,11 +311,10 @@ descendant_of <- function(commit = NULL, ancestor = NULL) {
     .Call(git2r_graph_descendant_of, commit, ancestor)
 }
 
-##' Check if object is S4 class git_commit
+##' Check if object is a git_commit object
 ##'
-##' @param object Check if object is S4 class git_commit
-##' @return TRUE if object is S4 class git_commit, else FALSE
-##' @keywords methods
+##' @param object Check if object is a git_commit object
+##' @return TRUE if object is a git_commit, else FALSE
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -343,7 +342,7 @@ is_commit <- function(object) {
 ##'
 ##' Determine if a commit is a merge commit, i.e. has more than one
 ##' parent.
-##' @param commit a S4 class git_commit \code{object}.
+##' @param commit a git_commit object.
 ##' @return TRUE if commit has more than one parent, else FALSE
 ##' @export
 ##' @examples
@@ -399,8 +398,8 @@ is_merge <- function(commit = NULL) {
 ##' Parents
 ##'
 ##' Get parents of a commit.
-##' @param object a S4 class git_commit \code{object}.
-##' @return list of S4 git_commit objects
+##' @param object a git_commit object.
+##' @return list of git_commit objects
 ##' @export
 ##' @examples
 ##' \dontrun{

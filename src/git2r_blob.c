@@ -206,7 +206,7 @@ cleanup:
  * Init entries in a S3 class git_blob
  *
  * @param source a blob
- * @param repo S4 class git_repository that contains the blob
+ * @param repo S3 class git_repository that contains the blob
  * @param dest S3 class git_blob to initialize
  * @return void
  */

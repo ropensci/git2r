@@ -7,9 +7,9 @@
 ahead_behind(local = NULL, upstream = NULL)
 }
 \arguments{
-\item{local}{an S4 class git_commit object.}
+\item{local}{a git_commit object.}
 
-\item{upstream}{an S4 class git_commit object.}
+\item{upstream}{a git_commit object.}
 }
 \value{
 An integer vector of length 2 with number of commits that

@@ -7,7 +7,7 @@
 is_merge(commit = NULL)
 }
 \arguments{
-\item{commit}{a S4 class git_commit \code{object}.}
+\item{commit}{a git_commit object.}
 }
 \value{
 TRUE if commit has more than one parent, else FALSE

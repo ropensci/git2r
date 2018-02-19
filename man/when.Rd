@@ -13,9 +13,8 @@ when(object)
 A \code{character} vector of length one.
 }
 \description{
-Help method to extract the time as a character string from the S4
-classes \code{git_commit}, \code{git_signature}, \code{git_tag}
-and \code{git_time}.
+Help method to extract the time as a character string from a
+git_commit, git_signature, git_tag and git_time object.
 }
 \examples{
 \dontrun{

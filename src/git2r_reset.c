@@ -77,7 +77,7 @@ cleanup:
 /**
  * Updates some entries in the index from the HEAD commit tree.
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param path The paths to reset
  * @return R_NilValue
  */

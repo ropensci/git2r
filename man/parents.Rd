@@ -7,10 +7,10 @@
 parents(object = NULL)
 }
 \arguments{
-\item{object}{a S4 class git_commit \code{object}.}
+\item{object}{a git_commit object.}
 }
 \value{
-list of S4 git_commit objects
+list of git_commit objects
 }
 \description{
 Get parents of a commit.

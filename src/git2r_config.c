@@ -233,7 +233,7 @@ cleanup:
  * Open configuration file
  *
  * @param out Pointer to store the loaded configuration.
- * @param repo S4 class git_repository. If non-R_NilValue open the
+ * @param repo S3 class git_repository. If non-R_NilValue open the
  * configuration file for the repository. If R_NilValue open the
  * global, XDG and system configuration files.
  * @param snapshot Open a snapshot of the configuration.
@@ -276,7 +276,7 @@ static int git2r_config_open(git_config **out, SEXP repo, int snapshot)
 /**
  * Get config variables
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @return VECSXP list with variables by level
  */
 SEXP git2r_config_get(SEXP repo)
@@ -321,7 +321,7 @@ cleanup:
 /**
  * Set or delete config entries
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param variables list of variables. If variable is NULL, it's deleted.
  * @return R_NilValue
  */
@@ -382,7 +382,7 @@ cleanup:
 /**
  * Get the value of a string config variable
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param name The name of the variable
  * @return If the variable exists, a character vector of length one
  * with the value, else R_NilValue.
@@ -427,7 +427,7 @@ cleanup:
 /**
  * Get the value of a boolean config variable
  *
- * @param repo S4 class git_repository
+ * @param repo S3 class git_repository
  * @param name The name of the variable
  * @return If the variable exists, a logical vector of length one
  * with TRUE or FALSE, else R_NilValue.
