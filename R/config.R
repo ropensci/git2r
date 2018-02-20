@@ -85,9 +85,11 @@ config <- function(repo = NULL, global = FALSE, user.name, user.email, ...)
             if (.Platform$OS.type == "windows") {
               # Ensure that git2r writes the config file to the root of the
               # user's home directory by first creating an empty file. Otherwise
-              # it may be written to the user's Documents/ directory.
+              # it may be written to the user's Documents/ directory. Only
+              # create the empty file if the user has specified configuration
+              # options to set.
               config_global <- file.path(home(), ".gitconfig")
-              if (!file.exists(config_global)) {
+              if (!file.exists(config_global) && length(variables) > 0) {
                 file.create(config_global)
               }
             }

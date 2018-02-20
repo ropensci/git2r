@@ -60,8 +60,17 @@ stopifnot(!is.na(cfg$path[4]))
 
 ## Check location of .gitconfig on Windows
 if (identical(Sys.getenv("APPVEYOR"), "True")) {
-  config(global = TRUE, user.name = "name", email = "email")
-  gitconfig_expected <- Sys.getenv("USERPROFILE")
+  gitconfig_expected <- file.path(Sys.getenv("USERPROFILE"), ".gitconfig")
+  ## .gitconfig should not be created if no configuration options specified
+  config(global = TRUE)
+  stopifnot(!file.exists(gitconfig_expected))
+  ## .gitconfig should be created in the user's home directory
+  config(global = TRUE, user.name = "name", user.email = "email")
+  stopifnot(file.exists(gitconfig_expected))
+  unlink(gitconfig_expected)
+  ## .gitconfig should be created if user specifies option other than user.name
+  ## and user.email
+  config(global = TRUE, core.editor = "nano")
   stopifnot(file.exists(gitconfig_expected))
   unlink(gitconfig_expected)
 }
