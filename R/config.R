@@ -86,10 +86,7 @@ config <- function(repo = NULL, global = FALSE, user.name, user.email, ...)
               # Ensure that git2r writes the config file to the root of the
               # user's home directory by first creating an empty file. Otherwise
               # it may be written to the user's Documents/ directory.
-              drive <- Sys.getenv("HOMEDRIVE")
-              login <- Sys.info()["login"]
-              home <- file.path(drive, "Users", login)
-              config_global <- file.path(home, ".gitconfig")
+              config_global <- file.path(home(), ".gitconfig")
               if (!file.exists(config_global)) {
                 file.create(config_global)
               }
