@@ -360,6 +360,14 @@ static int git2r_merge(
             Rf_ScalarLogical(1));
         SET_VECTOR_ELT(
             merge_result,
+            git2r_S3_item__git_merge_result__fast_forward,
+            Rf_ScalarLogical(0));
+        SET_VECTOR_ELT(
+            merge_result,
+            git2r_S3_item__git_merge_result__conflicts,
+            Rf_ScalarLogical(0));
+        SET_VECTOR_ELT(
+            merge_result,
             git2r_S3_item__git_merge_result__sha,
             Rf_ScalarString(NA_STRING));
         return 0;
