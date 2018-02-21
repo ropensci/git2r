@@ -60,6 +60,10 @@ stopifnot(!is.na(cfg$path[4]))
 
 ## Check location of .gitconfig on Windows
 if (identical(Sys.getenv("APPVEYOR"), "True")) {
+  ## TEST
+  Sys.getenv("USERPROFILE")
+  Sys.getenv("HOMEDRIVE")
+
   config(global = TRUE, user.name = "name", email = "email")
   gitconfig_expected <- file.path(Sys.getenv("HOMEDRIVE"), "Users",
                                   Sys.info()["login"])
