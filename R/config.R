@@ -87,10 +87,11 @@ config <- function(repo = NULL, global = FALSE, user.name, user.email, ...)
               # user's home directory by first creating an empty file. Otherwise
               # it may be written to the user's Documents/ directory. Only
               # create the empty file if the user has specified configuration
-              # options to set.
-              config_global <- file.path(home(), ".gitconfig")
-              if (!file.exists(config_global) && length(variables) > 0) {
-                file.create(config_global)
+              # options to set and no global config file exists.
+              config_files <- git_config_files()
+              config_global <- config_files$path[config_files$file == "global"]
+              if (!is.na(config_global) && length(variables) > 0) {
+                file.create(file.path(home(), ".gitconfig"))
               }
             }
         } else if (is.null(repo)) {
