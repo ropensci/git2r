@@ -65,6 +65,13 @@ stopifnot(identical(m_1$fast_forward, TRUE))
 stopifnot(identical(m_1$conflicts, FALSE))
 stopifnot(identical(m_1$sha, NA_character_))
 
+## Merge branch 1 again
+m_1_again <- merge(b[sapply(b, "[", "name") == "branch1"][[1]])
+stopifnot(identical(m_1_again$up_to_date, TRUE))
+stopifnot(identical(m_1_again$fast_forward, FALSE))
+stopifnot(identical(m_1_again$conflicts, FALSE))
+stopifnot(identical(m_1_again$sha, NA_character_))
+
 ## Merge branch 2
 m_2 <- merge(b[sapply(b, "[", "name") == "branch2"][[1]])
 stopifnot(identical(m_2$fast_forward, FALSE))
