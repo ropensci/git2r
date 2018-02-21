@@ -78,35 +78,35 @@ static int git2r_cred_env(
     SEXP credentials)
 {
     if (GIT_CREDTYPE_USERPASS_PLAINTEXT & allowed_types) {
-        int err;
+        int error;
         git_buf username = GIT_BUF_INIT;
         git_buf password = GIT_BUF_INIT;
 
         /* Read value of the username environment variable */
-        err = git__getenv(
+        error = git__getenv(
             &username,
             CHAR(STRING_ELT(git2r_get_list_element(credentials, "username"), 0)));
-        if (err)
+        if (error)
             goto cleanup;
 
         if (!git_buf_len(&username)) {
-            err = -1;
+            error = -1;
             goto cleanup;
         }
 
         /* Read value of the password environment variable */
-        err = git__getenv(
+        error = git__getenv(
             &password,
             CHAR(STRING_ELT(git2r_get_list_element(credentials, "password"), 0)));
-        if (err)
+        if (error)
             goto cleanup;
 
         if (!git_buf_len(&password)) {
-            err = -1;
+            error = -1;
             goto cleanup;
         }
 
-        err = git_cred_userpass_plaintext_new(
+        error = git_cred_userpass_plaintext_new(
             cred,
             git_buf_cstr(&username),
             git_buf_cstr(&password));
@@ -115,7 +115,7 @@ static int git2r_cred_env(
         git_buf_free(&username);
         git_buf_free(&password);
 
-        if (err)
+        if (error)
             return -1;
 
         return 0;
@@ -138,23 +138,23 @@ static int git2r_cred_token(
     SEXP credentials)
 {
     if (GIT_CREDTYPE_USERPASS_PLAINTEXT & allowed_types) {
-        int err;
+        int error;
         git_buf token = GIT_BUF_INIT;
 
         /* Read value of the personal access token from the
          * environment variable */
-        err = git__getenv(
+        error = git__getenv(
             &token,
             CHAR(STRING_ELT(git2r_get_list_element(credentials, "token"), 0)));
-        if (err)
+        if (error)
             goto cleanup;
 
-        err = git_cred_userpass_plaintext_new(cred, " ", git_buf_cstr(&token));
+        error = git_cred_userpass_plaintext_new(cred, " ", git_buf_cstr(&token));
 
     cleanup:
         git_buf_free(&token);
 
-        if (err)
+        if (error)
             return -1;
 
         return 0;

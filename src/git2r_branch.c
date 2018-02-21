@@ -209,7 +209,7 @@ cleanup:
 SEXP git2r_branch_is_head(SEXP branch)
 {
     SEXP result = R_NilValue;
-    int error;
+    int error, nprotect = 0;
     const char *name;
     git_reference *reference = NULL;
     git_repository *repository = NULL;
@@ -234,6 +234,7 @@ SEXP git2r_branch_is_head(SEXP branch)
     error = git_branch_is_head(reference);
     if (0 == error || 1 == error) {
         PROTECT(result = Rf_allocVector(LGLSXP, 1));
+        nprotect++;
         LOGICAL(result)[0] = error;
         error = 0;
     }
@@ -242,8 +243,8 @@ cleanup:
     git_reference_free(reference);
     git_repository_free(repository);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
@@ -262,7 +263,7 @@ cleanup:
 SEXP git2r_branch_list(SEXP repo, SEXP flags)
 {
     SEXP names, result = R_NilValue;
-    int error;
+    int error, nprotect = 0;
     git_branch_iterator *iter = NULL;
     size_t i, n = 0;
     git_repository *repository = NULL;
@@ -281,6 +282,7 @@ SEXP git2r_branch_list(SEXP repo, SEXP flags)
     if (error)
         goto cleanup;
     PROTECT(result = Rf_allocVector(VECSXP, n));
+    nprotect++;
     Rf_setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, n));
 
     error = git_branch_iterator_new(&iter, repository,  INTEGER(flags)[0]);
@@ -318,8 +320,8 @@ cleanup:
     git_reference_free(reference);
     git_repository_free(repository);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
@@ -335,7 +337,7 @@ cleanup:
  */
 SEXP git2r_branch_canonical_name(SEXP branch)
 {
-    int error;
+    int error, nprotect = 0;
     SEXP result = R_NilValue;
     const char *name;
     git_branch_t type;
@@ -356,14 +358,15 @@ SEXP git2r_branch_canonical_name(SEXP branch)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
+    nprotect++;
     SET_STRING_ELT(result, 0, Rf_mkChar(git_reference_name(reference)));
 
 cleanup:
     git_reference_free(reference);
     git_repository_free(repository);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
@@ -380,7 +383,7 @@ cleanup:
  */
 SEXP git2r_branch_upstream_canonical_name(SEXP branch)
 {
-    int error;
+    int error, nprotect = 0;
     SEXP result = R_NilValue;
     SEXP repo;
     const char *name;
@@ -419,6 +422,7 @@ SEXP git2r_branch_upstream_canonical_name(SEXP branch)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
+    nprotect++;
     SET_STRING_ELT(result, 0, Rf_mkChar(name));
 
 cleanup:
@@ -426,8 +430,8 @@ cleanup:
     git_config_free(cfg);
     git_repository_free(repository);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
@@ -443,7 +447,7 @@ cleanup:
  */
 SEXP git2r_branch_remote_name(SEXP branch)
 {
-    int error;
+    int error, nprotect = 0;
     SEXP result = R_NilValue;
     const char *name;
     git_buf buf = {0};
@@ -475,6 +479,7 @@ SEXP git2r_branch_remote_name(SEXP branch)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
+    nprotect++;
     SET_STRING_ELT(result, 0, Rf_mkChar(buf.ptr));
     git_buf_free(&buf);
 
@@ -482,8 +487,8 @@ cleanup:
     git_reference_free(reference);
     git_repository_free(repository);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
@@ -499,7 +504,7 @@ cleanup:
  */
 SEXP git2r_branch_remote_url(SEXP branch)
 {
-    int error;
+    int error, nprotect = 0;
     SEXP result = R_NilValue;
     const char *name;
     git_buf buf = {0};
@@ -542,6 +547,7 @@ SEXP git2r_branch_remote_url(SEXP branch)
     git_buf_free(&buf);
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
+    nprotect++;
     SET_STRING_ELT(result, 0, Rf_mkChar(git_remote_url(remote)));
 
 cleanup:
@@ -549,8 +555,8 @@ cleanup:
     git_reference_free(reference);
     git_repository_free(repository);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
@@ -635,7 +641,7 @@ cleanup:
  */
 SEXP git2r_branch_target(SEXP branch)
 {
-    int error;
+    int error, nprotect = 0;
     SEXP result = R_NilValue;
     const char *name;
     char sha[GIT_OID_HEXSZ + 1];
@@ -657,6 +663,7 @@ SEXP git2r_branch_target(SEXP branch)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
+    nprotect++;
     if (GIT_REF_OID == git_reference_type(reference)) {
         git_oid_fmt(sha, git_reference_target(reference));
         sha[GIT_OID_HEXSZ] = '\0';
@@ -669,8 +676,8 @@ cleanup:
     git_reference_free(reference);
     git_repository_free(repository);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);

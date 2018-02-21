@@ -207,7 +207,7 @@ static int git2r_odb_objects_cb(const git_oid *oid, void *payload)
  */
 SEXP git2r_odb_objects(SEXP repo)
 {
-    int i, error;
+    int i, error, nprotect = 0;
     SEXP result = R_NilValue;
     SEXP names = R_NilValue;
     git2r_odb_objects_cb_data cb_data = {0, R_NilValue, NULL};
@@ -229,6 +229,7 @@ SEXP git2r_odb_objects(SEXP repo)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(VECSXP, 3));
+    nprotect++;
     Rf_setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, 3));
 
     i = 0;
@@ -247,8 +248,8 @@ cleanup:
     git_repository_free(repository);
     git_odb_free(odb);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
@@ -473,7 +474,7 @@ static int git2r_odb_blobs_cb(const git_oid *oid, void *payload)
  */
 SEXP git2r_odb_blobs(SEXP repo)
 {
-    int i, error;
+    int i, error, nprotect = 0;
     SEXP result = R_NilValue;
     SEXP names = R_NilValue;
     git2r_odb_blobs_cb_data cb_data = {0, R_NilValue, NULL, NULL};
@@ -496,6 +497,7 @@ SEXP git2r_odb_blobs(SEXP repo)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(VECSXP, 7));
+    nprotect++;
     Rf_setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, 7));
 
     i = 0;
@@ -522,8 +524,8 @@ cleanup:
     git_repository_free(repository);
     git_odb_free(odb);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);

@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2017 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -358,7 +358,7 @@ SEXP git2r_status_list(
     SEXP all_untracked,
     SEXP ignored)
 {
-    int err;
+    int error, nprotect = 0;
     size_t i=0, count;
     SEXP list = R_NilValue;
     SEXP list_names = R_NilValue;
@@ -392,8 +392,8 @@ SEXP git2r_status_list(
     }
     if (LOGICAL(ignored)[0])
         opts.flags |= GIT_STATUS_OPT_INCLUDE_IGNORED;
-    err = git_status_list_new(&status_list, repository, &opts);
-    if (err)
+    error = git_status_list_new(&status_list, repository, &opts);
+    if (error)
         goto cleanup;
 
     count = LOGICAL(staged)[0] +
@@ -402,6 +402,7 @@ SEXP git2r_status_list(
         LOGICAL(ignored)[0];
 
     PROTECT(list = Rf_allocVector(VECSXP, count));
+    nprotect++;
     Rf_setAttrib(list, R_NamesSymbol, list_names = Rf_allocVector(STRSXP, count));
 
     if (LOGICAL(staged)[0]) {
@@ -429,16 +430,13 @@ SEXP git2r_status_list(
 
 
 cleanup:
-    if (status_list)
-        git_status_list_free(status_list);
+    git_status_list_free(status_list);
+    git_repository_free(repository);
 
-    if (repository)
-        git_repository_free(repository);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
-    if (!Rf_isNull(list))
-        UNPROTECT(1);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return list;
