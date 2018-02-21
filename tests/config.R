@@ -63,6 +63,9 @@ if (identical(Sys.getenv("APPVEYOR"), "True")) {
   ## TEST
   str(Sys.getenv("USERPROFILE"))
   str(Sys.getenv("HOMEDRIVE"))
+  gitconfig_expected <- file.path(Sys.getenv("USERPROFILE"), ".gitconfig")
+  str(gitconfig_expected)
+  str(file.exists(gitconfig_expected))
 
   config(global = TRUE, user.name = "name", email = "email")
   gitconfig_expected <- file.path(Sys.getenv("HOMEDRIVE"), "Users",
