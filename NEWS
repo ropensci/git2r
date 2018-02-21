@@ -5,6 +5,13 @@ NEW FEATURES
 
 * Added the 'git_config_files' method to locate configuration files.
 
+BUG FIXES
+
+* If a merge results in no change, the returned 'git_merge_result' now returns
+  'FALSE' for 'fast_forward' and 'conflicts' and 'NA' for 'sha'. Previously it
+  returned 'logical(0)' for 'fast_forward' and 'conflicts' and 'character(0)'
+  for 'sha'.
+
 git2r 0.21.0
 ------------
 
