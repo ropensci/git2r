@@ -5,7 +5,8 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
-#include "common.h"
+#include "proxy.h"
+
 #include "git2/proxy.h"
 
 int git_proxy_init_options(git_proxy_options *opts, unsigned int version)
@@ -29,4 +30,10 @@ int git_proxy_options_dup(git_proxy_options *tgt, const git_proxy_options *src)
 	}
 
 	return 0;
+}
+
+void git_proxy_options_clear(git_proxy_options *opts)
+{
+	git__free((char *) opts->url);
+	opts->url = NULL;
 }

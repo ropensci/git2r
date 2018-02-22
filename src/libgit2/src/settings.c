@@ -5,12 +5,13 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
+#include "common.h"
+
 #ifdef GIT_OPENSSL
 # include <openssl/err.h>
 #endif
 
 #include <git2.h>
-#include "common.h"
 #include "sysdir.h"
 #include "cache.h"
 #include "global.h"
@@ -18,6 +19,7 @@
 #include "odb.h"
 #include "refs.h"
 #include "transports/smart.h"
+#include "streams/openssl.h"
 
 void git_libgit2_version(int *major, int *minor, int *rev)
 {
@@ -171,14 +173,10 @@ int git_libgit2_opts(int key, ...)
 		{
 			const char *file = va_arg(ap, const char *);
 			const char *path = va_arg(ap, const char *);
-			if (!SSL_CTX_load_verify_locations(git__ssl_ctx, file, path)) {
-				giterr_set(GITERR_NET, "SSL error: %s",
-					ERR_error_string(ERR_get_error(), NULL));
-				error = -1;
-			}
+			error = git_openssl__set_cert_location(file, path);
 		}
 #else
-		giterr_set(GITERR_NET, "cannot set certificate locations: OpenSSL is not enabled");
+		giterr_set(GITERR_SSL, "TLS backend doesn't support certificate locations");
 		error = -1;
 #endif
 		break;
@@ -211,7 +209,7 @@ int git_libgit2_opts(int key, ...)
 			}
 		}
 #else
-		giterr_set(GITERR_NET, "cannot set custom ciphers: OpenSSL is not enabled");
+		giterr_set(GITERR_SSL, "TLS backend doesn't support custom ciphers");
 		error = -1;
 #endif
 		break;

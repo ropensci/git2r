@@ -5,6 +5,8 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
+#include "common.h"
+
 #ifdef GIT_WINHTTP
 
 #include "git2.h"
@@ -16,6 +18,7 @@
 #include "remote.h"
 #include "repository.h"
 #include "global.h"
+#include "http.h"
 
 #include <wincrypt.h>
 #include <winhttp.h>
@@ -170,14 +173,23 @@ static int apply_default_credentials(HINTERNET request, int mechanisms)
 	 * is "medium" which applies to the intranet and sounds like it would correspond
 	 * to Internet Explorer security zones, but in fact does not. */
 	DWORD data = WINHTTP_AUTOLOGON_SECURITY_LEVEL_LOW;
+	DWORD native_scheme = 0;
 
-	if ((mechanisms & GIT_WINHTTP_AUTH_NTLM) == 0 &&
-		(mechanisms & GIT_WINHTTP_AUTH_NEGOTIATE) == 0) {
+	if ((mechanisms & GIT_WINHTTP_AUTH_NTLM) != 0)
+		native_scheme |= WINHTTP_AUTH_SCHEME_NTLM;
+
+	if ((mechanisms & GIT_WINHTTP_AUTH_NEGOTIATE) != 0)
+		native_scheme |= WINHTTP_AUTH_SCHEME_NEGOTIATE;
+
+	if (!native_scheme) {
 		giterr_set(GITERR_NET, "invalid authentication scheme");
 		return -1;
 	}
 
 	if (!WinHttpSetOption(request, WINHTTP_OPTION_AUTOLOGON_POLICY, &data, sizeof(DWORD)))
+		return -1;
+
+	if (!WinHttpSetCredentials(request, WINHTTP_AUTH_TARGET_SERVER, native_scheme, NULL, NULL, NULL))
 		return -1;
 
 	return 0;
@@ -267,7 +279,7 @@ static int certificate_check(winhttp_stream *s, int valid)
 	cert.parent.cert_type = GIT_CERT_X509;
 	cert.data = cert_ctx->pbCertEncoded;
 	cert.len = cert_ctx->cbCertEncoded;
-	error = t->owner->certificate_check_cb((git_cert *) &cert, valid, t->connection_data.host, t->owner->cred_acquire_payload);
+	error = t->owner->certificate_check_cb((git_cert *) &cert, valid, t->connection_data.host, t->owner->message_cb_payload);
 	CertFreeCertificateContext(cert_ctx);
 
 	if (error < 0 && !giterr_last())
@@ -604,12 +616,12 @@ static int parse_unauthorized_response(
 	if (WINHTTP_AUTH_SCHEME_NTLM & supported) {
 		*allowed_types |= GIT_CREDTYPE_USERPASS_PLAINTEXT;
 		*allowed_types |= GIT_CREDTYPE_DEFAULT;
-		*allowed_mechanisms = GIT_WINHTTP_AUTH_NEGOTIATE;
+		*allowed_mechanisms |= GIT_WINHTTP_AUTH_NTLM;
 	}
 
 	if (WINHTTP_AUTH_SCHEME_NEGOTIATE & supported) {
 		*allowed_types |= GIT_CREDTYPE_DEFAULT;
-		*allowed_mechanisms = GIT_WINHTTP_AUTH_NEGOTIATE;
+		*allowed_mechanisms |= GIT_WINHTTP_AUTH_NEGOTIATE;
 	}
 
 	if (WINHTTP_AUTH_SCHEME_BASIC & supported) {
@@ -690,21 +702,6 @@ static int winhttp_close_connection(winhttp_subtransport *t)
 	return ret;
 }
 
-static int user_agent(git_buf *ua)
-{
-	const char *custom = git_libgit2__user_agent();
-
-	git_buf_clear(ua);
-	git_buf_PUTS(ua, "git/1.0 (");
-
-	if (custom)
-		git_buf_puts(ua, custom);
-	else
-		git_buf_PUTS(ua, "libgit2 " LIBGIT2_VERSION);
-
-	return git_buf_putc(ua, ')');
-}
-
 static void CALLBACK winhttp_status(
 	HINTERNET connection,
 	DWORD_PTR ctx,
@@ -761,7 +758,8 @@ static int winhttp_connect(
 		return -1;
 	}
 
-	if ((error = user_agent(&ua)) < 0) {
+
+	if ((error = git_http__user_agent(&ua)) < 0) {
 		git__free(wide_host);
 		return error;
 	}

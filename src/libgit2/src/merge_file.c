@@ -6,6 +6,7 @@
  */
 
 #include "common.h"
+
 #include "repository.h"
 #include "posix.h"
 #include "fileops.h"
@@ -124,6 +125,8 @@ static int merge_file__xdiff(
 
 	if (options.flags & GIT_MERGE_FILE_DIFF_MINIMAL)
 		xmparam.xpp.flags |= XDF_NEED_MINIMAL;
+
+	xmparam.marker_size = options.marker_size;
 
 	if ((xdl_result = xdl_merge(&ancestor_mmfile, &our_mmfile,
 		&their_mmfile, &xmparam, &mmbuffer)) < 0) {

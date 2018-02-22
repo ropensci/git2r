@@ -5,6 +5,8 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
+#include "streams/openssl.h"
+
 #ifdef GIT_OPENSSL
 
 #include <ctype.h>
@@ -12,14 +14,13 @@
 #include "global.h"
 #include "posix.h"
 #include "stream.h"
-#include "socket_stream.h"
-#include "openssl_stream.h"
+#include "streams/socket.h"
 #include "netops.h"
 #include "git2/transport.h"
 #include "git2/sys/openssl.h"
 
 #ifdef GIT_CURL
-# include "curl_stream.h"
+# include "streams/curl.h"
 #endif
 
 #ifndef GIT_WIN32
@@ -149,10 +150,19 @@ int git_openssl_stream_global_init(void)
 	return 0;
 }
 
+#if defined(GIT_THREADS)
+static void threadid_cb(CRYPTO_THREADID *threadid)
+{
+    CRYPTO_THREADID_set_numeric(threadid, git_thread_currentid());
+}
+#endif
+
 int git_openssl_set_locking(void)
 {
 #if defined(GIT_THREADS) && OPENSSL_VERSION_NUMBER < 0x10100000L
 	int num_locks, i;
+
+	CRYPTO_THREADID_set_callback(threadid_cb);
 
 	num_locks = CRYPTO_num_locks();
 	openssl_locks = git__calloc(num_locks, sizeof(git_mutex));
@@ -272,8 +282,9 @@ static int ssl_set_error(SSL *ssl, int error)
 	case SSL_ERROR_SYSCALL:
 		e = ERR_get_error();
 		if (e > 0) {
-			giterr_set(GITERR_NET, "SSL error: %s",
-					ERR_error_string(e, NULL));
+			char errmsg[256];
+			ERR_error_string_n(e, errmsg, sizeof(errmsg));
+			giterr_set(GITERR_NET, "SSL error: %s", errmsg);
 			break;
 		} else if (error < 0) {
 			giterr_set(GITERR_OS, "SSL error: syscall failure");
@@ -283,10 +294,13 @@ static int ssl_set_error(SSL *ssl, int error)
 		return GIT_EEOF;
 		break;
 	case SSL_ERROR_SSL:
+	{
+		char errmsg[256];
 		e = ERR_get_error();
-		giterr_set(GITERR_NET, "SSL error: %s",
-				ERR_error_string(e, NULL));
+		ERR_error_string_n(e, errmsg, sizeof(errmsg));
+		giterr_set(GITERR_NET, "SSL error: %s", errmsg);
 		break;
+	}
 	case SSL_ERROR_NONE:
 	case SSL_ERROR_ZERO_RETURN:
 	default:
@@ -322,7 +336,7 @@ static int check_host_name(const char *name, const char *host)
 
 static int verify_server_cert(SSL *ssl, const char *host)
 {
-	X509 *cert;
+	X509 *cert = NULL;
 	X509_NAME *peer_name;
 	ASN1_STRING *str;
 	unsigned char *peer_cn = NULL;
@@ -330,8 +344,8 @@ static int verify_server_cert(SSL *ssl, const char *host)
 	GENERAL_NAMES *alts;
 	struct in6_addr addr6;
 	struct in_addr addr4;
-	void *addr;
-	int i = -1,j;
+	void *addr = NULL;
+	int i = -1, j, error = 0;
 
 	if (SSL_get_verify_result(ssl) != X509_V_OK) {
 		giterr_set(GITERR_SSL, "the SSL certificate is invalid");
@@ -343,7 +357,7 @@ static int verify_server_cert(SSL *ssl, const char *host)
 		type = GEN_IPADD;
 		addr = &addr4;
 	} else {
-		if(p_inet_pton(AF_INET6, host, &addr6)) {
+		if (p_inet_pton(AF_INET6, host, &addr6)) {
 			type = GEN_IPADD;
 			addr = &addr6;
 		}
@@ -352,8 +366,9 @@ static int verify_server_cert(SSL *ssl, const char *host)
 
 	cert = SSL_get_peer_certificate(ssl);
 	if (!cert) {
+		error = -1;
 		giterr_set(GITERR_SSL, "the server did not provide a certificate");
-		return -1;
+		goto cleanup;
 	}
 
 	/* Check the alternative names */
@@ -382,7 +397,7 @@ static int verify_server_cert(SSL *ssl, const char *host)
 					matched = 1;
 			} else if (type == GEN_IPADD) {
 				/* Here name isn't so much a name but a binary representation of the IP */
-				matched = !!memcmp(name, addr, namelen);
+				matched = addr && !!memcmp(name, addr, namelen);
 			}
 		}
 	}
@@ -391,8 +406,9 @@ static int verify_server_cert(SSL *ssl, const char *host)
 	if (matched == 0)
 		goto cert_fail_name;
 
-	if (matched == 1)
-		return 0;
+	if (matched == 1) {
+		goto cleanup;
+	}
 
 	/* If no alternative names are available, check the common name */
 	peer_name = X509_get_subject_name(cert);
@@ -434,18 +450,21 @@ static int verify_server_cert(SSL *ssl, const char *host)
 	if (check_host_name((char *)peer_cn, host) < 0)
 		goto cert_fail_name;
 
-	OPENSSL_free(peer_cn);
-
-	return 0;
-
-on_error:
-	OPENSSL_free(peer_cn);
-	return ssl_set_error(ssl, 0);
+	goto cleanup;
 
 cert_fail_name:
-	OPENSSL_free(peer_cn);
+	error = GIT_ECERTIFICATE;
 	giterr_set(GITERR_SSL, "hostname does not match certificate");
-	return GIT_ECERTIFICATE;
+	goto cleanup;
+
+on_error:
+	error = ssl_set_error(ssl, 0);
+	goto cleanup;
+
+cleanup:
+	X509_free(cert);
+	OPENSSL_free(peer_cn);
+	return error;
 }
 
 typedef struct {
@@ -627,6 +646,20 @@ out_err:
 	return error;
 }
 
+int git_openssl__set_cert_location(const char *file, const char *path)
+{
+	if (SSL_CTX_load_verify_locations(git__ssl_ctx, file, path) == 0) {
+		char errmsg[256];
+
+		ERR_error_string_n(ERR_get_error(), errmsg, sizeof(errmsg));
+		giterr_set(GITERR_SSL, "OpenSSL error: failed to load certificates: %s",
+			errmsg);
+
+		return -1;
+	}
+	return 0;
+}
+
 #else
 
 #include "stream.h"
@@ -648,6 +681,15 @@ int git_openssl_stream_new(git_stream **out, const char *host, const char *port)
 	GIT_UNUSED(out);
 	GIT_UNUSED(host);
 	GIT_UNUSED(port);
+
+	giterr_set(GITERR_SSL, "openssl is not supported in this version");
+	return -1;
+}
+
+int git_openssl__set_cert_location(const char *file, const char *path)
+{
+	GIT_UNUSED(file);
+	GIT_UNUSED(path);
 
 	giterr_set(GITERR_SSL, "openssl is not supported in this version");
 	return -1;

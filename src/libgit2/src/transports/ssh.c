@@ -5,6 +5,8 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
+#include "ssh.h"
+
 #ifdef GIT_SSH
 #include <libssh2.h>
 #endif
@@ -15,8 +17,7 @@
 #include "netops.h"
 #include "smart.h"
 #include "cred.h"
-#include "socket_stream.h"
-#include "ssh.h"
+#include "streams/socket.h"
 
 #ifdef GIT_SSH
 
@@ -418,8 +419,10 @@ static int _git_ssh_authenticate_session(
 		}
 	} while (LIBSSH2_ERROR_EAGAIN == rc || LIBSSH2_ERROR_TIMEOUT == rc);
 
-        if (rc == LIBSSH2_ERROR_PASSWORD_EXPIRED || rc == LIBSSH2_ERROR_AUTHENTICATION_FAILED)
-                return GIT_EAUTH;
+	if (rc == LIBSSH2_ERROR_PASSWORD_EXPIRED ||
+		rc == LIBSSH2_ERROR_AUTHENTICATION_FAILED ||
+		rc == LIBSSH2_ERROR_PUBLICKEY_UNVERIFIED)
+			return GIT_EAUTH;
 
 	if (rc != LIBSSH2_ERROR_NONE) {
 		if (!giterr_last())

@@ -4,9 +4,11 @@
  * This file is part of libgit2, distributed under the GNU GPL v2 with
  * a Linking Exception. For full terms see the included COPYING file.
  */
+
+#include "object.h"
+
 #include "git2/object.h"
 
-#include "common.h"
 #include "repository.h"
 
 #include "commit.h"
@@ -234,13 +236,22 @@ const char *git_object_type2string(git_otype type)
 
 git_otype git_object_string2type(const char *str)
 {
+	if (!str)
+		return GIT_OBJ_BAD;
+
+	return git_object_stringn2type(str, strlen(str));
+}
+
+git_otype git_object_stringn2type(const char *str, size_t len)
+{
 	size_t i;
 
-	if (!str || !*str)
+	if (!str || !len || !*str)
 		return GIT_OBJ_BAD;
 
 	for (i = 0; i < ARRAY_SIZE(git_objects_table); i++)
-		if (!strcmp(str, git_objects_table[i].str))
+		if (*git_objects_table[i].str &&
+			!git__prefixncmp(str, len, git_objects_table[i].str))
 			return (git_otype)i;
 
 	return GIT_OBJ_BAD;

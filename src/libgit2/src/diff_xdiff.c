@@ -4,11 +4,12 @@
  * This file is part of libgit2, distributed under the GNU GPL v2 with
  * a Linking Exception. For full terms see the included COPYING file.
  */
+
+#include "diff_xdiff.h"
+
 #include "git2/errors.h"
-#include "common.h"
 #include "diff.h"
 #include "diff_driver.h"
-#include "diff_xdiff.h"
 #include "patch_generate.h"
 
 static int git_xdiff_scan_int(const char **str, int *value)
@@ -238,6 +239,8 @@ void git_xdiff_init(git_xdiff_output *xo, const git_diff_options *opts)
 		xo->params.flags |= XDF_IGNORE_WHITESPACE_CHANGE;
 	if (flags & GIT_DIFF_IGNORE_WHITESPACE_EOL)
 		xo->params.flags |= XDF_IGNORE_WHITESPACE_AT_EOL;
+	if (flags & GIT_DIFF_INDENT_HEURISTIC)
+		xo->params.flags |= XDF_INDENT_HEURISTIC;
 
 	if (flags & GIT_DIFF_PATIENCE)
 		xo->params.flags |= XDF_PATIENCE_DIFF;

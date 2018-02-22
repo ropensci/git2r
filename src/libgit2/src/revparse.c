@@ -5,9 +5,10 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
+#include "common.h"
+
 #include <assert.h>
 
-#include "common.h"
 #include "buffer.h"
 #include "tree.h"
 #include "refdb.h"
@@ -769,7 +770,6 @@ int revparse__ext(
 		}
 
 		case '@':
-		{
 			if (spec[pos+1] == '{') {
 				git_object *temp_object = NULL;
 
@@ -785,10 +785,8 @@ int revparse__ext(
 				if (temp_object != NULL)
 					base_rev = temp_object;
 				break;
-			} else {
-				/* Fall through */
 			}
-		}
+			/* fall through */
 
 		default:
 			if ((error = ensure_left_hand_identifier_is_not_known_yet(base_rev, reference)) < 0)

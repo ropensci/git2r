@@ -4,8 +4,9 @@
  * This file is part of libgit2, distributed under the GNU GPL v2 with
  * a Linking Exception. For full terms see the included COPYING file.
  */
-#include "common.h"
+
 #include "fileops.h"
+
 #include "global.h"
 #include "strmap.h"
 #include <ctype.h>
@@ -99,6 +100,16 @@ int git_futils_open_ro(const char *path)
 	if (fd < 0)
 		return git_path_set_error(errno, path, "open");
 	return fd;
+}
+
+int git_futils_truncate(const char *path, int mode)
+{
+	int fd = p_open(path, O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC, mode);
+	if (fd < 0)
+		return git_path_set_error(errno, path, "open");
+
+	close(fd);
+	return 0;
 }
 
 git_off_t git_futils_filesize(git_file fd)
