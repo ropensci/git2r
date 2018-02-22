@@ -60,6 +60,19 @@ stopifnot(!is.na(cfg$path[4]))
 
 ## Check location of .gitconfig on Windows
 if (identical(Sys.getenv("APPVEYOR"), "True")) {
+
+  ## AppVeyor diagnostics
+  str(Sys.getenv("USERPROFILE"))
+  str(Sys.getenv("HOMEDRIVE"))
+  str(normalizePath("~"))
+  str(git_config_files())
+
+  ## Temporarily move AppVeyor .gitconfig
+  gitconfig_appveyor <- "C:/Users/appveyor/.gitconfig"
+  gitconfig_tmp <- "/tmp/.gitconfig"
+  file.rename(gitconfig_appveyor, gitconfig_tmp)
+
+  ## Test config() on Windows
   gitconfig_expected <- file.path(Sys.getenv("USERPROFILE"), ".gitconfig")
   ## .gitconfig should not be created if no configuration options specified
   config(global = TRUE)
@@ -73,6 +86,9 @@ if (identical(Sys.getenv("APPVEYOR"), "True")) {
   config(global = TRUE, core.editor = "nano")
   stopifnot(file.exists(gitconfig_expected))
   unlink(gitconfig_expected)
+
+  ## Return AppVeyor .gitconfig
+  file.rename(gitconfig_tmp, gitconfig_appveyor)
 }
 
 ## Cleanup

@@ -21,3 +21,16 @@ notifications:
     auth_token:
       secure: Da1t3XpyPl/xPpY98Ay83DJc6J0p8jsdu5GB3dMVBypGXGSss6D/4rzHdCmN+xNu
     channel: builds
+
+artifacts:
+  - path: '*.Rcheck\**\*.log'
+    name: Logs
+
+  - path: '*.Rcheck\**\*.out'
+    name: Logs
+
+  - path: '*.Rcheck\**\*.fail'
+    name: Logs
+
+  - path: '*.Rcheck\**\*.Rout'
+    name: Logs

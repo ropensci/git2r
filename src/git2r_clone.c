@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2017 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -85,7 +85,7 @@ SEXP git2r_clone(
     SEXP credentials,
     SEXP progress)
 {
-    int err;
+    int error;
     git_repository *repository = NULL;
     git_clone_options clone_opts = GIT_CLONE_OPTIONS_INIT;
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
@@ -127,15 +127,14 @@ SEXP git2r_clone(
         Rprintf("cloning into '%s'...\n", CHAR(STRING_ELT(local_path, 0)));
     }
 
-    err = git_clone(&repository,
+    error = git_clone(&repository,
                     CHAR(STRING_ELT(url, 0)),
                     CHAR(STRING_ELT(local_path, 0)),
                     &clone_opts);
 
-    if (repository)
-        git_repository_free(repository);
+    git_repository_free(repository);
 
-    if (err)
+    if (error)
         git2r_error(
             __func__,
             giterr_last(),

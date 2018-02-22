@@ -30,7 +30,7 @@
  */
 SEXP git2r_blob_content(SEXP blob)
 {
-    int err;
+    int error, nprotect = 0;
     SEXP result = R_NilValue;
     SEXP sha;
     git_blob *blob_obj = NULL;
@@ -47,24 +47,22 @@ SEXP git2r_blob_content(SEXP blob)
     sha = git2r_get_list_element(blob, "sha");
     git_oid_fromstr(&oid, CHAR(STRING_ELT(sha, 0)));
 
-    err = git_blob_lookup(&blob_obj, repository, &oid);
-    if (err)
+    error = git_blob_lookup(&blob_obj, repository, &oid);
+    if (error)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
+    nprotect++;
     SET_STRING_ELT(result, 0, Rf_mkChar(git_blob_rawcontent(blob_obj)));
 
 cleanup:
-    if (blob_obj)
-        git_blob_free(blob_obj);
+    git_blob_free(blob_obj);
+    git_repository_free(repository);
 
-    if (repository)
-        git_repository_free(repository);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -81,7 +79,7 @@ cleanup:
 SEXP git2r_blob_create_fromdisk(SEXP repo, SEXP path)
 {
     SEXP result = R_NilValue;
-    int err = 0, nprotect = 0;
+    int error = 0, nprotect = 0;
     size_t len, i;
     git_repository *repository = NULL;
 
@@ -101,15 +99,15 @@ SEXP git2r_blob_create_fromdisk(SEXP repo, SEXP path)
             git_blob *blob = NULL;
             SEXP item;
 
-            err = git_blob_create_fromdisk(
+            error = git_blob_create_fromdisk(
                 &oid,
                 repository,
                 CHAR(STRING_ELT(path, i)));
-            if (err)
+            if (error)
                 goto cleanup;
 
-            err = git_blob_lookup(&blob, repository, &oid);
-            if (err)
+            error = git_blob_lookup(&blob, repository, &oid);
+            if (error)
                 goto cleanup;
 
             SET_VECTOR_ELT(result, i,
@@ -122,13 +120,12 @@ SEXP git2r_blob_create_fromdisk(SEXP repo, SEXP path)
     }
 
 cleanup:
-    if (repository)
-        git_repository_free(repository);
+    git_repository_free(repository);
 
     if (nprotect)
         UNPROTECT(nprotect);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -149,7 +146,7 @@ cleanup:
 SEXP git2r_blob_create_fromworkdir(SEXP repo, SEXP relative_path)
 {
     SEXP result = R_NilValue;
-    int err = 0, nprotect = 0;
+    int error = 0, nprotect = 0;
     size_t len, i;
     git_repository *repository = NULL;
 
@@ -169,15 +166,15 @@ SEXP git2r_blob_create_fromworkdir(SEXP repo, SEXP relative_path)
             git_blob *blob = NULL;
             SEXP item;
 
-            err = git_blob_create_fromworkdir(
+            error = git_blob_create_fromworkdir(
                 &oid,
                 repository,
                 CHAR(STRING_ELT(relative_path, i)));
-            if (err)
+            if (error)
                 goto cleanup;
 
-            err = git_blob_lookup(&blob, repository, &oid);
-            if (err)
+            error = git_blob_lookup(&blob, repository, &oid);
+            if (error)
                 goto cleanup;
 
             SET_VECTOR_ELT(result, i,
@@ -190,13 +187,12 @@ SEXP git2r_blob_create_fromworkdir(SEXP repo, SEXP relative_path)
     }
 
 cleanup:
-    if (repository)
-        git_repository_free(repository);
+    git_repository_free(repository);
 
     if (nprotect)
         UNPROTECT(nprotect);
 
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -235,7 +231,7 @@ void git2r_blob_init(const git_blob *source, SEXP repo, SEXP dest)
  */
 SEXP git2r_blob_is_binary(SEXP blob)
 {
-    int err;
+    int error, nprotect = 0;
     SEXP result = R_NilValue;
     SEXP sha;
     git_blob *blob_obj = NULL;
@@ -252,27 +248,25 @@ SEXP git2r_blob_is_binary(SEXP blob)
     sha = git2r_get_list_element(blob, "sha");
     git_oid_fromstr(&oid, CHAR(STRING_ELT(sha, 0)));
 
-    err = git_blob_lookup(&blob_obj, repository, &oid);
-    if (err)
+    error = git_blob_lookup(&blob_obj, repository, &oid);
+    if (error)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(LGLSXP, 1));
+    nprotect++;
     if (git_blob_is_binary(blob_obj))
         LOGICAL(result)[0] = 1;
     else
         LOGICAL(result)[0] = 0;
 
 cleanup:
-    if (blob_obj)
-        git_blob_free(blob_obj);
+    git_blob_free(blob_obj);
+    git_repository_free(repository);
 
-    if (repository)
-        git_repository_free(repository);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return result;
@@ -286,7 +280,7 @@ cleanup:
  */
 SEXP git2r_blob_rawsize(SEXP blob)
 {
-    int err;
+    int error;
     SEXP sha;
     git_off_t size = 0;
     git_blob *blob_obj = NULL;
@@ -303,20 +297,17 @@ SEXP git2r_blob_rawsize(SEXP blob)
     sha = git2r_get_list_element(blob, "sha");
     git_oid_fromstr(&oid, CHAR(STRING_ELT(sha, 0)));
 
-    err = git_blob_lookup(&blob_obj, repository, &oid);
-    if (err)
+    error = git_blob_lookup(&blob_obj, repository, &oid);
+    if (error)
         goto cleanup;
 
     size = git_blob_rawsize(blob_obj);
 
 cleanup:
-    if (blob_obj)
-        git_blob_free(blob_obj);
+    git_blob_free(blob_obj);
+    git_repository_free(repository);
 
-    if (repository)
-        git_repository_free(repository);
-
-    if (err)
+    if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
 
     return Rf_ScalarInteger(size);

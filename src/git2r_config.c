@@ -281,7 +281,7 @@ static int git2r_config_open(git_config **out, SEXP repo, int snapshot)
  */
 SEXP git2r_config_get(SEXP repo)
 {
-    int error;
+    int error, nprotect = 0;
     SEXP result = R_NilValue;
     size_t i = 0, n = 0, n_level[GIT2R_N_CONFIG_LEVELS] = {0};
     git_config *cfg = NULL;
@@ -301,6 +301,7 @@ SEXP git2r_config_get(SEXP repo)
     }
 
     PROTECT(result = Rf_allocVector(VECSXP, n));
+    nprotect++;
     Rf_setAttrib(result, R_NamesSymbol, Rf_allocVector(STRSXP, n));
 
     if (git2r_config_list_variables(cfg, result, n_level))
@@ -309,8 +310,8 @@ SEXP git2r_config_get(SEXP repo)
 cleanup:
     git_config_free(cfg);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);

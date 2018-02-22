@@ -296,7 +296,7 @@ cleanup:
  */
 SEXP git2r_tag_list(SEXP repo)
 {
-    int error;
+    int error, nprotect = 0;
     SEXP result = R_NilValue;
     git2r_tag_foreach_cb_data cb_data = {0, NULL, R_NilValue, R_NilValue};
     git_repository *repository;
@@ -318,6 +318,7 @@ SEXP git2r_tag_list(SEXP repo)
     }
 
     PROTECT(result = Rf_allocVector(VECSXP, cb_data.n));
+    nprotect++;
     Rf_setAttrib(result, R_NamesSymbol, Rf_allocVector(STRSXP, cb_data.n));
 
     cb_data.n = 0;
@@ -330,8 +331,8 @@ SEXP git2r_tag_list(SEXP repo)
 cleanup:
     git_repository_free(repository);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);

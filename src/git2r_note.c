@@ -208,7 +208,7 @@ cleanup:
  */
 SEXP git2r_note_default_ref(SEXP repo)
 {
-    int error;
+    int error, nprotect = 0;
     SEXP result = R_NilValue;
     git_buf buf = GIT_BUF_INIT;
     git_repository *repository = NULL;
@@ -222,14 +222,15 @@ SEXP git2r_note_default_ref(SEXP repo)
         goto cleanup;
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
+    nprotect++;
     SET_STRING_ELT(result, 0, Rf_mkChar(buf.ptr));
 
 cleanup:
     git_buf_free(&buf);
     git_repository_free(repository);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
@@ -289,7 +290,7 @@ static int git2r_note_foreach_cb(
  */
 SEXP git2r_notes(SEXP repo, SEXP ref)
 {
-    int error;
+    int error, nprotect = 0;
     SEXP result = R_NilValue;
     git_buf buf = GIT_BUF_INIT;
     git2r_note_foreach_cb_data cb_data = {0, R_NilValue, R_NilValue, NULL, NULL};
@@ -328,6 +329,7 @@ SEXP git2r_notes(SEXP repo, SEXP ref)
     }
 
     PROTECT(result = Rf_allocVector(VECSXP, cb_data.n));
+    nprotect++;
     cb_data.n = 0;
     cb_data.list = result;
     cb_data.repo = repo;
@@ -340,8 +342,8 @@ cleanup:
     git_buf_free(&buf);
     git_repository_free(repository);
 
-    if (!Rf_isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
