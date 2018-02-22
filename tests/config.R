@@ -86,6 +86,13 @@ if (identical(Sys.getenv("APPVEYOR"), "True")) {
   config(global = TRUE, core.editor = "nano")
   stopifnot(file.exists(gitconfig_expected))
   unlink(gitconfig_expected)
+  ## .gitconfig should not create a new .gitconfig if the user already has one
+  ## in Documents/
+  gitconfig_documents <- "~/.gitconfig"
+  file.create(gitconfig_documents)
+  config(global = TRUE, core.editor = "nano")
+  stopifnot(!file.exists(gitconfig_expected))
+  unlink(gitconfig_documents)
 
   ## Return AppVeyor .gitconfig
   file.rename(gitconfig_tmp, gitconfig_appveyor)
