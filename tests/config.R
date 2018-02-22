@@ -69,7 +69,7 @@ if (identical(Sys.getenv("APPVEYOR"), "True")) {
 
   ## Temporarily move AppVeyor .gitconfig
   gitconfig_appveyor <- "C:/Users/appveyor/.gitconfig"
-  gitconfig_tmp <- "/tmp/.gitconfig"
+  gitconfig_tmp <- file.path(tempdir(), ".gitconfig")
   file.rename(gitconfig_appveyor, gitconfig_tmp)
 
   ## Test config() on Windows
