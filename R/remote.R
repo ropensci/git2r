@@ -114,15 +114,7 @@ remote_url <- function(repo = ".", remote = NULL) {
 ##' remote_ls("https://github.com/ropensci/git2r")
 ##' }
 remote_ls <- function(name = NULL, repo = NULL, credentials = NULL) {
-    ## FIXME: When updating to libgit 0.26 + 1, remove this and allow
-    ## repo to be NULL, see 'git2r_remote_ls'.
-    if (is.null(repo)) {
-        path <- tempdir()
-        repo <- init(path)
-        on.exit(unlink(file.path(path, ".git"), recursive = TRUE))
-    } else {
+    if (!is.null(repo))
         repo <- lookup_repository(repo)
-    }
-
     .Call(git2r_remote_ls, name, repo, credentials)
 }
