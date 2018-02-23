@@ -91,7 +91,7 @@ config <- function(repo = NULL, global = FALSE, user.name, user.email, ...)
               config_files <- git_config_files()
               config_global <- config_files$path[config_files$file == "global"]
               if (is.na(config_global) && length(variables) > 0) {
-                file.create(file.path(home(), ".gitconfig"))
+                file.create(file.path(home_dir(), ".gitconfig"))
               }
             }
         } else if (is.null(repo)) {
