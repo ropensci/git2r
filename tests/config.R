@@ -60,18 +60,42 @@ stopifnot(!is.na(cfg$path[4]))
 
 ## Check location of .gitconfig on Windows
 if (identical(Sys.getenv("APPVEYOR"), "True")) {
-  ## TEST
+
+  ## AppVeyor diagnostics
   str(Sys.getenv("USERPROFILE"))
   str(Sys.getenv("HOMEDRIVE"))
-  gitconfig_expected <- file.path(Sys.getenv("USERPROFILE"), ".gitconfig")
-  str(gitconfig_expected)
-  str(file.exists(gitconfig_expected))
+  str(normalizePath("~"))
+  str(git_config_files())
 
-  config(global = TRUE, user.name = "name", email = "email")
-  gitconfig_expected <- file.path(Sys.getenv("HOMEDRIVE"), "Users",
-                                  Sys.info()["login"])
+  ## Temporarily move AppVeyor .gitconfig
+  gitconfig_appveyor <- "C:/Users/appveyor/.gitconfig"
+  gitconfig_tmp <- file.path(tempdir(), ".gitconfig")
+  file.rename(gitconfig_appveyor, gitconfig_tmp)
+
+  ## Test config() on Windows
+  gitconfig_expected <- file.path(Sys.getenv("USERPROFILE"), ".gitconfig")
+  ## .gitconfig should not be created if no configuration options specified
+  config(global = TRUE)
+  stopifnot(!file.exists(gitconfig_expected))
+  ## .gitconfig should be created in the user's home directory
+  config(global = TRUE, user.name = "name", user.email = "email")
   stopifnot(file.exists(gitconfig_expected))
   unlink(gitconfig_expected)
+  ## .gitconfig should be created if user specifies option other than user.name
+  ## and user.email
+  config(global = TRUE, core.editor = "nano")
+  stopifnot(file.exists(gitconfig_expected))
+  unlink(gitconfig_expected)
+  ## .gitconfig should not create a new .gitconfig if the user already has one
+  ## in Documents/
+  gitconfig_documents <- "~/.gitconfig"
+  file.create(gitconfig_documents)
+  config(global = TRUE, core.editor = "nano")
+  stopifnot(!file.exists(gitconfig_expected))
+  unlink(gitconfig_documents)
+
+  ## Return AppVeyor .gitconfig
+  file.rename(gitconfig_tmp, gitconfig_appveyor)
 }
 
 ## Cleanup

@@ -196,12 +196,15 @@ ssh_key_needs_passphrase <- function(privatekey = ssh_path("id_rsa")) {
 ##' ssh_path()
 ##' ssh_path("is_rsa.pub")
 ssh_path <- function(file = "") {
-  
+  file.path(home_dir(), ".ssh", file)
+}
+
+# Return the user's home directory regardless of operating system
+home_dir <- function() {
   if (.Platform$OS.type == "windows") {
     home <- Sys.getenv("USERPROFILE")
   } else {
     home <- path.expand("~")
   }
-  
-  file.path(home, ".ssh", file)
+  return(home)
 }
