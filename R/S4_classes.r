@@ -840,3 +840,121 @@ setClass("git_merge_result",
                    conflicts    = "logical",
                    sha          = "character")
 )
+
+##' Get the SHA-1 of a git object
+##'
+##' Get the 40 character hexadecimal string of the SHA-1.
+##' @rdname sha-methods
+##' @docType methods
+##' @param object a git object to get the SHA-1 from.
+##' @return The 40 character hexadecimal string of the SHA-1.
+##' @keywords methods
+##' @examples \dontrun{
+##' ## Create a directory in tempdir
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##'
+##' ## Initialize a repository
+##' repo <- init(path)
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##'
+##' ## Create a file, add and commit
+##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+##'            con = file.path(path, "test.txt"))
+##' add(repo, "test.txt")
+##' sha(commit(repo, "Commit message 1"))
+##' }
+setGeneric("sha",
+           signature = c("object"),
+           function(object)
+           standardGeneric("sha"))
+
+##' @rdname sha-methods
+##' @export
+setMethod("sha",
+          signature(object = "git_blob"),
+          function(object)
+          {
+              object@sha
+          }
+)
+
+##' @rdname sha-methods
+##' @export
+setMethod("sha",
+          signature(object = "git_commit"),
+          function(object)
+          {
+              object@sha
+          }
+)
+
+##' @rdname sha-methods
+##' @export
+setMethod("sha",
+          signature(object = "git_note"),
+          function(object)
+          {
+              object@sha
+          }
+)
+
+##' @rdname sha-methods
+##' @export
+setMethod("sha",
+          signature(object = "git_reference"),
+          function(object)
+          {
+              object@sha
+          }
+)
+
+##' @rdname sha-methods
+##' @export
+setMethod("sha",
+          signature(object = "git_reflog_entry"),
+          function(object)
+          {
+              object@sha
+          }
+)
+
+##' @rdname sha-methods
+##' @export
+setMethod("sha",
+          signature(object = "git_tag"),
+          function(object)
+          {
+              object@sha
+          }
+)
+
+##' @rdname sha-methods
+##' @export
+setMethod("sha",
+          signature(object = "git_tree"),
+          function(object)
+          {
+              object@sha
+          }
+)
+
+##' @rdname sha-methods
+##' @export
+setMethod("sha",
+          signature(object = "git_fetch_head"),
+          function(object)
+          {
+              object@sha
+          }
+)
+
+##' @rdname sha-methods
+##' @export
+setMethod("sha",
+          signature(object = "git_merge_result"),
+          function(object)
+          {
+              object@sha
+          }
+)
