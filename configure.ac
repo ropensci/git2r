@@ -1,5 +1,5 @@
 # git2r, R bindings to the libgit2 library.
-# Copyright (C) 2013-2017 The git2r contributors
+# Copyright (C) 2013-2018 The git2r contributors
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2,
@@ -182,10 +182,11 @@ if test "x${have_ssl}" = xno; then
 fi
 
 if test "x${have_ssl}" = xno; then
-    AC_MSG_FAILURE([
+    AC_MSG_WARN([
   ---------------------------------------------
-   The OpenSSL library that is required to
-   build git2r was not found.
+   Unable to find the OpenSSL library on this
+   system. Building a version without support
+   for HTTPS transport.
 
    Please install:
      libssl-dev    (package on e.g. Debian and Ubuntu)
@@ -319,18 +320,16 @@ esac
 CPPFLAGS="-I. -Ilibgit2/src -Ilibgit2/include -Ilibgit2/deps/http-parser ${CPPFLAGS}"
 
 # Add definitions
-CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DGIT_OPENSSL -DLIBGIT2_NO_FEATURES_H -DR_NO_REMAP -DGIT_HTTPS=1"
+CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DLIBGIT2_NO_FEATURES_H -DR_NO_REMAP"
 
 # Specify sha1 implementation
-case "${host_os}" in
-    darwin*)
-        PKG_CFLAGS="-Wno-deprecated-declarations"
-        CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_COMMON_CRYPTO"
-    ;;
-    *)
-        CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_OPENSSL"
-    ;;
-esac
+CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_COLLISIONDETECT -DSHA1DC_NO_STANDARD_INCLUDES=1"
+CPPFLAGS="${CPPFLAGS} -DSHA1DC_CUSTOM_INCLUDE_SHA1_C=\\\"common.h\\\" -DSHA1DC_CUSTOM_INCLUDE_UBC_CHECK_C=\\\"common.h\\\""
+
+# Add definition for ssl
+if test "x${have_ssl}" = xyes; then
+    CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL -DGIT_HTTPS"
+fi
 
 # Add definition for ssh
 if test "x${have_ssh2}" = xyes; then
