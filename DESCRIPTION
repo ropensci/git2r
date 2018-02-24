@@ -54,6 +54,7 @@ Collate:
     'repository.R'
     'reset.R'
     'revparse.R'
+    'sha.R'
     'signature.R'
     'stash.R'
     'status.R'

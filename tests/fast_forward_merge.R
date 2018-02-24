@@ -53,7 +53,7 @@ stopifnot(inherits(m, "git_merge_result"))
 stopifnot(identical(m$up_to_date, FALSE))
 stopifnot(identical(m$fast_forward, TRUE))
 stopifnot(identical(m$conflicts, FALSE))
-stopifnot(identical(m$sha, NA_character_))
+stopifnot(identical(sha(m), NA_character_))
 stopifnot(identical(length(commits(repo)), 2L))
 
 # Check reflog

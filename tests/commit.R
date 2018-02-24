@@ -43,7 +43,7 @@ commit_1 <- commit(repo, "Commit message")
 ## Check commit
 stopifnot(identical(commit_1$author$name, "Alice"))
 stopifnot(identical(commit_1$author$email, "alice@example.org"))
-stopifnot(identical(lookup(repo, commit_1$sha), commit_1))
+stopifnot(identical(lookup(repo, sha(commit_1)), commit_1))
 stopifnot(identical(length(commits(repo)), 1L))
 stopifnot(identical(commits(repo)[[1]]$author$name, "Alice"))
 stopifnot(identical(commits(repo)[[1]]$author$email, "alice@example.org"))
@@ -142,7 +142,7 @@ stopifnot(identical(names(df), c("sha", "summary", "message",
 
 ## Set working directory to path and check commits
 setwd(path)
-stopifnot(identical(last_commit()$sha, commits(repo, n = 1)[[1]]$sha))
+stopifnot(identical(sha(last_commit()), sha(commits(repo, n = 1)[[1]])))
 stopifnot(identical(length(commits()), 8L))
 stopifnot(identical(length(commits(n = -1)), 8L))
 stopifnot(identical(length(commits(n = 2)), 2L))

@@ -93,14 +93,14 @@ stopifnot(identical(references(repo_1), references(repo_2)))
 ref_1 <- references(repo_1)[["refs/heads/master"]]
 stopifnot(identical(ref_1$name, "refs/heads/master"))
 stopifnot(identical(ref_1$type, 1L))
-stopifnot(identical(ref_1$sha, commit_3$sha))
+stopifnot(identical(sha(ref_1), sha(commit_3)))
 stopifnot(identical(ref_1$target, NA_character_))
 stopifnot(identical(ref_1$shorthand, "master"))
 
 ref_2 <- references(repo_1)[["refs/remotes/origin/master"]]
 stopifnot(identical(ref_2$name, "refs/remotes/origin/master"))
 stopifnot(identical(ref_2$type, 1L))
-stopifnot(identical(ref_2$sha, commit_3$sha))
+stopifnot(identical(sha(ref_2), sha(commit_3)))
 stopifnot(identical(ref_2$target, NA_character_))
 stopifnot(identical(ref_2$shorthand, "origin/master"))
 

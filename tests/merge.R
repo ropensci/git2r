@@ -63,23 +63,23 @@ checkout(b[sapply(b, "[", "name") == "master"][[1]], force=TRUE)
 m_1 <- merge(b[sapply(b, "[", "name") == "branch1"][[1]])
 stopifnot(identical(m_1$fast_forward, TRUE))
 stopifnot(identical(m_1$conflicts, FALSE))
-stopifnot(identical(m_1$sha, NA_character_))
+stopifnot(identical(sha(m_1), NA_character_))
 
 ## Merge branch 1 again
 m_1_again <- merge(b[sapply(b, "[", "name") == "branch1"][[1]])
 stopifnot(identical(m_1_again$up_to_date, TRUE))
 stopifnot(identical(m_1_again$fast_forward, FALSE))
 stopifnot(identical(m_1_again$conflicts, FALSE))
-stopifnot(identical(m_1_again$sha, NA_character_))
+stopifnot(identical(sha(m_1_again), NA_character_))
 
 ## Merge branch 2
 m_2 <- merge(b[sapply(b, "[", "name") == "branch2"][[1]])
 stopifnot(identical(m_2$fast_forward, FALSE))
 stopifnot(identical(m_2$conflicts, FALSE))
-stopifnot(identical(m_2$sha, commits(repo)[[1]]$sha))
+stopifnot(identical(sha(m_2), sha(commits(repo)[[1]])))
 
 ## Create third branch, checkout, change file and commit
-b_3 <- branch_create(lookup(repo, m_2$sha), "branch3")
+b_3 <- branch_create(lookup(repo, sha(m_2)), "branch3")
 checkout(b_3)
 writeLines(c("Lorem ipsum dolor amet sit, consectetur adipisicing elit, sed do",
              "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
@@ -102,7 +102,7 @@ m_3 <- merge(b[sapply(b, "[", "name") == "branch3"][[1]], fail = TRUE)
 stopifnot(identical(m_3$up_to_date, FALSE))
 stopifnot(identical(m_3$fast_forward, FALSE))
 stopifnot(identical(m_3$conflicts, TRUE))
-stopifnot(identical(m_3$sha, NA_character_))
+stopifnot(identical(sha(m_3), NA_character_))
 m_3
 
 ## Check status; Expect to have a clean working directory
@@ -118,7 +118,7 @@ m_3 <- merge(b[sapply(b, "[", "name") == "branch3"][[1]])
 stopifnot(identical(m_3$up_to_date, FALSE))
 stopifnot(identical(m_3$fast_forward, FALSE))
 stopifnot(identical(m_3$conflicts, TRUE))
-stopifnot(identical(m_3$sha, NA_character_))
+stopifnot(identical(sha(m_3), NA_character_))
 m_3
 
 ## Check status; Expect to have one unstaged unmerged conflict.

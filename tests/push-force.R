@@ -70,8 +70,8 @@ push(repo_2, force = TRUE)
 
 ## Check commits
 stopifnot(identical(length(commits(bare_repo)), 2L))
-stopifnot(identical(commits(repo_2)[[1]]$sha, commits(bare_repo)[[1]]$sha))
-stopifnot(identical(commits(repo_2)[[2]]$sha, commits(bare_repo)[[2]]$sha))
+stopifnot(identical(sha(commits(repo_2)[[1]]), sha(commits(bare_repo)[[1]])))
+stopifnot(identical(sha(commits(repo_2)[[2]]), sha(commits(bare_repo)[[2]])))
 
 ## Cleanup
 unlink(path_bare, recursive=TRUE)
