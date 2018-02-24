@@ -48,7 +48,7 @@ push(repo_1, "origin", "refs/heads/master")
 ## Check result in bare repository
 stopifnot(identical(length(commits(bare_repo)), 1L))
 bare_commit_1 <- commits(bare_repo)[[1]]
-stopifnot(identical(commit_1@sha, bare_commit_1@sha))
+stopifnot(identical(sha(commit_1), sha(bare_commit_1)))
 stopifnot(identical(commit_1@author, bare_commit_1@author))
 stopifnot(identical(commit_1@committer, bare_commit_1@committer))
 stopifnot(identical(commit_1@summary, bare_commit_1@summary))

@@ -67,7 +67,7 @@ m_1 <- git2r:::merge_branch(
 
 stopifnot(identical(m_1@fast_forward, TRUE))
 stopifnot(identical(m_1@conflicts, FALSE))
-stopifnot(identical(m_1@sha, character(0)))
+stopifnot(identical(sha(m_1), character(0)))
 
 ## Merge branch 2
 m_2 <- git2r:::merge_branch(
@@ -77,10 +77,10 @@ m_2 <- git2r:::merge_branch(
 
 stopifnot(identical(m_2@fast_forward, FALSE))
 stopifnot(identical(m_2@conflicts, FALSE))
-stopifnot(identical(m_2@sha, commits(repo)[[1]]@sha))
+stopifnot(identical(sha(m_2), sha(commits(repo)[[1]])))
 
 ## Create third branch, checkout, change file and commit
-b_3 <- branch_create(lookup(repo, m_2@sha), "branch3")
+b_3 <- branch_create(lookup(repo, sha(m_2)), "branch3")
 checkout(b_3)
 writeLines(c("Lorem ipsum dolor amet sit, consectetur adipisicing elit, sed do",
              "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
@@ -107,7 +107,7 @@ m_3 <- git2r:::merge_branch(
 stopifnot(identical(m_3@up_to_date, FALSE))
 stopifnot(identical(m_3@fast_forward, FALSE))
 stopifnot(identical(m_3@conflicts, TRUE))
-stopifnot(identical(m_3@sha, character(0)))
+stopifnot(identical(sha(m_3), character(0)))
 
 ## Check status; Expect to have one unstaged unmerged conflict.
 stopifnot(identical(status(repo),

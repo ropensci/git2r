@@ -51,7 +51,7 @@ stopifnot(identical(list.files(path_tgt), character(0)))
 ## Compare commits
 stopifnot(identical(length(commits(repo_tgt)), 1L))
 commit_tgt <- commits(repo_tgt)[[1]]
-stopifnot(identical(commit_src@sha, commit_tgt@sha))
+stopifnot(identical(sha(commit_src), sha(commit_tgt)))
 stopifnot(identical(commit_src@author, commit_tgt@author))
 stopifnot(identical(commit_src@committer, commit_tgt@committer))
 stopifnot(identical(commit_src@summary, commit_tgt@summary))
