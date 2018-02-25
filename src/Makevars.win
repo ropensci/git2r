@@ -1,17 +1,17 @@
-PKG_CPPFLAGS=-Ilibgit2/src -Ilibgit2/include -Ilibgit2/deps/http-parser \
-	-Ilibgit2/deps/regex -Ilibgit2/deps/libssh2/include \
-	-I../windows/libz-1.2.8/include -I../windows/libssh2-1.6.0/include
+LIBSSH2 = 1.8.0
+RWINLIB = ../windows/libssh2-$(LIBSSH2)
 
-PKG_LIBS=-L. -lmygit \
-         -L../windows/libz-1.2.8/lib${R_ARCH} \
-         -L../windows/libssh2-1.6.0/lib${R_ARCH} -lssh2 -lz \
-         -L../windows/openssl-1.0.2d/lib${R_ARCH} -lssl -lcrypto \
+PKG_CPPFLAGS=-Ilibgit2/src -Ilibgit2/include -Ilibgit2/deps/http-parser \
+	-Ilibgit2/deps/regex -I$(RWINLIB)/include
+
+PKG_LIBS=-Llibgit2 -lmygit \
+         -L$(RWINLIB)/lib${R_ARCH} -lssh2 -lz -lssl -lcrypto \
          -lgdi32 -lws2_32 -lwinhttp -lrpcrt4 -lole32 -lcrypt32
 
 PKG_CFLAGS=-DWIN32 -D_WIN32_WINNT=0x0501 -D__USE_MINGW_ANSI_STDIO=1 \
            -DGIT_WINHTTP -D_FILE_OFFSET_BITS=64 -DGIT_SSH \
            -DGIT_USE_NSEC -DGIT_ARCH_$(WIN) -DLIBGIT2_NO_FEATURES_H \
-           -DR_NO_REMAP -DGIT_HTTPS=1
+           -DR_NO_REMAP -DSTRICT_R_HEADERS -DGIT_HTTPS=1
 
 LIBGIT=$(patsubst %.c,%.o,$(filter-out libgit2/src/transports/http.c,$(wildcard \
          libgit2/src/*.c libgit2/src/streams/*.c libgit2/src/transports/*.c \
@@ -20,18 +20,20 @@ LIBGIT+=libgit2/src/hash/hash_generic.o
 LIBGIT+=libgit2/deps/http-parser/http_parser.o
 LIBGIT+=libgit2/deps/regex/regex.o
 
-all: clean winlibs libwinhttp.dll.a libmygit.a
+STATLIB = libgit2/libmygit.a
+
+all: clean winlibs libwinhttp.dll.a $(STATLIB)
 
 winhttp.def:
 	cp libgit2/deps/winhttp/winhttp$(WIN).def.in winhttp.def
 
-libmygit.a: $(LIBGIT)
-	$(AR) rcs libmygit.a $(LIBGIT)
+$(STATLIB): $(LIBGIT)
+	$(AR) rcs $(STATLIB) $(LIBGIT)
 
 winlibs:
-	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" "../tools/winlibs.R"
+	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" --vanilla "../tools/winlibs.R" $(LIBSSH2)
 
 clean:
-	rm -f *.o libwinhttp.dll.a winhttp.def git2r.dll libmygit.a $(LIBGIT)
+	rm -f *.o libwinhttp.dll.a winhttp.def $(SHLIB) $(STATLIB) $(LIBGIT)
 
 .PHONY: all winlibs clean
