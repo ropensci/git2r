@@ -39,6 +39,6 @@ commit(repo, "First commit message")
 push(repo, "origin", "refs/heads/master")
 
 ## Get remote url of tracking branch to branch 'master'
-branch_remote_url(branch_get_upstream(head(repo)))
+branch_remote_url(branch_get_upstream(repository_head(repo)))
 }
 }

@@ -148,7 +148,7 @@ branch_remote_name <- function(branch = NULL) {
 ##' push(repo, "origin", "refs/heads/master")
 ##'
 ##' ## Get remote url of tracking branch to branch 'master'
-##' branch_remote_url(branch_get_upstream(head(repo)))
+##' branch_remote_url(branch_get_upstream(repository_head(repo)))
 ##' }
 branch_remote_url <- function(branch = NULL) {
     .Call(git2r_branch_remote_url, branch)
@@ -177,7 +177,7 @@ branch_remote_url <- function(branch = NULL) {
 ##'
 ##' ## Rename 'master' branch to 'dev'
 ##' branches(repo)
-##' branch_rename(head(repo), "dev")
+##' branch_rename(repository_head(repo), "dev")
 ##' branches(repo)
 ##' }
 branch_rename <- function(branch = NULL, name = NULL, force = FALSE) {
@@ -204,7 +204,7 @@ branch_rename <- function(branch = NULL, name = NULL, force = FALSE) {
 ##' commit(repo, "First commit message")
 ##'
 ##' ## Get target (sha) pointed to by 'master' branch
-##' branch_target(head(repo))
+##' branch_target(repository_head(repo))
 ##' }
 branch_target <- function(branch = NULL) {
     .Call(git2r_branch_target, branch)
@@ -241,7 +241,7 @@ branch_target <- function(branch = NULL) {
 ##' push(repo, "origin", "refs/heads/master")
 ##'
 ##' ## Get remote tracking branch
-##' branch_get_upstream(head(repo))
+##' branch_get_upstream(repository_head(repo))
 ##' }
 branch_get_upstream <- function(branch = NULL) {
     .Call(git2r_branch_get_upstream, branch)
@@ -279,13 +279,13 @@ branch_get_upstream <- function(branch = NULL) {
 ##' push(repo, "origin", "refs/heads/master")
 ##'
 ##' ## Unset remote remote tracking branch
-##' branch_get_upstream(head(repo))
-##' branch_set_upstream(head(repo), NULL)
-##' branch_get_upstream(head(repo))
+##' branch_get_upstream(repository_head(repo))
+##' branch_set_upstream(repository_head(repo), NULL)
+##' branch_get_upstream(repository_head(repo))
 ##'
 ##' ## Set remote tracking branch
-##' branch_set_upstream(head(repo), "origin/master")
-##' branch_get_upstream(head(repo))
+##' branch_set_upstream(repository_head(repo), "origin/master")
+##' branch_get_upstream(repository_head(repo))
 ##' }
 branch_set_upstream <- function(branch = NULL, name) {
     if (missing(name))

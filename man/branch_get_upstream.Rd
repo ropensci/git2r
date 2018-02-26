@@ -40,6 +40,6 @@ commit(repo, "First commit message")
 push(repo, "origin", "refs/heads/master")
 
 ## Get remote tracking branch
-branch_get_upstream(head(repo))
+branch_get_upstream(repository_head(repo))
 }
 }

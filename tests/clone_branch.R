@@ -69,7 +69,7 @@ config(repo_2, user.name="Bob", user.email="bob@example.org")
 
 ## Check branch and commits
 stopifnot(identical(length(commits(repo_2)), 3L))
-stopifnot(identical(head(repo_2)$name, "dev"))
+stopifnot(identical(repository_head(repo_2)$name, "dev"))
 
 ## Cleanup
 unlink(path_bare, recursive=TRUE)

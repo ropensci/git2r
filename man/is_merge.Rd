@@ -57,9 +57,9 @@ commit(repo, "Fourth commit message")
 merge(repo, "fix")
 
 ## Display parents of last commit
-parents(lookup(repo, branch_target(head(repo))))
+parents(lookup(repo, branch_target(repository_head(repo))))
 
 ## Check that last commit is a merge
-is_merge(lookup(repo, branch_target(head(repo))))
+is_merge(lookup(repo, branch_target(repository_head(repo))))
 }
 }

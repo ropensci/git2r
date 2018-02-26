@@ -70,13 +70,13 @@ references(repo)
 branches(repo)
 
 ## Get HEAD of repository
-head(repo)
+repository_head(repo)
 
 ## Check if HEAD is head
-is_head(head(repo))
+is_head(repository_head(repo))
 
 ## Check if HEAD is local
-is_local(head(repo))
+is_local(repository_head(repo))
 
 ## List all tags in repository
 tags(repo)

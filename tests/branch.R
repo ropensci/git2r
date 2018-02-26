@@ -39,8 +39,8 @@ stopifnot(identical(length(branches(repo)), 1L))
 stopifnot(identical(is_head(branches(repo)[[1]]), TRUE))
 stopifnot(identical(is_local(branches(repo)[[1]]), TRUE))
 stopifnot(identical(branches(repo)[[1]]$name, "master"))
-stopifnot(identical(branches(repo)[[1]], head(repo)))
-stopifnot(identical(branches(repo)$master, head(repo)))
+stopifnot(identical(branches(repo)[[1]], repository_head(repo)))
+stopifnot(identical(branches(repo)$master, repository_head(repo)))
 
 ## Create a branch
 b <- branch_create(commit.1, name = "test")

@@ -42,12 +42,12 @@ commit(repo, "First commit message")
 push(repo, "origin", "refs/heads/master")
 
 ## Unset remote remote tracking branch
-branch_get_upstream(head(repo))
-branch_set_upstream(head(repo), NULL)
-branch_get_upstream(head(repo))
+branch_get_upstream(repository_head(repo))
+branch_set_upstream(repository_head(repo), NULL)
+branch_get_upstream(repository_head(repo))
 
 ## Set remote tracking branch
-branch_set_upstream(head(repo), "origin/master")
-branch_get_upstream(head(repo))
+branch_set_upstream(repository_head(repo), "origin/master")
+branch_get_upstream(repository_head(repo))
 }
 }

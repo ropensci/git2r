@@ -74,7 +74,7 @@ commit.3 <- commit(repo, "Third commit message")
 
 ## Check HEAD
 stopifnot(identical(is_detached(repo), FALSE))
-stopifnot(identical(head(repo)$name, "master"))
+stopifnot(identical(repository_head(repo)$name, "master"))
 
 ## Check show and summary
 repo
@@ -83,7 +83,7 @@ summary(repo)
 ## Checkout first commit
 checkout(commit.1, TRUE)
 stopifnot(identical(is_detached(repo), TRUE))
-stopifnot(identical(head(repo), commit.1))
+stopifnot(identical(repository_head(repo), commit.1))
 stopifnot(identical(readLines(file.path(path, "test.txt")), "Hello world!"))
 
 ## Check show and summary

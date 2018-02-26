@@ -75,7 +75,7 @@ stopifnot(identical(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit,
 
 ## Checkout previous branch
 checkout(repo_2, "-")
-stopifnot(identical(head(repo_2)$name, "master"))
+stopifnot(identical(repository_head(repo_2)$name, "master"))
 
 ## Cleanup
 unlink(path_bare, recursive=TRUE)

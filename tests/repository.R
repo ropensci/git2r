@@ -42,7 +42,7 @@ stopifnot(identical(is_shallow(repo), FALSE))
 stopifnot(identical(branches(repo), structure(list(), .Names = character(0))))
 stopifnot(identical(references(repo), structure(list(), .Names = character(0))))
 stopifnot(identical(commits(repo), list()))
-stopifnot(identical(head(repo), NULL))
+stopifnot(identical(repository_head(repo), NULL))
 
 # check that we can find repository from a path
 wd <- sub(paste0("[", .Platform$file.sep, "]$"), "",  workdir(repo))

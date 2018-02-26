@@ -139,13 +139,13 @@ as.data.frame.git_repository <- function(x, ...) {
 ##' branches(repo)
 ##'
 ##' ## Get HEAD of repository
-##' head(repo)
+##' repository_head(repo)
 ##'
 ##' ## Check if HEAD is head
-##' is_head(head(repo))
+##' is_head(repository_head(repo))
 ##'
 ##' ## Check if HEAD is local
-##' is_local(head(repo))
+##' is_local(repository_head(repo))
 ##'
 ##' ## List all tags in repository
 ##' tags(repo)
@@ -294,7 +294,34 @@ clone <- function(url         = NULL,
 ##' head(repo)
 ##' }
 head.git_repository <- function(x, ...) {
+    stop("test")
     .Call(git2r_repository_head, x)
+}
+
+##' Get HEAD for a repository
+##'
+##' @template repo-param
+##' @return NULL if unborn branch or not found. A git_branch if not a
+##'     detached head. A git_commit if detached head
+##' @export
+##' @examples
+##' \dontrun{
+##' ## Create and initialize a repository in a temporary directory
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##'
+##' ## Create a file, add and commit
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit(repo, "Commit message")
+##'
+##' ## Get HEAD of repository
+##' repository_head(repo)
+##' }
+repository_head <- function(repo = ".") {
+    .Call(git2r_repository_head, repo)
 }
 
 ##' Check if repository is bare
@@ -525,20 +552,20 @@ lookup <- function(repo = ".", sha = NULL) {
 
 ##' @export
 print.git_repository <- function(x, ...) {
-    if (any(is_empty(x), is.null(head(x)))) {
+    if (any(is_empty(x), is.null(repository_head(x)))) {
         cat(sprintf("Local:    %s\n", workdir(x)))
         cat("Head:     nothing commited (yet)\n")
     } else {
         if (is_detached(x)) {
             cat(sprintf("Local:    (detached) %s\n", workdir(x)))
 
-            h <- head(x)
+            h <- repository_head(x)
         } else {
             cat(sprintf("Local:    %s %s\n",
-                        head(x)$name,
+                        repository_head(x)$name,
                         workdir(x)))
 
-            h <- head(x)
+            h <- repository_head(x)
             u <- branch_get_upstream(h)
             if (!is.null(u)) {
                 rn <- branch_remote_name(u)
@@ -548,7 +575,7 @@ print.git_repository <- function(x, ...) {
                             branch_remote_url(u)))
             }
 
-            h <- lookup(x, branch_target(head(x)))
+            h <- lookup(x, branch_target(repository_head(x)))
         }
 
         cat(sprintf("Head:     [%s] %s: %s\n",

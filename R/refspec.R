@@ -51,7 +51,7 @@ get_refspec <- function(repo = NULL, remote = NULL, spec = NULL, opts = NULL) {
     if (is.null(remote)) {
         remote <- .Call(git2r_config_get_string,
                         repo,
-                        paste0("branch.", head(repo)$name, ".remote"))
+                        paste0("branch.", repository_head(repo)$name, ".remote"))
         if (is.null(remote))
             remote <- "origin"
     }

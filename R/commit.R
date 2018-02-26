@@ -213,7 +213,7 @@ commits <- function(repo        = ".",
         result <- list()
 
         ## Get latest commit
-        x <- lookup(repo, branch_target(head(repo)))
+        x <- lookup(repo, branch_target(repository_head(repo)))
 
         ## Repeat until no more parent commits
         repeat {
@@ -386,10 +386,10 @@ is_commit <- function(object) {
 ##' merge(repo, "fix")
 ##'
 ##' ## Display parents of last commit
-##' parents(lookup(repo, branch_target(head(repo))))
+##' parents(lookup(repo, branch_target(repository_head(repo))))
 ##'
 ##' ## Check that last commit is a merge
-##' is_merge(lookup(repo, branch_target(head(repo))))
+##' is_merge(lookup(repo, branch_target(repository_head(repo))))
 ##' }
 is_merge <- function(commit = NULL) {
     length(parents(commit)) > 1

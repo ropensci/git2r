@@ -62,7 +62,7 @@ stopifnot(identical(sapply(commits(repo), function(x) length(parents(x))),
                     c(2L, 1L, 1L, 1L, 0L)))
 
 ## Check that last commit is a merge
-stopifnot(is_merge(lookup(repo, branch_target(head(repo)))))
+stopifnot(is_merge(lookup(repo, branch_target(repository_head(repo)))))
 
 ## Check that metadata associated with merge is removed
 stopifnot(!file.exists(file.path(path, ".git", "MERGE_HEAD")))

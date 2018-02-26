@@ -35,7 +35,7 @@ commit(repo, "First commit message")
 
 ## Rename 'master' branch to 'dev'
 branches(repo)
-branch_rename(head(repo), "dev")
+branch_rename(repository_head(repo), "dev")
 branches(repo)
 }
 }

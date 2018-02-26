@@ -215,7 +215,7 @@ checkout <- function(object = NULL,
 
     if (isTRUE(create)) {
         ## Create branch
-        commit <- lookup(object, branch_target(head(object)))
+        commit <- lookup(object, branch_target(repository_head(object)))
         checkout_branch(branch_create(commit, branch), force)
         return(invisible(NULL))
     }

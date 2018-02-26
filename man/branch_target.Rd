@@ -30,6 +30,6 @@ add(repo, "example.txt")
 commit(repo, "First commit message")
 
 ## Get target (sha) pointed to by 'master' branch
-branch_target(head(repo))
+branch_target(repository_head(repo))
 }
 }

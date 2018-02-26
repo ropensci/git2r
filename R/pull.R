@@ -91,7 +91,7 @@ pull <- function(repo = ".", credentials = NULL, merger = NULL) {
     repo <- lookup_repository(repo)
     if (is.null(merger))
         merger <- default_signature(repo)
-    current_branch <- head(repo)
+    current_branch <- repository_head(repo)
 
     if (is.null(current_branch))
         stop("'branch' is NULL")

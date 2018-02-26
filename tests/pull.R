@@ -59,14 +59,14 @@ pull(repo_2)
 stopifnot(identical(length(commits(repo_2)), 2L))
 
 ## Check remote url of repo_2
-stopifnot(identical(branch_remote_url(branch_get_upstream(head(repo_2))),
+stopifnot(identical(branch_remote_url(branch_get_upstream(repository_head(repo_2))),
                     path_bare))
 
 ## Unset remote remote tracking branch
-branch_set_upstream(head(repo_2), NULL)
-stopifnot(is.null(branch_get_upstream(head(repo_2))))
+branch_set_upstream(repository_head(repo_2), NULL)
+stopifnot(is.null(branch_get_upstream(repository_head(repo_2))))
 tools::assertError(pull(repo_2))
-tools::assertError(branch_set_upstream(head(repo_2), NULL))
+tools::assertError(branch_set_upstream(repository_head(repo_2), NULL))
 
 ## Add more changes to repo 1 and push to bare
 writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -78,8 +78,8 @@ commit_3 <- commit(repo_1, "Third commit message")
 push(repo_1)
 
 ## Set remote tracking branch
-branch_set_upstream(head(repo_2), "origin/master")
-stopifnot(identical(branch_remote_url(branch_get_upstream(head(repo_2))),
+branch_set_upstream(repository_head(repo_2), "origin/master")
+stopifnot(identical(branch_remote_url(branch_get_upstream(repository_head(repo_2))),
                     path_bare))
 
 ## Pull changes to repo_2

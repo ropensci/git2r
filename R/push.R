@@ -88,7 +88,7 @@ push <- function(object      = ".",
     }
 
     if (all(is.null(name), is.null(refspec))) {
-        b <- head(object)
+        b <- repository_head(object)
         upstream <- branch_get_upstream(b)
         if (is.null(upstream)) {
             stop("The branch '", b@name, "' that you are ",
