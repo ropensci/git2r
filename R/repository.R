@@ -294,7 +294,7 @@ clone <- function(url         = NULL,
 ##' head(repo)
 ##' }
 head.git_repository <- function(x, ...) {
-    stop("test")
+    .Deprecated("repository_head")
     .Call(git2r_repository_head, x)
 }
 
