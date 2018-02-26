@@ -321,7 +321,7 @@ head.git_repository <- function(x, ...) {
 ##' repository_head(repo)
 ##' }
 repository_head <- function(repo = ".") {
-    .Call(git2r_repository_head, repo)
+    .Call(git2r_repository_head, lookup_repository(repo))
 }
 
 ##' Check if repository is bare
