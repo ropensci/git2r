@@ -36,15 +36,19 @@
  */
 git_repository* git2r_repository_open(SEXP repo)
 {
+    int error;
     SEXP path;
-    git_repository *repository;
+    git_repository *repository = NULL;
 
     if (git2r_arg_check_repository(repo))
         return NULL;
 
     path = git2r_get_list_element(repo, "path");
-    if (git_repository_open(&repository, CHAR(STRING_ELT(path, 0))) < 0)
+    error = git_repository_open(&repository, CHAR(STRING_ELT(path, 0)));
+    if (error) {
+        git_repository_free(repository);
         return NULL;
+    }
 
     return repository;
 }
@@ -370,16 +374,16 @@ SEXP git2r_repository_is_empty(SEXP repo)
  */
 SEXP git2r_repository_can_open(SEXP path)
 {
-    int can_open;
+    int error;
     git_repository *repository = NULL;
 
     if (git2r_arg_check_string(path))
         git2r_error(__func__, NULL, "'path'", git2r_err_string_arg);
 
-    can_open = git_repository_open(&repository, CHAR(STRING_ELT(path, 0)));
+    error = git_repository_open(&repository, CHAR(STRING_ELT(path, 0)));
     git_repository_free(repository);
 
-    if (0 != can_open)
+    if (error)
         return Rf_ScalarLogical(0);
     return Rf_ScalarLogical(1);
 }
