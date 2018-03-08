@@ -5913,10 +5913,19 @@ CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DLIBGIT2_NO_FEATURES
 CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_COLLISIONDETECT -DSHA1DC_NO_STANDARD_INCLUDES=1"
 CPPFLAGS="${CPPFLAGS} -DSHA1DC_CUSTOM_INCLUDE_SHA1_C=\\\"common.h\\\" -DSHA1DC_CUSTOM_INCLUDE_UBC_CHECK_C=\\\"common.h\\\""
 
-# Add definition for ssl
-if test "x${have_ssl}" = xyes; then
-    CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL -DGIT_HTTPS=1"
-fi
+# Add definition for https
+case "${host_os}" in
+    darwin*)
+        # On macOS, use Security and CoreFoundation framework
+        CPPFLAGS="${CPPFLAGS} -DGIT_SECURE_TRANSPORT=1 -DGIT_HTTPS=1"
+        LIBS="${LIBS} -framework Security -framework CoreFoundation"
+    ;;
+    *)
+        if test "x${have_ssl}" = xyes; then
+            CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL -DGIT_HTTPS=1"
+        fi
+    ;;
+esac
 
 # Add definition for ssh
 if test "x${have_ssh2}" = xyes; then
