@@ -632,7 +632,7 @@ cleanup:
 SEXP git2r_merge_fetch_heads(SEXP fetch_heads, SEXP merger)
 {
     int error, nprotect = 0;
-    size_t n;
+    size_t n = 0;
     SEXP result = R_NilValue;
     git_annotated_commit **merge_heads = NULL;
     git_repository *repository = NULL;

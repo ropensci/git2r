@@ -175,7 +175,8 @@ SEXP git2r_tree_walk(SEXP tree, SEXP recursive)
     git_tree *tree_obj = NULL;
     git_repository *repository = NULL;
     git2r_tree_walk_cb_data cb_data = {0, R_NilValue};
-    SEXP repo, sha, result, names;
+    SEXP repo = R_NilValue, sha = R_NilValue;
+    SEXP result = R_NilValue, names = R_NilValue;
 
     if (git2r_arg_check_tree(tree))
         git2r_error(__func__, NULL, "'tree'", git2r_err_tree_arg);
