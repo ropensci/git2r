@@ -11,12 +11,15 @@ PKG_LIBS=-Llibgit2 -lmygit \
 PKG_CFLAGS=-DWIN32 -D_WIN32_WINNT=0x0501 -D__USE_MINGW_ANSI_STDIO=1 \
            -DGIT_WINHTTP -D_FILE_OFFSET_BITS=64 -DGIT_SSH \
            -DGIT_USE_NSEC -DGIT_ARCH_$(WIN) -DLIBGIT2_NO_FEATURES_H \
-           -DR_NO_REMAP -DSTRICT_R_HEADERS -DGIT_HTTPS=1
+           -DR_NO_REMAP -DSTRICT_R_HEADERS -DGIT_HTTPS=1 \
+           -DGIT_SHA1_COLLISIONDETECT -DSHA1DC_NO_STANDARD_INCLUDES=1 \
+           -DSHA1DC_CUSTOM_INCLUDE_SHA1_C=\"common.h\" \
+           -DSHA1DC_CUSTOM_INCLUDE_UBC_CHECK_C=\"common.h\"
 
 LIBGIT=$(patsubst %.c,%.o,$(filter-out libgit2/src/transports/http.c,$(wildcard \
          libgit2/src/*.c libgit2/src/streams/*.c libgit2/src/transports/*.c \
          libgit2/src/xdiff/*.c libgit2/src/win32/*.c)))
-LIBGIT+=libgit2/src/hash/hash_generic.o
+LIBGIT+=libgit2/src/hash/sha1dc/sha1.o libgit2/src/hash/sha1dc/ubc_check.o
 LIBGIT+=libgit2/deps/http-parser/http_parser.o
 LIBGIT+=libgit2/deps/regex/regex.o
 
