@@ -144,7 +144,7 @@ sync_libgit2:
 	cd src/libgit2/include/git2 && patch -i ../../../../patches/common.h.patch
 	cd src/libgit2/deps/regex && patch -i ../../../../patches/regcomp-pass-R-CMD-check-git2r.patch
 	cd src/libgit2/deps/regex && patch -i ../../../../patches/regex-prefix-entry-points.patch
-	Rscript scripts/build_Makevars.r
+	Rscript scripts/build_Makevars.R
 	Rscript scripts/libgit2_sha.R
 
 Makevars:
