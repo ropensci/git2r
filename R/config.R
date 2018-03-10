@@ -88,9 +88,7 @@ config <- function(repo = NULL, global = FALSE, user.name, user.email, ...)
               # it may be written to the user's Documents/ directory. Only
               # create the empty file if the user has specified configuration
               # options to set and no global config file exists.
-              config_files <- git_config_files()
-              config_global <- config_files$path[config_files$file == "global"]
-              if (is.na(config_global) && length(variables) > 0) {
+              if (is.na(git_config_files()$global) && length(variables) > 0) {
                 file.create(file.path(home_dir(), ".gitconfig"))
               }
             }
@@ -150,14 +148,10 @@ print.git_config <- function(x, ...) {
 ##'   }
 ##' }
 ##' @template repo-param
-##' @return a \code{data.frame} with one row per potential
-##'     configuration file where \code{NA} means not found.
+##' @return a named list with one item per potential configuration
+##'     file where \code{NA} means not found.
 ##' @export
 git_config_files <- function(repo = ".") {
-    path <- c(.Call(git2r_config_find_file, "system"),
-              .Call(git2r_config_find_file, "xdg"),
-              .Call(git2r_config_find_file, "global"))
-
     ## Lookup repository
     if (inherits(repo, "git_repository")) {
         repo <- repo$path
@@ -170,19 +164,17 @@ git_config_files <- function(repo = ".") {
         repo <- NULL
     }
 
-    ## Add local configuration file
+    ## Find local configuration file
     if (is.null(repo)) {
-        path <- c(path, NA_character_)
+        path <- NA_character_
     } else {
-        cfg <- file.path(normalizePath(repo), "config")
-        if (isTRUE(!file.info(cfg)$isdir)) {
-            path <- c(path, cfg)
-        } else {
-            path <- c(path, NA_character_)
-        }
+        path <- file.path(normalizePath(repo), "config")
+        if (!isTRUE(!file.info(path)$isdir))
+            path <- NA_character_
     }
 
-    data.frame(file = c("system", "xdg", "global", "local"),
-               path = path,
-               stringsAsFactors = FALSE)
+    list(system = .Call(git2r_config_find_file, "system"),
+         xdg    = .Call(git2r_config_find_file, "xdg"),
+         global = .Call(git2r_config_find_file, "global"),
+         local  = path)
 }

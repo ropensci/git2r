@@ -11,8 +11,8 @@ git_config_files(repo = ".")
 object. Default is '.'}
 }
 \value{
-a \code{data.frame} with one row per potential
-    configuration file where \code{NA} means not found.
+a named list with one item per potential configuration
+    file where \code{NA} means not found.
 }
 \description{
 Potential configuration files:

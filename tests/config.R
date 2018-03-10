@@ -54,9 +54,9 @@ stopifnot(identical(cfg$local$user.email, user.email))
 
 ## Check git config files
 cfg <- git_config_files(repo)
-stopifnot(identical(dim(cfg), c(4L, 2L)))
-stopifnot(identical(cfg$file, c("system", "xdg", "global", "local")))
-stopifnot(!is.na(cfg$path[4]))
+stopifnot(identical(length(cfg), 4L))
+stopifnot(identical(names(cfg), c("system", "xdg", "global", "local")))
+stopifnot(!is.na(cfg$local))
 
 ## Check location of .gitconfig on Windows
 if (identical(Sys.getenv("APPVEYOR"), "True")) {
