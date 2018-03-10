@@ -127,6 +127,12 @@ sync_libgit2:
 	-rm -f src/libgit2/src/CMakeLists.txt
 	-rm -f src/libgit2/src/features.h.in
 	-rm -f src/libgit2/src/stransport_stream.c
+	-rm -f src/libgit2/src/hash/hash_common_crypto.h
+	-rm -f src/libgit2/src/hash/hash_generic.c
+	-rm -f src/libgit2/src/hash/hash_generic.h
+	-rm -f src/libgit2/src/hash/hash_openssl.h
+	-rm -f src/libgit2/src/hash/hash_win32.c
+	-rm -f src/libgit2/src/hash/hash_win32.h
 	-rm -f src/libgit2/src/transports/auth_negotiate.c
 	-rm -f src/libgit2/src/win32/w32_crtdbg_stacktrace.c
 	-rm -f src/libgit2/src/win32/w32_crtdbg_stacktrace.h
