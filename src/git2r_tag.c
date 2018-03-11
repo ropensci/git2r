@@ -311,6 +311,7 @@ SEXP git2r_tag_list(SEXP repo)
         if (GIT_ENOTFOUND == error) {
             error = 0;
             PROTECT(result = Rf_allocVector(VECSXP, 0));
+            nprotect++;
             Rf_setAttrib(result, R_NamesSymbol, Rf_allocVector(STRSXP, 0));
         }
 

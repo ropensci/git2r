@@ -323,6 +323,7 @@ SEXP git2r_notes(SEXP repo, SEXP ref)
         if (GIT_ENOTFOUND == error) {
             error = GIT_OK;
             PROTECT(result = Rf_allocVector(VECSXP, 0));
+            nprotect++;
         }
 
         goto cleanup;
