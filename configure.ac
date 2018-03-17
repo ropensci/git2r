@@ -1,5 +1,5 @@
 # git2r, R bindings to the libgit2 library.
-# Copyright (C) 2013-2017 The git2r contributors
+# Copyright (C) 2013-2018 The git2r contributors
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2,
@@ -326,7 +326,7 @@ esac
 CPPFLAGS="-I. -Ilibgit2/src -Ilibgit2/include -Ilibgit2/deps/http-parser ${CPPFLAGS}"
 
 # Add definitions
-CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DGIT_OPENSSL -DLIBGIT2_NO_FEATURES_H"
+CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DLIBGIT2_NO_FEATURES_H"
 
 # Specify sha1 implementation
 case "${host_os}" in
@@ -336,6 +336,20 @@ case "${host_os}" in
     ;;
     *)
         CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_OPENSSL"
+    ;;
+esac
+
+# Add definition for https
+case "${host_os}" in
+    darwin*)
+        # On macOS, use Security and CoreFoundation framework
+        CPPFLAGS="${CPPFLAGS} -DGIT_SECURE_TRANSPORT=1 -DGIT_HTTPS=1"
+        LIBS="${LIBS} -framework Security -framework CoreFoundation"
+    ;;
+    *)
+        if test "x${have_ssl}" = xyes; then
+            CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL -DGIT_HTTPS=1"
+        fi
     ;;
 esac
 
