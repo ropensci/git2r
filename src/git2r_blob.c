@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2017 The git2r contributors
+ *  Copyright (C) 2013-2018 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -82,7 +82,7 @@ cleanup:
 SEXP git2r_blob_create_fromdisk(SEXP repo, SEXP path)
 {
     SEXP result = R_NilValue;
-    int err = GIT_OK;
+    int err = GIT_OK, nprotect = 0;
     size_t len, i;
     git_oid oid;
     git_blob *blob = NULL;
@@ -97,6 +97,7 @@ SEXP git2r_blob_create_fromdisk(SEXP repo, SEXP path)
 
     len = length(path);
     PROTECT(result = allocVector(VECSXP, len));
+    nprotect++;
     for (i = 0; i < len; i++) {
         if (NA_STRING != STRING_ELT(path, i)) {
             SEXP item;
@@ -122,8 +123,8 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (!isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     if (err)
         git2r_error(__func__, giterr_last(), NULL, NULL);
@@ -146,7 +147,7 @@ cleanup:
 SEXP git2r_blob_create_fromworkdir(SEXP repo, SEXP relative_path)
 {
     SEXP result = R_NilValue;
-    int err = GIT_OK;
+    int err = GIT_OK, nprotect = 0;
     size_t len, i;
     git_oid oid;
     git_blob *blob = NULL;
@@ -161,6 +162,7 @@ SEXP git2r_blob_create_fromworkdir(SEXP repo, SEXP relative_path)
 
     len = length(relative_path);
     PROTECT(result = allocVector(VECSXP, len));
+    nprotect++;
     for (i = 0; i < len; i++) {
         if (NA_STRING != STRING_ELT(relative_path, i)) {
             SEXP item;
@@ -186,8 +188,8 @@ cleanup:
     if (repository)
         git_repository_free(repository);
 
-    if (!isNull(result))
-        UNPROTECT(1);
+    if (nprotect)
+        UNPROTECT(nprotect);
 
     if (err)
         git2r_error(__func__, giterr_last(), NULL, NULL);
