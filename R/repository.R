@@ -740,6 +740,8 @@ workdir <- function(repo = ".") {
 ##' discover_repository(file.path(wd, "temp"), ceiling = 1)
 ##' }
 discover_repository <- function(path = ".", ceiling = NULL) {
+    if (identical(path, "."))
+        path <- getwd()
     path <- normalizePath(path)
 
     if (!is.null(ceiling)) {
@@ -766,7 +768,7 @@ discover_repository <- function(path = ".", ceiling = NULL) {
 ##' @return git_repository
 ##' @noRd
 lookup_repository <- function(repo = NULL) {
-    if (is.null(repo)) {
+    if (is.null(repo) || identical(repo, ".")) {
         ## Try current working directory
         repo <- discover_repository(getwd())
         if (is.null(repo))
