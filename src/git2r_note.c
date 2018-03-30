@@ -17,7 +17,6 @@
  */
 
 #include <git2.h>
-#include "buffer.h"
 
 #include "git2r_arg.h"
 #include "git2r_error.h"
@@ -210,7 +209,7 @@ SEXP git2r_note_default_ref(SEXP repo)
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;
-    git_buf buf = GIT_BUF_INIT;
+    git_buf buf = GIT_BUF_INIT_CONST(NULL, 0);
     git_repository *repository = NULL;
 
     repository = git2r_repository_open(repo);
@@ -292,7 +291,8 @@ SEXP git2r_notes(SEXP repo, SEXP ref)
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;
-    git_buf buf = GIT_BUF_INIT;
+    git_buf buf = GIT_BUF_INIT_CONST(NULL, 0);
+    const char *notes_ref;
     git2r_note_foreach_cb_data cb_data = {0, R_NilValue, R_NilValue, NULL, NULL};
     git_repository *repository = NULL;
 
@@ -306,17 +306,18 @@ SEXP git2r_notes(SEXP repo, SEXP ref)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     if (!Rf_isNull(ref)) {
-        git_buf_sets(&buf, CHAR(STRING_ELT(ref, 0)));
+        notes_ref = CHAR(STRING_ELT(ref, 0));
     } else {
         error = git_note_default_ref(&buf, repository);
         if (error)
             goto cleanup;
+        notes_ref = buf.ptr;
     }
 
     /* Count number of notes before creating the list */
     error = git_note_foreach(
         repository,
-        git_buf_cstr(&buf),
+        notes_ref,
         &git2r_note_foreach_cb,
         &cb_data);
     if (error) {
@@ -335,8 +336,8 @@ SEXP git2r_notes(SEXP repo, SEXP ref)
     cb_data.list = result;
     cb_data.repo = repo;
     cb_data.repository = repository;
-    cb_data.notes_ref = git_buf_cstr(&buf);
-    error = git_note_foreach(repository, git_buf_cstr(&buf),
+    cb_data.notes_ref = notes_ref;
+    error = git_note_foreach(repository, notes_ref,
                            &git2r_note_foreach_cb, &cb_data);
 
 cleanup:
