@@ -25,7 +25,7 @@
 
 #include <git2.h>
 #include <git2/sys/diff.h>
-#include "buffer.h"
+#include "cc-compat.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -163,13 +163,12 @@ SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename)
 
         error = git2r_diff_format_to_r(diff, result);
     } else if (0 == Rf_length(filename)) {
-        git_buf buf = GIT_BUF_INIT;
+        git_buf buf = GIT_BUF_INIT_CONST(NULL, 0);
 
-        error = git_diff_print(
+        error = git_diff_to_buf(
+            &buf,
             diff,
-            GIT_DIFF_FORMAT_PATCH,
-            git_diff_print_callback__to_buf,
-            &buf);
+            GIT_DIFF_FORMAT_PATCH);
         if (!error) {
             PROTECT(result = Rf_mkString(buf.ptr));
             nprotect++;
@@ -267,13 +266,12 @@ SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
 
         error = git2r_diff_format_to_r(diff, result);
     } else if (0 == Rf_length(filename)) {
-        git_buf buf = GIT_BUF_INIT;
+        git_buf buf = GIT_BUF_INIT_CONST(NULL, 0);
 
-        error = git_diff_print(
+        error = git_diff_to_buf(
+            &buf,
             diff,
-            GIT_DIFF_FORMAT_PATCH,
-            git_diff_print_callback__to_buf,
-            &buf);
+            GIT_DIFF_FORMAT_PATCH);
         if (!error) {
             PROTECT(result = Rf_mkString(buf.ptr));
             nprotect++;
@@ -373,13 +371,12 @@ SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
 
         error = git2r_diff_format_to_r(diff, result);
     } else if (0 == Rf_length(filename)) {
-        git_buf buf = GIT_BUF_INIT;
+        git_buf buf = GIT_BUF_INIT_CONST(NULL, 0);
 
-        error = git_diff_print(
+        error = git_diff_to_buf(
+            &buf,
             diff,
-            GIT_DIFF_FORMAT_PATCH,
-            git_diff_print_callback__to_buf,
-            &buf);
+            GIT_DIFF_FORMAT_PATCH);
         if (!error) {
             PROTECT(result = Rf_mkString(buf.ptr));
             nprotect++;
@@ -484,13 +481,12 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
 
         error = git2r_diff_format_to_r(diff, result);
     } else if (0 == Rf_length(filename)) {
-        git_buf buf = GIT_BUF_INIT;
+        git_buf buf = GIT_BUF_INIT_CONST(NULL, 0);
 
-        error = git_diff_print(
+        error = git_diff_to_buf(
+            &buf,
             diff,
-            GIT_DIFF_FORMAT_PATCH,
-            git_diff_print_callback__to_buf,
-            &buf);
+            GIT_DIFF_FORMAT_PATCH);
         if (!error) {
             PROTECT(result = Rf_mkString(buf.ptr));
             nprotect++;
@@ -611,13 +607,12 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
 
         error = git2r_diff_format_to_r(diff, result);
     } else if (0 == Rf_length(filename)) {
-        git_buf buf = GIT_BUF_INIT;
+        git_buf buf = GIT_BUF_INIT_CONST(NULL, 0);
 
-        error = git_diff_print(
+        error = git_diff_to_buf(
+            &buf,
             diff,
-            GIT_DIFF_FORMAT_PATCH,
-            git_diff_print_callback__to_buf,
-            &buf);
+            GIT_DIFF_FORMAT_PATCH);
         if (!error) {
             PROTECT(result = Rf_mkString(buf.ptr));
             nprotect++;
