@@ -23,9 +23,9 @@
 #include "git2r_tree.h"
 #include "git2r_repository.h"
 
-#include "git2.h"
+#include <git2.h>
+#include <git2/sys/diff.h>
 #include "buffer.h"
-#include "diff.h"
 
 #include <stdlib.h>
 #include <string.h>

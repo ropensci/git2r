@@ -16,6 +16,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include "buffer.h"
+
 #include "git2r_arg.h"
 #include "git2r_blob.h"
 #include "git2r_branch.h"
@@ -26,7 +28,6 @@
 #include "git2r_signature.h"
 #include "git2r_tag.h"
 #include "git2r_tree.h"
-#include "buffer.h"
 
 /**
  * Get repo from S3 class git_repository

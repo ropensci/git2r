@@ -22,7 +22,7 @@
 #include <R.h>
 #include <Rinternals.h>
 
-#include "git2.h"
+#include <git2.h>
 
 void git2r_tag_init(git_tag *source, SEXP repo, SEXP dest);
 SEXP git2r_tag_create(SEXP repo, SEXP name, SEXP message, SEXP tagger);

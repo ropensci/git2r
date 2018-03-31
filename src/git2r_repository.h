@@ -22,7 +22,7 @@
 #include <R.h>
 #include <Rinternals.h>
 
-#include "git2.h"
+#include <git2.h>
 
 git_repository* git2r_repository_open(SEXP repo);
 SEXP git2r_repository_can_open(SEXP path);

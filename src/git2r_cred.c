@@ -19,8 +19,8 @@
 #include <R.h>
 #include <Rinternals.h>
 
+#include <git2.h>
 #include "buffer.h"
-#include "common.h"
 
 #include "git2r_cred.h"
 #include "git2r_objects.h"

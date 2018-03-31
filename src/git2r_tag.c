@@ -16,6 +16,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include "util.h"
+
 #include "git2r_arg.h"
 #include "git2r_blob.h"
 #include "git2r_commit.h"
@@ -25,8 +27,6 @@
 #include "git2r_signature.h"
 #include "git2r_tag.h"
 #include "git2r_tree.h"
-
-#include "util.h"
 
 /**
  * Init slots in S3 class git_tag

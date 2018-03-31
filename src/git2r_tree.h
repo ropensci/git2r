@@ -22,7 +22,7 @@
 #include <R.h>
 #include <Rinternals.h>
 
-#include "git2.h"
+#include <git2.h>
 
 void git2r_tree_init(const git_tree *source, SEXP repo, SEXP dest);
 SEXP git2r_tree_walk(SEXP tree, SEXP recursive);

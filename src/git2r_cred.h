@@ -19,7 +19,7 @@
 #ifndef INCLUDE_git2r_cred_h
 #define INCLUDE_git2r_cred_h
 
-#include "git2.h"
+#include <git2.h>
 
 int git2r_cred_acquire_cb(
     git_cred **out,

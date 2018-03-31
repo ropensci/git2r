@@ -19,7 +19,7 @@
 #ifndef INCLUDE_git2r_error_h
 #define INCLUDE_git2r_error_h
 
-#include "git2.h"
+#include <git2.h>
 
 /**
  * Error messages

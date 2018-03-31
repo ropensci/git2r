@@ -28,7 +28,7 @@
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>
 
-#include "git2.h"
+#include <git2.h>
 
 #include "git2r_blame.h"
 #include "git2r_blob.h"
