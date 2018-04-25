@@ -211,7 +211,7 @@ typedef enum {
 	 * which generally can produce better diffs when dealing with ambiguous
 	 * diff hunks.
 	 */
-	GIT_DIFF_INDENT_HEURISTIC = (1u << 31),
+	GIT_DIFF_INDENT_HEURISTIC = (1 << 31),
 } git_diff_option_t;
 
 /**
