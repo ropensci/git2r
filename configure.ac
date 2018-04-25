@@ -244,7 +244,7 @@ case "${host_os}" in
             cd libssh2
             ./configure --with-pic --with-openssl --disable-examples-build \
               --disable-shared --enable-static --prefix=$LIBSSH2_INST_DIR \
-              CC="${CC}" CFLAGS="${CFLAGS} ${CPICFLAGS} -Wno-deprecated-declarations" \
+              CC="${CC}" CFLAGS="${CFLAGS} ${CPICFLAGS}" \
               CPPFLAGS="${CPPFLAGS}" && make && make install && have_ssh2=yes
             cd ..
             rm -rf libssh2
