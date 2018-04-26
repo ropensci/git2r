@@ -12,6 +12,11 @@ BUG FIXES
   returned 'logical(0)' for 'fast_forward' and 'conflicts' and 'character(0)'
   for 'sha'.
 
+BREAKING CHANGES
+
+* Removed the trailing slash from the directory name when reporting
+  repository path or workdir.
+
 git2r 0.21.0
 ------------
 

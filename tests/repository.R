@@ -48,7 +48,7 @@ stopifnot(identical(repository_head(repo), NULL))
 wd <- sub(paste0("[", .Platform$file.sep, "]$"), "",  workdir(repo))
 writeLines('test file', con = file.path(wd, "myfile.txt"))
 stopifnot(identical(discover_repository(file.path(wd, "myfile.txt")),
-                    paste0(file.path(wd, ".git"), .Platform$file.sep)))
+                    file.path(wd, ".git")))
 stopifnot(identical(discover_repository(file.path(wd, "doesntexist.txt")),
                     NULL))
 
@@ -56,7 +56,7 @@ stopifnot(identical(discover_repository(file.path(wd, "doesntexist.txt")),
 dir.create(file.path(wd, "temp"))
 stopifnot(identical(discover_repository(file.path(wd, "temp"), 0), NULL))
 stopifnot(identical(discover_repository(file.path(wd, "temp"), 1),
-                    paste0(file.path(wd, ".git"), .Platform$file.sep)))
+                    file.path(wd, ".git")))
 tools::assertError(discover_repository(file.path(wd, "temp"), 2))
 
 ## Check that lookup with a sha of less than 4 characters or more than

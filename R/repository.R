@@ -670,6 +670,14 @@ summary.git_repository <- function(object, ...) {
     invisible(NULL)
 }
 
+## Strip trailing slash or backslash, unless it's the current drive
+## root (/) or a Windows drive, for example, 'c:\'.
+strip_trailing_slash <- function(path) {
+    if (!is.null(path) && grep("^(/|[a-zA-Z]:[/\\\\]?)$", path, invert = TRUE))
+        path <- sub("/?$", "", path)
+    path
+}
+
 ##' Workdir of repository
 ##'
 ##' @template repo-param
@@ -689,7 +697,8 @@ summary.git_repository <- function(object, ...) {
 ##' workdir(repo)
 ##' }
 workdir <- function(repo = ".") {
-    .Call(git2r_repository_workdir, lookup_repository(repo))
+    path <- .Call(git2r_repository_workdir, lookup_repository(repo))
+    strip_trailing_slash(path)
 }
 
 ##' Find path to repository for any file
@@ -755,7 +764,8 @@ discover_repository <- function(path = ".", ceiling = NULL) {
         }
     }
 
-    .Call(git2r_repository_discover, path, ceiling)
+    path <- .Call(git2r_repository_discover, path, ceiling)
+    strip_trailing_slash(path)
 }
 
 ##' Internal utility function to lookup repository for methods

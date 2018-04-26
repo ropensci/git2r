@@ -162,15 +162,17 @@ rm_file <- function(repo = ".", path = NULL) {
     repo <- lookup_repository(repo)
 
     if (length(path)) {
+        wd <- workdir(repo)
+
         ## Check that files exists and are known to Git
-        if (!all(file.exists(paste0(workdir(repo), path)))) {
+        if (!all(file.exists(file.path(wd, path)))) {
             stop(sprintf("pathspec '%s' did not match any files. ",
-                         path[!file.exists(paste0(workdir(repo), path))]))
+                         path[!file.exists(file.path(wd, path))]))
         }
 
-        if (any(file.info(paste0(workdir(repo), path))$isdir)) {
+        if (any(file.info(file.path(wd, path))$isdir)) {
             stop(sprintf("pathspec '%s' did not match any files. ",
-                         path[exists(paste0(workdir(repo), path))]))
+                         path[exists(file.path(wd, path))]))
         }
 
         s <- status(repo, staged = TRUE, unstaged = TRUE,
@@ -192,7 +194,7 @@ rm_file <- function(repo = ".", path = NULL) {
 
         ## Remove and stage files
         lapply(path, function(x) {
-            file.remove(paste0(workdir(repo), x))
+            file.remove(file.path(wd, x))
             .Call(git2r_index_remove_bypath, repo, x)
         })
     }
