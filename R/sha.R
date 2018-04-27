@@ -50,6 +50,12 @@ sha.git_blob <- function(object) {
 
 ##' @rdname sha
 ##' @export
+sha.git_branch <- function(object) {
+    branch_target(object)
+}
+
+##' @rdname sha
+##' @export
 sha.git_commit <- function(object) {
     object$sha
 }

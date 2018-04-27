@@ -3,6 +3,7 @@
 \name{sha}
 \alias{sha}
 \alias{sha.git_blob}
+\alias{sha.git_branch}
 \alias{sha.git_commit}
 \alias{sha.git_note}
 \alias{sha.git_reflog_entry}
@@ -15,6 +16,8 @@
 sha(object)
 
 \method{sha}{git_blob}(object)
+
+\method{sha}{git_branch}(object)
 
 \method{sha}{git_commit}(object)
 
