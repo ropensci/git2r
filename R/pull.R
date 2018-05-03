@@ -24,7 +24,7 @@
 ##'     merge that creates a merge commit. The
 ##'     \code{default_signature} for \code{repo} is used if this
 ##'     parameter is \code{NULL}.
-##' @return invisible(NULL)
+##' @template return-git_merge_result
 ##' @export
 ##' @examples
 ##' \dontrun{
