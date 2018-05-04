@@ -38,41 +38,6 @@ esac
 # Check for pkg-config
 PKG_PROG_PKG_CONFIG
 
-# Optional include and library paths
-
-# zlib include and library path
-AC_ARG_WITH([zlib-include],
-            AC_HELP_STRING([--with-zlib-include=INCLUDE_PATH],
-                           [the location of the zlib header files]),
-            [zlib_include_path=$withval])
-
-AC_ARG_WITH([zlib-lib],
-            AC_HELP_STRING([--with-zlib-lib=LIB_PATH],
-                           [the location of the zlib library]),
-            [zlib_lib_path=$withval])
-
-# LibSSH2 include and library path
-AC_ARG_WITH([libssh2-include],
-            AC_HELP_STRING([--with-libssh2-include=INCLUDE_PATH],
-                           [the location of the LibSSH2 header files]),
-            [libssh2_include_path=$withval])
-
-AC_ARG_WITH([libssh2-lib],
-            AC_HELP_STRING([--with-libssh2-lib=LIB_PATH],
-                           [the location of the LibSSH2 library]),
-            [libssh2_lib_path=$withval])
-
-# libssl include and library path
-AC_ARG_WITH([libssl-include],
-            AC_HELP_STRING([--with-libssl-include=INCLUDE_PATH],
-                           [the location of the libssl header files]),
-            [libssl_include_path=$withval])
-
-AC_ARG_WITH([libssl-lib],
-            AC_HELP_STRING([--with-libssl-lib=LIB_PATH],
-                           [the location of the libssl library]),
-            [libssl_lib_path=$withval])
-
 # Find the compiler and compiler flags to use
 : ${R_HOME=`R RHOME`}
 if test -z "${R_HOME}"; then
@@ -82,8 +47,10 @@ fi
 RBIN="${R_HOME}/bin/R"
 CC=`"${RBIN}" CMD config CC`
 CFLAGS=`"${RBIN}" CMD config CFLAGS`
-CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
+RBIN_CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
+CPPFLAGS="${CPPFLAGS} ${RBIN_CPPFLAGS}"
 CPICFLAGS=`"${RBIN}" CMD config CPICFLAGS`
+LIBS="${LIBS}"
 
 # Use R to determine architecture of the machine
 AC_MSG_CHECKING([size of void*])
@@ -99,16 +66,6 @@ fi
 
 # Check for zlib
 have_zlib=no
-
-# Check for optional zlib include path
-if test [ -n "$zlib_include_path" ] ; then
-    CPPFLAGS="-I${zlib_include_path} ${CPPFLAGS}"
-fi
-
-# Check for optional zlib lib path
-if test [ -n "$zlib_lib_path" ] ; then
-    LIBS="-L${zlib_lib_path} ${LIBS}"
-fi
 
 AC_SEARCH_LIBS([inflate], [z], [have_zlib=yes])
 
@@ -136,22 +93,12 @@ if test "x${have_zlib}" = xno; then
    system but the git2r configuration is
    unable to find it, you can specify the
    include and lib path to zlib with:
-   R CMD INSTALL --configure-args='--with-zlib-include=INCLUDE_PATH --with-zlib-lib=LIB_PATH' git2r
+   R CMD INSTALL git2r --configure-vars='LIBS=-L/path/to/libs CPPFLAGS=-I/path/to/headers'
   ---------------------------------------------])
 fi
 
 # Check for SSL
 have_ssl=no
-
-# Check for optional libssl include path
-if test [ -n "$libssl_include_path" ] ; then
-    CPPFLAGS="-I${libssl_include_path} ${CPPFLAGS}"
-fi
-
-# Check for optional libssl lib path
-if test [ -n "$libssl_lib_path" ] ; then
-    LIBS="-L${libssl_lib_path} ${LIBS}"
-fi
 
 if test "x${OPENSSL_INCLUDES}" = x; then :; else
     CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
@@ -198,22 +145,12 @@ if test "x${have_ssl}" = xno; then
    your system but the git2r configuration
    is unable to find it, you can specify
    the include and lib path to OpenSSL with:
-   R CMD INSTALL --configure-args='--with-libssl-include=INCLUDE_PATH --with-libssl-lib=LIB_PATH' git2r
+   R CMD INSTALL git2r --configure-vars='LIBS=-L/path/to/libs CPPFLAGS=-I/path/to/headers'
   ---------------------------------------------])
 fi
 
 # Check for LibSSH2
 have_ssh2=no
-
-# Check for optional libssh2 include path
-if test [ -n "$libssh2_include_path" ] ; then
-    CPPFLAGS="-I${libssh2_include_path} ${CPPFLAGS}"
-fi
-
-# Check for optional libssh2 lib path
-if test [ -n "$libssh2_lib_path" ] ; then
-    LIBS="-L${libssh2_lib_path} ${LIBS}"
-fi
 
 case "${host_os}" in
     darwin*)
@@ -286,7 +223,7 @@ if test "x${have_ssh2}" = xno; then
    your system but the git2r configuration
    is unable to find it, you can specify
    the include and lib path to LibSSH2 with:
-   R CMD INSTALL --configure-args='--with-libssh2-include=INCLUDE_PATH --with-libssh2-lib=LIB_PATH' git2r
+   R CMD INSTALL git2r --configure-vars='LIBS=-L/path/to/libs CPPFLAGS=-I/path/to/headers'
   ---------------------------------------------])
 fi
 
