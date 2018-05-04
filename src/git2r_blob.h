@@ -21,7 +21,7 @@
 
 #include <R.h>
 #include <Rinternals.h>
-#include "git2.h"
+#include <git2.h>
 
 SEXP git2r_blob_content(SEXP blob);
 SEXP git2r_blob_create_fromdisk(SEXP repo, SEXP path);

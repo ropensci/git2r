@@ -16,6 +16,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <git2.h>
+
 #include "git2r_arg.h"
 #include "git2r_blob.h"
 #include "git2r_branch.h"
@@ -26,7 +28,6 @@
 #include "git2r_signature.h"
 #include "git2r_tag.h"
 #include "git2r_tree.h"
-#include "buffer.h"
 
 /**
  * Get repo from S3 class git_repository
@@ -508,7 +509,7 @@ SEXP git2r_repository_discover(SEXP path, SEXP ceiling)
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;
-    git_buf buf = GIT_BUF_INIT;
+    git_buf buf = GIT_BUF_INIT_CONST(NULL, 0);
     const char *ceiling_dirs = NULL;
 
     if (git2r_arg_check_string(path))

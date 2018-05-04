@@ -17,7 +17,7 @@
  */
 
 #include <Rinternals.h>
-#include "git2.h"
+#include <git2.h>
 
 /**
  * Error messages

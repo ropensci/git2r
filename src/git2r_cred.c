@@ -19,8 +19,8 @@
 #include <R.h>
 #include <Rinternals.h>
 
+#include <git2.h>
 #include "buffer.h"
-#include "common.h"
 
 #include "git2r_cred.h"
 #include "git2r_objects.h"
@@ -108,8 +108,8 @@ static int git2r_cred_env(
 
         error = git_cred_userpass_plaintext_new(
             cred,
-            git_buf_cstr(&username),
-            git_buf_cstr(&password));
+            username.ptr,
+            password.ptr);
 
     cleanup:
         git_buf_free(&username);
@@ -149,7 +149,7 @@ static int git2r_cred_token(
         if (error)
             goto cleanup;
 
-        error = git_cred_userpass_plaintext_new(cred, " ", git_buf_cstr(&token));
+        error = git_cred_userpass_plaintext_new(cred, " ", token.ptr);
 
     cleanup:
         git_buf_free(&token);

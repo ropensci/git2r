@@ -16,8 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "git2.h"
-#include "buffer.h"
+#include <git2.h>
 
 #include "git2r_arg.h"
 #include "git2r_error.h"
@@ -482,7 +481,7 @@ SEXP git2r_config_find_file(SEXP level)
 {
     int not_found = 1;
     SEXP result;
-    git_buf buf = GIT_BUF_INIT;
+    git_buf buf = GIT_BUF_INIT_CONST(NULL, 0);
 
     if (git2r_arg_check_string(level))
         git2r_error(__func__, NULL, "'level'", git2r_err_string_arg);
@@ -500,7 +499,7 @@ SEXP git2r_config_find_file(SEXP level)
     if (not_found)
         SET_STRING_ELT(result, 0, NA_STRING);
     else
-        SET_STRING_ELT(result, 0, Rf_mkChar(git_buf_cstr(&buf)));
+        SET_STRING_ELT(result, 0, Rf_mkChar(buf.ptr));
 
     git_buf_free(&buf);
     UNPROTECT(1);

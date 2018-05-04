@@ -21,7 +21,7 @@
 
 #include <R.h>
 #include <Rinternals.h>
-#include "git2.h"
+#include <git2.h>
 
 void git2r_oid_from_sha_sexp(SEXP sha, git_oid *oid);
 

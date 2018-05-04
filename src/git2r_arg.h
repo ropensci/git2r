@@ -21,7 +21,7 @@
 
 #include <R.h>
 #include <Rinternals.h>
-#include "git2.h"
+#include <git2.h>
 
 int git2r_arg_check_blob(SEXP arg);
 int git2r_arg_check_branch(SEXP arg);

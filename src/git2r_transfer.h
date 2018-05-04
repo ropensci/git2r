@@ -21,7 +21,7 @@
 
 #include <R.h>
 #include <Rinternals.h>
-#include "git2.h"
+#include <git2.h>
 
 /**
  * Data structure to hold information when performing a clone, fetch
