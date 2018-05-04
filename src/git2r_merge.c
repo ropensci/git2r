@@ -23,8 +23,8 @@
 #include "git2r_commit.h"
 #include "git2r_error.h"
 #include "git2r_merge.h"
-#include "git2r_objects.h"
 #include "git2r_repository.h"
+#include "git2r_S3.h"
 #include "git2r_signature.h"
 
 int git2r_commit_create(

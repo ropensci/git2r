@@ -19,8 +19,8 @@
 #include "git2r_arg.h"
 #include "git2r_blob.h"
 #include "git2r_error.h"
-#include "git2r_objects.h"
 #include "git2r_repository.h"
+#include "git2r_S3.h"
 
 /**
  * Get content of a blob

@@ -23,7 +23,7 @@
 #include "buffer.h"
 
 #include "git2r_cred.h"
-#include "git2r_objects.h"
+#include "git2r_S3.h"
 #include "git2r_transfer.h"
 
 /**

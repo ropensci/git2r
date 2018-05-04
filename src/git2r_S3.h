@@ -16,8 +16,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef INCLUDE_git2r_objects_h
-#define INCLUDE_git2r_objects_h
+#ifndef INCLUDE_git2r_S3_h
+#define INCLUDE_git2r_S3_h
 
 #include <R.h>
 #include <Rinternals.h>

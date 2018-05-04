@@ -16,7 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "git2r_objects.h"
+#include "git2r_S3.h"
 #include "git2r_transfer.h"
 
 /**

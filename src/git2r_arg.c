@@ -20,7 +20,7 @@
 
 #include "git2r_arg.h"
 #include "git2r_error.h"
-#include "git2r_objects.h"
+#include "git2r_S3.h"
 
 /**
  * Check blob argument

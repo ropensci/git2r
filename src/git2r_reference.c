@@ -20,9 +20,9 @@
 
 #include "git2r_arg.h"
 #include "git2r_error.h"
-#include "git2r_objects.h"
 #include "git2r_reference.h"
 #include "git2r_repository.h"
+#include "git2r_S3.h"
 
 /**
  * Lookup the full name of a reference by DWIMing its short name

@@ -18,7 +18,7 @@
 
 #include <string.h>
 
-#include "git2r_objects.h"
+#include "git2r_S3.h"
 
 const char *git2r_S3_class__git_blame = "git_blame";
 const char *git2r_S3_items__git_blame[] = {
