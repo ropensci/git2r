@@ -259,8 +259,8 @@ SEXP git2r_repository_init(SEXP path, SEXP bare)
         git2r_error(__func__, NULL, "'bare'", git2r_err_logical_arg);
 
     error = git_repository_init(&repository,
-                              CHAR(STRING_ELT(path, 0)),
-                              LOGICAL(bare)[0]);
+                                CHAR(STRING_ELT(path, 0)),
+                                LOGICAL(bare)[0]);
     if (error)
         git2r_error(__func__, NULL, git2r_err_repo_init, NULL);
 
@@ -286,10 +286,9 @@ SEXP git2r_repository_is_bare(SEXP repo)
 
     is_bare = git_repository_is_bare(repository);
     git_repository_free(repository);
-
-    if (1 == is_bare)
-        return Rf_ScalarLogical(1);
-    return Rf_ScalarLogical(0);
+    if (is_bare < 0)
+        git2r_error(__func__, giterr_last(), NULL, NULL);
+    return Rf_ScalarLogical(is_bare);
 }
 
 /**
@@ -311,10 +310,7 @@ SEXP git2r_repository_is_shallow(SEXP repo)
     git_repository_free(repository);
     if (is_shallow < 0)
         git2r_error(__func__, giterr_last(), NULL, NULL);
-
-    if (1 == is_shallow)
-        return Rf_ScalarLogical(1);
-    return Rf_ScalarLogical(0);
+    return Rf_ScalarLogical(is_shallow);
 }
 
 /**
@@ -336,10 +332,7 @@ SEXP git2r_repository_head_detached(SEXP repo)
     git_repository_free(repository);
     if (head_detached < 0)
         git2r_error(__func__, giterr_last(), NULL, NULL);
-
-    if (1 == head_detached)
-        return Rf_ScalarLogical(1);
-    return Rf_ScalarLogical(0);
+    return Rf_ScalarLogical(head_detached);
 }
 
 /**
@@ -361,10 +354,7 @@ SEXP git2r_repository_is_empty(SEXP repo)
     git_repository_free(repository);
     if (is_empty < 0)
         git2r_error(__func__, giterr_last(), NULL, NULL);
-
-    if (1 == is_empty)
-        return Rf_ScalarLogical(1);
-    return Rf_ScalarLogical(0);
+    return Rf_ScalarLogical(is_empty);
 }
 
 /**
