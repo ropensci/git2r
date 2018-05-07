@@ -16,7 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "buffer.h"
+#include <git2.h>
 
 #include "git2r_arg.h"
 #include "git2r_error.h"
@@ -111,16 +111,18 @@ static int git2r_tree_walk_cb(
         return 1;
 
     if (!Rf_isNull(p->list)) {
-        git_buf mode = GIT_BUF_INIT;
+        char mode[23]; /* enums are int/32-bit, but this is enough for even a 64-bit int */
         git_object *blob = NULL, *obj = NULL;
         char sha[GIT_OID_HEXSZ + 1];
 
         /* mode */
-        error = git_buf_printf(&mode, "%06o", git_tree_entry_filemode(entry));
-        if (error)
+        error = snprintf(mode, sizeof(mode), "%06o", git_tree_entry_filemode(entry));
+        if (error < 0 || error >= sizeof(mode)) {
+            error = -1;
             goto cleanup;
+        }
         SET_STRING_ELT(VECTOR_ELT(p->list, 0), p->n,
-                       Rf_mkChar(git_buf_cstr(&mode)));
+                       Rf_mkChar(mode));
 
         /* type */
         SET_STRING_ELT(VECTOR_ELT(p->list, 1), p->n,
@@ -151,7 +153,6 @@ static int git2r_tree_walk_cb(
         }
 
     cleanup:
-        git_buf_free(&mode);
         git_object_free(obj);
         git_object_free(blob);
     }
