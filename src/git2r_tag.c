@@ -16,7 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "util.h"
+#include <git2.h>
 
 #include "git2r_arg.h"
 #include "git2r_blob.h"
@@ -267,7 +267,7 @@ static int git2r_tag_foreach_cb(const char *name, git_oid *oid, void *payload)
             git2r_error(__func__, NULL, git2r_err_object_type, NULL);
         }
 
-        if (git__prefixcmp(name, "refs/tags/") == 0)
+        if (strncmp(name, "refs/tags/", sizeof("refs/tags/") - 1) == 0)
             skip = strlen("refs/tags/");
         PROTECT(tag = Rf_mkChar(name + skip));
         SET_STRING_ELT(
