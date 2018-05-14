@@ -16,7 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "refs.h"
+#include <git2.h>
 
 #include "git2r_arg.h"
 #include "git2r_branch.h"
@@ -388,7 +388,10 @@ SEXP git2r_branch_upstream_canonical_name(SEXP branch)
     SEXP repo;
     const char *name;
     git_branch_t type;
-    git_buf buf = GIT_BUF_INIT;
+    const char *branch_name;
+    size_t branch_name_len;
+    char *buf = NULL;
+    size_t buf_len;
     git_config *cfg = NULL;
     git_repository *repository = NULL;
 
@@ -408,16 +411,30 @@ SEXP git2r_branch_upstream_canonical_name(SEXP branch)
     if (error)
         goto cleanup;
 
-    error = git_buf_join3(
-        &buf,
-        '.',
-        "branch",
-        CHAR(STRING_ELT(git2r_get_list_element(branch, "name"), 0)),
-        "merge");
-    if (error)
+    branch_name = CHAR(STRING_ELT(git2r_get_list_element(branch, "name"), 0));
+    branch_name_len = strlen(branch_name);
+    while (branch_name[0] == '.') {
+        branch_name++;
+        branch_name_len--;
+    }
+    while (branch_name_len >= 1 && branch_name[branch_name_len - 1] == '.') {
+        branch_name_len--;
+    }
+    buf_len = branch_name_len + sizeof("branch." ".merge");
+    buf = malloc(buf_len);
+    if (!buf) {
+        giterr_set_oom();
+        error = GITERR_NOMEMORY;
         goto cleanup;
+    }
+    error = snprintf(buf, buf_len, "branch.%.*s.merge", (int)branch_name_len, branch_name);
+    if (error < 0 || error >= buf_len) {
+        giterr_set_str(GITERR_OS, "Failed to snprintf branch config.");
+        error = GITERR_OS;
+        goto cleanup;
+    }
 
-    error = git_config_get_string(&name, cfg, buf.ptr);
+    error = git_config_get_string(&name, cfg, buf);
     if (error)
         goto cleanup;
 
@@ -426,7 +443,8 @@ SEXP git2r_branch_upstream_canonical_name(SEXP branch)
     SET_STRING_ELT(result, 0, Rf_mkChar(name));
 
 cleanup:
-    git_buf_free(&buf);
+    if (buf)
+        free(buf);
     git_config_free(cfg);
     git_repository_free(repository);
 

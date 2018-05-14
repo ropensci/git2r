@@ -17,7 +17,6 @@
  */
 
 #include <git2.h>
-#include "buffer.h"
 
 #include "git2r_arg.h"
 #include "git2r_error.h"
@@ -355,7 +354,10 @@ static int git2r_odb_tree_blobs(
         switch (git_tree_entry_type(entry)) {
         case GIT_OBJ_TREE:
         {
-            git_buf buf = GIT_BUF_INIT;
+            char *buf = NULL;
+            size_t path_len, buf_len;
+            const char *entry_name;
+            const char *sep;
             git_tree *sub_tree = NULL;
 
             error = git_tree_lookup(
@@ -365,19 +367,35 @@ static int git2r_odb_tree_blobs(
             if (error)
                 return error;
 
-            error = git_buf_joinpath(&buf, path, git_tree_entry_name(entry));
-
-            if (GIT_OK == error) {
+            entry_name = git_tree_entry_name(entry);
+            path_len = strlen(path);
+            buf_len = path_len + strlen(entry_name) + 2;
+            buf = malloc(buf_len);
+            if (!buf) {
+                git_tree_free(sub_tree);
+                giterr_set_oom();
+                return GITERR_NOMEMORY;
+            }
+            if (path_len) {
+                sep = "/";
+            } else {
+                sep = "";
+            }
+            error = snprintf(buf, buf_len, "%s%s%s", path, sep, entry_name);
+            if (0 <= error && error < buf_len) {
                 error = git2r_odb_tree_blobs(
                     sub_tree,
-                    buf.ptr,
+                    buf,
                     commit,
                     author,
                     when,
                     data);
+            } else {
+                giterr_set_str(GITERR_OS, "Failed to snprintf tree path.");
+                error = GITERR_OS;
             }
 
-            git_buf_free(&buf);
+            free(buf);
             git_tree_free(sub_tree);
 
             if (error)
