@@ -25,7 +25,6 @@
 
 #include <git2.h>
 #include <git2/sys/diff.h>
-#include "cc-compat.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -674,9 +673,6 @@ int git2r_diff_count_file_cb(const git_diff_delta *delta,
 {
     git2r_diff_count_payload *n = payload;
 
-    GIT_UNUSED(delta);
-    GIT_UNUSED(progress);
-
     n->num_files += 1;
     n->num_hunks = n->num_lines = 0;
     return 0;
@@ -695,9 +691,6 @@ int git2r_diff_count_hunk_cb(const git_diff_delta *delta,
 			     void *payload)
 {
     git2r_diff_count_payload *n = payload;
-
-    GIT_UNUSED(delta);
-    GIT_UNUSED(hunk);
 
     n->num_hunks += 1;
     if (n->num_hunks > n->max_hunks) { n->max_hunks = n->num_hunks; }
@@ -721,10 +714,6 @@ int git2r_diff_count_line_cb(const git_diff_delta *delta,
 			     void *payload)
 {
     git2r_diff_count_payload *n = payload;
-
-    GIT_UNUSED(delta);
-    GIT_UNUSED(hunk);
-    GIT_UNUSED(line);
 
     n->num_lines += 1;
     if (n->num_lines > n->max_lines)
@@ -801,8 +790,6 @@ int git2r_diff_get_file_cb(const git_diff_delta *delta,
 {
     git2r_diff_payload *p = (git2r_diff_payload *) payload;
 
-    GIT_UNUSED(progress);
-
     /* Save previous hunk's lines in hunk_tmp, we just call the
        hunk callback, with a NULL hunk */
     git2r_diff_get_hunk_cb(delta, /* hunk= */ 0, payload);
@@ -866,8 +853,6 @@ int git2r_diff_get_hunk_cb(const git_diff_delta *delta,
 			   void *payload)
 {
     git2r_diff_payload *p = (git2r_diff_payload *) payload;
-
-    GIT_UNUSED(delta);
 
     /* Save previous hunk's lines in hunk_tmp, from the line_tmp
        temporary storage. */
@@ -948,9 +933,6 @@ int git2r_diff_get_line_cb(const git_diff_delta *delta,
     static char short_buffer[200];
     char *buffer = short_buffer;
     SEXP line_obj;
-
-    GIT_UNUSED(delta);
-    GIT_UNUSED(hunk);
 
     SET_VECTOR_ELT(
         p->line_tmp,

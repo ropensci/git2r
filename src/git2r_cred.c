@@ -212,8 +212,6 @@ int git2r_cred_acquire_cb(
 {
     SEXP credentials;
 
-    GIT_UNUSED(url);
-
     if (!payload)
         return -1;
 
