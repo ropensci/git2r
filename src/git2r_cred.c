@@ -20,11 +20,38 @@
 #include <Rinternals.h>
 
 #include <git2.h>
-#include "buffer.h"
 
 #include "git2r_cred.h"
 #include "git2r_S3.h"
 #include "git2r_transfer.h"
+
+/**
+ * Read an environtmental variable.
+ *
+ * @param out Pointer where to store the environmental variable.
+ * @param obj The S3 object with name of the environmental
+ *   variable to read.
+ * @param slot The slot in the S3 object with the name of the
+ *   environmental variable.
+ * @return 0 on success, else -1.
+ */
+static int git2r_getenv(char **out, SEXP obj, const char *slot)
+{
+    const char *buf;
+
+    /* Read value of the environment variable */
+    buf = getenv(CHAR(STRING_ELT(git2r_get_list_element(obj, slot), 0)));
+    if (!buf || !strlen(buf))
+        return -1;
+
+    *out = malloc(strlen(buf)+1);
+    if (!*out)
+        return -1;
+
+    strcpy(*out, buf);
+
+    return 0;
+}
 
 /**
  * Create credential object from S3 class 'cred_ssh_key'.
@@ -79,41 +106,24 @@ static int git2r_cred_env(
 {
     if (GIT_CREDTYPE_USERPASS_PLAINTEXT & allowed_types) {
         int error;
-        git_buf username = GIT_BUF_INIT;
-        git_buf password = GIT_BUF_INIT;
+        char *username = NULL;
+        char *password = NULL;
 
         /* Read value of the username environment variable */
-        error = git__getenv(
-            &username,
-            CHAR(STRING_ELT(git2r_get_list_element(credentials, "username"), 0)));
+        error = git2r_getenv(&username, credentials, "username");
         if (error)
             goto cleanup;
-
-        if (!git_buf_len(&username)) {
-            error = -1;
-            goto cleanup;
-        }
 
         /* Read value of the password environment variable */
-        error = git__getenv(
-            &password,
-            CHAR(STRING_ELT(git2r_get_list_element(credentials, "password"), 0)));
+        error = git2r_getenv(&password, credentials, "password");
         if (error)
             goto cleanup;
 
-        if (!git_buf_len(&password)) {
-            error = -1;
-            goto cleanup;
-        }
-
-        error = git_cred_userpass_plaintext_new(
-            cred,
-            username.ptr,
-            password.ptr);
+        error = git_cred_userpass_plaintext_new(cred, username, password);
 
     cleanup:
-        git_buf_free(&username);
-        git_buf_free(&password);
+        free(username);
+        free(password);
 
         if (error)
             return -1;
@@ -139,20 +149,18 @@ static int git2r_cred_token(
 {
     if (GIT_CREDTYPE_USERPASS_PLAINTEXT & allowed_types) {
         int error;
-        git_buf token = GIT_BUF_INIT;
+        char *token = NULL;
 
         /* Read value of the personal access token from the
          * environment variable */
-        error = git__getenv(
-            &token,
-            CHAR(STRING_ELT(git2r_get_list_element(credentials, "token"), 0)));
+        error = git2r_getenv(&token, credentials, "token");
         if (error)
             goto cleanup;
 
-        error = git_cred_userpass_plaintext_new(cred, " ", token.ptr);
+        error = git_cred_userpass_plaintext_new(cred, " ", token);
 
     cleanup:
-        git_buf_free(&token);
+        free(token);
 
         if (error)
             return -1;
