@@ -6,7 +6,7 @@ PKG_CPPFLAGS = -I${RWINLIB}/include \
 
 PKG_LIBS = -L${RWINLIB}/lib${R_ARCH} \
 	-lgit2 -lcurl-dualssl -lhttp_parser -lssh2 -lz -lssl -lcrypto \
-	-lgdi32 -lws2_32 -lcrypt32 -lwldap32
+	-lwinhttp -lgdi32 -lole32 -lrpcrt4 -lws2_32 -lcrypt32 -lwldap32
 
 all: clean winlibs
 
