@@ -41,8 +41,10 @@ git_repository* git2r_repository_open(SEXP repo)
     SEXP path;
     git_repository *repository = NULL;
 
-    if (git2r_arg_check_repository(repo))
+    if (git2r_arg_check_repository(repo)) {
+        Rprintf("The repo argument is unexpectedly invalid\n");
         return NULL;
+    }
 
     path = git2r_get_list_element(repo, "path");
     error = git_repository_open(&repository, CHAR(STRING_ELT(path, 0)));
