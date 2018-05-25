@@ -1,42 +1,19 @@
-LIBSSH2 = 1.8.0
-RWINLIB = ../windows/libssh2-$(LIBSSH2)
+VERSION = 0.27.0
+RWINLIB = ../windows/libgit2-${VERSION}
 
-PKG_CPPFLAGS=-Ilibgit2/src -Ilibgit2/include -Ilibgit2/deps/http-parser \
-	-Ilibgit2/deps/regex -I$(RWINLIB)/include
+PKG_CPPFLAGS = -I${RWINLIB}/include \
+	-DR_NO_REMAP -DSTRICT_R_HEADERS
 
-PKG_LIBS=-Llibgit2 -lmygit \
-         -L$(RWINLIB)/lib${R_ARCH} -lssh2 -lz -lssl -lcrypto \
-         -lgdi32 -lws2_32 -lwinhttp -lrpcrt4 -lole32 -lcrypt32
+PKG_LIBS = -L${RWINLIB}/lib${R_ARCH} \
+	-lgit2 -lcurl-dualssl -lhttp_parser -lssh2 -lz -lssl -lcrypto \
+	-lwinhttp -lgdi32 -lole32 -lrpcrt4 -lws2_32 -lcrypt32 -lwldap32
 
-PKG_CFLAGS=-DWIN32 -D_WIN32_WINNT=0x0501 -D__USE_MINGW_ANSI_STDIO=1 \
-           -DGIT_WINHTTP -D_FILE_OFFSET_BITS=64 -DGIT_SSH \
-           -DGIT_USE_NSEC -DGIT_ARCH_$(WIN) -DLIBGIT2_NO_FEATURES_H \
-           -DR_NO_REMAP -DSTRICT_R_HEADERS -DGIT_HTTPS=1 \
-           -DGIT_SHA1_COLLISIONDETECT -DSHA1DC_NO_STANDARD_INCLUDES=1 \
-           -DSHA1DC_CUSTOM_INCLUDE_SHA1_C=\"common.h\" \
-           -DSHA1DC_CUSTOM_INCLUDE_UBC_CHECK_C=\"common.h\"
-
-LIBGIT=$(patsubst %.c,%.o,$(filter-out libgit2/src/transports/http.c,$(wildcard \
-         libgit2/src/*.c libgit2/src/streams/*.c libgit2/src/transports/*.c \
-         libgit2/src/xdiff/*.c libgit2/src/win32/*.c)))
-LIBGIT+=libgit2/src/hash/sha1dc/sha1.o libgit2/src/hash/sha1dc/ubc_check.o
-LIBGIT+=libgit2/deps/http-parser/http_parser.o
-LIBGIT+=libgit2/deps/regex/regex.o
-
-STATLIB = libgit2/libmygit.a
-
-all: clean winlibs libwinhttp.dll.a $(STATLIB)
-
-winhttp.def:
-	cp libgit2/deps/winhttp/winhttp$(WIN).def.in winhttp.def
-
-$(STATLIB): $(LIBGIT)
-	$(AR) rcs $(STATLIB) $(LIBGIT)
+all: clean winlibs
 
 winlibs:
-	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" --vanilla "../tools/winlibs.R" $(LIBSSH2)
+	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" "../tools/winlibs.R" $(VERSION)
 
 clean:
-	rm -f *.o libwinhttp.dll.a winhttp.def $(SHLIB) $(STATLIB) $(LIBGIT)
+	rm -f $(SHLIB) $(OBJECTS)
 
 .PHONY: all winlibs clean
