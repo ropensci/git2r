@@ -134,14 +134,7 @@ sync_libgit2:
 	-rm -f src/libgit2/src/hash/hash_win32.c
 	-rm -f src/libgit2/src/hash/hash_win32.h
 	-rm -f src/libgit2/src/transports/auth_negotiate.c
-	-rm -f src/libgit2/src/win32/w32_crtdbg_stacktrace.c
-	-rm -f src/libgit2/src/win32/w32_crtdbg_stacktrace.h
-	-rm -f src/libgit2/src/win32/thread.c
-	-rm -f src/libgit2/src/win32/w32_stack.c
-	-rm -f src/libgit2/src/win32/w32_stack.h
-	cd src/libgit2/src && patch -i ../../../patches/cc-compat.h.patch
-	cd src/libgit2/src/win32 && patch -i ../../../../patches/reparse.h.patch
-	cd src/libgit2/include/git2 && patch -i ../../../../patches/common.h.patch
+	-rm -rf src/libgit2/src/win32
 	cd src/libgit2/include/git2 && patch -i ../../../../patches/diff.h.patch
 	cd src/libgit2/deps/regex && patch -i ../../../../patches/regcomp-pass-R-CMD-check-git2r.patch
 	cd src/libgit2/deps/regex && patch -i ../../../../patches/regex-prefix-entry-points.patch

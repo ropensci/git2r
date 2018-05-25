@@ -46,7 +46,7 @@
 #define GIT_UNUSED(x) ((void)(x))
 
 /* Define the printf format specifer to use for size_t output */
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) || defined(__MINGW32__)
 #	define PRIuZ "Iu"
 #	define PRIxZ "Ix"
 #	define PRIdZ "Id"
