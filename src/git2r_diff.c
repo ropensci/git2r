@@ -150,24 +150,15 @@ SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename)
         Rf_setAttrib(result, R_ClassSymbol,
                      Rf_mkString(git2r_S3_class__git_diff));
 
-        SET_VECTOR_ELT(
-            result,
-            git2r_S3_item__git_diff__old,
-            Rf_mkString("index"));
+        SET_VECTOR_ELT(result, git2r_S3_item__git_diff__old, Rf_mkString("index"));
 
-        SET_VECTOR_ELT(
-            result,
-            git2r_S3_item__git_diff__new,
-            Rf_mkString("workdir"));
+        SET_VECTOR_ELT(result, git2r_S3_item__git_diff__new, Rf_mkString("workdir"));
 
         error = git2r_diff_format_to_r(diff, result);
     } else if (0 == Rf_length(filename)) {
         git_buf buf = GIT_BUF_INIT_CONST(NULL, 0);
 
-        error = git_diff_to_buf(
-            &buf,
-            diff,
-            GIT_DIFF_FORMAT_PATCH);
+        error = git_diff_to_buf(&buf, diff, GIT_DIFF_FORMAT_PATCH);
         if (!error) {
             PROTECT(result = Rf_mkString(buf.ptr));
             nprotect++;

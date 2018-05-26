@@ -72,10 +72,7 @@ static int git2r_note_init(
 
     git_oid_fmt(sha, annotated_object_id);
     sha[GIT_OID_HEXSZ] = '\0';
-    SET_VECTOR_ELT(
-        dest,
-        git2r_S3_item__git_note__annotated,
-        Rf_mkString(sha));
+    SET_VECTOR_ELT(dest, git2r_S3_item__git_note__annotated, Rf_mkString(sha));
 
     SET_VECTOR_ELT(
         dest,

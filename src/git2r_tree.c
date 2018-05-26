@@ -43,10 +43,7 @@ void git2r_tree_init(const git_tree *source, SEXP repo, SEXP dest)
 
     oid = git_tree_id(source);
     git_oid_tostr(sha, sizeof(sha), oid);
-    SET_VECTOR_ELT(
-        dest,
-        git2r_S3_item__git_tree__sha,
-        Rf_mkString(sha));
+    SET_VECTOR_ELT(dest, git2r_S3_item__git_tree__sha, Rf_mkString(sha));
 
     n = git_tree_entrycount(source);
     SET_VECTOR_ELT(
@@ -222,11 +219,8 @@ SEXP git2r_tree_walk(SEXP tree, SEXP recursive)
     error = git_tree_walk(tree_obj, 0, &git2r_tree_walk_cb, &cb_data);
 
 cleanup:
-    if (repository)
-        git_repository_free(repository);
-
-    if (tree_obj)
-        git_tree_free(tree_obj);
+    git_repository_free(repository);
+    git_tree_free(tree_obj);
 
     if (nprotect)
         UNPROTECT(nprotect);

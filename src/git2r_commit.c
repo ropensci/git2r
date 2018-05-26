@@ -436,10 +436,7 @@ void git2r_commit_init(git_commit *source, SEXP repo, SEXP dest)
 
     git_oid_fmt(sha, git_commit_id(source));
     sha[GIT_OID_HEXSZ] = '\0';
-    SET_VECTOR_ELT(
-        dest,
-        git2r_S3_item__git_commit__sha,
-        Rf_mkString(sha));
+    SET_VECTOR_ELT(dest, git2r_S3_item__git_commit__sha, Rf_mkString(sha));
 
     signature = git_commit_author(source);
     if (signature) {
