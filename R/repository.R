@@ -443,8 +443,6 @@ is_empty <- function(repo = ".") {
 ##' in_repository()
 ##' }
 in_repository <- function(path = ".") {
-    if (is.null(path))
-        path = getwd()
     !is.null(discover_repository(path))
 }
 

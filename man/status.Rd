@@ -4,7 +4,7 @@
 \alias{status}
 \title{Status}
 \usage{
-status(repo = NULL, staged = TRUE, unstaged = TRUE, untracked = TRUE,
+status(repo = ".", staged = TRUE, unstaged = TRUE, untracked = TRUE,
   ignored = FALSE, all_untracked = FALSE)
 }
 \arguments{

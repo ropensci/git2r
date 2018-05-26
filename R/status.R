@@ -70,7 +70,7 @@
 ##' ## Check status; clean
 ##' status(repo)
 ##'}
-status <- function(repo      = NULL,
+status <- function(repo      = ".",
                    staged    = TRUE,
                    unstaged  = TRUE,
                    untracked = TRUE,
