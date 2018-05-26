@@ -49,6 +49,10 @@ git_repository* git2r_repository_open(SEXP repo)
     path = git2r_get_list_element(repo, "path");
     error = git_repository_open(&repository, CHAR(STRING_ELT(path, 0)));
     if (error) {
+        if (error == GIT_ENOTFOUND)
+            Rf_warning("Could not find repository at path '%s'", CHAR(STRING_ELT(path, 0)));
+        else
+            Rf_warning("Unable to open repository: %s", giterr_last()->message);
         git_repository_free(repository);
         return NULL;
     }
