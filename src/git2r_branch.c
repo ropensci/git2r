@@ -88,7 +88,7 @@ int git2r_branch_init(
         goto cleanup;
     SET_VECTOR_ELT(dest, git2r_S3_item__git_branch__name, Rf_mkString(name));
     SET_VECTOR_ELT(dest, git2r_S3_item__git_branch__type, Rf_ScalarInteger(type));
-    SET_VECTOR_ELT(dest, git2r_S3_item__git_branch__repo, repo);
+    SET_VECTOR_ELT(dest, git2r_S3_item__git_branch__repo, Rf_duplicate(repo));
 
 cleanup:
     return error;

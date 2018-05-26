@@ -474,25 +474,14 @@ void git2r_commit_init(git_commit *source, SEXP repo, SEXP dest)
     }
 
     str = git_commit_summary(source);
-    if (str) {
-        SET_VECTOR_ELT(
-            dest,
-            git2r_S3_item__git_commit__summary,
-            Rf_mkString(str));
-    }
+    if (str)
+        SET_VECTOR_ELT(dest, git2r_S3_item__git_commit__summary, Rf_mkString(str));
 
     str = git_commit_message(source);
-    if (str) {
-        SET_VECTOR_ELT(
-            dest,
-            git2r_S3_item__git_commit__message,
-            Rf_mkString(str));
-    }
+    if (str)
+        SET_VECTOR_ELT(dest, git2r_S3_item__git_commit__message, Rf_mkString(str));
 
-    SET_VECTOR_ELT(
-        dest,
-        git2r_S3_item__git_commit__repo,
-        repo);
+    SET_VECTOR_ELT(dest, git2r_S3_item__git_commit__repo, Rf_duplicate(repo));
 }
 
 /**

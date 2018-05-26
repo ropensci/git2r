@@ -90,7 +90,7 @@ static int git2r_note_init(
     SET_VECTOR_ELT(
         dest,
         git2r_S3_item__git_note__repo,
-        repo);
+        Rf_duplicate(repo));
 
     git_note_free(note);
 

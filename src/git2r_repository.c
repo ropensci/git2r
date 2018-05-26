@@ -116,7 +116,7 @@ static int git2r_repository_fetchhead_foreach_cb(
         SET_VECTOR_ELT(
             fetch_head,
             git2r_S3_item__git_fetch_head__repo,
-            cb_data->repo);
+            Rf_duplicate(cb_data->repo));
     }
 
     cb_data->n += 1;

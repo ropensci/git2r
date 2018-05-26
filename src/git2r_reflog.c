@@ -98,7 +98,7 @@ void git2r_reflog_entry_init(
     SET_VECTOR_ELT(
         dest,
         git2r_S3_item__git_reflog_entry__repo,
-        repo);
+        Rf_duplicate(repo));
 }
 
 /**

@@ -79,15 +79,9 @@ void git2r_tag_init(git_tag *source, SEXP repo, SEXP dest)
 
     oid = git_tag_target_id(source);
     git_oid_tostr(target, sizeof(target), oid);;
-    SET_VECTOR_ELT(
-        dest,
-        git2r_S3_item__git_tag__target,
-        Rf_mkString(target));
+    SET_VECTOR_ELT(dest, git2r_S3_item__git_tag__target, Rf_mkString(target));
 
-    SET_VECTOR_ELT(
-        dest,
-        git2r_S3_item__git_tag__repo,
-        repo);
+    SET_VECTOR_ELT(dest, git2r_S3_item__git_tag__repo, Rf_duplicate(repo));
 }
 
 /**

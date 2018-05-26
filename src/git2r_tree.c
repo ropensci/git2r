@@ -79,10 +79,7 @@ void git2r_tree_init(const git_tree *source, SEXP repo, SEXP dest)
         SET_STRING_ELT(name, i, Rf_mkChar(git_tree_entry_name(entry)));
     }
 
-    SET_VECTOR_ELT(
-        dest,
-        git2r_S3_item__git_tree__repo,
-        repo);
+    SET_VECTOR_ELT(dest, git2r_S3_item__git_tree__repo, Rf_duplicate(repo));
 }
 
 /**

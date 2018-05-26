@@ -130,18 +130,12 @@ void git2r_blame_init(git_blame *source, SEXP repo, SEXP path, SEXP dest)
             SET_VECTOR_ELT(
                 item,
                 git2r_S3_item__git_blame_hunk__repo,
-                repo);
+                Rf_duplicate(repo));
         }
     }
 
-    SET_VECTOR_ELT(
-        dest,
-        git2r_S3_item__git_blame__path,
-        path);
-    SET_VECTOR_ELT(
-        dest,
-        git2r_S3_item__git_blame__repo,
-        repo);
+    SET_VECTOR_ELT(dest, git2r_S3_item__git_blame__path, path);
+    SET_VECTOR_ELT(dest, git2r_S3_item__git_blame__repo, Rf_duplicate(repo));
 }
 
 /**

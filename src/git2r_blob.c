@@ -213,14 +213,8 @@ void git2r_blob_init(const git_blob *source, SEXP repo, SEXP dest)
 
     oid = git_blob_id(source);
     git_oid_tostr(sha, sizeof(sha), oid);
-    SET_VECTOR_ELT(
-        dest,
-        git2r_S3_item__git_blob__sha,
-        Rf_mkString(sha));
-    SET_VECTOR_ELT(
-        dest,
-        git2r_S3_item__git_blob__repo,
-        repo);
+    SET_VECTOR_ELT(dest, git2r_S3_item__git_blob__sha, Rf_mkString(sha));
+    SET_VECTOR_ELT(dest, git2r_S3_item__git_blob__repo, Rf_duplicate(repo));
 }
 
 /**
