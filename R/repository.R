@@ -298,6 +298,9 @@ head.git_repository <- function(x, ...) {
     .Call(git2r_repository_head, x)
 }
 
+##' @export
+utils::head
+
 ##' Get HEAD for a repository
 ##'
 ##' @template repo-param
