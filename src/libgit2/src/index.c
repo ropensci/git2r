@@ -884,11 +884,13 @@ static int index_entry_create(
 	git_index_entry **out,
 	git_repository *repo,
 	const char *path,
+	struct stat *st,
 	bool from_workdir)
 {
 	size_t pathlen = strlen(path), alloclen;
 	struct entry_internal *entry;
 	unsigned int path_valid_flags = GIT_PATH_REJECT_INDEX_DEFAULTS;
+	uint16_t mode = 0;
 
 	/* always reject placing `.git` in the index and directory traversal.
 	 * when requested, disallow platform-specific filenames and upgrade to
@@ -896,8 +898,10 @@ static int index_entry_create(
 	 */
 	if (from_workdir)
 		path_valid_flags |= GIT_PATH_REJECT_WORKDIR_DEFAULTS;
+	if (st)
+		mode = st->st_mode;
 
-	if (!git_path_isvalid(repo, path, path_valid_flags)) {
+	if (!git_path_isvalid(repo, path, mode, path_valid_flags)) {
 		giterr_set(GITERR_INDEX, "invalid path: '%s'", path);
 		return -1;
 	}
@@ -922,15 +926,35 @@ static int index_entry_init(
 {
 	int error = 0;
 	git_index_entry *entry = NULL;
+	git_buf path = GIT_BUF_INIT;
 	struct stat st;
 	git_oid oid;
+	git_repository *repo;
 
 	if (INDEX_OWNER(index) == NULL)
 		return create_index_error(-1,
 			"could not initialize index entry. "
 			"Index is not backed up by an existing repository.");
 
-	if (index_entry_create(&entry, INDEX_OWNER(index), rel_path, true) < 0)
+	/*
+	 * FIXME: this is duplicated with the work in
+	 * git_blob__create_from_paths. It should accept an optional stat
+	 * structure so we can pass in the one we have to do here.
+	 */
+	repo = INDEX_OWNER(index);
+	if (git_repository__ensure_not_bare(repo, "create blob from file") < 0)
+		return GIT_EBAREREPO;
+
+	if (git_buf_joinpath(&path, git_repository_workdir(repo), rel_path) < 0)
+		return -1;
+
+	error = git_path_lstat(path.ptr, &st);
+	git_buf_free(&path);
+
+	if (error < 0)
+		return error;
+
+	if (index_entry_create(&entry, INDEX_OWNER(index), rel_path, &st, true) < 0)
 		return -1;
 
 	/* write the blob to disk and get the oid and stat info */
@@ -1016,7 +1040,7 @@ static int index_entry_dup(
 	git_index *index,
 	const git_index_entry *src)
 {
-	if (index_entry_create(out, INDEX_OWNER(index), src->path, false) < 0)
+	if (index_entry_create(out, INDEX_OWNER(index), src->path, NULL, false) < 0)
 		return -1;
 
 	index_entry_cpy(*out, src);
@@ -1038,7 +1062,7 @@ static int index_entry_dup_nocache(
 	git_index *index,
 	const git_index_entry *src)
 {
-	if (index_entry_create(out, INDEX_OWNER(index), src->path, false) < 0)
+	if (index_entry_create(out, INDEX_OWNER(index), src->path, NULL, false) < 0)
 		return -1;
 
 	index_entry_cpy_nocache(*out, src);
@@ -1461,9 +1485,6 @@ static int add_repo_as_submodule(git_index_entry **out, git_index *index, const 
 	struct stat st;
 	int error;
 
-	if (index_entry_create(&entry, INDEX_OWNER(index), path, true) < 0)
-		return -1;
-
 	if ((error = git_buf_joinpath(&abspath, git_repository_workdir(repo), path)) < 0)
 		return error;
 
@@ -1471,6 +1492,9 @@ static int add_repo_as_submodule(git_index_entry **out, git_index *index, const 
 		giterr_set(GITERR_OS, "failed to stat repository dir");
 		return -1;
 	}
+
+	if (index_entry_create(&entry, INDEX_OWNER(index), path, &st, true) < 0)
+		return -1;
 
 	git_index_entry__init_from_stat(entry, &st, !index->distrust_filemode);
 
@@ -2299,8 +2323,9 @@ static size_t index_entry_size(size_t path_len, size_t varint_len, uint32_t flag
 	}
 }
 
-static size_t read_entry(
+static int read_entry(
 	git_index_entry **out,
+	size_t *out_size,
 	git_index *index,
 	const void *buffer,
 	size_t buffer_size,
@@ -2314,7 +2339,7 @@ static size_t read_entry(
 	char *tmp_path = NULL;
 
 	if (INDEX_FOOTER_SIZE + minimal_entry_size > buffer_size)
-		return 0;
+		return -1;
 
 	/* buffer is not guaranteed to be aligned */
 	memcpy(&source, buffer, sizeof(struct entry_short));
@@ -2356,7 +2381,7 @@ static size_t read_entry(
 
 			path_end = memchr(path_ptr, '\0', buffer_size);
 			if (path_end == NULL)
-				return 0;
+				return -1;
 
 			path_length = path_end - path_ptr;
 		}
@@ -2364,19 +2389,24 @@ static size_t read_entry(
 		entry_size = index_entry_size(path_length, 0, entry.flags);
 		entry.path = (char *)path_ptr;
 	} else {
-		size_t varint_len;
-		size_t strip_len = git_decode_varint((const unsigned char *)path_ptr,
-						     &varint_len);
-		size_t last_len = strlen(last);
-		size_t prefix_len = last_len - strip_len;
-		size_t suffix_len = strlen(path_ptr + varint_len);
-		size_t path_len;
+		size_t varint_len, last_len, prefix_len, suffix_len, path_len;
+		uintmax_t strip_len;
 
-		if (varint_len == 0)
+		strip_len = git_decode_varint((const unsigned char *)path_ptr, &varint_len);
+		last_len = strlen(last);
+
+		if (varint_len == 0 || last_len < strip_len)
 			return index_error_invalid("incorrect prefix length");
+
+		prefix_len = last_len - strip_len;
+		suffix_len = strlen(path_ptr + varint_len);
 
 		GITERR_CHECK_ALLOC_ADD(&path_len, prefix_len, suffix_len);
 		GITERR_CHECK_ALLOC_ADD(&path_len, path_len, 1);
+
+		if (path_len > GIT_PATH_MAX)
+			return index_error_invalid("unreasonable path length");
+
 		tmp_path = git__malloc(path_len);
 		GITERR_CHECK_ALLOC(tmp_path);
 
@@ -2386,16 +2416,20 @@ static size_t read_entry(
 		entry.path = tmp_path;
 	}
 
+	if (entry_size == 0)
+		return -1;
+
 	if (INDEX_FOOTER_SIZE + entry_size > buffer_size)
-		return 0;
+		return -1;
 
 	if (index_entry_dup(out, index, &entry) < 0) {
 		git__free(tmp_path);
-		return 0;
+		return -1;
 	}
 
 	git__free(tmp_path);
-	return entry_size;
+	*out_size = entry_size;
+	return 0;
 }
 
 static int read_header(struct index_header *dest, const void *buffer)
@@ -2499,10 +2533,9 @@ static int parse_index(git_index *index, const char *buffer, size_t buffer_size)
 	/* Parse all the entries */
 	for (i = 0; i < header.entry_count && buffer_size > INDEX_FOOTER_SIZE; ++i) {
 		git_index_entry *entry = NULL;
-		size_t entry_size = read_entry(&entry, index, buffer, buffer_size, last);
+		size_t entry_size;
 
-		/* 0 bytes read means an object corruption */
-		if (entry_size == 0) {
+		if ((error = read_entry(&entry, &entry_size, index, buffer, buffer_size, last)) < 0) {
 			error = index_error_invalid("invalid entry");
 			goto done;
 		}
@@ -2956,7 +2989,7 @@ static int read_tree_cb(
 	if (git_buf_joinpath(&path, root, tentry->filename) < 0)
 		return -1;
 
-	if (index_entry_create(&entry, INDEX_OWNER(data->index), path.ptr, false) < 0)
+	if (index_entry_create(&entry, INDEX_OWNER(data->index), path.ptr, NULL, false) < 0)
 		return -1;
 
 	entry->mode = tentry->attr;
