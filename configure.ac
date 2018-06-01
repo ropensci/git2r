@@ -52,7 +52,7 @@ CPPFLAGS="${CPPFLAGS} ${RBIN_CPPFLAGS}"
 CPICFLAGS=`"${RBIN}" CMD config CPICFLAGS`
 LIBS="${LIBS}"
 
-# Check if libgit2 is installed and have a version that is compatible
+# Check if libgit2 is installed and that the version is compatible
 # with git2r.
 LIBGIT2_VERSION=0.27.1
 PKG_CHECK_MODULES([libgit2],
