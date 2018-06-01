@@ -52,6 +52,30 @@ CPPFLAGS="${CPPFLAGS} ${RBIN_CPPFLAGS}"
 CPICFLAGS=`"${RBIN}" CMD config CPICFLAGS`
 LIBS="${LIBS}"
 
+# Check if libgit2 is installed and have a version that is compatible
+# with git2r.
+LIBGIT2_VERSION=0.27.1
+PKG_CHECK_MODULES([libgit2],
+                  [libgit2 = ${LIBGIT2_VERSION}],
+                  [USE_BUNDLED_LIBGIT2=no],
+                  [USE_BUNDLED_LIBGIT2=yes])
+
+################# Begin configuration to use system libgit2 ##################
+if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
+    AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS}"])
+    AC_SUBST([PKG_CPPFLAGS], ["${CPPFLAGS} ${libgit2_CFLAGS}"])
+    AC_SUBST([PKG_LIBS], ["${LIBS} ${libgit2_LIBS}"])
+    AC_CONFIG_FILES([src/Makevars])
+    AC_OUTPUT
+fi
+################# End configuration to use system libgit2 ####################
+
+################# Begin configuration to build bundled libgit2 ###############
+if test "x${USE_BUNDLED_LIBGIT2}" = xyes; then
+
+AC_MSG_NOTICE([Package dependency requirement 'libgit2 = ${LIBGIT2_VERSION}' could not be satisfied.])
+AC_MSG_NOTICE([Attempting configuration of bundled libgit2])
+
 # Use R to determine architecture of the machine
 AC_MSG_CHECKING([size of void*])
 sizeof_voidp=`"${RBIN}" --slave --vanilla -e "cat(.Machine\\$sizeof.pointer)"`
@@ -344,7 +368,7 @@ AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS} ${LIBSSH2_CFLAGS}"])
 AC_SUBST([PKG_CPPFLAGS], ["${CPPFLAGS} ${LIBCURL_CPPFLAGS}"])
 AC_SUBST([PKG_LIBS], ["${LIBS} ${LIBSSH2_LIBS} ${LIBCURL} ${LIBICONV}"])
 
-AC_CONFIG_FILES([src/Makevars])
+AC_CONFIG_FILES([src/Makevars_libgit2])
 
 echo "
   ----- Results of the git2r package configure -----
@@ -356,3 +380,8 @@ echo "
 "
 
 AC_OUTPUT
+
+cd src; mv Makevars_libgit2 Makevars
+
+fi
+################# End configuration to build bundled libgit2 #################

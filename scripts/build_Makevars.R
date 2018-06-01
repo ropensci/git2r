@@ -66,7 +66,7 @@ build_objects <- function(files, substitution, Makevars) {
 ##'
 ##' @return invisible NULL
 build_Makevars.in <- function() {
-    Makevars <- file("src/Makevars.in", "w")
+    Makevars <- file("src/Makevars_libgit2.in", "w")
     on.exit(close(Makevars))
 
     files <- list(libgit2 = o_files("src/libgit2/src"),

@@ -142,7 +142,7 @@ sync_libgit2:
 	Rscript scripts/libgit2_sha.R
 
 Makevars:
-	Rscript scripts/build_Makevars.r
+	Rscript scripts/build_Makevars.R
 
 configure: configure.ac
 	autoconf ./configure.ac > ./configure
