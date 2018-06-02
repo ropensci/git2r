@@ -54,9 +54,9 @@ LIBS="${LIBS}"
 
 # Check if libgit2 is installed and that the version is compatible
 # with git2r.
-LIBGIT2_VERSION=0.27.1
+LIBGIT2_VERSION=0.26.0
 PKG_CHECK_MODULES([libgit2],
-                  [libgit2 = ${LIBGIT2_VERSION}],
+                  [libgit2 >= ${LIBGIT2_VERSION}],
                   [USE_BUNDLED_LIBGIT2=no],
                   [USE_BUNDLED_LIBGIT2=yes])
 

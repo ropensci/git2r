@@ -430,10 +430,6 @@ cleanup:
  * @param repo S3 class git_repository
  * @param name Character vector with URL of remote.
  * @return Character vector for each reference with the associated commit IDs.
- *
- * FIXME: When updating to libgit 0.26 + 1, change code to use
- * 'git_remote_create_detached()' when repo is NULL, see CHANGELOG in
- * libgit2.
  */
 SEXP git2r_remote_ls(SEXP name, SEXP repo, SEXP credentials)
 {

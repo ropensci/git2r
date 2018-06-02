@@ -114,7 +114,16 @@ remote_url <- function(repo = ".", remote = NULL) {
 ##' remote_ls("https://github.com/ropensci/git2r")
 ##' }
 remote_ls <- function(name = NULL, repo = NULL, credentials = NULL) {
-    if (!is.null(repo))
+    if (is.null(repo)) {
+        ver <- libgit2_version()
+        if (ver$major == 0 && ver$minor < 27) {
+            path <- tempdir()
+            repo <- init(path)
+            on.exit(unlink(file.path(path, ".git"), recursive = TRUE))
+        }
+    } else {
         repo <- lookup_repository(repo)
+    }
+
     .Call(git2r_remote_ls, name, repo, credentials)
 }

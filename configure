@@ -3269,7 +3269,7 @@ LIBS="${LIBS}"
 
 # Check if libgit2 is installed and that the version is compatible
 # with git2r.
-LIBGIT2_VERSION=0.27.1
+LIBGIT2_VERSION=0.26.0
 
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libgit2" >&5
@@ -3279,12 +3279,12 @@ if test -n "$libgit2_CFLAGS"; then
     pkg_cv_libgit2_CFLAGS="$libgit2_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libgit2 = \${LIBGIT2_VERSION}\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "libgit2 = ${LIBGIT2_VERSION}") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libgit2 >= \${LIBGIT2_VERSION}\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libgit2 >= ${LIBGIT2_VERSION}") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_libgit2_CFLAGS=`$PKG_CONFIG --cflags "libgit2 = ${LIBGIT2_VERSION}" 2>/dev/null`
+  pkg_cv_libgit2_CFLAGS=`$PKG_CONFIG --cflags "libgit2 >= ${LIBGIT2_VERSION}" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -3296,12 +3296,12 @@ if test -n "$libgit2_LIBS"; then
     pkg_cv_libgit2_LIBS="$libgit2_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libgit2 = \${LIBGIT2_VERSION}\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "libgit2 = ${LIBGIT2_VERSION}") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libgit2 >= \${LIBGIT2_VERSION}\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libgit2 >= ${LIBGIT2_VERSION}") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_libgit2_LIBS=`$PKG_CONFIG --libs "libgit2 = ${LIBGIT2_VERSION}" 2>/dev/null`
+  pkg_cv_libgit2_LIBS=`$PKG_CONFIG --libs "libgit2 >= ${LIBGIT2_VERSION}" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -3322,9 +3322,9 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        libgit2_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libgit2 = ${LIBGIT2_VERSION}" 2>&1`
+	        libgit2_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libgit2 >= ${LIBGIT2_VERSION}" 2>&1`
         else
-	        libgit2_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libgit2 = ${LIBGIT2_VERSION}" 2>&1`
+	        libgit2_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libgit2 >= ${LIBGIT2_VERSION}" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$libgit2_PKG_ERRORS" >&5
