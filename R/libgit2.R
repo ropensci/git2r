@@ -38,17 +38,6 @@ libgit2_version <- function() {
     .Call(git2r_libgit2_version)
 }
 
-##' SHA of the libgit2 library
-##'
-##' SHA of the libgit2 library that the bundled source code is based
-##' on
-##' @return The 40 character hexadecimal string of the SHA-1
-##' @keywords methods
-##' @export
-##' @examples
-##' libgit2_sha()
-libgit2_sha <- function() "b0d9952c318a3d1b8917e06ad46b9110c0c28831"
-
 ##' Set the SSL certificate-authority locations
 ##'
 ##' @note Either parameter may be 'NULL', but not both.

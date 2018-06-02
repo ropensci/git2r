@@ -17,6 +17,9 @@ BREAKING CHANGES
 * Removed the trailing slash from the directory name when reporting
   repository path or workdir.
 
+* Removed the 'libgit2_sha' method. Use the 'libgit2_version' method
+  instead.
+
 git2r 0.21.0
 ------------
 
