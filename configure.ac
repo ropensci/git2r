@@ -139,16 +139,6 @@ if test "x${OPENSSL_INCLUDES}" = x; then :; else
     CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
 fi
 
-# On OS X, add path to libssl in brew
-case "${host_os}" in
-    darwin*)
-        if test "x${BREW}" = xyes; then
-            CPPFLAGS="${CPPFLAGS} -I${BREW_DIR}/opt/openssl/include"
-            LIBS="${LIBS} -L${BREW_DIR}/opt/openssl/lib"
-        fi
-    ;;
-esac
-
 AC_SEARCH_LIBS([EVP_EncryptInit],
                [crypto],
                [AC_SEARCH_LIBS([SSL_library_init], [ssl], [have_ssl=yes])
@@ -173,7 +163,6 @@ if test "x${have_ssl}" = xno; then
    Please install:
      libssl-dev    (package on e.g. Debian and Ubuntu)
      openssl-devel (package on e.g. Fedora, CentOS and RHEL)
-     openssl       (Homebrew package on OS X)
    and try again.
 
    If the OpenSSL library is installed on
@@ -186,51 +175,7 @@ fi
 
 # Check for LibSSH2
 have_ssh2=no
-
-case "${host_os}" in
-    darwin*)
-        # Save flags
-        oCPPFLAGS="${CPPFLAGS}"
-        oLIBS="${LIBS}"
-
-        # On OS X, try to find libssh2 in brew
-        if test "x${BREW}" = xyes; then
-            CPPFLAGS="${CPPFLAGS} -I${BREW_DIR}/opt/libssh2/include"
-            LIBS="${LIBS} -L${BREW_DIR}/opt/libssh2/lib"
-            AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
-        fi
-
-        if test "x${have_ssh2}" = xno; then
-            CPPFLAGS="${oCPPFLAGS}"
-            LIBS="${oLIBS}"
-
-            AC_MSG_NOTICE([Download and build libssh2])
-
-            mkdir -p libssh2 && \
-            curl -fsSL https://www.libssh2.org/download/libssh2-1.8.0.tar.gz | \
-            tar xz --strip 1 -C libssh2
-
-            mkdir -p src/libgit2/deps/libssh2
-            LIBSSH2_INST_DIR="${PWD}/src/libgit2/deps/libssh2"
-            cp -f tools/missing libssh2
-            cd libssh2
-            ./configure --with-pic --with-openssl --disable-examples-build \
-              --disable-shared --enable-static --prefix=$LIBSSH2_INST_DIR \
-              CC="${CC}" CFLAGS="${CFLAGS} ${CPICFLAGS}" \
-              CPPFLAGS="${CPPFLAGS}" && make && make install && have_ssh2=yes
-            cd ..
-            rm -rf libssh2
-
-            if test "x${have_ssh2}" = xyes; then
-                LIBSSH2_CFLAGS="-Ilibgit2/deps/libssh2/include"
-                LIBSSH2_LIBS="-Llibgit2/deps/libssh2/lib -lssh2"
-            fi
-        fi
-    ;;
-    *)
-        AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
-    ;;
-esac
+AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
 
 if test "x${have_ssh2}" = xno; then
     if test [ -n "$PKG_CONFIG" ] ; then
@@ -251,7 +196,6 @@ if test "x${have_ssh2}" = xno; then
    To build with SSH support, please install:
      libssh2-1-dev (package on e.g. Debian and Ubuntu)
      libssh2-devel (package on e.g. Fedora, CentOS and RHEL)
-     libssh2       (Homebrew package on OS X)
    and try again.
 
    If the LibSSH2 library is installed on
@@ -261,17 +205,6 @@ if test "x${have_ssh2}" = xno; then
    R CMD INSTALL git2r --configure-vars='LIBS=-L/path/to/libs CPPFLAGS=-I/path/to/headers'
   ---------------------------------------------])
 fi
-
-# Check for iconv
-have_iconv=no
-case "${host_os}" in
-    darwin*)
-        AM_ICONV
-        if test "x${am_cv_func_iconv}" = xyes; then
-            have_iconv=yes
-        fi
-    ;;
-esac
 
 # Check for libcurl
 LIBCURL_CHECK_CONFIG(, , [have_libcurl=yes], [have_libcurl=no])
@@ -299,18 +232,9 @@ CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_COLLISIONDETECT -DSHA1DC_NO_STANDARD_INCLUDES=1
 CPPFLAGS="${CPPFLAGS} -DSHA1DC_CUSTOM_INCLUDE_SHA1_C=\\\"common.h\\\" -DSHA1DC_CUSTOM_INCLUDE_UBC_CHECK_C=\\\"common.h\\\""
 
 # Add definition for https
-case "${host_os}" in
-    darwin*)
-        # On macOS, use Security and CoreFoundation framework
-        CPPFLAGS="${CPPFLAGS} -DGIT_SECURE_TRANSPORT=1 -DGIT_HTTPS=1"
-        LIBS="${LIBS} -framework Security -framework CoreFoundation"
-    ;;
-    *)
-        if test "x${have_ssl}" = xyes; then
-            CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL -DGIT_HTTPS=1"
-        fi
-    ;;
-esac
+if test "x${have_ssl}" = xyes; then
+    CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL -DGIT_HTTPS=1"
+fi
 
 # Add definition for ssh
 if test "x${have_ssh2}" = xyes; then
