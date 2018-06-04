@@ -622,7 +622,8 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='GIT2R_SRC_REGEX
+ac_subst_vars='PKG_CPPFLAGS
+GIT2R_SRC_REGEX
 LIBCURL
 LIBCURL_CPPFLAGS
 _libcurl_config
@@ -641,7 +642,6 @@ zlib_CFLAGS
 LTLIBOBJS
 LIBOBJS
 PKG_LIBS
-PKG_CPPFLAGS
 PKG_CFLAGS
 libgit2_LIBS
 libgit2_CFLAGS
@@ -3345,8 +3345,6 @@ fi
 ################# Begin configuration to use system libgit2 ##################
 if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
     PKG_CFLAGS="${PKG_CFLAGS}"
-
-    PKG_CPPFLAGS="${CPPFLAGS} ${libgit2_CFLAGS}"
 
     PKG_LIBS="${LIBS} ${libgit2_LIBS}"
 

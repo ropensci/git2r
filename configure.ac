@@ -63,7 +63,6 @@ PKG_CHECK_MODULES([libgit2],
 ################# Begin configuration to use system libgit2 ##################
 if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
     AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS}"])
-    AC_SUBST([PKG_CPPFLAGS], ["${CPPFLAGS} ${libgit2_CFLAGS}"])
     AC_SUBST([PKG_LIBS], ["${LIBS} ${libgit2_LIBS}"])
     AC_CONFIG_FILES([src/Makevars])
     AC_OUTPUT
