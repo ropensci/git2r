@@ -59,9 +59,22 @@ PKG_CHECK_MODULES([libgit2],
                   [USE_BUNDLED_LIBGIT2=no],
                   [USE_BUNDLED_LIBGIT2=yes])
 
+if test "x${USE_BUNDLED_LIBGIT2}" = xyes; then
+    # On macOS, add path to libgit2 in brew
+    case "${host_os}" in
+        darwin*)
+            if test "x${BREW}" = xyes; then
+                CFLAGS="${CFLAGS} -I${BREW_DIR}/opt/libgit2/include"
+                LIBS="${LIBS} -L${BREW_DIR}/opt/libgit2/lib"
+                USE_BUNDLED_LIBGIT2=no
+            fi
+        ;;
+    esac
+fi
+
 ################# Begin configuration to use system libgit2 ##################
 if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
-    AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS}"])
+    AC_SUBST([PKG_CFLAGS], ["${CFLAGS}" ${libgit2_CFLAGS}])
     AC_SUBST([PKG_LIBS], ["${LIBS} ${libgit2_LIBS}"])
     AC_CONFIG_FILES([src/Makevars])
     AC_OUTPUT
