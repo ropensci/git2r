@@ -3252,7 +3252,6 @@ CC=`"${RBIN}" CMD config CC`
 CFLAGS=`"${RBIN}" CMD config CFLAGS`
 RBIN_CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
 CPPFLAGS="${CPPFLAGS} ${RBIN_CPPFLAGS}"
-CPICFLAGS=`"${RBIN}" CMD config CPICFLAGS`
 LIBS="${LIBS}"
 
 # Check if libgit2 is installed and that the version is compatible
