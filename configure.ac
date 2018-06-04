@@ -41,8 +41,7 @@ PKG_PROG_PKG_CONFIG
 # Find the compiler and compiler flags to use
 : ${R_HOME=`R RHOME`}
 if test -z "${R_HOME}"; then
-  echo "could not determine R_HOME"
-  exit 1
+    AC_MSG_FAILURE([Could not determine R_HOME])
 fi
 RBIN="${R_HOME}/bin/R"
 CC=`"${RBIN}" CMD config CC`
