@@ -53,10 +53,14 @@ LIBS="${LIBS}"
 # Check if libgit2 is installed and that the version is compatible
 # with git2r.
 LIBGIT2_VERSION=0.26.0
-PKG_CHECK_MODULES([libgit2],
-                  [libgit2 >= ${LIBGIT2_VERSION}],
-                  [USE_BUNDLED_LIBGIT2=no],
-                  [USE_BUNDLED_LIBGIT2=yes])
+if test [ -n "$PKG_CONFIG" ] ; then
+    PKG_CHECK_MODULES([libgit2],
+                      [libgit2 >= ${LIBGIT2_VERSION}],
+                      [CFLAGS="${CFLAGS} ${libgit2_CFLAGS}"
+                       LIBS="${LIBS} ${libgit2_LIBS}"
+                       USE_BUNDLED_LIBGIT2=no],
+                      [USE_BUNDLED_LIBGIT2=yes])
+fi
 
 if test "x${USE_BUNDLED_LIBGIT2}" = xyes; then
     # On macOS, add path to libgit2 in brew
@@ -73,8 +77,8 @@ fi
 
 ################# Begin configuration to use system libgit2 ##################
 if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
-    AC_SUBST([PKG_CFLAGS], ["${CFLAGS}" ${libgit2_CFLAGS}])
-    AC_SUBST([PKG_LIBS], ["${LIBS} ${libgit2_LIBS}"])
+    AC_SUBST([PKG_CFLAGS], ["${CFLAGS}"])
+    AC_SUBST([PKG_LIBS], ["${LIBS}"])
     AC_CONFIG_FILES([src/Makevars])
     AC_OUTPUT
 fi
