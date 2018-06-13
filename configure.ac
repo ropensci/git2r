@@ -52,7 +52,6 @@ LIBS="${LIBS}"
 
 # Check if libgit2 is installed and that the version is compatible
 # with git2r.
-USE_BUNDLED_LIBGIT2=yes
 LIBGIT2_VERSION=0.26.0
 LIBGIT2_VER_MINOR=26
 if test [ -n "$PKG_CONFIG" ] ; then
@@ -60,7 +59,10 @@ if test [ -n "$PKG_CONFIG" ] ; then
                       [libgit2 >= ${LIBGIT2_VERSION}],
                       [CFLAGS="${CFLAGS} ${libgit2_CFLAGS}"
                        LIBS="${LIBS} ${libgit2_LIBS}"
-                       USE_BUNDLED_LIBGIT2=no], [])
+                       USE_BUNDLED_LIBGIT2=no],
+                      [USE_BUNDLED_LIBGIT2=yes])
+else
+    USE_BUNDLED_LIBGIT2=yes
 fi
 
 if test "x${USE_BUNDLED_LIBGIT2}" = xyes; then
