@@ -4,41 +4,33 @@ language: r
 sudo: false
 cache: packages
 warnings_are_errors: true
-
-os:
-  - linux
-  - osx
-
-brew_packages:
-  - libgit2
+fortran: false
+latex: false
+pandoc: false
 
 addons:
   apt:
     packages:
       - libssh2-1-dev
 
-r_packages:
-  - covr
-
-r:
-  - 3.1
-  - 3.2
-  - oldrel
-  - release
-  - devel
-
 matrix:
-  exclude:
-  - os: osx
-    r: 3.1
-  - os: osx
-    r: 3.2
-  - os: osx
-    r: devel
+  include:
+    - r: 3.1
+    - r: 3.2
+    - r: 3.3
+    - r: oldrel
+    - r: release
+      env: R_CODECOV=true
+    - r: devel
+    - os: osx
+      osx_image: xcode9.3 # High Sierra
+      brew_packages: libgit2
+    - os: osx
+      osx_image: xcode9.3 # High Sierra
+      disable_homebrew: true
 
-# Only report coverage for the release version on linux
 after_success:
-  - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TRAVIS_R_VERSION_STRING" == "release" ]; then Rscript -e "library(covr); coveralls(exclusions=list.files('src/libgit2', pattern='[.](c|h)$', full.names=TRUE, recursive=TRUE))"; fi
+  - test $R_CODECOV && Rscript -e "covr::coveralls(exclusions=list.files('src/libgit2', pattern='[.](c|h)$', full.names=TRUE, recursive=TRUE))"
 
 notifications:
   slack:
