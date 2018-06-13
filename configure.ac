@@ -24,16 +24,8 @@ AC_CANONICAL_HOST
 # Checks for programs.
 AC_PROG_CC
 
-## check for brew on OS X
+## Check for brew on macOS
 AC_DEFUN([AC_PROG_BREW], [AC_CHECK_PROG(BREW,brew,yes)])
-case "${host_os}" in
-    darwin*)
-        AC_PROG_BREW
-        if test "x${BREW}" = xyes; then
-            BREW_DIR=`brew --prefix`
-        fi
-    ;;
-esac
 
 # Check for pkg-config
 PKG_PROG_PKG_CONFIG
@@ -53,7 +45,6 @@ LIBS="${LIBS}"
 # Check if libgit2 is installed and that the version is compatible
 # with git2r.
 LIBGIT2_VERSION=0.26.0
-LIBGIT2_VER_MINOR=26
 if test [ -n "$PKG_CONFIG" ] ; then
     PKG_CHECK_MODULES([libgit2],
                       [libgit2 >= ${LIBGIT2_VERSION}],
@@ -66,41 +57,29 @@ else
 fi
 
 if test "x${USE_BUNDLED_LIBGIT2}" = xyes; then
-    # On macOS, add path to libgit2 in brew
     case "${host_os}" in
         darwin*)
-            # Never use the bundled libgit2 on macOS
+            # Don't use the bundled libgit2 on macOS
             USE_BUNDLED_LIBGIT2=no
+
+            AC_PROG_BREW
             if test "x${BREW}" = xyes; then
-                CFLAGS="${CFLAGS} -I${BREW_DIR}/opt/libgit2/include"
-                LIBS="${LIBS} -L${BREW_DIR}/opt/libgit2/lib"
+                BREWDIR=`brew --prefix`
             fi
+            CFLAGS="${CFLAGS} -I${BREWDIR}/opt/libgit2/include"
+            LIBS="${LIBS} -L${BREWDIR}/opt/libgit2/lib"
         ;;
     esac
 fi
 
 ################# Begin configuration to use system libgit2 ##################
 if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
-    # Check the libgit2 version and that the actual package will work
-    AC_MSG_CHECKING([whether libgit2 will work in a package])
-    have_libgit2=no
-    AC_LANG_CONFTEST(
-    [AC_LANG_PROGRAM([[#include <git2.h>
-                       #if LIBGIT2_VER_MAJOR == 0
-                       #    if LIBGIT2_VER_MINOR < ${LIBGIT2_VER_MINOR}
-                       #        error libgit2 version too old
-                       #    endif
-                       #else
-                       #    error the libgit2 version is not compatible with git2r
-                       #endif]],
-                     [[git_libgit2_features();]])])
-    PKG_CFLAGS="${CFLAGS}" PKG_LIBS="${LIBS}" "$RBIN" CMD SHLIB conftest.c \
-    1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD && \
-    "$RBIN" --vanilla -q -e "dyn.load(paste('conftest',.Platform\$dynlib.ext,sep=''))" \
-    1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD && have_libgit2=yes
-    AC_MSG_RESULT([${have_libgit2}])
+    AC_MSG_CHECKING([whether the libgit2 version will work in git2r])
+    libgit2_ver_ok=no
+    ${CC} ${CPPFLAGS} ${CFLAGS} -E tools/version.c >/dev/null 2>&1 && libgit2_ver_ok=yes
+    AC_MSG_RESULT([${libgit2_ver_ok}])
 
-    if test "x${have_libgit2}" = xno; then
+    if test "x${libgit2_ver_ok}" = xno; then
         AC_MSG_FAILURE([
   ---------------------------------------------
    The libgit2 library (>= ${LIBGIT2_VERSION}) that is required to build git2r was not found.
@@ -113,7 +92,7 @@ if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
 
    If the libgit2 library is installed on your system but the git2r configuration is
    unable to find it, you can specify the include and lib path to libgit2 with:
-   R CMD INSTALL git2r --configure-vars='LIBS=-L/path/to/libs CPPFLAGS=-I/path/to/headers'
+   R CMD INSTALL --configure-vars='INCLUDE_DIR=-I/path/to/include LIB_DIR=-L/path/to/lib'
   ---------------------------------------------])
     fi
 
