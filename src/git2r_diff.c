@@ -165,20 +165,18 @@ SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename)
         }
 
         git_buf_free(&buf);
+    } else {
+        FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
+
+        error = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_file_handle,
+            fp);
+
+        if (fp)
+            fclose(fp);
     }
-    /* FIXME */
-    /* else { */
-    /*     FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+"); */
-
-    /*     error = git_diff_print( */
-    /*         diff, */
-    /*         GIT_DIFF_FORMAT_PATCH, */
-    /*         git_diff_print_callback__to_file_handle, */
-    /*         fp); */
-
-    /*     if (fp) */
-    /*         fclose(fp); */
-    /* } */
 
 cleanup:
     git_diff_free(diff);
@@ -270,20 +268,18 @@ SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
         }
 
         git_buf_free(&buf);
+    } else {
+        FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
+
+        error = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_file_handle,
+            fp);
+
+        if (fp)
+            fclose(fp);
     }
-    /* FIXME */
-    /* else { */
-    /*     FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+"); */
-
-    /*     error = git_diff_print( */
-    /*         diff, */
-    /*         GIT_DIFF_FORMAT_PATCH, */
-    /*         git_diff_print_callback__to_file_handle, */
-    /*         fp); */
-
-    /*     if (fp) */
-    /*         fclose(fp); */
-    /* } */
 
 cleanup:
     git_tree_free(head);
@@ -377,20 +373,18 @@ SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
         }
 
         git_buf_free(&buf);
+    } else {
+        FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
+
+        error = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_file_handle,
+            fp);
+
+        if (fp)
+            fclose(fp);
     }
-    /* FIXME */
-    /* else { */
-    /*     FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+"); */
-
-    /*     error = git_diff_print( */
-    /*         diff, */
-    /*         GIT_DIFF_FORMAT_PATCH, */
-    /*         git_diff_print_callback__to_file_handle, */
-    /*         fp); */
-
-    /*     if (fp) */
-    /*         fclose(fp); */
-    /* } */
 
 cleanup:
     git_diff_free(diff);
@@ -489,20 +483,18 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
         }
 
         git_buf_free(&buf);
+    } else {
+        FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
+
+        error = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_file_handle,
+            fp);
+
+        if (fp)
+            fclose(fp);
     }
-    /* FIXME */
-    /* else { */
-    /*     FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+"); */
-
-    /*     error = git_diff_print( */
-    /*         diff, */
-    /*         GIT_DIFF_FORMAT_PATCH, */
-    /*         git_diff_print_callback__to_file_handle, */
-    /*         fp); */
-
-    /*     if (fp) */
-    /*         fclose(fp); */
-    /* } */
 
 cleanup:
     git_diff_free(diff);
@@ -617,20 +609,18 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
         }
 
         git_buf_free(&buf);
+    } else {
+        FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
+
+        error = git_diff_print(
+            diff,
+            GIT_DIFF_FORMAT_PATCH,
+            git_diff_print_callback__to_file_handle,
+            fp);
+
+        if (fp)
+            fclose(fp);
     }
-    /* FIXME */
-    /* else { */
-    /*     FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+"); */
-
-    /*     error = git_diff_print( */
-    /*         diff, */
-    /*         GIT_DIFF_FORMAT_PATCH, */
-    /*         git_diff_print_callback__to_file_handle, */
-    /*         fp); */
-
-    /*     if (fp) */
-    /*         fclose(fp); */
-    /* } */
 
 cleanup:
     git_diff_free(diff);
