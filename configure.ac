@@ -27,8 +27,14 @@ AC_PROG_CC
 ## Check for brew on macOS
 AC_DEFUN([AC_PROG_BREW], [AC_CHECK_PROG(BREW,brew,yes)])
 
-# Check for pkg-config
+# Use pkg-config if available
 PKG_PROG_PKG_CONFIG
+if test [ -n "$PKG_CONFIG" ] ; then
+    PKG_CHECK_MODULES([libgit2], [libgit2],
+                      [PKGCONFIG_CFLAGS="${libgit2_CFLAGS}"
+                       PKGCONFIG_LIBS="${libgit2_LIBS}"],
+                      [USE_BUNDLED_LIBGIT2=yes])
+fi
 
 # Find the compiler and compiler flags to use
 : ${R_HOME=`R RHOME`}
@@ -38,38 +44,33 @@ fi
 RBIN="${R_HOME}/bin/R"
 CC=`"${RBIN}" CMD config CC`
 CFLAGS=`"${RBIN}" CMD config CFLAGS`
-RBIN_CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
-CPPFLAGS="${CPPFLAGS} ${RBIN_CPPFLAGS}"
-LIBS="${LIBS}"
+CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
 
-# Check if libgit2 is installed and that the version is compatible
-# with git2r.
-LIBGIT2_VERSION=0.26.0
-if test [ -n "$PKG_CONFIG" ] ; then
-    PKG_CHECK_MODULES([libgit2],
-                      [libgit2 >= ${LIBGIT2_VERSION}],
-                      [CFLAGS="${CFLAGS} ${libgit2_CFLAGS}"
-                       LIBS="${LIBS} ${libgit2_LIBS}"
-                       USE_BUNDLED_LIBGIT2=no],
-                      [USE_BUNDLED_LIBGIT2=yes])
+USE_BUNDLED_LIBGIT2=yes
+if test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
+    if test "x${PKGCONFIG_CFLAGS}${PKGCONFIG_LIBS}" = x; then
+        case "${host_os}" in
+            darwin*)
+                AC_PROG_BREW
+                if test "x${BREW}" = xyes; then
+                    BREWDIR=`brew --prefix`
+                fi
+                CFLAGS="${CFLAGS} -I${BREWDIR}/opt/libgit2/include"
+                LIBS="-L${BREWDIR}/opt/libgit2/lib"
+                USE_BUNDLED_LIBGIT2=no
+            ;;
+        esac
+    else
+        echo "Found pkg-config cflags and libs!"
+        CFLAGS="${CFLAGS} ${PKGCONFIG_CFLAGS}"
+        LIBS="${PKGCONFIG_LIBS}"
+        USE_BUNDLED_LIBGIT2=no
+    fi
 else
-    USE_BUNDLED_LIBGIT2=yes
-fi
-
-if test "x${USE_BUNDLED_LIBGIT2}" = xyes; then
-    case "${host_os}" in
-        darwin*)
-            # Don't use the bundled libgit2 on macOS
-            USE_BUNDLED_LIBGIT2=no
-
-            AC_PROG_BREW
-            if test "x${BREW}" = xyes; then
-                BREWDIR=`brew --prefix`
-            fi
-            CFLAGS="${CFLAGS} -I${BREWDIR}/opt/libgit2/include"
-            LIBS="${LIBS} -L${BREWDIR}/opt/libgit2/lib"
-        ;;
-    esac
+    echo "Found INCLUDE_DIR and/or LIB_DIR!"
+    CFLAGS="-I${INCLUDE_DIR} ${CFLAGS}"
+    LIBS="-L${LIB_DIR}"
+    USE_BUNDLED_LIBGIT2=no,
 fi
 
 ################# Begin configuration to use system libgit2 ##################
@@ -82,7 +83,7 @@ if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
     if test "x${libgit2_ver_ok}" = xno; then
         AC_MSG_FAILURE([
   ---------------------------------------------
-   The libgit2 library (>= ${LIBGIT2_VERSION}) that is required to build git2r was not found.
+   The libgit2 library that is required to build git2r was not found.
 
    Please install:
      libgit2-dev   (package on e.g. Debian and Ubuntu)
@@ -92,7 +93,7 @@ if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
 
    If the libgit2 library is installed on your system but the git2r configuration is
    unable to find it, you can specify the include and lib path to libgit2 with:
-   R CMD INSTALL --configure-vars='INCLUDE_DIR=-I/path/to/include LIB_DIR=-L/path/to/lib'
+   R CMD INSTALL git2r --configure-vars='INCLUDE_DIR=path/to/include LIB_DIR=path/to/lib'
   ---------------------------------------------])
     fi
 
@@ -106,7 +107,6 @@ fi
 ################# Begin configuration to build bundled libgit2 ###############
 if test "x${USE_BUNDLED_LIBGIT2}" = xyes; then
 
-AC_MSG_NOTICE([Package dependency requirement 'libgit2 = ${LIBGIT2_VERSION}' could not be satisfied.])
 AC_MSG_NOTICE([Attempting configuration of bundled libgit2])
 
 # Use R to determine architecture of the machine
