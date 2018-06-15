@@ -57,7 +57,7 @@ if test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
                     BREWDIR=`brew --prefix`
                 fi
                 CFLAGS="${CFLAGS} -I${BREWDIR}/opt/libgit2/include"
-                LIBS="-L${BREWDIR}/opt/libgit2/lib"
+                LIBS="-L${BREWDIR}/opt/libgit2/lib -lgit2"
                 USE_BUNDLED_LIBGIT2=no
             ;;
         esac
@@ -65,7 +65,7 @@ if test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
 else
     echo "Found INCLUDE_DIR and/or LIB_DIR!"
     CFLAGS="-I${INCLUDE_DIR} ${CFLAGS}"
-    LIBS="-L${LIB_DIR}"
+    LIBS="-L${LIB_DIR} -lgit2"
     USE_BUNDLED_LIBGIT2=no,
 fi
 
