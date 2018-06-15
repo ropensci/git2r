@@ -27,13 +27,8 @@ AC_PROG_CC
 ## Check for brew on macOS
 AC_DEFUN([AC_PROG_BREW], [AC_CHECK_PROG(BREW,brew,yes)])
 
-# Use pkg-config if available
+# Check for pkg-config
 PKG_PROG_PKG_CONFIG
-if test [ -n "$PKG_CONFIG" ] ; then
-    PKG_CHECK_MODULES([libgit2], [libgit2],
-                      [PKGCONFIG_CFLAGS="${libgit2_CFLAGS}"
-                       PKGCONFIG_LIBS="${libgit2_LIBS}"], [ ])
-fi
 
 # Find the compiler and compiler flags to use
 : ${R_HOME=`R RHOME`}
@@ -47,7 +42,14 @@ CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
 
 USE_BUNDLED_LIBGIT2=yes
 if test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
-    if test "x${PKGCONFIG_CFLAGS}${PKGCONFIG_LIBS}" = x; then
+    if test [ -n "$PKG_CONFIG" ] ; then
+        PKG_CHECK_MODULES([libgit2], [libgit2],
+                          [CFLAGS="${CFLAGS} ${libgit2_CFLAGS}"
+                           LIBS="${libgit2_LIBS}"
+                           USE_BUNDLED_LIBGIT2=no], [ ])
+    fi
+
+    if test "x${USE_BUNDLED_LIBGIT2}" = xyes; then
         case "${host_os}" in
             darwin*)
                 AC_PROG_BREW
@@ -59,11 +61,6 @@ if test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
                 USE_BUNDLED_LIBGIT2=no
             ;;
         esac
-    else
-        echo "Found pkg-config cflags and libs!"
-        CFLAGS="${CFLAGS} ${PKGCONFIG_CFLAGS}"
-        LIBS="${PKGCONFIG_LIBS}"
-        USE_BUNDLED_LIBGIT2=no
     fi
 else
     echo "Found INCLUDE_DIR and/or LIB_DIR!"
