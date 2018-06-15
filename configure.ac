@@ -32,8 +32,7 @@ PKG_PROG_PKG_CONFIG
 if test [ -n "$PKG_CONFIG" ] ; then
     PKG_CHECK_MODULES([libgit2], [libgit2],
                       [PKGCONFIG_CFLAGS="${libgit2_CFLAGS}"
-                       PKGCONFIG_LIBS="${libgit2_LIBS}"],
-                      [USE_BUNDLED_LIBGIT2=yes])
+                       PKGCONFIG_LIBS="${libgit2_LIBS}"], [ ])
 fi
 
 # Find the compiler and compiler flags to use

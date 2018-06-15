@@ -3254,11 +3254,11 @@ fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$libgit2_PKG_ERRORS" >&5
 
-	USE_BUNDLED_LIBGIT2=yes
+
 elif test $pkg_failed = untried; then
      	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-	USE_BUNDLED_LIBGIT2=yes
+
 else
 	libgit2_CFLAGS=$pkg_cv_libgit2_CFLAGS
 	libgit2_LIBS=$pkg_cv_libgit2_LIBS
