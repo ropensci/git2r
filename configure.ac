@@ -30,22 +30,26 @@ AC_DEFUN([AC_PROG_BREW], [AC_CHECK_PROG(BREW,brew,yes)])
 # Check for pkg-config
 PKG_PROG_PKG_CONFIG
 
-# Find the compiler and compiler flags to use
+# Check for R
 : ${R_HOME=`R RHOME`}
 if test -z "${R_HOME}"; then
     AC_MSG_FAILURE([Could not determine R_HOME])
 fi
 RBIN="${R_HOME}/bin/R"
-CC=`"${RBIN}" CMD config CC`
-CFLAGS=`"${RBIN}" CMD config CFLAGS`
-CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
 
+# Library settings
+m4_pattern_allow([PKG_BREW_NAME])
+PKG_BREW_NAME="libgit2"
+PKG_LIBS="-lgit2"
+PKG_CFLAGS=""
+
+# Check if building against bundled libgit2 or system libgit2
 USE_BUNDLED_LIBGIT2=yes
 if test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
     if test [ -n "$PKG_CONFIG" ] ; then
         PKG_CHECK_MODULES([libgit2], [libgit2],
-                          [CFLAGS="${CFLAGS} ${libgit2_CFLAGS}"
-                           LIBS="${libgit2_LIBS}"
+                          [PKG_CFLAGS="${libgit2_CFLAGS}"
+                           PKG_LIBS="${libgit2_LIBS}"
                            USE_BUNDLED_LIBGIT2=no], [ ])
     fi
 
@@ -56,21 +60,26 @@ if test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
                 if test "x${BREW}" = xyes; then
                     BREWDIR=`brew --prefix`
                 fi
-                CFLAGS="${CFLAGS} -I${BREWDIR}/opt/libgit2/include"
-                LIBS="-L${BREWDIR}/opt/libgit2/lib -lgit2"
+                PKG_CFLAGS="-I${BREWDIR}/opt/libgit2/include"
+                PKG_LIBS="-L${BREWDIR}/opt/libgit2/lib ${PKG_LIBS}"
                 USE_BUNDLED_LIBGIT2=no
             ;;
         esac
     fi
 else
     echo "Found INCLUDE_DIR and/or LIB_DIR!"
-    CFLAGS="-I${INCLUDE_DIR} ${CFLAGS}"
-    LIBS="-L${LIB_DIR} -lgit2"
+    PKG_CFLAGS="-I${INCLUDE_DIR} ${PKG_CFLAGS}"
+    PKG_LIBS="-L${LIB_DIR} ${PKG_LIBS}"
     USE_BUNDLED_LIBGIT2=no,
 fi
 
 ################# Begin configuration to use system libgit2 ##################
 if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
+    # Find the compiler and compiler flags to use
+    CC=`"${RBIN}" CMD config CC`
+    CFLAGS=`"${RBIN}" CMD config CFLAGS`
+    CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
+
     AC_MSG_CHECKING([whether the libgit2 version will work in git2r])
     libgit2_ver_ok=no
     ${CC} ${CPPFLAGS} ${CFLAGS} -E tools/version.c >/dev/null 2>&1 && libgit2_ver_ok=yes
@@ -93,9 +102,17 @@ if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
   ---------------------------------------------])
     fi
 
-    AC_SUBST([PKG_CFLAGS], ["${CFLAGS}"])
-    AC_SUBST([PKG_LIBS], ["${LIBS}"])
+    AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS}"])
+    AC_SUBST([PKG_LIBS], ["${PKG_LIBS}"])
     AC_CONFIG_FILES([src/Makevars])
+
+    echo "----- Results of the git2r package configure -----"
+    echo ""
+    echo "  PKG_CFLAGS: ${PKG_CFLAGS}"
+    echo "  PKG_LIBS: ${PKG_LIBS}"
+    echo ""
+    echo "--------------------------------------------------"
+
     AC_OUTPUT
 fi
 ################# End configuration to use system libgit2 ####################
@@ -104,6 +121,11 @@ fi
 if test "x${USE_BUNDLED_LIBGIT2}" = xyes; then
 
 AC_MSG_NOTICE([Attempting configuration of bundled libgit2])
+
+# Find the compiler and compiler flags to use
+CC=`"${RBIN}" CMD config CC`
+CFLAGS=`"${RBIN}" CMD config CFLAGS`
+CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
 
 # Use R to determine architecture of the machine
 AC_MSG_CHECKING([size of void*])
