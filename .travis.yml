@@ -11,7 +11,7 @@ pandoc: false
 addons:
   apt:
     packages:
-      - libssh2-1-dev
+      - libgit2-dev
 
 matrix:
   include:
