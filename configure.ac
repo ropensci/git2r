@@ -38,7 +38,9 @@ fi
 RBIN="${R_HOME}/bin/R"
 
 # Library settings
+m4_pattern_allow([PKG_CONFIG_NAME])
 m4_pattern_allow([PKG_BREW_NAME])
+PKG_CONFIG_NAME="libgit2"
 PKG_BREW_NAME="libgit2"
 PKG_LIBS="-lgit2"
 PKG_CFLAGS=""
@@ -47,27 +49,30 @@ PKG_CFLAGS=""
 USE_BUNDLED_LIBGIT2=yes
 if test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
     if test [ -n "$PKG_CONFIG" ] ; then
-        PKG_CHECK_MODULES([libgit2], [libgit2],
-                          [PKG_CFLAGS="${libgit2_CFLAGS}"
-                           PKG_LIBS="${libgit2_LIBS}"
-                           USE_BUNDLED_LIBGIT2=no], [ ])
+        PKGCONFIG_CFLAGS=`"${PKG_CONFIG}" --cflags "${PKG_CONFIG_NAME}"`
+        PKGCONFIG_LIBS=`"${PKG_CONFIG}" --libs "${PKG_CONFIG_NAME}"`
     fi
 
-    if test "x${USE_BUNDLED_LIBGIT2}" = xyes; then
+    if test "x${PKGCONFIG_CFLAGS}${PKGCONFIG_LIBS}" = x; then
         case "${host_os}" in
             darwin*)
                 AC_PROG_BREW
                 if test "x${BREW}" = xyes; then
                     BREWDIR=`brew --prefix`
                 else
-                    curl -sfL "https://jeroen.github.io/autobrew/default" > autobrew
+                    curl -sfL "https://jeroen.github.io/autobrew/${PKG_BREW_NAME}" > autobrew
                     source autobrew
                 fi
-                PKG_CFLAGS="-I${BREWDIR}/opt/libgit2/include"
-                PKG_LIBS="-L${BREWDIR}/opt/libgit2/lib ${PKG_LIBS}"
+                PKG_CFLAGS="-I${BREWDIR}/opt/${PKG_BREW_NAME}/include"
+                PKG_LIBS="-L${BREWDIR}/opt/${PKG_BREW_NAME}/lib ${PKG_LIBS}"
                 USE_BUNDLED_LIBGIT2=no
             ;;
         esac
+    else
+        echo "Found pkg-config cflags and libs!"
+        PKG_CFLAGS="${PKGCONFIG_CFLAGS}"
+        PKG_LIBS="${PKGCONFIG_LIBS}"
+        USE_BUNDLED_LIBGIT2=no
     fi
 else
     echo "Found INCLUDE_DIR and/or LIB_DIR!"

@@ -642,8 +642,6 @@ LIBOBJS
 PKG_LIBS
 PKG_CFLAGS
 BREW
-libgit2_LIBS
-libgit2_CFLAGS
 PKG_CONFIG_LIBDIR
 PKG_CONFIG_PATH
 PKG_CONFIG
@@ -716,8 +714,6 @@ CPPFLAGS
 PKG_CONFIG
 PKG_CONFIG_PATH
 PKG_CONFIG_LIBDIR
-libgit2_CFLAGS
-libgit2_LIBS
 zlib_CFLAGS
 zlib_LIBS
 openssl_CFLAGS
@@ -1353,10 +1349,6 @@ Some influential environment variables:
               directories to add to pkg-config's search path
   PKG_CONFIG_LIBDIR
               path overriding pkg-config's built-in search path
-  libgit2_CFLAGS
-              C compiler flags for libgit2, overriding pkg-config
-  libgit2_LIBS
-              linker flags for libgit2, overriding pkg-config
   zlib_CFLAGS C compiler flags for zlib, overriding pkg-config
   zlib_LIBS   linker flags for zlib, overriding pkg-config
   openssl_CFLAGS
@@ -3207,6 +3199,8 @@ RBIN="${R_HOME}/bin/R"
 
 # Library settings
 
+
+PKG_CONFIG_NAME="libgit2"
 PKG_BREW_NAME="libgit2"
 PKG_LIBS="-lgit2"
 PKG_CFLAGS=""
@@ -3215,82 +3209,11 @@ PKG_CFLAGS=""
 USE_BUNDLED_LIBGIT2=yes
 if test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
     if test  -n "$PKG_CONFIG"  ; then
-
-pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libgit2" >&5
-$as_echo_n "checking for libgit2... " >&6; }
-
-if test -n "$libgit2_CFLAGS"; then
-    pkg_cv_libgit2_CFLAGS="$libgit2_CFLAGS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libgit2\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "libgit2") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; then
-  pkg_cv_libgit2_CFLAGS=`$PKG_CONFIG --cflags "libgit2" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
-else
-  pkg_failed=yes
-fi
- else
-    pkg_failed=untried
-fi
-if test -n "$libgit2_LIBS"; then
-    pkg_cv_libgit2_LIBS="$libgit2_LIBS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libgit2\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "libgit2") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; then
-  pkg_cv_libgit2_LIBS=`$PKG_CONFIG --libs "libgit2" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
-else
-  pkg_failed=yes
-fi
- else
-    pkg_failed=untried
-fi
-
-
-
-if test $pkg_failed = yes; then
-   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-
-if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
-        _pkg_short_errors_supported=yes
-else
-        _pkg_short_errors_supported=no
-fi
-        if test $_pkg_short_errors_supported = yes; then
-	        libgit2_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libgit2" 2>&1`
-        else
-	        libgit2_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libgit2" 2>&1`
-        fi
-	# Put the nasty error message in config.log where it belongs
-	echo "$libgit2_PKG_ERRORS" >&5
-
-
-elif test $pkg_failed = untried; then
-     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-
-else
-	libgit2_CFLAGS=$pkg_cv_libgit2_CFLAGS
-	libgit2_LIBS=$pkg_cv_libgit2_LIBS
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-	PKG_CFLAGS="${libgit2_CFLAGS}"
-                           PKG_LIBS="${libgit2_LIBS}"
-                           USE_BUNDLED_LIBGIT2=no
-fi
+        PKGCONFIG_CFLAGS=`"${PKG_CONFIG}" --cflags "${PKG_CONFIG_NAME}"`
+        PKGCONFIG_LIBS=`"${PKG_CONFIG}" --libs "${PKG_CONFIG_NAME}"`
     fi
 
-    if test "x${USE_BUNDLED_LIBGIT2}" = xyes; then
+    if test "x${PKGCONFIG_CFLAGS}${PKGCONFIG_LIBS}" = x; then
         case "${host_os}" in
             darwin*)
                 # Extract the first word of "brew", so it can be a program name with args.
@@ -3333,14 +3256,19 @@ fi
                 if test "x${BREW}" = xyes; then
                     BREWDIR=`brew --prefix`
                 else
-                    curl -sfL "https://jeroen.github.io/autobrew/default" > autobrew
+                    curl -sfL "https://jeroen.github.io/autobrew/${PKG_BREW_NAME}" > autobrew
                     source autobrew
                 fi
-                PKG_CFLAGS="-I${BREWDIR}/opt/libgit2/include"
-                PKG_LIBS="-L${BREWDIR}/opt/libgit2/lib ${PKG_LIBS}"
+                PKG_CFLAGS="-I${BREWDIR}/opt/${PKG_BREW_NAME}/include"
+                PKG_LIBS="-L${BREWDIR}/opt/${PKG_BREW_NAME}/lib ${PKG_LIBS}"
                 USE_BUNDLED_LIBGIT2=no
             ;;
         esac
+    else
+        echo "Found pkg-config cflags and libs!"
+        PKG_CFLAGS="${PKGCONFIG_CFLAGS}"
+        PKG_LIBS="${PKGCONFIG_LIBS}"
+        USE_BUNDLED_LIBGIT2=no
     fi
 else
     echo "Found INCLUDE_DIR and/or LIB_DIR!"
