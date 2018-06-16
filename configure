@@ -3359,9 +3359,17 @@ if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the libgit2 version will work in git2r" >&5
 $as_echo_n "checking whether the libgit2 version will work in git2r... " >&6; }
     libgit2_ver_ok=no
-    ${CC} ${CPPFLAGS} ${CFLAGS} -E tools/version.c >/dev/null 2>&1 && libgit2_ver_ok=yes
+    ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E tools/version.c >/dev/null 2>&1 && libgit2_ver_ok=yes
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${libgit2_ver_ok}" >&5
 $as_echo "${libgit2_ver_ok}" >&6; }
+
+    # For debugging
+    echo "----- Results of the git2r package configure -----"
+    echo ""
+    echo "  PKG_CFLAGS: ${PKG_CFLAGS}"
+    echo "  PKG_LIBS: ${PKG_LIBS}"
+    echo ""
+    echo "--------------------------------------------------"
 
     if test "x${libgit2_ver_ok}" = xno; then
         { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
@@ -3389,13 +3397,6 @@ See \`config.log' for more details" "$LINENO" 5; }
 
     ac_config_files="$ac_config_files src/Makevars"
 
-
-    echo "----- Results of the git2r package configure -----"
-    echo ""
-    echo "  PKG_CFLAGS: ${PKG_CFLAGS}"
-    echo "  PKG_LIBS: ${PKG_LIBS}"
-    echo ""
-    echo "--------------------------------------------------"
 
     cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure

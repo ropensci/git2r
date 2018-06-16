@@ -59,6 +59,9 @@ if test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
                 AC_PROG_BREW
                 if test "x${BREW}" = xyes; then
                     BREWDIR=`brew --prefix`
+                else
+                    curl -sfL "https://jeroen.github.io/autobrew/default" > autobrew
+                    source autobrew
                 fi
                 PKG_CFLAGS="-I${BREWDIR}/opt/libgit2/include"
                 PKG_LIBS="-L${BREWDIR}/opt/libgit2/lib ${PKG_LIBS}"
@@ -82,8 +85,16 @@ if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
 
     AC_MSG_CHECKING([whether the libgit2 version will work in git2r])
     libgit2_ver_ok=no
-    ${CC} ${CPPFLAGS} ${CFLAGS} -E tools/version.c >/dev/null 2>&1 && libgit2_ver_ok=yes
+    ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E tools/version.c >/dev/null 2>&1 && libgit2_ver_ok=yes
     AC_MSG_RESULT([${libgit2_ver_ok}])
+
+    # For debugging
+    echo "----- Results of the git2r package configure -----"
+    echo ""
+    echo "  PKG_CFLAGS: ${PKG_CFLAGS}"
+    echo "  PKG_LIBS: ${PKG_LIBS}"
+    echo ""
+    echo "--------------------------------------------------"
 
     if test "x${libgit2_ver_ok}" = xno; then
         AC_MSG_FAILURE([
@@ -105,13 +116,6 @@ if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
     AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS}"])
     AC_SUBST([PKG_LIBS], ["${PKG_LIBS}"])
     AC_CONFIG_FILES([src/Makevars])
-
-    echo "----- Results of the git2r package configure -----"
-    echo ""
-    echo "  PKG_CFLAGS: ${PKG_CFLAGS}"
-    echo "  PKG_LIBS: ${PKG_LIBS}"
-    echo ""
-    echo "--------------------------------------------------"
 
     AC_OUTPUT
 fi
