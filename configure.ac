@@ -63,8 +63,6 @@ if test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
                     curl -sfL "https://jeroen.github.io/autobrew/${PKG_BREW_NAME}" > autobrew
                     source autobrew
                 fi
-                PKG_CFLAGS="-I${BREWDIR}/opt/${PKG_BREW_NAME}/include"
-                PKG_LIBS="-L${BREWDIR}/opt/${PKG_BREW_NAME}/lib ${PKG_LIBS}"
                 USE_BUNDLED_LIBGIT2=no
             ;;
         esac
