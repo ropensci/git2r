@@ -5,6 +5,22 @@ NEW FEATURES
 
 * Added the 'git_config_files' method to locate configuration files.
 
+IMPROVEMENTS
+
+* Updated the bundled libgit2 source code to v0.27.2 (8d36dc6).
+
+* git2r can now build against a system installation of libgit2
+  (Elliott Sales de Andrade in PR #345, #344 and #336).
+
+* Refactoring of the configuration scripts to use a prebuilt libgit2
+  on macOS and Windows (Thanks Jeroen).
+
+* Ensure that git2r writes the config file to the correct location on
+  Windows (John Blischak in PR #320).
+
+* Better default location to find ssh keys in 'cred_ssh_key()' (Ian
+  Lyttle in PR #317).
+
 BUG FIXES
 
 * If a merge results in no change, the returned 'git_merge_result' now returns
@@ -13,6 +29,9 @@ BUG FIXES
   for 'sha'.
 
 BREAKING CHANGES
+
+* Changed from S4 classes to S3 classes to simplify the design and
+  facilitate future development.
 
 * Removed the trailing slash from the directory name when reporting
   repository path or workdir.
