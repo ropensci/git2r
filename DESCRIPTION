@@ -22,9 +22,9 @@ Type: Package
 LazyData: true
 Biarch: true
 NeedsCompilation: yes
-SystemRequirements: zlib headers and library. OpenSSL headers and
-    library. LibSSH2 (optional on non-Windows) to enable the SSH
-    transport.
+SystemRequirements: libgit2 headers and library. zlib headers and
+    library. OpenSSL headers and library. LibSSH2 (optional on
+    non-Windows) to enable the SSH transport.
 Collate:
     'blame.R'
     'blob.R'
