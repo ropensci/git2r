@@ -19,6 +19,10 @@
 #include <R.h>
 #include <Rinternals.h>
 
+#idfef WIN32
+#include <windows.h>
+#endif
+
 #include <sys/types.h>
 #include <sys/stat.h>
 
