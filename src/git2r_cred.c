@@ -19,6 +19,9 @@
 #include <R.h>
 #include <Rinternals.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #include <git2.h>
 
 #include "git2r_cred.h"
@@ -197,6 +200,60 @@ static int git2r_cred_user_pass(
     }
 
     return -1;
+}
+
+static int git2r_file_exists(const char *path)
+{
+#ifdef Win32
+    struct _stati64 sb;
+    return _stati64(path, &sb) == 0;
+#else
+    struct stat sb;
+    return stat(path, &sb) == 0;
+#endif
+}
+
+SEXP git2r_ssh_keys() {
+#ifdef Win32
+    const char *home [] = {getenv("HOME"), getenv("USERPROFILE"), NULL};
+#else
+    const char *home [] = {getenv("HOME"), NULL};
+#endif
+    const char *keys [] = {"id_ed25519", "id_ecdsa", "id_rsa", "id_dsa", NULL};
+    int i;
+
+    for (i = 0; home[i]; i++) {
+        int j;
+
+        for (j = 0; keys[j]; j++) {
+            int n;
+            int private_key_len = strlen(home[i]) + sizeof("/.ssh/") + strlen(keys[j]);
+            char *private_key = malloc(private_key_len);
+            if (!private_key)
+                Rf_error("FIXME");
+            n = snprintf(private_key, private_key_len, "%s/.ssh/%s", home[i], keys[j]);
+            if (n < 0 || n >= private_key_len)
+                Rf_error("FIXME");
+
+            if (git2r_file_exists(private_key)) {
+                int public_key_len = strlen(private_key) + sizeof(".pub");
+                char *public_key = malloc(public_key_len);
+                if (!private_key)
+                    Rf_error("FIXME");
+                n = snprintf(public_key, public_key_len, "%s.pub", private_key);
+                if (n < 0 || n >= public_key_len)
+                    Rf_error("FIXME");
+
+                Rprintf("private: %s public: %s\n", private_key, public_key);
+
+                free(public_key);
+            }
+
+            free(private_key);
+        }
+    }
+
+    return R_NilValue;
 }
 
 /**
