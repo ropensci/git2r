@@ -214,40 +214,63 @@ static int git2r_file_exists(const char *path)
 }
 
 SEXP git2r_ssh_keys() {
-    const char *home [] = {R_ExpandFileName("~"), NULL};
-    const char *keys [] = {"id_ed25519", "id_ecdsa", "id_rsa", "id_dsa", NULL};
-    int i;
+#ifdef WIN32
+    wchar_t path[MAX_PATH];
+    DWORD len;
 
-    for (i = 0; home[i]; i++) {
-        int j;
+    len = ExpandEnvironmentStringsW(L"%HOME%\\", path, MAX_PATH);
+    if (!len || len > MAX_PATH)
+        Rf_error("FIXME");
+    Rprintf("path: %s\n", path);
 
-        for (j = 0; keys[j]; j++) {
-            int n;
-            int private_key_len = strlen(home[i]) + sizeof("/.ssh/") + strlen(keys[j]);
-            char *private_key = malloc(private_key_len);
-            if (!private_key)
-                Rf_error("FIXME");
-            n = snprintf(private_key, private_key_len, "%s/.ssh/%s", home[i], keys[j]);
-            if (n < 0 || n >= private_key_len)
-                Rf_error("FIXME");
+    len = ExpandEnvironmentStringsW(L"%HOMEDRIVE%%HOMEPATH%\\", path, MAX_PATH);
+    if (!len || len > MAX_PATH)
+        Rf_error("FIXME");
+    Rprintf("path: %s\n", path);
 
-            if (git2r_file_exists(private_key)) {
-                int public_key_len = strlen(private_key) + sizeof(".pub");
-                char *public_key = malloc(public_key_len);
-                if (!private_key)
-                    Rf_error("FIXME");
-                n = snprintf(public_key, public_key_len, "%s.pub", private_key);
-                if (n < 0 || n >= public_key_len)
-                    Rf_error("FIXME");
+    len = ExpandEnvironmentStringsW(L"%USERPROFILE%\\", path, MAX_PATH);
+    if (!len || len > MAX_PATH)
+        Rf_error("FIXME");
+    Rprintf("path: %s\n", path);
+#else
+    const char *path = getenv("HOME");
+    Rprintf("path: %s\n", path);
+#endif
 
-                Rprintf("private: %s public: %s\n", private_key, public_key);
+    /* const char *home [] = {R_ExpandFileName("~"), NULL}; */
+    /* const char *keys [] = {"id_ed25519", "id_ecdsa", "id_rsa", "id_dsa", NULL}; */
+    /* int i; */
 
-                free(public_key);
-            }
+    /* for (i = 0; home[i]; i++) { */
+    /*     int j; */
 
-            free(private_key);
-        }
-    }
+    /*     for (j = 0; keys[j]; j++) { */
+    /*         int n; */
+    /*         int private_key_len = strlen(home[i]) + sizeof("/.ssh/") + strlen(keys[j]); */
+    /*         char *private_key = malloc(private_key_len); */
+    /*         if (!private_key) */
+    /*             Rf_error("FIXME"); */
+    /*         n = snprintf(private_key, private_key_len, "%s/.ssh/%s", home[i], keys[j]); */
+    /*         if (n < 0 || n >= private_key_len) */
+    /*             Rf_error("FIXME"); */
+
+    /*         if (git2r_file_exists(private_key)) { */
+    /*             int public_key_len = strlen(private_key) + sizeof(".pub"); */
+    /*             char *public_key = malloc(public_key_len); */
+    /*             if (!private_key) */
+    /*                 Rf_error("FIXME"); */
+    /*             n = snprintf(public_key, public_key_len, "%s.pub", private_key); */
+    /*             if (n < 0 || n >= public_key_len) */
+    /*                 Rf_error("FIXME"); */
+
+    /*             Rprintf("private: %s public: %s\n", private_key, public_key); */
+
+    /*             free(public_key); */
+    /*         } */
+
+    /*         free(private_key); */
+    /*     } */
+    /* } */
 
     return R_NilValue;
 }
