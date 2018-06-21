@@ -214,11 +214,7 @@ static int git2r_file_exists(const char *path)
 }
 
 SEXP git2r_ssh_keys() {
-#ifdef Win32
-    const char *home [] = {getenv("HOME"), getenv("USERPROFILE"), NULL};
-#else
-    const char *home [] = {getenv("HOME"), NULL};
-#endif
+    const char *home [] = {R_ExpandFileName("~"), NULL};
     const char *keys [] = {"id_ed25519", "id_ecdsa", "id_rsa", "id_dsa", NULL};
     int i;
 
