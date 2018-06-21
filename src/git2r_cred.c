@@ -19,7 +19,7 @@
 #include <R.h>
 #include <Rinternals.h>
 
-#idfef WIN32
+#ifdef WIN32
 #include <windows.h>
 #endif
 
