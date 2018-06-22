@@ -211,16 +211,16 @@ static int git2r_cred_user_pass(
     return -1;
 }
 
-/* static int git2r_file_exists(const char *path) */
-/* { */
-/* #ifdef Win32 */
-/*     struct _stati64 sb; */
-/*     return _stati64(path, &sb) == 0; */
-/* #else */
-/*     struct stat sb; */
-/*     return stat(path, &sb) == 0; */
-/* #endif */
-/* } */
+static int git2r_file_exists(const char *path)
+{
+#ifdef WIN32
+    struct _stati64 sb;
+    return _stati64(path, &sb) == 0;
+#else
+    struct stat sb;
+    return stat(path, &sb) == 0;
+#endif
+}
 
 #ifdef WIN32
 int git2r_path_from_environment_variable(char** out, wchar_t *env)
@@ -257,27 +257,61 @@ int git2r_path_from_environment_variable(char** out, wchar_t *env)
 }
 #endif
 
-SEXP git2r_ssh_keys() {
+SEXP git2r_ssh_keys()
+{
+    const char *keys [] = {"id_ed25519", "id_ecdsa", "id_rsa", "id_dsa", NULL};
+
 #ifdef WIN32
-    char *path = NULL;
+    const wchar_t *env =
+        {L"%HOME%\\", L"%HOMEDRIVE%%HOMEPATH%\\", L"%USERPROFILE%\\", NULL};
+    int i;
 
-    if (git2r_path_from_environment_variable(&path, L"%HOME%\\"))
-        Rf_error("FIXME");
-    Rprintf("path: %s\n", path);
-    free(path);
-    path = NULL;
+    for (i = 0; env[i]; i++) {
+        char *path = NULL;
+        int j;
 
-    if (git2r_path_from_environment_variable(&path, L"%HOMEDRIVE%%HOMEPATH%\\"))
-        Rf_error("FIXME");
-    Rprintf("path: %s\n", path);
-    free(path);
-    path = NULL;
+        if (git2r_path_from_environment_variable(&path, env[i]))
+            continue;
 
-    if (git2r_path_from_environment_variable(&path, L"%USERPROFILE%\\"))
-        Rf_error("FIXME");
-    Rprintf("path: %s\n", path);
-    free(path);
-    path = NULL;
+        for (j = 0; keys[j]; j++) {
+            char *private_key = NULL;
+            int private_key_len;
+            int n;
+
+            private_key_len = strlen(path) + sizeof(".ssh/") + strlen(keys[j]);
+            private_key = malloc(private_key_len);
+            if (!private_key)
+                continue;
+            n = snprintf(private_key, private_key_len, "%s.ssh/%s", path, keys[j]);
+            if (n < 0 || n >= private_key_len) {
+                free(private_key);
+                continue;
+            }
+
+            if (git2r_file_exists(private_key)) {
+                int public_key_len = strlen(private_key) + sizeof(".pub");
+                char *public_key = malloc(public_key_len);
+                if (!public_key) {
+                    free(private_key);
+                    continue;
+                }
+                n = snprintf(public_key, public_key_len, "%s.pub", private_key);
+                if (n < 0 || n >= public_key_len) {
+                    free(private_key);
+                    free(public_key);
+                    continue;
+                }
+
+                if (git2r_file_exists(private_key))
+                    Rprintf("private: %s public: %s\n", private_key, public_key);
+                free(public_key);
+            }
+
+            free(private_key);
+        }
+
+        free(path);
+    }
 #else
     const char *path = getenv("HOME");
     Rprintf("path: %s\n", path);
