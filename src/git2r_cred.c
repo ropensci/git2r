@@ -262,7 +262,7 @@ SEXP git2r_ssh_keys()
     const char *keys [] = {"id_ed25519", "id_ecdsa", "id_rsa", "id_dsa", NULL};
 
 #ifdef WIN32
-    const wchar_t *env =
+    const wchar_t *env[4] =
         {L"%HOME%\\", L"%HOMEDRIVE%%HOMEPATH%\\", L"%USERPROFILE%\\", NULL};
     int i;
 
