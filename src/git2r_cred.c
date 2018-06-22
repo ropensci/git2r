@@ -206,22 +206,23 @@ static int git2r_cred_user_pass(
     return -1;
 }
 
-static int git2r_file_exists(const char *path)
-{
-#ifdef Win32
-    struct _stati64 sb;
-    return _stati64(path, &sb) == 0;
-#else
-    struct stat sb;
-    return stat(path, &sb) == 0;
-#endif
-}
+/* static int git2r_file_exists(const char *path) */
+/* { */
+/* #ifdef Win32 */
+/*     struct _stati64 sb; */
+/*     return _stati64(path, &sb) == 0; */
+/* #else */
+/*     struct stat sb; */
+/*     return stat(path, &sb) == 0; */
+/* #endif */
+/* } */
 
 #ifdef WIN32
 int git2r_path_from_environment_variable(char** out, wchar_t *env)
 {
     wchar_t path[MAX_PATH];
     DWORD len;
+    int len_utf8;
 
     /* Expands environment-variable strings and replaces them with the
      * values defined for the current user. */
