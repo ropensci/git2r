@@ -239,3 +239,6 @@ diff.git_tree <- function(x,
 
     .Call(git2r_diff, NULL, x, new_tree, index, filename)
 }
+
+##' @export
+base::diff
