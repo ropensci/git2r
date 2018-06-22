@@ -302,7 +302,7 @@ SEXP git2r_ssh_keys()
                     continue;
                 }
 
-                if (git2r_file_exists(private_key))
+                if (git2r_file_exists(public_key))
                     Rprintf("private: %s public: %s\n", private_key, public_key);
                 free(public_key);
             }
