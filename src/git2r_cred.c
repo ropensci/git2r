@@ -21,6 +21,11 @@
 
 #ifdef WIN32
 #include <windows.h>
+#include <wchar.h>
+
+# ifndef WC_ERR_INVALID_CHARS
+#  define WC_ERR_INVALID_CHARS	0x80
+# endif
 #endif
 
 #include <sys/types.h>
