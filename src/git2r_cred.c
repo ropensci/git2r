@@ -217,25 +217,61 @@ static int git2r_file_exists(const char *path)
 #endif
 }
 
-SEXP git2r_ssh_keys() {
 #ifdef WIN32
+int git2r_path_from_environment_variable(char** out, wchar_t *env)
+{
     wchar_t path[MAX_PATH];
     DWORD len;
 
-    len = ExpandEnvironmentStringsW(L"%HOME%\\", path, MAX_PATH);
+    /* Expands environment-variable strings and replaces them with the
+     * values defined for the current user. */
+    len = ExpandEnvironmentStringsW(env, path, MAX_PATH);
     if (!len || len > MAX_PATH)
-        Rf_error("FIXME");
-    Rprintf("path: %s\n", path);
+        return -1;
 
-    len = ExpandEnvironmentStringsW(L"%HOMEDRIVE%%HOMEPATH%\\", path, MAX_PATH);
-    if (!len || len > MAX_PATH)
-        Rf_error("FIXME");
-    Rprintf("path: %s\n", path);
+    /* Map wide character string to a new utf8 character string. */
+    len_utf8 = WideCharToMultiByte(
+        CP_UTF8, WC_ERR_INVALID_CHARS, path,-1, NULL, 0, NULL, NULL);
+    if (!len_utf8)
+        return -1;
 
-    len = ExpandEnvironmentStringsW(L"%USERPROFILE%\\", path, MAX_PATH);
-    if (!len || len > MAX_PATH)
+    *out = malloc(len_utf8);
+    if (!*out)
+        return -1;
+
+    len_utf8 = WideCharToMultiByte(
+        CP_UTF8, WC_ERR_INVALID_CHARS, path, -1, *out, len_utf8, NULL, NULL);
+    if (!len_utf8) {
+        free(*out);
+        *out = NULL;
+        return -1;
+    }
+
+    return 0;
+}
+#endif
+
+SEXP git2r_ssh_keys() {
+#ifdef WIN32
+    char *path = NULL;
+
+    if (git2r_path_from_environment_variable(&path, L"%HOME%\\"))
         Rf_error("FIXME");
     Rprintf("path: %s\n", path);
+    free(path);
+    path = NULL;
+
+    if (git2r_path_from_environment_variable(&path, L"%HOMEDRIVE%%HOMEPATH%\\"))
+        Rf_error("FIXME");
+    Rprintf("path: %s\n", path);
+    free(path);
+    path = NULL;
+
+    if (git2r_path_from_environment_variable(&path, L"%USERPROFILE%\\"))
+        Rf_error("FIXME");
+    Rprintf("path: %s\n", path);
+    free(path);
+    path = NULL;
 #else
     const char *path = getenv("HOME");
     Rprintf("path: %s\n", path);
