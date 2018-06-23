@@ -36,6 +36,15 @@
 #include "git2r_cred.h"
 #include "git2r_S3.h"
 #include "git2r_transfer.h"
+#include "kvec.h"
+
+typedef struct git2r_ssh_key
+{
+    char *private;
+    char *public;
+} git2r_ssh_key;
+
+typedef kvec_t(git2r_ssh_key) git2r_ssh_key_t;
 
 /**
  * Read an environtmental variable.
@@ -211,23 +220,11 @@ static int git2r_cred_user_pass(
     return -1;
 }
 
-static int git2r_file_exists(const char *path)
-{
 #ifdef WIN32
+static int git2r_expand_path(char** out, const wchar_t *path)
+{
     struct _stati64 sb;
-    return _stati64(path, &sb) == 0;
-#else
-    struct stat sb;
-    return stat(path, &sb) == 0;
-#endif
-}
-
-#ifdef WIN32
-static int git2r_path_from_environment_variable(
-    char** out,
-    wchar_t *env)
-{
-    wchar_t path[MAX_PATH];
+    wchar_t buf[MAX_PATH];
     DWORD len;
     int len_utf8;
 
@@ -235,13 +232,13 @@ static int git2r_path_from_environment_variable(
 
     /* Expands environment-variable strings and replaces them with the
      * values defined for the current user. */
-    len = ExpandEnvironmentStringsW(env, path, MAX_PATH);
+    len = ExpandEnvironmentStringsW(path, buf, MAX_PATH);
     if (!len || len > MAX_PATH)
         goto on_error;
 
     /* Map wide character string to a new utf8 character string. */
     len_utf8 = WideCharToMultiByte(
-        CP_UTF8, WC_ERR_INVALID_CHARS, path,-1, NULL, 0, NULL, NULL);
+        CP_UTF8, WC_ERR_INVALID_CHARS, buf,-1, NULL, 0, NULL, NULL);
     if (!len_utf8)
         goto on_error;
 
@@ -250,162 +247,152 @@ static int git2r_path_from_environment_variable(
         goto on_error;
 
     len_utf8 = WideCharToMultiByte(
-        CP_UTF8, WC_ERR_INVALID_CHARS, path, -1, *out, len_utf8, NULL, NULL);
+        CP_UTF8, WC_ERR_INVALID_CHARS, buf, -1, *out, len_utf8, NULL, NULL);
     if (!len_utf8)
         goto on_error;
 
-    return 0;
+    /* Check if file exists. */
+    if (_stati64(*out, &sb) == 0)
+        return 0;
 
 on_error:
     free(*out);
     *out = NULL;
+
+    return -1;
+}
+#else
+static int git2r_expand_path(char** out, const char *path)
+{
+    struct stat sb;
+    int len;
+    const char *buf = R_ExpandFileName(path);
+
+    *out = NULL;
+    if (!buf)
+        goto on_error;
+    len = strlen(buf);
+    if (len <= 0)
+        goto on_error;
+    *out = malloc(len + 1);
+    if (!*out)
+        goto on_error;
+    strncpy(*out, buf, len);
+    (*out)[len] = '\0';
+
+    /* Check if file exists. */
+    if (stat(*out, &sb) == 0)
+        return 0;
+
+on_error:
+    free(*out);
+    *out = NULL;
+
     return -1;
 }
 #endif
 
-/**
- * Look for the ssh-key in path/.ssh/key.
- *
- * @param private_key result with path to the private key.
- * @param public_key result with path to the public key.
- * @param path path where to look for the ssh-key.
- * @param key name of the ssh-key e.g. id_rsa.
- * @return 0 on success, else -1.
- */
-static int git2r_ssh_key(
-    char **private_key,
-    char **public_key,
-    const char *path,
-    const char *key)
+static void git2r_default_ssh_keys(git2r_ssh_key_t *keys)
 {
-    int n, len;
+#ifdef WIN32
+    static const wchar_t *private_key_patterns[13] =
+        {L"%HOME%\\.ssh\\id_ed25519",
+         L"%HOME%\\.ssh\\id_ecdsa",
+         L"%HOME%\\.ssh\\id_rsa",
+         L"%HOME%\\.ssh\\id_dsa",
+         L"%HOMEDRIVE%%HOMEPATH%\\.ssh\\id_ed25519",
+         L"%HOMEDRIVE%%HOMEPATH%\\.ssh\\id_ecdsa",
+         L"%HOMEDRIVE%%HOMEPATH%\\.ssh\\id_rsa",
+         L"%HOMEDRIVE%%HOMEPATH%\\.ssh\\id_dsa",
+         L"%USERPROFILE%\\.ssh\\id_ed25519",
+         L"%USERPROFILE%\\.ssh\\id_ecdsa",
+         L"%USERPROFILE%\\.ssh\\id_rsa",
+         L"%USERPROFILE%\\.ssh\\id_dsa",
+         NULL};
 
-    *public_key = NULL;
-    len = strlen(path) + sizeof("/.ssh/") + strlen(key);
-    *private_key = malloc(len);
-    if (!*private_key)
-        goto on_error;
-    n = snprintf(*private_key, len, "%s/.ssh/%s", path, key);
-    if (n < 0 || n >= len)
-        goto on_error;
-    if (!git2r_file_exists(*private_key))
-        goto on_error;
+    static const wchar_t *public_key_patterns[13] =
+        {L"%HOME%\\.ssh\\id_ed25519.pub",
+         L"%HOME%\\.ssh\\id_ecdsa.pub",
+         L"%HOME%\\.ssh\\id_rsa.pub",
+         L"%HOME%\\.ssh\\id_dsa.pub",
+         L"%HOMEDRIVE%%HOMEPATH%\\.ssh\\id_ed25519.pub",
+         L"%HOMEDRIVE%%HOMEPATH%\\.ssh\\id_ecdsa.pub",
+         L"%HOMEDRIVE%%HOMEPATH%\\.ssh\\id_rsa.pub",
+         L"%HOMEDRIVE%%HOMEPATH%\\.ssh\\id_dsa.pub",
+         L"%USERPROFILE%\\.ssh\\id_ed25519.pub",
+         L"%USERPROFILE%\\.ssh\\id_ecdsa.pub",
+         L"%USERPROFILE%\\.ssh\\id_rsa.pub",
+         L"%USERPROFILE%\\.ssh\\id_dsa.pub",
+         NULL};
+#else
+    static const char *private_key_patterns[5] =
+        {"~/.ssh/id_ed25519",
+         "~/.ssh/id_ecdsa",
+         "~/.ssh/id_rsa",
+         "~/.ssh/id_dsa",
+         NULL};
 
-    len = strlen(*private_key) + sizeof(".pub");
-    *public_key = malloc(len);
-    if (!*public_key)
-        goto on_error;
-    n = snprintf(*public_key, len, "%s.pub", *private_key);
-    if (n < 0 || n >= len)
-        goto on_error;
+    static const char *public_key_patterns[5] =
+        {"~/.ssh/id_ed25519.pub",
+         "~/.ssh/id_ecdsa.pub",
+         "~/.ssh/id_rsa.pub",
+         "~/.ssh/id_dsa.pub",
+         NULL};
+#endif
+    int i;
 
-    if (!git2r_file_exists(*public_key))
-        goto on_error;
+    /* Find unique keys. */
+    for (i = 0; private_key_patterns[i] && public_key_patterns[i]; i++) {
+        char *private_key = NULL;
+        char *public_key = NULL;
+        int duplicate_key = 0;
+        int j;
 
-    return 0;
+        if (git2r_expand_path(&private_key, private_key_patterns[i]) ||
+            git2r_expand_path(&public_key, public_key_patterns[i]))
+        {
+            free(private_key);
+            free(public_key);
+            continue;
+        }
 
-on_error:
-    free(*private_key);
-    free(*public_key);
-    *private_key = NULL;
-    *public_key = NULL;
-    return -1;
+        for (j = 0; j < kv_size(*keys); j++) {
+            if (strcmp(private_key, kv_A(*keys, j).private) == 0 ||
+                strcmp(public_key, kv_A(*keys, j).public) == 0) {
+                duplicate_key = 1;
+                break;
+            }
+        }
+
+        if (duplicate_key) {
+            free(private_key);
+            free(public_key);
+        } else {
+            const git2r_ssh_key key = {private_key, public_key};
+            kv_push(git2r_ssh_key, *keys, key);
+        }
+    }
+
 }
 
 SEXP git2r_ssh_keys()
 {
-    const char *keys [] = {"id_ed25519", "id_ecdsa", "id_rsa", "id_dsa", NULL};
-
-#ifdef WIN32
-    const wchar_t *env[4] =
-        {L"%HOME%", L"%HOMEDRIVE%%HOMEPATH%", L"%USERPROFILE%", NULL};
+    git2r_ssh_key_t keys;
     int i;
 
-    for (i = 0; env[i]; i++) {
-        char *path = NULL;
-        int j;
+    kv_init(keys);
+    git2r_default_ssh_keys(&keys);
 
-        if (git2r_path_from_environment_variable(&path, env[i]))
-            continue;
+    /* Print keys. */
+    for (i = 0; i < kv_size(keys); i++)
+        Rprintf("private: %s, public: %s\n", kv_A(keys, i).private, kv_A(keys, i).public);
 
-        for (j = 0; keys[j]; j++) {
-            char *private_key = NULL;
-            int private_key_len;
-            int n;
-
-            private_key_len = strlen(path) + sizeof("/.ssh/") + strlen(keys[j]);
-            private_key = malloc(private_key_len);
-            if (!private_key)
-                continue;
-            n = snprintf(private_key, private_key_len, "%s/.ssh/%s", path, keys[j]);
-            if (n < 0 || n >= private_key_len) {
-                free(private_key);
-                continue;
-            }
-
-            if (git2r_file_exists(private_key)) {
-                int public_key_len = strlen(private_key) + sizeof(".pub");
-                char *public_key = malloc(public_key_len);
-                if (!public_key) {
-                    free(private_key);
-                    continue;
-                }
-                n = snprintf(public_key, public_key_len, "%s.pub", private_key);
-                if (n < 0 || n >= public_key_len) {
-                    free(private_key);
-                    free(public_key);
-                    continue;
-                }
-
-                if (git2r_file_exists(public_key))
-                    Rprintf("private: %s public: %s\n", private_key, public_key);
-                free(public_key);
-            }
-
-            free(private_key);
-        }
-
-        free(path);
+    for (i = 0; i < kv_size(keys); i++) {
+        free(kv_A(keys, i).private);
+        free(kv_A(keys, i).public);
     }
-#else
-    const char *path = getenv("HOME");
-    Rprintf("path: %s\n", path);
-#endif
 
-    /* const char *home [] = {R_ExpandFileName("~"), NULL}; */
-    /* const char *keys [] = {"id_ed25519", "id_ecdsa", "id_rsa", "id_dsa", NULL}; */
-    /* int i; */
-
-    /* for (i = 0; home[i]; i++) { */
-    /*     int j; */
-
-    /*     for (j = 0; keys[j]; j++) { */
-    /*         int n; */
-    /*         int private_key_len = strlen(home[i]) + sizeof("/.ssh/") + strlen(keys[j]); */
-    /*         char *private_key = malloc(private_key_len); */
-    /*         if (!private_key) */
-    /*             Rf_error("FIXME"); */
-    /*         n = snprintf(private_key, private_key_len, "%s/.ssh/%s", home[i], keys[j]); */
-    /*         if (n < 0 || n >= private_key_len) */
-    /*             Rf_error("FIXME"); */
-
-    /*         if (git2r_file_exists(private_key)) { */
-    /*             int public_key_len = strlen(private_key) + sizeof(".pub"); */
-    /*             char *public_key = malloc(public_key_len); */
-    /*             if (!private_key) */
-    /*                 Rf_error("FIXME"); */
-    /*             n = snprintf(public_key, public_key_len, "%s.pub", private_key); */
-    /*             if (n < 0 || n >= public_key_len) */
-    /*                 Rf_error("FIXME"); */
-
-    /*             Rprintf("private: %s public: %s\n", private_key, public_key); */
-
-    /*             free(public_key); */
-    /*         } */
-
-    /*         free(private_key); */
-    /*     } */
-    /* } */
+    kv_destroy(keys);
 
     return R_NilValue;
 }
