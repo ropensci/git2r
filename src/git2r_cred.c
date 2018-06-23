@@ -223,40 +223,55 @@ static int git2r_file_exists(const char *path)
 }
 
 #ifdef WIN32
-int git2r_path_from_environment_variable(char** out, wchar_t *env)
+static int git2r_path_from_environment_variable(
+    char** out,
+    wchar_t *env)
 {
     wchar_t path[MAX_PATH];
     DWORD len;
     int len_utf8;
 
+    *out = NULL;
+
     /* Expands environment-variable strings and replaces them with the
      * values defined for the current user. */
     len = ExpandEnvironmentStringsW(env, path, MAX_PATH);
     if (!len || len > MAX_PATH)
-        return -1;
+        goto on_error;
 
     /* Map wide character string to a new utf8 character string. */
     len_utf8 = WideCharToMultiByte(
         CP_UTF8, WC_ERR_INVALID_CHARS, path,-1, NULL, 0, NULL, NULL);
     if (!len_utf8)
-        return -1;
+        goto on_error;
 
     *out = malloc(len_utf8);
     if (!*out)
-        return -1;
+        goto on_error;
 
     len_utf8 = WideCharToMultiByte(
         CP_UTF8, WC_ERR_INVALID_CHARS, path, -1, *out, len_utf8, NULL, NULL);
-    if (!len_utf8) {
-        free(*out);
-        *out = NULL;
-        return -1;
-    }
+    if (!len_utf8)
+        goto on_error;
 
     return 0;
+
+on_error:
+    free(*out);
+    *out = NULL;
+    return -1;
 }
 #endif
 
+/**
+ * Look for the ssh-key in path/.ssh/key.
+ *
+ * @param private_key result with path to the private key.
+ * @param public_key result with path to the public key.
+ * @param path path where to look for the ssh-key.
+ * @param key name of the ssh-key e.g. id_rsa.
+ * @return 0 on success, else -1.
+ */
 static int git2r_ssh_key(
     char **private_key,
     char **public_key,
