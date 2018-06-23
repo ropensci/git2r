@@ -292,7 +292,10 @@ on_error:
 }
 #endif
 
-static void git2r_default_ssh_keys(git2r_ssh_key_t *keys)
+static int git2r_cred_default_ssh_keys(
+    git_cred **cred,
+    const char *username_from_url,
+    git2r_transfer_data *td)
 {
 #ifdef WIN32
     static const wchar_t *private_key_patterns[13] =
@@ -339,7 +342,10 @@ static void git2r_default_ssh_keys(git2r_ssh_key_t *keys)
          "~/.ssh/id_dsa.pub",
          NULL};
 #endif
-    int i;
+    git2r_ssh_key_t keys;
+    int i, error = 0;
+
+    kv_init(keys);
 
     /* Find unique keys. */
     for (i = 0; private_key_patterns[i] && public_key_patterns[i]; i++) {
@@ -356,9 +362,9 @@ static void git2r_default_ssh_keys(git2r_ssh_key_t *keys)
             continue;
         }
 
-        for (j = 0; j < kv_size(*keys); j++) {
-            if (strcmp(private_key, kv_A(*keys, j).private) == 0 ||
-                strcmp(public_key, kv_A(*keys, j).public) == 0) {
+        for (j = 0; j < kv_size(keys); j++) {
+            if (strcmp(private_key, kv_A(keys, j).private) == 0 ||
+                strcmp(public_key, kv_A(keys, j).public) == 0) {
                 duplicate_key = 1;
                 break;
             }
@@ -368,33 +374,39 @@ static void git2r_default_ssh_keys(git2r_ssh_key_t *keys)
             free(private_key);
             free(public_key);
         } else {
+            /* Add key to list. */
             const git2r_ssh_key key = {private_key, public_key};
-            kv_push(git2r_ssh_key, *keys, key);
+            kv_push(git2r_ssh_key, keys, key);
         }
     }
 
-}
+    if (td->ssh_key < kv_size(keys)) {
+        /* Try next key */
+        char *passphrase = NULL;
 
-SEXP git2r_ssh_keys()
-{
-    git2r_ssh_key_t keys;
-    int i;
+        if (git_cred_ssh_key_new(
+                cred,
+                username_from_url,
+                kv_A(keys, td->ssh_key).public,
+                kv_A(keys, td->ssh_key).private,
+                passphrase))
+            error = -1;
 
-    kv_init(keys);
-    git2r_default_ssh_keys(&keys);
+        /* Increment index to next key to try. */
+        td->ssh_key += 1;
+    } else {
+        /* No more keys to try. */
+        error = -1;
+    }
 
-    /* Print keys. */
-    for (i = 0; i < kv_size(keys); i++)
-        Rprintf("private: %s, public: %s\n", kv_A(keys, i).private, kv_A(keys, i).public);
-
+    /* Cleanup. */
     for (i = 0; i < kv_size(keys); i++) {
         free(kv_A(keys, i).private);
         free(kv_A(keys, i).public);
     }
-
     kv_destroy(keys);
 
-    return R_NilValue;
+    return error;
 }
 
 /**
@@ -416,20 +428,25 @@ int git2r_cred_acquire_cb(
     unsigned int allowed_types,
     void *payload)
 {
+    git2r_transfer_data *td;
     SEXP credentials;
 
     if (!payload)
         return -1;
 
-    credentials = ((git2r_transfer_data*)payload)->credentials;
+    td = (git2r_transfer_data*)payload;
+    credentials = td->credentials;
     if (Rf_isNull(credentials)) {
         if (GIT_CREDTYPE_SSH_KEY & allowed_types) {
-	    if (((git2r_transfer_data*)payload)->ssh_key_agent_tried)
-	        return -1;
-	    ((git2r_transfer_data*)payload)->ssh_key_agent_tried = 1;
-            if (git_cred_ssh_key_from_agent(cred, username_from_url))
-                return -1;
-            return 0;
+	    if (td->ssh_key_agent_tried == 0) {
+                /* First, try to get credentials from the
+                 * ssh-agent. */
+                td->ssh_key_agent_tried = 1;
+                if (git_cred_ssh_key_from_agent(cred, username_from_url) == 0)
+                    return 0;
+            }
+
+            return git2r_cred_default_ssh_keys(cred, username_from_url, td);
         }
 
         return -1;

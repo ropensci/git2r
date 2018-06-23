@@ -60,8 +60,6 @@
 #include "git2r_tag.h"
 #include "git2r_tree.h"
 
-SEXP git2r_ssh_keys();
-
 #define CALLDEF(name, n) {#name, (DL_FUNC) &name, n}
 
 static const R_CallMethodDef callMethods[] =
@@ -153,7 +151,6 @@ static const R_CallMethodDef callMethods[] =
     CALLDEF(git2r_tag_delete, 2),
     CALLDEF(git2r_tag_list, 1),
     CALLDEF(git2r_tree_walk, 2),
-    CALLDEF(git2r_ssh_keys, 0),
     {NULL, NULL, 0}
 };
 
