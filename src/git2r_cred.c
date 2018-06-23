@@ -257,13 +257,53 @@ int git2r_path_from_environment_variable(char** out, wchar_t *env)
 }
 #endif
 
+static int git2r_ssh_key(
+    char **private_key,
+    char **public_key,
+    const char *path,
+    const char *key)
+{
+    int n, len;
+
+    *public_key = NULL;
+    len = strlen(path) + sizeof("/.ssh/") + strlen(key);
+    *private_key = malloc(len);
+    if (!*private_key)
+        goto on_error;
+    n = snprintf(*private_key, len, "%s/.ssh/%s", path, key);
+    if (n < 0 || n >= len)
+        goto on_error;
+    if (!git2r_file_exists(*private_key))
+        goto on_error;
+
+    len = strlen(*private_key) + sizeof(".pub");
+    *public_key = malloc(len);
+    if (!*public_key)
+        goto on_error;
+    n = snprintf(*public_key, len, "%s.pub", *private_key);
+    if (n < 0 || n >= len)
+        goto on_error;
+
+    if (!git2r_file_exists(*public_key))
+        goto on_error;
+
+    return 0;
+
+on_error:
+    free(*private_key);
+    free(*public_key);
+    *private_key = NULL;
+    *public_key = NULL;
+    return -1;
+}
+
 SEXP git2r_ssh_keys()
 {
     const char *keys [] = {"id_ed25519", "id_ecdsa", "id_rsa", "id_dsa", NULL};
 
 #ifdef WIN32
     const wchar_t *env[4] =
-        {L"%HOME%\\", L"%HOMEDRIVE%%HOMEPATH%\\", L"%USERPROFILE%\\", NULL};
+        {L"%HOME%", L"%HOMEDRIVE%%HOMEPATH%", L"%USERPROFILE%", NULL};
     int i;
 
     for (i = 0; env[i]; i++) {
@@ -278,11 +318,11 @@ SEXP git2r_ssh_keys()
             int private_key_len;
             int n;
 
-            private_key_len = strlen(path) + sizeof(".ssh/") + strlen(keys[j]);
+            private_key_len = strlen(path) + sizeof("/.ssh/") + strlen(keys[j]);
             private_key = malloc(private_key_len);
             if (!private_key)
                 continue;
-            n = snprintf(private_key, private_key_len, "%s.ssh/%s", path, keys[j]);
+            n = snprintf(private_key, private_key_len, "%s/.ssh/%s", path, keys[j]);
             if (n < 0 || n >= private_key_len) {
                 free(private_key);
                 continue;
