@@ -220,10 +220,20 @@ static int git2r_cred_user_pass(
     return -1;
 }
 
+static int git2r_file_exists(const char *path)
+{
+#ifdef WIN32
+    struct _stati64 sb;
+    return _stati64(path, &sb) == 0;
+#else
+    struct stat sb;
+    return stat(path, &sb) == 0;
+#endif
+}
+
 #ifdef WIN32
 static int git2r_expand_path(char** out, const wchar_t *path)
 {
-    struct _stati64 sb;
     wchar_t buf[MAX_PATH];
     DWORD len;
     int len_utf8;
@@ -251,8 +261,7 @@ static int git2r_expand_path(char** out, const wchar_t *path)
     if (!len_utf8)
         goto on_error;
 
-    /* Check if file exists. */
-    if (_stati64(*out, &sb) == 0)
+    if (git2r_file_exists(*out))
         return 0;
 
 on_error:
@@ -264,7 +273,6 @@ on_error:
 #else
 static int git2r_expand_path(char** out, const char *path)
 {
-    struct stat sb;
     int len;
     const char *buf = R_ExpandFileName(path);
 
@@ -280,8 +288,7 @@ static int git2r_expand_path(char** out, const char *path)
     strncpy(*out, buf, len);
     (*out)[len] = '\0';
 
-    /* Check if file exists. */
-    if (stat(*out, &sb) == 0)
+    if (git2r_file_exists(*out))
         return 0;
 
 on_error:
