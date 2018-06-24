@@ -255,66 +255,69 @@ static int git2r_file_exists(const char *path)
 }
 
 #ifdef WIN32
-static int git2r_expand_key(char** out, const wchar_t *key)
+static int git2r_expand_key(char** out, const wchar_t *key, const char *ext)
 {
-    wchar_t buf[MAX_PATH];
-    DWORD len;
+    wchar_t wbuf[MAX_PATH];
+    char *buf_utf8 = NULL;
+    DWORD len_wbuf;
     int len_utf8;
 
     *out = NULL;
 
+    if (!key || !ext)
+        goto on_error;
+
     /* Expands environment-variable strings and replaces them with the
      * values defined for the current user. */
-    len = ExpandEnvironmentStringsW(key, buf, MAX_PATH);
-    if (!len || len > MAX_PATH)
+    len_wbuf = ExpandEnvironmentStringsW(key, wbuf, MAX_PATH);
+    if (!len_wbuf || len_wbuf > MAX_PATH)
         goto on_error;
 
     /* Map wide character string to a new utf8 character string. */
     len_utf8 = WideCharToMultiByte(
-        CP_UTF8, WC_ERR_INVALID_CHARS, buf,-1, NULL, 0, NULL, NULL);
+        CP_UTF8, WC_ERR_INVALID_CHARS, wbuf,-1, NULL, 0, NULL, NULL);
     if (!len_utf8)
         goto on_error;
 
-    *out = malloc(len_utf8);
-    if (!*out)
+    buf_utf8 = malloc(len_utf8);
+    if (!buf_utf8)
         goto on_error;
 
     len_utf8 = WideCharToMultiByte(
-        CP_UTF8, WC_ERR_INVALID_CHARS, buf, -1, *out, len_utf8, NULL, NULL);
+        CP_UTF8, WC_ERR_INVALID_CHARS, wbuf, -1, buf_utf8, len_utf8, NULL, NULL);
     if (!len_utf8)
         goto on_error;
+
+    if (git2r_join_str(out, buf_utf8, ext))
+        goto on_error;
+    free(buf_utf8);
 
     if (git2r_file_exists(*out))
         return 0;
 
 on_error:
+    free(buf_utf8);
     free(*out);
     *out = NULL;
 
     return -1;
 }
 #else
-static int git2r_expand_key(char** out, const char *key)
+static int git2r_expand_key(
+    char** out,
+    const char *key,
+    const char *ext)
 {
-    int len;
     const char *buf = R_ExpandFileName(key);
 
     *out = NULL;
-    if (!buf)
-        goto on_error;
-    len = strlen(buf);
-    if (len <= 0)
-        goto on_error;
-    *out = malloc(len + 1);
-    if (!*out)
-        goto on_error;
-    strncpy(*out, buf, len);
-    (*out)[len] = '\0';
+
+    if (git2r_join_str(out, buf, ext))
+        return -1;
 
     if (git2r_file_exists(*out))
         return 0;
 
-on_error:
     free(*out);
     *out = NULL;
 
@@ -328,7 +331,7 @@ static int git2r_cred_default_ssh_keys(
     git2r_transfer_data *td)
 {
 #ifdef WIN32
-    static const wchar_t *private_key_patterns[13] =
+    static const wchar_t *key_patterns[] =
         {L"%HOME%\\.ssh\\id_ed25519",
          L"%HOME%\\.ssh\\id_ecdsa",
          L"%HOME%\\.ssh\\id_rsa",
@@ -342,34 +345,12 @@ static int git2r_cred_default_ssh_keys(
          L"%USERPROFILE%\\.ssh\\id_rsa",
          L"%USERPROFILE%\\.ssh\\id_dsa",
          NULL};
-
-    static const wchar_t *public_key_patterns[13] =
-        {L"%HOME%\\.ssh\\id_ed25519.pub",
-         L"%HOME%\\.ssh\\id_ecdsa.pub",
-         L"%HOME%\\.ssh\\id_rsa.pub",
-         L"%HOME%\\.ssh\\id_dsa.pub",
-         L"%HOMEDRIVE%%HOMEPATH%\\.ssh\\id_ed25519.pub",
-         L"%HOMEDRIVE%%HOMEPATH%\\.ssh\\id_ecdsa.pub",
-         L"%HOMEDRIVE%%HOMEPATH%\\.ssh\\id_rsa.pub",
-         L"%HOMEDRIVE%%HOMEPATH%\\.ssh\\id_dsa.pub",
-         L"%USERPROFILE%\\.ssh\\id_ed25519.pub",
-         L"%USERPROFILE%\\.ssh\\id_ecdsa.pub",
-         L"%USERPROFILE%\\.ssh\\id_rsa.pub",
-         L"%USERPROFILE%\\.ssh\\id_dsa.pub",
-         NULL};
 #else
-    static const char *private_key_patterns[5] =
+    static const char *key_patterns[] =
         {"~/.ssh/id_ed25519",
          "~/.ssh/id_ecdsa",
          "~/.ssh/id_rsa",
          "~/.ssh/id_dsa",
-         NULL};
-
-    static const char *public_key_patterns[5] =
-        {"~/.ssh/id_ed25519.pub",
-         "~/.ssh/id_ecdsa.pub",
-         "~/.ssh/id_rsa.pub",
-         "~/.ssh/id_dsa.pub",
          NULL};
 #endif
     git2r_ssh_key_t keys;
@@ -378,14 +359,14 @@ static int git2r_cred_default_ssh_keys(
     kv_init(keys);
 
     /* Find unique keys. */
-    for (i = 0; private_key_patterns[i] && public_key_patterns[i]; i++) {
+    for (i = 0; key_patterns[i]; i++) {
         char *private_key = NULL;
         char *public_key = NULL;
         int duplicate_key = 0;
         int j;
 
-        if (git2r_expand_key(&private_key, private_key_patterns[i]) ||
-            git2r_expand_key(&public_key, public_key_patterns[i]))
+        if (git2r_expand_key(&private_key, key_patterns[i], "") ||
+            git2r_expand_key(&public_key, key_patterns[i], ".pub"))
         {
             free(private_key);
             free(public_key);
