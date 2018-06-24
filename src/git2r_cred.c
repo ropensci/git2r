@@ -232,7 +232,7 @@ static int git2r_file_exists(const char *path)
 }
 
 #ifdef WIN32
-static int git2r_expand_path(char** out, const wchar_t *path)
+static int git2r_expand_key(char** out, const wchar_t *key)
 {
     wchar_t buf[MAX_PATH];
     DWORD len;
@@ -242,7 +242,7 @@ static int git2r_expand_path(char** out, const wchar_t *path)
 
     /* Expands environment-variable strings and replaces them with the
      * values defined for the current user. */
-    len = ExpandEnvironmentStringsW(path, buf, MAX_PATH);
+    len = ExpandEnvironmentStringsW(key, buf, MAX_PATH);
     if (!len || len > MAX_PATH)
         goto on_error;
 
@@ -271,10 +271,10 @@ on_error:
     return -1;
 }
 #else
-static int git2r_expand_path(char** out, const char *path)
+static int git2r_expand_key(char** out, const char *key)
 {
     int len;
-    const char *buf = R_ExpandFileName(path);
+    const char *buf = R_ExpandFileName(key);
 
     *out = NULL;
     if (!buf)
@@ -361,8 +361,8 @@ static int git2r_cred_default_ssh_keys(
         int duplicate_key = 0;
         int j;
 
-        if (git2r_expand_path(&private_key, private_key_patterns[i]) ||
-            git2r_expand_path(&public_key, public_key_patterns[i]))
+        if (git2r_expand_key(&private_key, private_key_patterns[i]) ||
+            git2r_expand_key(&public_key, public_key_patterns[i]))
         {
             free(private_key);
             free(public_key);
