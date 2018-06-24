@@ -220,6 +220,29 @@ static int git2r_cred_user_pass(
     return -1;
 }
 
+static int git2r_join_str(char** out, const char *str_a, const char *str_b)
+{
+    int len_a, len_b;
+
+    if (!str_a || !str_b)
+        return -1;
+
+    len_a = strlen(str_a);
+    len_b = strlen(str_b);
+
+    *out = malloc(len_a + len_b + 1);
+    if (!*out)
+        return -1;
+
+    if (len_a)
+        memcpy(*out, str_a, len_a);
+    if (len_b)
+        memcpy(*out + len_a, str_b, len_b);
+    (*out)[len_a + len_b] = '\0';
+
+    return 0;
+}
+
 static int git2r_file_exists(const char *path)
 {
 #ifdef WIN32
