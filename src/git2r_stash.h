@@ -22,6 +22,7 @@
 #include <R.h>
 #include <Rinternals.h>
 
+SEXP git2r_stash_apply(SEXP repo, SEXP index);
 SEXP git2r_stash_drop(SEXP repo, SEXP index);
 SEXP git2r_stash_pop(SEXP repo, SEXP index);
 SEXP git2r_stash_save(SEXP repo, SEXP message, SEXP index, SEXP untracked,
