@@ -66,7 +66,7 @@
 ##' readLines(file.path(path, "test.txt"))
 ##'
 ##' # Apply latest git_stash object in repository
-##' stash_pop(stash_list(repo)[[1]])
+##' stash_apply(stash_list(repo)[[1]])
 ##'
 ##' # Read file
 ##' readLines(file.path(path, "test.txt"))
