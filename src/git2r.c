@@ -145,6 +145,7 @@ static const R_CallMethodDef callMethods[] =
     CALLDEF(git2r_ssl_cert_locations, 2),
     CALLDEF(git2r_stash_drop, 2),
     CALLDEF(git2r_stash_list, 1),
+    CALLDEF(git2r_stash_pop, 2),
     CALLDEF(git2r_stash_save, 6),
     CALLDEF(git2r_status_list, 6),
     CALLDEF(git2r_tag_create, 4),

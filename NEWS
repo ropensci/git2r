@@ -1,6 +1,11 @@
 git2r 0.22.0.9000
 -----------------
 
+NEW FEATURES
+
+* Added the 'stash_pop' method to apply a single stashed state from
+  the stash list and remove it from the list if successful.
+
 BREAKING CHANGES
 
 * Changed the 'stash_drop' argument 'index' from zero-based to

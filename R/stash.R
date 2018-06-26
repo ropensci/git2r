@@ -183,6 +183,77 @@ stash_list <- function(repo = ".") {
     .Call(git2r_stash_list, lookup_repository(repo))
 }
 
+##' Pop stash
+##'
+##' Apply a single stashed state from the stash list and remove it
+##' from the list if successful.
+##' @param object path to a repository, or a \code{git_repository}
+##'     object, or the stash \code{object} to pop. Default is a
+##'     \code{path = '.'} to a reposiory.
+##' @param index The index to the stash to drop. Only used when
+##'     \code{object} is a path to a repository or a
+##'     \code{git_repository} object. Default is \code{index = 1}.
+##' @return invisible NULL
+##' @export
+##' @examples \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' # Configure a user
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##'
+##' # Create a file, add and commit
+##' writeLines("Hello world!", file.path(path, "test.txt"))
+##' add(repo, 'test.txt')
+##' commit(repo, "Commit message")
+##'
+##' # Change file
+##' writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test.txt"))
+##'
+##' # Create stash in repository
+##' stash(repo)
+##'
+##' # Change file
+##' writeLines(c("Hello world!", "HeLlO wOrLd!"), file.path(path, "test.txt"))
+##'
+##' # Create stash in repository
+##' stash(repo)
+##'
+##' # View stashes
+##' stash_list(repo)
+##'
+##' # Read file
+##' readLines(file.path(path, "test.txt"))
+##'
+##' # Pop latest git_stash object in repository
+##' stash_pop(stash_list(repo)[[1]])
+##'
+##' # Read file
+##' readLines(file.path(path, "test.txt"))
+##'
+##' # View stashes
+##' stash_list(repo)
+##' }
+stash_pop <- function(object = ".", index = 1) {
+    if (inherits(object, "git_stash")) {
+        ## Determine the index of the stash in the stash list
+        index <- match(object$sha, vapply(stash_list(object$repo),
+                                          "[[", character(1), "sha"))
+        object <- object$repo
+    } else {
+        object <- lookup_repository(object)
+    }
+
+    ## The stash list is zero-based
+    if (abs(index - round(index)) >= .Machine$double.eps^0.5)
+        stop("'index' must be an integer")
+    index <- as.integer(index) - 1L
+
+    invisible(.Call(git2r_stash_pop, object, index))
+}
+
 ## @export
 print.git_stash <- function(x, ...) {
     cat(sprintf("%s\n", x$message))
