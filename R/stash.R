@@ -89,7 +89,7 @@ stash_apply <- function(object = ".", index = 1) {
         stop("'index' must be an integer")
     index <- as.integer(index) - 1L
 
-    invisible(.Call(git2r_stash_pop, object, index))
+    invisible(.Call(git2r_stash_apply, object, index))
 }
 
 ##' Drop stash
