@@ -58,7 +58,7 @@ stopifnot(identical(length(stash_list(repo)), 1L))
 tree(stash_list(repo)[[1]])
 
 ## Drop stash
-stash_drop(repo, 0)
+stash_drop(repo, 1)
 stopifnot(identical(stash_list(repo), list()))
 
 ## Check stash_drop argument

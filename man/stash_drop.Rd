@@ -4,16 +4,16 @@
 \alias{stash_drop}
 \title{Drop stash}
 \usage{
-stash_drop(object = ".", index = 0)
+stash_drop(object = ".", index = 1)
 }
 \arguments{
 \item{object}{path to a repository, or a \code{git_repository}
 object, or the stash \code{object} to drop. Default is a
 \code{path = '.'} to a reposiory.}
 
-\item{index}{Zero based index to the stash to drop. Only used when
+\item{index}{The index to the stash to drop. Only used when
 \code{object} is a path to a repository or a
-\code{git_repository} object. Default is \code{index = 0}.}
+\code{git_repository} object. Default is \code{index = 1}.}
 }
 \value{
 invisible NULL
@@ -55,7 +55,7 @@ stash_list(repo)
 stash_drop(stash_list(repo)[[1]])
 
 ## Drop stash using an index to stash
-stash_drop(repo, 0)
+stash_drop(repo, 1)
 
 # View stashes
 stash_list(repo)

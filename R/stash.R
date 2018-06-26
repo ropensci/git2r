@@ -19,9 +19,9 @@
 ##' @param object path to a repository, or a \code{git_repository}
 ##'     object, or the stash \code{object} to drop. Default is a
 ##'     \code{path = '.'} to a reposiory.
-##' @param index Zero based index to the stash to drop. Only used when
+##' @param index The index to the stash to drop. Only used when
 ##'     \code{object} is a path to a repository or a
-##'     \code{git_repository} object. Default is \code{index = 0}.
+##'     \code{git_repository} object. Default is \code{index = 1}.
 ##' @return invisible NULL
 ##' @export
 ##' @examples \dontrun{
@@ -57,31 +57,27 @@
 ##' stash_drop(stash_list(repo)[[1]])
 ##'
 ##' ## Drop stash using an index to stash
-##' stash_drop(repo, 0)
+##' stash_drop(repo, 1)
 ##'
 ##' # View stashes
 ##' stash_list(repo)
 ##' }
-stash_drop <- function(object = ".", index = 0) {
+stash_drop <- function(object = ".", index = 1) {
     if (inherits(object, "git_stash")) {
         ## Determine the index of the stash in the stash list
-        i <- match(object$sha, vapply(stash_list(object$repo),
-                                      "[[", character(1), "sha"))
-
-        ## The stash list is zero-based
-        index <- i - 1L
-
+        index <- match(object$sha, vapply(stash_list(object$repo),
+                                          "[[", character(1), "sha"))
         object <- object$repo
     } else {
         object <- lookup_repository(object)
     }
 
+    ## The stash list is zero-based
     if (abs(index - round(index)) >= .Machine$double.eps^0.5)
         stop("'index' must be an integer")
-    index <- as.integer(index)
+    index <- as.integer(index) - 1L
 
-    .Call(git2r_stash_drop, object, index)
-    invisible(NULL)
+    invisible(.Call(git2r_stash_drop, object, index))
 }
 
 ##' Stash
