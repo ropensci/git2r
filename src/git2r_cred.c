@@ -33,6 +33,7 @@
 
 #include <git2.h>
 
+#include "git2r_arg.h"
 #include "git2r_cred.h"
 #include "git2r_S3.h"
 #include "git2r_transfer.h"
@@ -332,25 +333,13 @@ static int git2r_cred_default_ssh_keys(
 {
 #ifdef WIN32
     static const wchar_t *key_patterns[] =
-        {L"%HOME%\\.ssh\\id_ed25519",
-         L"%HOME%\\.ssh\\id_ecdsa",
-         L"%HOME%\\.ssh\\id_rsa",
-         L"%HOME%\\.ssh\\id_dsa",
-         L"%HOMEDRIVE%%HOMEPATH%\\.ssh\\id_ed25519",
-         L"%HOMEDRIVE%%HOMEPATH%\\.ssh\\id_ecdsa",
+        {L"%HOME%\\.ssh\\id_rsa",
          L"%HOMEDRIVE%%HOMEPATH%\\.ssh\\id_rsa",
-         L"%HOMEDRIVE%%HOMEPATH%\\.ssh\\id_dsa",
-         L"%USERPROFILE%\\.ssh\\id_ed25519",
-         L"%USERPROFILE%\\.ssh\\id_ecdsa",
          L"%USERPROFILE%\\.ssh\\id_rsa",
-         L"%USERPROFILE%\\.ssh\\id_dsa",
          NULL};
 #else
     static const char *key_patterns[] =
-        {"~/.ssh/id_ed25519",
-         "~/.ssh/id_ecdsa",
-         "~/.ssh/id_rsa",
-         "~/.ssh/id_dsa",
+        {"~/.ssh/id_rsa",
          NULL};
 #endif
     git2r_ssh_key_t keys;
@@ -393,7 +382,18 @@ static int git2r_cred_default_ssh_keys(
 
     if (td->ssh_key < kv_size(keys)) {
         /* Try next key */
-        char *passphrase = NULL;
+        const char *passphrase = NULL;
+        SEXP pass, askpass, call;
+
+        PROTECT(pass = Rf_eval(Rf_lang2(Rf_install("getNamespace"),
+                                        Rf_ScalarString(Rf_mkChar("getPass"))),
+                               R_GlobalEnv));
+        PROTECT(call = Rf_lcons(Rf_findFun(Rf_install("getPass"), pass),
+                                Rf_lcons(Rf_mkString("passphrase: "), R_NilValue)));
+
+        PROTECT(askpass = Rf_eval(call, pass));
+        if (git2r_arg_check_string(askpass) == 0)
+            passphrase = CHAR(STRING_ELT(askpass, 0));
 
         if (git_cred_ssh_key_new(
                 cred,
@@ -405,6 +405,8 @@ static int git2r_cred_default_ssh_keys(
 
         /* Increment index to next key to try. */
         td->ssh_key += 1;
+
+        UNPROTECT(3);
     } else {
         /* No more keys to try. */
         error = -1;
