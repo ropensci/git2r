@@ -388,8 +388,10 @@ static int git2r_cred_default_ssh_keys(
         PROTECT(pass = Rf_eval(Rf_lang2(Rf_install("getNamespace"),
                                         Rf_ScalarString(Rf_mkChar("getPass"))),
                                R_GlobalEnv));
-        PROTECT(call = Rf_lcons(Rf_findFun(Rf_install("getPass"), pass),
-                                Rf_lcons(Rf_mkString("passphrase: "), R_NilValue)));
+        PROTECT(call = Rf_lcons(
+                    Rf_findFun(Rf_install("getPass"), pass),
+                    Rf_lcons(Rf_mkString(kv_A(keys, td->ssh_key).private),
+                             R_NilValue)));
 
         PROTECT(askpass = Rf_eval(call, pass));
         if (git2r_arg_check_string(askpass) == 0)
