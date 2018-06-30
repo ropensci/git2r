@@ -70,7 +70,6 @@ build_Makevars.in <- function() {
     on.exit(close(Makevars))
 
     files <- list(libgit2 = o_files("src/libgit2/src"),
-                  libgit2.sha1dc = o_files("src/libgit2/src/hash/sha1dc"),
                   libgit2.streams = o_files("src/libgit2/src/streams"),
                   libgit2.transports =
                       o_files("src/libgit2/src/transports",

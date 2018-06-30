@@ -3212,11 +3212,52 @@ if test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
         PKGCONFIG_CFLAGS=`"${PKG_CONFIG}" --cflags "${PKG_CONFIG_NAME}"`
         PKGCONFIG_LIBS=`"${PKG_CONFIG}" --libs "${PKG_CONFIG_NAME}"`
     fi
-    
+
     # Hack for CRAN server: do not use preinstalled libgit2
-    if [ -e "/Builds/CRAN-QA-Simon" ] || [ -e "/Volumes/SSD-Data/Builds" ]; then
-      unset PKGCONFIG_CFLAGS
-      unset PKGCONFIG_LIBS
+    CRAN_server=no
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for /Builds/CRAN-QA-Simon" >&5
+$as_echo_n "checking for /Builds/CRAN-QA-Simon... " >&6; }
+if ${ac_cv_file__Builds_CRAN_QA_Simon+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/Builds/CRAN-QA-Simon"; then
+  ac_cv_file__Builds_CRAN_QA_Simon=yes
+else
+  ac_cv_file__Builds_CRAN_QA_Simon=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__Builds_CRAN_QA_Simon" >&5
+$as_echo "$ac_cv_file__Builds_CRAN_QA_Simon" >&6; }
+if test "x$ac_cv_file__Builds_CRAN_QA_Simon" = xyes; then :
+  CRAN_server=yes
+else
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for /Volumes/SSD-Data/Builds" >&5
+$as_echo_n "checking for /Volumes/SSD-Data/Builds... " >&6; }
+if ${ac_cv_file__Volumes_SSD_Data_Builds+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/Volumes/SSD-Data/Builds"; then
+  ac_cv_file__Volumes_SSD_Data_Builds=yes
+else
+  ac_cv_file__Volumes_SSD_Data_Builds=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__Volumes_SSD_Data_Builds" >&5
+$as_echo "$ac_cv_file__Volumes_SSD_Data_Builds" >&6; }
+if test "x$ac_cv_file__Volumes_SSD_Data_Builds" = xyes; then :
+  CRAN_server=yes
+fi
+
+fi
+
+    if test "x${CRAN_server}" = xyes; then
+        unset PKGCONFIG_CFLAGS
+        unset PKGCONFIG_LIBS
     fi
 
     if test "x${PKGCONFIG_CFLAGS}${PKGCONFIG_LIBS}" = x; then
@@ -4931,11 +4972,12 @@ fi
 fi
 
 if test "x${have_ssl}" = xno; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING:
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "
   ---------------------------------------------
-   Unable to find the OpenSSL library on this
-   system. Building a version without support
-   for HTTPS transport.
+   The OpenSSL library that is required to
+   build git2r was not found.
 
    Please install:
      libssl-dev    (package on e.g. Debian and Ubuntu)
@@ -4947,24 +4989,8 @@ if test "x${have_ssl}" = xno; then
    is unable to find it, you can specify
    the include and lib path to OpenSSL with:
    R CMD INSTALL git2r --configure-vars='LIBS=-L/path/to/libs CPPFLAGS=-I/path/to/headers'
-  ---------------------------------------------" >&5
-$as_echo "$as_me: WARNING:
   ---------------------------------------------
-   Unable to find the OpenSSL library on this
-   system. Building a version without support
-   for HTTPS transport.
-
-   Please install:
-     libssl-dev    (package on e.g. Debian and Ubuntu)
-     openssl-devel (package on e.g. Fedora, CentOS and RHEL)
-   and try again.
-
-   If the OpenSSL library is installed on
-   your system but the git2r configuration
-   is unable to find it, you can specify
-   the include and lib path to OpenSSL with:
-   R CMD INSTALL git2r --configure-vars='LIBS=-L/path/to/libs CPPFLAGS=-I/path/to/headers'
-  ---------------------------------------------" >&2;}
+See \`config.log' for more details" "$LINENO" 5; }
 fi
 
 # Check for LibSSH2
@@ -5653,16 +5679,7 @@ esac
 CPPFLAGS="-I. -Ilibgit2/src -Ilibgit2/include -Ilibgit2/deps/http-parser ${CPPFLAGS}"
 
 # Add definitions
-CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DLIBGIT2_NO_FEATURES_H -DR_NO_REMAP -DSTRICT_R_HEADERS"
-
-# Specify sha1 implementation
-CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_COLLISIONDETECT -DSHA1DC_NO_STANDARD_INCLUDES=1"
-CPPFLAGS="${CPPFLAGS} -DSHA1DC_CUSTOM_INCLUDE_SHA1_C=\\\"common.h\\\" -DSHA1DC_CUSTOM_INCLUDE_UBC_CHECK_C=\\\"common.h\\\""
-
-# Add definition for https
-if test "x${have_ssl}" = xyes; then
-    CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL -DGIT_HTTPS=1"
-fi
+CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DGIT_OPENSSL -DGIT_SHA1_OPENSSL -DGIT_HTTPS=1 -DLIBGIT2_NO_FEATURES_H -DR_NO_REMAP -DSTRICT_R_HEADERS"
 
 # Add definition for ssh
 if test "x${have_ssh2}" = xyes; then

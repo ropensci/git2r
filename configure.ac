@@ -52,11 +52,14 @@ if test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
         PKGCONFIG_CFLAGS=`"${PKG_CONFIG}" --cflags "${PKG_CONFIG_NAME}"`
         PKGCONFIG_LIBS=`"${PKG_CONFIG}" --libs "${PKG_CONFIG_NAME}"`
     fi
-    
+
     # Hack for CRAN server: do not use preinstalled libgit2
-    if [ -e "/Builds/CRAN-QA-Simon" ] || [ -e "/Volumes/SSD-Data/Builds" ]; then
-      unset PKGCONFIG_CFLAGS
-      unset PKGCONFIG_LIBS
+    CRAN_server=no
+    AC_CHECK_FILE([/Builds/CRAN-QA-Simon], [CRAN_server=yes], [
+    AC_CHECK_FILE([/Volumes/SSD-Data/Builds], [CRAN_server=yes], [ ])])
+    if test "x${CRAN_server}" = xyes; then
+        unset PKGCONFIG_CFLAGS
+        unset PKGCONFIG_LIBS
     fi
 
     if test "x${PKGCONFIG_CFLAGS}${PKGCONFIG_LIBS}" = x; then
@@ -207,11 +210,10 @@ if test "x${have_ssl}" = xno; then
 fi
 
 if test "x${have_ssl}" = xno; then
-    AC_MSG_WARN([
+    AC_MSG_FAILURE([
   ---------------------------------------------
-   Unable to find the OpenSSL library on this
-   system. Building a version without support
-   for HTTPS transport.
+   The OpenSSL library that is required to
+   build git2r was not found.
 
    Please install:
      libssl-dev    (package on e.g. Debian and Ubuntu)
@@ -278,16 +280,7 @@ esac
 CPPFLAGS="-I. -Ilibgit2/src -Ilibgit2/include -Ilibgit2/deps/http-parser ${CPPFLAGS}"
 
 # Add definitions
-CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DLIBGIT2_NO_FEATURES_H -DR_NO_REMAP -DSTRICT_R_HEADERS"
-
-# Specify sha1 implementation
-CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_COLLISIONDETECT -DSHA1DC_NO_STANDARD_INCLUDES=1"
-CPPFLAGS="${CPPFLAGS} -DSHA1DC_CUSTOM_INCLUDE_SHA1_C=\\\"common.h\\\" -DSHA1DC_CUSTOM_INCLUDE_UBC_CHECK_C=\\\"common.h\\\""
-
-# Add definition for https
-if test "x${have_ssl}" = xyes; then
-    CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL -DGIT_HTTPS=1"
-fi
+CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DGIT_OPENSSL -DGIT_SHA1_OPENSSL -DGIT_HTTPS=1 -DLIBGIT2_NO_FEATURES_H -DR_NO_REMAP -DSTRICT_R_HEADERS"
 
 # Add definition for ssh
 if test "x${have_ssh2}" = xyes; then
