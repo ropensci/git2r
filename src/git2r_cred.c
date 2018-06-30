@@ -451,10 +451,9 @@ int git2r_cred_acquire_cb(
     credentials = td->credentials;
     if (Rf_isNull(credentials)) {
         if (GIT_CREDTYPE_SSH_KEY & allowed_types) {
-	    if (td->ssh_key_agent_tried == 0) {
-                /* First, try to get credentials from the
-                 * ssh-agent. */
-                td->ssh_key_agent_tried = 1;
+	    if (td->ssh_key_agent) {
+                /* Try to get credentials from the ssh-agent. */
+                td->ssh_key_agent = 0;
                 if (git_cred_ssh_key_from_agent(cred, username_from_url) == 0)
                     return 0;
             }
