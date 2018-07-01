@@ -38,6 +38,35 @@ typedef struct {
 } git2r_stash_list_cb_data;
 
 /**
+ * Apply a single stashed state from the stash list.
+ *
+ * @param repo S3 class git_repository that contains the stash
+ * @param index The index to the stash. 0 is the most recent stash.
+ * @return R_NilValue
+ */
+SEXP git2r_stash_apply(SEXP repo, SEXP index)
+{
+    int error;
+    git_repository *repository = NULL;
+
+    if (git2r_arg_check_integer_gte_zero(index))
+        git2r_error(__func__, NULL, "'index'", git2r_err_integer_gte_zero_arg);
+
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
+
+    error = git_stash_apply(repository, INTEGER(index)[0], NULL);
+    if (error == GIT_ENOTFOUND)
+        error = 0;
+    git_repository_free(repository);
+    if (error)
+        git2r_error(__func__, giterr_last(), NULL, NULL);
+
+    return R_NilValue;
+}
+
+/**
  * Remove a stash from the stash list
  *
  * @param repo S3 class git_repository that contains the stash
@@ -57,6 +86,36 @@ SEXP git2r_stash_drop(SEXP repo, SEXP index)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     error = git_stash_drop(repository, INTEGER(index)[0]);
+    git_repository_free(repository);
+    if (error)
+        git2r_error(__func__, giterr_last(), NULL, NULL);
+
+    return R_NilValue;
+}
+
+/**
+ * Apply a single stashed state from the stash list and remove it from
+ * the list if successful.
+ *
+ * @param repo S3 class git_repository that contains the stash
+ * @param index The index to the stash. 0 is the most recent stash.
+ * @return R_NilValue
+ */
+SEXP git2r_stash_pop(SEXP repo, SEXP index)
+{
+    int error;
+    git_repository *repository = NULL;
+
+    if (git2r_arg_check_integer_gte_zero(index))
+        git2r_error(__func__, NULL, "'index'", git2r_err_integer_gte_zero_arg);
+
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
+
+    error = git_stash_pop(repository, INTEGER(index)[0], NULL);
+    if (error == GIT_ENOTFOUND)
+        error = 0;
     git_repository_free(repository);
     if (error)
         git2r_error(__func__, giterr_last(), NULL, NULL);
