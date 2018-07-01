@@ -304,14 +304,14 @@ on_error:
     return -1;
 }
 #else
-static int git2r_expand_key(
-    char** out,
-    const char *key,
-    const char *ext)
+static int git2r_expand_key(char** out, const char *key, const char *ext)
 {
     const char *buf = R_ExpandFileName(key);
 
     *out = NULL;
+
+    if (!key || !ext)
+        return -1;
 
     if (git2r_join_str(out, buf, ext))
         return -1;
@@ -325,6 +325,34 @@ static int git2r_expand_key(
     return -1;
 }
 #endif
+
+static int git2r_ssh_key_needs_passphrase(const char *key)
+{
+    int i;
+    FILE* file = fopen(key, "r");
+    char str[65];
+
+    if (!file)
+        return 0;
+
+    /* Look for "ENCRYPTED" in the first three lines. */
+    for (i = 0; i < 3; i++) {
+        if (fgets(str, sizeof(str), file)) {
+            str[sizeof(str) - 1] = '\0';
+            if (strstr(str, "ENCRYPTED")) {
+                fclose(file);
+                return 1;
+            }
+        } else {
+            fclose(file);
+            return 0;
+        }
+    }
+
+    fclose(file);
+
+    return 0;
+}
 
 static int git2r_cred_default_ssh_keys(
     git_cred **cred,
@@ -351,7 +379,7 @@ static int git2r_cred_default_ssh_keys(
     for (i = 0; key_patterns[i]; i++) {
         char *private_key = NULL;
         char *public_key = NULL;
-        int duplicate_key = 0;
+        int unique_key = 1;
         int j;
 
         if (git2r_expand_key(&private_key, key_patterns[i], "") ||
@@ -365,37 +393,45 @@ static int git2r_cred_default_ssh_keys(
         for (j = 0; j < kv_size(keys); j++) {
             if (strcmp(private_key, kv_A(keys, j).private) == 0 ||
                 strcmp(public_key, kv_A(keys, j).public) == 0) {
-                duplicate_key = 1;
+                unique_key = 0;
                 break;
             }
         }
 
-        if (duplicate_key) {
-            free(private_key);
-            free(public_key);
-        } else {
+        if (unique_key) {
             /* Add key to list. */
             const git2r_ssh_key key = {private_key, public_key};
             kv_push(git2r_ssh_key, keys, key);
+        } else {
+            free(private_key);
+            free(public_key);
         }
     }
 
     if (td->ssh_key < kv_size(keys)) {
         /* Try next key */
-        const char *passphrase = NULL;
+        int nprotect = 0;
         SEXP pass, askpass, call;
+        const char *passphrase = NULL;
 
-        PROTECT(pass = Rf_eval(Rf_lang2(Rf_install("getNamespace"),
-                                        Rf_ScalarString(Rf_mkChar("getPass"))),
-                               R_GlobalEnv));
-        PROTECT(call = Rf_lcons(
-                    Rf_findFun(Rf_install("getPass"), pass),
-                    Rf_lcons(Rf_mkString(kv_A(keys, td->ssh_key).private),
-                             R_NilValue)));
+        if (git2r_ssh_key_needs_passphrase(kv_A(keys, td->ssh_key).private)) {
+            /* Use the R package getPass to ask for the passphrase. */
+            PROTECT(pass = Rf_eval(Rf_lang2(Rf_install("getNamespace"),
+                                            Rf_ScalarString(Rf_mkChar("getPass"))),
+                                   R_GlobalEnv));
+            nprotect++;
 
-        PROTECT(askpass = Rf_eval(call, pass));
-        if (git2r_arg_check_string(askpass) == 0)
-            passphrase = CHAR(STRING_ELT(askpass, 0));
+            PROTECT(call = Rf_lcons(
+                        Rf_findFun(Rf_install("getPass"), pass),
+                        Rf_lcons(Rf_mkString("Enter passphrase: "),
+                                 R_NilValue)));
+            nprotect++;
+
+            PROTECT(askpass = Rf_eval(call, pass));
+            nprotect++;
+            if (git2r_arg_check_string(askpass) == 0)
+                passphrase = CHAR(STRING_ELT(askpass, 0));
+        }
 
         if (git_cred_ssh_key_new(
                 cred,
@@ -408,7 +444,8 @@ static int git2r_cred_default_ssh_keys(
         /* Increment index to next key to try. */
         td->ssh_key += 1;
 
-        UNPROTECT(3);
+        if (nprotect)
+            UNPROTECT(nprotect);
     } else {
         /* No more keys to try. */
         error = -1;
