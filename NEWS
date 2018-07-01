@@ -5,6 +5,12 @@ NEW FEATURES
 
 * Added the 'git_config_files' method to locate configuration files.
 
+* Added the 'stash_pop' method to apply a single stashed state from
+  the stash list and remove it from the list if successful.
+
+* Added the 'stash_apply' method to apply a single stashed state from
+  the stash list.
+
 IMPROVEMENTS
 
 * Updated the bundled libgit2 source code to v0.27.2 (8d36dc6).
@@ -38,6 +44,9 @@ BREAKING CHANGES
 
 * Removed the 'libgit2_sha' method. Use the 'libgit2_version' method
   instead.
+
+* Changed the 'stash_drop' argument 'index' from zero-based to
+  one-based i.e. use index = 1 to drop the first stash.
 
 git2r 0.21.0
 ------------
