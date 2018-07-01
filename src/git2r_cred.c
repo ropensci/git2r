@@ -37,15 +37,6 @@
 #include "git2r_cred.h"
 #include "git2r_S3.h"
 #include "git2r_transfer.h"
-#include "kvec.h"
-
-typedef struct git2r_ssh_key
-{
-    char *private;
-    char *public;
-} git2r_ssh_key;
-
-typedef kvec_t(git2r_ssh_key) git2r_ssh_key_t;
 
 /**
  * Read an environtmental variable.
@@ -354,10 +345,9 @@ static int git2r_ssh_key_needs_passphrase(const char *key)
     return 0;
 }
 
-static int git2r_cred_default_ssh_keys(
+static int git2r_cred_default_ssh_key(
     git_cred **cred,
-    const char *username_from_url,
-    git2r_transfer_data *td)
+    const char *username_from_url)
 {
 #ifdef WIN32
     static const wchar_t *key_patterns[] =
@@ -370,18 +360,17 @@ static int git2r_cred_default_ssh_keys(
         {"~/.ssh/id_rsa",
          NULL};
 #endif
-    git2r_ssh_key_t keys;
-    int i, error = 0;
+    int error = 1, i;
 
-    kv_init(keys);
-
-    /* Find unique keys. */
+    /* Find key. */
     for (i = 0; key_patterns[i]; i++) {
         char *private_key = NULL;
         char *public_key = NULL;
-        int unique_key = 1;
-        int j;
+        const char *passphrase = NULL;
+        SEXP pass, askpass, call;
+        int nprotect = 0;
 
+        /* Expand key pattern and check if files exists. */
         if (git2r_expand_key(&private_key, key_patterns[i], "") ||
             git2r_expand_key(&public_key, key_patterns[i], ".pub"))
         {
@@ -390,31 +379,7 @@ static int git2r_cred_default_ssh_keys(
             continue;
         }
 
-        for (j = 0; j < kv_size(keys); j++) {
-            if (strcmp(private_key, kv_A(keys, j).private) == 0 ||
-                strcmp(public_key, kv_A(keys, j).public) == 0) {
-                unique_key = 0;
-                break;
-            }
-        }
-
-        if (unique_key) {
-            /* Add key to list. */
-            const git2r_ssh_key key = {private_key, public_key};
-            kv_push(git2r_ssh_key, keys, key);
-        } else {
-            free(private_key);
-            free(public_key);
-        }
-    }
-
-    if (td->ssh_key < kv_size(keys)) {
-        /* Try next key */
-        int nprotect = 0;
-        SEXP pass, askpass, call;
-        const char *passphrase = NULL;
-
-        if (git2r_ssh_key_needs_passphrase(kv_A(keys, td->ssh_key).private)) {
+        if (git2r_ssh_key_needs_passphrase(private_key)) {
             /* Use the R package getPass to ask for the passphrase. */
             PROTECT(pass = Rf_eval(Rf_lang2(Rf_install("getNamespace"),
                                             Rf_ScalarString(Rf_mkChar("getPass"))),
@@ -433,32 +398,25 @@ static int git2r_cred_default_ssh_keys(
                 passphrase = CHAR(STRING_ELT(askpass, 0));
         }
 
-        if (git_cred_ssh_key_new(
-                cred,
-                username_from_url,
-                kv_A(keys, td->ssh_key).public,
-                kv_A(keys, td->ssh_key).private,
-                passphrase))
-            error = -1;
+        error = git_cred_ssh_key_new(
+            cred,
+            username_from_url,
+            public_key,
+            private_key,
+            passphrase);
 
-        /* Increment index to next key to try. */
-        td->ssh_key += 1;
-
+        /* Cleanup. */
+        free(private_key);
+        free(public_key);
         if (nprotect)
             UNPROTECT(nprotect);
-    } else {
-        /* No more keys to try. */
-        error = -1;
+
+        break;
     }
 
-    /* Cleanup. */
-    for (i = 0; i < kv_size(keys); i++) {
-        free(kv_A(keys, i).private);
-        free(kv_A(keys, i).public);
-    }
-    kv_destroy(keys);
-
-    return error;
+    if (error)
+        return -1;
+    return 0;
 }
 
 /**
@@ -490,14 +448,19 @@ int git2r_cred_acquire_cb(
     credentials = td->credentials;
     if (Rf_isNull(credentials)) {
         if (GIT_CREDTYPE_SSH_KEY & allowed_types) {
-	    if (td->ssh_key_agent) {
+	    if (td->ssh_agent) {
                 /* Try to get credentials from the ssh-agent. */
-                td->ssh_key_agent = 0;
+                td->ssh_agent = 0;
                 if (git_cred_ssh_key_from_agent(cred, username_from_url) == 0)
                     return 0;
             }
 
-            return git2r_cred_default_ssh_keys(cred, username_from_url, td);
+	    if (td->ssh_key) {
+                /* Try to get credentials from ssh key. */
+                td->ssh_key = 0;
+                if (git2r_cred_default_ssh_key(cred, username_from_url) == 0)
+                    return 0;
+            }
         }
 
         return -1;

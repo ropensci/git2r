@@ -31,15 +31,15 @@ typedef struct {
     int received_progress;
     int received_done;
     int verbose;
-    int ssh_key_agent;
+    int ssh_agent;
     int ssh_key;
     SEXP credentials;
 } git2r_transfer_data;
 
 #ifdef WIN32
-#  define GIT2R_TRANSFER_DATA_INIT {0, 0, 0, 0, 0, R_NilValue}
+#  define GIT2R_TRANSFER_DATA_INIT {0, 0, 0, 0, 1, R_NilValue}
 #else
-#  define GIT2R_TRANSFER_DATA_INIT {0, 0, 0, 1, 0, R_NilValue}
+#  define GIT2R_TRANSFER_DATA_INIT {0, 0, 0, 1, 1, R_NilValue}
 #endif
 
 void git2r_transfer_progress_init(
