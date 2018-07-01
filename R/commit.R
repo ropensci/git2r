@@ -74,7 +74,28 @@ add_session_info <- function(message) {
 ##' @param author Signature with author and author time of commit.
 ##' @param committer Signature with committer and commit time of
 ##'     commit.
-##' @return \code{git_commit} object
+##' @return A list of class \code{git_commit} with entries:
+##' \describe{
+##'   \item{sha}{
+##'     The 40 character hexadecimal string of the SHA-1
+##'   }
+##'   \item{author}{
+##'     An author signature
+##'   }
+##'   \item{committer}{
+##'     The committer signature
+##'   }
+##'   \item{summary}{
+##'     The short "summary" of a git commit message, comprising the first
+##'     paragraph of the message with whitespace trimmed and squashed.
+##'   }
+##'   \item{message}{
+##'     The message of a commit
+##'   }
+##'   \item{repo}{
+##'     The \code{git_repository} object that contains the commit
+##'   }
+##' }
 ##' @export
 ##' @examples
 ##' \dontrun{

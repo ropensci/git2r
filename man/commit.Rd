@@ -25,7 +25,28 @@ FALSE.}
 commit.}
 }
 \value{
-\code{git_commit} object
+A list of class \code{git_commit} with entries:
+\describe{
+  \item{sha}{
+    The 40 character hexadecimal string of the SHA-1
+  }
+  \item{author}{
+    An author signature
+  }
+  \item{committer}{
+    The committer signature
+  }
+  \item{summary}{
+    The short "summary" of a git commit message, comprising the first
+    paragraph of the message with whitespace trimmed and squashed.
+  }
+  \item{message}{
+    The message of a commit
+  }
+  \item{repo}{
+    The \code{git_repository} object that contains the commit
+  }
+}
 }
 \description{
 Commit
