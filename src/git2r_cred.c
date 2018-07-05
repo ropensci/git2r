@@ -38,6 +38,8 @@
 #include "git2r_S3.h"
 #include "git2r_transfer.h"
 
+#define GIT2R_ARRAY_SIZE(x) (sizeof(x)/sizeof(x[0]))
+
 /**
  * Read an environtmental variable.
  *
@@ -261,8 +263,8 @@ static int git2r_expand_key(char** out, const wchar_t *key, const char *ext)
 
     /* Expands environment-variable strings and replaces them with the
      * values defined for the current user. */
-    len_wbuf = ExpandEnvironmentStringsW(key, wbuf, MAX_PATH);
-    if (!len_wbuf || len_wbuf > MAX_PATH)
+    len_wbuf = ExpandEnvironmentStringsW(key, wbuf, GIT2R_ARRAY_SIZE(wbuf));
+    if (!len_wbuf || len_wbuf > GIT2R_ARRAY_SIZE(wbuf))
         goto on_error;
 
     /* Map wide character string to a new utf8 character string. */
@@ -319,18 +321,17 @@ static int git2r_expand_key(char** out, const char *key, const char *ext)
 
 static int git2r_ssh_key_needs_passphrase(const char *key)
 {
-    int i;
+    size_t i;
     FILE* file = fopen(key, "r");
-    char str[65];
 
-    if (!file)
+    if (file == NULL)
         return 0;
 
     /* Look for "ENCRYPTED" in the first three lines. */
     for (i = 0; i < 3; i++) {
-        if (fgets(str, sizeof(str), file)) {
-            str[sizeof(str) - 1] = '\0';
-            if (strstr(str, "ENCRYPTED")) {
+        char str[128] = {0};
+        if (fgets(str, GIT2R_ARRAY_SIZE(str), file) != NULL) {
+            if (strstr(str, "ENCRYPTED") != NULL) {
                 fclose(file);
                 return 1;
             }
@@ -350,20 +351,18 @@ static int git2r_cred_default_ssh_key(
     const char *username_from_url)
 {
 #ifdef WIN32
-    static const wchar_t *key_patterns[] =
+    static const wchar_t *key_patterns[3] =
         {L"%HOME%\\.ssh\\id_rsa",
          L"%HOMEDRIVE%%HOMEPATH%\\.ssh\\id_rsa",
-         L"%USERPROFILE%\\.ssh\\id_rsa",
-         NULL};
+         L"%USERPROFILE%\\.ssh\\id_rsa"};
 #else
-    static const char *key_patterns[] =
-        {"~/.ssh/id_rsa",
-         NULL};
+    static const char *key_patterns[1] = {"~/.ssh/id_rsa"};
 #endif
-    int error = 1, i;
+    size_t i;
+    int error = 1;
 
     /* Find key. */
-    for (i = 0; key_patterns[i]; i++) {
+    for (i = 0; i < GIT2R_ARRAY_SIZE(key_patterns); i++) {
         char *private_key = NULL;
         char *public_key = NULL;
         const char *passphrase = NULL;
