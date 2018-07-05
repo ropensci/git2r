@@ -31,8 +31,8 @@ typedef struct {
     int received_progress;
     int received_done;
     int verbose;
-    int ssh_agent;
-    int ssh_key;
+    int use_ssh_agent;
+    int use_ssh_key;
     SEXP credentials;
 } git2r_transfer_data;
 
