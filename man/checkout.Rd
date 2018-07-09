@@ -5,7 +5,7 @@
 \title{Checkout}
 \usage{
 checkout(object = NULL, branch = NULL, create = FALSE, force = FALSE,
-  path = NULL)
+  path = NULL, ...)
 }
 \arguments{
 \item{object}{A path to a repository, or a \code{git_repository}
@@ -26,6 +26,8 @@ target. This will throw away local changes. Default is
 \item{path}{Limit the checkout operation to only certain
 paths. This argument is only used if branch is NULL. Default
 is \code{NULL}.}
+
+\item{...}{Additional arguments. Not used.}
 }
 \value{
 invisible NULL

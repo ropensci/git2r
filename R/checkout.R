@@ -95,6 +95,7 @@ checkout_git_object <- function(object, force) {
 ##' @param path Limit the checkout operation to only certain
 ##'     paths. This argument is only used if branch is NULL. Default
 ##'     is \code{NULL}.
+##' @param ...  Additional arguments. Not used.
 ##' @return invisible NULL
 ##' @export
 ##' @examples
@@ -159,7 +160,8 @@ checkout <- function(object = NULL,
                      branch = NULL,
                      create = FALSE,
                      force  = FALSE,
-                     path   = NULL)
+                     path   = NULL,
+                     ...)
 {
     if (checkout_git_object(object, force))
         return(invisible(NULL))
