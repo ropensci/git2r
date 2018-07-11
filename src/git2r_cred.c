@@ -346,77 +346,77 @@ static int git2r_ssh_key_needs_passphrase(const char *key)
     return 0;
 }
 
-static int git2r_cred_default_ssh_key(
-    git_cred **cred,
-    const char *username_from_url)
-{
-#ifdef WIN32
-    static const wchar_t *key_patterns[3] =
-        {L"%HOME%\\.ssh\\id_rsa",
-         L"%HOMEDRIVE%%HOMEPATH%\\.ssh\\id_rsa",
-         L"%USERPROFILE%\\.ssh\\id_rsa"};
-#else
-    static const char *key_patterns[1] = {"~/.ssh/id_rsa"};
-#endif
-    size_t i;
-    int error = 1;
+/* static int git2r_cred_default_ssh_key( */
+/*     git_cred **cred, */
+/*     const char *username_from_url) */
+/* { */
+/* #ifdef WIN32 */
+/*     static const wchar_t *key_patterns[3] = */
+/*         {L"%HOME%\\.ssh\\id_rsa", */
+/*          L"%HOMEDRIVE%%HOMEPATH%\\.ssh\\id_rsa", */
+/*          L"%USERPROFILE%\\.ssh\\id_rsa"}; */
+/* #else */
+/*     static const char *key_patterns[1] = {"~/.ssh/id_rsa"}; */
+/* #endif */
+/*     size_t i; */
+/*     int error = 1; */
 
-    /* Find key. */
-    for (i = 0; i < GIT2R_ARRAY_SIZE(key_patterns); i++) {
-        char *private_key = NULL;
-        char *public_key = NULL;
-        const char *passphrase = NULL;
-        SEXP pass, askpass, call;
-        int nprotect = 0;
+/*     /\* Find key. *\/ */
+/*     for (i = 0; i < GIT2R_ARRAY_SIZE(key_patterns); i++) { */
+/*         char *private_key = NULL; */
+/*         char *public_key = NULL; */
+/*         const char *passphrase = NULL; */
+/*         SEXP pass, askpass, call; */
+/*         int nprotect = 0; */
 
-        /* Expand key pattern and check if files exists. */
-        if (git2r_expand_key(&private_key, key_patterns[i], "") ||
-            git2r_expand_key(&public_key, key_patterns[i], ".pub"))
-        {
-            free(private_key);
-            free(public_key);
-            continue;
-        }
+/*         /\* Expand key pattern and check if files exists. *\/ */
+/*         if (git2r_expand_key(&private_key, key_patterns[i], "") || */
+/*             git2r_expand_key(&public_key, key_patterns[i], ".pub")) */
+/*         { */
+/*             free(private_key); */
+/*             free(public_key); */
+/*             continue; */
+/*         } */
 
-        if (git2r_ssh_key_needs_passphrase(private_key)) {
-            /* Use the R package getPass to ask for the passphrase. */
-            PROTECT(pass = Rf_eval(Rf_lang2(Rf_install("getNamespace"),
-                                            Rf_ScalarString(Rf_mkChar("getPass"))),
-                                   R_GlobalEnv));
-            nprotect++;
+/*         if (git2r_ssh_key_needs_passphrase(private_key)) { */
+/*             /\* Use the R package getPass to ask for the passphrase. *\/ */
+/*             PROTECT(pass = Rf_eval(Rf_lang2(Rf_install("getNamespace"), */
+/*                                             Rf_ScalarString(Rf_mkChar("getPass"))), */
+/*                                    R_GlobalEnv)); */
+/*             nprotect++; */
 
-            PROTECT(call = Rf_lcons(
-                        Rf_findFun(Rf_install("getPass"), pass),
-                        Rf_lcons(Rf_mkString("Enter passphrase: "),
-                                 R_NilValue)));
-            nprotect++;
+/*             PROTECT(call = Rf_lcons( */
+/*                         Rf_findFun(Rf_install("getPass"), pass), */
+/*                         Rf_lcons(Rf_mkString("Enter passphrase: "), */
+/*                                  R_NilValue))); */
+/*             nprotect++; */
 
-            PROTECT(askpass = Rf_eval(call, pass));
-            nprotect++;
-            if (git2r_arg_check_string(askpass) == 0)
-                passphrase = CHAR(STRING_ELT(askpass, 0));
-        }
+/*             PROTECT(askpass = Rf_eval(call, pass)); */
+/*             nprotect++; */
+/*             if (git2r_arg_check_string(askpass) == 0) */
+/*                 passphrase = CHAR(STRING_ELT(askpass, 0)); */
+/*         } */
 
-        error = git_cred_ssh_key_new(
-            cred,
-            username_from_url,
-            public_key,
-            private_key,
-            passphrase);
+/*         error = git_cred_ssh_key_new( */
+/*             cred, */
+/*             username_from_url, */
+/*             public_key, */
+/*             private_key, */
+/*             passphrase); */
 
-        /* Cleanup. */
-        free(private_key);
-        free(public_key);
-        if (nprotect)
-            UNPROTECT(nprotect);
+/*         /\* Cleanup. *\/ */
+/*         free(private_key); */
+/*         free(public_key); */
+/*         if (nprotect) */
+/*             UNPROTECT(nprotect); */
 
-        break;
-    }
+/*         break; */
+/*     } */
 
-    if (error)
-        return -1;
-    return 0;
-}
+/*     if (error) */
+/*         return -1; */
+/*     return 0; */
+/* } */
 
 /**
  * Callback if the remote host requires authentication in order to
@@ -454,12 +454,12 @@ int git2r_cred_acquire_cb(
                     return 0;
             }
 
-	    if (td->use_ssh_key) {
-                /* Try to get credentials from default ssh key. */
-                td->use_ssh_key = 0;
-                if (git2r_cred_default_ssh_key(cred, username_from_url) == 0)
-                    return 0;
-            }
+	    /* if (td->use_ssh_key) { */
+            /*     /\* Try to get credentials from default ssh key. *\/ */
+            /*     td->use_ssh_key = 0; */
+            /*     if (git2r_cred_default_ssh_key(cred, username_from_url) == 0) */
+            /*         return 0; */
+            /* } */
         }
 
         return -1;
