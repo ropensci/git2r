@@ -351,8 +351,12 @@ char *git__strsep(char **end, const char *sep)
 
 size_t git__linenlen(const char *buffer, size_t buffer_len)
 {
+    if (buffer == NULL) {
+        return buffer_len;
+    } else {
 	char *nl = memchr(buffer, '\n', buffer_len);
 	return nl ? (size_t)(nl - buffer) + 1 : buffer_len;
+    }
 }
 
 void git__hexdump(const char *buffer, size_t len)
