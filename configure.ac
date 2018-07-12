@@ -49,17 +49,10 @@ PKG_CFLAGS=""
 USE_BUNDLED_LIBGIT2=yes
 if test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
     if test [ -n "$PKG_CONFIG" ] ; then
-        PKGCONFIG_CFLAGS=`"${PKG_CONFIG}" --cflags "${PKG_CONFIG_NAME}"`
-        PKGCONFIG_LIBS=`"${PKG_CONFIG}" --libs "${PKG_CONFIG_NAME}"`
-    fi
-
-    # Hack for CRAN server: do not use preinstalled libgit2
-    CRAN_server=no
-    AC_CHECK_FILE([/Builds/CRAN-QA-Simon], [CRAN_server=yes], [
-    AC_CHECK_FILE([/Volumes/SSD-Data/Builds], [CRAN_server=yes], [ ])])
-    if test "x${CRAN_server}" = xyes; then
-        unset PKGCONFIG_CFLAGS
-        unset PKGCONFIG_LIBS
+        if $PKG_CONFIG ${PKG_CONFIG_NAME} --atleast-version=0.27.0; then
+            PKGCONFIG_CFLAGS=`"${PKG_CONFIG}" --cflags "${PKG_CONFIG_NAME}"`
+            PKGCONFIG_LIBS=`"${PKG_CONFIG}" --libs "${PKG_CONFIG_NAME}"`
+        fi
     fi
 
     if test "x${PKGCONFIG_CFLAGS}${PKGCONFIG_LIBS}" = x; then
