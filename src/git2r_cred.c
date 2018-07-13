@@ -214,137 +214,137 @@ static int git2r_cred_user_pass(
     return -1;
 }
 
-static int git2r_join_str(char** out, const char *str_a, const char *str_b)
-{
-    int len_a, len_b;
+/* static int git2r_join_str(char** out, const char *str_a, const char *str_b) */
+/* { */
+/*     int len_a, len_b; */
 
-    if (!str_a || !str_b)
-        return -1;
+/*     if (!str_a || !str_b) */
+/*         return -1; */
 
-    len_a = strlen(str_a);
-    len_b = strlen(str_b);
+/*     len_a = strlen(str_a); */
+/*     len_b = strlen(str_b); */
 
-    *out = malloc(len_a + len_b + 1);
-    if (!*out)
-        return -1;
+/*     *out = malloc(len_a + len_b + 1); */
+/*     if (!*out) */
+/*         return -1; */
 
-    if (len_a)
-        memcpy(*out, str_a, len_a);
-    if (len_b)
-        memcpy(*out + len_a, str_b, len_b);
-    (*out)[len_a + len_b] = '\0';
+/*     if (len_a) */
+/*         memcpy(*out, str_a, len_a); */
+/*     if (len_b) */
+/*         memcpy(*out + len_a, str_b, len_b); */
+/*     (*out)[len_a + len_b] = '\0'; */
 
-    return 0;
-}
+/*     return 0; */
+/* } */
 
-static int git2r_file_exists(const char *path)
-{
-#ifdef WIN32
-    struct _stati64 sb;
-    return _stati64(path, &sb) == 0;
-#else
-    struct stat sb;
-    return stat(path, &sb) == 0;
-#endif
-}
+/* static int git2r_file_exists(const char *path) */
+/* { */
+/* #ifdef WIN32 */
+/*     struct _stati64 sb; */
+/*     return _stati64(path, &sb) == 0; */
+/* #else */
+/*     struct stat sb; */
+/*     return stat(path, &sb) == 0; */
+/* #endif */
+/* } */
 
-#ifdef WIN32
-static int git2r_expand_key(char** out, const wchar_t *key, const char *ext)
-{
-    wchar_t wbuf[MAX_PATH];
-    char *buf_utf8 = NULL;
-    DWORD len_wbuf;
-    int len_utf8;
+/* #ifdef WIN32 */
+/* static int git2r_expand_key(char** out, const wchar_t *key, const char *ext) */
+/* { */
+/*     wchar_t wbuf[MAX_PATH]; */
+/*     char *buf_utf8 = NULL; */
+/*     DWORD len_wbuf; */
+/*     int len_utf8; */
 
-    *out = NULL;
+/*     *out = NULL; */
 
-    if (!key || !ext)
-        goto on_error;
+/*     if (!key || !ext) */
+/*         goto on_error; */
 
-    /* Expands environment-variable strings and replaces them with the
-     * values defined for the current user. */
-    len_wbuf = ExpandEnvironmentStringsW(key, wbuf, GIT2R_ARRAY_SIZE(wbuf));
-    if (!len_wbuf || len_wbuf > GIT2R_ARRAY_SIZE(wbuf))
-        goto on_error;
+/*     /\* Expands environment-variable strings and replaces them with the */
+/*      * values defined for the current user. *\/ */
+/*     len_wbuf = ExpandEnvironmentStringsW(key, wbuf, GIT2R_ARRAY_SIZE(wbuf)); */
+/*     if (!len_wbuf || len_wbuf > GIT2R_ARRAY_SIZE(wbuf)) */
+/*         goto on_error; */
 
-    /* Map wide character string to a new utf8 character string. */
-    len_utf8 = WideCharToMultiByte(
-        CP_UTF8, WC_ERR_INVALID_CHARS, wbuf,-1, NULL, 0, NULL, NULL);
-    if (!len_utf8)
-        goto on_error;
+/*     /\* Map wide character string to a new utf8 character string. *\/ */
+/*     len_utf8 = WideCharToMultiByte( */
+/*         CP_UTF8, WC_ERR_INVALID_CHARS, wbuf,-1, NULL, 0, NULL, NULL); */
+/*     if (!len_utf8) */
+/*         goto on_error; */
 
-    buf_utf8 = malloc(len_utf8);
-    if (!buf_utf8)
-        goto on_error;
+/*     buf_utf8 = malloc(len_utf8); */
+/*     if (!buf_utf8) */
+/*         goto on_error; */
 
-    len_utf8 = WideCharToMultiByte(
-        CP_UTF8, WC_ERR_INVALID_CHARS, wbuf, -1, buf_utf8, len_utf8, NULL, NULL);
-    if (!len_utf8)
-        goto on_error;
+/*     len_utf8 = WideCharToMultiByte( */
+/*         CP_UTF8, WC_ERR_INVALID_CHARS, wbuf, -1, buf_utf8, len_utf8, NULL, NULL); */
+/*     if (!len_utf8) */
+/*         goto on_error; */
 
-    if (git2r_join_str(out, buf_utf8, ext))
-        goto on_error;
-    free(buf_utf8);
+/*     if (git2r_join_str(out, buf_utf8, ext)) */
+/*         goto on_error; */
+/*     free(buf_utf8); */
 
-    if (git2r_file_exists(*out))
-        return 0;
+/*     if (git2r_file_exists(*out)) */
+/*         return 0; */
 
-on_error:
-    free(buf_utf8);
-    free(*out);
-    *out = NULL;
+/* on_error: */
+/*     free(buf_utf8); */
+/*     free(*out); */
+/*     *out = NULL; */
 
-    return -1;
-}
-#else
-static int git2r_expand_key(char** out, const char *key, const char *ext)
-{
-    const char *buf = R_ExpandFileName(key);
+/*     return -1; */
+/* } */
+/* #else */
+/* static int git2r_expand_key(char** out, const char *key, const char *ext) */
+/* { */
+/*     const char *buf = R_ExpandFileName(key); */
 
-    *out = NULL;
+/*     *out = NULL; */
 
-    if (!key || !ext)
-        return -1;
+/*     if (!key || !ext) */
+/*         return -1; */
 
-    if (git2r_join_str(out, buf, ext))
-        return -1;
+/*     if (git2r_join_str(out, buf, ext)) */
+/*         return -1; */
 
-    if (git2r_file_exists(*out))
-        return 0;
+/*     if (git2r_file_exists(*out)) */
+/*         return 0; */
 
-    free(*out);
-    *out = NULL;
+/*     free(*out); */
+/*     *out = NULL; */
 
-    return -1;
-}
-#endif
+/*     return -1; */
+/* } */
+/* #endif */
 
-static int git2r_ssh_key_needs_passphrase(const char *key)
-{
-    size_t i;
-    FILE* file = fopen(key, "r");
+/* static int git2r_ssh_key_needs_passphrase(const char *key) */
+/* { */
+/*     size_t i; */
+/*     FILE* file = fopen(key, "r"); */
 
-    if (file == NULL)
-        return 0;
+/*     if (file == NULL) */
+/*         return 0; */
 
-    /* Look for "ENCRYPTED" in the first three lines. */
-    for (i = 0; i < 3; i++) {
-        char str[128] = {0};
-        if (fgets(str, GIT2R_ARRAY_SIZE(str), file) != NULL) {
-            if (strstr(str, "ENCRYPTED") != NULL) {
-                fclose(file);
-                return 1;
-            }
-        } else {
-            fclose(file);
-            return 0;
-        }
-    }
+/*     /\* Look for "ENCRYPTED" in the first three lines. *\/ */
+/*     for (i = 0; i < 3; i++) { */
+/*         char str[128] = {0}; */
+/*         if (fgets(str, GIT2R_ARRAY_SIZE(str), file) != NULL) { */
+/*             if (strstr(str, "ENCRYPTED") != NULL) { */
+/*                 fclose(file); */
+/*                 return 1; */
+/*             } */
+/*         } else { */
+/*             fclose(file); */
+/*             return 0; */
+/*         } */
+/*     } */
 
-    fclose(file);
+/*     fclose(file); */
 
-    return 0;
-}
+/*     return 0; */
+/* } */
 
 /* static int git2r_cred_default_ssh_key( */
 /*     git_cred **cred, */
