@@ -262,6 +262,8 @@ if test "x${have_ssh2}" = xno; then
    the include and lib path to LibSSH2 with:
    R CMD INSTALL git2r --configure-vars='LIBS=-L/path/to/libs CPPFLAGS=-I/path/to/headers'
   ---------------------------------------------])
+else
+    CPPFLAGS="${CPPFLAGS} -DGIT_SSH"
 fi
 
 # Check for iconv
@@ -275,7 +277,7 @@ case "${host_os}" in
 esac
 
 # Check for libcurl
-LIBCURL_CHECK_CONFIG(, , [have_libcurl=yes], [have_libcurl=no])
+LIBCURL_CHECK_CONFIG(, , [CPPFLAGS="${CPPFLAGS} -DGIT_CURL"], [ ])
 
 # Configuration specific for solaris
 case "${host_os}" in
@@ -308,16 +310,6 @@ case "${host_os}" in
         fi
     ;;
 esac
-
-# Add definition for ssh
-if test "x${have_ssh2}" = xyes; then
-    CPPFLAGS="${CPPFLAGS} -DGIT_SSH"
-fi
-
-# Add definition for curl
-if test "x${have_libcurl}" = xyes; then
-    CPPFLAGS="${CPPFLAGS} -DGIT_CURL"
-fi
 
 # Add definitions specific for solaris
 case "${host_os}" in
