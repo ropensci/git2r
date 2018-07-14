@@ -61,7 +61,7 @@ OBJECTS.libgit2.xdiff = libgit2/src/xdiff/xdiffi.o libgit2/src/xdiff/xemit.o lib
 OBJECTS.http_parser = libgit2/deps/http-parser/http_parser.o
 
 LIBGIT = $(OBJECTS.libgit2) $(OBJECTS.libgit2.streams) $(OBJECTS.libgit2.transports) \
-    $(OBJECTS.libgit2.unix) $(OBJECTS.libgit2.xdiff) $(OBJECTS.http_parser) @GIT2R_SRC_REGEX@
+    $(OBJECTS.libgit2.unix) $(OBJECTS.libgit2.xdiff) $(OBJECTS.http_parser) @GIT2R_SRC_REGEX@ @GIT2R_SRC_SHA1DC@
 
 $(SHLIB): libmygit.a
 
