@@ -62,7 +62,7 @@ if test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
                 if test "x${BREW}" = xyes; then
                     BREWDIR=`brew --prefix`
                     USE_BUNDLED_LIBGIT2=no
-                elif test "x${AUTOBREW}" = xyes; then
+                elif test "x${autobrew}" = xyes; then
                     curl -sfL "https://jeroen.github.io/autobrew/${PKG_BREW_NAME}" > autobrew
                     source autobrew
                     USE_BUNDLED_LIBGIT2=no
