@@ -265,7 +265,6 @@ if test "x${have_ssh2}" = xno; then
 fi
 
 # Check for iconv
-have_iconv=no
 case "${host_os}" in
     darwin*)
         AM_ICONV

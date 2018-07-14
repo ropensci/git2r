@@ -5147,7 +5147,6 @@ $as_echo "$as_me: WARNING:
 fi
 
 # Check for iconv
-have_iconv=no
 case "${host_os}" in
     darwin*)
 
