@@ -207,6 +207,10 @@ if test "x${have_ssl}" = xno; then
 fi
 
 if test "x${have_ssl}" = xno; then
+    case "${host_os}" in
+        darwin*)
+        ;;
+        *)
     AC_MSG_FAILURE([
   ---------------------------------------------
    The OpenSSL library that is required to
@@ -223,6 +227,8 @@ if test "x${have_ssl}" = xno; then
    the include and lib path to OpenSSL with:
    R CMD INSTALL git2r --configure-vars='LIBS=-L/path/to/libs CPPFLAGS=-I/path/to/headers'
   ---------------------------------------------])
+        ;;
+    esac
 fi
 
 # Check for LibSSH2
