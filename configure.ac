@@ -254,6 +254,17 @@ if test "x${have_ssh2}" = xno; then
   ---------------------------------------------])
 fi
 
+# Check for iconv
+have_iconv=no
+case "${host_os}" in
+    darwin*)
+        AM_ICONV
+        if test "x${am_cv_func_iconv}" = xyes; then
+            CPPFLAGS="${CPPFLAGS} -DGIT_USE_ICONV"
+        fi
+    ;;
+esac
+
 # Check for libcurl
 LIBCURL_CHECK_CONFIG(, , [have_libcurl=yes], [have_libcurl=no])
 
@@ -283,11 +294,6 @@ fi
 # Add definition for curl
 if test "x${have_libcurl}" = xyes; then
     CPPFLAGS="${CPPFLAGS} -DGIT_CURL"
-fi
-
-# Add definition for iconv
-if test "x${have_iconv}" = xyes; then
-    CPPFLAGS="${CPPFLAGS} -DGIT_USE_ICONV"
 fi
 
 # Add definitions specific for solaris
