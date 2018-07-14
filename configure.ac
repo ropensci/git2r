@@ -313,9 +313,7 @@ case "${host_os}" in
         LIBS="${LIBS} -framework Security -framework CoreFoundation"
     ;;
     *)
-        if test "x${have_ssl}" = xyes; then
-            CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL -DGIT_HTTPS=1"
-        fi
+        CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL -DGIT_HTTPS=1"
     ;;
 esac
 
@@ -377,7 +375,7 @@ AC_CONFIG_FILES([src/Makevars_libgit2])
 echo "
   ----- Results of the git2r package configure -----
 
-    OpenSSL to talk over HTTPS...........: ${have_ssl}
+    HTTPS transport......................: yes
     LibSSH2 to enable the SSH transport..: ${have_ssh2}
 
   --------------------------------------------------
