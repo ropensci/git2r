@@ -47,7 +47,6 @@ PKG_CFLAGS=""
 
 # Check if building against bundled libgit2 or system libgit2
 USE_BUNDLED_LIBGIT2=yes
-USE_AUTOBREW=no
 if test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
     if test [ -n "$PKG_CONFIG" ] ; then
         if $PKG_CONFIG ${PKG_CONFIG_NAME} --atleast-version=0.27.0; then
@@ -63,12 +62,10 @@ if test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
                 if test "x${BREW}" = xyes; then
                     BREWDIR=`brew --prefix`
                     USE_BUNDLED_LIBGIT2=no
-                else
-                    if test "x${USE_AUTOBREW}" = xyes; then
-                        curl -sfL "https://jeroen.github.io/autobrew/${PKG_BREW_NAME}" > autobrew
-                        source autobrew
-                        USE_BUNDLED_LIBGIT2=no
-                    fi
+                elif test "x${AUTOBREW}" = xyes; then
+                    curl -sfL "https://jeroen.github.io/autobrew/${PKG_BREW_NAME}" > autobrew
+                    source autobrew
+                    USE_BUNDLED_LIBGIT2=no
                 fi
             ;;
         esac

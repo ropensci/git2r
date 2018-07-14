@@ -3222,7 +3222,6 @@ PKG_CFLAGS=""
 
 # Check if building against bundled libgit2 or system libgit2
 USE_BUNDLED_LIBGIT2=yes
-USE_AUTOBREW=no
 if test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
     if test  -n "$PKG_CONFIG"  ; then
         if $PKG_CONFIG ${PKG_CONFIG_NAME} --atleast-version=0.27.0; then
@@ -3274,12 +3273,10 @@ fi
                 if test "x${BREW}" = xyes; then
                     BREWDIR=`brew --prefix`
                     USE_BUNDLED_LIBGIT2=no
-                else
-                    if test "x${USE_AUTOBREW}" = xyes; then
-                        curl -sfL "https://jeroen.github.io/autobrew/${PKG_BREW_NAME}" > autobrew
-                        source autobrew
-                        USE_BUNDLED_LIBGIT2=no
-                    fi
+                elif test "x${AUTOBREW}" = xyes; then
+                    curl -sfL "https://jeroen.github.io/autobrew/${PKG_BREW_NAME}" > autobrew
+                    source autobrew
+                    USE_BUNDLED_LIBGIT2=no
                 fi
             ;;
         esac
@@ -6955,7 +6952,7 @@ CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DLIBGIT2_NO_FEATURES
 # Specify sha1 implementation
 case "${host_os}" in
     darwin*)
-        CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_COLLISIONDETECT -DSHA1DC_NO_STANDARD_INCLUDES=1"
+        CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_COLLISIONDETECT=1 -DSHA1DC_NO_STANDARD_INCLUDES=1"
         CPPFLAGS="${CPPFLAGS} -DSHA1DC_CUSTOM_INCLUDE_SHA1_C=\\\"common.h\\\" -DSHA1DC_CUSTOM_INCLUDE_UBC_CHECK_C=\\\"common.h\\\""
         GIT2R_SRC_SHA1DC="libgit2/src/hash/sha1dc/sha1.o libgit2/src/hash/sha1dc/ubc_check.o"
     ;;
