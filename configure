@@ -6811,14 +6811,17 @@ _ACEOF
 
   if test x$_libcurl_with = xno || test x$libcurl_cv_lib_curl_usable != xyes ; then
      # This is the IF-NO path
-
+     have_libcurl=no
   else
      # This is the IF-YES path
-     CPPFLAGS="${CPPFLAGS} -DGIT_CURL"
+     have_libcurl=yes
   fi
 
   unset _libcurl_with
 
+if test "x${have_libcurl}" = xyes; then
+    CPPFLAGS="${CPPFLAGS} -DGIT_CURL"
+fi
 
 # Configuration specific for solaris
 case "${host_os}" in

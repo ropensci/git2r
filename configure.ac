@@ -277,7 +277,10 @@ case "${host_os}" in
 esac
 
 # Check for libcurl
-LIBCURL_CHECK_CONFIG(, , [CPPFLAGS="${CPPFLAGS} -DGIT_CURL"], [ ])
+LIBCURL_CHECK_CONFIG(, , [have_libcurl=yes], [have_libcurl=no])
+if test "x${have_libcurl}" = xyes; then
+    CPPFLAGS="${CPPFLAGS} -DGIT_CURL"
+fi
 
 # Configuration specific for solaris
 case "${host_os}" in
