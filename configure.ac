@@ -82,12 +82,13 @@ else
     USE_BUNDLED_LIBGIT2=no,
 fi
 
+# Find the compiler and compiler flags to use
+CC=`"${RBIN}" CMD config CC`
+CFLAGS=`"${RBIN}" CMD config CFLAGS`
+CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
+
 ################# Begin configuration to use system libgit2 ##################
 if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
-    # Find the compiler and compiler flags to use
-    CC=`"${RBIN}" CMD config CC`
-    CFLAGS=`"${RBIN}" CMD config CFLAGS`
-    CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
 
     AC_MSG_CHECKING([whether the libgit2 version will work in git2r])
     libgit2_ver_ok=no
@@ -131,11 +132,6 @@ fi
 if test "x${USE_BUNDLED_LIBGIT2}" = xyes; then
 
 AC_MSG_NOTICE([Attempting configuration of bundled libgit2])
-
-# Find the compiler and compiler flags to use
-CC=`"${RBIN}" CMD config CC`
-CFLAGS=`"${RBIN}" CMD config CFLAGS`
-CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
 
 # Use R to determine architecture of the machine
 AC_MSG_CHECKING([size of void*])

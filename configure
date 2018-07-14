@@ -3293,12 +3293,13 @@ else
     USE_BUNDLED_LIBGIT2=no,
 fi
 
+# Find the compiler and compiler flags to use
+CC=`"${RBIN}" CMD config CC`
+CFLAGS=`"${RBIN}" CMD config CFLAGS`
+CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
+
 ################# Begin configuration to use system libgit2 ##################
 if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
-    # Find the compiler and compiler flags to use
-    CC=`"${RBIN}" CMD config CC`
-    CFLAGS=`"${RBIN}" CMD config CFLAGS`
-    CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the libgit2 version will work in git2r" >&5
 $as_echo_n "checking whether the libgit2 version will work in git2r... " >&6; }
@@ -4505,11 +4506,6 @@ if test "x${USE_BUNDLED_LIBGIT2}" = xyes; then
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: Attempting configuration of bundled libgit2" >&5
 $as_echo "$as_me: Attempting configuration of bundled libgit2" >&6;}
-
-# Find the compiler and compiler flags to use
-CC=`"${RBIN}" CMD config CC`
-CFLAGS=`"${RBIN}" CMD config CFLAGS`
-CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
 
 # Use R to determine architecture of the machine
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking size of void*" >&5
