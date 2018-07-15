@@ -28,6 +28,10 @@ matrix:
     - os: osx
       osx_image: xcode9.3 # High Sierra
       disable_homebrew: true
+    - os: osx
+      osx_image: xcode9.3 # High Sierra
+      disable_homebrew: true
+      env: autobrew=yes
 
 after_success:
   - test $R_CODECOV && Rscript -e "covr::coveralls(exclusions=list.files('src/libgit2', pattern='[.](c|h)$', full.names=TRUE, recursive=TRUE))"
