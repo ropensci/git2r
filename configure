@@ -4513,6 +4513,46 @@ if test "x${USE_BUNDLED_LIBGIT2}" = xyes; then
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: Package dependency requirement 'libgit2 >= ${LIBGIT2_MIN_VERSION}' could not be satisfied." >&5
 $as_echo "$as_me: Package dependency requirement 'libgit2 >= ${LIBGIT2_MIN_VERSION}' could not be satisfied." >&6;}
+
+echo "
+  -----------------------------------------------------------------------
+
+   Unable to find the libgit2 library on this system. Building 'git2r'
+   using the bundled source of the libgit2 library.
+
+   To build git2r with a system installation of libgit2, please install:
+     libgit2-dev   (package on e.g. Debian and Ubuntu)
+     libgit2-devel (package on e.g. Fedora, CentOS and RHEL)
+     libgit2       (Homebrew package on OS X)
+   and try again.
+
+   If the libgit2 library is installed on your system but the git2r
+   configuration is unable to find it, you can specify the include and
+   lib path to libgit2 with:
+
+   given you downloaded a tar-gz archive:
+   R CMD INSTALL git2r-.tar.gz --configure-vars='INCLUDE_DIR=/path/to/include LIB_DIR=/path/to/lib'
+
+   or cloned the GitHub git2r repository into a directory:
+   R CMD INSTALL git2r/ --configure-vars='INCLUDE_DIR=/path/to/include LIB_DIR=/path/to/lib'
+
+   or download and install git2r in R using
+   install.packages('git2r', type='source', configure.vars='LIB_DIR=-L/path/to/libs INCLUDE_DIR=-I/path/to/headers')
+
+   On macOS, another possibility is to let the configuration
+   automatically download the libgit2 library from the Homebrew
+   package manager with:
+
+   R CMD INSTALL git2r-.tar.gz --configure-vars='autobrew=yes'
+   or
+   R CMD INSTALL git2r/ --configure-vars='autobrew=yes'
+   or
+   install.packages('git2r', type='source', configure.vars='autobrew=yes')
+
+  -----------------------------------------------------------------------
+
+"
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: Attempting configuration of bundled libgit2" >&5
 $as_echo "$as_me: Attempting configuration of bundled libgit2" >&6;}
 
@@ -5122,6 +5162,7 @@ if test "x${have_ssh2}" = xno; then
    To build with SSH support, please install:
      libssh2-1-dev (package on e.g. Debian and Ubuntu)
      libssh2-devel (package on e.g. Fedora, CentOS and RHEL)
+     libssh2 (Homebrew package on OS X)
    and try again.
 
    If the LibSSH2 library is installed on
@@ -5139,6 +5180,7 @@ $as_echo "$as_me: WARNING:
    To build with SSH support, please install:
      libssh2-1-dev (package on e.g. Debian and Ubuntu)
      libssh2-devel (package on e.g. Fedora, CentOS and RHEL)
+     libssh2 (Homebrew package on OS X)
    and try again.
 
    If the LibSSH2 library is installed on
