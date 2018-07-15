@@ -45,11 +45,18 @@ PKG_BREW_NAME="libgit2"
 PKG_LIBS="-lgit2"
 PKG_CFLAGS=""
 
+# The minimum version of libgit2 that is compatible with git2r. The
+# version 0.26 is in all Fedora releases and at least the latest
+# Ubuntu.
+LIBGIT2_MIN_VERSION=0.26.0
+
 # Check if building against bundled libgit2 or system libgit2
 USE_BUNDLED_LIBGIT2=yes
 if test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
     if test [ -n "$PKG_CONFIG" ] ; then
-        if $PKG_CONFIG ${PKG_CONFIG_NAME} --atleast-version=0.27.0; then
+        # Check if libgit2 is installed and have a version that is
+        # compatible with git2r.
+        if $PKG_CONFIG ${PKG_CONFIG_NAME} --atleast-version=${LIBGIT2_MIN_VERSION}; then
             PKGCONFIG_CFLAGS=`"${PKG_CONFIG}" --cflags "${PKG_CONFIG_NAME}"`
             PKGCONFIG_LIBS=`"${PKG_CONFIG}" --libs "${PKG_CONFIG_NAME}"`
         fi
@@ -131,6 +138,7 @@ fi
 ################# Begin configuration to build bundled libgit2 ###############
 if test "x${USE_BUNDLED_LIBGIT2}" = xyes; then
 
+AC_MSG_NOTICE([Package dependency requirement 'libgit2 >= ${LIBGIT2_MIN_VERSION}' could not be satisfied.])
 AC_MSG_NOTICE([Attempting configuration of bundled libgit2])
 
 # Use R to determine architecture of the machine
