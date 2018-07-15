@@ -1,6 +1,20 @@
 git2r 0.22.1.9000
 -----------------
 
+BREAKING CHANGE
+
+* On macOS, git2r no longer enables SSH transport by default. This is
+  due to the complexity to build the dependencies for SSH transport in
+  an R package when macOS no longer ships the OpenSSL headers.
+  However, you can install git2r from source on macOS (see the 'R
+  Installation and Administration' manual) with SSH transport enabled
+  if you first install the libgit2 library, for example, using the
+  Homebrew package manager. Another possibility is to let the build
+  configuration automatically download the libgit2 library from the
+  Homebrew package manager with:
+
+  install.packages('git2r', type='source', configure.vars='autobrew=yes')
+
 git2r 0.22.1
 ------------
 
