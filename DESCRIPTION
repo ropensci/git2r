@@ -22,9 +22,12 @@ Type: Package
 LazyData: true
 Biarch: true
 NeedsCompilation: yes
-SystemRequirements: libgit2 headers and library. zlib headers and
-    library. OpenSSL headers and library. LibSSH2 (optional on
-    non-Windows) to enable the SSH transport.
+SystemRequirements: By default, git2r uses a system installation of
+    the libgit2 headers and library. However, if a system installation
+    is not available, builds and uses a bundled version of the libgit2
+    source. zlib headers and library. OpenSSL headers and library
+    (non-macOS). LibSSH2 (optional on non-Windows) to enable the SSH
+    transport.
 Collate:
     'blame.R'
     'blob.R'
