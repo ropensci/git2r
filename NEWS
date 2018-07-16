@@ -1,6 +1,10 @@
 git2r 0.22.1.9000
 -----------------
 
+IMPROVEMENTS
+
+* Updated the bundled libgit2 source code to v0.27.3 (504bd54).
+
 BREAKING CHANGE
 
 * On macOS, git2r no longer enables SSH transport by default. This is
