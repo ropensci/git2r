@@ -7,11 +7,13 @@
 
 #include "global.h"
 
+#include "alloc.h"
 #include "hash.h"
 #include "sysdir.h"
 #include "filter.h"
 #include "merge_driver.h"
 #include "streams/curl.h"
+#include "streams/mbedtls.h"
 #include "streams/openssl.h"
 #include "thread-utils.h"
 #include "git2/global.h"
@@ -59,13 +61,15 @@ static int init_common(void)
 #endif
 
 	/* Initialize any other subsystems that have global state */
-	if ((ret = git_hash_global_init()) == 0 &&
+	if ((ret = git_allocator_global_init()) == 0 &&
+		(ret = git_hash_global_init()) == 0 &&
 		(ret = git_sysdir_global_init()) == 0 &&
 		(ret = git_filter_global_init()) == 0 &&
 		(ret = git_merge_driver_global_init()) == 0 &&
 		(ret = git_transport_ssh_global_init()) == 0 &&
 		(ret = git_openssl_stream_global_init()) == 0 &&
-		(ret = git_curl_stream_global_init()) == 0)
+		(ret = git_curl_stream_global_init()) == 0 &&
+		(ret = git_mbedtls_stream_global_init()) == 0)
 		ret = git_mwindow_global_init();
 
 	GIT_MEMORY_BARRIER;
@@ -274,10 +278,10 @@ int git_libgit2_init(void)
 {
 	int ret, err;
 
-	ret = git_atomic_inc(&git__n_inits);
-
 	if ((err = pthread_mutex_lock(&_init_mutex)) != 0)
 		return err;
+
+	ret = git_atomic_inc(&git__n_inits);
 	err = pthread_once(&_once_init, init_once);
 	err |= pthread_mutex_unlock(&_init_mutex);
 
@@ -291,13 +295,13 @@ int git_libgit2_shutdown(void)
 {
 	void *ptr = NULL;
 	pthread_once_t new_once = PTHREAD_ONCE_INIT;
-	int ret;
+	int error, ret;
+
+	if ((error = pthread_mutex_lock(&_init_mutex)) != 0)
+		return error;
 
 	if ((ret = git_atomic_dec(&git__n_inits)) != 0)
-		return ret;
-
-	if ((ret = pthread_mutex_lock(&_init_mutex)) != 0)
-		return ret;
+		goto out;
 
 	/* Shut down any subsystems that have global state */
 	shutdown_common();
@@ -312,10 +316,11 @@ int git_libgit2_shutdown(void)
 	git_mutex_free(&git__mwindow_mutex);
 	_once_init = new_once;
 
-	if ((ret = pthread_mutex_unlock(&_init_mutex)) != 0)
-		return ret;
+out:
+	if ((error = pthread_mutex_unlock(&_init_mutex)) != 0)
+		return error;
 
-	return 0;
+	return ret;
 }
 
 git_global_st *git__global_state(void)

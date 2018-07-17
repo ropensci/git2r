@@ -63,6 +63,9 @@ typedef int64_t git_time_t;
 
 #endif
 
+#include "buffer.h"
+#include "oid.h"
+
 /** Basic type (loose or packed) of any Git object. */
 typedef enum {
 	GIT_OBJ_ANY = -2,		/**< Object can be any of the following */
@@ -181,9 +184,6 @@ typedef struct git_transaction git_transaction;
 /** Annotated commits, the input to merge and rebase. */
 typedef struct git_annotated_commit git_annotated_commit;
 
-/** Merge result */
-typedef struct git_merge_result git_merge_result;
-
 /** Representation of a status collection */
 typedef struct git_status_list git_status_list;
 
@@ -215,7 +215,7 @@ typedef enum {
 	GIT_FILEMODE_COMMIT              = 0160000,
 } git_filemode_t;
 
-/*
+/**
  * A refspec specifies the mapping between remote and local reference
  * names when fetch or pushing.
  */
@@ -425,14 +425,17 @@ typedef enum {
 	GIT_SUBMODULE_RECURSE_ONDEMAND = 2,
 } git_submodule_recurse_t;
 
-/** A type to write in a streaming fashion, for example, for filters. */
 typedef struct git_writestream git_writestream;
 
+/** A type to write in a streaming fashion, for example, for filters. */
 struct git_writestream {
 	int (*write)(git_writestream *stream, const char *buffer, size_t len);
 	int (*close)(git_writestream *stream);
 	void (*free)(git_writestream *stream);
 };
+
+/** Representation of .mailmap file state. */
+typedef struct git_mailmap git_mailmap;
 
 /** @} */
 GIT_END_DECL

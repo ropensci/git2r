@@ -16,7 +16,7 @@
 
 int git_refspec__parse(git_refspec *refspec, const char *input, bool is_fetch)
 {
-	// Ported from https://github.com/git/git/blob/f06d47e7e0d9db709ee204ed13a8a7486149f494/remote.c#L518-636
+	/* Ported from https://github.com/git/git/blob/f06d47e7e0d9db709ee204ed13a8a7486149f494/remote.c#L518-636 */
 
 	size_t llen;
 	int is_glob = 0;
@@ -144,11 +144,11 @@ int git_refspec__parse(git_refspec *refspec, const char *input, bool is_fetch)
         giterr_set(
                 GITERR_INVALID,
                 "'%s' is not a valid refspec.", input);
-        git_refspec__free(refspec);
+        git_refspec__dispose(refspec);
 	return -1;
 }
 
-void git_refspec__free(git_refspec *refspec)
+void git_refspec__dispose(git_refspec *refspec)
 {
 	if (refspec == NULL)
 		return;
@@ -158,6 +158,31 @@ void git_refspec__free(git_refspec *refspec)
 	git__free(refspec->string);
 
 	memset(refspec, 0x0, sizeof(git_refspec));
+}
+
+int git_refspec_parse(git_refspec **out_refspec, const char *input, int is_fetch)
+{
+	git_refspec *refspec;
+	assert(out_refspec && input);
+
+	*out_refspec = NULL;
+
+	refspec = git__malloc(sizeof(git_refspec));
+	GITERR_CHECK_ALLOC(refspec);
+
+	if (git_refspec__parse(refspec, input, !!is_fetch) != 0) {
+		git__free(refspec);
+		return -1;
+	}
+
+	*out_refspec = refspec;
+	return 0;
+}
+
+void git_refspec_free(git_refspec *refspec)
+{
+	git_refspec__dispose(refspec);
+	git__free(refspec);
 }
 
 const char *git_refspec_src(const git_refspec *refspec)
@@ -252,7 +277,7 @@ int git_refspec_transform(git_buf *out, const git_refspec *spec, const char *nam
 	}
 
 	if (!spec->pattern)
-		return git_buf_puts(out, spec->dst);
+		return git_buf_puts(out, spec->dst ? spec->dst : "");
 
 	return refspec_transform(out, spec->src, spec->dst, name);
 }
@@ -359,7 +384,7 @@ int git_refspec__dwim_one(git_vector *out, git_refspec *spec, git_vector *refs)
 		cur->dst = git_buf_detach(&buf);
 	}
 
-	git_buf_free(&buf);
+	git_buf_dispose(&buf);
 
 	if (cur->dst == NULL && spec->dst != NULL) {
 		cur->dst = git__strdup(spec->dst);

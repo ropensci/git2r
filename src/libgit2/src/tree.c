@@ -74,14 +74,6 @@ int git_tree_entry_cmp(const git_tree_entry *e1, const git_tree_entry *e2)
 	return entry_sort_cmp(e1, e2);
 }
 
-int git_tree_entry_icmp(const git_tree_entry *e1, const git_tree_entry *e2)
-{
-	return git_path_cmp(
-		e1->filename, e1->filename_len, git_tree_entry__is_tree(e1),
-		e2->filename, e2->filename_len, git_tree_entry__is_tree(e2),
-		git__strncasecmp);
-}
-
 /**
  * Allocate a new self-contained entry, with enough space after it to
  * store the filename and the id.
@@ -340,41 +332,6 @@ const git_tree_entry *git_tree_entry_byid(
 	}
 
 	return NULL;
-}
-
-int git_tree__prefix_position(const git_tree *tree, const char *path)
-{
-	struct tree_key_search ksearch;
-	size_t at_pos, path_len;
-
-	if (!path)
-		return 0;
-
-	path_len = strlen(path);
-	TREE_ENTRY_CHECK_NAMELEN(path_len);
-
-	ksearch.filename = path;
-	ksearch.filename_len = (uint16_t)path_len;
-
-	/* Find tree entry with appropriate prefix */
-	git_array_search(
-		&at_pos, tree->entries, &homing_search_cmp, &ksearch);
-
-	for (; at_pos < tree->entries.size; ++at_pos) {
-		const git_tree_entry *entry = git_array_get(tree->entries, at_pos);
-		if (homing_search_cmp(&ksearch, entry) < 0)
-			break;
-	}
-
-	for (; at_pos > 0; --at_pos) {
-		const git_tree_entry *entry =
-			git_array_get(tree->entries, at_pos - 1);
-
-		if (homing_search_cmp(&ksearch, entry) > 0)
-			break;
-	}
-
-	return (int)at_pos;
 }
 
 size_t git_tree_entrycount(const git_tree *tree)
@@ -650,7 +607,7 @@ int git_tree__write_index(
 	}
 
 	ret = write_tree(oid, repo, index, "", 0, &shared_buf);
-	git_buf_free(&shared_buf);
+	git_buf_dispose(&shared_buf);
 
 	if (old_ignore_case)
 		git_index__set_ignore_case(index, true);
@@ -814,7 +771,7 @@ int git_treebuilder_write(git_oid *oid, git_treebuilder *bld)
 
 	error = git_treebuilder_write_with_buffer(oid, bld, &buffer);
 
-	git_buf_free(&buffer);
+	git_buf_dispose(&buffer);
 	return error;
 }
 
@@ -1055,7 +1012,7 @@ int git_tree_walk(
 	error = tree_walk(
 		tree, callback, &root_path, payload, (mode == GIT_TREEWALK_PRE));
 
-	git_buf_free(&root_path);
+	git_buf_dispose(&root_path);
 
 	return error;
 }
@@ -1320,7 +1277,7 @@ cleanup:
 		}
 	}
 
-	git_buf_free(&component);
+	git_buf_dispose(&component);
 	git_array_clear(stack);
 	git_vector_free(&entries);
 	return error;

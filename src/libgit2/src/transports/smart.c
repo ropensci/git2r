@@ -82,7 +82,7 @@ static bool is_malformed_http_header(const char *http_header)
 	const char *c;
 	int name_len;
 
-	// Disallow \r and \n
+	/* Disallow \r and \n */
 	c = strchr(http_header, '\r');
 	if (c)
 		return true;
@@ -90,7 +90,7 @@ static bool is_malformed_http_header(const char *http_header)
 	if (c)
 		return true;
 
-	// Require a header name followed by :
+	/* Require a header name followed by : */
 	name_len = http_header_name_length(http_header);
 	if (name_len < 1)
 		return true;
@@ -112,7 +112,7 @@ static bool is_forbidden_custom_header(const char *custom_header)
 	unsigned long i;
 	int name_len = http_header_name_length(custom_header);
 
-	// Disallow headers that we set
+	/* Disallow headers that we set */
 	for (i = 0; i < ARRAY_SIZE(forbidden_custom_headers); i++)
 		if (strncmp(forbidden_custom_headers[i], custom_header, name_len) == 0)
 			return true;
@@ -167,11 +167,13 @@ int git_smart__update_heads(transport_smart *t, git_vector *symrefs)
 			git_vector_foreach(symrefs, j, spec) {
 				git_buf_clear(&buf);
 				if (git_refspec_src_matches(spec, ref->head.name) &&
-				    !(error = git_refspec_transform(&buf, spec, ref->head.name)))
+				    !(error = git_refspec_transform(&buf, spec, ref->head.name))) {
+					git__free(ref->head.symref_target);
 					ref->head.symref_target = git_buf_detach(&buf);
+				}
 			}
 
-			git_buf_free(&buf);
+			git_buf_dispose(&buf);
 
 			if (error < 0)
 				return error;
@@ -190,7 +192,7 @@ static void free_symrefs(git_vector *symrefs)
 	size_t i;
 
 	git_vector_foreach(symrefs, i, spec) {
-		git_refspec__free(spec);
+		git_refspec__dispose(spec);
 		git__free(spec);
 	}
 
@@ -266,14 +268,21 @@ static int git_smart__connect(
 	/* We now have loaded the refs. */
 	t->have_refs = 1;
 
-	first = (git_pkt_ref *)git_vector_get(&t->refs, 0);
+	pkt = (git_pkt *)git_vector_get(&t->refs, 0);
+	if (pkt && GIT_PKT_REF != pkt->type) {
+		giterr_set(GITERR_NET, "invalid response");
+		return -1;
+	}
+	first = (git_pkt_ref *)pkt;
 
 	if ((error = git_vector_init(&symrefs, 1, NULL)) < 0)
 		return error;
 
 	/* Detect capabilities */
-	if (git_smart__detect_caps(first, &t->caps, &symrefs) < 0)
+	if (git_smart__detect_caps(first, &t->caps, &symrefs) < 0) {
+		free_symrefs(&symrefs);
 		return -1;
+	}
 
 	/* If the only ref in the list is capabilities^{} with OID_ZERO, remove it */
 	if (1 == t->refs.length && !strcmp(first->head.name, "capabilities^{}") &&

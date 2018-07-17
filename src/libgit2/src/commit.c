@@ -11,6 +11,7 @@
 #include "git2/object.h"
 #include "git2/repository.h"
 #include "git2/signature.h"
+#include "git2/mailmap.h"
 #include "git2/sys/commit.h"
 
 #include "odb.h"
@@ -74,7 +75,7 @@ static int git_commit__create_buffer_internal(
 	return 0;
 
 on_error:
-	git_buf_free(out);
+	git_buf_dispose(out);
 	return -1;
 }
 
@@ -176,7 +177,7 @@ static int git_commit__create_internal(
 cleanup:
 	git_array_clear(parents);
 	git_reference_free(ref);
-	git_buf_free(&buf);
+	git_buf_dispose(&buf);
 	return error;
 }
 
@@ -886,6 +887,18 @@ int git_commit_create_with_signature(
 		goto cleanup;
 
 cleanup:
-	git_buf_free(&commit);
+	git_buf_dispose(&commit);
 	return error;
+}
+
+int git_commit_committer_with_mailmap(
+	git_signature **out, const git_commit *commit, const git_mailmap *mailmap)
+{
+	return git_mailmap_resolve_signature(out, mailmap, commit->committer);
+}
+
+int git_commit_author_with_mailmap(
+	git_signature **out, const git_commit *commit, const git_mailmap *mailmap)
+{
+	return git_mailmap_resolve_signature(out, mailmap, commit->author);
 }

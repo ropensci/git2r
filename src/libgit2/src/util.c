@@ -351,12 +351,8 @@ char *git__strsep(char **end, const char *sep)
 
 size_t git__linenlen(const char *buffer, size_t buffer_len)
 {
-    if (buffer == NULL) {
-        return buffer_len;
-    } else {
 	char *nl = memchr(buffer, '\n', buffer_len);
 	return nl ? (size_t)(nl - buffer) + 1 : buffer_len;
-    }
 }
 
 void git__hexdump(const char *buffer, size_t len)
@@ -808,6 +804,22 @@ int git__utf8_iterate(const uint8_t *str, int str_len, int32_t *dst)
 double git_time_monotonic(void)
 {
 	return git__timer();
+}
+
+size_t git__utf8_valid_buf_length(const uint8_t *str, size_t str_len)
+{
+	size_t offset = 0;
+
+	while (offset < str_len) {
+		int length = git__utf8_charlen(str + offset, str_len - offset);
+
+		if (length < 0)
+			break;
+
+		offset += length;
+	}
+
+	return offset;
 }
 
 #ifdef GIT_WIN32

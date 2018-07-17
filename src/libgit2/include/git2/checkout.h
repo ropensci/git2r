@@ -243,15 +243,14 @@ typedef void (*git_checkout_perfdata_cb)(
 /**
  * Checkout options structure
  *
- * Zero out for defaults.  Initialize with `GIT_CHECKOUT_OPTIONS_INIT` macro to
- * correctly set the `version` field.  E.g.
+ * Initialize with `GIT_CHECKOUT_OPTIONS_INIT`. Alternatively, you can
+ * use `git_checkout_init_options`.
  *
- *		git_checkout_options opts = GIT_CHECKOUT_OPTIONS_INIT;
  */
 typedef struct git_checkout_options {
 	unsigned int version;
 
-	unsigned int checkout_strategy; /**< default will be a dry run */
+	unsigned int checkout_strategy; /**< default will be a safe checkout */
 
 	int disable_filters;    /**< don't apply filters like CRLF conversion */
 	unsigned int dir_mode;  /**< default is 0755 */
@@ -295,16 +294,18 @@ typedef struct git_checkout_options {
 } git_checkout_options;
 
 #define GIT_CHECKOUT_OPTIONS_VERSION 1
-#define GIT_CHECKOUT_OPTIONS_INIT {GIT_CHECKOUT_OPTIONS_VERSION}
+#define GIT_CHECKOUT_OPTIONS_INIT {GIT_CHECKOUT_OPTIONS_VERSION, GIT_CHECKOUT_SAFE}
 
 /**
-* Initializes a `git_checkout_options` with default values. Equivalent to
-* creating an instance with GIT_CHECKOUT_OPTIONS_INIT.
-*
-* @param opts the `git_checkout_options` struct to initialize.
-* @param version Version of struct; pass `GIT_CHECKOUT_OPTIONS_VERSION`
-* @return Zero on success; -1 on failure.
-*/
+ * Initialize git_checkout_options structure
+ *
+ * Initializes a `git_checkout_options` with default values. Equivalent to creating
+ * an instance with GIT_CHECKOUT_OPTIONS_INIT.
+ *
+ * @param opts The `git_checkout_options` struct to initialize.
+ * @param version The struct version; pass `GIT_CHECKOUT_OPTIONS_VERSION`.
+ * @return Zero on success; -1 on failure.
+ */
 GIT_EXTERN(int) git_checkout_init_options(
 	git_checkout_options *opts,
 	unsigned int version);

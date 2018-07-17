@@ -83,7 +83,7 @@ static void free_refspec(push_spec *spec)
 	if (spec == NULL)
 		return;
 
-	git_refspec__free(&spec->refspec);
+	git_refspec__dispose(&spec->refspec);
 	git__free(spec);
 }
 
@@ -228,7 +228,7 @@ int git_push_update_tips(git_push *push, const git_remote_callbacks *callbacks)
 	error = 0;
 
 on_error:
-	git_buf_free(&remote_ref_name);
+	git_buf_dispose(&remote_ref_name);
 	return error;
 }
 

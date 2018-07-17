@@ -216,6 +216,11 @@ static int ref_pkt(git_pkt **out, const char *line, size_t len)
 	git_pkt_ref *pkt;
 	size_t alloclen;
 
+	if (len < GIT_OID_HEXSZ + 1) {
+		giterr_set(GITERR_NET, "error parsing pkt-line");
+		return -1;
+	}
+
 	pkt = git__malloc(sizeof(git_pkt_ref));
 	GITERR_CHECK_ALLOC(pkt);
 
@@ -370,7 +375,7 @@ static int32_t parse_len(const char *line)
 					num[k] = '.';
 				}
 			}
-			
+
 			giterr_set(GITERR_NET, "invalid hex digit in length: '%s'", num);
 			return -1;
 		}
@@ -483,6 +488,9 @@ int git_pkt_parse_line(
 
 void git_pkt_free(git_pkt *pkt)
 {
+	if (pkt == NULL) {
+		return;
+	}
 	if (pkt->type == GIT_PKT_REF) {
 		git_pkt_ref *p = (git_pkt_ref *) pkt;
 		git__free(p->head.name);
@@ -551,7 +559,7 @@ static int buffer_want_with_caps(const git_remote_head *head, transport_smart_ca
 	git_oid_fmt(oid, &head->oid);
 	git_buf_printf(buf,
 		"%04xwant %s %s\n", (unsigned int)len, oid, git_buf_cstr(&str));
-	git_buf_free(&str);
+	git_buf_dispose(&str);
 
 	GITERR_CHECK_ALLOC_BUF(buf);
 

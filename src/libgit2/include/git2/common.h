@@ -48,6 +48,17 @@ typedef size_t size_t;
 # define GIT_EXTERN(type) extern type
 #endif
 
+/** Declare a function as deprecated. */
+#if defined(__GNUC__)
+# define GIT_DEPRECATED(func) \
+			 __attribute__((deprecated)) \
+			 func
+#elif defined(_MSC_VER)
+# define GIT_DEPRECATED(func) __declspec(deprecated) func
+#else
+# define GIT_DEPRECATED(func) func
+#endif
+
 /** Declare a function's takes printf style arguments. */
 #ifdef __GNUC__
 # define GIT_FORMAT_PRINTF(a,b) __attribute__((format (printf, a, b)))
@@ -183,6 +194,8 @@ typedef enum {
 	GIT_OPT_GET_WINDOWS_SHAREMODE,
 	GIT_OPT_SET_WINDOWS_SHAREMODE,
 	GIT_OPT_ENABLE_STRICT_HASH_VERIFICATION,
+	GIT_OPT_SET_ALLOCATOR,
+	GIT_OPT_ENABLE_UNSAVED_INDEX_SAFETY
 } git_libgit2_opt_t;
 
 /**
@@ -344,6 +357,20 @@ typedef enum {
  *		> objects from disk. This may impact performance due to an
  *		> additional checksum calculation on each object. This defaults
  *		> to enabled.
+ *
+ *	 opts(GIT_OPT_SET_ALLOCATOR, git_allocator *allocator)
+ *
+ *		> Set the memory allocator to a different memory allocator. This
+ *		> allocator will then be used to make all memory allocations for
+ *		> libgit2 operations.
+ *
+ *	 opts(GIT_OPT_ENABLE_UNSAVED_INDEX_SAFETY, int enabled)
+ *
+ *		> Ensure that there are no unsaved changes in the index before
+ *		> beginning any operation that reloads the index from disk (eg,
+ *		> checkout).  If there are unsaved changes, the instruction will
+ *		> fail.  (Using the FORCE flag to checkout will still overwrite
+ *		> these changes.)
  *
  * @param option Option key
  * @param ... value to set the option

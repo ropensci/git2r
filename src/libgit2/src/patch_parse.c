@@ -98,7 +98,7 @@ static int parse_header_git_oldpath(
 	patch->old_path = git_buf_detach(&old_path);
 
 out:
-	git_buf_free(&old_path);
+	git_buf_dispose(&old_path);
 	return error;
 }
 
@@ -114,7 +114,7 @@ static int parse_header_git_newpath(
 	patch->new_path = git_buf_detach(&new_path);
 
 out:
-	git_buf_free(&new_path);
+	git_buf_dispose(&new_path);
 	return error;
 }
 
@@ -563,6 +563,8 @@ static int parse_hunk_body(
 		char c;
 		int origin;
 		int prefix = 1;
+		int old_lineno = hunk->hunk.old_start + (hunk->hunk.old_lines - oldlines);
+		int new_lineno = hunk->hunk.new_start + (hunk->hunk.new_lines - newlines);
 
 		if (ctx->parse_ctx.line_len == 0 || ctx->parse_ctx.line[ctx->parse_ctx.line_len - 1] != '\n') {
 			error = git_parse_err("invalid patch instruction at line %"PRIuZ,
@@ -586,11 +588,13 @@ static int parse_hunk_body(
 		case '-':
 			origin = GIT_DIFF_LINE_DELETION;
 			oldlines--;
+			new_lineno = -1;
 			break;
 
 		case '+':
 			origin = GIT_DIFF_LINE_ADDITION;
 			newlines--;
+			old_lineno = -1;
 			break;
 
 		default:
@@ -607,6 +611,9 @@ static int parse_hunk_body(
 		line->content_len = ctx->parse_ctx.line_len - prefix;
 		line->content_offset = ctx->parse_ctx.content_len - ctx->parse_ctx.remain_len;
 		line->origin = origin;
+		line->num_lines = 1;
+		line->old_lineno = old_lineno;
+		line->new_lineno = new_lineno;
 
 		hunk->line_count++;
 	}
@@ -770,8 +777,8 @@ static int parse_patch_binary_side(
 	binary->data = git_buf_detach(&decoded);
 
 done:
-	git_buf_free(&base85);
-	git_buf_free(&decoded);
+	git_buf_dispose(&base85);
+	git_buf_dispose(&decoded);
 	return error;
 }
 

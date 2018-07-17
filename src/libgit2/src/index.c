@@ -135,6 +135,8 @@ struct reuc_entry_internal {
 	char path[GIT_FLEX_ARRAY];
 };
 
+bool git_index__enforce_unsaved_safety = false;
+
 /* local declarations */
 static size_t read_extension(git_index *index, const char *buffer, size_t buffer_size);
 static int read_header(struct index_header *dest, const void *buffer);
@@ -516,6 +518,8 @@ static int index_remove_entry(git_index *index, size_t pos)
 		} else {
 			index_entry_free(entry);
 		}
+
+		index->dirty = 1;
 	}
 
 	return error;
@@ -527,6 +531,7 @@ int git_index_clear(git_index *index)
 
 	assert(index);
 
+	index->dirty = 1;
 	index->tree = NULL;
 	git_pool_clear(&index->tree_pool);
 
@@ -637,8 +642,10 @@ int git_index_read(git_index *index, int force)
 	index->on_disk = git_path_exists(index->index_file_path);
 
 	if (!index->on_disk) {
-		if (force)
-			return git_index_clear(index);
+		if (force && (error = git_index_clear(index)) < 0)
+			return error;
+
+		index->dirty = 0;
 		return 0;
 	}
 
@@ -650,6 +657,7 @@ int git_index_read(git_index *index, int force)
 			index->index_file_path);
 		return updated;
 	}
+
 	if (!updated && !force)
 		return 0;
 
@@ -665,11 +673,24 @@ int git_index_read(git_index *index, int force)
 	if (!error)
 		error = parse_index(index, buffer.ptr, buffer.size);
 
-	if (!error)
+	if (!error) {
 		git_futils_filestamp_set(&index->stamp, &stamp);
+		index->dirty = 0;
+	}
 
-	git_buf_free(&buffer);
+	git_buf_dispose(&buffer);
 	return error;
+}
+
+int git_index_read_safely(git_index *index)
+{
+	if (git_index__enforce_unsaved_safety && index->dirty) {
+		giterr_set(GITERR_INDEX,
+			"the index has unsaved changes that would be overwritten by this operation");
+		return GIT_EINDEXDIRTY;
+	}
+
+	return git_index_read(index, false);
 }
 
 int git_index__changed_relative_to(
@@ -735,8 +756,10 @@ static int truncate_racily_clean(git_index *index)
 		/* Ensure that we have a stage 0 for this file (ie, it's not a
 		 * conflict), otherwise smudging it is quite pointless.
 		 */
-		if (entry)
+		if (entry) {
 			entry->file_size = 0;
+			index->dirty = 1;
+		}
 	}
 
 done:
@@ -774,8 +797,9 @@ int git_index_write(git_index *index)
 
 	truncate_racily_clean(index);
 
-	if ((error = git_indexwriter_init(&writer, index)) == 0)
-		error = git_indexwriter_commit(&writer);
+	if ((error = git_indexwriter_init(&writer, index)) == 0 &&
+		(error = git_indexwriter_commit(&writer)) == 0)
+		index->dirty = 0;
 
 	git_indexwriter_cleanup(&writer);
 
@@ -949,7 +973,7 @@ static int index_entry_init(
 		return -1;
 
 	error = git_path_lstat(path.ptr, &st);
-	git_buf_free(&path);
+	git_buf_dispose(&path);
 
 	if (error < 0)
 		return error;
@@ -1389,6 +1413,8 @@ static int index_insert(
 	if (error < 0) {
 		index_entry_free(*entry_ptr);
 		*entry_ptr = NULL;
+	} else {
+		index->dirty = 1;
 	}
 
 	return error;
@@ -1509,7 +1535,7 @@ static int add_repo_as_submodule(git_index_entry **out, git_index *index, const 
 
 	git_reference_free(head);
 	git_repository_free(sub);
-	git_buf_free(&abspath);
+	git_buf_dispose(&abspath);
 
 	*out = entry;
 	return 0;
@@ -1616,6 +1642,8 @@ int git_index__fill(git_index *index, const git_vector *source_entries)
 		INSERT_IN_MAP(index, entry, &ret);
 		if (ret < 0)
 			break;
+
+		index->dirty = 1;
 	}
 
 	if (!ret)
@@ -1693,7 +1721,7 @@ int git_index_remove_directory(git_index *index, const char *dir, int stage)
 		/* removed entry at 'pos' so we don't need to increment */
 	}
 
-	git_buf_free(&pfx);
+	git_buf_dispose(&pfx);
 
 	return error;
 }
@@ -2053,6 +2081,7 @@ int git_index_name_add(git_index *index,
 		return -1;
 	}
 
+	index->dirty = 1;
 	return 0;
 }
 
@@ -2067,6 +2096,8 @@ void git_index_name_clear(git_index *index)
 		index_name_entry_free(conflict_name);
 
 	git_vector_clear(&index->names);
+
+	index->dirty = 1;
 }
 
 size_t git_index_reuc_entrycount(git_index *index)
@@ -2092,6 +2123,8 @@ static int index_reuc_insert(
 	assert(git_vector_is_sorted(&index->reuc));
 
 	res = git_vector_insert_sorted(&index->reuc, reuc, &index_reuc_on_dup);
+	index->dirty = 1;
+
 	return res == GIT_EEXISTS ? 0 : res;
 }
 
@@ -2157,6 +2190,7 @@ int git_index_reuc_remove(git_index *index, size_t position)
 	if (!error)
 		index_entry_reuc_free(reuc);
 
+	index->dirty = 1;
 	return error;
 }
 
@@ -2170,6 +2204,8 @@ void git_index_reuc_clear(git_index *index)
 		index_entry_reuc_free(git__swap(index->reuc.contents[i], NULL));
 
 	git_vector_clear(&index->reuc);
+
+	index->dirty = 1;
 }
 
 static int index_error_invalid(const char *message)
@@ -2604,6 +2640,7 @@ static int parse_index(git_index *index, const char *buffer, size_t buffer_size)
 	git_vector_set_sorted(&index->entries, !index->ignore_case);
 	git_vector_sort(&index->entries);
 
+	index->dirty = 0;
 done:
 	return error;
 }
@@ -2629,7 +2666,7 @@ static bool is_index_extended(git_index *index)
 static int write_disk_entry(git_filebuf *file, git_index_entry *entry, const char *last)
 {
 	void *mem = NULL;
-	struct entry_short *ondisk;
+	struct entry_short ondisk;
 	size_t path_len, disk_size;
 	int varint_len = 0;
 	char *path;
@@ -2657,9 +2694,7 @@ static int write_disk_entry(git_filebuf *file, git_index_entry *entry, const cha
 	if (git_filebuf_reserve(file, &mem, disk_size) < 0)
 		return -1;
 
-	ondisk = (struct entry_short *)mem;
-
-	memset(ondisk, 0x0, disk_size);
+	memset(mem, 0x0, disk_size);
 
 	/**
 	 * Yes, we have to truncate.
@@ -2671,30 +2706,32 @@ static int write_disk_entry(git_filebuf *file, git_index_entry *entry, const cha
 	 *
 	 * In 2038 I will be either too dead or too rich to care about this
 	 */
-	ondisk->ctime.seconds = htonl((uint32_t)entry->ctime.seconds);
-	ondisk->mtime.seconds = htonl((uint32_t)entry->mtime.seconds);
-	ondisk->ctime.nanoseconds = htonl(entry->ctime.nanoseconds);
-	ondisk->mtime.nanoseconds = htonl(entry->mtime.nanoseconds);
-	ondisk->dev = htonl(entry->dev);
-	ondisk->ino = htonl(entry->ino);
-	ondisk->mode = htonl(entry->mode);
-	ondisk->uid = htonl(entry->uid);
-	ondisk->gid = htonl(entry->gid);
-	ondisk->file_size = htonl((uint32_t)entry->file_size);
+	ondisk.ctime.seconds = htonl((uint32_t)entry->ctime.seconds);
+	ondisk.mtime.seconds = htonl((uint32_t)entry->mtime.seconds);
+	ondisk.ctime.nanoseconds = htonl(entry->ctime.nanoseconds);
+	ondisk.mtime.nanoseconds = htonl(entry->mtime.nanoseconds);
+	ondisk.dev = htonl(entry->dev);
+	ondisk.ino = htonl(entry->ino);
+	ondisk.mode = htonl(entry->mode);
+	ondisk.uid = htonl(entry->uid);
+	ondisk.gid = htonl(entry->gid);
+	ondisk.file_size = htonl((uint32_t)entry->file_size);
 
-	git_oid_cpy(&ondisk->oid, &entry->id);
+	git_oid_cpy(&ondisk.oid, &entry->id);
 
-	ondisk->flags = htons(entry->flags);
+	ondisk.flags = htons(entry->flags);
 
 	if (entry->flags & GIT_IDXENTRY_EXTENDED) {
-		struct entry_long *ondisk_ext;
-		ondisk_ext = (struct entry_long *)ondisk;
-		ondisk_ext->flags_extended = htons(entry->flags_extended &
+		struct entry_long ondisk_ext;
+		memcpy(&ondisk_ext, &ondisk, sizeof(struct entry_short));
+		ondisk_ext.flags_extended = htons(entry->flags_extended &
 			GIT_IDXENTRY_EXTENDED_FLAGS);
-		path = ondisk_ext->path;
+		memcpy(mem, &ondisk_ext, offsetof(struct entry_long, path));
+		path = ((struct entry_long*)mem)->path;
 		disk_size -= offsetof(struct entry_long, path);
 	} else {
-		path = ondisk->path;
+		memcpy(mem, &ondisk, offsetof(struct entry_short, path));
+		path = ((struct entry_short*)mem)->path;
 		disk_size -= offsetof(struct entry_short, path);
 	}
 
@@ -2819,7 +2856,7 @@ static int write_name_extension(git_index *index, git_filebuf *file)
 
 	error = write_extension(file, &extension, &name_buf);
 
-	git_buf_free(&name_buf);
+	git_buf_dispose(&name_buf);
 
 done:
 	return error;
@@ -2867,7 +2904,7 @@ static int write_reuc_extension(git_index *index, git_filebuf *file)
 
 	error = write_extension(file, &extension, &reuc_buf);
 
-	git_buf_free(&reuc_buf);
+	git_buf_dispose(&reuc_buf);
 
 done:
 	return error;
@@ -2891,7 +2928,7 @@ static int write_tree_extension(git_index *index, git_filebuf *file)
 
 	error = write_extension(file, &extension, &buf);
 
-	git_buf_free(&buf);
+	git_buf_dispose(&buf);
 
 	return error;
 }
@@ -3008,7 +3045,7 @@ static int read_tree_cb(
 	}
 
 	index_entry_adjust_namemask(entry, path.size);
-	git_buf_free(&path);
+	git_buf_dispose(&path);
 
 	if (git_vector_insert(data->new_entries, entry) < 0) {
 		index_entry_free(entry);
@@ -3069,6 +3106,8 @@ int git_index_read_tree(git_index *index, const git_tree *tree)
 		git_vector_swap(&entries, &index->entries);
 		entries_map = git__swap(index->entries_map, entries_map);
 	}
+
+	index->dirty = 1;
 
 cleanup:
 	git_vector_free(&entries);
@@ -3209,6 +3248,7 @@ static int git_index_read_iterator(
 
 	clear_uptodate(index);
 
+	index->dirty = 1;
 	error = 0;
 
 done:
@@ -3463,7 +3503,7 @@ static int index_apply_to_all(
 		}
 	}
 
-	git_buf_free(&path);
+	git_buf_dispose(&path);
 	git_pathspec__clear(&ps);
 
 	return error;
@@ -3601,6 +3641,7 @@ int git_indexwriter_commit(git_indexwriter *writer)
 		return -1;
 	}
 
+	writer->index->dirty = 0;
 	writer->index->on_disk = 1;
 	git_oid_cpy(&writer->index->checksum, &checksum);
 

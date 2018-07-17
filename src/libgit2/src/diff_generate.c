@@ -273,7 +273,8 @@ static git_diff_delta *diff_delta__last_for_item(
 		break;
 	case GIT_DELTA_MODIFIED:
 		if (git_oid__cmp(&delta->old_file.id, &item->id) == 0 ||
-			git_oid__cmp(&delta->new_file.id, &item->id) == 0)
+		    (delta->new_file.mode == item->mode &&
+			git_oid__cmp(&delta->new_file.id, &item->id) == 0))
 			return delta;
 		break;
 	default:
@@ -600,7 +601,7 @@ int git_diff__oid_for_entry(
 
 		if (p_stat(full_path.ptr, &st) < 0) {
 			error = git_path_set_error(errno, entry.path, "stat");
-			git_buf_free(&full_path);
+			git_buf_dispose(&full_path);
 			return error;
 		}
 
@@ -663,7 +664,7 @@ int git_diff__oid_for_entry(
 		}
  	}
 
-	git_buf_free(&full_path);
+	git_buf_dispose(&full_path);
 	return error;
 }
 
