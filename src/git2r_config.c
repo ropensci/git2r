@@ -501,7 +501,12 @@ SEXP git2r_config_find_file(SEXP level)
     else
         SET_STRING_ELT(result, 0, Rf_mkChar(buf.ptr));
 
+#if defined(GIT2R_BUF_DISPOSE)
+    git_buf_dispose(&buf);
+#else
     git_buf_free(&buf);
+#endif
+
     UNPROTECT(1);
 
     return result;

@@ -413,6 +413,10 @@ if test $ac_cv_func_qsort_s = yes; then
     CPPFLAGS="${CPPFLAGS} -DHAVE_QSORT_S"
 fi
 
+# The function 'git_buf_free' is deprecated in libgit2. Use
+# 'git_buf_dispose' instead.
+CPPFLAGS="${CPPFLAGS} -DGIT2R_BUF_DISPOSE"
+
 AC_SUBST(GIT2R_SRC_REGEX)
 AC_SUBST(GIT2R_SRC_SHA1DC)
 AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS} ${LIBSSH2_CFLAGS}"])

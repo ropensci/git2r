@@ -536,7 +536,11 @@ SEXP git2r_repository_discover(SEXP path, SEXP ceiling)
     SET_STRING_ELT(result, 0, Rf_mkChar(buf.ptr));
 
 cleanup:
+#if defined(GIT2R_BUF_DISPOSE)
+    git_buf_dispose(&buf);
+#else
     git_buf_free(&buf);
+#endif
 
     if (nprotect)
         UNPROTECT(nprotect);
