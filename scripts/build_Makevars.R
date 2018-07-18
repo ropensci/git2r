@@ -86,7 +86,7 @@ build_Makevars.in <- function() {
     cat("PKG_LIBS = -L. -lmygit @PKG_LIBS@\n", file = Makevars)
     cat("\n", file = Makevars)
 
-    build_objects(files, " @GIT2R_SRC_REGEX@", Makevars)
+    build_objects(files, " @GIT2R_SRC_REGEX@ @GIT2R_SRC_SHA1DC@", Makevars)
 
     cat("\n$(SHLIB): libmygit.a\n\n", file = Makevars)
     cat("libmygit.a: $(LIBGIT)\n\t$(AR) rcs libmygit.a $(LIBGIT)\n\n", file = Makevars)
