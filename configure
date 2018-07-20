@@ -3297,7 +3297,7 @@ else
     echo "Found INCLUDE_DIR and/or LIB_DIR!"
     PKG_CFLAGS="-I${INCLUDE_DIR} ${PKG_CFLAGS}"
     PKG_LIBS="-L${LIB_DIR} ${PKG_LIBS}"
-    USE_BUNDLED_LIBGIT2=no,
+    USE_BUNDLED_LIBGIT2=no
 fi
 
 # Find the compiler and compiler flags to use
