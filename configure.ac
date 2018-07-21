@@ -102,16 +102,6 @@ if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
     ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E tools/version.c >/dev/null 2>&1 && libgit2_ver_ok=yes
     AC_MSG_RESULT([${libgit2_ver_ok}])
 
-    # The function 'git_buf_free' is deprecated in libgit2. If
-    # available, use 'git_buf_dispose' instead.
-    AC_MSG_CHECKING([whether the libgit2 function git_buf_dispose is available])
-    have_buf_dispose=no
-    ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E tools/buf_dispose.c >/dev/null 2>&1 && have_buf_dispose=yes
-    AC_MSG_RESULT([${have_buf_dispose}])
-    if test "x${have_buf_dispose}" = xyes; then
-        PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_BUF_DISPOSE"
-    fi
-
     # For debugging
     echo "----- Results of the git2r package configure -----"
     echo ""
