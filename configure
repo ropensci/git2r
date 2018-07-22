@@ -3315,6 +3315,30 @@ $as_echo_n "checking whether the libgit2 version will work in git2r... " >&6; }
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${libgit2_ver_ok}" >&5
 $as_echo "${libgit2_ver_ok}" >&6; }
 
+    # The function 'git_buf_free' is deprecated in libgit2. Use
+    # 'git_buf_dispose', if available, instead.
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the libgit2 function git_buf_dispose is available" >&5
+$as_echo_n "checking whether the libgit2 function git_buf_dispose is available... " >&6; }
+    have_buf_dispose=no
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <git2.h>
+int
+main ()
+{
+ git_buf_dispose(NULL);
+  ;
+  return 0;
+}
+_ACEOF
+    PKG_CFLAGS="${PKG_CFLAGS} -Werror" "$RBIN" CMD SHLIB conftest.c \
+    1>&5 2>&5 && have_buf_dispose=yes
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${have_buf_dispose}" >&5
+$as_echo "${have_buf_dispose}" >&6; }
+    if test "x${have_buf_dispose}" = xyes; then
+        PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_BUF_DISPOSE"
+    fi
+
     # For debugging
     echo "----- Results of the git2r package configure -----"
     echo ""
