@@ -4,7 +4,7 @@
 \alias{write_delim_git}
 \title{Write a \code{data.frame} to a git repository}
 \usage{
-write_delim_git(x, file, repo)
+write_delim_git(x, file, repo = ".", force = FALSE)
 }
 \arguments{
 \item{x}{the \code{data.frame}}
@@ -13,8 +13,10 @@ write_delim_git(x, file, repo)
 path. It is relative to the "project" when set in the \code{repo}. Otherwise
 it is relative to the root of the \code{repo}.}
 
-\item{repo}{a \code{git_repository} object, created with
-\code{\link{repository}}}
+\item{repo}{a path to a repository or a \code{git_repository}
+object. Default is '.'}
+
+\item{force}{Add ignored files. Default is FALSE.}
 }
 \value{
 The relative path to the file

@@ -118,6 +118,9 @@ add <- function(repo = ".", path = NULL, force = FALSE)
         ## directory. Substitute common prefix with ""
         sub(paste0("^", repo_wd), "", np)
     }, character(1))
+    if (inherits(repo, "git_repository") && !is.null(repo$project)) {
+        path <- file.path(repo$project, path)
+    }
 
     .Call(git2r_index_add_all, repo, path, isTRUE(force))
 

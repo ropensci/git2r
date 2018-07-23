@@ -4,15 +4,15 @@
 \alias{read_delim_file}
 \title{Read a \code{data.frame} from a git repository}
 \usage{
-read_delim_file(file, repo)
+read_delim_file(file, repo = ".")
 }
 \arguments{
 \item{file}{the name of the file without file extension. Can include a relative
 path. It is relative to the "project" when set in the \code{repo}. Otherwise
 it is relative to the root of the \code{repo}.}
 
-\item{repo}{a \code{git_repository} object, created with
-\code{\link{repository}}}
+\item{repo}{a path to a repository or a \code{git_repository}
+object. Default is '.'}
 }
 \value{
 The \code{data.frame}

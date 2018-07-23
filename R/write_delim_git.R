@@ -21,12 +21,12 @@
 ##' @param file the name of the file without file extension. Can include a relative
 ##' path. It is relative to the "project" when set in the \code{repo}. Otherwise
 ##' it is relative to the root of the \code{repo}.
-##' @param repo a \code{git_repository} object, created with
-##' \code{\link{repository}}
+##' @template repo-param
+##' @inheritParams add
 ##' @return The relative path to the file
 ##' @export
 ##' @importFrom utils write.table
-write_delim_git <- function(x, file, repo) {
+write_delim_git <- function(x, file, repo = ".", force = FALSE) {
     if (!inherits(x, "data.frame")) {
         stop("x is not a 'data.frame'")
     }
@@ -55,17 +55,19 @@ write_delim_git <- function(x, file, repo) {
         quote = FALSE, sep = "\t", eol = "\n", dec = ".",
         row.names = FALSE, col.names = FALSE, fileEncoding = "UTF-8"
     )
+    add(repo, path = paste0(file, c(".tsv", ".yml")), force = force)
 
     return(file)
 }
 
 ##' Read a \code{data.frame} from a git repository
 ##'
+##' @template repo-param
 ##' @inheritParams write_delim_git
 ##' @return The \code{data.frame}
 ##' @export
 ##' @importFrom utils read.table
-read_delim_file <- function(file, repo) {
+read_delim_file <- function(file, repo = ".") {
     file <- file.path(dirname(file), gsub("\\..*$", "", basename(file)))
     if (!inherits(repo, "git_repository")) {
         stop("repo is not a 'git_repository'")
