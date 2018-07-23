@@ -51,6 +51,7 @@ Collate:
     'pull.R'
     'punch_card.R'
     'push.R'
+    'read_delim_git.R'
     'reference.R'
     'reflog.R'
     'refspec.R'
