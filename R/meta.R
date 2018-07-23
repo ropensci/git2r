@@ -16,26 +16,30 @@
 
 ##' Optimise a vector for storage in to a git repository and add meta data
 ##' @param x the vector
-##' @noRd
+##' @export
 meta <- function(x) {
   UseMethod("meta")
 }
 
+##' @export
 meta.character <- function(x) {
   attr(x, "meta") <- "    class: character"
   return(x)
 }
 
+##' @export
 meta.integer <- function(x) {
   attr(x, "meta") <- "    class: integer"
   return(x)
 }
 
+##' @export
 meta.numeric <- function(x) {
   attr(x, "meta") <- "    class: numeric"
   return(x)
 }
 
+##' @export
 meta.factor <- function(x) {
   z <- as.integer(x)
   attr(z, "meta") <- paste(
