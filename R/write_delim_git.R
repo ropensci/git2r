@@ -22,6 +22,7 @@
 ##' relative to the path of the \code{repo}
 ##' @param repo a \code{git_repository} object, created with
 ##' \code{\link{repository}}
+##' @return The relative path to the file
 ##' @export
 ##' @include meta.R
 ##' @importFrom utils write.table
@@ -29,15 +30,15 @@ write_delim_git <- function(x, file, repo) {
   if (!inherits(x, "data.frame")) {
     stop("x is not a 'data.frame'")
   }
-  if (grepl("\\..*$", file)) {
+  if (grepl("\\..*$", basename(file))) {
     warning("file extensions are stripped")
-    file <- gsub("\\..*$", "", file)
+    file <- file.path(dirname(file), gsub("\\..*$", "", basename(file)))
   }
   if (!inherits(repo, "git_repository")) {
     stop("repo is not a 'git_repository'")
   }
-  raw_file <- sprintf("%s/%s.tsv", dirname(repo$path), file)
-  meta_file <- sprintf("%s/%s.yml", dirname(repo$path), file)
+  raw_file <- file.path(dirname(repo$path), paste0(file, ".tsv"))
+  meta_file <- file.path(dirname(repo$path), paste0(file, ".yml"))
   if (!dir.exists(dirname(raw_file))) {
     dir.create(dirname(raw_file), recursive = TRUE)
   }
@@ -53,4 +54,6 @@ write_delim_git <- function(x, file, repo) {
     quote = FALSE, sep = "\t", eol = "\n", dec = ".",
     row.names = FALSE, col.names = FALSE, fileEncoding = "UTF-8"
   )
+
+  return(file)
 }

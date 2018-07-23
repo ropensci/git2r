@@ -16,15 +16,16 @@
 ##' Read a \code{data.frame} from a git repository
 ##'
 ##' @inheritParams write_delim_git
+##' @return The \code{data.frame}
 ##' @export
 ##' @importFrom utils read.table
 read_delim_file <- function(file, repo) {
-  file <- gsub("\\..*$", "", file)
+  file <- file.path(dirname(file), gsub("\\..*$", "", basename(file)))
   if (!inherits(repo, "git_repository")) {
     stop("repo is not a 'git_repository'")
   }
-  raw_file <- sprintf("%s/%s.tsv", dirname(repo$path), file)
-  meta_file <- sprintf("%s/%s.yml", dirname(repo$path), file)
+  raw_file <- file.path(dirname(repo$path), paste0(file, ".tsv"))
+  meta_file <- file.path(dirname(repo$path), paste0(file, ".yml"))
   if (!file.exists(raw_file) || !file.exists(meta_file)) {
     stop("raw file and/or meta file missing")
   }

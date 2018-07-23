@@ -15,6 +15,9 @@ relative to the path of the \code{repo}}
 \item{repo}{a \code{git_repository} object, created with
 \code{\link{repository}}}
 }
+\value{
+The relative path to the file
+}
 \description{
 This will create two files. The \code{".tsv"} file contains the raw data.
 The \code{".yml"} contains the meta data on the columns in YAML format.

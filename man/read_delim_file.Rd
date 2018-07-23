@@ -13,6 +13,9 @@ relative to the path of the \code{repo}}
 \item{repo}{a \code{git_repository} object, created with
 \code{\link{repository}}}
 }
+\value{
+The \code{data.frame}
+}
 \description{
 Read a \code{data.frame} from a git repository
 }
