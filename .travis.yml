@@ -8,11 +8,6 @@ fortran: false
 latex: false
 pandoc: false
 
-addons:
-  apt:
-    packages:
-      - libssh2-1-dev
-
 matrix:
   include:
     - r: 3.1
@@ -20,6 +15,10 @@ matrix:
     - r: 3.3
     - r: oldrel
     - r: release
+      addons:
+        apt:
+          packages:
+            - libssh2-1-dev
       env: R_CODECOV=true
     - r: devel
     - os: osx
