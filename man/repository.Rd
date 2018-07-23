@@ -4,18 +4,25 @@
 \alias{repository}
 \title{Open a repository}
 \usage{
-repository(path = ".", discover = TRUE)
+repository(path = ".", discover = TRUE, project = NULL)
 }
 \arguments{
 \item{path}{A path to an existing local git repository.}
 
 \item{discover}{Discover repository from path. Default is TRUE.}
+
+\item{project}{The name of of project. Refers to a local path in case of a
+data repository. Defaults to \code{NULL}, indicating a standard repository.}
 }
 \value{
 A \code{git_repository} object with entries:
 \describe{
   \item{path}{
     Path to a git repository
+  }
+  \item{project}{
+    If set, the local path to the project starting from the root of the
+    repository
   }
 }
 }

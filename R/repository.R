@@ -84,10 +84,16 @@ as.data.frame.git_repository <- function(x, ...) {
 ##'
 ##' @param path A path to an existing local git repository.
 ##' @param discover Discover repository from path. Default is TRUE.
+##' @param project The name of of project. Refers to a local path in case of a
+##' data repository. Defaults to \code{NULL}, indicating a standard repository.
 ##' @return A \code{git_repository} object with entries:
 ##' \describe{
 ##'   \item{path}{
 ##'     Path to a git repository
+##'   }
+##'   \item{project}{
+##'     If set, the local path to the project starting from the root of the
+##'     repository
 ##'   }
 ##' }
 ##' @export
@@ -150,7 +156,7 @@ as.data.frame.git_repository <- function(x, ...) {
 ##' ## List all tags in repository
 ##' tags(repo)
 ##' }
-repository <- function(path = ".", discover = TRUE) {
+repository <- function(path = ".", discover = TRUE, project = NULL) {
     if (isTRUE(discover)) {
         path <- discover_repository(path)
         if (is.null(path))
@@ -164,7 +170,18 @@ repository <- function(path = ".", discover = TRUE) {
     if (!isTRUE(.Call(git2r_repository_can_open, path)))
         stop("Unable to open repository at 'path'")
 
-    structure(list(path = path), class = "git_repository")
+    if (is.null(project)) {
+        return(structure(list(path = path), class = "git_repository"))
+    }
+
+    stopifnot(is.character(project))
+    stopifnot(length(project) == 1)
+
+    local_path <- file.path(path, project)
+    if (!dir.exists(local_path)) {
+        dir.create(local_path, recursive = TRUE)
+    }
+    structure(list(path = path, project = project), class = "git_repository")
 }
 
 ##' Init a repository
