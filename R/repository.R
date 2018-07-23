@@ -719,7 +719,11 @@ strip_trailing_slash <- function(path) {
 ##' }
 workdir <- function(repo = ".") {
     path <- .Call(git2r_repository_workdir, lookup_repository(repo))
-    strip_trailing_slash(path)
+    path <- strip_trailing_slash(path)
+    if (!inherits(repo, "git_repository") || is.null(repo$project)) {
+        return(path)
+    }
+    strip_trailing_slash(file.path(path, repo$project))
 }
 
 ##' Find path to repository for any file

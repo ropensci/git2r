@@ -39,13 +39,8 @@ write_delim_git <- function(x, file, repo) {
     stop("repo is not a 'git_repository'")
   }
 
-  if (is.null(repo$project)) {
-      project_path <- dirname(repo$path)
-  } else {
-      project_path <- file.path(dirname(repo$path), repo$project)
-  }
-  raw_file <- file.path(project_path, paste0(file, ".tsv"))
-  meta_file <- file.path(project_path, paste0(file, ".yml"))
+  raw_file <- file.path(workdir(repo), paste0(file, ".tsv"))
+  meta_file <- file.path(workdir(repo), paste0(file, ".yml"))
   if (!dir.exists(dirname(raw_file))) {
     dir.create(dirname(raw_file), recursive = TRUE)
   }
