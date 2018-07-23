@@ -77,9 +77,17 @@ status <- function(repo      = ".",
                    ignored   = FALSE,
                    all_untracked = FALSE)
 {
-    structure(.Call(git2r_status_list, lookup_repository(repo), staged,
+    s <- structure(.Call(git2r_status_list, lookup_repository(repo), staged,
                     unstaged, untracked, all_untracked, ignored),
               class = "git_status")
+    if (!inherits(repo, "git_repository") || is.null(repo$project)) {
+        return(s)
+    }
+    rgx <- paste0("^", repo$project, "/")
+    s <- lapply(s, function(x){lapply(x, gsub, pattern = rgx, replacement = "")})
+    class(s) <- "git_status"
+    attr(s, "project") <- repo$project
+    return(s)
 }
 
 ##' @export
@@ -96,6 +104,11 @@ print.git_status <- function(x, ...)
         }
 
         invisible(NULL)
+    }
+
+    project <- attr(x, "project", exact = TRUE)
+    if (!is.null(project)) {
+        cat("Project folder:", project, "\n\n")
     }
 
     if (max(sapply(x, length)) == 0L)
