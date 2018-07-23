@@ -4759,12 +4759,16 @@ fi
 
 # Check for SSL
 have_ssl=no
+case "${host_os}" in
+    darwin*)
+        have_ssl=yes
+    ;;
+    *)
+        if test "x${OPENSSL_INCLUDES}" = x; then :; else
+            CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
+        fi
 
-if test "x${OPENSSL_INCLUDES}" = x; then :; else
-    CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
-fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing EVP_EncryptInit" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing EVP_EncryptInit" >&5
 $as_echo_n "checking for library containing EVP_EncryptInit... " >&6; }
 if ${ac_cv_search_EVP_EncryptInit+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -4873,7 +4877,7 @@ if test "$ac_res" != no; then :
   have_ssl=yes
 fi
 
-                { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing OPENSSL_init_ssl" >&5
+                        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing OPENSSL_init_ssl" >&5
 $as_echo_n "checking for library containing OPENSSL_init_ssl... " >&6; }
 if ${ac_cv_search_OPENSSL_init_ssl+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -4932,8 +4936,8 @@ fi
 fi
 
 
-if test "x${have_ssl}" = xno; then
-    if test  -n "$PKG_CONFIG"  ; then
+        if test "x${have_ssl}" = xno; then
+            if test  -n "$PKG_CONFIG"  ; then
 
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for openssl" >&5
@@ -5004,25 +5008,20 @@ else
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 	CPPFLAGS="${openssl_CFLAGS} ${CPPFLAGS}"
-                           LIBS="${openssl_LIBS} ${LIBS}"
-                           have_ssl=yes
+                                   LIBS="${openssl_LIBS} ${LIBS}"
+                                   have_ssl=yes
 fi
-    fi
-fi
+            fi
+        fi
 
-if test "x${have_ssl}" = xno; then
-    case "${host_os}" in
-        darwin*)
-        ;;
-        *)
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "
+        if test "x${have_ssl}" = xno; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING:
   ---------------------------------------------
-   The OpenSSL library that is required to
-   build git2r was not found.
+   Unable to find the OpenSSL library on this
+   system. Building a version without support
+   for https transport.
 
-   Please install:
+   To build with https support, please install:
      libssl-dev    (package on e.g. Debian and Ubuntu)
      openssl-devel (package on e.g. Fedora, CentOS and RHEL)
    and try again.
@@ -5032,11 +5031,27 @@ as_fn_error $? "
    is unable to find it, you can specify
    the include and lib path to OpenSSL with:
    R CMD INSTALL git2r --configure-vars='LIBS=-L/path/to/libs CPPFLAGS=-I/path/to/headers'
+  ---------------------------------------------" >&5
+$as_echo "$as_me: WARNING:
   ---------------------------------------------
-See \`config.log' for more details" "$LINENO" 5; }
-        ;;
-    esac
-fi
+   Unable to find the OpenSSL library on this
+   system. Building a version without support
+   for https transport.
+
+   To build with https support, please install:
+     libssl-dev    (package on e.g. Debian and Ubuntu)
+     openssl-devel (package on e.g. Fedora, CentOS and RHEL)
+   and try again.
+
+   If the OpenSSL library is installed on
+   your system but the git2r configuration
+   is unable to find it, you can specify
+   the include and lib path to OpenSSL with:
+   R CMD INSTALL git2r --configure-vars='LIBS=-L/path/to/libs CPPFLAGS=-I/path/to/headers'
+  ---------------------------------------------" >&2;}
+        fi
+    ;;
+esac
 
 # Check for LibSSH2
 have_ssh2=no
@@ -7031,7 +7046,9 @@ case "${host_os}" in
         LIBS="${LIBS} -framework Security -framework CoreFoundation"
     ;;
     *)
-        CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL -DGIT_HTTPS=1"
+        if test "x${have_ssl}" = xyes; then
+            CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL=1 -DGIT_HTTPS=1"
+        fi
     ;;
 esac
 
@@ -7255,7 +7272,7 @@ ac_config_files="$ac_config_files src/Makevars_libgit2"
 echo "
   ----- Results of the git2r package configure -----
 
-    HTTPS transport......................: yes
+    HTTPS transport......................: ${have_ssl}
     LibSSH2 to enable the SSH transport..: ${have_ssh2}
 
   --------------------------------------------------

@@ -241,36 +241,37 @@ fi
 
 # Check for SSL
 have_ssl=no
+case "${host_os}" in
+    darwin*)
+        have_ssl=yes
+    ;;
+    *)
+        if test "x${OPENSSL_INCLUDES}" = x; then :; else
+            CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
+        fi
 
-if test "x${OPENSSL_INCLUDES}" = x; then :; else
-    CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
-fi
+        AC_SEARCH_LIBS([EVP_EncryptInit],
+                       [crypto],
+                       [AC_SEARCH_LIBS([SSL_library_init], [ssl], [have_ssl=yes])
+                        AC_SEARCH_LIBS([OPENSSL_init_ssl], [ssl], [have_ssl=yes])])
 
-AC_SEARCH_LIBS([EVP_EncryptInit],
-               [crypto],
-               [AC_SEARCH_LIBS([SSL_library_init], [ssl], [have_ssl=yes])
-                AC_SEARCH_LIBS([OPENSSL_init_ssl], [ssl], [have_ssl=yes])])
+        if test "x${have_ssl}" = xno; then
+            if test [ -n "$PKG_CONFIG" ] ; then
+                PKG_CHECK_MODULES([openssl], [openssl],
+                                  [CPPFLAGS="${openssl_CFLAGS} ${CPPFLAGS}"
+                                   LIBS="${openssl_LIBS} ${LIBS}"
+                                   have_ssl=yes], [ ])
+            fi
+        fi
 
-if test "x${have_ssl}" = xno; then
-    if test [ -n "$PKG_CONFIG" ] ; then
-        PKG_CHECK_MODULES([openssl], [openssl],
-                          [CPPFLAGS="${openssl_CFLAGS} ${CPPFLAGS}"
-                           LIBS="${openssl_LIBS} ${LIBS}"
-                           have_ssl=yes], [ ])
-    fi
-fi
-
-if test "x${have_ssl}" = xno; then
-    case "${host_os}" in
-        darwin*)
-        ;;
-        *)
-    AC_MSG_FAILURE([
+        if test "x${have_ssl}" = xno; then
+            AC_MSG_WARN([
   ---------------------------------------------
-   The OpenSSL library that is required to
-   build git2r was not found.
+   Unable to find the OpenSSL library on this
+   system. Building a version without support
+   for https transport.
 
-   Please install:
+   To build with https support, please install:
      libssl-dev    (package on e.g. Debian and Ubuntu)
      openssl-devel (package on e.g. Fedora, CentOS and RHEL)
    and try again.
@@ -281,9 +282,9 @@ if test "x${have_ssl}" = xno; then
    the include and lib path to OpenSSL with:
    R CMD INSTALL git2r --configure-vars='LIBS=-L/path/to/libs CPPFLAGS=-I/path/to/headers'
   ---------------------------------------------])
-        ;;
-    esac
-fi
+        fi
+    ;;
+esac
 
 # Check for LibSSH2
 have_ssh2=no
@@ -367,7 +368,9 @@ case "${host_os}" in
         LIBS="${LIBS} -framework Security -framework CoreFoundation"
     ;;
     *)
-        CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL -DGIT_HTTPS=1"
+        if test "x${have_ssl}" = xyes; then
+            CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL=1 -DGIT_HTTPS=1"
+        fi
     ;;
 esac
 
@@ -432,7 +435,7 @@ AC_CONFIG_FILES([src/Makevars_libgit2])
 echo "
   ----- Results of the git2r package configure -----
 
-    HTTPS transport......................: yes
+    HTTPS transport......................: ${have_ssl}
     LibSSH2 to enable the SSH transport..: ${have_ssh2}
 
   --------------------------------------------------
