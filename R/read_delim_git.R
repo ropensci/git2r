@@ -24,8 +24,13 @@ read_delim_file <- function(file, repo) {
   if (!inherits(repo, "git_repository")) {
     stop("repo is not a 'git_repository'")
   }
-  raw_file <- file.path(dirname(repo$path), paste0(file, ".tsv"))
-  meta_file <- file.path(dirname(repo$path), paste0(file, ".yml"))
+  if (is.null(repo$project)) {
+      project_path <- dirname(repo$path)
+  } else {
+      project_path <- file.path(dirname(repo$path), repo$project)
+  }
+  raw_file <- file.path(project_path, paste0(file, ".tsv"))
+  meta_file <- file.path(project_path, paste0(file, ".yml"))
   if (!file.exists(raw_file) || !file.exists(meta_file)) {
     stop("raw file and/or meta file missing")
   }

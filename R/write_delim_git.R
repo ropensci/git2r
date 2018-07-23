@@ -18,8 +18,9 @@
 ##' This will create two files. The \code{".tsv"} file contains the raw data.
 ##' The \code{".yml"} contains the meta data on the columns in YAML format.
 ##' @param x the \code{data.frame}
-##' @param file the name of the file with file extension. Can include a path
-##' relative to the path of the \code{repo}
+##' @param file the name of the file without file extension. Can include a relative
+##' path. It is relative to the "project" when set in the \code{repo}. Otherwise
+##' it is relative to the root of the \code{repo}.
 ##' @param repo a \code{git_repository} object, created with
 ##' \code{\link{repository}}
 ##' @return The relative path to the file
@@ -37,8 +38,14 @@ write_delim_git <- function(x, file, repo) {
   if (!inherits(repo, "git_repository")) {
     stop("repo is not a 'git_repository'")
   }
-  raw_file <- file.path(dirname(repo$path), paste0(file, ".tsv"))
-  meta_file <- file.path(dirname(repo$path), paste0(file, ".yml"))
+
+  if (is.null(repo$project)) {
+      project_path <- dirname(repo$path)
+  } else {
+      project_path <- file.path(dirname(repo$path), repo$project)
+  }
+  raw_file <- file.path(project_path, paste0(file, ".tsv"))
+  meta_file <- file.path(project_path, paste0(file, ".yml"))
   if (!dir.exists(dirname(raw_file))) {
     dir.create(dirname(raw_file), recursive = TRUE)
   }

@@ -9,8 +9,9 @@ write_delim_git(x, file, repo)
 \arguments{
 \item{x}{the \code{data.frame}}
 
-\item{file}{the name of the file with file extension. Can include a path
-relative to the path of the \code{repo}}
+\item{file}{the name of the file without file extension. Can include a relative
+path. It is relative to the "project" when set in the \code{repo}. Otherwise
+it is relative to the root of the \code{repo}.}
 
 \item{repo}{a \code{git_repository} object, created with
 \code{\link{repository}}}
