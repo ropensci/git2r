@@ -15,10 +15,6 @@ matrix:
     - r: 3.3
     - r: oldrel
     - r: release
-      addons:
-        apt:
-          packages:
-            - libssh2-1-dev
       env: R_CODECOV=true
     - r: devel
     - os: osx
