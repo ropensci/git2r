@@ -4,7 +4,7 @@
 \alias{init}
 \title{Init a repository}
 \usage{
-init(path = ".", bare = FALSE)
+init(path = ".", bare = FALSE, project = NULL)
 }
 \arguments{
 \item{path}{A path to where to init a git repository}
@@ -13,6 +13,9 @@ init(path = ".", bare = FALSE)
 is created at the pointed path. If FALSE, provided path will
 be considered as the working directory into which the .git
 directory will be created.}
+
+\item{project}{The name of of project. Refers to a local path in case of a
+data repository. Defaults to \code{NULL}, indicating a standard repository.}
 }
 \value{
 A \code{git_repository} object
