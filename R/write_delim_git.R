@@ -30,16 +30,17 @@ write_delim_git <- function(x, file, repo = ".", force = FALSE) {
     if (!inherits(x, "data.frame")) {
         stop("x is not a 'data.frame'")
     }
+    repo <- lookup_repository(repo)
+    if (is_data_repo(repo)) {
+        file <- file.path(workdir(repo), file)
+    }
     if (grepl("\\..*$", basename(file))) {
         warning("file extensions are stripped")
-        file <- file.path(dirname(file), gsub("\\..*$", "", basename(file)))
+        file <- clean_data_path(file)
     }
-    repo <- lookup_repository(repo)
 
-    raw_file <- file.path(workdir(repo), paste0(file, ".tsv"))
-    meta_file <- file.path(workdir(repo), paste0(file, ".yml"))
-    if (!dir.exists(dirname(raw_file))) {
-        dir.create(dirname(raw_file), recursive = TRUE)
+    if (!dir.exists(dirname(file["raw_file"]))) {
+        dir.create(dirname(file["raw_file"]), recursive = TRUE)
     }
     raw_data <- as.data.frame(lapply(x, meta), stringsAsFactors = FALSE)
     meta_data <- paste(
@@ -47,13 +48,13 @@ write_delim_git <- function(x, file, repo = ".", force = FALSE) {
         vapply(raw_data, attr, "", which = "meta"),
         sep = ":\n"
     )
-    writeLines(meta_data, meta_file)
+    writeLines(meta_data, file["meta_file"])
     write.table(
-        x = raw_data, file = raw_file, append = FALSE,
+        x = raw_data, file = file["raw_file"], append = FALSE,
         quote = FALSE, sep = "\t", eol = "\n", dec = ".",
         row.names = FALSE, col.names = FALSE, fileEncoding = "UTF-8"
     )
-    add(repo, path = paste0(file, c(".tsv", ".yml")), force = force)
+    add(repo, path = file, force = force)
 
     return(file)
 }
@@ -66,19 +67,17 @@ write_delim_git <- function(x, file, repo = ".", force = FALSE) {
 ##' @export
 ##' @importFrom utils read.table
 read_delim_git <- function(file, repo = ".") {
-    file <- file.path(dirname(file), gsub("\\..*$", "", basename(file)))
     repo <- lookup_repository(repo)
+    file <- clean_data_path(file)
 
-    raw_file <- file.path(workdir(repo), paste0(file, ".tsv"))
-    meta_file <- file.path(workdir(repo), paste0(file, ".yml"))
-    if (!file.exists(raw_file) || !file.exists(meta_file)) {
+    if (!all(file.exists(file))) {
         stop("raw file and/or meta file missing")
     }
-    meta_data <- readLines(meta_file)
+    meta_data <- readLines(file["meta_file"])
     meta_cols <- grep("^\\S*:$", meta_data)
     col_names <- gsub(":", "", meta_data[meta_cols])
     raw_data <- read.table(
-        file = raw_file, header = FALSE,
+        file = file["raw_file"], header = FALSE,
         sep = "\t", quote = "", dec = ".",
         as.is = TRUE, col.names = col_names
     )
@@ -145,9 +144,20 @@ meta.factor <- function(x) {
 
 ##' Check if object is a data repository
 ##' @param object the object to check
-##' @value TRUE is a data \code{git_repository}, else FALSE
+##' @return TRUE is a data \code{git_repository}, else FALSE
 ##' @seealso repo init
 ##' @export
 is_data_repo <- function(object) {
     inherits(object, "git_repository") && !is.null(object$project)
+}
+
+##' Clean the data path
+##' Strips any file extension from the path and adds the ".tsv" and ".yml" file extensions
+##' @param path the paths
+##' @return a named vector with "raw_file" and "meta_file", refering to the ".tsv" and ".yml" files
+##' @noRd
+clean_data_path <- function(path) {
+    path <- file.path(dirname(path), gsub("\\..*$", "", basename(path)))
+    path <- normalizePath(unique(path), mustWork = FALSE)
+    c(raw_file = paste0(path, ".tsv"), meta_file = paste0(path, ".yml"))
 }

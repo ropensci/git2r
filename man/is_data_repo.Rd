@@ -9,6 +9,9 @@ is_data_repo(object)
 \arguments{
 \item{object}{the object to check}
 }
+\value{
+TRUE is a data \code{git_repository}, else FALSE
+}
 \description{
 Check if object is a data repository
 }

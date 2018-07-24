@@ -173,9 +173,7 @@ rm_file <- function(repo = ".", path = NULL) {
     repo <- lookup_repository(repo)
 
     if (is_data_repo(repo)) {
-        path <- file.path(dirname(path), gsub("\\..*$", "", basename(path)))
-        path <- normalizePath(unique(path), mustWork = FALSE)
-        path <- c(paste0(path, ".tsv"), paste0(path, ".yml"))
+        path <- clean_data_path(path)
     }
 
     if (length(path)) {
