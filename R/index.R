@@ -159,10 +159,24 @@ add <- function(repo = ".", path = NULL, force = FALSE)
 ##' status(repo)
 ##' }
 rm_file <- function(repo = ".", path = NULL) {
-    if (is.null(path) || !is.character(path))
-        stop("'path' must be a character vector")
+    if (is.null(path) || !is.character(path)) {
+        if (!inherits(repo, "git_repository") || is.null(repo$project)) {
+            stop("'path' must be a character vector")
+        }
+        path <- list.files(
+            workdir(repo),
+            pattern = "\\.(tsv|yml)$",
+            recursive = TRUE
+        )
+    }
 
     repo <- lookup_repository(repo)
+
+    if (inherits(repo, "git_repository") & !is.null(repo$project)) {
+        path <- file.path(dirname(path), gsub("\\..*$", "", basename(path)))
+        path <- normalizePath(unique(path), mustWork = FALSE)
+        path <- c(paste0(path, ".tsv"), paste0(path, ".yml"))
+    }
 
     if (length(path)) {
         wd <- workdir(repo)
