@@ -239,11 +239,14 @@ if test "x${have_zlib}" = xno; then
   ---------------------------------------------])
 fi
 
-# Check for SSL
+# Check for SSL for https transport
 have_ssl=no
 case "${host_os}" in
     darwin*)
+        # On macOS, use the Security and CoreFoundation framework
         have_ssl=yes
+        CPPFLAGS="${CPPFLAGS} -DGIT_SECURE_TRANSPORT=1 -DGIT_HTTPS=1"
+        LIBS="${LIBS} -framework Security -framework CoreFoundation"
     ;;
     *)
         if test "x${OPENSSL_INCLUDES}" = x; then :; else
@@ -264,7 +267,9 @@ case "${host_os}" in
             fi
         fi
 
-        if test "x${have_ssl}" = xno; then
+        if test "x${have_ssl}" = xyes; then
+            CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL=1 -DGIT_HTTPS=1"
+        else
             AC_MSG_WARN([
   ---------------------------------------------
    Unable to find the OpenSSL library on this
@@ -359,20 +364,6 @@ CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DLIBGIT2_NO_FEATURES
 # Specify sha1 implementation
 CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_COLLISIONDETECT=1 -DSHA1DC_NO_STANDARD_INCLUDES=1"
 CPPFLAGS="${CPPFLAGS} -DSHA1DC_CUSTOM_INCLUDE_SHA1_C=\\\"common.h\\\" -DSHA1DC_CUSTOM_INCLUDE_UBC_CHECK_C=\\\"common.h\\\""
-
-# Add definition for https
-case "${host_os}" in
-    darwin*)
-        # On macOS, use Security and CoreFoundation framework
-        CPPFLAGS="${CPPFLAGS} -DGIT_SECURE_TRANSPORT=1 -DGIT_HTTPS=1"
-        LIBS="${LIBS} -framework Security -framework CoreFoundation"
-    ;;
-    *)
-        if test "x${have_ssl}" = xyes; then
-            CPPFLAGS="${CPPFLAGS} -DGIT_OPENSSL=1 -DGIT_HTTPS=1"
-        fi
-    ;;
-esac
 
 # Add definitions specific for solaris
 case "${host_os}" in
