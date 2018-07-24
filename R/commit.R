@@ -454,7 +454,7 @@ parents <- function(object = NULL) {
 
 ##' @export
 format.git_commit <- function(x, ...) {
-    sprintf("[%s] %s: %s\n",
+    sprintf("[%s] %s: %s",
             substring(x$sha, 1, 7),
             substring(as.character(x$author$when), 1, 10),
             x$summary)
