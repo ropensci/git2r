@@ -60,10 +60,12 @@ remote_remove(repo, "foobar")
 stopifnot(identical(remotes(repo), character(0)))
 
 if (identical(Sys.getenv("NOT_CRAN"), "true")) {
-    refs <- remote_ls("https://github.com/ropensci/git2r")
-    stopifnot(length(refs) > 0)
-    stopifnot(names(refs) > 0)
-    stopifnot(any(names(refs) == "HEAD"))
+    if (isTRUE(libgit2_features()$https)) {
+        refs <- remote_ls("https://github.com/ropensci/git2r")
+        stopifnot(length(refs) > 0)
+        stopifnot(names(refs) > 0)
+        stopifnot(any(names(refs) == "HEAD"))
+    }
 }
 
 # an invalid URL should throw an error
