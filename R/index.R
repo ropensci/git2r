@@ -118,7 +118,7 @@ add <- function(repo = ".", path = NULL, force = FALSE)
         ## directory. Substitute common prefix with ""
         sub(paste0("^", repo_wd), "", np)
     }, character(1))
-    if (inherits(repo, "git_repository") && !is.null(repo$project)) {
+    if (is_data_repo(repo)) {
         path <- file.path(repo$project, path)
     }
 
@@ -160,7 +160,7 @@ add <- function(repo = ".", path = NULL, force = FALSE)
 ##' }
 rm_file <- function(repo = ".", path = NULL) {
     if (is.null(path) || !is.character(path)) {
-        if (!inherits(repo, "git_repository") || is.null(repo$project)) {
+        if (!is_data_repo(repo)) {
             stop("'path' must be a character vector")
         }
         path <- list.files(
@@ -172,7 +172,7 @@ rm_file <- function(repo = ".", path = NULL) {
 
     repo <- lookup_repository(repo)
 
-    if (inherits(repo, "git_repository") & !is.null(repo$project)) {
+    if (is_data_repo(repo)) {
         path <- file.path(dirname(path), gsub("\\..*$", "", basename(path)))
         path <- normalizePath(unique(path), mustWork = FALSE)
         path <- c(paste0(path, ".tsv"), paste0(path, ".yml"))

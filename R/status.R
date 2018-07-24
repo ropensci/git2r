@@ -80,7 +80,7 @@ status <- function(repo      = ".",
     s <- structure(.Call(git2r_status_list, lookup_repository(repo), staged,
                     unstaged, untracked, all_untracked, ignored),
               class = "git_status")
-    if (!inherits(repo, "git_repository") || is.null(repo$project)) {
+    if (!is_data_repo(repo)) {
         return(s)
     }
     rgx <- paste0("^", repo$project, "/")

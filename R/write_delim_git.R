@@ -34,9 +34,7 @@ write_delim_git <- function(x, file, repo = ".", force = FALSE) {
         warning("file extensions are stripped")
         file <- file.path(dirname(file), gsub("\\..*$", "", basename(file)))
     }
-    if (!inherits(repo, "git_repository")) {
-        stop("repo is not a 'git_repository'")
-    }
+    repo <- lookup_repository(repo)
 
     raw_file <- file.path(workdir(repo), paste0(file, ".tsv"))
     meta_file <- file.path(workdir(repo), paste0(file, ".yml"))
@@ -69,9 +67,8 @@ write_delim_git <- function(x, file, repo = ".", force = FALSE) {
 ##' @importFrom utils read.table
 read_delim_file <- function(file, repo = ".") {
     file <- file.path(dirname(file), gsub("\\..*$", "", basename(file)))
-    if (!inherits(repo, "git_repository")) {
-        stop("repo is not a 'git_repository'")
-    }
+    repo <- lookup_repository(repo)
+
     raw_file <- file.path(workdir(repo), paste0(file, ".tsv"))
     meta_file <- file.path(workdir(repo), paste0(file, ".yml"))
     if (!file.exists(raw_file) || !file.exists(meta_file)) {
@@ -144,4 +141,13 @@ meta.factor <- function(x) {
         sep = "\n"
     )
     return(z)
+}
+
+##' Check if object is a data repository
+##' @param object the object to check
+##' @value TRUE is a data \code{git_repository}, else FALSE
+##' @seealso repo init
+##' @export
+is_data_repo <- function(object) {
+    inherits(object, "git_repository") && !is.null(object$project)
 }
