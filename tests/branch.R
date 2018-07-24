@@ -46,6 +46,7 @@ stopifnot(identical(branches(repo)$master, repository_head(repo)))
 b <- branch_create(commit.1, name = "test")
 stopifnot(identical(b$name, "test"))
 stopifnot(identical(b$type, 1L))
+stopifnot(identical(sha(b), branch_target(b)))
 stopifnot(identical(length(branches(repo)), 2L))
 stopifnot(identical(branch_target(branches(repo)[[1]]),
                     branch_target(branches(repo)[[2]])))

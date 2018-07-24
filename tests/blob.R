@@ -39,6 +39,7 @@ new_commit <- commit(repo, "Commit message")
 ## Lookup blob
 blob <- lookup(repo, "cd0875583aabe89ee197ea133980a9085d08e497")
 stopifnot(isTRUE(is_blob(blob)))
+stopifnot(identical(sha(blob), "cd0875583aabe89ee197ea133980a9085d08e497"))
 stopifnot(identical(is_binary(blob), FALSE))
 stopifnot(identical(blob, lookup(repo, "cd0875")))
 stopifnot(identical(length(blob), 13L))

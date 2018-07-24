@@ -57,6 +57,8 @@ stopifnot(!identical(commit_1$repo, bare_commit_1$repo))
 
 ## Fetch
 fetch(repo_2, "origin")
+fh <- fetch_heads(repo_2)[[1]]
+stopifnot(identical(sha(fh), fh$sha))
 
 ## Test show method of non-empty repository where head is null
 show(repo_2)
