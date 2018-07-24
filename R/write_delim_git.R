@@ -65,7 +65,7 @@ write_delim_git <- function(x, file, repo = ".", force = FALSE) {
 ##' @return The \code{data.frame}
 ##' @export
 ##' @importFrom utils read.table
-read_delim_file <- function(file, repo = ".") {
+read_delim_git <- function(file, repo = ".") {
     file <- file.path(dirname(file), gsub("\\..*$", "", basename(file)))
     repo <- lookup_repository(repo)
 
