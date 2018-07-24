@@ -32,7 +32,7 @@ after_failure:
   - cat "${RCHECK_DIR}/00install.out"
 
 after_success:
-  - test $R_CODECOV && Rscript -e "covr::coveralls(exclusions=list.files('src/libgit2', pattern='[.](c|h)$', full.names=TRUE, recursive=TRUE))"
+  - test ${R_CODECOV} && Rscript -e "covr::coveralls(exclusions=list.files('src/libgit2', pattern='[.](c|h)$', full.names=TRUE, recursive=TRUE))"
   - cat "${RCHECK_DIR}/00install.out"
 
 notifications:
