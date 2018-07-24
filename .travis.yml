@@ -15,6 +15,7 @@ matrix:
     - r: 3.3
     - r: oldrel
     - r: release
+      r_packages: covr
       env: R_CODECOV=true
     - r: devel
     - os: osx
