@@ -23,7 +23,7 @@
 ##' it is relative to the root of the \code{repo}.
 ##' @template repo-param
 ##' @inheritParams add
-##' @return The relative path to the file
+##' @return NULL (invisible)
 ##' @export
 ##' @importFrom utils write.table
 write_delim_git <- function(x, file, repo = ".", force = FALSE) {
@@ -36,8 +36,8 @@ write_delim_git <- function(x, file, repo = ".", force = FALSE) {
     }
     if (grepl("\\..*$", basename(file))) {
         warning("file extensions are stripped")
-        file <- clean_data_path(file)
     }
+    file <- clean_data_path(file)
 
     if (!dir.exists(dirname(file["raw_file"]))) {
         dir.create(dirname(file["raw_file"]), recursive = TRUE)
@@ -56,7 +56,7 @@ write_delim_git <- function(x, file, repo = ".", force = FALSE) {
     )
     add(repo, path = file, force = force)
 
-    return(file)
+    return(invisible(NULL))
 }
 
 ##' Read a \code{data.frame} from a git repository
@@ -68,6 +68,9 @@ write_delim_git <- function(x, file, repo = ".", force = FALSE) {
 ##' @importFrom utils read.table
 read_delim_git <- function(file, repo = ".") {
     repo <- lookup_repository(repo)
+    if (is_data_repo(repo)) {
+        file <- file.path(workdir(repo), file)
+    }
     file <- clean_data_path(file)
 
     if (!all(file.exists(file))) {
@@ -157,7 +160,12 @@ is_data_repo <- function(object) {
 ##' @return a named vector with "raw_file" and "meta_file", refering to the ".tsv" and ".yml" files
 ##' @noRd
 clean_data_path <- function(path) {
-    path <- file.path(dirname(path), gsub("\\..*$", "", basename(path)))
+    dir_name <- dirname(path)
+    not_root <- dir_name != "."
+    path <- gsub("\\..*$", "", basename(path))
+    if (any(not_root)) {
+        path[not_root] <- file.path(dir_name[not_root], path[not_root])
+    }
     path <- normalizePath(unique(path), mustWork = FALSE)
     c(raw_file = paste0(path, ".tsv"), meta_file = paste0(path, ".yml"))
 }

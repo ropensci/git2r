@@ -213,6 +213,9 @@ rm_file <- function(repo = ".", path = NULL) {
             .Call(git2r_index_remove_bypath, repo, x)
         })
     }
+    if (is_data_repo(repo)) {
+        add(repo = repo, path = path)
+    }
 
     invisible(NULL)
 }

@@ -19,7 +19,7 @@ object. Default is '.'}
 \item{force}{Add ignored files. Default is FALSE.}
 }
 \value{
-The relative path to the file
+NULL (invisible)
 }
 \description{
 This will create two files. The \code{".tsv"} file contains the raw data.
