@@ -22,11 +22,14 @@
 ##' path. It is relative to the "project" when set in the \code{repo}. Otherwise
 ##' it is relative to the root of the \code{repo}.
 ##' @template repo-param
+##' @param override Ignore existing meta data. This is required when new
+##' variables are added or variables are deleted. Setting this to TRUE can
+##' potentially lead to large diffs. Defaults to FALSE.
 ##' @inheritParams add
 ##' @return NULL (invisible)
 ##' @export
 ##' @importFrom utils write.table
-write_delim_git <- function(x, file, repo = ".", force = FALSE) {
+write_delim_git <- function(x, file, repo = ".", override = FALSE, force = FALSE) {
     if (!inherits(x, "data.frame")) {
         stop("x is not a 'data.frame'")
     }
@@ -48,7 +51,15 @@ write_delim_git <- function(x, file, repo = ".", force = FALSE) {
         vapply(raw_data, attr, "", which = "meta"),
         sep = ":\n"
     )
-    writeLines(meta_data, file["meta_file"])
+    if (override || !file.exists(file["meta_file"])) {
+        writeLines(meta_data, file["meta_file"])
+    } else {
+        meta_data <- compare_meta(
+            meta_data,
+            old_meta_data = readLines(file["meta_file"])
+        )
+        raw_data <- raw_data[gsub("(\\S*?):.*", "\\1", meta_data)]
+    }
     write.table(
         x = raw_data, file = file["raw_file"], append = FALSE,
         quote = FALSE, sep = "\t", eol = "\n", dec = ".",
@@ -57,6 +68,33 @@ write_delim_git <- function(x, file, repo = ".", force = FALSE) {
     add(repo, path = file, force = force)
 
     return(invisible(NULL))
+}
+
+compare_meta <- function(meta_data, old_meta_data) {
+    meta_cols <- grep("^\\S*:$", old_meta_data)
+    if (length(meta_cols) != length(meta_data)) {
+        stop("old data has different number of variables, use override = TRUE")
+    }
+    old_col_names <- gsub(":", "", old_meta_data[meta_cols])
+    col_names <- gsub("(\\S*?):.*", "\\1", meta_data)
+    if (!all(sort(col_names) == sort(old_col_names))) {
+        stop("old data has different variables, use override = TRUE")
+    }
+    positions <- cbind(
+        start = meta_cols,
+        end = c(tail(meta_cols, -1) - 1, length(old_meta_data))
+    )
+    old_meta_data <- apply(
+        positions,
+        1,
+        function(i) {
+            paste(old_meta_data[i["start"]:i["end"]], collapse = "\n")
+        }
+    )
+    if (!all(sort(meta_data) == sort(old_meta_data))) {
+        stop("old data has different variable types, use override = TRUE")
+    }
+    return(old_meta_data)
 }
 
 ##' Read a \code{data.frame} from a git repository

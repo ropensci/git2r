@@ -4,7 +4,7 @@
 \alias{write_delim_git}
 \title{Write a \code{data.frame} to a git repository}
 \usage{
-write_delim_git(x, file, repo = ".", force = FALSE)
+write_delim_git(x, file, repo = ".", override = FALSE, force = FALSE)
 }
 \arguments{
 \item{x}{the \code{data.frame}}
@@ -15,6 +15,10 @@ it is relative to the root of the \code{repo}.}
 
 \item{repo}{a path to a repository or a \code{git_repository}
 object. Default is '.'}
+
+\item{override}{Ignore existing meta data. This is required when new
+variables are added or variables are deleted. Setting this to TRUE can
+potentially lead to large diffs. Defaults to FALSE.}
 
 \item{force}{Add ignored files. Default is FALSE.}
 }
