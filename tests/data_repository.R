@@ -110,14 +110,22 @@ stopifnot(all.equal(
 
 write_delim_git(x, "junk/test", data_repo)
 commit(data_repo, "test")
-rm_file(data_repo, "junk/test")
+rm_file(data_repo, ".tsv")
 stopifnot(
     all.equal(
         status(data_repo)$s,
-        list(deleted = "junk/test.tsv", deleted = "junk/test.yml")
+        list(deleted = "junk/test.tsv", deleted = "test.tsv")
     )
 )
-rm_file(data_repo)
+write_delim_git(x, "junk/test", data_repo)
+rm_file(data_repo, ".yml")
+stopifnot(
+    all.equal(
+        status(data_repo)$s,
+        list(deleted = "test.tsv", deleted = "test.yml")
+    )
+)
+rm_file(data_repo, "junk/test")
 stopifnot(
     all.equal(
         status(data_repo)$s,

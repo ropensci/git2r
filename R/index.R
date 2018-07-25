@@ -132,8 +132,25 @@ add <- function(repo = ".", path = NULL, force = FALSE)
 ##' @template repo-param
 ##' @param path character vector with filenames to remove. The path
 ##'     must be relative to the repository's working folder. Only
-##'     files known to Git are removed.
+##'     files known to Git are removed. Works different in case of
+##'     \code{data_repository}. See details.
 ##' @return invisible(NULL)
+##' @details
+##' In case of a \code{data_repository}, there are three options for \code{path}
+##' \enumerate{
+##'     \item{a vector of file names as used in \code{\link{write_delim_git}}}.
+##'     This will remove all associated \code{.tsv} and \code{.yml} files
+##'     \item{\code{".tsv"}} will remove ALL \code{.tsv} files.
+##'     \item{\code{".yml"}} will remove all \code{.yml} files which have no
+##'     associated \code{.tsv} file
+##' }
+##'
+##' \code{path = ".tsv"} is useful when updating a \code{data_repository} with a
+##' variable number of files. First use \code{rm_file(repo, path = ".tsv")} to
+##' remove all \code{.tsv} files. Then use \code{write_delim_git()} the store
+##' all the data.frames. End by using \code{rm_file(repo, path = ".yml")}, which
+##' will clean any left-over \code{.yml} files. As a result, any data.frame
+##' which wasn't rewritten will be deleted.
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -160,20 +177,36 @@ add <- function(repo = ".", path = NULL, force = FALSE)
 ##' }
 rm_file <- function(repo = ".", path = NULL) {
     if (is.null(path) || !is.character(path)) {
-        if (!is_data_repo(repo)) {
-            stop("'path' must be a character vector")
-        }
-        path <- list.files(
-            workdir(repo),
-            pattern = "\\.(tsv|yml)$",
-            recursive = TRUE
-        )
+        stop("'path' must be a character vector")
     }
 
     repo <- lookup_repository(repo)
 
     if (is_data_repo(repo)) {
-        path <- clean_data_path(path)
+        if (length(path) == 1 && path %in% c(".tsv", ".yml")) {
+            if (path == ".tsv") {
+                path <- list.files(
+                    workdir(repo),
+                    pattern = "\\.tsv$",
+                    recursive = TRUE
+                )
+            } else {
+                yml <- list.files(
+                    workdir(repo),
+                    pattern = "\\.yml$",
+                    recursive = TRUE
+                )
+                tsv <- list.files(
+                    workdir(repo),
+                    pattern = "\\.tsv$",
+                    recursive = TRUE
+                )
+                both <- gsub("\\.yml$", "", yml) %in% gsub("\\.tsv$", "", tsv)
+                path <- yml[!both]
+            }
+        } else {
+            path <- clean_data_path(path)
+        }
     }
 
     if (length(path)) {
