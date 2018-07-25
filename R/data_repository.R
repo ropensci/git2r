@@ -22,19 +22,32 @@
 ##' path. It is relative to the "project" when set in the \code{repo}. Otherwise
 ##' it is relative to the root of the \code{repo}.
 ##' @template repo-param
+##' @param sorting a vector of column names defining which columns to use for
+##' sorting \code{x} and in what order to use them. Defaults to
+##' \code{colnames(x)}
 ##' @param override Ignore existing meta data. This is required when new
 ##' variables are added or variables are deleted. Setting this to TRUE can
 ##' potentially lead to large diffs. Defaults to FALSE.
 ##' @inheritParams add
 ##' @return NULL (invisible)
 ##' @export
-##' @importFrom utils write.table
-write_delim_git <- function(x, file, repo = ".", override = FALSE, force = FALSE) {
+##' @importFrom utils tail write.table
+write_delim_git <- function(
+    x, file, repo = ".", sorting, override = FALSE, force = FALSE
+) {
     if (!inherits(x, "data.frame")) {
         stop("x is not a 'data.frame'")
     }
     if (!is_data_repo(repo)) {
         stop("repo is not a 'data_repository'")
+    }
+    if (!missing(sorting)) {
+        if (length(sorting) == 0) {
+            stop("at least one variable is required for sorting")
+        }
+        if (!all(sorting %in% colnames(x))) {
+            stop("use only variables of 'x' for sorting")
+        }
     }
     if (grepl("\\..*$", basename(file))) {
         warning("file extensions are stripped")
@@ -51,15 +64,45 @@ write_delim_git <- function(x, file, repo = ".", override = FALSE, force = FALSE
         vapply(raw_data, attr, "", which = "meta"),
         sep = ":\n"
     )
+    names(meta_data) <- colnames(x)
     if (override || !file.exists(file["meta_file"])) {
+        if (missing(sorting)) {
+            sorting <- colnames(x)
+        }
+        to_sort <- colnames(x) %in% sorting
+        meta_data <- meta_data[c(sorting, colnames(x)[!to_sort])]
+        meta_data[sorting] <- paste0(meta_data[sorting], "\n    sort")
         writeLines(meta_data, file["meta_file"])
     } else {
-        meta_data <- compare_meta(
-            meta_data,
-            old_meta_data = readLines(file["meta_file"])
+        old_meta_data <- readLines(file["meta_file"])
+        meta_cols <- grep("^\\S*:$", old_meta_data)
+        positions <- cbind(
+            start = meta_cols,
+            end = c(tail(meta_cols, -1) - 1, length(old_meta_data))
         )
-        raw_data <- raw_data[gsub("(\\S*?):.*", "\\1", meta_data)]
+        old_meta_data <- apply(
+            positions,
+            1,
+            function(i) {
+                paste(old_meta_data[i["start"]:i["end"]], collapse = "\n")
+            }
+        )
+        if (missing(sorting)) {
+            sorting <- grep(".*sort", old_meta_data)
+            sorting <- gsub("(\\S*?):\n.*", "\\1", old_meta_data)[sorting]
+            if (!all(sorting %in% colnames(x))) {
+                stop("new data lacks old sorting variable, use override = TRUE")
+            }
+        }
+        to_sort <- colnames(x) %in% sorting
+        meta_data <- meta_data[c(sorting, colnames(x)[!to_sort])]
+        meta_data[sorting] <- paste0(meta_data[sorting], "\n    sort")
+        meta_data <- compare_meta(meta_data, old_meta_data)
     }
+    # order the variables
+    raw_data <- raw_data[gsub("(\\S*?):.*", "\\1", meta_data)]
+    # order the observations
+    raw_data <- raw_data[do.call(order, raw_data[sorting]), ]
     write.table(
         x = raw_data, file = file["raw_file"], append = FALSE,
         quote = FALSE, sep = "\t", eol = "\n", dec = ".",
@@ -71,28 +114,16 @@ write_delim_git <- function(x, file, repo = ".", override = FALSE, force = FALSE
 }
 
 compare_meta <- function(meta_data, old_meta_data) {
-    meta_cols <- grep("^\\S*:$", old_meta_data)
-    if (length(meta_cols) != length(meta_data)) {
+    if (length(old_meta_data) != length(meta_data)) {
         stop("old data has different number of variables, use override = TRUE")
     }
-    old_col_names <- gsub(":", "", old_meta_data[meta_cols])
+    old_col_names <- gsub("(\\S*?):.*", "\\1", old_meta_data)
     col_names <- gsub("(\\S*?):.*", "\\1", meta_data)
     if (!all(sort(col_names) == sort(old_col_names))) {
         stop("old data has different variables, use override = TRUE")
     }
-    positions <- cbind(
-        start = meta_cols,
-        end = c(tail(meta_cols, -1) - 1, length(old_meta_data))
-    )
-    old_meta_data <- apply(
-        positions,
-        1,
-        function(i) {
-            paste(old_meta_data[i["start"]:i["end"]], collapse = "\n")
-        }
-    )
     if (!all(sort(meta_data) == sort(old_meta_data))) {
-        stop("old data has different variable types, use override = TRUE")
+stop("old data has different variable types or sorting, use override = TRUE")
     }
     return(old_meta_data)
 }
