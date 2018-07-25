@@ -79,6 +79,10 @@
 as.data.frame.git_repository <- function(x, ...) {
     do.call("rbind", lapply(commits(x), as.data.frame))
 }
+##' @export
+as.data.frame.data_repository <- function(x, ...) {
+    NextMethod()
+}
 
 ##' Open a repository
 ##'
@@ -86,14 +90,19 @@ as.data.frame.git_repository <- function(x, ...) {
 ##' @param discover Discover repository from path. Default is TRUE.
 ##' @param project The name of of project. Refers to a local path in case of a
 ##' data repository. Defaults to \code{NULL}, indicating a standard repository.
-##' @return A \code{git_repository} object with entries:
+##' @return Either a \code{git_repository} object with entries:
+##' \describe{
+##'   \item{path}{
+##'     Path to a git repository
+##'   }
+##' }
+##' or a \code{data_repository} object with entries:
 ##' \describe{
 ##'   \item{path}{
 ##'     Path to a git repository
 ##'   }
 ##'   \item{project}{
-##'     If set, the local path to the project starting from the root of the
-##'     repository
+##'     The local path to the project starting from the root of the repository
 ##'   }
 ##' }
 ##' @export
@@ -181,7 +190,10 @@ repository <- function(path = ".", discover = TRUE, project = NULL) {
     if (!dir.exists(local_path)) {
         dir.create(local_path, recursive = TRUE)
     }
-    structure(list(path = path, project = project), class = "git_repository")
+    structure(
+        list(path = path, project = project),
+        class = c("data_repository", "git_repository")
+    )
 }
 
 ##' Init a repository
@@ -605,6 +617,10 @@ print.git_repository <- function(x, ...) {
                     h$summary))
     }
 }
+##' @export
+print.data_repository <- function(x, ...) {
+    NextMethod()
+}
 
 ##' Summary of repository
 ##'
@@ -689,6 +705,10 @@ summary.git_repository <- function(object, ...) {
     lapply(commits(object, n = 5), print)
 
     invisible(NULL)
+}
+##' @export
+summary.data_repository <- function(object, ...) {
+    NextMethod()
 }
 
 ## Strip trailing slash or backslash, unless it's the current drive

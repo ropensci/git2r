@@ -30,13 +30,13 @@ write_delim_git <- function(x, file, repo = ".", force = FALSE) {
     if (!inherits(x, "data.frame")) {
         stop("x is not a 'data.frame'")
     }
-    repo <- lookup_repository(repo)
-    if (is_data_repo(repo)) {
-        file <- file.path(workdir(repo), file)
+    if (!is_data_repo(repo)) {
+        stop("repo is not a 'data_repository'")
     }
     if (grepl("\\..*$", basename(file))) {
         warning("file extensions are stripped")
     }
+    file <- file.path(workdir(repo), file)
     file <- clean_data_path(file)
 
     if (!dir.exists(dirname(file["raw_file"]))) {
@@ -67,10 +67,10 @@ write_delim_git <- function(x, file, repo = ".", force = FALSE) {
 ##' @export
 ##' @importFrom utils read.table
 read_delim_git <- function(file, repo = ".") {
-    repo <- lookup_repository(repo)
-    if (is_data_repo(repo)) {
-        file <- file.path(workdir(repo), file)
+    if (!is_data_repo(repo)) {
+        stop("repo is not a 'data_repository'")
     }
+    file <- file.path(workdir(repo), file)
     file <- clean_data_path(file)
 
     if (!all(file.exists(file))) {
@@ -151,7 +151,9 @@ meta.factor <- function(x) {
 ##' @seealso repo init
 ##' @export
 is_data_repo <- function(object) {
-    inherits(object, "git_repository") && !is.null(object$project)
+    inherits(object, "git_repository") &&
+        inherits(object, "data_repository") &&
+        !is.null(object$project)
 }
 
 ##' Clean the data path

@@ -15,14 +15,19 @@ repository(path = ".", discover = TRUE, project = NULL)
 data repository. Defaults to \code{NULL}, indicating a standard repository.}
 }
 \value{
-A \code{git_repository} object with entries:
+Either a \code{git_repository} object with entries:
+\describe{
+  \item{path}{
+    Path to a git repository
+  }
+}
+or a \code{data_repository} object with entries:
 \describe{
   \item{path}{
     Path to a git repository
   }
   \item{project}{
-    If set, the local path to the project starting from the root of the
-    repository
+    The local path to the project starting from the root of the repository
   }
 }
 }

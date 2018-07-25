@@ -38,6 +38,7 @@ Collate:
     'config.R'
     'contributions.R'
     'credential.R'
+    'data_repository.R'
     'diff.R'
     'fetch.R'
     'git2r.R'
@@ -65,5 +66,4 @@ Collate:
     'time.R'
     'tree.R'
     'when.R'
-    'write_delim_git.R'
 RoxygenNote: 6.0.1
