@@ -45,20 +45,69 @@ x <- data.frame(
     abc = c(rnorm(25), NA),
     stringsAsFactors = FALSE
 )
-tools::assertWarning(wdg <- write_delim_git(x, "test.txt", data_repo))
+
+stopifnot(all.equal(
+    tools::assertWarning(
+        write_delim_git(x, "test.txt", data_repo)
+    )[[1]]$message,
+    "file extensions are stripped"
+))
 z <- status(data_repo)
 print(z)
 stopifnot(
     all.equal(z$s, list(new = "test.tsv", new = "test.yml"))
 )
+write_delim_git(x, "test", data_repo)
+stopifnot(all.equal(status(data_repo), z))
+stopifnot(all.equal(
+    tools::assertError(
+        write_delim_git(x[, 1:3], "test", data_repo)
+    )[[1]][["message"]],
+    "new data lacks old sorting variable, use override = TRUE"
+))
+y <- x
+y$junk <- x$x
+stopifnot(all.equal(
+    tools::assertError(
+        write_delim_git(y, "test", data_repo)
+    )[[1]][["message"]],
+    "old data has different number of variables, use override = TRUE"
+))
+y <- x
+y$x <- factor(y$x)
+stopifnot(all.equal(
+    tools::assertError(
+        write_delim_git(y, "test", data_repo)
+    )[[1]][["message"]],
+    "old data has different variable types or sorting, use override = TRUE"
+))
 all.equal(
     x,
     read_delim_git("test", data_repo)
 )
+write_delim_git(x, "test", data_repo, sorting = c("y", "x"), override = TRUE)
+x_sorted <- x[do.call(order, x[c("y", "x")]), c("y", "x", "z", "abc")]
+rownames(x_sorted) <- NULL
+stopifnot(all.equal(x_sorted, read_delim_git("test", data_repo)))
+y <- x
+y$abc <- NULL
+y$xyz <- x$abc
 stopifnot(all.equal(
-    tools::assertError(read_delim_git(NA, data_repo))[[1]][["message"]],
+    tools::assertError(
+        write_delim_git(y, "test", data_repo)
+    )[[1]][["message"]],
+    "old data has different variables, use override = TRUE"
+))
+
+stopifnot(all.equal(
+    tools::assertError(read_delim_git("", data_repo))[[1]][["message"]],
     "raw file and/or meta file missing"
 ))
+stopifnot(all.equal(
+    tools::assertError(read_delim_git("test", "."))[[1]][["message"]],
+    "repo is not a 'data_repository'"
+))
+
 write_delim_git(x, "junk/test", data_repo)
 commit(data_repo, "test")
 rm_file(data_repo, "junk/test")
@@ -78,3 +127,22 @@ stopifnot(
         )
     )
 )
+
+stopifnot(all.equal(
+    tools::assertError(
+        write_delim_git(x, "test", repository(path))
+    )[[1]][["message"]],
+    "repo is not a 'data_repository'"
+))
+stopifnot(all.equal(
+    tools::assertError(
+        write_delim_git(x, "test", sorting = character(0), data_repo)
+    )[[1]][["message"]],
+    "at least one variable is required for sorting"
+))
+stopifnot(all.equal(
+    tools::assertError(
+        write_delim_git(x, "test", sorting = "junk", data_repo)
+    )[[1]][["message"]],
+    "use only variables of 'x' for sorting"
+))
