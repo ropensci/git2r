@@ -180,6 +180,15 @@ read_delim_git <- function(file, repo = ".") {
 
 ##' Optimise a vector for storage in to a git repository and add meta data
 ##' @param x the vector
+##' @details
+##' \itemize{
+##'    \item \code{meta.character} checks for the presence of \code{'NA'}.
+##'    Because \code{\link{write_delim_git}} stores the data unquoted,
+##'    \code{'NA'} and \code{NA} result in the same value in the file. Hence
+##'    \code{\link{read_delim_git}} would report \code{'NA'} as \code{NA}.
+##'    Therefore \code{meta.character} will throw an error with \code{'NA'} is
+##'    detected.
+##' }
 ##' @export
 meta <- function(x) {
     UseMethod("meta")
@@ -188,6 +197,13 @@ meta <- function(x) {
 ##' @export
 meta.character <- function(x) {
     attr(x, "meta") <- "    class: character"
+    if (any(is.na(x))) {
+        stop(
+"The string 'NA' cannot be stored because it would be indistinguishable from the
+missing value NA. Please replace or remove any 'NA' strings. Consider using a
+factor."
+        )
+    }
     return(x)
 }
 

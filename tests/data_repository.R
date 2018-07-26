@@ -98,6 +98,17 @@ stopifnot(all.equal(
     )[[1]][["message"]],
     "old data has different variables, use override = TRUE"
 ))
+y <- x
+y$x[1] <- NA
+stopifnot(
+    grepl(
+        "^The string 'NA' cannot be stored",
+        tools::assertError(
+            write_delim_git(y, "test", data_repo)
+        )[[1]]["message"]
+    )
+)
+
 
 stopifnot(all.equal(
     tools::assertError(read_delim_git("", data_repo))[[1]][["message"]],
