@@ -181,6 +181,12 @@ read_delim_git <- function(file, repo = ".") {
         raw_data[[id]] <- as.logical(raw_data[[id]])
     }
 
+
+    col_posix <- which(col_classes == "POSIXct")
+    for (id in col_posix) {
+        raw_data[[id]] <- as.POSIXct(raw_data[[id]], origin = "1970-01-01")
+    }
+
     return(raw_data)
 }
 
@@ -247,6 +253,13 @@ meta.logical <- function(x) {
 meta.complex <- function(x) {
     attr(x, "meta") <- "    class: complex"
     return(x)
+}
+
+##' @export
+meta.POSIXct <- function(x) {
+    z <- unclass(x)
+    attr(z, "meta") <- "    class: POSIXct\n    origin: 1970-01-01\n"
+    return(z)
 }
 
 ##' Check if object is a data repository

@@ -169,6 +169,11 @@ stopifnot(all.equal(
 y <- x
 y$logic <- sample(c(TRUE, FALSE, NA), replace = TRUE, size = nrow(y))
 y$complex <- complex(real = rnorm(nrow(y)), imaginary = rnorm(nrow(y)))
+y$timestamp <- seq(
+    as.POSIXct("1900-01-01"),
+    as.POSIXct("2050-01-01"),
+    length = 26
+)
 write_delim_git(y, "logical", data_repo, sorting = c("y", "logic"))
 z <- read_delim_git("logical", data_repo)
 y.sorted <- y[do.call(order, y[c("y", "logic")]), colnames(z)]
