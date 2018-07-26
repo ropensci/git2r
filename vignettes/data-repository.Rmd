@@ -1,0 +1,101 @@
+---
+title: "Data repository"
+author: "Thierry Onkelinx"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Data repository}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(knitr)
+opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Rationale
+
+In some cases we want to place data under version control. Data refers here to the information which is stored in a rectangular format. The columns define variables, while the rows represent observations. There is no information in neither the order of the columns nor the order of the rows. We assume that the data is available a an R `data.frame`.
+
+Although git can store binary files, its real power and efficiency is with plain text files. R has several functions to read and write `data.frames` as plain text files. Main downside is the loss of meta data, especially in case of `factors`. A `factor` will be written as a `character` and hence lose all information on the levels. This can be important when the levels are a) not sorted alphabethical, b) not all levels have observations or c) the `factor` is ordered. Besides that, storing a `factor` as `character` is not efficient.
+
+Git stores the version history under the form of diffs: a list of lines which are deleted and a list of lines which are inserted at a specific line number in a file. We have to keep this in mind when storing data as plain text files in Git. The table below indicate what impact changing the information content has on the diff in Git. Note that changing observations requires a small diff, while changing variables results in a massive diff.
+
+```{r echo = FALSE}
+cases <- rbind(
+    c("remove 1 observation", "remove 1 line"),
+    c("add 1 observation", "add 1 line"),
+    c("update 1 observation", "remove 1 line and add 1 line"),
+    c("remove 1 variable", "remove all lines and add all lines"),
+    c("add 1 variable", "remove all lines and add all lines")
+)
+colnames(cases) <- c("Change in data", "Git diff")
+kable(cases, caption = "Changes in the information content of the data")
+```
+
+In the next table we show the effect on the diff when making changes in the data which don't change in the information content in the data.
+
+```{r echo = FALSE}
+cases <- rbind(
+    c("move 1 observation", "remove 1 line and add 1 line"),
+    c("move 1 variable", "remove all lines and add all lines")
+)
+colnames(cases) <- c("Change in data", "Git diff")
+kable(cases, caption = "Changes in the data without changing the information content")
+```
+
+So in order to use Git a a performant and efficient version control system for data, we need to make sure to store the meta data and keep the diffs as small as possible.
+
+# Tools in `git2r`
+
+## Data repository
+
+A 'data repository' refers to a sub directory within the root of an existing git repository. Create a `data_repository` object with `init()` or `repository()` and specify the sub directory through the `project` argument. Most functions of the package handle a `data_repository` object in the same way as they handle a `git_repository` object. The main difference is that the working directory points to the sub directory of the root, rather that the root of the git repository. You can create multiple data repositories within the same git repository.
+
+```{r}
+# Create a directory in tempdir
+path <- tempfile(pattern = "git2r-")
+dir.create(path)
+
+library(git2r)
+data_repo <- init(path, project = "test")
+```
+
+## Storing data
+
+Use `write_delim_git()` to store a `data.frame` into the data repository. The function will separate the data and the meta data. The data is stored as a headerless, unquoted tab delimited file with ".tsv" extension and UTF-8 encoding. The meta data is stored in YAML format with ".yml" format. Therefore any extension given to the `file` will be stripped (with a warning).
+
+The function will do a lot more preprocessing to the data in order to keep the file and the diff as small as possible. That is the reason why the data is stored headerless and unquoted. 
+
+- `logical` is written as 0 (FALSE), 1 (TRUE) or NA to the data. The class is stored in the meta data.
+- `integer` is written as is to the data. The class is stored in the meta data.
+- `numeric` is written as is to the data. The class is stored in the meta data.
+- `complex` is written as is to the data. The class is stored in the meta data.
+- `character` is written as is and unquoted to the data. The class is stored in the meta data.
+- `factor` is  stored as its indices in the data. The labels of levels are stored in the meta data.
+- `POSIXct` is written as an integer to the data. The class and the origin are stored in the meta data.
+
+```{r}
+# Create dummy data
+x <- data.frame(
+    x = LETTERS,
+    y = factor(
+        sample(c("a", "b", NA), 26, replace = TRUE),
+        levels = c("a", "b", "c")
+    ),
+    z = c(NA, 1:25),
+    abc = c(rnorm(25), NA),
+    stringsAsFactors = FALSE
+)
+str(x)
+```
+
+```{r}
+write_delim_git(x = x, file = "my_data", repo = data_repo, sorting = c("y", "x"))
+status(data_repo)
+```
+
