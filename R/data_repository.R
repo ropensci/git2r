@@ -243,6 +243,12 @@ meta.logical <- function(x) {
     return(x)
 }
 
+##' @export
+meta.complex <- function(x) {
+    attr(x, "meta") <- "    class: complex"
+    return(x)
+}
+
 ##' Check if object is a data repository
 ##' @param object the object to check
 ##' @return TRUE is a data \code{git_repository}, else FALSE
