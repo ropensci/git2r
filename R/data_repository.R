@@ -155,6 +155,7 @@ read_delim_git <- function(file, repo = ".") {
     )
 
     col_classes <- gsub(" {4}class: (.*)", "\\1", meta_data[meta_cols + 1])
+
     col_factor <- which(col_classes == "factor")
     level_rows <- grep("^ {8}- .*$", meta_data)
     level_value <- gsub("^ {8}- (.*)$", "\\1", meta_data[level_rows])
@@ -173,6 +174,11 @@ read_delim_git <- function(file, repo = ".") {
             levels = seq_along(col_factor_level[[id]]),
             labels = col_factor_level[[id]]
         )
+    }
+
+    col_logical <- which(col_classes == "logical")
+    for (id in col_logical) {
+        raw_data[[id]] <- as.logical(raw_data[[id]])
     }
 
     return(raw_data)
@@ -228,6 +234,13 @@ meta.factor <- function(x) {
         sep = "\n"
     )
     return(z)
+}
+
+##' @export
+meta.logical <- function(x) {
+    x <- as.integer(x)
+    attr(x, "meta") <- "    class: logical"
+    return(x)
 }
 
 ##' Check if object is a data repository

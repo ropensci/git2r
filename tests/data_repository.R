@@ -81,10 +81,10 @@ stopifnot(all.equal(
     )[[1]][["message"]],
     "old data has different variable types or sorting, use override = TRUE"
 ))
-all.equal(
+stopifnot(all.equal(
     x,
     read_delim_git("test", data_repo)
-)
+))
 write_delim_git(x, "test", data_repo, sorting = c("y", "x"), override = TRUE)
 x_sorted <- x[do.call(order, x[c("y", "x")]), c("y", "x", "z", "abc")]
 rownames(x_sorted) <- NULL
@@ -165,3 +165,11 @@ stopifnot(all.equal(
     )[[1]][["message"]],
     "use only variables of 'x' for sorting"
 ))
+
+y <- x
+y$logic <- sample(c(TRUE, FALSE, NA), replace = TRUE, size = nrow(x))
+write_delim_git(y, "logical", data_repo, sorting = c("y", "logic"))
+z <- read_delim_git("logical", data_repo)
+y.sorted <- y[do.call(order, y[c("y", "logic")]), colnames(z)]
+rownames(y.sorted) <- NULL
+stopifnot(all.equal(y.sorted, z))
