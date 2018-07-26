@@ -63,6 +63,9 @@ commit(repo_1, "Third commit message")
 push(repo_1, "origin", "refs/heads/master")
 push(repo_1, "origin", "refs/heads/dev")
 
+## Print branch
+branches(repo_1)[["origin/master"]]
+
 ## Clone to repo 2
 repo_2 <- clone(url = path_bare, local_path = path_repo_2, branch = "dev")
 config(repo_2, user.name="Bob", user.email="bob@example.org")

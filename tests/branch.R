@@ -42,6 +42,19 @@ stopifnot(identical(branches(repo)[[1]]$name, "master"))
 stopifnot(identical(branches(repo)[[1]], repository_head(repo)))
 stopifnot(identical(branches(repo)$master, repository_head(repo)))
 
+## Check branch argument
+res <- tools::assertError(is_local(1))
+stopifnot(length(grep("argument 'branch' must be a 'git_branch' object",
+                      res[[1]]$message)) > 0)
+
+## Check branch name argument
+res <- tools::assertError(branch_set_upstream())
+stopifnot(length(grep("Missing argument name",
+                      res[[1]]$message)) > 0)
+
+## Print branch
+repository_head(repo)
+
 ## Create a branch
 b <- branch_create(commit.1, name = "test")
 stopifnot(identical(b$name, "test"))
