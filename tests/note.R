@@ -43,16 +43,26 @@ commit.2 <- commit(repo, "Commit message 2")
 stopifnot(identical(note_default_ref(repo),
                     "refs/notes/commits"))
 
+## Check that an invalid object argument in note_create produce an
+## error.
+tools::assertError(note_create(object = NULL, message = "test"))
+tools::assertError(note_create(object = 1, message = "test"))
+
 ## Check that notes is an empty list
 stopifnot(identical(notes(repo), list()))
 
 ## Create note in default namespace
 note.1 <- note_create(commit.1, "Note-1")
+note.1
 stopifnot(identical(length(notes(repo)), 1L))
 stopifnot(identical(sha(note.1), note.1$sha))
 tools::assertError(note_create(commit.1, "Note-2"))
 note.2 <- note_create(commit.1, "Note-2", force = TRUE)
 stopifnot(identical(length(notes(repo)), 1L))
+
+## Check that an invalid note argument in note_remove produce an
+## error.
+tools::assertError(note_remove(note = 1))
 
 ## Create note in named (review) namespace
 note.3 <- note_create(commit.1, "Note-3", ref="refs/notes/review")
