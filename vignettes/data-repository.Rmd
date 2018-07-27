@@ -111,7 +111,7 @@ str(x)
 
 Another important part of the preprocessing is ordering both the variables as the observations. This is determined when the file is created and stored in the meta data. When the file is overwritten, the ordering is based on the existing meta data. Therefore it is important to think carefully about the ordering and make sure that is how you want it to stay **before** you create your first commit. The ordering of the observations is specified through the `sorting` argument. It holds a vector of variable names which are used in the ordering. Make sure that you add enough sorting variables to avoid ties. `sorting` also defines the order of the variables, the order of the other variables is taken from the `data.frame`.
 
-The data file (".tsv") and the meta data file (".yml") are automatically staged after writing.
+The data file (".tsv") and the meta data file (".yml") are automatically staged after writing. `write_delim_git()` returns the hashes of both the data file and the meta data file. The names of the vector contain the path of the files, relative to the root of the _git_ repository.
 
 ```{r}
 status(data_repo)

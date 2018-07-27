@@ -28,7 +28,8 @@ potentially lead to large diffs. Defaults to FALSE.}
 \item{force}{Add ignored files. Default is FALSE.}
 }
 \value{
-NULL (invisible)
+a named vector with the hashes of the files. The names contains the
+files with their paths relative to the root of the git_repository.
 }
 \description{
 This will create two files. The \code{".tsv"} file contains the raw data.

@@ -29,7 +29,8 @@
 ##' variables are added or variables are deleted. Setting this to TRUE can
 ##' potentially lead to large diffs. Defaults to FALSE.
 ##' @inheritParams add
-##' @return NULL (invisible)
+##' @return a named vector with the hashes of the files. The names contains the
+##' files with their paths relative to the root of the git_repository.
 ##' @export
 ##' @importFrom utils tail write.table
 write_delim_git <- function(
@@ -115,7 +116,11 @@ write_delim_git <- function(
     )
     add(repo, path = file, force = force)
 
-    return(invisible(NULL))
+    hashes <- hashfile(file)
+    names(hashes) <- gsub(paste0("^", workdir(repo), "/"), "", file)
+    names(hashes) <- file.path(repo$project, names(hashes))
+
+    return(hashes)
 }
 
 compare_meta <- function(meta_data, old_meta_data) {
