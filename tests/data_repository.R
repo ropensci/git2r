@@ -180,6 +180,11 @@ y$timestamp <- seq(
     as.POSIXct("2050-01-01"),
     length = 26
 )
+y$date <- seq(
+    as.Date("1970-01-01"),
+    as.Date("1970-01-26"),
+    length = 26
+)
 write_delim_git(y, "logical", data_repo, sorting = c("y", "logic"))
 z <- read_delim_git("logical", data_repo)
 y.sorted <- y[do.call(order, y[c("y", "logic")]), colnames(z)]

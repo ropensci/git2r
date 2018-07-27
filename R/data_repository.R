@@ -206,6 +206,11 @@ read_delim_git <- function(file, repo = ".") {
         raw_data[[id]] <- as.POSIXct(raw_data[[id]], origin = "1970-01-01")
     }
 
+    col_date <- which(col_classes == "Date")
+    for (id in col_date) {
+        raw_data[[id]] <- as.Date(raw_data[[id]], origin = "1970-01-01")
+    }
+
     return(raw_data)
 }
 
@@ -279,6 +284,13 @@ meta.complex <- function(x) {
 meta.POSIXct <- function(x) {
     z <- unclass(x)
     attr(z, "meta") <- "    class: POSIXct\n    origin: 1970-01-01\n"
+    return(z)
+}
+
+##' @export
+meta.Date <- function(x) {
+    z <- unclass(x)
+    attr(z, "meta") <- "    class: Date\n    origin: 1970-01-01\n"
     return(z)
 }
 
