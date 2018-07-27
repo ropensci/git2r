@@ -85,6 +85,12 @@ stopifnot(all.equal(
     x,
     read_delim_git("test", data_repo)
 ))
+stopifnot(all.equal(
+    tools::assertWarning(
+        write_delim_git(x, "test", data_repo, sorting = "y", override = TRUE)
+    )[[1]]$message,
+"sorting results in ties. Add extra sorting variables to ensure small diffs."
+))
 write_delim_git(x, "test", data_repo, sorting = c("y", "x"), override = TRUE)
 x_sorted <- x[do.call(order, x[c("y", "x")]), c("y", "x", "z", "abc")]
 rownames(x_sorted) <- NULL

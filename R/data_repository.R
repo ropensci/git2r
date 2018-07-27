@@ -102,6 +102,11 @@ write_delim_git <- function(
     # order the variables
     raw_data <- raw_data[gsub("(\\S*?):.*", "\\1", meta_data)]
     # order the observations
+    if (anyDuplicated(raw_data[sorting])) {
+        warning(
+"sorting results in ties. Add extra sorting variables to ensure small diffs."
+        )
+    }
     raw_data <- raw_data[do.call(order, raw_data[sorting]), ]
     write.table(
         x = raw_data, file = file["raw_file"], append = FALSE,
