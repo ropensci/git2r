@@ -120,15 +120,24 @@ write_delim_git <- function(
 
 compare_meta <- function(meta_data, old_meta_data) {
     if (length(old_meta_data) != length(meta_data)) {
-        stop("old data has different number of variables, use override = TRUE")
+        stop(
+            call. = FALSE,
+            "old data has different number of variables, use override = TRUE"
+        )
     }
     old_col_names <- gsub("(\\S*?):.*", "\\1", old_meta_data)
     col_names <- gsub("(\\S*?):.*", "\\1", meta_data)
     if (!all(sort(col_names) == sort(old_col_names))) {
-        stop("old data has different variables, use override = TRUE")
+        stop(
+            call. = FALSE,
+            "old data has different variables, use override = TRUE"
+        )
     }
     if (!all(sort(meta_data) == sort(old_meta_data))) {
-stop("old data has different variable types or sorting, use override = TRUE")
+        stop(
+            call. = FALSE,
+        "old data has different variable types or sorting, use override = TRUE"
+        )
     }
     return(old_meta_data)
 }
@@ -216,6 +225,7 @@ meta.character <- function(x) {
     attr(x, "meta") <- "    class: character"
     if (any(is.na(x))) {
         stop(
+            call. = FALSE,
 "The string 'NA' cannot be stored because it would be indistinguishable from the
 missing value NA. Please replace or remove any 'NA' strings. Consider using a
 factor."
