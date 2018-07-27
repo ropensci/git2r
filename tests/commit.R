@@ -36,9 +36,15 @@ writeLines("Hello world!", file.path(path, "test.txt"))
 ## Commit without adding changes should produce an error
 tools::assertError(commit(repo, "Test to commit"))
 
-## Add and commit
+## Add
 add(repo, "test.txt")
-commit_1 <- commit(repo, "Commit message")
+
+## Commit with empty message should produce an error
+tools::assertError(commit(repo, ""))
+
+## Commit
+commit_1 <- commit(repo, "Commit message", session = TRUE)
+summary(commit_1)
 
 ## Check commit
 stopifnot(identical(commit_1$author$name, "Alice"))
