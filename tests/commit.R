@@ -139,6 +139,7 @@ stopifnot(identical(length(commits(repo, n = -1)), 8L))
 stopifnot(identical(length(commits(repo, n = 2)), 2L))
 tools::assertError(commits(repo, n = 2.2))
 tools::assertError(commits(repo, n = "2"))
+tools::assertError(commits(repo, n = 1:2))
 
 ## Check to coerce repository to data.frame
 df <- as.data.frame(repo)
