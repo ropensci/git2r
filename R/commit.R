@@ -246,7 +246,7 @@ commits <- function(repo        = ".",
 
             if (is.null(x))
                 break
-            result <- append(result, x)
+            result[[length(result) + 1]] <- x
 
             ## Get parent to commit
             x <- tryCatch(parents(x)[[1]], error = function(e) NULL)

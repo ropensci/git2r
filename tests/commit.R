@@ -189,3 +189,17 @@ stopifnot(length(grep("'commit' must be an S3 class git_commit",
 
 ## Cleanup
 unlink(path, recursive=TRUE)
+
+if (identical(Sys.getenv("NOT_CRAN"), "true") ||
+    identical(Sys.getenv("R_COVR"), "true")) {
+    path <- tempfile(pattern="git2r-")
+    dir.create(path)
+    setwd(path)
+    system("git clone --depth 2 https://github.com/ropensci/git2r.git")
+
+    ## Check the number of commits in the shallow clone.
+    stopifnot(identical(length(commits(repository("git2r"))), 2L))
+
+    ## Cleanup
+    unlink(path, recursive=TRUE)
+}
