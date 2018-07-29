@@ -199,6 +199,7 @@ if (identical(Sys.getenv("NOT_CRAN"), "true") ||
 
     ## Check the number of commits in the shallow clone.
     stopifnot(identical(length(commits(repository("git2r"))), 2L))
+    stopifnot(identical(length(commits(repository("git2r"), n = 1)), 1L))
 
     ## Cleanup
     unlink(path, recursive=TRUE)
