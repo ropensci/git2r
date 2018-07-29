@@ -31,6 +31,13 @@ tools::assertError(is_empty(new("git_repository")))
 
 ## Check that open an invalid repository fails
 tools::assertError(repository(path))
+tools::assertError(repository(path, discover = FALSE))
+
+## Check that it fails to open a repository with a path to a file.
+writeLines("test", file.path(path, "test.txt"))
+tools::assertError(repository(file.path(path, "test.txt"),
+                              discover = FALSE))
+unlink(file.path(path, "test.txt"))
 
 ## Initialize a repository
 repo <- init(path)
