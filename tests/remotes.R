@@ -41,6 +41,8 @@ remote_add(repo, "playground",
 stopifnot(identical(remotes(repo), "playground"))
 stopifnot(identical(remote_url(repo, "playground"),
                     "https://github.com/gaborcsardi/playground"))
+stopifnot(identical(remote_url(repo),
+                    "https://github.com/gaborcsardi/playground"))
 
 ## Rename a remote
 remote_rename(repo, "playground", "foobar")
