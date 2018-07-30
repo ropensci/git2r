@@ -34,6 +34,7 @@ status_exp_1 <- structure(list(staged = structure(list(), .Names = character(0))
                           .Names = c("staged", "unstaged", "untracked"),
                           class = "git_status")
 status_obs_1 <- status(repo)
+status_obs_1
 str(status_exp_1)
 str(status_obs_1)
 stopifnot(identical(status_obs_1, status_exp_1))
@@ -48,6 +49,7 @@ status_exp_2 <- structure(list(staged = structure(list(), .Names = character(0))
                           .Names = c("staged", "unstaged", "untracked", "ignored"),
                           class = "git_status")
 status_obs_2 <- status(repo, ignored = TRUE)
+status_obs_2
 str(status_exp_2)
 str(status_obs_2)
 stopifnot(identical(status_obs_2, status_exp_2))
@@ -72,6 +74,7 @@ status_exp_3 <- structure(list(staged = structure(list(), .Names = character(0))
                           .Names = c("staged", "unstaged", "untracked"),
                           class = "git_status")
 status_obs_3 <- status(repo)
+status_obs_3
 str(status_exp_3)
 str(status_obs_3)
 stopifnot(identical(status_obs_3, status_exp_3))
@@ -90,6 +93,7 @@ status_exp_4 <- structure(list(staged = structure(list(), .Names = character(0))
                           .Names = c("staged", "unstaged", "untracked"),
                           class = "git_status")
 status_obs_4 <- status(repo)
+status_obs_4
 str(status_exp_4)
 str(status_obs_4)
 stopifnot(identical(status_obs_4, status_exp_4))
@@ -109,6 +113,7 @@ status_exp_5 <- structure(list(staged = structure(list(modified = "test-1.txt"),
                           .Names = c("staged", "unstaged", "untracked"),
                           class = "git_status")
 status_obs_5 <- status(repo)
+status_obs_5
 str(status_exp_5)
 str(status_obs_5)
 stopifnot(identical(status_obs_5, status_exp_5))
@@ -126,6 +131,7 @@ status_exp_6 <- structure(list(staged = structure(list(modified = "test-1.txt"),
                           .Names = c("staged", "unstaged", "untracked", "ignored"),
                           class = "git_status")
 status_obs_6 <- status(repo, ignore=TRUE)
+status_obs_6
 str(status_exp_6)
 str(status_obs_6)
 stopifnot(identical(status_obs_6, status_exp_6))
