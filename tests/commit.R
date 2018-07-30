@@ -66,6 +66,7 @@ tools::assertError(commit(repo, "Test to commit"))
 writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test.txt"))
 add(repo, "test.txt")
 commit_2 <- commit(repo, "Commit message 2")
+summary(commit_2)
 
 ## Check relationship
 stopifnot(identical(descendant_of(commit_2, commit_1), TRUE))
