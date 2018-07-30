@@ -67,8 +67,9 @@ stopifnot(identical(table(odb_objects(repo)$type),
 tag_delete(new_tag)
 stopifnot(identical(length(tags(repo)), 0L))
 
-## Create tag
-tag(repo, "Tagname", "Tag message")
+## Create tag with session info
+tag(repo, "Tagname", "Tag message", session = TRUE)
+stopifnot(grep("git2r", tags(repo)[[1]]$message) > 0)
 
 ## Check tags method with default repo argument
 wd <- setwd(path)
