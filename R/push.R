@@ -14,6 +14,17 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+get_upstream_name <- function(object) {
+    upstream <- branch_get_upstream(object)
+
+    if (is.null(upstream)) {
+        stop("The branch '", object$name, "' that you are ",
+             "trying to push does not track an upstream branch.")
+    }
+
+    branch_remote_name(upstream)
+}
+
 ##' Push
 ##'
 ##' @param object path to repository, or a \code{git_repository} or
@@ -72,12 +83,7 @@ push <- function(object      = ".",
                  credentials = NULL)
 {
     if (is_branch(object)) {
-        upstream <- branch_get_upstream(object)
-        if (is.null(upstream)) {
-            stop("The branch '", object$name, "' that you are ",
-                 "trying to push does not track an upstream branch.")
-        }
-        name <- branch_remote_name(upstream)
+        name <- get_upstream_name(object)
 
         src <- .Call(git2r_branch_canonical_name, object)
         dst <- .Call(git2r_branch_upstream_canonical_name, object)
@@ -89,15 +95,9 @@ push <- function(object      = ".",
 
     if (all(is.null(name), is.null(refspec))) {
         b <- repository_head(object)
-        upstream <- branch_get_upstream(b)
-        if (is.null(upstream)) {
-            stop("The branch '", b$name, "' that you are ",
-                 "trying to push does not track an upstream branch.")
-        }
-
+        name <- get_upstream_name(b)
         src <- .Call(git2r_branch_canonical_name, b)
         dst <- .Call(git2r_branch_upstream_canonical_name, b)
-        name <- branch_remote_name(upstream)
         refspec <- paste0(src, ":", dst)
 
         if (isTRUE(force))
