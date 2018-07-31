@@ -76,6 +76,7 @@ stopifnot(identical(r$committer$name, "Alice"))
 stopifnot(identical(r$committer$email, "alice@example.org"))
 stopifnot(identical(r$refname, "refs/remotes/origin/master"))
 stopifnot(identical(r$repo$path, repo$path))
+push(branches(repo)[[1]])
 
 ## Check result in bare repository
 stopifnot(identical(length(commits(bare_repo)), 1L))

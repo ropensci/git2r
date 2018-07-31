@@ -82,7 +82,7 @@ push <- function(object      = ".",
         src <- .Call(git2r_branch_canonical_name, object)
         dst <- .Call(git2r_branch_upstream_canonical_name, object)
         refspec <- paste0(src, ":", dst)
-        object <- object@repo
+        object <- object$repo
     } else {
         object <- lookup_repository(object)
     }
