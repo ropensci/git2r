@@ -56,16 +56,13 @@ references <- function(repo = ".") {
 }
 
 ##' @export
+format.git_reference <- function(x, ...) {
+    if (identical(x$type, 1L))
+        return(sprintf("[%s] %s", substr(x$sha, 1 , 6), x$shorthand))
+    sprintf("%s => %s", x$name, x$target)
+}
+
+##' @export
 print.git_reference <- function(x, ...) {
-    if (identical(x$type, 1L)) {
-        cat(sprintf("[%s] %s\n",
-                    substr(x$sha, 1 , 6),
-                    x$shorthand))
-    } else if (identical(x$type, 2L)) {
-        cat(sprintf("%s => %s\n",
-                    x$name,
-                    x$target))
-    } else {
-        stop("Unexpected reference type")
-    }
+    cat(format(x, ...), "\n", sep = "")
 }
