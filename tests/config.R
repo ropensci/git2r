@@ -36,6 +36,9 @@ stopifnot("user.name" %in% names(cfg$local))
 stopifnot(identical(cfg$local$user.name, "Alice"))
 stopifnot(identical(cfg$local$user.email, "alice@example.org"))
 
+## Check that config fails for non-character entry.
+tools::assertError(config(repo, test = 5))
+
 ## Delete entries
 cfg <- config(repo, user.name=NULL, user.email=NULL)
 
@@ -58,6 +61,9 @@ cfg <- git_config_files(repo)
 stopifnot(identical(length(cfg), 4L))
 stopifnot(identical(names(cfg), c("system", "xdg", "global", "local")))
 stopifnot(!is.na(cfg$local))
+
+## Check that the local config file is NA for an invalid repo
+## argument.
 stopifnot(is.na(git_config_files(5)$local))
 
 ## Check location of .gitconfig on Windows
