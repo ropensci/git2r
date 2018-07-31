@@ -312,9 +312,14 @@ stash_pop <- function(object = ".", index = 1) {
     invisible(NULL)
 }
 
-## @export
+##' @export
+format.git_stash <- function(x, ...) {
+    x$message
+}
+
+##' @export
 print.git_stash <- function(x, ...) {
-    cat(sprintf("%s\n", x$message))
+    cat(format(x, ...), "\n", sep = "")
 }
 
 ##' Summary of a stash
