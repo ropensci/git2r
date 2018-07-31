@@ -58,6 +58,7 @@ cfg <- git_config_files(repo)
 stopifnot(identical(length(cfg), 4L))
 stopifnot(identical(names(cfg), c("system", "xdg", "global", "local")))
 stopifnot(!is.na(cfg$local))
+stopifnot(is.na(git_config_files(5)$local))
 
 ## Check location of .gitconfig on Windows
 if (identical(Sys.getenv("APPVEYOR"), "True")) {
