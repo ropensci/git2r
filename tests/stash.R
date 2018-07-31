@@ -34,7 +34,7 @@ writeLines("Hello world!", file.path(path, "test-1.txt"))
 add(repo, 'test-1.txt')
 commit(repo, "Commit message")
 
-## Apply stash
+## Pop stash
 writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test-1.txt"))
 stash(repo)
 stopifnot(identical("Hello world!",
@@ -49,6 +49,23 @@ commit(repo, "Next commit message")
 
 ## Check that there are no stashes
 stopifnot(identical(stash_list(repo), list()))
+
+## Apply stash
+writeLines(c("Hello world!", "HELLO WORLD!", "hello world!"),
+           file.path(path, "test-1.txt"))
+stash(repo)
+stopifnot(identical(c("Hello world!", "HELLO WORLD!"),
+                    readLines(file.path(path, "test-1.txt"))))
+stash_apply(repo)
+stopifnot(identical(c("Hello world!", "HELLO WORLD!", "hello world!"),
+                    readLines(file.path(path, "test-1.txt"))))
+stopifnot(identical(length(stash_list(repo)), 1L))
+stash_drop(repo, 1)
+stopifnot(identical(stash_list(repo), list()))
+
+## Make one more commit
+add(repo, 'test-1.txt')
+commit(repo, "Apply stash commit message")
 
 ## Create one more file
 writeLines("Hello world!", file.path(path, "test-2.txt"))
