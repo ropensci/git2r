@@ -74,7 +74,7 @@ push <- function(object      = ".",
     if (is_branch(object)) {
         upstream <- branch_get_upstream(object)
         if (is.null(upstream)) {
-            stop("The branch '", object@name, "' that you are ",
+            stop("The branch '", object$name, "' that you are ",
                  "trying to push does not track an upstream branch.")
         }
         name <- branch_remote_name(upstream)
@@ -91,7 +91,7 @@ push <- function(object      = ".",
         b <- repository_head(object)
         upstream <- branch_get_upstream(b)
         if (is.null(upstream)) {
-            stop("The branch '", b@name, "' that you are ",
+            stop("The branch '", b$name, "' that you are ",
                  "trying to push does not track an upstream branch.")
         }
 
