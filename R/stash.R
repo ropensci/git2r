@@ -14,6 +14,25 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+stash_index <- function(object, index) {
+    if (inherits(object, "git_stash")) {
+        ## Determine the index of the stash in the stash list
+        index <- match(object$sha, vapply(stash_list(object$repo),
+                                          "[[", character(1), "sha"))
+    }
+
+    ## The stash list is zero-based
+    if (abs(index - round(index)) >= .Machine$double.eps^0.5)
+        stop("'index' must be an integer")
+    as.integer(index) - 1L
+}
+
+stash_object <- function(object) {
+    if (inherits(object, "git_stash"))
+        return(object$repo)
+    lookup_repository(object)
+}
+
 ##' Apply stash
 ##'
 ##' Apply a single stashed state from the stash list.
@@ -75,21 +94,8 @@
 ##' stash_list(repo)
 ##' }
 stash_apply <- function(object = ".", index = 1) {
-    if (inherits(object, "git_stash")) {
-        ## Determine the index of the stash in the stash list
-        index <- match(object$sha, vapply(stash_list(object$repo),
-                                          "[[", character(1), "sha"))
-        object <- object$repo
-    } else {
-        object <- lookup_repository(object)
-    }
-
-    ## The stash list is zero-based
-    if (abs(index - round(index)) >= .Machine$double.eps^0.5)
-        stop("'index' must be an integer")
-    index <- as.integer(index) - 1L
-
-    invisible(.Call(git2r_stash_apply, object, index))
+    .Call(git2r_stash_apply, stash_object(object), stash_index(object, index))
+    invisible(NULL)
 }
 
 ##' Drop stash
@@ -141,21 +147,8 @@ stash_apply <- function(object = ".", index = 1) {
 ##' stash_list(repo)
 ##' }
 stash_drop <- function(object = ".", index = 1) {
-    if (inherits(object, "git_stash")) {
-        ## Determine the index of the stash in the stash list
-        index <- match(object$sha, vapply(stash_list(object$repo),
-                                          "[[", character(1), "sha"))
-        object <- object$repo
-    } else {
-        object <- lookup_repository(object)
-    }
-
-    ## The stash list is zero-based
-    if (abs(index - round(index)) >= .Machine$double.eps^0.5)
-        stop("'index' must be an integer")
-    index <- as.integer(index) - 1L
-
-    invisible(.Call(git2r_stash_drop, object, index))
+    .Call(git2r_stash_drop, stash_object(object), stash_index(object, index))
+    invisible(NULL)
 }
 
 ##' Stash
@@ -315,21 +308,8 @@ stash_list <- function(repo = ".") {
 ##' stash_list(repo)
 ##' }
 stash_pop <- function(object = ".", index = 1) {
-    if (inherits(object, "git_stash")) {
-        ## Determine the index of the stash in the stash list
-        index <- match(object$sha, vapply(stash_list(object$repo),
-                                          "[[", character(1), "sha"))
-        object <- object$repo
-    } else {
-        object <- lookup_repository(object)
-    }
-
-    ## The stash list is zero-based
-    if (abs(index - round(index)) >= .Machine$double.eps^0.5)
-        stop("'index' must be an integer")
-    index <- as.integer(index) - 1L
-
-    invisible(.Call(git2r_stash_pop, object, index))
+    .Call(git2r_stash_pop, stash_object(object), stash_index(object, index))
+    invisible(NULL)
 }
 
 ## @export
