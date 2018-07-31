@@ -109,5 +109,7 @@ push <- function(object      = ".",
         refspec <- tmp$refspec
     }
 
-    invisible(.Call(git2r_push, object, name, refspec, credentials))
+    .Call(git2r_push, object, name, refspec, credentials)
+
+    invisible(NULL)
 }
