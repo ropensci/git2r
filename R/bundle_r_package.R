@@ -54,7 +54,7 @@ bundle_r_package <- function(repo = ".") {
     repo <- lookup_repository(repo)
 
     ## Check for 'inst' folder
-    inst <- paste0(workdir(repo), "inst", sep = "")
+    inst <- file.path(workdir(repo), "inst")
     if (!isTRUE(file.info(inst)$isdir))
         dir.create(inst)
 
