@@ -39,6 +39,16 @@ stopifnot(identical(cfg$local$user.email, "alice@example.org"))
 ## Check that config fails for non-character entry.
 tools::assertError(config(repo, test = 5))
 
+## Check config method with missing repo argument
+wd <- setwd(path)
+cfg <- config(user.name="Alice", user.email="alice@example.org")
+stopifnot("local" %in% names(cfg))
+stopifnot("user.name" %in% names(cfg$local))
+stopifnot(identical(cfg$local$user.name, "Alice"))
+stopifnot(identical(cfg$local$user.email, "alice@example.org"))
+if (!is.null(wd))
+    setwd(wd)
+
 ## Delete entries
 cfg <- config(repo, user.name=NULL, user.email=NULL)
 
