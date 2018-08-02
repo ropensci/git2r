@@ -25,52 +25,6 @@
 #include "git2r_S3.h"
 
 /**
- * Lookup the full name of a reference by DWIMing its short name
- *
- * @param repo S3 class git_repository
- * @param shorthand The short name for the reference
- * @return Character vector of length one with the full name of the
- * reference
- */
-SEXP git2r_reference_dwim(SEXP repo, SEXP shorthand)
-{
-    int error, nprotect = 0;
-    SEXP result = R_NilValue;
-    git_reference* reference = NULL;
-    git_repository *repository = NULL;
-
-    if (git2r_arg_check_string(shorthand))
-        git2r_error(__func__, NULL, "'shorthand'", git2r_err_string_arg);
-
-    repository = git2r_repository_open(repo);
-    if (!repository)
-        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
-
-    error = git_reference_dwim(
-        &reference,
-        repository,
-        CHAR(STRING_ELT(shorthand, 0)));
-    if (error)
-        goto cleanup;
-
-    PROTECT(result = Rf_allocVector(STRSXP, 1));
-    nprotect++;
-    SET_STRING_ELT(result, 0, Rf_mkChar(git_reference_name(reference)));
-
-cleanup:
-    git_reference_free(reference);
-    git_repository_free(repository);
-
-    if (nprotect)
-        UNPROTECT(nprotect);
-
-    if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
-
-    return result;
-}
-
-/**
  * Init slots in S3 class git_reference.
  *
  * @param source A git_reference pointer
@@ -126,6 +80,53 @@ static void git2r_reference_init(git_reference *source, SEXP dest)
             git2r_S3_item__git_reference__target,
             Rf_ScalarString(NA_STRING));
     }
+}
+
+/**
+ * Lookup the full name of a reference by DWIMing its short name
+ *
+ * @param repo S3 class git_repository
+ * @param shorthand The short name for the reference
+ * @return S3 class git_reference object
+ */
+SEXP git2r_reference_dwim(SEXP repo, SEXP shorthand)
+{
+    int error, nprotect = 0;
+    SEXP result = R_NilValue;
+    git_reference* reference = NULL;
+    git_repository *repository = NULL;
+
+    if (git2r_arg_check_string(shorthand))
+        git2r_error(__func__, NULL, "'shorthand'", git2r_err_string_arg);
+
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
+
+    error = git_reference_dwim(
+        &reference,
+        repository,
+        CHAR(STRING_ELT(shorthand, 0)));
+    if (error)
+        goto cleanup;
+
+    PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_reference));
+    nprotect++;
+    Rf_setAttrib(result, R_ClassSymbol,
+                 Rf_mkString(git2r_S3_class__git_reference));
+    git2r_reference_init(reference, result);
+
+cleanup:
+    git_reference_free(reference);
+    git_repository_free(repository);
+
+    if (nprotect)
+        UNPROTECT(nprotect);
+
+    if (error)
+        git2r_error(__func__, giterr_last(), NULL, NULL);
+
+    return result;
 }
 
 /**
