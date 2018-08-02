@@ -83,14 +83,15 @@ config <- function(repo = NULL, global = FALSE, user.name, user.email, ...)
         if (isTRUE(global)) {
             repo <- NULL
             if (.Platform$OS.type == "windows") {
-              # Ensure that git2r writes the config file to the root of the
-              # user's home directory by first creating an empty file. Otherwise
-              # it may be written to the user's Documents/ directory. Only
-              # create the empty file if the user has specified configuration
-              # options to set and no global config file exists.
-              if (is.na(git_config_files()$global) && length(variables) > 0) {
-                file.create(file.path(home_dir(), ".gitconfig"))
-              }
+                ## Ensure that git2r writes the config file to the
+                ## root of the user's home directory by first creating
+                ## an empty file. Otherwise it may be written to the
+                ## user's Documents/ directory. Only create the empty
+                ## file if the user has specified configuration
+                ## options to set and no global config file exists.
+                if (is.na(git_config_files()$global) && length(variables) > 0) {
+                    file.create(file.path(home_dir(), ".gitconfig"))
+                }
             }
         } else if (is.null(repo)) {
             stop("Unable to locate local repository")
