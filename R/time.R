@@ -42,4 +42,5 @@ as.POSIXct.git_time <- function(x, ...) {
 ##' @export
 print.git_time <- function(x, ...) {
     cat(sprintf("%s\n", as.character(x)))
+    invisible(x)
 }

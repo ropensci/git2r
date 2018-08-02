@@ -144,6 +144,7 @@ tree <- function(object = NULL) {
 print.git_tree <- function(x, ...) {
     cat(sprintf("tree: %s\n\n", x$sha))
     print(as.data.frame(x))
+    invisible(x)
 }
 
 ##' Summary of tree

@@ -445,6 +445,8 @@ print.git_branch <- function(x, ...) {
                            start = nchar(branch_remote_name(x)) + 2,
                            stop = nchar(x$name))))
     }
+
+    invisible(x)
 }
 
 ##' Check if object is \code{git_branch}

@@ -34,6 +34,7 @@ print.git_diff <- function(x, ...) {
         cat("\n")
         print(x$old)
     }
+
     cat("New:  ")
     if (is.character(x$new)) {
         cat(x$new, "\n")
@@ -43,6 +44,8 @@ print.git_diff <- function(x, ...) {
         cat("\n")
         print(x$new)
     }
+
+    invisible(x)
 }
 
 lines_per_file <- function(diff) {

@@ -584,6 +584,8 @@ print.git_repository <- function(x, ...) {
                     substring(as.character(h$author$when), 1, 10),
                     h$summary))
     }
+
+    invisible(x)
 }
 
 ##' Summary of repository

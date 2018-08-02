@@ -121,5 +121,5 @@ print.git_status <- function(x, ...)
         cat("\n")
     }
 
-    invisible(NULL)
+    invisible(x)
 }

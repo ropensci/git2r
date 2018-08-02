@@ -120,6 +120,8 @@ print.git_config <- function(x, ...) {
             cat(sprintf("        %s=%s\n", entry, x[[level]][[entry]][1]))
         })
     })
+
+    invisible(x)
 }
 
 ##' Locate the path to configuration files

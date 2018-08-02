@@ -320,6 +320,7 @@ format.git_stash <- function(x, ...) {
 ##' @export
 print.git_stash <- function(x, ...) {
     cat(format(x, ...), "\n", sep = "")
+    invisible(x)
 }
 
 ##' Summary of a stash

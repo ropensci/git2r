@@ -463,11 +463,11 @@ format.git_commit <- function(x, ...) {
 ##' @export
 print.git_commit <- function(x, ...) {
     cat(format(x, ...), "\n", sep = "")
+    invisible(x)
 }
 
 ##' @export
-summary.git_commit <- function(object, ...)
-{
+summary.git_commit <- function(object, ...) {
     is_merge_commit <- is_merge(object)
     po <- parents(object)
 

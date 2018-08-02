@@ -64,7 +64,7 @@ reflog <- function(repo = ".", refname = "HEAD") {
 print.git_reflog <- function(x, ...)
 {
     lapply(x, print)
-    invisible(NULL)
+    invisible(x)
 }
 
 ##' Print a reflog entry
@@ -95,4 +95,5 @@ print.git_reflog_entry <- function(x, ...) {
                 x$refname,
                 x$index,
                 x$message))
+    invisible(x)
 }

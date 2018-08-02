@@ -122,4 +122,5 @@ format.git_merge_result <- function(x, ...) {
 ##' @export
 print.git_merge_result <- function(x, ...) {
     cat(format(x, ...), "\n", sep = "")
+    invisible(x)
 }

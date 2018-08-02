@@ -63,4 +63,5 @@ format.git_signature <- function(x, ...) {
 ##' @export
 print.git_signature <- function(x, ...) {
     cat(format(x, ...), "\n", sep = "")
+    invisible(x)
 }

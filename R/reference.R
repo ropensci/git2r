@@ -65,4 +65,5 @@ format.git_reference <- function(x, ...) {
 ##' @export
 print.git_reference <- function(x, ...) {
     cat(format(x, ...), "\n", sep = "")
+    invisible(x)
 }

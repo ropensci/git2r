@@ -229,4 +229,5 @@ format.git_note <- function(x, ...) {
 ##' @export
 print.git_note <- function(x, ...) {
     cat(format(x, ...), "\n", sep = "")
+    invisible(x)
 }

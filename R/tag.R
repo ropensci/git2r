@@ -157,6 +157,7 @@ format.git_tag <- function(x, ...) {
 ##' @export
 print.git_tag <- function(x, ...) {
     cat(format(x, ...), "\n", sep = "")
+    invisible(x)
 }
 
 ##' @export
