@@ -77,7 +77,7 @@ cleanup:
  * @param dest S3 class git_reference to initialize
  * @return void
  */
-void git2r_reference_init(git_reference *source, SEXP dest)
+static void git2r_reference_init(git_reference *source, SEXP dest)
 {
     char sha[GIT_OID_HEXSZ + 1];
 
