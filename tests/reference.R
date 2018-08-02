@@ -35,11 +35,11 @@ add(repo, "test.txt")
 commit(repo, "Commit message")
 
 ## Check dwim of reference shorthand
-stopifnot(identical(.Call(git2r:::git2r_reference_dwim, repo, ""),
+stopifnot(identical(.Call(git2r:::git2r_reference_dwim, repo, "")$name,
                     "refs/heads/master"))
-stopifnot(identical(.Call(git2r:::git2r_reference_dwim, repo, "master"),
+stopifnot(identical(.Call(git2r:::git2r_reference_dwim, repo, "master")$name,
                     "refs/heads/master"))
-stopifnot(identical(.Call(git2r:::git2r_reference_dwim, repo, "refs/heads/master"),
+stopifnot(identical(.Call(git2r:::git2r_reference_dwim, repo, "refs/heads/master")$name,
                     "refs/heads/master"))
 
 ## Cleanup
