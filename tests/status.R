@@ -34,7 +34,7 @@ status_exp_1 <- structure(list(staged = structure(list(), .Names = character(0))
                           .Names = c("staged", "unstaged", "untracked"),
                           class = "git_status")
 status_obs_1 <- status(repo)
-status_obs_1
+stopifnot(identical(print(status_obs_1), status_obs_1))
 str(status_exp_1)
 str(status_obs_1)
 stopifnot(identical(status_obs_1, status_exp_1))

@@ -53,7 +53,8 @@ stopifnot(length(grep("Missing argument name",
                       res[[1]]$message)) > 0)
 
 ## Print branch
-repository_head(repo)
+b <- repository_head(repo)
+stopifnot(identical(print(b), b))
 
 ## Create a branch
 b <- branch_create(commit.1, name = "test")

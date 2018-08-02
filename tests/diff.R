@@ -65,6 +65,7 @@ diff(repo, as_char=TRUE, filename = file.path(path, "test.diff"))
 stopifnot(identical(diff_3$old, tree(commits(repo)[[1]])))
 stopifnot(identical(diff_3$new, "workdir"))
 stopifnot(identical(diff_3$files, diff_1$files))
+stopifnot(identical(print(diff_3), diff_3))
 
 ## Add changes, diff between index and HEAD is the same as diff_1
 add(repo, "test.txt")

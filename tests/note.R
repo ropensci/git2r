@@ -53,7 +53,7 @@ stopifnot(identical(notes(repo), list()))
 
 ## Create note in default namespace
 note.1 <- note_create(commit.1, "Note-1")
-note.1
+stopifnot(identical(print(note.1), note.1))
 stopifnot(identical(length(notes(repo)), 1L))
 stopifnot(identical(sha(note.1), note.1$sha))
 tools::assertError(note_create(commit.1, "Note-2"))

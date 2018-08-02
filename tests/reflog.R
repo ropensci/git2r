@@ -47,7 +47,8 @@ stopifnot(identical(reflog_entry$committer$email, "alice@example.org"))
 stopifnot(identical(reflog_entry$message, "commit (initial): Commit message"))
 
 ## Check printing
-reflog(repo)
+r <- reflog(repo)
+stopifnot(identical(print(r), r))
 
 ## Cleanup
 unlink(path, recursive=TRUE)

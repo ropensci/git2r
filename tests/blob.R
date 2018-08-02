@@ -44,7 +44,7 @@ stopifnot(identical(is_binary(blob), FALSE))
 stopifnot(identical(blob, lookup(repo, "cd0875")))
 stopifnot(identical(length(blob), 13L))
 stopifnot(identical(content(blob), "Hello world!"))
-blob
+stopifnot(identical(print(blob), blob))
 
 ## Add one more commit
 f <- file(file.path(path, "test.txt"), "wb")

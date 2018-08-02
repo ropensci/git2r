@@ -54,6 +54,7 @@ stopifnot(identical(length(commits(repo)), 1L))
 stopifnot(identical(commits(repo)[[1]]$author$name, "Alice"))
 stopifnot(identical(commits(repo)[[1]]$author$email, "alice@example.org"))
 stopifnot(identical(parents(commit_1), list()))
+stopifnot(identical(print(commit_1), commit_1))
 
 ## Check is_commit
 stopifnot(identical(is_commit(commit_1), TRUE))

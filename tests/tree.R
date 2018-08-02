@@ -52,7 +52,8 @@ stopifnot(identical(names(as.data.frame(tree(commits(repo)[[1]]))),
 ## Coerce to list and check length
 stopifnot(identical(length(as.list(tree(last_commit(repo)))), 1L))
 
-## Print summary
+## Print and summary
+stopifnot(identical(print(tree(last_commit(repo))), tree(last_commit(repo))))
 summary(tree(last_commit(repo)))
 
 ## Check indexing

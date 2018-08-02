@@ -39,7 +39,7 @@ stopifnot(identical(tags(repo), structure(list(), .Names = character(0))))
 
 ## Create tag
 new_tag <- tag(repo, "Tagname", "Tag message")
-new_tag
+stopifnot(identical(print(new_tag), new_tag))
 summary(new_tag)
 
 ## Check tag

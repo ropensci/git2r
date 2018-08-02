@@ -27,4 +27,4 @@ signature <- structure(list(name = "Alice",
                             email = "alice@example.org",
                             when = when),
                        class = "git_signature")
-signature
+stopifnot(identical(print(signature), signature))

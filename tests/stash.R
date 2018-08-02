@@ -77,7 +77,7 @@ stopifnot(identical(stash_list(repo), list()))
 stash(repo)
 stopifnot(identical(stash_list(repo), list()))
 s <- stash(repo, untracked=TRUE)
-s
+stopifnot(identical(print(s), s))
 summary(s)
 stopifnot(identical(length(stash_list(repo)), 1L))
 tree(stash_list(repo)[[1]])

@@ -30,7 +30,7 @@ repo <- init(path)
 cfg <- config(repo, user.name="Alice", user.email="alice@example.org")
 
 ## Check configuration
-cfg
+stopifnot(identical(print(cfg), cfg))
 stopifnot("local" %in% names(cfg))
 stopifnot("user.name" %in% names(cfg$local))
 stopifnot(identical(cfg$local$user.name, "Alice"))

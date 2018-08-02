@@ -64,6 +64,7 @@ m_1 <- merge(b[sapply(b, "[", "name") == "branch1"][[1]])
 stopifnot(identical(m_1$fast_forward, TRUE))
 stopifnot(identical(m_1$conflicts, FALSE))
 stopifnot(identical(sha(m_1), NA_character_))
+stopifnot(identical(print(m_1), m_1))
 
 ## Merge branch 1 again
 m_1_again <- merge(b[sapply(b, "[", "name") == "branch1"][[1]])

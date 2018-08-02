@@ -25,3 +25,4 @@ git_t <- structure(list(time = 1395567947, offset = 60),
 stopifnot(identical(as.character(git_t), "2014-03-23 10:45:47"))
 stopifnot(identical(as.POSIXct(git_t),
                     as.POSIXct(1395571547, origin="1970-01-01", tz="GMT")))
+stopifnot(identical(print(git_t), git_t))

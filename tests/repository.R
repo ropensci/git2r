@@ -43,6 +43,7 @@ unlink(file.path(path, "test.txt"))
 
 ## Initialize a repository
 repo <- init(path)
+stopifnot(identical(print(repo), repo))
 
 ## Check the state of the repository
 stopifnot(identical(is_bare(repo), FALSE))
