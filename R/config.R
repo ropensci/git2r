@@ -161,7 +161,7 @@ git_config_files <- function(repo = ".") {
     } else if (is.null(repo)) {
         repo <- discover_repository(getwd())
     } else if (is.character(repo) && (length(repo) == 1) &&
-               !is.na(repo) && dir.exists(repo)) {
+               !is.na(repo) && isTRUE(file.info(repo)$isdir)) {
         repo <- discover_repository(repo)
     } else {
         repo <- NULL
