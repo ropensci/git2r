@@ -46,6 +46,10 @@ stopifnot("local" %in% names(cfg))
 stopifnot("user.name" %in% names(cfg$local))
 stopifnot(identical(cfg$local$user.name, "Alice"))
 stopifnot(identical(cfg$local$user.email, "alice@example.org"))
+stopifnot(identical(git_config_files(repo = repo)$local,
+                    git_config_files(repo = NULL)$local))
+stopifnot(identical(git_config_files(repo = repo)$local,
+                    git_config_files(repo = repo$path)$local))
 if (!is.null(wd))
     setwd(wd)
 
