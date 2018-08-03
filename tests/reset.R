@@ -30,8 +30,26 @@ config(repo, user.name="Alice", user.email="alice@example.org")
 ## Create a file
 writeLines("Hello world!", file.path(path, "test-1.txt"))
 
+## Add and reset
+add(repo, "test-1.txt")
+stopifnot(identical(
+    status(repo),
+    structure(list(
+        staged = list(new = "test-1.txt"),
+        unstaged = structure(list(), .Names = character(0)),
+        untracked = structure(list(), .Names = character(0))),
+        class = "git_status")))
+reset(repo, path = "test-1.txt")
+stopifnot(identical(
+    status(repo),
+    structure(list(
+        staged = structure(list(), .Names = character(0)),
+        unstaged = structure(list(), .Names = character(0)),
+        untracked = list(untracked = "test-1.txt")),
+        class = "git_status")))
+
 ## add and commit
-add(repo, 'test-1.txt')
+add(repo, "test-1.txt")
 commit_1 <- commit(repo, "Commit message")
 
 ## Make one more commit
