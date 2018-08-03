@@ -30,7 +30,7 @@ config(repo, user.name="Alice", user.email="alice@example.org")
 ## Create a file
 writeLines("Hello world!", file.path(path, "test-1.txt"))
 
-## Add and reset
+## Add and reset an empty repository using a path
 add(repo, "test-1.txt")
 stopifnot(identical(
     status(repo),
@@ -48,12 +48,34 @@ stopifnot(identical(
         untracked = list(untracked = "test-1.txt")),
         class = "git_status")))
 
+## Add and reset a non-empty repository using a path
+add(repo, "test-1.txt")
+commit(repo, "First commit")
+writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test-1.txt"))
+add(repo, "test-1.txt")
+stopifnot(identical(
+    status(repo),
+    structure(list(
+        staged = list(modified = "test-1.txt"),
+        unstaged = structure(list(), .Names = character(0)),
+        untracked = structure(list(), .Names = character(0))),
+        class = "git_status")))
+reset(repo, path = "test-1.txt")
+stopifnot(identical(
+    status(repo),
+    structure(list(
+        staged = structure(list(), .Names = character(0)),
+        unstaged = list(modified = "test-1.txt"),
+        untracked = structure(list(), .Names = character(0))),
+        class = "git_status")))
+
 ## add and commit
 add(repo, "test-1.txt")
 commit_1 <- commit(repo, "Commit message")
 
 ## Make one more commit
-writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test-1.txt"))
+writeLines(c("Hello world!", "HELLO WORLD!", "hello world!"),
+           file.path(path, "test-1.txt"))
 add(repo, 'test-1.txt')
 commit(repo, "Next commit message")
 
@@ -72,7 +94,7 @@ soft_exp <- structure(list(staged = structure(list(modified = "test-1.txt"),
                       class = "git_status")
 soft_obs <- status(repo)
 stopifnot(identical(soft_obs, soft_exp))
-stopifnot(identical(length(commits(repo)), 1L))
+stopifnot(identical(length(commits(repo)), 2L))
 stopifnot(identical(commits(repo)[[1]], commit_1))
 
 ## 'mixed' reset to first commit
@@ -88,7 +110,7 @@ mixed_exp <- structure(list(staged = structure(list(),
                        class = "git_status")
 mixed_obs <- status(repo)
 stopifnot(identical(mixed_obs, mixed_exp))
-stopifnot(identical(length(commits(repo)), 1L))
+stopifnot(identical(length(commits(repo)), 2L))
 stopifnot(identical(commits(repo)[[1]], commit_1))
 
 ## 'hard' reset to first commit
@@ -105,7 +127,7 @@ hard_exp <- structure(list(staged = structure(list(),
                       class = "git_status")
 hard_obs <- status(repo)
 stopifnot(identical(hard_obs, hard_exp))
-stopifnot(identical(length(commits(repo)), 1L))
+stopifnot(identical(length(commits(repo)), 2L))
 stopifnot(identical(commits(repo)[[1]], commit_1))
 
 ## Cleanup
