@@ -690,6 +690,7 @@ SEXP git2r_merge_fetch_heads(SEXP fetch_heads, SEXP merger)
     nprotect++;
     Rf_setAttrib(result, R_ClassSymbol,
                  Rf_mkString(git2r_S3_class__git_merge_result));
+
     error = git2r_merge(
         result,
         repository,
@@ -700,8 +701,6 @@ SEXP git2r_merge_fetch_heads(SEXP fetch_heads, SEXP merger)
         who,
         1,  /* Commit on success */
         0); /* Don't fail on conflicts */
-    if (error)
-        goto cleanup;
 
 cleanup:
     git_signature_free(who);
