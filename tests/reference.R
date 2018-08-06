@@ -42,5 +42,9 @@ stopifnot(identical(.Call(git2r:::git2r_reference_dwim, repo, "master")$name,
 stopifnot(identical(.Call(git2r:::git2r_reference_dwim, repo, "refs/heads/master")$name,
                     "refs/heads/master"))
 
+## print reference
+r <- .Call(git2r:::git2r_reference_dwim, repo, "refs/heads/master")
+stopifnot(identical(print(r), r))
+
 ## Cleanup
 unlink(path, recursive=TRUE)
