@@ -75,7 +75,7 @@ data_repo <- init(path, project = "test")
 
 ### Storing data
 
-Use `write_delim_git()` to store a `data.frame` into the data repository. The function will separate the data and the metadata. The data is stored as a headerless, unquoted tab delimited file with ".tsv" extension and UTF-8 encoding. The metadata is stored in YAML format with ".yml" format. Therefore any extension given to the `file` will be stripped (with a warning).
+Use `write_delim_git()` to store a `data.frame` into the data repository. The function will separate the data and the metadata. The data is stored as a headerless, unquoted tab delimited file with ".tsv" extension and UTF-8 encoding. The metadata is stored in YAML format with ".yml" extension. Therefore any extension given to the `file` will be stripped (with a warning).
 
 The function will do a lot more preprocessing to the data in order to keep the file and the diff as small as possible. That is the reason why the data is stored headerless and unquoted. 
 
