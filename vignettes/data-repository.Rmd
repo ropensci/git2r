@@ -178,7 +178,15 @@ rm_file(repo = data_repo, path = c("my_data", "sub/test"))
 status(data_repo)
 ```
 
-Note that this will remove both the data and the metadata. In case you want to update the current data, it is better to overwrite the data than first delete it and then write it. Sometime you want to write a bunch of data object to the data repository and you cannot guarantee that all data objects will remain after the update. The workflow below is intended for such case.
+Note that this will remove both the data and the metadata.
+
+In case of a data repository, there are three options for `path`:
+
+- a vector of file names as used in `write_delim_git}`. This will remove all associated `.tsv` and `.yml` files.
+- `".tsv"` will remove ALL `.tsv` files.
+- `".yml"` will remove all `.yml` files which have no associated `.tsv` file.
+
+In case you want to update the current data, it is better to overwrite the data than first delete it and then write it. Sometime you want to write a bunch of data object to the data repository and you cannot guarantee that all data objects will remain after the update. The workflow below is intended for such case.
 
 1. use `path = ".tsv"` in `rm_file()` to remove **all** ".tsv" in the data repository
 1. use `write_delim_git()` to write all data objects. Since the ".yml" are still present, any existing metadata will be used.
