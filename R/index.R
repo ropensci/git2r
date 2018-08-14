@@ -147,7 +147,7 @@ add <- function(repo = ".", path = NULL, force = FALSE)
 ##'
 ##' \code{path = ".tsv"} is useful when updating a \code{data_repository} with a
 ##' variable number of files. First use \code{rm_file(repo, path = ".tsv")} to
-##' remove all \code{.tsv} files. Then use \code{write_delim_git()} the store
+##' remove all \code{.tsv} files. Then use \code{write_delim_git()} to store
 ##' all the data.frames. End by using \code{rm_file(repo, path = ".yml")}, which
 ##' will clean any left-over \code{.yml} files. As a result, any data.frame
 ##' which wasn't rewritten will be deleted.
