@@ -315,3 +315,50 @@ clean_data_path <- function(path) {
     path <- normalizePath(unique(path), mustWork = FALSE)
     c(raw_file = paste0(path, ".tsv"), meta_file = paste0(path, ".yml"))
 }
+
+##' Remove data files
+##' Remove all tsv and/or yml files within the path
+##' @template repo-param
+##' @param path the directory in which to clean all the data files
+##' @param type which file type should be removed
+##' @param recursive remove files in subdirectories too
+##' @export
+rm_data <- function(
+    repo = ".", path = NULL, type = c("tsv", "yml", "both"), recursive = TRUE
+) {
+    repo <- lookup_repository(repo)
+    if (is.null(path) || !is.character(path))
+        stop("'path' must be a character vector")
+    if (length(path) != 1)
+        stop("'path' must be a single value")
+    type <- match.arg(type)
+
+    local_path <- file.path(workdir(repo), path)
+    if (type == "tsv") {
+        to_do <- list.files(
+            path = local_path,
+            pattern = "\\.tsv$",
+            recursive = recursive
+        )
+    } else if (type == "both") {
+        to_do <- list.files(
+            path = local_path,
+            pattern = "\\.(tsv|yml)$",
+            recursive = recursive
+        )
+    } else {
+        to_do <- list.files(
+            path = local_path,
+            pattern = "\\.yml$",
+            recursive = recursive
+        )
+        keep <- list.files(
+            path = local_path,
+            pattern = "\\.tsv$",
+            recursive = recursive
+        )
+        keep <- gsub("\\.tsv$", ".yml", keep)
+        to_do <- to_do[!to_do %in% keep]
+    }
+    rm_file(repo = repo, path = file.path(path, to_do))
+}

@@ -264,7 +264,6 @@ clone <- function(url         = NULL,
                   branch      = NULL,
                   checkout    = TRUE,
                   credentials = NULL,
-                  project     = NULL,
                   progress    = TRUE)
 {
     .Call(git2r_clone, url, local_path, bare,
