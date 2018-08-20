@@ -23,11 +23,10 @@ sessionInfo()
 path <- tempfile(pattern = "git2r-")
 dir.create(path)
 
-## Initialize a data repository
-data_repo <- init(path, project = "test")
+## Initialize a repository
+data_repo <- init(path)
 stopifnot(inherits(data_repo, "git_repository"))
 stopifnot(all.equal(data_repo$path, file.path(path, ".git")))
-stopifnot(all.equal(data_repo$project, "test"))
 config(data_repo, user.name = "Alice", user.email = "alice@example.org")
 
 stopifnot(all.equal(
@@ -120,10 +119,6 @@ stopifnot(all.equal(
     tools::assertError(read_delim_git("", data_repo))[[1]][["message"]],
     "raw file and/or meta file missing"
 ))
-stopifnot(all.equal(
-    tools::assertError(read_delim_git("test", "."))[[1]][["message"]],
-    "repo is not a 'data_repository'"
-))
 
 write_delim_git(x, "junk/test", data_repo)
 commit(data_repo, "test")
@@ -153,12 +148,6 @@ stopifnot(
     )
 )
 
-stopifnot(all.equal(
-    tools::assertError(
-        write_delim_git(x, "test", repository(path))
-    )[[1]][["message"]],
-    "repo is not a 'data_repository'"
-))
 stopifnot(all.equal(
     tools::assertError(
         write_delim_git(x, "test", sorting = character(0), data_repo)

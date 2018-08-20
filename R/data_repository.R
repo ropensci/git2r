@@ -39,9 +39,7 @@ write_delim_git <- function(
     if (!inherits(x, "data.frame")) {
         stop("x is not a 'data.frame'")
     }
-    if (!is_data_repo(repo)) {
-        stop("repo is not a 'data_repository'")
-    }
+    repo <- lookup_repository(repo)
     if (!missing(sorting)) {
         if (length(sorting) == 0) {
             stop("at least one variable is required for sorting")
@@ -118,7 +116,6 @@ write_delim_git <- function(
 
     hashes <- hashfile(file)
     names(hashes) <- gsub(paste0("^", workdir(repo), "/"), "", file)
-    names(hashes) <- file.path(repo$project, names(hashes))
 
     return(hashes)
 }
@@ -155,9 +152,7 @@ compare_meta <- function(meta_data, old_meta_data) {
 ##' @export
 ##' @importFrom utils read.table
 read_delim_git <- function(file, repo = ".") {
-    if (!is_data_repo(repo)) {
-        stop("repo is not a 'data_repository'")
-    }
+    repo <- lookup_repository(repo)
     file <- file.path(workdir(repo), file)
     file <- clean_data_path(file)
 
