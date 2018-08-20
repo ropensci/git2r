@@ -65,11 +65,3 @@ plot.git_repository <- function(x,
     mp <- barplot(df$n, xlab = xlab, ylab = ylab, main = main, ...)
     axis(1, at = mp, labels = seq(min(df$when), max(df$when), breaks))
 }
-##' @export
-plot.data_repository <- function(x,
-                                breaks = c("month", "year", "quarter", "week", "day"),
-                                main = NULL,
-                                ...)
-{
-    NextMethod()
-}

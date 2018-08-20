@@ -93,10 +93,6 @@ reset <- function(object, reset_type = c("soft", "mixed", "hard"), path = NULL) 
         if (is_empty(object)) {
             .Call(git2r_index_remove_bypath, object, path)
         } else {
-            if (is_data_repo(object) && !is.null(path)) {
-                path <- file.path(object$project, path)
-                path <- clean_data_path(path)
-            }
             .Call(git2r_reset_default, object, path)
         }
     }

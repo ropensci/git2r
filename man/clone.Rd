@@ -24,9 +24,6 @@ is TRUE.}
 access. Default is NULL. To use and query an ssh-agent for the
 ssh key credentials, let this parameter be NULL (the default).}
 
-\item{project}{The name of of project. Refers to a local path in case of a
-data repository. Defaults to \code{NULL}, indicating a standard repository.}
-
 \item{progress}{Show progress. Default is TRUE.}
 }
 \value{

@@ -118,9 +118,6 @@ add <- function(repo = ".", path = NULL, force = FALSE)
         ## directory. Substitute common prefix with ""
         sub(paste0("^", repo_wd), "", np)
     }, character(1))
-    if (is_data_repo(repo)) {
-        path <- file.path(repo$project, path)
-    }
 
     .Call(git2r_index_add_all, repo, path, isTRUE(force))
 
@@ -132,25 +129,8 @@ add <- function(repo = ".", path = NULL, force = FALSE)
 ##' @template repo-param
 ##' @param path character vector with filenames to remove. The path
 ##'     must be relative to the repository's working folder. Only
-##'     files known to Git are removed. Works different in case of
-##'     \code{data_repository}. See details.
+##'     files known to Git are removed.
 ##' @return invisible(NULL)
-##' @details
-##' In case of a \code{data_repository}, there are three options for \code{path}
-##' \enumerate{
-##'     \item{a vector of file names as used in \code{\link{write_delim_git}}}.
-##'     This will remove all associated \code{.tsv} and \code{.yml} files
-##'     \item{\code{".tsv"}} will remove ALL \code{.tsv} files.
-##'     \item{\code{".yml"}} will remove all \code{.yml} files which have no
-##'     associated \code{.tsv} file
-##' }
-##'
-##' \code{path = ".tsv"} is useful when updating a \code{data_repository} with a
-##' variable number of files. First use \code{rm_file(repo, path = ".tsv")} to
-##' remove all \code{.tsv} files. Then use \code{write_delim_git()} to store
-##' all the data.frames. End by using \code{rm_file(repo, path = ".yml")}, which
-##' will clean any left-over \code{.yml} files. As a result, any data.frame
-##' which wasn't rewritten will be deleted.
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -176,38 +156,10 @@ add <- function(repo = ".", path = NULL, force = FALSE)
 ##' status(repo)
 ##' }
 rm_file <- function(repo = ".", path = NULL) {
-    if (is.null(path) || !is.character(path)) {
+    if (is.null(path) || !is.character(path))
         stop("'path' must be a character vector")
-    }
 
     repo <- lookup_repository(repo)
-
-    if (is_data_repo(repo)) {
-        if (length(path) == 1 && path %in% c(".tsv", ".yml")) {
-            if (path == ".tsv") {
-                path <- list.files(
-                    workdir(repo),
-                    pattern = "\\.tsv$",
-                    recursive = TRUE
-                )
-            } else {
-                yml <- list.files(
-                    workdir(repo),
-                    pattern = "\\.yml$",
-                    recursive = TRUE
-                )
-                tsv <- list.files(
-                    workdir(repo),
-                    pattern = "\\.tsv$",
-                    recursive = TRUE
-                )
-                both <- gsub("\\.yml$", "", yml) %in% gsub("\\.tsv$", "", tsv)
-                path <- yml[!both]
-            }
-        } else {
-            path <- clean_data_path(path)
-        }
-    }
 
     if (length(path)) {
         wd <- workdir(repo)
@@ -245,9 +197,6 @@ rm_file <- function(repo = ".", path = NULL) {
             file.remove(file.path(wd, x))
             .Call(git2r_index_remove_bypath, repo, x)
         })
-    }
-    if (is_data_repo(repo)) {
-        add(repo = repo, path = path)
     }
 
     invisible(NULL)
