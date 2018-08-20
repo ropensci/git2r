@@ -25,36 +25,30 @@ Although git can store binary files, its real power and efficiency is with plain
 
 Git stores the version history under the form of diffs: a list of lines which are deleted and a list of lines which are inserted at a specific line number in a file. We have to keep this in mind when storing data as plain text files in Git. The table below indicates the impact of changing the information content on the diff in Git. Note that changing observations requires a small diff, while changing variables results in a massive diff.
 
-```{r echo = FALSE}
-cases <- rbind(
-    c("remove 1 observation", "remove 1 line"),
-    c("add 1 observation", "add 1 line"),
-    c("update 1 observation", "remove 1 line and add 1 line"),
-    c("remove 1 variable", "remove all lines and add all lines"),
-    c("add 1 variable", "remove all lines and add all lines")
-)
-colnames(cases) <- c("Change in data", "Git diff")
-kable(cases, caption = "Changes in the information content of the data")
-```
+
+|  Change in data | Git diff |
+|:----------------------|:----------|
+| remove 1 observation | remove 1 line |
+| add 1 observation | add 1 line |
+| update 1 observation | remove 1 line and add 1 line |
+| remove 1 variable | remove all lines and add all lines |
+| add 1 variable | remove all lines and add all lines |
+Changes in the information content of the data:
 
 In the next table we show the effect on the diff when making changes in the data which don't change the information content of the data.
 
-```{r echo = FALSE}
-cases <- rbind(
-    c("move 1 observation", "remove 1 line and add 1 line"),
-    c("move 1 variable", "remove all lines and add all lines")
-)
-colnames(cases) <- c("Change in data", "Git diff")
-kable(cases, caption = "Changes in the data without changing the information content")
-```
 
-So in order to use Git as a performant and efficient version control system for data, we need to make sure to store the metadata and keep the diffs as small as possible.
+|Change in data     |Git diff                           |
+|:------------------|:----------------------------------|
+|move 1 observation |remove 1 line and add 1 line       |
+|move 1 variable    |remove all lines and add all lines |
+Changes in the data without changing the information content
+
+So in order to use Git as a performant and efficient version control system for data, we need to make sure to store the metadata and keep the diffs as small as possible. In the next section, the way git2r handles this will be explained.
 
 ## Tools in `git2r`
 
-### Data repository
-
-A 'data repository' refers to a subdirectory within the root of an existing git repository. Create a `data_repository` object with `init()` or `repository()` and specify the subdirectory through the `project` argument. Most functions of the package handle a `data_repository` object in the same way as they handle a `git_repository` object. The main difference is that the working directory points to the subdirectory of the root, rather than the root of the git repository. You can create multiple data repositories within the same git repository.
+### Connect to a repository
 
 ```{r}
 # Create a directory in tempdir
@@ -64,18 +58,16 @@ dir.create(path)
 library(git2r)
 # inititialize a new git repository
 repo <- init(path)
-# use a data repository in an existing git repository
-data_repo <- repository(path, project = "test")
 ```
 
 ```{r eval = FALSE}
-# inititialize a new git repository and use a data repository within it
-data_repo <- init(path, project = "test")
+# connect to an existing repository
+repo <- repository(path)
 ```
 
 ### Storing data
 
-Use `write_delim_git()` to store a `data.frame` into the data repository. The function will separate the data and the metadata. The data is stored as a headerless, unquoted tab delimited file with ".tsv" extension and UTF-8 encoding. The metadata is stored in YAML format with ".yml" extension. Therefore any extension given to the `file` will be stripped (with a warning).
+Use `write_delim_git()` to store a `data.frame` into the repository. The function will separate the data and the metadata. The data is stored as a headerless, unquoted tab delimited file with ".tsv" extension and UTF-8 encoding. The metadata is stored in YAML format with ".yml" extension. Therefore any extension given to the `file` will be stripped (with a warning).
 
 The function will do a lot more preprocessing to the data in order to keep the file and the diff as small as possible. That is the reason why the data is stored headerless and unquoted. 
 
@@ -114,9 +106,8 @@ Another important part of the preprocessing is ordering both the variables and t
 The data file (".tsv") and the metadata file (".yml") are automatically staged after writing. `write_delim_git()` returns the hashes of both the data file and the metadata file. The names of the vector contain the path of the files, relative to the root of the _git_ repository.
 
 ```{r}
-status(data_repo)
-write_delim_git(x = x, file = "my_data", repo = data_repo, sorting = c("y", "x"))
-status(data_repo)
+status(repo)
+write_delim_git(x = x, file = "my_data", repo = repo, sorting = c("y", "x"))
 status(repo)
 ```
 
@@ -132,9 +123,9 @@ However you can bypass this by using `override = TRUE`. This will completely ign
 ```{r error=TRUE}
 y <- x
 y$extra <- x$x
-write_delim_git(y, file = "my_data", repo = data_repo, sorting = c("y", "x"))
+write_delim_git(y, file = "my_data", repo = repo, sorting = c("y", "x"))
 write_delim_git(
-    y, file = "my_data", repo = data_repo, sorting = c("y", "x"), 
+    y, file = "my_data", repo = repo, sorting = c("y", "x"), 
     override = TRUE
 )
 ```
@@ -144,7 +135,7 @@ write_delim_git(
 Retrieving data is straight forward. Use `read_delim_git` and provide the `file` and the `repo`. The retrieved data is identical to the original data after applying the ordering of variables and observations.
 
 ```{r}
-y_stored <- read_delim_git(file = "my_data", repo = data_repo)
+y_stored <- read_delim_git(file = "my_data", repo = repo)
 str(y_stored)
 y_sorted <- y[order(y$y, y$x), colnames(y_stored)]
 rownames(y_sorted) <- NULL
@@ -156,53 +147,45 @@ stopifnot(all.equal(y_sorted, y_stored))
 Commit the changes using `commit()`
 
 ```{r}
-write_delim_git(x, file = "sub/test", repo = data_repo, sorting = "x")
-status(data_repo)
-commit(data_repo, message = "Initial commit")
-status(data_repo)
+write_delim_git(x, file = "sub/test", repo = repo, sorting = "x")
+status(repo)
+commit(repo, message = "Initial commit")
+status(repo)
 ```
 
 ### Removing data
 
-Data objects can be removed with `rm_file`. Provide the data repository to `repo` and the data object name to `path`.`path` can take multiple data objects.
+Data objects are files, so you remove them with `rm_file`. 
 
 ```{r}
-# remove a single data object
-rm_file(repo = data_repo, path = "my_data")
-status(data_repo)
+# remove a single file
+rm_file(repo = repo, path = "my_data.tsv")
+rm_file(repo = repo, path = "my_data.yml")
+status(repo)
 # undo the remove by resetting to the last commit
-reset(commits(data_repo)[[1]], "hard")
-status(data_repo)
-# remove multiple data objects
-rm_file(repo = data_repo, path = c("my_data", "sub/test"))
-status(data_repo)
+reset(commits(repo)[[1]], "hard")
+status(repo)
+# remove all data objects in a given path
+rm_data(repo = repo, path = ".", type = "both")
+status(repo)
 ```
 
-Note that this will remove both the data and the metadata.
+Sometimes you want to write a bunch of data objects to the repository and you cannot guarantee that all data objects will remain after the update. The workflow below is intended for such case.
 
-In case of a data repository, there are three options for `path`:
-
-- a vector of file names as used in `write_delim_git}`. This will remove all associated `.tsv` and `.yml` files.
-- `".tsv"` will remove ALL `.tsv` files.
-- `".yml"` will remove all `.yml` files which have no associated `.tsv` file.
-
-In case you want to update the current data, it is better to overwrite the data than first delete it and then write it. Sometime you want to write a bunch of data object to the data repository and you cannot guarantee that all data objects will remain after the update. The workflow below is intended for such case.
-
-1. use `path = ".tsv"` in `rm_file()` to remove **all** ".tsv" in the data repository
+1. use `rm_data()` with `type = "tsv"` to remove **all** ".tsv" in a specific path of the repository
 1. use `write_delim_git()` to write all data objects. Since the ".yml" are still present, any existing metadata will be used.
-1. use `path = ".yml"` in `rm_file()` to remove **any** ".yml" which have no associated ".tsv"
+1. use `type = "yml"` in `rm_data()` to remove **any** ".yml" which have no associated ".tsv"
 1. `commit()` the changes
 
 ```{r}
 # undo the remove by resetting to the last commit
-reset(commits(data_repo)[[1]], "hard")
-status(data_repo)
-rm_file(data_repo, ".tsv")
-status(data_repo)
-write_delim_git(x, file = "sub/test", repo = data_repo, sorting = "x")
-status(data_repo)
-rm_file(data_repo, ".yml")
-status(data_repo)
-commit(data_repo, "Automated update")
+reset(commits(repo)[[1]], "hard")
+status(repo)
+rm_data(repo, path = ".", type = "tsv")
+status(repo)
+write_delim_git(x, file = "sub/test", repo = repo, sorting = "x")
+status(repo)
+rm_data(repo, path = ".", type = "yml")
+status(repo)
+commit(repo, "Automated update", all = TRUE)
 ```
-
