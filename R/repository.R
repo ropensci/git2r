@@ -174,7 +174,6 @@ repository <- function(path = ".", discover = TRUE) {
 ##'     is created at the pointed path. If FALSE, provided path will
 ##'     be considered as the working directory into which the .git
 ##'     directory will be created.
-##' @inheritParams repository
 ##' @return A \code{git_repository} object
 ##' @export
 ##' @seealso \link{repository}
@@ -213,7 +212,6 @@ init <- function(path = ".", bare = FALSE) {
 ##'     access. Default is NULL. To use and query an ssh-agent for the
 ##'     ssh key credentials, let this parameter be NULL (the default).
 ##' @param progress Show progress. Default is TRUE.
-##' @inheritParams repository
 ##' @return A \code{git_repository} object.
 ##' @seealso \link{repository}, \code{\link{cred_user_pass}},
 ##'     \code{\link{cred_ssh_key}}

@@ -95,6 +95,7 @@ merge.git_repository <- function(x, y = NULL, commit_on_success = TRUE,
     merge.git_branch(b, commit_on_success = commit_on_success,
                      merger = merger, fail = fail)
 }
+
 ##' @export
 ##' @rdname merge
 merge.character <- function(x = ".", y = NULL, commit_on_success = TRUE,
