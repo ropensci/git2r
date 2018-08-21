@@ -5,7 +5,7 @@
 \title{Write a \code{data.frame} to a git repository}
 \usage{
 write_delim_git(x, file, repo = ".", sorting, override = FALSE,
-  force = FALSE)
+  stage = FALSE, force = FALSE)
 }
 \arguments{
 \item{x}{the \code{data.frame}}
@@ -24,6 +24,8 @@ sorting \code{x} and in what order to use them. Defaults to
 \item{override}{Ignore existing meta data. This is required when new
 variables are added or variables are deleted. Setting this to TRUE can
 potentially lead to large diffs. Defaults to FALSE.}
+
+\item{stage}{immediatly stage the changes}
 
 \item{force}{Add ignored files. Default is FALSE.}
 }

@@ -6,7 +6,7 @@
 Remove all tsv and/or yml files within the path}
 \usage{
 rm_data(repo = ".", path = NULL, type = c("tsv", "yml", "both"),
-  recursive = TRUE)
+  recursive = TRUE, stage = FALSE)
 }
 \arguments{
 \item{repo}{a path to a repository or a \code{git_repository}
@@ -17,6 +17,8 @@ object. Default is '.'}
 \item{type}{which file type should be removed}
 
 \item{recursive}{remove files in subdirectories too}
+
+\item{stage}{immediatly stage the changes}
 }
 \description{
 Remove data files

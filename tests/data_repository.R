@@ -54,7 +54,7 @@ stopifnot(all.equal(
 z <- status(data_repo)
 print(z)
 stopifnot(
-    all.equal(z$s, list(new = "test.tsv", new = "test.yml"))
+    all.equal(z$untracked, list(untracked = "test.tsv", untracked = "test.yml"))
 )
 write_delim_git(x, "test", data_repo)
 stopifnot(all.equal(status(data_repo), z))
@@ -121,6 +121,7 @@ stopifnot(all.equal(
 ))
 
 write_delim_git(x, "junk/test", data_repo)
+add(data_repo, path = ".")
 commit(data_repo, "test")
 rm_data(data_repo, ".", "tsv")
 stopifnot(

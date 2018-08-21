@@ -149,6 +149,8 @@ Commit the changes using `commit()`
 ```{r}
 write_delim_git(x, file = "sub/test", repo = repo, sorting = "x")
 status(repo)
+add(repo, ".")
+status(repo)
 commit(repo, message = "Initial commit")
 status(repo)
 ```
@@ -188,4 +190,5 @@ status(repo)
 rm_data(repo, path = ".", type = "yml")
 status(repo)
 commit(repo, "Automated update", all = TRUE)
+status(repo)
 ```

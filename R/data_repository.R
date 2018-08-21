@@ -28,13 +28,14 @@
 ##' @param override Ignore existing meta data. This is required when new
 ##' variables are added or variables are deleted. Setting this to TRUE can
 ##' potentially lead to large diffs. Defaults to FALSE.
+##' @param stage immediatly stage the changes
 ##' @inheritParams add
 ##' @return a named vector with the hashes of the files. The names contains the
 ##' files with their paths relative to the root of the git_repository.
 ##' @export
 ##' @importFrom utils tail write.table
 write_delim_git <- function(
-    x, file, repo = ".", sorting, override = FALSE, force = FALSE
+    x, file, repo = ".", sorting, override = FALSE, stage = FALSE, force = FALSE
 ) {
     if (!inherits(x, "data.frame")) {
         stop("x is not a 'data.frame'")
@@ -112,7 +113,9 @@ write_delim_git <- function(
         quote = FALSE, sep = "\t", eol = "\n", dec = ".",
         row.names = FALSE, col.names = FALSE, fileEncoding = "UTF-8"
     )
-    add(repo, path = file, force = force)
+    if (stage) {
+        add(repo, path = file, force = force)
+    }
 
     hashes <- hashfile(file)
     names(hashes) <- gsub(paste0("^", workdir(repo), "/"), "", file)
@@ -289,17 +292,6 @@ meta.Date <- function(x) {
     return(z)
 }
 
-##' Check if object is a data repository
-##' @param object the object to check
-##' @return TRUE is a data \code{git_repository}, else FALSE
-##' @seealso repo init
-##' @export
-is_data_repo <- function(object) {
-    inherits(object, "git_repository") &&
-        inherits(object, "data_repository") &&
-        !is.null(object$project)
-}
-
 ##' Clean the data path
 ##' Strips any file extension from the path and adds the ".tsv" and ".yml" file extensions
 ##' @param path the paths
@@ -322,9 +314,11 @@ clean_data_path <- function(path) {
 ##' @param path the directory in which to clean all the data files
 ##' @param type which file type should be removed
 ##' @param recursive remove files in subdirectories too
+##' @inheritParams write_delim_git
 ##' @export
 rm_data <- function(
-    repo = ".", path = NULL, type = c("tsv", "yml", "both"), recursive = TRUE
+    repo = ".", path = NULL, type = c("tsv", "yml", "both"), recursive = TRUE,
+    stage = FALSE
 ) {
     repo <- lookup_repository(repo)
     if (is.null(path) || !is.character(path))
@@ -361,4 +355,7 @@ rm_data <- function(
         to_do <- to_do[!to_do %in% keep]
     }
     rm_file(repo = repo, path = file.path(path, to_do))
+    if (stage) {
+        add(repo, path = to_do)
+    }
 }
