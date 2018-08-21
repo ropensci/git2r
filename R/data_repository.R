@@ -30,12 +30,14 @@
 ##' potentially lead to large diffs. Defaults to FALSE.
 ##' @param stage immediatly stage the changes
 ##' @inheritParams add
+##' @inheritParams meta
 ##' @return a named vector with the hashes of the files. The names contains the
 ##' files with their paths relative to the root of the git_repository.
 ##' @export
 ##' @importFrom utils tail write.table
 write_delim_git <- function(
-    x, file, repo = ".", sorting, override = FALSE, stage = FALSE, force = FALSE
+    x, file, repo = ".", sorting, override = FALSE, stage = FALSE,
+    optimize = TRUE, force = FALSE
 ) {
     if (!inherits(x, "data.frame")) {
         stop("x is not a 'data.frame'")
@@ -58,7 +60,10 @@ write_delim_git <- function(
     if (!dir.exists(dirname(file["raw_file"]))) {
         dir.create(dirname(file["raw_file"]), recursive = TRUE)
     }
-    raw_data <- as.data.frame(lapply(x, meta), stringsAsFactors = FALSE)
+    raw_data <- as.data.frame(
+        lapply(x, meta, optimize = optimize),
+        stringsAsFactors = FALSE
+    )
     meta_data <- paste(
         colnames(x),
         vapply(raw_data, attr, "", which = "meta"),
@@ -72,13 +77,29 @@ write_delim_git <- function(
         to_sort <- colnames(x) %in% sorting
         meta_data <- meta_data[c(sorting, colnames(x)[!to_sort])]
         meta_data[sorting] <- paste0(meta_data[sorting], "\n    sort")
-        writeLines(meta_data, file["meta_file"])
+        if (optimize) {
+            store_meta_data <- c(meta_data, "optimized")
+        } else {
+            store_meta_data <- c(meta_data, "verbose")
+        }
+        writeLines(store_meta_data, file["meta_file"])
     } else {
         old_meta_data <- readLines(file["meta_file"])
+        if (tail(old_meta_data, 1) == "verbose") {
+            if (optimize) {
+                stop("old data was stored verbose")
+            }
+        } else if (tail(old_meta_data, 1) == "optimized") {
+            if (!optimize) {
+                stop("old data was stored optimized")
+            }
+        } else {
+            stop("error in existing metadata")
+        }
         meta_cols <- grep("^\\S*:$", old_meta_data)
         positions <- cbind(
             start = meta_cols,
-            end = c(tail(meta_cols, -1) - 1, length(old_meta_data))
+            end = c(tail(meta_cols, -1) - 1, length(old_meta_data) - 1)
         )
         old_meta_data <- apply(
             positions,
@@ -110,8 +131,8 @@ write_delim_git <- function(
     raw_data <- raw_data[do.call(order, raw_data[sorting]), ]
     write.table(
         x = raw_data, file = file["raw_file"], append = FALSE,
-        quote = FALSE, sep = "\t", eol = "\n", dec = ".",
-        row.names = FALSE, col.names = FALSE, fileEncoding = "UTF-8"
+        quote = !optimize, sep = "\t", eol = "\n", dec = ".",
+        row.names = FALSE, col.names = !optimize, fileEncoding = "UTF-8"
     )
     if (stage) {
         add(repo, path = file, force = force)
@@ -165,9 +186,16 @@ read_delim_git <- function(file, repo = ".") {
     meta_data <- readLines(file["meta_file"])
     meta_cols <- grep("^\\S*:$", meta_data)
     col_names <- gsub(":", "", meta_data[meta_cols])
+    if (tail(meta_data, 1) == "optimized") {
+        optimize <- TRUE
+    } else if (tail(meta_data, 1) == "verbose") {
+        optimize <- FALSE
+    } else {
+        stop("error in metadata")
+    }
     raw_data <- read.table(
-        file = file["raw_file"], header = FALSE,
-        sep = "\t", quote = "", dec = ".",
+        file = file["raw_file"], header = !optimize,
+        sep = "\t", quote = ifelse(optimize, "", "\"'"), dec = ".",
         as.is = TRUE, col.names = col_names
     )
 
@@ -212,8 +240,9 @@ read_delim_git <- function(file, repo = ".") {
     return(raw_data)
 }
 
-##' Optimise a vector for storage in to a git repository and add meta data
+##' optimize a vector for storage in to a git repository and add meta data
 ##' @param x the vector
+##' @param optimize recode the data to get smaller text files. Defaults to TRUE
 ##' @details
 ##' \itemize{
 ##'    \item \code{meta.character} checks for the presence of \code{'NA'}.
@@ -224,12 +253,12 @@ read_delim_git <- function(file, repo = ".") {
 ##'    detected.
 ##' }
 ##' @export
-meta <- function(x) {
+meta <- function(x, optimize = TRUE) {
     UseMethod("meta")
 }
 
 ##' @export
-meta.character <- function(x) {
+meta.character <- function(x, optimize = TRUE) {
     attr(x, "meta") <- "    class: character"
     if (any(is.na(x))) {
         stop(
@@ -243,20 +272,24 @@ factor."
 }
 
 ##' @export
-meta.integer <- function(x) {
+meta.integer <- function(x, optimize = TRUE) {
     attr(x, "meta") <- "    class: integer"
     return(x)
 }
 
 ##' @export
-meta.numeric <- function(x) {
+meta.numeric <- function(x, optimize = TRUE) {
     attr(x, "meta") <- "    class: numeric"
     return(x)
 }
 
 ##' @export
-meta.factor <- function(x) {
-    z <- as.integer(x)
+meta.factor <- function(x, optimize = TRUE) {
+    if (optimize) {
+        z <- as.integer(x)
+    } else {
+        z <- x
+    }
     attr(z, "meta") <- paste(
         "    class: factor\n    levels:",
         paste("        -", levels(x), collapse = "\n"),
@@ -266,28 +299,38 @@ meta.factor <- function(x) {
 }
 
 ##' @export
-meta.logical <- function(x) {
-    x <- as.integer(x)
+meta.logical <- function(x, optimize = TRUE) {
+    if (optimize) {
+        x <- as.integer(x)
+    }
     attr(x, "meta") <- "    class: logical"
     return(x)
 }
 
 ##' @export
-meta.complex <- function(x) {
+meta.complex <- function(x, optimize = TRUE) {
     attr(x, "meta") <- "    class: complex"
     return(x)
 }
 
 ##' @export
-meta.POSIXct <- function(x) {
-    z <- unclass(x)
+meta.POSIXct <- function(x, optimize = TRUE) {
+    if (optimize) {
+        z <- unclass(x)
+    } else {
+        z <- x
+    }
     attr(z, "meta") <- "    class: POSIXct\n    origin: 1970-01-01\n"
     return(z)
 }
 
 ##' @export
-meta.Date <- function(x) {
-    z <- unclass(x)
+meta.Date <- function(x, optimize = TRUE) {
+    if (optimize) {
+        z <- unclass(x)
+    } else {
+        z <- x
+    }
     attr(z, "meta") <- "    class: Date\n    origin: 1970-01-01\n"
     return(z)
 }

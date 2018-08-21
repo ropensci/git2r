@@ -2,15 +2,17 @@
 % Please edit documentation in R/data_repository.R
 \name{meta}
 \alias{meta}
-\title{Optimise a vector for storage in to a git repository and add meta data}
+\title{optimize a vector for storage in to a git repository and add meta data}
 \usage{
-meta(x)
+meta(x, optimize = TRUE)
 }
 \arguments{
 \item{x}{the vector}
+
+\item{optimize}{recode the data to get smaller text files. Defaults to TRUE}
 }
 \description{
-Optimise a vector for storage in to a git repository and add meta data
+optimize a vector for storage in to a git repository and add meta data
 }
 \details{
 \itemize{

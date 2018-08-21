@@ -5,7 +5,7 @@
 \title{Write a \code{data.frame} to a git repository}
 \usage{
 write_delim_git(x, file, repo = ".", sorting, override = FALSE,
-  stage = FALSE, force = FALSE)
+  stage = FALSE, optimize = TRUE, force = FALSE)
 }
 \arguments{
 \item{x}{the \code{data.frame}}
@@ -26,6 +26,8 @@ variables are added or variables are deleted. Setting this to TRUE can
 potentially lead to large diffs. Defaults to FALSE.}
 
 \item{stage}{immediatly stage the changes}
+
+\item{optimize}{recode the data to get smaller text files. Defaults to TRUE}
 
 \item{force}{Add ignored files. Default is FALSE.}
 }
