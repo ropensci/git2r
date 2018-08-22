@@ -57,7 +57,7 @@ write_delim_git <- function(
     file <- file.path(workdir(repo), file)
     file <- clean_data_path(file)
 
-    if (!dir.exists(dirname(file["raw_file"]))) {
+    if (!file.exists(dirname(file["raw_file"]))) {
         dir.create(dirname(file["raw_file"]), recursive = TRUE)
     }
     raw_data <- as.data.frame(
