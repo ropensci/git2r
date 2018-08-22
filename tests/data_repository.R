@@ -47,14 +47,14 @@ x <- data.frame(
 
 stopifnot(all.equal(
     tools::assertWarning(
-        write_delim_git(x, "test.txt", data_repo)
+        write_delim_git(x, "test.txt", data_repo, stage = TRUE)
     )[[1]]$message,
     "file extensions are stripped"
 ))
 z <- status(data_repo)
 print(z)
 stopifnot(
-    all.equal(z$untracked, list(untracked = "test.tsv", untracked = "test.yml"))
+    all.equal(z$staged, list(new = "test.tsv", new = "test.yml"))
 )
 write_delim_git(x, "test", data_repo)
 stopifnot(all.equal(status(data_repo), z))
@@ -138,13 +138,18 @@ stopifnot(
         list(deleted = "test.tsv", deleted = "test.yml")
     )
 )
-rm_data(data_repo, ".", "both")
+rm_data(data_repo, ".", "both", stage = TRUE)
 stopifnot(
     all.equal(
         status(data_repo)$unstaged,
+        list(deleted = "test.tsv", deleted = "test.yml")
+    )
+)
+stopifnot(
+    all.equal(
+        status(data_repo)$staged,
         list(
-            deleted = "junk/test.tsv", deleted = "junk/test.yml",
-            deleted = "test.tsv", deleted = "test.yml"
+            deleted = "junk/test.tsv", deleted = "junk/test.yml"
         )
     )
 )
@@ -180,3 +185,52 @@ z <- read_delim_git("logical", data_repo)
 y.sorted <- y[do.call(order, y[c("y", "logic")]), colnames(z)]
 rownames(y.sorted) <- NULL
 stopifnot(all.equal(y.sorted, z))
+
+stopifnot(all.equal(
+    tools::assertError(
+        write_delim_git(
+            y, "logical", data_repo, sorting = c("y", "logic"), optimize = FALSE
+        )
+    )[[1]][["message"]],
+    "old data was stored optimized"
+))
+
+write_delim_git(y, "verbose", data_repo, optimize = FALSE)
+z <- read_delim_git("verbose", data_repo)
+stopifnot(all.equal(y, z))
+
+stopifnot(all.equal(
+    tools::assertError(
+        write_delim_git(y, "verbose", data_repo, optimize = TRUE)
+    )[[1]][["message"]],
+    "old data was stored verbose"
+))
+yml <- file.path(path, "verbose.yml")
+meta <- head(readLines(yml), -1)
+writeLines(text = meta, con = yml)
+stopifnot(all.equal(
+    tools::assertError(
+        read_delim_git("verbose", data_repo)
+    )[[1]][["message"]],
+    "error in metadata"
+))
+stopifnot(all.equal(
+    tools::assertError(
+        write_delim_git(y, "verbose", data_repo, optimize = FALSE)
+    )[[1]][["message"]],
+    "error in existing metadata"
+))
+
+stopifnot(all.equal(
+    tools::assertError(
+        rm_data(path)
+    )[[1]][["message"]],
+    "'path' must be a character vector"
+))
+stopifnot(all.equal(
+    tools::assertError(
+        rm_data(path, c(".", "junk"))
+    )[[1]][["message"]],
+    "'path' must be a single value"
+))
+

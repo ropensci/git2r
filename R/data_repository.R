@@ -213,14 +213,22 @@ read_delim_git <- function(file, repo = ".") {
         list(character(0))
     )
     names(col_factor_level) <- col_names[col_factor]
-    for (id in names(col_factor_level)) {
-        raw_data[[id]] <- factor(
-            raw_data[[id]],
-            levels = seq_along(col_factor_level[[id]]),
-            labels = col_factor_level[[id]]
-        )
+    if (optimize) {
+        for (id in names(col_factor_level)) {
+            raw_data[[id]] <- factor(
+                raw_data[[id]],
+                levels = seq_along(col_factor_level[[id]]),
+                labels = col_factor_level[[id]]
+            )
+        }
+    } else {
+        for (id in names(col_factor_level)) {
+            raw_data[[id]] <- factor(
+                raw_data[[id]],
+                levels = col_factor_level[[id]]
+            )
+        }
     }
-
     col_logical <- which(col_classes == "logical")
     for (id in col_logical) {
         raw_data[[id]] <- as.logical(raw_data[[id]])
