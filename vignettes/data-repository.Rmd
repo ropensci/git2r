@@ -33,7 +33,7 @@ Git stores the version history under the form of diffs: a list of lines which ar
 | update 1 observation | remove 1 line and add 1 line |
 | remove 1 variable | remove all lines and add all lines |
 | add 1 variable | remove all lines and add all lines |
-Changes in the information content of the data:
+Table: Changes in the information content of the data
 
 In the next table we show the effect on the diff when making changes in the data which don't change the information content of the data.
 
@@ -42,7 +42,7 @@ In the next table we show the effect on the diff when making changes in the data
 |:------------------|:----------------------------------|
 |move 1 observation |remove 1 line and add 1 line       |
 |move 1 variable    |remove all lines and add all lines |
-Changes in the data without changing the information content
+Table: Changes in the data without changing the information content
 
 So in order to use Git as a performant and efficient version control system for data, we need to make sure to store the metadata and keep the diffs as small as possible. In the next section, the way git2r handles this will be explained.
 
@@ -78,6 +78,7 @@ The function will do a lot more preprocessing to the data in order to keep the f
 - `character` is written as is and unquoted to the data. The class is stored in the metadata.
 - `factor` is  stored as its indices in the data. The labels of levels are stored in the metadata.
 - `POSIXct` is written as an integer to the data. The class and the origin are stored in the metadata.
+- `Date` is written as an integer to the data. The class and the origin are stored in the metadata.
 
 ```{r}
 # Create dummy data
@@ -192,3 +193,43 @@ status(repo)
 commit(repo, "Automated update", all = TRUE)
 status(repo)
 ```
+
+### Verbose data storage
+
+`write_delim_git()` will store the data by default in an optimize way in the repository. The downside of this is that the stored data is less human-readable. 
+
+```{r}
+# the first 10 lines of the raw data file in optimized format
+opt <- readLines(file.path(path, "sub/test.tsv"))
+cat(head(opt, 10), sep = "\n")
+```
+
+Setting `optimize = FALSE` will store the data in a human-readable format. The main differences are:
+
+1. the raw data file will have a header row with the column names
+1. factor, POSIXct and Date are stored as characters instead of integer
+1. all character columns are quoted
+
+```{r}
+# the first 10 lines of the raw data file in verbose format
+write_delim_git(x, file = "verb", repo = repo, sorting = "x", optimize = FALSE)
+verb <- readLines(file.path(path, "verb.tsv"))
+cat(head(verb, 10), sep = "\n")
+```
+
+
+Verbose storage of the raw data will require more disk space. The table below indicates the number of bytes required to store the data types which can be optimized. In case of factor and character this will highly depend on the length of the text. For sake of simplicity we used three examples: 1) _short_: 1 character per level and < 10 levels; 2) _medium_: 10 characters per level and < 100 levels; 3) _long_: 50 characters per level and < 1000 levels. Note that factors are more efficient than characters, unless the character column contains only unique values.
+
+| data type        | verbose | optimized | ratio |
+| ---------------- | -------:| ---------:| -----:|
+| POSIXct          |      19 |        16 | 0.842 |
+| Date             |      10 |         5 | 0.500 |
+| Logical          |       4 |         1 | 0.250 |
+| short factor     |       3 |         1 | 0.333 |
+| medium factor    |      12 |         2 | 0.167 |
+| long factor      |      52 |         3 | 0.058 |
+| short character  |       3 |         1 | 0.333 |
+| medium character |      12 |        10 | 0.833 |
+| long character   |      52 |        50 | 0.962 |
+Table: Comparison of the number of bytes required to store a single value in verbose or optimized format
+
