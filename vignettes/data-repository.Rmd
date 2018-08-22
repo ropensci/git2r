@@ -58,6 +58,7 @@ dir.create(path)
 library(git2r)
 # inititialize a new git repository
 repo <- init(path)
+config(repo, user.name = "Alice", user.email = "alice@example.org")
 ```
 
 ```{r eval = FALSE}

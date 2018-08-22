@@ -25,8 +25,6 @@ dir.create(path)
 
 ## Initialize a repository
 data_repo <- init(path)
-stopifnot(inherits(data_repo, "git_repository"))
-stopifnot(all.equal(data_repo$path, file.path(path, ".git")))
 config(data_repo, user.name = "Alice", user.email = "alice@example.org")
 
 stopifnot(all.equal(
