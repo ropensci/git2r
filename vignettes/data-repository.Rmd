@@ -134,7 +134,7 @@ write_delim_git(
 
 ### Reading data
 
-Retrieving data is straight forward. Use `read_delim_git` and provide the `file` and the `repo`. The retrieved data is identical to the original data after applying the ordering of variables and observations.
+Retrieving data is straightforward. Use `read_delim_git` and provide the `file` and the `repo`. The retrieved data is identical to the original data after applying the ordering of variables and observations.
 
 ```{r}
 y_stored <- read_delim_git(file = "my_data", repo = repo)
@@ -197,7 +197,7 @@ status(repo)
 
 ### Verbose data storage
 
-`write_delim_git()` will store the data by default in an optimize way in the repository. The downside of this is that the stored data is less human-readable. 
+`write_delim_git()` will store the data by default in an optimized way in the repository. The downside of this is that the stored data is less human-readable. 
 
 ```{r}
 # the first 10 lines of the raw data file in optimized format
