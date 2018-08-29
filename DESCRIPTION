@@ -17,6 +17,8 @@ Imports:
 Depends:
     R (>= 3.1)
 Suggests:
+    knitr,
+    rmarkdown,
     getPass
 Type: Package
 LazyData: true
@@ -38,6 +40,7 @@ Collate:
     'config.R'
     'contributions.R'
     'credential.R'
+    'data_repository.R'
     'diff.R'
     'fetch.R'
     'git2r.R'
@@ -66,3 +69,4 @@ Collate:
     'tree.R'
     'when.R'
 RoxygenNote: 6.0.1
+VignetteBuilder: knitr

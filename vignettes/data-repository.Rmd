@@ -1,0 +1,236 @@
+---
+title: "Data repository"
+author: "Thierry Onkelinx"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Data repository}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(knitr)
+opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Rationale
+
+In some cases we want to place data under version control. Data refers here to the information which is stored in a rectangular format. The columns define variables, while the rows represent observations. There is no information in neither the order of the columns nor the order of the rows. We assume that the data is available as an R `data.frame`.
+
+Although git can store binary files, its real power and efficiency is with plain text files. R has several functions to read and write `data.frames` as plain text files. Main downside is the loss of metadata, especially in case of `factors`. A `factor` will be written as a `character` and hence lose all information on the levels. This can be important when the levels are a) not sorted alphabetically, b) not all levels have observations or c) the `factor` is ordered. Besides that, storing a `factor` as a `character` is not efficient.
+
+Git stores the version history under the form of diffs: a list of lines which are deleted and a list of lines which are inserted at a specific line number in a file. We have to keep this in mind when storing data as plain text files in Git. The table below indicates the impact of changing the information content on the diff in Git. Note that changing observations requires a small diff, while changing variables results in a massive diff.
+
+
+|  Change in data | Git diff |
+|:----------------------|:----------|
+| remove 1 observation | remove 1 line |
+| add 1 observation | add 1 line |
+| update 1 observation | remove 1 line and add 1 line |
+| remove 1 variable | remove all lines and add all lines |
+| add 1 variable | remove all lines and add all lines |
+Table: Changes in the information content of the data
+
+In the next table we show the effect on the diff when making changes in the data which don't change the information content of the data.
+
+
+|Change in data     |Git diff                           |
+|:------------------|:----------------------------------|
+|move 1 observation |remove 1 line and add 1 line       |
+|move 1 variable    |remove all lines and add all lines |
+Table: Changes in the data without changing the information content
+
+So in order to use Git as a performant and efficient version control system for data, we need to make sure to store the metadata and keep the diffs as small as possible. In the next section, the way git2r handles this will be explained.
+
+## Tools in `git2r`
+
+### Connect to a repository
+
+```{r}
+# Create a directory in tempdir
+path <- tempfile(pattern = "git2r-")
+dir.create(path)
+
+library(git2r)
+# inititialize a new git repository
+repo <- init(path)
+config(repo, user.name = "Alice", user.email = "alice@example.org")
+```
+
+```{r eval = FALSE}
+# connect to an existing repository
+repo <- repository(path)
+```
+
+### Storing data
+
+Use `write_delim_git()` to store a `data.frame` into the repository. The function will separate the data and the metadata. The data is stored as a headerless, unquoted tab delimited file with ".tsv" extension and UTF-8 encoding. The metadata is stored in YAML format with ".yml" extension. Therefore any extension given to the `file` will be stripped (with a warning).
+
+The function will do a lot more preprocessing to the data in order to keep the file and the diff as small as possible. That is the reason why the data is stored headerless and unquoted. 
+
+- `logical` is written as 0 (FALSE), 1 (TRUE) or NA to the data. The class is stored in the metadata.
+- `integer` is written as is to the data. The class is stored in the metadata.
+- `numeric` is written as is to the data. The class is stored in the metadata.
+- `complex` is written as is to the data. The class is stored in the metadata.
+- `character` is written as is and unquoted to the data. The class is stored in the metadata.
+- `factor` is  stored as its indices in the data. The labels of levels are stored in the metadata.
+- `POSIXct` is written as an integer to the data. The class and the origin are stored in the metadata.
+- `Date` is written as an integer to the data. The class and the origin are stored in the metadata.
+
+```{r}
+# Create dummy data
+x <- data.frame(
+    x = LETTERS,
+    y = factor(
+        sample(c("a", "b", NA), 26, replace = TRUE),
+        levels = c("a", "b", "c")
+    ),
+    z = c(NA, 1:25),
+    abc = c(rnorm(25), NA),
+    xyz = complex(real = rnorm(26), imaginary = rnorm(26)),
+    def = sample(c(TRUE, FALSE, NA), 26, replace = TRUE),
+    timestamp = seq(
+        as.POSIXct("2018-01-01"),
+        as.POSIXct("2019-01-01"),
+        length = 26
+    ),
+    stringsAsFactors = FALSE
+)
+str(x)
+```
+
+Another important part of the preprocessing is ordering both the variables and the observations. This is determined when the file is created and stored in the metadata. When the file is overwritten, the ordering is based on the existing metadata. Therefore it is important to think carefully about the ordering and make sure that it is how you want it to stay **before** you create your first commit. The ordering of the observations is specified through the `sorting` argument. It holds a vector of variable names which are used in the ordering. Make sure that you add enough sorting variables to avoid ties. `sorting` also defines the order of the variables. The order of the other variables is taken from the `data.frame`.
+
+The data file (".tsv") and the metadata file (".yml") are automatically staged after writing. `write_delim_git()` returns the hashes of both the data file and the metadata file. The names of the vector contain the path of the files, relative to the root of the _git_ repository.
+
+```{r}
+status(repo)
+write_delim_git(x = x, file = "my_data", repo = repo, sorting = c("y", "x"))
+status(repo)
+```
+
+Overwriting data which has different metadata than the original data will throw an error because this can potentially lead to large diffs. Differences in metadata occur when:
+
+- the sorting changes
+- variables are added, removed or renamed
+- the class of a variable changes
+- the levels of a factor changes
+
+However you can bypass this by using `override = TRUE`. This will completely ignore the existing metadata and create new metadata based on the new `data.frame`.
+
+```{r error=TRUE}
+y <- x
+y$extra <- x$x
+write_delim_git(y, file = "my_data", repo = repo, sorting = c("y", "x"))
+write_delim_git(
+    y, file = "my_data", repo = repo, sorting = c("y", "x"), 
+    override = TRUE
+)
+```
+
+### Reading data
+
+Retrieving data is straightforward. Use `read_delim_git` and provide the `file` and the `repo`. The retrieved data is identical to the original data after applying the ordering of variables and observations.
+
+```{r}
+y_stored <- read_delim_git(file = "my_data", repo = repo)
+str(y_stored)
+y_sorted <- y[order(y$y, y$x), colnames(y_stored)]
+rownames(y_sorted) <- NULL
+stopifnot(all.equal(y_sorted, y_stored))
+```
+
+### Committing changes
+
+Commit the changes using `commit()`
+
+```{r}
+write_delim_git(x, file = "sub/test", repo = repo, sorting = "x")
+status(repo)
+add(repo, ".")
+status(repo)
+commit(repo, message = "Initial commit")
+status(repo)
+```
+
+### Removing data
+
+Data objects are files, so you remove them with `rm_file`. 
+
+```{r}
+# remove a single file
+rm_file(repo = repo, path = "my_data.tsv")
+rm_file(repo = repo, path = "my_data.yml")
+status(repo)
+# undo the remove by resetting to the last commit
+reset(commits(repo)[[1]], "hard")
+status(repo)
+# remove all data objects in a given path
+rm_data(repo = repo, path = ".", type = "both")
+status(repo)
+```
+
+Sometimes you want to write a bunch of data objects to the repository and you cannot guarantee that all data objects will remain after the update. The workflow below is intended for such case.
+
+1. use `rm_data()` with `type = "tsv"` to remove **all** ".tsv" in a specific path of the repository
+1. use `write_delim_git()` to write all data objects. Since the ".yml" are still present, any existing metadata will be used.
+1. use `type = "yml"` in `rm_data()` to remove **any** ".yml" which have no associated ".tsv"
+1. `commit()` the changes
+
+```{r}
+# undo the remove by resetting to the last commit
+reset(commits(repo)[[1]], "hard")
+status(repo)
+rm_data(repo, path = ".", type = "tsv")
+status(repo)
+write_delim_git(x, file = "sub/test", repo = repo, sorting = "x")
+status(repo)
+rm_data(repo, path = ".", type = "yml")
+status(repo)
+commit(repo, "Automated update", all = TRUE)
+status(repo)
+```
+
+### Verbose data storage
+
+`write_delim_git()` will store the data by default in an optimized way in the repository. The downside of this is that the stored data is less human-readable. 
+
+```{r}
+# the first 10 lines of the raw data file in optimized format
+opt <- readLines(file.path(path, "sub/test.tsv"))
+cat(head(opt, 10), sep = "\n")
+```
+
+Setting `optimize = FALSE` will store the data in a human-readable format. The main differences are:
+
+1. the raw data file will have a header row with the column names
+1. factor, POSIXct and Date are stored as characters instead of integer
+1. all character columns are quoted
+
+```{r}
+# the first 10 lines of the raw data file in verbose format
+write_delim_git(x, file = "verb", repo = repo, sorting = "x", optimize = FALSE)
+verb <- readLines(file.path(path, "verb.tsv"))
+cat(head(verb, 10), sep = "\n")
+```
+
+
+Verbose storage of the raw data will require more disk space. The table below indicates the number of bytes required to store the data types which can be optimized. In case of factor and character this will highly depend on the length of the text. For sake of simplicity we used three examples: 1) _short_: 1 character per level and < 10 levels; 2) _medium_: 10 characters per level and < 100 levels; 3) _long_: 50 characters per level and < 1000 levels. Note that factors are more efficient than characters, unless the character column contains only unique values.
+
+| data type        | verbose | optimized | ratio |
+| ---------------- | -------:| ---------:| -----:|
+| POSIXct          |      19 |        16 | 0.842 |
+| Date             |      10 |         5 | 0.500 |
+| Logical          |       4 |         1 | 0.250 |
+| short factor     |       3 |         1 | 0.333 |
+| medium factor    |      12 |         2 | 0.167 |
+| long factor      |      52 |         3 | 0.058 |
+| short character  |       3 |         1 | 0.333 |
+| medium character |      12 |        10 | 0.833 |
+| long character   |      52 |        50 | 0.962 |
+Table: Comparison of the number of bytes required to store a single value in verbose or optimized format
+
