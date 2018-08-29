@@ -23,6 +23,10 @@ sessionInfo()
 path <- tempfile(pattern = "git2r-")
 dir.create(path)
 
+# currently odb_blobs() can't handle subsecond commits
+# when TRUE Sys.sleep(1) is added before each commit
+subsecond <- TRUE
+
 ## Initialize a repository
 data_repo <- init(path)
 config(data_repo, user.name = "Alice", user.email = "alice@example.org")
@@ -50,12 +54,15 @@ stopifnot(all.equal(
     "file extensions are stripped"
 ))
 z <- status(data_repo)
-print(z)
 stopifnot(
     all.equal(z$staged, list(new = "test.tsv", new = "test.yml"))
 )
 write_delim_git(x, "test", data_repo)
 stopifnot(all.equal(status(data_repo), z))
+add(data_repo, path = ".")
+if (subsecond) Sys.sleep(1)
+commit_1 <- commit(data_repo, "initial commit")
+
 stopifnot(all.equal(
     tools::assertError(
         write_delim_git(x[, 1:3], "test", data_repo)
@@ -117,10 +124,15 @@ stopifnot(all.equal(
     tools::assertError(read_delim_git("", data_repo))[[1]][["message"]],
     "raw file and/or meta file missing"
 ))
+add(data_repo, path = ".")
+if (subsecond) Sys.sleep(1)
+commit_2 <- commit(data_repo, "test")
 
 write_delim_git(x, "junk/test", data_repo)
 add(data_repo, path = ".")
-commit(data_repo, "test")
+if (subsecond) Sys.sleep(1)
+commit_3 <- commit(data_repo, "test")
+
 rm_data(data_repo, ".", "tsv")
 stopifnot(
     all.equal(
@@ -164,6 +176,8 @@ stopifnot(all.equal(
     )[[1]][["message"]],
     "use only variables of 'x' for sorting"
 ))
+if (subsecond) Sys.sleep(1)
+commit_4 <- commit(data_repo, "more")
 
 y <- x
 y$logic <- sample(c(TRUE, FALSE, NA), replace = TRUE, size = nrow(y))
@@ -183,6 +197,9 @@ z <- read_delim_git("logical", data_repo)
 y.sorted <- y[do.call(order, y[c("y", "logic")]), colnames(z)]
 rownames(y.sorted) <- NULL
 stopifnot(all.equal(y.sorted, z))
+add(data_repo, path = ".")
+if (subsecond) Sys.sleep(1)
+commit_5 <- commit(data_repo, "logical")
 
 stopifnot(all.equal(
     tools::assertError(
@@ -203,9 +220,15 @@ stopifnot(all.equal(
     )[[1]][["message"]],
     "old data was stored verbose"
 ))
+add(data_repo, path = ".")
+if (subsecond) Sys.sleep(1)
+commit_6 <- commit(data_repo, "verbose")
+
 yml <- file.path(path, "verbose.yml")
 meta <- head(readLines(yml), -1)
 writeLines(text = meta, con = yml)
+add(data_repo, path = ".")
+commit_7 <- commit(data_repo, "fast")
 stopifnot(all.equal(
     tools::assertError(
         read_delim_git("verbose", data_repo)
@@ -218,7 +241,6 @@ stopifnot(all.equal(
     )[[1]][["message"]],
     "error in existing metadata"
 ))
-
 stopifnot(all.equal(
     tools::assertError(
         rm_data(path)
@@ -232,3 +254,41 @@ stopifnot(all.equal(
     "'path' must be a single value"
 ))
 
+com <- recent_commit(data_repo, "test.tsv")
+stopifnot(inherits(com, "data.frame"))
+stopifnot(all.equal(colnames(com), c("commit", "author", "when")))
+stopifnot(all.equal(com$commit, commit_2$sha))
+
+com <- recent_commit(data_repo, "test", data = TRUE)
+stopifnot(inherits(com, "data.frame"))
+stopifnot(all.equal(colnames(com), c("commit", "author", "when")))
+stopifnot(all.equal(com$commit, commit_2$sha))
+
+com <- recent_commit(data_repo, "junk/test", data = TRUE)
+stopifnot(all.equal(com$commit, commit_3$sha))
+com <- recent_commit(data_repo, "junk/test.tsv")
+stopifnot(all.equal(com$commit, commit_3$sha))
+com <- recent_commit(data_repo, "junk/test.yml")
+stopifnot(all.equal(com$commit, commit_3$sha))
+
+stopifnot(all.equal(
+    tools::assertError(
+        recent_commit(data_repo, TRUE)
+    )[[1]][["message"]],
+    "'path' must be a character vector"
+))
+stopifnot(all.equal(
+    tools::assertError(
+        recent_commit(data_repo, c("junk", "test"))
+    )[[1]][["message"]],
+    "'path' must be a single value"
+))
+
+stopifnot(all.equal(
+    tools::assertWarning(
+        com <- recent_commit(data_repo, "verbose.yml")
+    )[[1]][["message"]],
+    "Multiple commits within the same second"
+))
+stopifnot(nrow(com) == 2)
+stopifnot(all(com$commit %in% c(commit_6$sha, commit_7$sha)))

@@ -410,3 +410,34 @@ rm_data <- function(
         add(repo, path = to_do)
     }
 }
+
+##' Recent file change
+##' Retrieve the most recent commit in which a file or data object was changed.
+##' @template repo-param
+##' @param path the path to the file or the data object. File extensions are silently ignored in case of a data object
+##' @param data refers path to a file (FALSE) or a data object (TRUE). Defaults to FALSE
+##' @export
+##' @return A data.frame with commit, author and timestamp. Will contain multiple rows when multiple commits are made within the same second
+recent_commit <- function(repo, path = NULL, data = FALSE) {
+    repo <- lookup_repository(repo)
+    if (is.null(path) || !is.character(path))
+        stop("'path' must be a character vector")
+    if (length(path) != 1)
+        stop("'path' must be a single value")
+    if (data) {
+        path <- clean_data_path(path)
+    }
+    name <- basename(path)
+    path <- unique(dirname(path))
+    if (path == ".") {
+        path <- ""
+    }
+    blobs <- odb_blobs(repo)
+    blobs <- blobs[blobs$path == path & blobs$name %in% name, ]
+    blobs <- blobs[blobs$when == max(blobs$when), c("commit", "author", "when")]
+    blobs <- unique(blobs)
+    if (nrow(blobs) > 1) {
+        warning("Multiple commits within the same second")
+    }
+    blobs
+}
