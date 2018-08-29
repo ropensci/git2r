@@ -3,7 +3,7 @@
 \name{recent_commit}
 \alias{recent_commit}
 \title{Recent file change
-Retrieve the most commit in which a file or data object was changed.}
+Retrieve the most recent commit in which a file or data object was changed.}
 \usage{
 recent_commit(repo, path = NULL, data = FALSE)
 }
@@ -15,7 +15,10 @@ object. Default is '.'}
 
 \item{data}{refers path to a file (FALSE) or a data object (TRUE). Defaults to FALSE}
 }
+\value{
+A data.frame with commit, author and timestamp. Will contain multiple rows when multiple commits are made within the same second
+}
 \description{
 Recent file change
-Retrieve the most commit in which a file or data object was changed.
+Retrieve the most recent commit in which a file or data object was changed.
 }

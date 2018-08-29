@@ -24,7 +24,7 @@ path <- tempfile(pattern = "git2r-")
 dir.create(path)
 
 # currently odb_blobs() can't handle subsecond commits
-# when TRUE Sys.sleep(1) is added before each commit
+# when TRUE Sys.sleep(1.1) is added before each commit
 subsecond <- TRUE
 
 ## Initialize a repository
@@ -60,7 +60,7 @@ stopifnot(
 write_delim_git(x, "test", data_repo)
 stopifnot(all.equal(status(data_repo), z))
 add(data_repo, path = ".")
-if (subsecond) Sys.sleep(1)
+if (subsecond) Sys.sleep(1.1)
 commit_1 <- commit(data_repo, "initial commit")
 
 stopifnot(all.equal(
@@ -125,12 +125,12 @@ stopifnot(all.equal(
     "raw file and/or meta file missing"
 ))
 add(data_repo, path = ".")
-if (subsecond) Sys.sleep(1)
+if (subsecond) Sys.sleep(1.1)
 commit_2 <- commit(data_repo, "test")
 
 write_delim_git(x, "junk/test", data_repo)
 add(data_repo, path = ".")
-if (subsecond) Sys.sleep(1)
+if (subsecond) Sys.sleep(1.1)
 commit_3 <- commit(data_repo, "test")
 
 rm_data(data_repo, ".", "tsv")
@@ -176,7 +176,7 @@ stopifnot(all.equal(
     )[[1]][["message"]],
     "use only variables of 'x' for sorting"
 ))
-if (subsecond) Sys.sleep(1)
+if (subsecond) Sys.sleep(1.1)
 commit_4 <- commit(data_repo, "more")
 
 y <- x
@@ -198,7 +198,7 @@ y.sorted <- y[do.call(order, y[c("y", "logic")]), colnames(z)]
 rownames(y.sorted) <- NULL
 stopifnot(all.equal(y.sorted, z))
 add(data_repo, path = ".")
-if (subsecond) Sys.sleep(1)
+if (subsecond) Sys.sleep(1.1)
 commit_5 <- commit(data_repo, "logical")
 
 stopifnot(all.equal(
@@ -221,7 +221,7 @@ stopifnot(all.equal(
     "old data was stored verbose"
 ))
 add(data_repo, path = ".")
-if (subsecond) Sys.sleep(1)
+if (subsecond) Sys.sleep(1.1)
 commit_6 <- commit(data_repo, "verbose")
 
 yml <- file.path(path, "verbose.yml")
@@ -259,10 +259,13 @@ stopifnot(inherits(com, "data.frame"))
 stopifnot(all.equal(colnames(com), c("commit", "author", "when")))
 stopifnot(all.equal(com$commit, commit_2$sha))
 
+bl <- odb_blobs(data_repo)
+bl[grepl("test", bl$name) & bl$path == "", -1]
+commit_2$sha
 com <- recent_commit(data_repo, "test", data = TRUE)
+stopifnot(all.equal(com$commit, commit_2$sha))
 stopifnot(inherits(com, "data.frame"))
 stopifnot(all.equal(colnames(com), c("commit", "author", "when")))
-stopifnot(all.equal(com$commit, commit_2$sha))
 
 com <- recent_commit(data_repo, "junk/test", data = TRUE)
 stopifnot(all.equal(com$commit, commit_3$sha))

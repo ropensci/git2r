@@ -429,6 +429,7 @@ recent_commit <- function(repo, path = NULL, data = FALSE) {
     }
     name <- basename(path)
     path <- unique(dirname(path))
+message("path: ", path)
     if (path == ".") {
         path <- ""
     }
