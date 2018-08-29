@@ -355,7 +355,7 @@ clean_data_path <- function(path) {
     if (any(not_root)) {
         path[not_root] <- file.path(dir_name[not_root], path[not_root])
     }
-    path <- normalizePath(unique(path), mustWork = FALSE)
+    path <- normalizePath(unique(path), winslash = "/", mustWork = FALSE)
     c(raw_file = paste0(path, ".tsv"), meta_file = paste0(path, ".yml"))
 }
 
@@ -426,6 +426,7 @@ recent_commit <- function(repo, path = NULL, data = FALSE) {
         stop("'path' must be a single value")
     if (data) {
         path <- clean_data_path(path)
+message("path: ", path)
     }
     name <- basename(path)
     path <- unique(dirname(path))
