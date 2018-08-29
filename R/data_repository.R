@@ -346,16 +346,19 @@ meta.Date <- function(x, optimize = TRUE) {
 ##' Clean the data path
 ##' Strips any file extension from the path and adds the ".tsv" and ".yml" file extensions
 ##' @param path the paths
+##' @param normalize normalize the path? Defaults to TRUE
 ##' @return a named vector with "raw_file" and "meta_file", refering to the ".tsv" and ".yml" files
 ##' @noRd
-clean_data_path <- function(path) {
+clean_data_path <- function(path, normalize = TRUE) {
     dir_name <- dirname(path)
     not_root <- dir_name != "."
     path <- gsub("\\..*$", "", basename(path))
     if (any(not_root)) {
         path[not_root] <- file.path(dir_name[not_root], path[not_root])
     }
-    path <- normalizePath(unique(path), winslash = "/", mustWork = FALSE)
+    if (isTRUE(normalize)) {
+        path <- normalizePath(unique(path), winslash = "/", mustWork = FALSE)
+    }
     c(raw_file = paste0(path, ".tsv"), meta_file = paste0(path, ".yml"))
 }
 
@@ -425,12 +428,10 @@ recent_commit <- function(repo, path = NULL, data = FALSE) {
     if (length(path) != 1)
         stop("'path' must be a single value")
     if (data) {
-        path <- clean_data_path(path)
-message("path: ", path)
+        path <- clean_data_path(path, normalize = FALSE)
     }
     name <- basename(path)
     path <- unique(dirname(path))
-message("path: ", path)
     if (path == ".") {
         path <- ""
     }

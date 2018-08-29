@@ -259,13 +259,10 @@ stopifnot(inherits(com, "data.frame"))
 stopifnot(all.equal(colnames(com), c("commit", "author", "when")))
 stopifnot(all.equal(com$commit, commit_2$sha))
 
-bl <- odb_blobs(data_repo)
-bl[grepl("test", bl$name) & bl$path == "", c(2:3, 5, 7)]
-commit_2$sha
 com <- recent_commit(data_repo, "test", data = TRUE)
-stopifnot(all.equal(com$commit, commit_2$sha))
 stopifnot(inherits(com, "data.frame"))
 stopifnot(all.equal(colnames(com), c("commit", "author", "when")))
+stopifnot(all.equal(com$commit, commit_2$sha))
 
 com <- recent_commit(data_repo, "junk/test", data = TRUE)
 stopifnot(all.equal(com$commit, commit_3$sha))
