@@ -15,7 +15,7 @@
 #include "buf_text.h"
 #include "vector.h"
 #include "posix.h"
-#include "config_file.h"
+#include "config_backend.h"
 #include "config.h"
 #include "repository.h"
 #include "tree.h"
@@ -199,13 +199,15 @@ out:
  */
 static void free_submodule_names(git_strmap *names)
 {
-	git_buf *name;
+	const char *key;
+	char *value;
 
 	if (names == NULL)
 		return;
 
-	git_strmap_foreach_value(names, name, {
-		git__free(name);
+	git_strmap_foreach(names, key, value, {
+		git__free((char *) key);
+		git__free(value);
 	});
 	git_strmap_free(names);
 
@@ -257,10 +259,11 @@ static int load_submodule_names(git_strmap **out, git_repository *repo, git_conf
 		if (!isvalid)
 			continue;
 
-		git_strmap_insert(names, entry->value, git_buf_detach(&buf), &rval);
+		git_strmap_insert(names, git__strdup(entry->value), git_buf_detach(&buf), &rval);
 		if (rval < 0) {
 			giterr_set(GITERR_NOMEMORY, "error inserting submodule into hash table");
-			return -1;
+			error = -1;
+			goto out;
 		}
 	}
 	if (error == GIT_ITEROVER)
@@ -332,9 +335,9 @@ int git_submodule_lookup(
 		mods = open_gitmodules(repo, GITMODULES_EXISTING);
 
 		if (mods)
-			error = git_config_file_foreach_match(mods, pattern, find_by_path, &data);
+			error = git_config_backend_foreach_match(mods, pattern, find_by_path, &data);
 
-		git_config_file_free(mods);
+		git_config_backend_free(mods);
 
 		if (error < 0) {
 			git_submodule_free(sm);
@@ -791,11 +794,11 @@ int git_submodule_add_setup(
 	}
 
 	if ((error = git_buf_printf(&name, "submodule.%s.path", path)) < 0 ||
-		(error = git_config_file_set_string(mods, name.ptr, path)) < 0)
+		(error = git_config_backend_set_string(mods, name.ptr, path)) < 0)
 		goto cleanup;
 
 	if ((error = submodule_config_key_trunc_puts(&name, "url")) < 0 ||
-		(error = git_config_file_set_string(mods, name.ptr, url)) < 0)
+		(error = git_config_backend_set_string(mods, name.ptr, url)) < 0)
 		goto cleanup;
 
 	git_buf_clear(&name);
@@ -833,7 +836,7 @@ cleanup:
 	if (out != NULL)
 		*out = sm;
 
-	git_config_file_free(mods);
+	git_config_backend_free(mods);
 	git_repository_free(subrepo);
 	git_buf_dispose(&real_url);
 	git_buf_dispose(&name);
@@ -1032,14 +1035,14 @@ static int write_var(git_repository *repo, const char *name, const char *var, co
 		goto cleanup;
 
 	if (val)
-		error = git_config_file_set_string(mods, key.ptr, val);
+		error = git_config_backend_set_string(mods, key.ptr, val);
 	else
-		error = git_config_file_delete(mods, key.ptr);
+		error = git_config_backend_delete(mods, key.ptr);
 
 	git_buf_dispose(&key);
 
 cleanup:
-	git_config_file_free(mods);
+	git_config_backend_free(mods);
 	return error;
 }
 
@@ -1862,6 +1865,14 @@ static int get_value(const char **out, git_config *cfg, git_buf *buf, const char
 	return error;
 }
 
+static bool looks_like_command_line_option(const char *s)
+{
+	if (s && s[0] == '-')
+		return true;
+
+	return false;
+}
+
 static int submodule_read_config(git_submodule *sm, git_config *cfg)
 {
 	git_buf key = GIT_BUF_INIT;
@@ -1875,24 +1886,31 @@ static int submodule_read_config(git_submodule *sm, git_config *cfg)
 
 	if ((error = get_value(&value, cfg, &key, sm->name, "path")) == 0) {
 		in_config = 1;
+		/* We would warn here if we had that API */
+		if (!looks_like_command_line_option(value)) {
 	/*
 	 * TODO: if case insensitive filesystem, then the following strcmp
 	 * should be strcasecmp
 	 */
-		if (strcmp(sm->name, value) != 0) {
-			if (sm->path != sm->name)
-				git__free(sm->path);
-			sm->path = git__strdup(value);
-			GITERR_CHECK_ALLOC(sm->path);
+			if (strcmp(sm->name, value) != 0) {
+				if (sm->path != sm->name)
+					git__free(sm->path);
+				sm->path = git__strdup(value);
+				GITERR_CHECK_ALLOC(sm->path);
+			}
+
 		}
 	} else if (error != GIT_ENOTFOUND) {
 		goto cleanup;
 	}
 
 	if ((error = get_value(&value, cfg, &key, sm->name, "url")) == 0) {
-		in_config = 1;
-		sm->url = git__strdup(value);
-		GITERR_CHECK_ALLOC(sm->url);
+		/* We would warn here if we had that API */
+		if (!looks_like_command_line_option(value)) {
+			in_config = 1;
+			sm->url = git__strdup(value);
+			GITERR_CHECK_ALLOC(sm->url);
+		}
 	} else if (error != GIT_ENOTFOUND) {
 		goto cleanup;
 	}
@@ -2069,12 +2087,12 @@ static git_config_backend *open_gitmodules(
 			return NULL;
 
 		if (okay_to_create || git_path_isfile(path.ptr)) {
-			/* git_config_file__ondisk should only fail if OOM */
-			if (git_config_file__ondisk(&mods, path.ptr) < 0)
+			/* git_config_backend_from_file should only fail if OOM */
+			if (git_config_backend_from_file(&mods, path.ptr) < 0)
 				mods = NULL;
 			/* open should only fail here if the file is malformed */
-			else if (git_config_file_open(mods, GIT_CONFIG_LEVEL_LOCAL, repo) < 0) {
-				git_config_file_free(mods);
+			else if (git_config_backend_open(mods, GIT_CONFIG_LEVEL_LOCAL, repo) < 0) {
+				git_config_backend_free(mods);
 				mods = NULL;
 			}
 		}

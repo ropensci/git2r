@@ -184,10 +184,10 @@ static int apply_default_credentials(HINTERNET request, int mechanisms)
 	DWORD native_scheme = 0;
 
 	if ((mechanisms & GIT_WINHTTP_AUTH_NTLM) != 0)
-		native_scheme |= WINHTTP_AUTH_SCHEME_NTLM;
+		native_scheme = WINHTTP_AUTH_SCHEME_NTLM;
 
 	if ((mechanisms & GIT_WINHTTP_AUTH_NEGOTIATE) != 0)
-		native_scheme |= WINHTTP_AUTH_SCHEME_NEGOTIATE;
+		native_scheme = WINHTTP_AUTH_SCHEME_NEGOTIATE;
 
 	if (!native_scheme) {
 		giterr_set(GITERR_NET, "invalid authentication scheme");
@@ -219,6 +219,7 @@ static int fallback_cred_acquire_cb(
 	 * as an authentication mechanism */
 	if (GIT_CREDTYPE_DEFAULT & allowed_types) {
 		wchar_t *wide_url;
+		HRESULT hCoInitResult;
 
 		/* Convert URL to wide characters */
 		if (git__utf8_to_16_alloc(&wide_url, url) < 0) {
@@ -226,7 +227,9 @@ static int fallback_cred_acquire_cb(
 			return -1;
 		}
 
-		if (SUCCEEDED(CoInitializeEx(NULL, COINIT_MULTITHREADED))) {
+		hCoInitResult = CoInitializeEx(NULL, COINIT_MULTITHREADED);
+			
+		if (SUCCEEDED(hCoInitResult) || hCoInitResult == RPC_E_CHANGED_MODE) {
 			IInternetSecurityManager* pISM;
 
 			/* And if the target URI is in the My Computer, Intranet, or Trusted zones */
@@ -250,7 +253,9 @@ static int fallback_cred_acquire_cb(
 				pISM->lpVtbl->Release(pISM);
 			}
 
-			CoUninitialize();
+            if (SUCCEEDED(hCoInitResult))
+                /* Only unitialize if the call to CoInitializeEx was successful. */
+                CoUninitialize();
 		}
 
 		git__free(wide_url);
@@ -845,23 +850,27 @@ on_error:
 
 static int do_send_request(winhttp_stream *s, size_t len, int ignore_length)
 {
-	if (ignore_length) {
-		if (!WinHttpSendRequest(s->request,
-			WINHTTP_NO_ADDITIONAL_HEADERS, 0,
-			WINHTTP_NO_REQUEST_DATA, 0,
-			WINHTTP_IGNORE_REQUEST_TOTAL_LENGTH, 0)) {
-			return -1;
+	int attempts;
+	bool success;
+
+	for (attempts = 0; attempts < 5; attempts++) {
+		if (ignore_length) {
+			success = WinHttpSendRequest(s->request,
+				WINHTTP_NO_ADDITIONAL_HEADERS, 0,
+				WINHTTP_NO_REQUEST_DATA, 0,
+				WINHTTP_IGNORE_REQUEST_TOTAL_LENGTH, 0);
+		} else {
+			success = WinHttpSendRequest(s->request,
+				WINHTTP_NO_ADDITIONAL_HEADERS, 0,
+				WINHTTP_NO_REQUEST_DATA, 0,
+				len, 0);
 		}
-	} else {
-		if (!WinHttpSendRequest(s->request,
-			WINHTTP_NO_ADDITIONAL_HEADERS, 0,
-			WINHTTP_NO_REQUEST_DATA, 0,
-			len, 0)) {
-			return -1;
-		}
+
+		if (success || GetLastError() != SEC_E_BUFFER_TOO_SMALL)
+			break;
 	}
 
-	return 0;
+	return success ? 0 : -1;
 }
 
 static int send_request(winhttp_stream *s, size_t len, int ignore_length)

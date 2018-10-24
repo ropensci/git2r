@@ -44,7 +44,7 @@ int git_smart__store_refs(transport_smart *t, int flushes)
 
 	do {
 		if (buf->offset > 0)
-			error = git_pkt_parse_line(&pkt, buf->data, &line_end, buf->offset);
+			error = git_pkt_parse_line(&pkt, &line_end, buf->data, buf->offset);
 		else
 			error = GIT_EBUFS;
 
@@ -66,12 +66,6 @@ int git_smart__store_refs(transport_smart *t, int flushes)
 		gitno_consume(buf, line_end);
 		if (pkt->type == GIT_PKT_ERR) {
 			giterr_set(GITERR_NET, "remote error: %s", ((git_pkt_err *)pkt)->error);
-			git__free(pkt);
-			return -1;
-		}
-
-		if (pkt->type == GIT_PKT_PACK) {
-			giterr_set(GITERR_NET, "unexpected packfile");
 			git__free(pkt);
 			return -1;
 		}
@@ -142,7 +136,7 @@ int git_smart__detect_caps(git_pkt_ref *pkt, transport_smart_caps *caps, git_vec
 
 	/* No refs or capabilites, odd but not a problem */
 	if (pkt == NULL || pkt->capabilities == NULL)
-		return 0;
+		return GIT_ENOTFOUND;
 
 	ptr = pkt->capabilities;
 	while (ptr != NULL && *ptr != '\0') {
@@ -223,7 +217,7 @@ static int recv_pkt(git_pkt **out_pkt, git_pkt_type *out_type, gitno_buffer *buf
 
 	do {
 		if (buf->offset > 0)
-			error = git_pkt_parse_line(&pkt, ptr, &line_end, buf->offset);
+			error = git_pkt_parse_line(&pkt, &line_end, ptr, buf->offset);
 		else
 			error = GIT_EBUFS;
 
@@ -761,7 +755,7 @@ static int add_push_report_sideband_pkt(git_push *push, git_pkt_data *data_pkt, 
 	}
 
 	while (line_len > 0) {
-		error = git_pkt_parse_line(&pkt, line, &line_end, line_len);
+		error = git_pkt_parse_line(&pkt, &line_end, line, line_len);
 
 		if (error == GIT_EBUFS) {
 			/* Buffer the data when the inner packet is split
@@ -804,8 +798,8 @@ static int parse_report(transport_smart *transport, git_push *push)
 
 	for (;;) {
 		if (buf->offset > 0)
-			error = git_pkt_parse_line(&pkt, buf->data,
-						   &line_end, buf->offset);
+			error = git_pkt_parse_line(&pkt, &line_end,
+						   buf->data, buf->offset);
 		else
 			error = GIT_EBUFS;
 

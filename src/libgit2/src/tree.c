@@ -375,18 +375,16 @@ static int parse_mode(unsigned int *modep, const char *buffer, const char **buff
 	return 0;
 }
 
-int git_tree__parse(void *_tree, git_odb_object *odb_obj)
+int git_tree__parse_raw(void *_tree, const char *data, size_t size)
 {
 	git_tree *tree = _tree;
 	const char *buffer;
 	const char *buffer_end;
 
-	if (git_odb_object_dup(&tree->odb_obj, odb_obj) < 0)
-		return -1;
+	buffer = data;
+	buffer_end = buffer + size;
 
-	buffer = git_odb_object_data(tree->odb_obj);
-	buffer_end = buffer + git_odb_object_size(tree->odb_obj);
-
+	tree->odb_obj = NULL;
 	git_array_init_to_size(tree->entries, DEFAULT_TREE_SIZE);
 	GITERR_CHECK_ARRAY(tree->entries);
 
@@ -426,6 +424,21 @@ int git_tree__parse(void *_tree, git_odb_object *odb_obj)
 	return 0;
 }
 
+int git_tree__parse(void *_tree, git_odb_object *odb_obj)
+{
+	git_tree *tree = _tree;
+
+	if ((git_tree__parse_raw(tree,
+	    git_odb_object_data(odb_obj),
+	    git_odb_object_size(odb_obj))) < 0)
+		return -1;
+
+	if (git_odb_object_dup(&tree->odb_obj, odb_obj) < 0)
+		return -1;
+
+	return 0;
+}
+
 static size_t find_next_dir(const char *dirname, git_index *index, size_t start)
 {
 	size_t dirlen, i, entries = git_index_entrycount(index);
@@ -443,20 +456,48 @@ static size_t find_next_dir(const char *dirname, git_index *index, size_t start)
 	return i;
 }
 
+static git_otype otype_from_mode(git_filemode_t filemode)
+{
+	switch (filemode) {
+	case GIT_FILEMODE_TREE:
+		return GIT_OBJ_TREE;
+	case GIT_FILEMODE_COMMIT:
+		return GIT_OBJ_COMMIT;
+	default:
+		return GIT_OBJ_BLOB;
+	}
+}
+
+static int check_entry(git_repository *repo, const char *filename, const git_oid *id, git_filemode_t filemode)
+{
+	if (!valid_filemode(filemode))
+		return tree_error("failed to insert entry: invalid filemode for file", filename);
+
+	if (!valid_entry_name(repo, filename))
+		return tree_error("failed to insert entry: invalid name for a tree entry", filename);
+
+	if (git_oid_iszero(id))
+		return tree_error("failed to insert entry: invalid null OID", filename);
+
+	if (filemode != GIT_FILEMODE_COMMIT &&
+	    !git_object__is_valid(repo, id, otype_from_mode(filemode)))
+		return tree_error("failed to insert entry: invalid object specified", filename);
+
+	return 0;
+}
+
 static int append_entry(
 	git_treebuilder *bld,
 	const char *filename,
 	const git_oid *id,
-	git_filemode_t filemode)
+	git_filemode_t filemode,
+	bool validate)
 {
 	git_tree_entry *entry;
 	int error = 0;
 
-	if (!valid_entry_name(bld->repo, filename))
-		return tree_error("failed to insert entry: invalid name for a tree entry", filename);
-
-	if (git_oid_iszero(id))
-		return tree_error("failed to insert entry: invalid null OID for a tree entry", filename);
+	if (validate && ((error = check_entry(bld->repo, filename, id, filemode)) < 0))
+		return error;
 
 	entry = alloc_entry(filename, strlen(filename), id);
 	GITERR_CHECK_ALLOC(entry);
@@ -553,12 +594,12 @@ static int write_tree(
 				last_comp = subdir;
 			}
 
-			error = append_entry(bld, last_comp, &sub_oid, S_IFDIR);
+			error = append_entry(bld, last_comp, &sub_oid, S_IFDIR, true);
 			git__free(subdir);
 			if (error < 0)
 				goto on_error;
 		} else {
-			error = append_entry(bld, filename, &entry->id, entry->mode);
+			error = append_entry(bld, filename, &entry->id, entry->mode, true);
 			if (error < 0)
 				goto on_error;
 		}
@@ -656,7 +697,8 @@ int git_treebuilder_new(
 			if (append_entry(
 				bld, entry_src->filename,
 				entry_src->oid,
-				entry_src->attr) < 0)
+				entry_src->attr,
+				false) < 0)
 				goto on_error;
 		}
 	}
@@ -667,18 +709,6 @@ int git_treebuilder_new(
 on_error:
 	git_treebuilder_free(bld);
 	return -1;
-}
-
-static git_otype otype_from_mode(git_filemode_t filemode)
-{
-	switch (filemode) {
-	case GIT_FILEMODE_TREE:
-		return GIT_OBJ_TREE;
-	case GIT_FILEMODE_COMMIT:
-		return GIT_OBJ_COMMIT;
-	default:
-		return GIT_OBJ_BLOB;
-	}
 }
 
 int git_treebuilder_insert(
@@ -694,18 +724,8 @@ int git_treebuilder_insert(
 
 	assert(bld && id && filename);
 
-	if (!valid_filemode(filemode))
-		return tree_error("failed to insert entry: invalid filemode for file", filename);
-
-	if (!valid_entry_name(bld->repo, filename))
-		return tree_error("failed to insert entry: invalid name for a tree entry", filename);
-
-	if (git_oid_iszero(id))
-		return tree_error("failed to insert entry: invalid null OID", filename);
-
-	if (filemode != GIT_FILEMODE_COMMIT &&
-	    !git_object__is_valid(bld->repo, id, otype_from_mode(filemode)))
-		return tree_error("failed to insert entry: invalid object specified", filename);
+	if ((error = check_entry(bld->repo, filename, id, filemode)) < 0)
+		return error;
 
 	pos = git_strmap_lookup_index(bld->map, filename);
 	if (git_strmap_valid_index(bld->map, pos)) {

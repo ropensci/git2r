@@ -1802,7 +1802,8 @@ int git_index_conflict_add(git_index *index,
 		if (entries[i] && !valid_filemode(entries[i]->mode)) {
 			giterr_set(GITERR_INDEX, "invalid filemode for stage %d entry",
 				i + 1);
-			return -1;
+			ret = -1;
+			goto on_error;
 		}
 	}
 
@@ -3549,7 +3550,7 @@ int git_index_snapshot_new(git_vector *snap, git_index *index)
 	error = git_vector_dup(snap, &index->entries, index->entries._cmp);
 
 	if (error < 0)
-		git_index_free(index);
+		git_index_snapshot_release(snap, index);
 
 	return error;
 }
