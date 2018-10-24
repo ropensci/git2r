@@ -28,31 +28,14 @@
  */
 SEXP git2r_libgit2_features(void)
 {
-    SEXP features, names;
-    int value;
+    const char *names[] = {"threads", "https", "ssh", ""};
+    int value = git_libgit2_features();
+    SEXP features;
 
-    value = git_libgit2_features();
-    PROTECT(features = Rf_allocVector(VECSXP, 3));
-    Rf_setAttrib(features, R_NamesSymbol, names = Rf_allocVector(STRSXP, 3));
-
-    SET_STRING_ELT(names, 0, Rf_mkChar("threads"));
-    if (value & GIT_FEATURE_THREADS)
-        SET_VECTOR_ELT(features, 0, Rf_ScalarLogical(1));
-    else
-        SET_VECTOR_ELT(features, 0, Rf_ScalarLogical(0));
-
-    SET_STRING_ELT(names, 1, Rf_mkChar("https"));
-    if (value & GIT_FEATURE_HTTPS)
-        SET_VECTOR_ELT(features, 1, Rf_ScalarLogical(1));
-    else
-        SET_VECTOR_ELT(features, 1, Rf_ScalarLogical(0));
-
-    SET_STRING_ELT(names, 2, Rf_mkChar("ssh"));
-    if (value & GIT_FEATURE_SSH)
-        SET_VECTOR_ELT(features, 2, Rf_ScalarLogical(1));
-    else
-        SET_VECTOR_ELT(features, 2, Rf_ScalarLogical(0));
-
+    PROTECT(features = Rf_mkNamed(VECSXP, names));
+    SET_VECTOR_ELT(features, 0, Rf_ScalarLogical(value & GIT_FEATURE_THREADS));
+    SET_VECTOR_ELT(features, 1, Rf_ScalarLogical(value & GIT_FEATURE_HTTPS));
+    SET_VECTOR_ELT(features, 2, Rf_ScalarLogical(value & GIT_FEATURE_SSH));
     UNPROTECT(1);
 
     return features;
@@ -65,18 +48,15 @@ SEXP git2r_libgit2_features(void)
  */
 SEXP git2r_libgit2_version(void)
 {
-    SEXP version, names;
+    const char *names[] = {"major", "minor", "rev", ""};
+    SEXP version;
     int major, minor, rev;
 
     git_libgit2_version(&major, &minor, &rev);
-    PROTECT(version = Rf_allocVector(VECSXP, 3));
-    Rf_setAttrib(version, R_NamesSymbol, names = Rf_allocVector(STRSXP, 3));
+    PROTECT(version = Rf_mkNamed(VECSXP, names));
     SET_VECTOR_ELT(version, 0, Rf_ScalarInteger(major));
     SET_VECTOR_ELT(version, 1, Rf_ScalarInteger(minor));
     SET_VECTOR_ELT(version, 2, Rf_ScalarInteger(rev));
-    SET_STRING_ELT(names, 0, Rf_mkChar("major"));
-    SET_STRING_ELT(names, 1, Rf_mkChar("minor"));
-    SET_STRING_ELT(names, 2, Rf_mkChar("rev"));
     UNPROTECT(1);
 
     return version;
