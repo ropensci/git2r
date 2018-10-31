@@ -4,11 +4,8 @@
 \name{reexports}
 \alias{reexports}
 \alias{diff}
-\alias{reexports}
 \alias{merge}
-\alias{reexports}
 \alias{head}
-\alias{reexports}
 \alias{as.data.frame}
 \title{Objects exported from other packages}
 \keyword{internal}

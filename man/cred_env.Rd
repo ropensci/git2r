@@ -45,3 +45,4 @@ push(repo, credentials = cred)
 Other git credential functions: \code{\link{cred_ssh_key}},
   \code{\link{cred_token}}, \code{\link{cred_user_pass}}
 }
+\concept{git credential functions}

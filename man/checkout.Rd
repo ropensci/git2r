@@ -4,8 +4,8 @@
 \alias{checkout}
 \title{Checkout}
 \usage{
-checkout(object = NULL, branch = NULL, create = FALSE, force = FALSE,
-  path = NULL, ...)
+checkout(object = NULL, branch = NULL, create = FALSE,
+  force = FALSE, path = NULL, ...)
 }
 \arguments{
 \item{object}{A path to a repository, or a \code{git_repository}

@@ -4,8 +4,8 @@
 \alias{commits}
 \title{Commits}
 \usage{
-commits(repo = ".", topological = TRUE, time = TRUE, reverse = FALSE,
-  n = NULL)
+commits(repo = ".", topological = TRUE, time = TRUE,
+  reverse = FALSE, n = NULL)
 }
 \arguments{
 \item{repo}{a path to a repository or a \code{git_repository}

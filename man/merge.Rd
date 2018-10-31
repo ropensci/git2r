@@ -12,8 +12,8 @@
 \method{merge}{git_repository}(x, y = NULL, commit_on_success = TRUE,
   merger = NULL, fail = FALSE, ...)
 
-\method{merge}{character}(x = ".", y = NULL, commit_on_success = TRUE,
-  merger = NULL, fail = FALSE, ...)
+\method{merge}{character}(x = ".", y = NULL,
+  commit_on_success = TRUE, merger = NULL, fail = FALSE, ...)
 }
 \arguments{
 \item{x}{A path (default '.') to a repository, or a

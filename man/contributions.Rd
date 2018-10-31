@@ -4,8 +4,8 @@
 \alias{contributions}
 \title{Contributions}
 \usage{
-contributions(repo = ".", breaks = c("month", "year", "quarter", "week",
-  "day"), by = c("commits", "author"))
+contributions(repo = ".", breaks = c("month", "year", "quarter",
+  "week", "day"), by = c("commits", "author"))
 }
 \arguments{
 \item{repo}{a path to a repository or a \code{git_repository}
