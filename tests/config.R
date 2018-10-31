@@ -72,9 +72,10 @@ stopifnot(identical(cfg$local$user.email, user.email))
 
 ## Check git config files
 cfg <- git_config_files(repo)
-stopifnot(identical(length(cfg), 4L))
-stopifnot(identical(names(cfg), c("system", "xdg", "global", "local")))
-stopifnot(!is.na(cfg$local))
+stopifnot(identical(nrow(cfg), 4L))
+stopifnot(identical(names(cfg), c("file", "path")))
+stopifnot(identical(cfg$file, c("system", "xdg", "global", "local")))
+stopifnot(!is.na(cfg$path[4]))
 
 ## Check that the local config file is NA for an invalid repo
 ## argument.

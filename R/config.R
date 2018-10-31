@@ -89,8 +89,10 @@ config <- function(repo = NULL, global = FALSE, user.name, user.email, ...)
                 ## user's Documents/ directory. Only create the empty
                 ## file if the user has specified configuration
                 ## options to set and no global config file exists.
-                if (is.na(git_config_files()$global) && length(variables) > 0) {
-                    file.create(file.path(home_dir(), ".gitconfig"))
+                if (is.na(git_config_files()[["path"]][3])) {
+                    if (length(variables) > 0) {
+                        file.create(file.path(home_dir(), ".gitconfig"))
+                    }
                 }
             }
         } else if (is.null(repo)) {
@@ -151,8 +153,8 @@ print.git_config <- function(x, ...) {
 ##'   }
 ##' }
 ##' @template repo-param
-##' @return a named list with one item per potential configuration
-##'     file where \code{NA} means not found.
+##' @return a \code{data.frame} with one row per potential
+##'     configuration file where \code{NA} means not found.
 ##' @export
 git_config_files <- function(repo = ".") {
     ## Lookup repository
@@ -176,8 +178,10 @@ git_config_files <- function(repo = ".") {
             path <- NA_character_
     }
 
-    list(system = .Call(git2r_config_find_file, "system"),
-         xdg    = .Call(git2r_config_find_file, "xdg"),
-         global = .Call(git2r_config_find_file, "global"),
-         local  = path)
+    data.frame(file = c("system", "xdg", "global", "local"),
+               path = c(.Call(git2r_config_find_file, "system"),
+                        .Call(git2r_config_find_file, "xdg"),
+                        .Call(git2r_config_find_file, "global"),
+                        path),
+               stringsAsFactors = FALSE)
 }
