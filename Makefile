@@ -14,9 +14,7 @@ install:
 # 2) Generate documentation
 roxygen:
 	rm -f man/*.Rd
-	Rscript -e "library(methods)" \
-                -e "library(devtools)" \
-                -e "devtools::document()"
+	cd .. && Rscript -e "roxygen2::roxygenize('$(PKG_NAME)')"
 
 # Generate PDF output from the Rd sources
 # 1) Rebuild documentation with roxygen
