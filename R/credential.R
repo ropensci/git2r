@@ -61,7 +61,7 @@ cred_env <- function(username = NULL, password = NULL) {
 ##' \url{https://help.github.com/articles/creating-an-access-token-for-command-line-use/}
 ##' @family git credential functions
 ##' @param token The name of the environmental variable that holds the
-##'     personal access token for the authentication. Defualt is
+##'     personal access token for the authentication. Default is
 ##'     \code{GITHUB_PAT}.
 ##' @return A list of class \code{cred_token} with entry:
 ##' \describe{

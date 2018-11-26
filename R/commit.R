@@ -168,7 +168,7 @@ commit <- function(repo      = ".",
 ##' @param reverse Sort the commits in reverse order; can be combined
 ##'     with topological and/or time sorting. Default is FALSE.
 ##' @param n The upper limit of the number of commits to output. The
-##'     defualt is NULL for unlimited number of commits.
+##'     default is NULL for unlimited number of commits.
 ##' @return list of commits in repository
 ##' @export
 ##' @examples
