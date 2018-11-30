@@ -228,7 +228,7 @@ static int fallback_cred_acquire_cb(
 		}
 
 		hCoInitResult = CoInitializeEx(NULL, COINIT_MULTITHREADED);
-			
+
 		if (SUCCEEDED(hCoInitResult) || hCoInitResult == RPC_E_CHANGED_MODE) {
 			IInternetSecurityManager* pISM;
 
@@ -294,6 +294,9 @@ static int certificate_check(winhttp_stream *s, int valid)
 	cert.len = cert_ctx->cbCertEncoded;
 	error = t->owner->certificate_check_cb((git_cert *) &cert, valid, t->connection_data.host, t->owner->message_cb_payload);
 	CertFreeCertificateContext(cert_ctx);
+
+	if (error == GIT_PASSTHROUGH)
+		error = valid ? 0 : GIT_ECERTIFICATE;
 
 	if (error < 0 && !giterr_last())
 		giterr_set(GITERR_NET, "user cancelled certificate check");
@@ -929,7 +932,7 @@ static int winhttp_stream_read(
 
 replay:
 	/* Enforce a reasonable cap on the number of replays */
-	if (++replay_count >= 7) {
+	if (replay_count++ >= GIT_HTTP_REPLAY_MAX) {
 		giterr_set(GITERR_NET, "too many redirects or authentication replays");
 		return -1;
 	}

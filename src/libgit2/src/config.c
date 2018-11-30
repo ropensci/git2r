@@ -109,7 +109,7 @@ int git_config_add_file_ondisk(
 	assert(cfg && path);
 
 	res = p_stat(path, &st);
-	if (res < 0 && errno != ENOENT) {
+	if (res < 0 && errno != ENOENT && errno != ENOTDIR) {
 		giterr_set(GITERR_CONFIG, "failed to stat '%s'", path);
 		return -1;
 	}
@@ -1182,6 +1182,8 @@ int git_config_lock(git_transaction **out, git_config *cfg)
 	git_config_backend *backend;
 	backend_internal *internal;
 
+	assert(cfg);
+
 	internal = git_vector_get(&cfg->backends, 0);
 	if (!internal || !internal->backend) {
 		giterr_set(GITERR_CONFIG, "cannot lock; the config has no backends");
@@ -1199,6 +1201,8 @@ int git_config_unlock(git_config *cfg, int commit)
 {
 	git_config_backend *backend;
 	backend_internal *internal;
+
+	assert(cfg);
 
 	internal = git_vector_get(&cfg->backends, 0);
 	if (!internal || !internal->backend) {

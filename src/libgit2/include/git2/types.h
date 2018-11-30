@@ -137,6 +137,9 @@ typedef struct git_treebuilder git_treebuilder;
 /** Memory representation of an index file. */
 typedef struct git_index git_index;
 
+/** An iterator for entries in the index. */
+typedef struct git_index_iterator git_index_iterator;
+
 /** An iterator for conflicts in the index. */
 typedef struct git_index_conflict_iterator git_index_conflict_iterator;
 
@@ -330,6 +333,9 @@ typedef struct {
  * this certificate is valid
  * @param host Hostname of the host libgit2 connected to
  * @param payload Payload provided by the caller
+ * @return 0 to proceed with the connection, < 0 to fail the connection
+ *         or > 0 to indicate that the callback refused to act and that
+ *         the existing validity determination should be honored
  */
 typedef int (*git_transport_certificate_check_cb)(git_cert *cert, int valid, const char *host, void *payload);
 

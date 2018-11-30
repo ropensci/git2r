@@ -45,14 +45,13 @@ GIT_INLINE(int) git_smart__reset_stream(transport_smart *t, bool close_subtransp
 		t->current_stream = NULL;
 	}
 
-	if (t->url) {
+	if (close_subtransport) {
 		git__free(t->url);
 		t->url = NULL;
-	}
 
-	if (close_subtransport &&
-		t->wrapped->close(t->wrapped) < 0)
-		return -1;
+		if (t->wrapped->close(t->wrapped) < 0)
+			return -1;
+	}
 
 	return 0;
 }
@@ -482,12 +481,22 @@ int git_transport_smart_certificate_check(git_transport *transport, git_cert *ce
 {
 	transport_smart *t = (transport_smart *)transport;
 
+	assert(transport && cert && hostname);
+
+	if (!t->certificate_check_cb)
+		return GIT_PASSTHROUGH;
+
 	return t->certificate_check_cb(cert, valid, hostname, t->message_cb_payload);
 }
 
 int git_transport_smart_credentials(git_cred **out, git_transport *transport, const char *user, int methods)
 {
 	transport_smart *t = (transport_smart *)transport;
+
+	assert(out && transport);
+
+	if (!t->cred_acquire_cb)
+		return GIT_PASSTHROUGH;
 
 	return t->cred_acquire_cb(out, t->url, user, methods, t->cred_acquire_payload);
 }
