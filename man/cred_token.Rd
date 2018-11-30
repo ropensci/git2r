@@ -8,7 +8,7 @@ cred_token(token = "GITHUB_PAT")
 }
 \arguments{
 \item{token}{The name of the environmental variable that holds the
-personal access token for the authentication. Defualt is
+personal access token for the authentication. Default is
 \code{GITHUB_PAT}.}
 }
 \value{
