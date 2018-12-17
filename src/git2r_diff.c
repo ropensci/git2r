@@ -803,12 +803,13 @@ int git2r_diff_get_file_cb(const git_diff_delta *delta,
     if (delta) {
 	SEXP file_obj;
 
-	SET_VECTOR_ELT(
-            p->result,
-            p->file_ptr,
-            file_obj = Rf_mkNamed(VECSXP, git2r_S3_items__git_diff_file));
-        Rf_setAttrib(file_obj, R_ClassSymbol,
-                     Rf_mkString(git2r_S3_class__git_diff_file));
+        PROTECT(file_obj = Rf_mkNamed(VECSXP, git2r_S3_items__git_diff_file));
+        Rf_setAttrib(
+            file_obj,
+            R_ClassSymbol,
+            Rf_mkString(git2r_S3_class__git_diff_file));
+	SET_VECTOR_ELT(p->result, p->file_ptr, file_obj);
+        UNPROTECT(1);
 
 	SET_VECTOR_ELT(
             file_obj,
