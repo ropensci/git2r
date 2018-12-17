@@ -94,33 +94,40 @@ static int git2r_repository_fetchhead_foreach_cb(
         char sha[GIT_OID_HEXSZ + 1];
         SEXP fetch_head;
 
-        SET_VECTOR_ELT(
-            cb_data->list,
-            cb_data->n,
-            fetch_head = Rf_mkNamed(VECSXP, git2r_S3_items__git_fetch_head));
-        Rf_setAttrib(fetch_head, R_ClassSymbol,
-                     Rf_mkString(git2r_S3_class__git_fetch_head));
+        PROTECT(fetch_head = Rf_mkNamed(VECSXP, git2r_S3_items__git_fetch_head));
+        Rf_setAttrib(
+            fetch_head,
+            R_ClassSymbol,
+            Rf_mkString(git2r_S3_class__git_fetch_head));
+
         SET_VECTOR_ELT(
             fetch_head,
             git2r_S3_item__git_fetch_head__ref_name,
             Rf_mkString(ref_name));
+
         SET_VECTOR_ELT(
             fetch_head,
             git2r_S3_item__git_fetch_head__remote_url,
             Rf_mkString(remote_url));
+
         git_oid_tostr(sha, sizeof(sha), oid);
         SET_VECTOR_ELT(
             fetch_head,
             git2r_S3_item__git_fetch_head__sha,
             Rf_mkString(sha));
+
         SET_VECTOR_ELT(
             fetch_head,
             git2r_S3_item__git_fetch_head__is_merge,
             Rf_ScalarLogical(is_merge));
+
         SET_VECTOR_ELT(
             fetch_head,
             git2r_S3_item__git_fetch_head__repo,
             Rf_duplicate(cb_data->repo));
+
+        SET_VECTOR_ELT(cb_data->list, cb_data->n, fetch_head);
+        UNPROTECT(1);
     }
 
     cb_data->n += 1;
