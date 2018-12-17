@@ -129,7 +129,10 @@ hash <- function(data = NULL) {
 ##' identical(hashfile(path), hash("Hello, world!\n"))
 ##' }
 hashfile <- function(path = NULL) {
-    .Call(git2r_odb_hashfile, normalizePath(path, mustWork = TRUE))
+    path <- normalizePath(path, mustWork = TRUE)
+    if (any(is.na(path)))
+        stop("Invalid 'path' argument")
+    .Call(git2r_odb_hashfile, path)
 }
 
 ##' Is blob binary
