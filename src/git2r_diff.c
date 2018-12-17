@@ -808,7 +808,7 @@ int git2r_diff_get_file_cb(const git_diff_delta *delta,
             file_obj,
             R_ClassSymbol,
             Rf_mkString(git2r_S3_class__git_diff_file));
-	SET_VECTOR_ELT(p->result, p->file_ptr, file_obj);
+        SET_VECTOR_ELT(p->result, p->file_ptr, file_obj);
         UNPROTECT(1);
 
 	SET_VECTOR_ELT(
@@ -864,12 +864,11 @@ int git2r_diff_get_hunk_cb(const git_diff_delta *delta,
     if (hunk) {
 	SEXP hunk_obj;
 
-	SET_VECTOR_ELT(
-            p->hunk_tmp,
-            p->hunk_ptr,
-            hunk_obj = Rf_mkNamed(VECSXP, git2r_S3_items__git_diff_hunk));
-        Rf_setAttrib(hunk_obj, R_ClassSymbol,
-                     Rf_mkString(git2r_S3_class__git_diff_hunk));
+        PROTECT(hunk_obj = Rf_mkNamed(VECSXP, git2r_S3_items__git_diff_hunk));
+        Rf_setAttrib(
+            hunk_obj,
+            R_ClassSymbol,
+            Rf_mkString(git2r_S3_class__git_diff_hunk));
 
         SET_VECTOR_ELT(
             hunk_obj,
@@ -896,6 +895,8 @@ int git2r_diff_get_hunk_cb(const git_diff_delta *delta,
             git2r_S3_item__git_diff_hunk__header,
             Rf_mkString(hunk->header));
 
+	SET_VECTOR_ELT(p->hunk_tmp, p->hunk_ptr, hunk_obj);
+        UNPROTECT(1);
 	p->hunk_ptr += 1;
 	p->line_ptr = 0;
     }
