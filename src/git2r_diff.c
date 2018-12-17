@@ -947,12 +947,11 @@ int git2r_diff_get_line_cb(const git_diff_delta *delta,
     char *buffer = short_buffer;
     SEXP line_obj;
 
-    SET_VECTOR_ELT(
-        p->line_tmp,
-        p->line_ptr++,
-        line_obj = Rf_mkNamed(VECSXP, git2r_S3_items__git_diff_line));
-    Rf_setAttrib(line_obj, R_ClassSymbol,
-                 Rf_mkString(git2r_S3_class__git_diff_line));
+    PROTECT(line_obj = Rf_mkNamed(VECSXP, git2r_S3_items__git_diff_line));
+    Rf_setAttrib(
+        line_obj,
+        R_ClassSymbol,
+        Rf_mkString(git2r_S3_class__git_diff_line));
 
     SET_VECTOR_ELT(
         line_obj,
@@ -986,6 +985,9 @@ int git2r_diff_get_line_cb(const git_diff_delta *delta,
 
     if (buffer != short_buffer)
 	free(buffer);
+
+    SET_VECTOR_ELT(p->line_tmp, p->line_ptr++, line_obj);
+    UNPROTECT(1);
 
     return 0;
 }
