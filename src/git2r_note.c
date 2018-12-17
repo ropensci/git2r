@@ -254,12 +254,11 @@ static int git2r_note_foreach_cb(
         int error;
         SEXP note;
 
-        SET_VECTOR_ELT(
-            cb_data->list,
-            cb_data->n,
-            note = Rf_mkNamed(VECSXP, git2r_S3_items__git_note));
-        Rf_setAttrib(note, R_ClassSymbol,
-                     Rf_mkString(git2r_S3_class__git_note));
+        PROTECT(note = Rf_mkNamed(VECSXP, git2r_S3_items__git_note));
+        Rf_setAttrib(
+            note,
+            R_ClassSymbol,
+            Rf_mkString(git2r_S3_class__git_note));
 
         error = git2r_note_init(
             blob_id,
@@ -270,6 +269,9 @@ static int git2r_note_foreach_cb(
             note);
         if (error)
             return error;
+
+        SET_VECTOR_ELT(cb_data->list, cb_data->n, note);
+        UNPROTECT(1);
     }
 
     cb_data->n += 1;
