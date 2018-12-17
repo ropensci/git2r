@@ -173,13 +173,12 @@ static int git2r_stash_list_cb(
         int error;
         SEXP stash, class;
 
-        SET_VECTOR_ELT(
-            cb_data->list,
-            cb_data->n,
-            stash = Rf_mkNamed(VECSXP, git2r_S3_items__git_commit));
-        Rf_setAttrib(stash, R_ClassSymbol, class = Rf_allocVector(STRSXP, 2));
+        PROTECT(class = Rf_allocVector(STRSXP, 2));
         SET_STRING_ELT(class, 0, Rf_mkChar("git_stash"));
         SET_STRING_ELT(class, 1, Rf_mkChar("git_commit"));
+
+        PROTECT(stash = Rf_mkNamed(VECSXP, git2r_S3_items__git_commit));
+        Rf_setAttrib(stash, R_ClassSymbol, class);
 
         error = git2r_stash_init(
             stash_id,
@@ -188,6 +187,9 @@ static int git2r_stash_list_cb(
             stash);
         if (error)
             return error;
+
+        SET_VECTOR_ELT(cb_data->list, cb_data->n, stash);
+        UNPROTECT(2);
     }
 
     cb_data->n += 1;
