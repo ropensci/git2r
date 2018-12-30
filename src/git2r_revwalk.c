@@ -58,6 +58,7 @@ static int git2r_revwalk_count(git_revwalk *walker, int max_n)
  * @param reverse Sort the commits in reverse order
  * @param max_n n The upper limit of the number of commits to
  * output. Use max_n < 0 for unlimited number of commits.
+ * @param pathname TO DO: Add description of "pathname" argument here.
  * @return list with S3 class git_commit objects
  */
 SEXP git2r_revwalk_list(
@@ -65,7 +66,8 @@ SEXP git2r_revwalk_list(
     SEXP topological,
     SEXP time,
     SEXP reverse,
-    SEXP max_n)
+    SEXP max_n,
+    SEXP pathname)
 {
     int error = GIT_OK, nprotect = 0;
     SEXP result = R_NilValue;
