@@ -84,7 +84,9 @@ SEXP git2r_revwalk_list(
         git2r_error(__func__, NULL, "'reverse'", git2r_err_logical_arg);
     if (git2r_arg_check_integer(max_n))
         git2r_error(__func__, NULL, "'max_n'", git2r_err_integer_arg);
-
+    if (git2r_arg_check_string(pathname))
+        git2r_error(__func__, NULL, "'pathname'", git2r_err_string_arg);
+      
     repository = git2r_repository_open(repo);
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);

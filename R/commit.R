@@ -227,15 +227,16 @@ commits <- function(repo        = ".",
     }
 
     ## Check pathname
-    if (!(is.null(pathname) | is.character(pathname)))
-      stop("'pathname' must be NULL or of type character")
-    if (length(pathname) != 1)
-      stop("'pathname' must be a character vector of length 1")
     if (is.null(pathname))
       pathname <- ""
+    if (!is.character(pathname))
+      stop("'pathname' must be NULL or a character vector of length 1")
+    if (length(pathname) != 1)
+      stop("'pathname' must be a character vector of length 1")
     
     repo <- lookup_repository(repo)
     if (is_shallow(repo)) {
+        
         ## FIXME: Remove this if-statement when libgit2 supports
         ## shallow clones, see #219.  Note: This workaround does not
         ## use the 'topological', 'time' and 'reverse' flags.
