@@ -156,27 +156,29 @@ SEXP git2r_revwalk_list(
           goto cleanup;
 
 	// Added from log.c example in libgit2 repository.
-        parents = (int) git_commit_parentcount(commit);
-	int unmatched = parents;
-	if (parents == 0) {
-	  git_tree *tree;
-	  git_commit_tree(&tree, commit);
-	  if (git_pathspec_match_tree(NULL,tree,
-	        GIT_PATHSPEC_NO_MATCH_ERROR,ps) != 0)
-	    unmatched = 1;
-	  git_tree_free(tree);
-	} else if (parents == 1) {
-	  unmatched = match_with_parent(commit, 0, &diffopts) ? 0 : 1;
-	} else {
-	  for (i = 0; i < parents; ++i) {
-	    if (match_with_parent(commit, i, &diffopts))
-	      unmatched--;
+	if (strlen(path) > 0) {
+          parents = (int) git_commit_parentcount(commit);
+	  int unmatched = parents;
+	  if (parents == 0) {
+	    git_tree *tree;
+	    git_commit_tree(&tree, commit);
+	    if (git_pathspec_match_tree(NULL,tree,
+		  GIT_PATHSPEC_NO_MATCH_ERROR,ps) != 0)
+	      unmatched = 1;
+	    git_tree_free(tree);
+	  } else if (parents == 1) {
+	    unmatched = match_with_parent(commit, 0, &diffopts) ? 0 : 1;
+	  } else {
+	    for (i = 0; i < parents; ++i) {
+	      if (match_with_parent(commit, i, &diffopts))
+		unmatched--;
+	    }
 	  }
+	  if (unmatched > 0)
+	    continue;
 	}
-	if (unmatched > 0)
-	  continue;
 	// ---------------------------
-
+	  
         SET_VECTOR_ELT(
             result,
             i,
