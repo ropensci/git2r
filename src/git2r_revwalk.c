@@ -92,9 +92,9 @@ SEXP git2r_revwalk_list(
     if (git2r_arg_check_string(pathname))
         git2r_error(__func__, NULL, "'pathname'", git2r_err_string_arg);
 
-    // Rprintf("%s\n",CHAR(STRING_ELT(pathname,0)));
-    char* temp = "analysis/poisson.Rmd";
-    diffopts.pathspec.strings = &temp;
+    char* path = malloc(strlen(CHAR(STRING_ELT(pathname,0))) + 1);
+    strcpy(path,CHAR(STRING_ELT(pathname,0)));
+    diffopts.pathspec.strings = &path;
     diffopts.pathspec.count   = 1;
     git_pathspec_new(&ps,&diffopts.pathspec);
   
@@ -188,6 +188,7 @@ SEXP git2r_revwalk_list(
     }
 
 cleanup:
+    free(path);
     git_pathspec_free(ps);
     git_revwalk_free(walker);
     git_repository_free(repository);
