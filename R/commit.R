@@ -266,7 +266,10 @@ commits <- function(repo        = ".",
         return(result)
     }
 
-    .Call(git2r_revwalk_list, repo, topological, time, reverse, n, pathname)
+    out <- .Call(git2r_revwalk_list, repo, topological, time, reverse, n,
+                 pathname)
+    i   <- sapply(out,function (x) !is.null(x))
+    return(out[i])
 }
 
 ##' Last commit
