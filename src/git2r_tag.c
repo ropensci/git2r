@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2018 The git2r contributors
+ *  Copyright (C) 2013-2019 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -211,7 +211,7 @@ static int git2r_tag_foreach_cb(const char *name, git_oid *oid, void *payload)
     /* Check if we have a list to populate */
     if (!Rf_isNull(cb_data->tags)) {
         int skip = 0;
-        SEXP item, tag;
+        SEXP item = R_NilValue, tag;
 
         error = git_object_lookup(&object, cb_data->repository, oid, GIT_OBJ_ANY);
         if (error)
