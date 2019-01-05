@@ -10,7 +10,7 @@
 #include <memory.h>
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef __unix__
+#if defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
 #include <sys/types.h> /* make sure macros like _BIG_ENDIAN visible */
 #endif
 #endif
