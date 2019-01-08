@@ -163,19 +163,23 @@ cleanup:
 }
 
 SEXP git2r_revwalk_list2 (SEXP repo, SEXP path) {
+  SEXP repo_path;
   SEXP result = R_NilValue;
   int  error = GIT_OK;
   int  nprotect = 0;
   int  i;
   int  n;
-  unsigned int   sort_mode   = GIT_SORT_NONE;
+  unsigned int   sort_mode   = GIT_SORT_TIME;
   git_revwalk    *walker     = NULL;
   git_repository *repository = NULL;
+  git_commit     *commit     = NULL;
 
   // Open the repository.
-  repository = git2r_repository_open(repo);
-  if (!repository)
-    git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
+  repo_path = git2r_get_list_element(repo,"path");
+  error = git_repository_open_ext(&repository,CHAR(STRING_ELT(repo_path,0)),
+				  0,NULL);
+  if (error)
+    git2r_error(__func__,NULL,git2r_err_invalid_repository,NULL);
 
   // If there are no commits, create an empty list.
   if (git_repository_is_empty(repository)) {
@@ -184,66 +188,62 @@ SEXP git2r_revwalk_list2 (SEXP repo, SEXP path) {
     goto cleanup;
   }
 
-//     error = git_revwalk_new(&walker, repository);
-//     if (error)
-//         goto cleanup;
+  // Create a new revwalker.
+  error = git_revwalk_new(&walker,repository);
+  if (error)
+    goto cleanup;
+  git_revwalk_sorting(walker,sort_mode);
+  error = git_revwalk_push_head(walker);
+  if (error)
+    goto cleanup;
 
-//     error = git_revwalk_push_head(walker);
-//     if (error)
-//         goto cleanup;
-//     git_revwalk_sorting(walker, sort_mode);
+  // Count number of revisions before creating the list.
+  n = git2r_revwalk_count(walker,-1);
 
-//     /* Count number of revisions before creating the list */
-//     n = git2r_revwalk_count(walker, INTEGER(max_n)[0]);
+  // Create the list to store the result.
+  PROTECT(result = Rf_allocVector(VECSXP, n));
+  nprotect++;
 
-//     /* Create list to store result */
-//     PROTECT(result = Rf_allocVector(VECSXP, n));
-//     nprotect++;
+  // Restart the revwalker.
+  git_revwalk_reset(walker);
+  git_revwalk_sorting(walker,sort_mode);
+  error = git_revwalk_push_head(walker);
+  if (error)
+    goto cleanup;
+  
+  for (i = 0; i < n; i++) {
+    SEXP item;
+    git_oid oid;
 
-//     git_revwalk_reset(walker);
-//     error = git_revwalk_push_head(walker);
-//     if (error)
-//         goto cleanup;
-//     git_revwalk_sorting(walker, sort_mode);
+    error = git_revwalk_next(&oid, walker);
+    if (error) {
+      if (GIT_ITEROVER == error)
+        error = GIT_OK;
+      goto cleanup;
+    }
 
-//     for (i = 0; i < n; i++) {
-//         git_commit *commit;
-//         SEXP item;
-//         git_oid oid;
+    error = git_commit_lookup(&commit, repository, &oid);
+    if (error)
+      goto cleanup;
 
-//         error = git_revwalk_next(&oid, walker);
-//         if (error) {
-//             if (GIT_ITEROVER == error)
-//                 error = GIT_OK;
-//             goto cleanup;
-//         }
-
-//         error = git_commit_lookup(&commit, repository, &oid);
-//         if (error)
-//             goto cleanup;
-
-//         SET_VECTOR_ELT(
-//             result,
-//             i,
-//             item = Rf_mkNamed(VECSXP, git2r_S3_items__git_commit));
-//         Rf_setAttrib(item, R_ClassSymbol,
-//                      Rf_mkString(git2r_S3_class__git_commit));
-//         git2r_commit_init(commit, repo, item);
-//         git_commit_free(commit);
-//     }
+    SET_VECTOR_ELT(
+      result,
+      i,
+      item = Rf_mkNamed(VECSXP, git2r_S3_items__git_commit));
+    Rf_setAttrib(item, R_ClassSymbol,
+		 Rf_mkString(git2r_S3_class__git_commit));
+    git2r_commit_init(commit, repo, item);
+    git_commit_free(commit);
+  }
 
   cleanup:
-//     git_revwalk_free(walker);
-//     git_repository_free(repository);
-
-//     if (nprotect)
-//         UNPROTECT(nprotect);
-
-//     if (error)
-//         git2r_error(__func__, giterr_last(), NULL, NULL);
-
-//   return result;
-  return 0;
+    git_revwalk_free(walker);
+    git_repository_free(repository);
+    if (nprotect)
+      UNPROTECT(nprotect);
+    if (error)
+      git2r_error(__func__, giterr_last(), NULL, NULL);
+  return result;
 }
 
 /**

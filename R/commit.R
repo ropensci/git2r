@@ -264,8 +264,10 @@ touching_commits <- function (repo = ".", path = NULL) {
     path <- ""
   if (path == "")
     return(commits(repo))
-  else
+  else {
+    repo <- lookup_repository(repo)
     return(.Call(git2r_revwalk_list2, repo, path))
+  }
 }
 
 ##' Last commit
