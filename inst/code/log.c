@@ -44,7 +44,6 @@ struct log_state {
 
 /** utility functions that are called to configure the walker */
 static void push_rev(struct log_state *s, git_object *obj, int hide);
-static int add_revision(struct log_state *s, const char *revstr);
 
 /** log_options holds other command line options that affect log output */
 struct log_options {
@@ -84,7 +83,9 @@ int main(int argc, char *argv[]) {
   diffopts.pathspec.count   = 1;
   git_pathspec_new(&ps, &diffopts.pathspec);
 
-  add_revision(&s, NULL);
+  // Open the repository.
+  git_repository_open_ext(&s.repo, ".", 0, NULL);
+  push_rev(&s, NULL, 0);
   
   // Use the revwalker to traverse the history.
   for (; !git_revwalk_next(&oid, s.walker); git_commit_free(commit)) {
@@ -138,50 +139,6 @@ static void push_rev(struct log_state *s, git_object *obj, int hide) {
     git_revwalk_push(s->walker, git_object_id(obj));
   
   git_object_free(obj);
-}
-
-/** Parse revision string and add revs to walker. */
-static int add_revision(struct log_state *s, const char *revstr) {
-  git_revspec revs;
-  int hide = 0;
-
-  /** Open repo on demand if it isn't already open. */
-  if (!s->repo) {
-    if (!s->repodir) s->repodir = ".";
-    git_repository_open_ext(&s->repo, s->repodir, 0, NULL);
-  }
-  
-  if (!revstr) {
-    push_rev(s, NULL, hide);
-    return 0;
-  }
-  
-  if (*revstr == '^') {
-    revs.flags = GIT_REVPARSE_SINGLE;
-    hide = !hide;
-    
-    if (git_revparse_single(&revs.from, s->repo, revstr + 1) < 0)
-      return -1;
-  } else if (git_revparse(&revs, s->repo, revstr) < 0)
-    return -1;
-  
-  if ((revs.flags & GIT_REVPARSE_SINGLE) != 0)
-    push_rev(s, revs.from, hide);
-  else {
-    push_rev(s, revs.to, hide);
-    
-    if ((revs.flags & GIT_REVPARSE_MERGE_BASE) != 0) {
-      git_oid base;
-      git_merge_base(&base, s->repo,git_object_id(revs.from),
-		     git_object_id(revs.to));
-      git_object_lookup(&revs.to, s->repo, &base, GIT_OBJ_COMMIT);      
-      push_rev(s, revs.to, hide);
-    }
-    
-    push_rev(s, revs.from, !hide);
-  }
-  
-  return 0;
 }
 
 /** Helper to print a commit object. */
