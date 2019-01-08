@@ -266,7 +266,9 @@ touching_commits <- function (repo = ".", path = NULL) {
     return(commits(repo))
   else {
     repo <- lookup_repository(repo)
-    return(.Call(git2r_revwalk_list2, repo, path))
+    out  <- .Call(git2r_revwalk_list2, repo, path)
+    i    <- sapply(out,function (x) !is.null(x))
+    return(out[i])
   }
 }
 

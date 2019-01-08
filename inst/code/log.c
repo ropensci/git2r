@@ -19,10 +19,9 @@ static int match_with_parent (git_commit *commit, int i,
 			      git_diff_options *opts);
 
 int main(int argc, char *argv[]) {
-  int i, unmatched;
+  int i, parents, unmatched;
   int count   = 0;
   int printed = 0;
-  int parents = 0;
   git_diff_options diffopts = GIT_DIFF_OPTIONS_INIT;
   git_oid oid;
   git_repository *repo = NULL;
