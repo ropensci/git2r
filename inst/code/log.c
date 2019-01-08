@@ -65,55 +65,41 @@ static void print_time(const git_time *intime, const char *prefix);
 static void print_commit(git_commit *commit, struct log_options *opts);
 static int match_with_parent(git_commit *commit, int i, git_diff_options *);
 
-/** utility functions for filtering */
-static int signature_matches(const git_signature *sig, const char *filter);
-static int log_message_matches(const git_commit *commit, const char *filter);
-
 int main(int argc, char *argv[]) {
-  int i, count = 0, printed = 0, parents;
+  int i, unmatched;
+  int count   = 0;
+  int printed = 0;
+  int parents = 0;
   struct log_state s;
   struct log_options opt;
   git_diff_options diffopts = GIT_DIFF_OPTIONS_INIT;
   git_oid oid;
   git_commit *commit = NULL;
   git_pathspec *ps = NULL;
-  
+  git_tree *tree;
+	
   git_libgit2_init();
   
-  /** Parse arguments and set up revwalker. */
-  
+  // Parse arguments and set up revwalker.
   init_options(&s,&opt);
   diffopts.pathspec.strings = &argv[1];
   diffopts.pathspec.count   = 1;
-  check_lg2(git_pathspec_new(&ps, &diffopts.pathspec),
-	    "Building pathspec", NULL);
+  git_pathspec_new(&ps, &diffopts.pathspec);
 
-  if (!s.revisions)
-    add_revision(&s, NULL);
+  add_revision(&s, NULL);
   
-  /** Use the revwalker to traverse the history. */
-  
-  printed = count = 0;
-  
+  // Use the revwalker to traverse the history.
   for (; !git_revwalk_next(&oid, s.walker); git_commit_free(commit)) {
-    check_lg2(git_commit_lookup(&commit, s.repo, &oid),
-	      "Failed to look up commit", NULL);
+    git_commit_lookup(&commit, s.repo, &oid);
     
-    parents = (int)git_commit_parentcount(commit);
-    if (parents < opt.min_parents)
-      continue;
-    if (opt.max_parents > 0 && parents > opt.max_parents)
-      continue;
-    
-    if (diffopts.pathspec.count > 0) {
-      int unmatched = parents;
+    parents = (int) git_commit_parentcount(commit);
+    unmatched = parents;
       
-      if (parents == 0) {
-	git_tree *tree;
-	check_lg2(git_commit_tree(&tree, commit), "Get tree", NULL);
-	if (git_pathspec_match_tree(NULL,tree,GIT_PATHSPEC_NO_MATCH_ERROR,ps)
-	    != 0)
-	  unmatched = 1;
+    if (parents == 0) {
+      git_commit_tree(&tree, commit);
+      if (git_pathspec_match_tree(NULL,tree,GIT_PATHSPEC_NO_MATCH_ERROR,ps)
+	  != 0)
+	unmatched = 1;
 	git_tree_free(tree);
       } else if (parents == 1) {
 	unmatched = match_with_parent(commit, 0, &diffopts) ? 0 : 1;
@@ -124,28 +110,10 @@ int main(int argc, char *argv[]) {
 	}
       }
       
-      if (unmatched > 0)
-	continue;
-    }
-    
-    if (!signature_matches(git_commit_author(commit), opt.author))
+    if (unmatched > 0)
       continue;
-    
-    if (!signature_matches(git_commit_committer(commit), opt.committer))
-      continue;
-    
-    if (!log_message_matches(commit, opt.grep))
-      continue;
-    
-    if (count++ < opt.skip)
-      continue;
-    if (opt.limit != -1 && printed++ >= opt.limit) {
-      git_commit_free(commit);
-      break;
-    }
     
     print_commit(commit, &opt);
-  
   }
   
   git_pathspec_free(ps);
@@ -156,52 +124,20 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-/** Determine if the given git_signature does not contain the filter text. */
-static int signature_matches(const git_signature *sig, const char *filter) {
-  if (filter == NULL)
-    return 1;
-  
-  if (sig != NULL &&
-      (strstr(sig->name, filter) != NULL ||
-       strstr(sig->email, filter) != NULL))
-    return 1;
-  
-  return 0;
-}
-
-static int log_message_matches(const git_commit *commit, const char *filter) {
-  const char *message = NULL;
-  
-  if (filter == NULL)
-    return 1;
-  
-  if ((message = git_commit_message(commit)) != NULL &&
-      strstr(message, filter) != NULL)
-    return 1;
-  
-  return 0;
-}
-
 /** Push object (for hide or show) onto revwalker. */
 static void push_rev(struct log_state *s, git_object *obj, int hide) {
   hide = s->hide ^ hide;
   
   /** Create revwalker on demand if it doesn't already exist. */
   if (!s->walker) {
-    check_lg2(git_revwalk_new(&s->walker, s->repo),
-	      "Could not create revision walker", NULL);
+    git_revwalk_new(&s->walker, s->repo);
     git_revwalk_sorting(s->walker, s->sorting);
   }
   
   if (!obj)
-    check_lg2(git_revwalk_push_head(s->walker),
-	      "Could not find repository HEAD", NULL);
-  else if (hide)
-    check_lg2(git_revwalk_hide(s->walker, git_object_id(obj)),
-	      "Reference does not refer to a commit", NULL);
+    git_revwalk_push_head(s->walker);
   else
-    check_lg2(git_revwalk_push(s->walker, git_object_id(obj)),
-	      "Reference does not refer to a commit", NULL);
+    git_revwalk_push(s->walker, git_object_id(obj));
   
   git_object_free(obj);
 }
@@ -214,8 +150,7 @@ static int add_revision(struct log_state *s, const char *revstr) {
   /** Open repo on demand if it isn't already open. */
   if (!s->repo) {
     if (!s->repodir) s->repodir = ".";
-    check_lg2(git_repository_open_ext(&s->repo, s->repodir, 0, NULL),
-	      "Could not open repository", s->repodir);
+    git_repository_open_ext(&s->repo, s->repodir, 0, NULL);
   }
   
   if (!revstr) {
@@ -239,13 +174,9 @@ static int add_revision(struct log_state *s, const char *revstr) {
     
     if ((revs.flags & GIT_REVPARSE_MERGE_BASE) != 0) {
       git_oid base;
-      check_lg2(git_merge_base(&base, s->repo,git_object_id(revs.from),
-			       git_object_id(revs.to)),
-		"Could not find merge base", revstr);
-      check_lg2(
-		git_object_lookup(&revs.to, s->repo, &base, GIT_OBJ_COMMIT),
-		"Could not find merge base commit", NULL);
-      
+      git_merge_base(&base, s->repo,git_object_id(revs.from),
+		     git_object_id(revs.to));
+      git_object_lookup(&revs.to, s->repo, &base, GIT_OBJ_COMMIT);      
       push_rev(s, revs.to, hide);
     }
     
@@ -261,14 +192,12 @@ static void set_sorting(struct log_state *s, unsigned int sort_mode) {
   /** Open repo on demand if it isn't already open. */
   if (!s->repo) {
     if (!s->repodir) s->repodir = ".";
-    check_lg2(git_repository_open_ext(&s->repo, s->repodir, 0, NULL),
-	      "Could not open repository", s->repodir);
+    git_repository_open_ext(&s->repo, s->repodir, 0, NULL);
   }
   
   /** Create revwalker on demand if it doesn't already exist. */
   if (!s->walker)
-    check_lg2(git_revwalk_new(&s->walker, s->repo),
-	      "Could not create revision walker", NULL);
+    git_revwalk_new(&s->walker, s->repo);
   
   if (sort_mode == GIT_SORT_REVERSE)
     s->sorting = s->sorting ^ GIT_SORT_REVERSE;
