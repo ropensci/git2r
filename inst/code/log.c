@@ -42,9 +42,6 @@ struct log_state {
   int revisions;
 };
 
-/** utility functions that are called to configure the walker */
-static void push_rev(struct log_state *s, git_object *obj, int hide);
-
 /** log_options holds other command line options that affect log output */
 struct log_options {
   int show_log_size;
@@ -85,7 +82,9 @@ int main(int argc, char *argv[]) {
 
   // Open the repository.
   git_repository_open_ext(&s.repo, ".", 0, NULL);
-  push_rev(&s, NULL, 0);
+  git_revwalk_new(&s.walker,s.repo);
+  git_revwalk_sorting(s.walker, s.sorting);
+  git_revwalk_push_head(s.walker);
   
   // Use the revwalker to traverse the history.
   for (; !git_revwalk_next(&oid, s.walker); git_commit_free(commit)) {
@@ -123,23 +122,6 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-/** Push object (for hide or show) onto revwalker. */
-static void push_rev(struct log_state *s, git_object *obj, int hide) {
-  hide = s->hide ^ hide;
-  
-  /** Create revwalker on demand if it doesn't already exist. */
-  if (!s->walker) {
-    git_revwalk_new(&s->walker, s->repo);
-    git_revwalk_sorting(s->walker, s->sorting);
-  }
-  
-  if (!obj)
-    git_revwalk_push_head(s->walker);
-  else
-    git_revwalk_push(s->walker, git_object_id(obj));
-  
-  git_object_free(obj);
-}
 
 /** Helper to print a commit object. */
 static void print_commit(git_commit *commit, struct log_options *opts) {
