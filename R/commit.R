@@ -258,6 +258,16 @@ commits <- function(repo        = ".",
     .Call(git2r_revwalk_list, repo, topological, time, reverse, n)
 }
 
+##' @export
+touching_commits <- function (repo = ".", path = NULL) {
+  if (is.null(path))
+    path <- ""
+  if (path == "")
+    return(commits(repo))
+  else
+    return(.Call(git2r_revwalk_list2, repo, path))
+}
+
 ##' Last commit
 ##'
 ##' Get last commit in the current branch.

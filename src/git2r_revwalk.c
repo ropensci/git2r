@@ -162,6 +162,90 @@ cleanup:
     return result;
 }
 
+SEXP git2r_revwalk_list2 (SEXP repo, SEXP path) {
+  SEXP result = R_NilValue;
+  int  error = GIT_OK;
+  int  nprotect = 0;
+  int  i;
+  int  n;
+  unsigned int   sort_mode   = GIT_SORT_NONE;
+  git_revwalk    *walker     = NULL;
+  git_repository *repository = NULL;
+
+  // Open the repository.
+  repository = git2r_repository_open(repo);
+  if (!repository)
+    git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
+
+  // If there are no commits, create an empty list.
+  if (git_repository_is_empty(repository)) {
+    PROTECT(result = Rf_allocVector(VECSXP, 0));
+    nprotect++;
+    goto cleanup;
+  }
+
+//     error = git_revwalk_new(&walker, repository);
+//     if (error)
+//         goto cleanup;
+
+//     error = git_revwalk_push_head(walker);
+//     if (error)
+//         goto cleanup;
+//     git_revwalk_sorting(walker, sort_mode);
+
+//     /* Count number of revisions before creating the list */
+//     n = git2r_revwalk_count(walker, INTEGER(max_n)[0]);
+
+//     /* Create list to store result */
+//     PROTECT(result = Rf_allocVector(VECSXP, n));
+//     nprotect++;
+
+//     git_revwalk_reset(walker);
+//     error = git_revwalk_push_head(walker);
+//     if (error)
+//         goto cleanup;
+//     git_revwalk_sorting(walker, sort_mode);
+
+//     for (i = 0; i < n; i++) {
+//         git_commit *commit;
+//         SEXP item;
+//         git_oid oid;
+
+//         error = git_revwalk_next(&oid, walker);
+//         if (error) {
+//             if (GIT_ITEROVER == error)
+//                 error = GIT_OK;
+//             goto cleanup;
+//         }
+
+//         error = git_commit_lookup(&commit, repository, &oid);
+//         if (error)
+//             goto cleanup;
+
+//         SET_VECTOR_ELT(
+//             result,
+//             i,
+//             item = Rf_mkNamed(VECSXP, git2r_S3_items__git_commit));
+//         Rf_setAttrib(item, R_ClassSymbol,
+//                      Rf_mkString(git2r_S3_class__git_commit));
+//         git2r_commit_init(commit, repo, item);
+//         git_commit_free(commit);
+//     }
+
+  cleanup:
+//     git_revwalk_free(walker);
+//     git_repository_free(repository);
+
+//     if (nprotect)
+//         UNPROTECT(nprotect);
+
+//     if (error)
+//         git2r_error(__func__, giterr_last(), NULL, NULL);
+
+//   return result;
+  return 0;
+}
+
 /**
  * Get list with contributions.
  *
