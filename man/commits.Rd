@@ -5,7 +5,7 @@
 \title{Commits}
 \usage{
 commits(repo = ".", topological = TRUE, time = TRUE,
-  reverse = FALSE, n = NULL, pathname = NULL)
+  reverse = FALSE, n = NULL)
 }
 \arguments{
 \item{repo}{a path to a repository or a \code{git_repository}
@@ -23,8 +23,6 @@ with topological and/or time sorting. Default is FALSE.}
 
 \item{n}{The upper limit of the number of commits to output. The
 default is NULL for unlimited number of commits.}
-
-\item{pathname}{TO DO: Add description of "pathname" argument here.}
 }
 \value{
 list of commits in repository

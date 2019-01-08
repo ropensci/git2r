@@ -169,7 +169,6 @@ commit <- function(repo      = ".",
 ##'     with topological and/or time sorting. Default is FALSE.
 ##' @param n The upper limit of the number of commits to output. The
 ##'     default is NULL for unlimited number of commits.
-##' @param pathname TO DO: Add description of "pathname" argument here.
 ##' @return list of commits in repository
 ##' @export
 ##' @examples
@@ -210,8 +209,7 @@ commits <- function(repo        = ".",
                     topological = TRUE,
                     time        = TRUE,
                     reverse     = FALSE,
-                    n           = NULL,
-                    pathname    = NULL)
+                    n           = NULL)
 {
     ## Check limit in number of commits
     if (is.null(n)) {
@@ -226,17 +224,8 @@ commits <- function(repo        = ".",
         stop("'n' must be integer")
     }
 
-    ## Check pathname
-    if (is.null(pathname))
-      pathname <- ""
-    if (!is.character(pathname))
-      stop("'pathname' must be NULL or a character vector of length 1")
-    if (length(pathname) != 1)
-      stop("'pathname' must be a character vector of length 1")
-    
     repo <- lookup_repository(repo)
     if (is_shallow(repo)) {
-        
         ## FIXME: Remove this if-statement when libgit2 supports
         ## shallow clones, see #219.  Note: This workaround does not
         ## use the 'topological', 'time' and 'reverse' flags.
@@ -266,10 +255,7 @@ commits <- function(repo        = ".",
         return(result)
     }
 
-    out <- .Call(git2r_revwalk_list, repo, topological, time, reverse, n,
-                 pathname)
-    i   <- sapply(out,function (x) !is.null(x))
-    return(out[i])
+    .Call(git2r_revwalk_list, repo, topological, time, reverse, n)
 }
 
 ##' Last commit
