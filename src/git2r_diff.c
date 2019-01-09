@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2018 The git2r contributors
+ *  Copyright (C) 2013-2019 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -809,7 +809,6 @@ int git2r_diff_get_file_cb(const git_diff_delta *delta,
             R_ClassSymbol,
             Rf_mkString(git2r_S3_class__git_diff_file));
         SET_VECTOR_ELT(p->result, p->file_ptr, file_obj);
-        UNPROTECT(1);
 
 	SET_VECTOR_ELT(
             file_obj,
@@ -824,6 +823,7 @@ int git2r_diff_get_file_cb(const git_diff_delta *delta,
 	p->file_ptr++;
 	p->hunk_ptr = 0;
 	p->line_ptr = 0;
+        UNPROTECT(1);
     }
 
     return 0;
