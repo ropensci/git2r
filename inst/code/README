@@ -9,7 +9,7 @@ sys  0m0.029s
   0.753   0.012   0.767
 
 > library(git2r)
-> system.time(commits(pathname = "analysis/poisson.Rmd"))
+> system.time(touching_commits(path = "analysis/poisson.Rmd"))
    user  system elapsed
-  0.019   0.007   0.026
+  0.019   0.009   0.029
   
