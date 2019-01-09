@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2018 The git2r contributors
+ *  Copyright (C) 2013-2019 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -185,8 +185,10 @@ static int git2r_stash_list_cb(
             cb_data->repository,
             cb_data->repo,
             stash);
-        if (error)
+        if (error) {
+            UNPROTECT(2);
             return error;
+        }
 
         SET_VECTOR_ELT(cb_data->list, cb_data->n, stash);
         UNPROTECT(2);

@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2018 The git2r contributors
+ *  Copyright (C) 2013-2019 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -271,8 +271,10 @@ static int git2r_note_foreach_cb(
             cb_data->notes_ref,
             cb_data->repo,
             note);
-        if (error)
+        if (error) {
+            UNPROTECT(1);
             return error;
+        }
 
         SET_VECTOR_ELT(cb_data->list, cb_data->n, note);
         UNPROTECT(1);
