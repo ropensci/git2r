@@ -110,7 +110,7 @@ pull <- function(repo = ".", credentials = NULL, merger = NULL) {
     fh <- fh[vapply(fh, "[[", logical(1), "is_merge")]
 
     if (identical(length(fh), 0L))
-        stop("Remote ref was not feteched")
+        stop("Remote ref was not fetched")
 
     .Call(git2r_merge_fetch_heads, fh, merger)
 }
