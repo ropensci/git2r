@@ -69,7 +69,7 @@ typedef int64_t git_time_t;
 /** Basic type (loose or packed) of any Git object. */
 typedef enum {
 	GIT_OBJECT_ANY =      -2, /**< Object can be any of the following */
-	GIT_OBJECT_BAD =      -1, /**< Object is invalid. */
+	GIT_OBJECT_INVALID =  -1, /**< Object is invalid. */
 	GIT_OBJECT_COMMIT =    1, /**< A commit object. */
 	GIT_OBJECT_TREE =      2, /**< A tree (directory listing) object. */
 	GIT_OBJECT_BLOB =      3, /**< A file revision object. */
@@ -193,11 +193,11 @@ typedef struct git_rebase git_rebase;
 
 /** Basic type of any Git reference. */
 typedef enum {
-	GIT_REF_INVALID = 0, /**< Invalid reference */
-	GIT_REF_OID = 1, /**< A reference which points at an object id */
-	GIT_REF_SYMBOLIC = 2, /**< A reference which points at another reference */
-	GIT_REF_LISTALL = GIT_REF_OID|GIT_REF_SYMBOLIC,
-} git_ref_t;
+	GIT_REFERENCE_INVALID  = 0, /**< Invalid reference */
+	GIT_REFERENCE_DIRECT   = 1, /**< A reference that points at an object id */
+	GIT_REFERENCE_SYMBOLIC = 2, /**< A reference that points at another reference */
+	GIT_REFERENCE_ALL      = GIT_REFERENCE_DIRECT | GIT_REFERENCE_SYMBOLIC,
+} git_reference_t;
 
 /** Basic type of any Git branch. */
 typedef enum {
@@ -272,7 +272,7 @@ typedef struct git_transfer_progress {
  * @param stats Structure containing information about the state of the transfer
  * @param payload Payload provided by caller
  */
-typedef int (*git_transfer_progress_cb)(const git_transfer_progress *stats, void *payload);
+typedef int GIT_CALLBACK(git_transfer_progress_cb)(const git_transfer_progress *stats, void *payload);
 
 /**
  * Type for messages delivered by the transport.  Return a negative value
@@ -282,7 +282,7 @@ typedef int (*git_transfer_progress_cb)(const git_transfer_progress *stats, void
  * @param len The length of the message
  * @param payload Payload provided by the caller
  */
-typedef int (*git_transport_message_cb)(const char *str, int len, void *payload);
+typedef int GIT_CALLBACK(git_transport_message_cb)(const char *str, int len, void *payload);
 
 
 /**
@@ -335,7 +335,7 @@ typedef struct {
  *         or > 0 to indicate that the callback refused to act and that
  *         the existing validity determination should be honored
  */
-typedef int (*git_transport_certificate_check_cb)(git_cert *cert, int valid, const char *host, void *payload);
+typedef int GIT_CALLBACK(git_transport_certificate_check_cb)(git_cert *cert, int valid, const char *host, void *payload);
 
 /**
  * Opaque structure representing a submodule.
@@ -433,9 +433,9 @@ typedef struct git_writestream git_writestream;
 
 /** A type to write in a streaming fashion, for example, for filters. */
 struct git_writestream {
-	int (*write)(git_writestream *stream, const char *buffer, size_t len);
-	int (*close)(git_writestream *stream);
-	void (*free)(git_writestream *stream);
+	int GIT_CALLBACK(write)(git_writestream *stream, const char *buffer, size_t len);
+	int GIT_CALLBACK(close)(git_writestream *stream);
+	void GIT_CALLBACK(free)(git_writestream *stream);
 };
 
 /** Representation of .mailmap file state. */
@@ -450,18 +450,18 @@ typedef struct git_mailmap git_mailmap;
 
 /**@{*/
 
-#define GIT_OBJ_ANY        GIT_OBJECT_ANY
-#define GIT_OBJ_BAD        GIT_OBJECT_BAD
-#define GIT_OBJ__EXT1      0
-#define GIT_OBJ_COMMIT     GIT_OBJECT_COMMIT
-#define GIT_OBJ_TREE       GIT_OBJECT_TREE
-#define GIT_OBJ_BLOB       GIT_OBJECT_BLOB
-#define GIT_OBJ_TAG        GIT_OBJECT_TAG
-#define GIT_OBJ__EXT2      5
-#define GIT_OBJ_OFS_DELTA  GIT_OBJECT_OFS_DELTA
-#define GIT_OBJ_REF_DELTA  GIT_OBJECT_REF_DELTA
-
 #define git_otype git_object_t
+
+GIT_DEPRECATED(static const git_otype) GIT_OBJ_ANY = GIT_OBJECT_ANY;
+GIT_DEPRECATED(static const git_otype) GIT_OBJ_BAD = GIT_OBJECT_INVALID;
+GIT_DEPRECATED(static const git_otype) GIT_OBJ__EXT1 = 0;
+GIT_DEPRECATED(static const git_otype) GIT_OBJ_COMMIT = GIT_OBJECT_COMMIT;
+GIT_DEPRECATED(static const git_otype) GIT_OBJ_TREE = GIT_OBJECT_TREE;
+GIT_DEPRECATED(static const git_otype) GIT_OBJ_BLOB = GIT_OBJECT_BLOB;
+GIT_DEPRECATED(static const git_otype) GIT_OBJ_TAG = GIT_OBJECT_TAG;
+GIT_DEPRECATED(static const git_otype) GIT_OBJ__EXT2 = 5;
+GIT_DEPRECATED(static const git_otype) GIT_OBJ_OFS_DELTA = GIT_OBJECT_OFS_DELTA;
+GIT_DEPRECATED(static const git_otype) GIT_OBJ_REF_DELTA = GIT_OBJECT_REF_DELTA;
 
 /**@}*/
 

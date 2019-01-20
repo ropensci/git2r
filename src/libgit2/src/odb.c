@@ -63,7 +63,7 @@ static git_object_t odb_hardcoded_type(const git_oid *id)
 	if (!git_oid_cmp(id, &empty_tree))
 		return GIT_OBJECT_TREE;
 
-	return GIT_OBJECT_BAD;
+	return GIT_OBJECT_INVALID;
 }
 
 static int odb_read_hardcoded(bool *found, git_rawobj *raw, const git_oid *id)
@@ -72,7 +72,7 @@ static int odb_read_hardcoded(bool *found, git_rawobj *raw, const git_oid *id)
 
 	*found = false;
 
-	if ((type = odb_hardcoded_type(id)) == GIT_OBJECT_BAD)
+	if ((type = odb_hardcoded_type(id)) == GIT_OBJECT_INVALID)
 		return 0;
 
 	raw->type = type;
@@ -95,7 +95,7 @@ int git_odb__format_object_header(
 	int hdr_max = (hdr_size > INT_MAX-2) ? (INT_MAX-2) : (int)hdr_size;
 	int len;
 
-	len = p_snprintf(hdr, hdr_max, "%s %lld", type_str, (long long)obj_len);
+	len = p_snprintf(hdr, hdr_max, "%s %"PRId64, type_str, (int64_t)obj_len);
 
 	if (len < 0 || len >= hdr_max) {
 		giterr_set(GITERR_OS, "object header creation failed");
@@ -945,7 +945,7 @@ static int odb_read_header_1(
 	bool passthrough = false;
 	int error;
 
-	if (!only_refreshed && (ht = odb_hardcoded_type(id)) != GIT_OBJECT_BAD) {
+	if (!only_refreshed && (ht = odb_hardcoded_type(id)) != GIT_OBJECT_INVALID) {
 		*type_p = ht;
 		*len_p = 0;
 		return 0;
@@ -1260,7 +1260,7 @@ int git_odb_foreach(git_odb *db, git_odb_foreach_cb cb, void *payload)
 	git_vector_foreach(&db->backends, i, internal) {
 		git_odb_backend *b = internal->backend;
 		int error = b->foreach(b, cb, payload);
-		if (error < 0)
+		if (error != 0)
 			return error;
 	}
 
