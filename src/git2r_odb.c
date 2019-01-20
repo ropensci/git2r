@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2018 The git2r contributors
+ *  Copyright (C) 2013-2019 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -19,6 +19,7 @@
 #include <git2.h>
 
 #include "git2r_arg.h"
+#include "git2r_constants.h"
 #include "git2r_error.h"
 #include "git2r_odb.h"
 #include "git2r_repository.h"
@@ -50,7 +51,7 @@ SEXP git2r_odb_hash(SEXP data)
             error = git_odb_hash(&oid,
                                CHAR(STRING_ELT(data, i)),
                                LENGTH(STRING_ELT(data, i)),
-                               GIT_OBJ_BLOB);
+                               GIT2R_OBJECT_BLOB);
             if (error)
                 break;
 
@@ -94,7 +95,7 @@ SEXP git2r_odb_hashfile(SEXP path)
         } else {
             error = git_odb_hashfile(&oid,
                                    CHAR(STRING_ELT(path, i)),
-                                   GIT_OBJ_BLOB);
+                                   GIT2R_OBJECT_BLOB);
             if (error)
                 break;
 
@@ -173,19 +174,19 @@ static int git2r_odb_objects_cb(const git_oid *oid, void *payload)
         return error;
 
     switch(type) {
-    case GIT_OBJ_COMMIT:
+    case GIT2R_OBJECT_COMMIT:
         if (!Rf_isNull(p->list))
             git2r_add_object(oid, p->list, p->n, "commit", len);
         break;
-    case GIT_OBJ_TREE:
+    case GIT2R_OBJECT_TREE:
         if (!Rf_isNull(p->list))
             git2r_add_object(oid, p->list, p->n, "tree", len);
         break;
-    case GIT_OBJ_BLOB:
+    case GIT2R_OBJECT_BLOB:
         if (!Rf_isNull(p->list))
             git2r_add_object(oid, p->list, p->n, "blob", len);
         break;
-    case GIT_OBJ_TAG:
+    case GIT2R_OBJECT_TAG:
         if (!Rf_isNull(p->list))
             git2r_add_object(oid, p->list, p->n, "tag", len);
         break;
@@ -352,7 +353,7 @@ static int git2r_odb_tree_blobs(
 
         entry = git_tree_entry_byindex(tree, i);
         switch (git_tree_entry_type(entry)) {
-        case GIT_OBJ_TREE:
+        case GIT2R_OBJECT_TREE:
         {
             char *buf = NULL;
             size_t path_len, buf_len;
@@ -403,7 +404,7 @@ static int git2r_odb_tree_blobs(
 
             break;
         }
-        case GIT_OBJ_BLOB:
+        case GIT2R_OBJECT_BLOB:
             if (!Rf_isNull(data->list)) {
                 error = git2r_odb_add_blob(
                     entry,
@@ -445,7 +446,7 @@ static int git2r_odb_blobs_cb(const git_oid *oid, void *payload)
     if (error)
         return error;
 
-    if (GIT_OBJ_COMMIT == type) {
+    if (type == GIT2R_OBJECT_COMMIT) {
         const git_signature *author;
         git_commit *commit = NULL;
         git_tree *tree = NULL;

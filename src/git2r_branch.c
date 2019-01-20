@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2018 The git2r contributors
+ *  Copyright (C) 2013-2019 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -21,6 +21,7 @@
 #include "git2r_arg.h"
 #include "git2r_branch.h"
 #include "git2r_commit.h"
+#include "git2r_constants.h"
 #include "git2r_error.h"
 #include "git2r_reference.h"
 #include "git2r_repository.h"
@@ -696,7 +697,7 @@ SEXP git2r_branch_target(SEXP branch)
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
     nprotect++;
-    if (GIT_REF_OID == git_reference_type(reference)) {
+    if (git_reference_type(reference) == GIT2R_REFERENCE_DIRECT) {
         git_oid_fmt(sha, git_reference_target(reference));
         sha[GIT_OID_HEXSZ] = '\0';
         SET_STRING_ELT(result, 0, Rf_mkChar(sha));

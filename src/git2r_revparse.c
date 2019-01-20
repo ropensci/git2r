@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2018 The git2r contributors
+ *  Copyright (C) 2013-2019 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -21,6 +21,7 @@
 #include "git2r_arg.h"
 #include "git2r_blob.h"
 #include "git2r_commit.h"
+#include "git2r_constants.h"
 #include "git2r_error.h"
 #include "git2r_repository.h"
 #include "git2r_S3.h"
@@ -57,28 +58,28 @@ SEXP git2r_revparse_single(SEXP repo, SEXP revision)
         goto cleanup;
 
     switch (git_object_type(treeish)) {
-    case GIT_OBJ_BLOB:
+    case GIT2R_OBJECT_BLOB:
         PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_blob));
         nprotect++;
         Rf_setAttrib(result, R_ClassSymbol,
                      Rf_mkString(git2r_S3_class__git_blob));
         git2r_blob_init((git_blob*)treeish, repo, result);
         break;
-    case GIT_OBJ_COMMIT:
+    case GIT2R_OBJECT_COMMIT:
         PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_commit));
         nprotect++;
         Rf_setAttrib(result, R_ClassSymbol,
                      Rf_mkString(git2r_S3_class__git_commit));
         git2r_commit_init((git_commit*)treeish, repo, result);
         break;
-    case GIT_OBJ_TAG:
+    case GIT2R_OBJECT_TAG:
         PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_tag));
         nprotect++;
         Rf_setAttrib(result, R_ClassSymbol,
                      Rf_mkString(git2r_S3_class__git_tag));
         git2r_tag_init((git_tag*)treeish, repo, result);
         break;
-    case GIT_OBJ_TREE:
+    case GIT2R_OBJECT_TREE:
         PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_tree));
         nprotect++;
         Rf_setAttrib(result, R_ClassSymbol,

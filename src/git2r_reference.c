@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2018 The git2r contributors
+ *  Copyright (C) 2013-2019 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -19,6 +19,7 @@
 #include <git2.h>
 
 #include "git2r_arg.h"
+#include "git2r_constants.h"
 #include "git2r_error.h"
 #include "git2r_reference.h"
 #include "git2r_repository.h"
@@ -46,11 +47,11 @@ static void git2r_reference_init(git_reference *source, SEXP dest)
         Rf_mkString(git_reference_shorthand(source)));
 
     switch (git_reference_type(source)) {
-    case GIT_REF_OID:
+    case GIT2R_REFERENCE_DIRECT:
         SET_VECTOR_ELT(
             dest,
             git2r_S3_item__git_reference__type,
-            Rf_ScalarInteger(GIT_REF_OID));
+            Rf_ScalarInteger(GIT2R_REFERENCE_DIRECT));
 
         git_oid_fmt(sha, git_reference_target(source));
         sha[GIT_OID_HEXSZ] = '\0';
@@ -59,11 +60,11 @@ static void git2r_reference_init(git_reference *source, SEXP dest)
             git2r_S3_item__git_reference__sha,
             Rf_mkString(sha));
         break;
-    case GIT_REF_SYMBOLIC:
+    case GIT2R_REFERENCE_SYMBOLIC:
         SET_VECTOR_ELT(
             dest,
             git2r_S3_item__git_reference__type,
-            Rf_ScalarInteger(GIT_REF_SYMBOLIC));
+            Rf_ScalarInteger(GIT2R_REFERENCE_SYMBOLIC));
 
         SET_VECTOR_ELT(
             dest,

@@ -1,5 +1,5 @@
 # git2r, R bindings to the libgit2 library.
-# Copyright (C) 2013-2018 The git2r contributors
+# Copyright (C) 2013-2019 The git2r contributors
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2,
@@ -112,6 +112,22 @@ if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
     AC_MSG_RESULT([${have_buf_dispose}])
     if test "x${have_buf_dispose}" = xyes; then
         PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_BUF_DISPOSE"
+    fi
+
+    # The constants GIT_OBJ_ANY, GIT_OBJ_BLOB, GIT_OBJ_COMMIT,
+    # GIT_OBJ_TAG_GIT_OBJ_TREE and GIT_REF_OID are deprecated in
+    # libgit2. Use GIT_OBJECT_ANY, GIT_OBJECT_BLOB, GIT_OBJECT_COMMIT,
+    # GIT_OBJECT_TAG_GIT_OBJECT_TREE and GIT_REFERENCE_DIRECT, if
+    # available, instead.
+    AC_MSG_CHECKING([whether the libgit2 constant GIT_OBJECT_ANY is available])
+    have_git_object_any=no
+    AC_LANG_CONFTEST(
+    [AC_LANG_PROGRAM([[#include <git2.h>]], [[ git_buf_dispose(NULL); ]])])
+    PKG_CFLAGS="${PKG_CFLAGS} -Werror" "$RBIN" CMD SHLIB conftest.c \
+    1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD && have_git_object_any=yes
+    AC_MSG_RESULT([${have_git_object_any}])
+    if test "x${have_git_object_any}" = xyes; then
+        PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_HAVE_OBJECT_ANY"
     fi
 
     # For debugging
@@ -407,7 +423,14 @@ fi
 
 # The function 'git_buf_free' is deprecated in libgit2. Use
 # 'git_buf_dispose' instead.
+#
 CPPFLAGS="${CPPFLAGS} -DGIT2R_BUF_DISPOSE"
+
+# The constants GIT_OBJ_ANY, GIT_OBJ_BLOB, GIT_OBJ_COMMIT,
+# GIT_OBJ_TAG_GIT_OBJ_TREE and GIT_REF_OID are deprecated in
+# libgit2. Use GIT_OBJECT_ANY, GIT_OBJECT_BLOB, GIT_OBJECT_COMMIT,
+# GIT_OBJECT_TAG_GIT_OBJECT_TREE and GIT_REFERENCE_DIRECT instead.
+CPPFLAGS="${CPPFLAGS} -DGIT2R_HAVE_OBJECT_ANY"
 
 AC_SUBST(GIT2R_SRC_REGEX)
 AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS} ${LIBSSH2_CFLAGS}"])
