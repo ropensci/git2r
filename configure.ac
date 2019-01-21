@@ -111,7 +111,7 @@ if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
     1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD && have_buf_dispose=yes
     AC_MSG_RESULT([${have_buf_dispose}])
     if test "x${have_buf_dispose}" = xyes; then
-        PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_BUF_DISPOSE"
+        PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_HAVE_BUF_DISPOSE"
     fi
 
     # The constants GIT_OBJ_ANY, GIT_OBJ_BLOB, GIT_OBJ_COMMIT,
@@ -424,7 +424,7 @@ fi
 # The function 'git_buf_free' is deprecated in libgit2. Use
 # 'git_buf_dispose' instead.
 #
-CPPFLAGS="${CPPFLAGS} -DGIT2R_BUF_DISPOSE"
+CPPFLAGS="${CPPFLAGS} -DGIT2R_HAVE_BUF_DISPOSE"
 
 # The constants GIT_OBJ_ANY, GIT_OBJ_BLOB, GIT_OBJ_COMMIT,
 # GIT_OBJ_TAG_GIT_OBJ_TREE and GIT_REF_OID are deprecated in

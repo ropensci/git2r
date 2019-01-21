@@ -37,4 +37,10 @@
 # define GIT2R_REFERENCE_SYMBOLIC GIT_REF_SYMBOLIC
 #endif
 
+#if defined(GIT2R_HAVE_BUF_DISPOSE)
+# define GIT2R_BUF_DISPOSE git_buf_dispose
+#else
+# define GIT2R_BUF_DISPOSE git_buf_free
+#endif
+
 #endif

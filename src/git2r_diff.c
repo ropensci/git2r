@@ -17,6 +17,7 @@
  */
 
 #include "git2r_arg.h"
+#include "git2r_constants.h"
 #include "git2r_diff.h"
 #include "git2r_error.h"
 #include "git2r_repository.h"
@@ -164,11 +165,7 @@ SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename)
             nprotect++;
         }
 
-#if defined(GIT2R_BUF_DISPOSE)
-        git_buf_dispose(&buf);
-#else
-        git_buf_free(&buf);
-#endif
+        GIT2R_BUF_DISPOSE(&buf);
     } else {
         FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
 
@@ -271,11 +268,7 @@ SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
             nprotect++;
         }
 
-#if defined(GIT2R_BUF_DISPOSE)
-        git_buf_dispose(&buf);
-#else
-        git_buf_free(&buf);
-#endif
+        GIT2R_BUF_DISPOSE(&buf);
     } else {
         FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
 
@@ -380,11 +373,7 @@ SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
             nprotect++;
         }
 
-#if defined(GIT2R_BUF_DISPOSE)
-        git_buf_dispose(&buf);
-#else
-        git_buf_free(&buf);
-#endif
+        GIT2R_BUF_DISPOSE(&buf);
     } else {
         FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
 
@@ -494,11 +483,7 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
             nprotect++;
         }
 
-#if defined(GIT2R_BUF_DISPOSE)
-        git_buf_dispose(&buf);
-#else
-        git_buf_free(&buf);
-#endif
+        GIT2R_BUF_DISPOSE(&buf);
     } else {
         FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
 
@@ -624,11 +609,7 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
             nprotect++;
         }
 
-#if defined(GIT2R_BUF_DISPOSE)
-        git_buf_dispose(&buf);
-#else
-        git_buf_free(&buf);
-#endif
+        GIT2R_BUF_DISPOSE(&buf);
     } else {
         FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
 

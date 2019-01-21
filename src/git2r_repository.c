@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2018 The git2r contributors
+ *  Copyright (C) 2013-2019 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -21,6 +21,7 @@
 #include "git2r_arg.h"
 #include "git2r_blob.h"
 #include "git2r_branch.h"
+#include "git2r_constants.h"
 #include "git2r_commit.h"
 #include "git2r_error.h"
 #include "git2r_repository.h"
@@ -543,11 +544,7 @@ SEXP git2r_repository_discover(SEXP path, SEXP ceiling)
     SET_STRING_ELT(result, 0, Rf_mkChar(buf.ptr));
 
 cleanup:
-#if defined(GIT2R_BUF_DISPOSE)
-    git_buf_dispose(&buf);
-#else
-    git_buf_free(&buf);
-#endif
+    GIT2R_BUF_DISPOSE(&buf);
 
     if (nprotect)
         UNPROTECT(nprotect);

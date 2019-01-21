@@ -3269,7 +3269,7 @@ _ACEOF
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${have_buf_dispose}" >&5
 $as_echo "${have_buf_dispose}" >&6; }
     if test "x${have_buf_dispose}" = xyes; then
-        PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_BUF_DISPOSE"
+        PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_HAVE_BUF_DISPOSE"
     fi
 
     # The constants GIT_OBJ_ANY, GIT_OBJ_BLOB, GIT_OBJ_COMMIT,
@@ -6820,7 +6820,7 @@ fi
 # The function 'git_buf_free' is deprecated in libgit2. Use
 # 'git_buf_dispose' instead.
 #
-CPPFLAGS="${CPPFLAGS} -DGIT2R_BUF_DISPOSE"
+CPPFLAGS="${CPPFLAGS} -DGIT2R_HAVE_BUF_DISPOSE"
 
 # The constants GIT_OBJ_ANY, GIT_OBJ_BLOB, GIT_OBJ_COMMIT,
 # GIT_OBJ_TAG_GIT_OBJ_TREE and GIT_REF_OID are deprecated in

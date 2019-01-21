@@ -500,11 +500,7 @@ SEXP git2r_branch_remote_name(SEXP branch)
     PROTECT(result = Rf_allocVector(STRSXP, 1));
     nprotect++;
     SET_STRING_ELT(result, 0, Rf_mkChar(buf.ptr));
-#if defined(GIT2R_BUF_DISPOSE)
-    git_buf_dispose(&buf);
-#else
-    git_buf_free(&buf);
-#endif
+    GIT2R_BUF_DISPOSE(&buf);
 
 cleanup:
     git_reference_free(reference);
@@ -563,21 +559,12 @@ SEXP git2r_branch_remote_url(SEXP branch)
     if (error) {
         error = git_remote_create_anonymous(&remote, repository, buf.ptr);
         if (error) {
-#if defined(GIT2R_BUF_DISPOSE)
-            git_buf_dispose(&buf);
-#else
-            git_buf_free(&buf);
-#endif
-
+            GIT2R_BUF_DISPOSE(&buf);
             goto cleanup;
         }
     }
 
-#if defined(GIT2R_BUF_DISPOSE)
-    git_buf_dispose(&buf);
-#else
-    git_buf_free(&buf);
-#endif
+    GIT2R_BUF_DISPOSE(&buf);
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
     nprotect++;

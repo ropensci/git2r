@@ -19,6 +19,7 @@
 #include <git2.h>
 
 #include "git2r_arg.h"
+#include "git2r_constants.h"
 #include "git2r_error.h"
 #include "git2r_note.h"
 #include "git2r_repository.h"
@@ -222,11 +223,7 @@ SEXP git2r_note_default_ref(SEXP repo)
     SET_STRING_ELT(result, 0, Rf_mkChar(buf.ptr));
 
 cleanup:
-#if defined(GIT2R_BUF_DISPOSE)
-    git_buf_dispose(&buf);
-#else
-    git_buf_free(&buf);
-#endif
+    GIT2R_BUF_DISPOSE(&buf);
     git_repository_free(repository);
 
     if (nprotect)
@@ -346,11 +343,7 @@ SEXP git2r_notes(SEXP repo, SEXP ref)
                            &git2r_note_foreach_cb, &cb_data);
 
 cleanup:
-#if defined(GIT2R_BUF_DISPOSE)
-    git_buf_dispose(&buf);
-#else
-    git_buf_free(&buf);
-#endif
+    GIT2R_BUF_DISPOSE(&buf);
     git_repository_free(repository);
 
     if (nprotect)
