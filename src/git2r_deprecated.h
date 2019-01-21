@@ -16,9 +16,14 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef INCLUDE_git2r_constants_h
-#define INCLUDE_git2r_constants_h
+#ifndef INCLUDE_git2r_deprecated_h
+#define INCLUDE_git2r_deprecated_h
 
+/* The constants GIT_OBJ_ANY, GIT_OBJ_BLOB, GIT_OBJ_COMMIT,
+ * GIT_OBJ_TAG_GIT_OBJ_TREE and GIT_REF_OID are deprecated in
+ * libgit2. Use GIT_OBJECT_ANY, GIT_OBJECT_BLOB, GIT_OBJECT_COMMIT,
+ * GIT_OBJECT_TAG_GIT_OBJECT_TREE and GIT_REFERENCE_DIRECT, if
+ * available, instead. */
 #if defined(GIT2R_HAVE_OBJECT_ANY)
 # define GIT2R_OBJECT_ANY GIT_OBJECT_ANY
 # define GIT2R_OBJECT_BLOB GIT_OBJECT_BLOB
@@ -37,6 +42,8 @@
 # define GIT2R_REFERENCE_SYMBOLIC GIT_REF_SYMBOLIC
 #endif
 
+/* The function 'git_buf_free' is deprecated in libgit2. Use
+ * 'git_buf_dispose', if available, instead. */
 #if defined(GIT2R_HAVE_BUF_DISPOSE)
 # define GIT2R_BUF_DISPOSE git_buf_dispose
 #else
