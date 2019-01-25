@@ -3286,7 +3286,7 @@ $as_echo_n "checking whether the libgit2 constant GIT_OBJECT_ANY is available...
 int
 main ()
 {
- git_buf_dispose(NULL);
+git_object_typeisloose(GIT_OBJECT_ANY);
   ;
   return 0;
 }

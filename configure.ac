@@ -121,8 +121,9 @@ if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
     # available, instead.
     AC_MSG_CHECKING([whether the libgit2 constant GIT_OBJECT_ANY is available])
     have_git_object_any=no
-    AC_LANG_CONFTEST(
-    [AC_LANG_PROGRAM([[#include <git2.h>]], [[ git_buf_dispose(NULL); ]])])
+    AC_LANG_CONFTEST([AC_LANG_PROGRAM(
+    [[#include <git2.h>]],
+    [[git_object_typeisloose(GIT_OBJECT_ANY);]])])
     PKG_CFLAGS="${PKG_CFLAGS} -Werror" "$RBIN" CMD SHLIB conftest.c \
     1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD && have_git_object_any=yes
     AC_MSG_RESULT([${have_git_object_any}])
