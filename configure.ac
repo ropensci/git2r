@@ -105,8 +105,9 @@ if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
     # 'git_buf_dispose', if available, instead.
     AC_MSG_CHECKING([whether the libgit2 function git_buf_dispose is available])
     have_buf_dispose=no
-    AC_LANG_CONFTEST(
-    [AC_LANG_PROGRAM([[#include <git2.h>]], [[ git_buf_dispose(NULL); ]])])
+    AC_LANG_CONFTEST([AC_LANG_PROGRAM(
+    [[#include <git2.h>]],
+    [[git_buf_dispose(NULL);]])])
     PKG_CFLAGS="${PKG_CFLAGS} -Werror" "$RBIN" CMD SHLIB conftest.c \
     1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD && have_buf_dispose=yes
     AC_MSG_RESULT([${have_buf_dispose}])

@@ -3259,7 +3259,7 @@ $as_echo_n "checking whether the libgit2 function git_buf_dispose is available..
 int
 main ()
 {
- git_buf_dispose(NULL);
+git_buf_dispose(NULL);
   ;
   return 0;
 }
