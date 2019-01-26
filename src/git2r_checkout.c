@@ -58,7 +58,7 @@ SEXP git2r_checkout_path(SEXP repo, SEXP path)
     /* Allocate the strings in pathspec */
     opts.paths.strings = malloc(opts.paths.count * sizeof(char*));
     if (!opts.paths.strings) {
-        giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
+        GIT2R_ERROR_SET_STR(GIT2R_ERROR_NONE, git2r_err_alloc_memory_buffer);
         error = GIT_ERROR;
         goto cleanup;
     }
@@ -76,7 +76,7 @@ cleanup:
     git_repository_free(repository);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return R_NilValue;
 }
@@ -118,7 +118,7 @@ SEXP git2r_checkout_tree(SEXP repo, SEXP revision, SEXP force)
         error = GIT_OK;
         break;
     default:
-        giterr_set_str(GITERR_NONE, git2r_err_checkout_tree);
+        GIT2R_ERROR_SET_STR(GIT2R_ERROR_NONE, git2r_err_checkout_tree);
         error = GIT_ERROR;
         break;
     }
@@ -137,7 +137,7 @@ cleanup:
     git_repository_free(repository);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return R_NilValue;
 }

@@ -50,4 +50,24 @@
 # define GIT2R_BUF_DISPOSE git_buf_free
 #endif
 
+#if defined(GIT2R_HAVE_GIT_ERROR)
+# define GIT2R_ERROR_SET_STR git_error_set_str
+# define GIT2R_ERROR_LAST git_error_last
+# define GIT2R_ERROR_SET_OOM git_error_set_oom
+# define GIT2R_ERROR_NONE GIT_ERROR_NONE
+# define GIT2R_ERROR_OS GIT_ERROR_OS
+# define GIT2R_ERROR_NOMEMORY GIT_ERROR_NOMEMORY
+# define GIT2R_ERROR_CONFIG GIT_ERROR_CONFIG
+# define GIT2R_OBJECT_T git_object_t
+#else
+# define GIT2R_ERROR_SET_STR giterr_set_str
+# define GIT2R_ERROR_LAST giterr_last
+# define GIT2R_ERROR_SET_OOM giterr_set_oom
+# define GIT2R_ERROR_NONE GITERR_NONE
+# define GIT2R_ERROR_OS GITERR_OS
+# define GIT2R_ERROR_NOMEMORY GITERR_NOMEMORY
+# define GIT2R_ERROR_CONFIG GITERR_CONFIG
+# define GIT2R_OBJECT_T git_otype
+#endif
+
 #endif

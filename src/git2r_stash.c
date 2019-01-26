@@ -20,6 +20,7 @@
 
 #include "git2r_arg.h"
 #include "git2r_commit.h"
+#include "git2r_deprecated.h"
 #include "git2r_error.h"
 #include "git2r_repository.h"
 #include "git2r_S3.h"
@@ -61,7 +62,7 @@ SEXP git2r_stash_apply(SEXP repo, SEXP index)
         error = 0;
     git_repository_free(repository);
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return R_NilValue;
 }
@@ -88,7 +89,7 @@ SEXP git2r_stash_drop(SEXP repo, SEXP index)
     error = git_stash_drop(repository, INTEGER(index)[0]);
     git_repository_free(repository);
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return R_NilValue;
 }
@@ -118,7 +119,7 @@ SEXP git2r_stash_pop(SEXP repo, SEXP index)
         error = 0;
     git_repository_free(repository);
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return R_NilValue;
 }
@@ -236,7 +237,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return list;
 }
@@ -323,7 +324,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }

@@ -75,8 +75,8 @@ static int git2r_config_count_variables(
             n_level[6]++;
             break;
         default:
-            giterr_set_str(GITERR_CONFIG,
-                           git2r_err_unexpected_config_level);
+            GIT2R_ERROR_SET_STR(GIT2R_ERROR_CONFIG,
+                                git2r_err_unexpected_config_level);
             error = GIT_ERROR;
             goto cleanup;
         }
@@ -217,8 +217,8 @@ static int git2r_config_list_variables(
             git2r_config_list_add_entry(list, 6, i_level, i_list, entry);
             break;
         default:
-            giterr_set_str(GITERR_CONFIG,
-                           git2r_err_unexpected_config_level);
+            GIT2R_ERROR_SET_STR(GIT2R_ERROR_CONFIG,
+                                git2r_err_unexpected_config_level);
             error = GIT_ERROR;
             goto cleanup;
         }
@@ -314,7 +314,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -375,7 +375,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return R_NilValue;
 }
@@ -420,7 +420,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -468,7 +468,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }

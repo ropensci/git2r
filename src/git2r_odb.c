@@ -64,7 +64,7 @@ SEXP git2r_odb_hash(SEXP data)
     UNPROTECT(1);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -108,7 +108,7 @@ SEXP git2r_odb_hashfile(SEXP path)
     UNPROTECT(1);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -166,7 +166,7 @@ static int git2r_odb_objects_cb(const git_oid *oid, void *payload)
 {
     int error;
     size_t len;
-    git_otype type;
+    GIT2R_OBJECT_T type;
     git2r_odb_objects_cb_data *p = (git2r_odb_objects_cb_data*)payload;
 
     error = git_odb_read_header(&len, &type, p->odb, oid);
@@ -248,7 +248,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -289,7 +289,7 @@ static int git2r_odb_add_blob(
     int error;
     int j = 0;
     size_t len;
-    git_otype type;
+    GIT2R_OBJECT_T type;
     char sha[GIT_OID_HEXSZ + 1];
 
     /* Sha */
@@ -370,8 +370,8 @@ static int git2r_odb_tree_blobs(
             buf = malloc(buf_len);
             if (!buf) {
                 git_tree_free(sub_tree);
-                giterr_set_oom();
-                return GITERR_NOMEMORY;
+                GIT2R_ERROR_SET_OOM();
+                return GIT2R_ERROR_NOMEMORY;
             }
             if (path_len) {
                 sep = "/";
@@ -388,8 +388,8 @@ static int git2r_odb_tree_blobs(
                     when,
                     data);
             } else {
-                giterr_set_str(GITERR_OS, "Failed to snprintf tree path.");
-                error = GITERR_OS;
+                GIT2R_ERROR_SET_STR(GIT2R_ERROR_OS, "Failed to snprintf tree path.");
+                error = GIT2R_ERROR_OS;
             }
 
             free(buf);
@@ -435,7 +435,7 @@ static int git2r_odb_blobs_cb(const git_oid *oid, void *payload)
 {
     int error = GIT_OK;
     size_t len;
-    git_otype type;
+    GIT2R_OBJECT_T type;
     git2r_odb_blobs_cb_data *p = (git2r_odb_blobs_cb_data*)payload;
 
     error = git_odb_read_header(&len, &type, p->odb, oid);
@@ -535,7 +535,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }

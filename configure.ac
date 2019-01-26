@@ -132,6 +132,20 @@ if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
         PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_HAVE_OBJECT_ANY"
     fi
 
+    # Several libgit2 error functions and enumaration values have been
+    # deprecated, use newer versions.
+    AC_MSG_CHECKING([whether the libgit2 function git_error_last is available])
+    have_git_error_last=no
+    AC_LANG_CONFTEST([AC_LANG_PROGRAM(
+    [[#include <git2.h>]],
+    [[git_error_last();]])])
+    PKG_CFLAGS="${PKG_CFLAGS} -Werror" "$RBIN" CMD SHLIB conftest.c \
+    1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD && have_git_error_last=yes
+    AC_MSG_RESULT([${have_git_error_last}])
+    if test "x${have_git_error_last}" = xyes; then
+        PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_HAVE_GIT_ERROR"
+    fi
+
     # For debugging
     echo "----- Results of the git2r package configure -----"
     echo ""
@@ -426,13 +440,17 @@ fi
 # The function 'git_buf_free' is deprecated in libgit2. Use
 # 'git_buf_dispose' instead.
 #
-CPPFLAGS="${CPPFLAGS} -DGIT2R_HAVE_BUF_DISPOSE"
+CPPFLAGS="${CPPFLAGS} -DGIT_DEPRECATE_HARD -DGIT2R_HAVE_BUF_DISPOSE"
 
 # The constants GIT_OBJ_ANY, GIT_OBJ_BLOB, GIT_OBJ_COMMIT,
 # GIT_OBJ_TAG_GIT_OBJ_TREE and GIT_REF_OID are deprecated in
 # libgit2. Use GIT_OBJECT_ANY, GIT_OBJECT_BLOB, GIT_OBJECT_COMMIT,
 # GIT_OBJECT_TAG_GIT_OBJECT_TREE and GIT_REFERENCE_DIRECT instead.
 CPPFLAGS="${CPPFLAGS} -DGIT2R_HAVE_OBJECT_ANY"
+
+# Several libgit2 error functions and enumaration values have been
+# deprecated, use newer versions.
+CPPFLAGS="${CPPFLAGS} -DGIT2R_HAVE_GIT_ERROR"
 
 AC_SUBST(GIT2R_SRC_REGEX)
 AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS} ${LIBSSH2_CFLAGS}"])

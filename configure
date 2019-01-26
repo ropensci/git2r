@@ -3299,6 +3299,30 @@ $as_echo "${have_git_object_any}" >&6; }
         PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_HAVE_OBJECT_ANY"
     fi
 
+    # Several libgit2 error functions and enumaration values have been
+    # deprecated, use newer versions.
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the libgit2 function git_error_last is available" >&5
+$as_echo_n "checking whether the libgit2 function git_error_last is available... " >&6; }
+    have_git_error_last=no
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <git2.h>
+int
+main ()
+{
+git_error_last();
+  ;
+  return 0;
+}
+_ACEOF
+    PKG_CFLAGS="${PKG_CFLAGS} -Werror" "$RBIN" CMD SHLIB conftest.c \
+    1>&5 2>&5 && have_git_error_last=yes
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${have_git_error_last}" >&5
+$as_echo "${have_git_error_last}" >&6; }
+    if test "x${have_git_error_last}" = xyes; then
+        PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_HAVE_GIT_ERROR"
+    fi
+
     # For debugging
     echo "----- Results of the git2r package configure -----"
     echo ""
@@ -6820,13 +6844,17 @@ fi
 # The function 'git_buf_free' is deprecated in libgit2. Use
 # 'git_buf_dispose' instead.
 #
-CPPFLAGS="${CPPFLAGS} -DGIT2R_HAVE_BUF_DISPOSE"
+CPPFLAGS="${CPPFLAGS} -DGIT_DEPRECATE_HARD -DGIT2R_HAVE_BUF_DISPOSE"
 
 # The constants GIT_OBJ_ANY, GIT_OBJ_BLOB, GIT_OBJ_COMMIT,
 # GIT_OBJ_TAG_GIT_OBJ_TREE and GIT_REF_OID are deprecated in
 # libgit2. Use GIT_OBJECT_ANY, GIT_OBJECT_BLOB, GIT_OBJECT_COMMIT,
 # GIT_OBJECT_TAG_GIT_OBJECT_TREE and GIT_REFERENCE_DIRECT instead.
 CPPFLAGS="${CPPFLAGS} -DGIT2R_HAVE_OBJECT_ANY"
+
+# Several libgit2 error functions and enumaration values have been
+# deprecated, use newer versions.
+CPPFLAGS="${CPPFLAGS} -DGIT2R_HAVE_GIT_ERROR"
 
 
 PKG_CFLAGS="${PKG_CFLAGS} ${LIBSSH2_CFLAGS}"

@@ -53,7 +53,7 @@ git_repository* git2r_repository_open(SEXP repo)
         if (error == GIT_ENOTFOUND)
             Rf_warning("Could not find repository at path '%s'", CHAR(STRING_ELT(path, 0)));
         else
-            Rf_warning("Unable to open repository: %s", giterr_last()->message);
+            Rf_warning("Unable to open repository: %s", GIT2R_ERROR_LAST()->message);
         git_repository_free(repository);
         return NULL;
     }
@@ -183,7 +183,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -247,7 +247,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -301,7 +301,7 @@ SEXP git2r_repository_is_bare(SEXP repo)
     is_bare = git_repository_is_bare(repository);
     git_repository_free(repository);
     if (is_bare < 0)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
     return Rf_ScalarLogical(is_bare);
 }
 
@@ -323,7 +323,7 @@ SEXP git2r_repository_is_shallow(SEXP repo)
     is_shallow = git_repository_is_shallow(repository);
     git_repository_free(repository);
     if (is_shallow < 0)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
     return Rf_ScalarLogical(is_shallow);
 }
 
@@ -345,7 +345,7 @@ SEXP git2r_repository_head_detached(SEXP repo)
     head_detached = git_repository_head_detached(repository);
     git_repository_free(repository);
     if (head_detached < 0)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
     return Rf_ScalarLogical(head_detached);
 }
 
@@ -367,7 +367,7 @@ SEXP git2r_repository_is_empty(SEXP repo)
     is_empty = git_repository_is_empty(repository);
     git_repository_free(repository);
     if (is_empty < 0)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
     return Rf_ScalarLogical(is_empty);
 }
 
@@ -419,7 +419,7 @@ SEXP git2r_repository_set_head(SEXP repo, SEXP ref_name)
     git_repository_free(repository);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return R_NilValue;
 }
@@ -463,7 +463,7 @@ cleanup:
     git_repository_free(repository);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return R_NilValue;
 }
@@ -550,7 +550,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }

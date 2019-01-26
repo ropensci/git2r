@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2018 The git2r contributors
+ *  Copyright (C) 2013-2019 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -20,6 +20,7 @@
 
 #include "git2r_arg.h"
 #include "git2r_commit.h"
+#include "git2r_deprecated.h"
 #include "git2r_error.h"
 #include "git2r_merge.h"
 #include "git2r_repository.h"
@@ -101,7 +102,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -153,14 +154,14 @@ static int git2r_fast_forward_merge(
     buf_len = strlen(log_message) + sizeof(": Fast-forward");
     buf = malloc(buf_len);
     if (!buf) {
-        giterr_set_oom();
-        error = GITERR_NOMEMORY;
+        GIT2R_ERROR_SET_OOM();
+        error = GIT2R_ERROR_NOMEMORY;
         goto cleanup;
     }
     error = snprintf(buf, buf_len, "%s: Fast-forward", log_message);
     if (error < 0 || error >= buf_len) {
-        giterr_set_str(GITERR_OS, "Failed to snprintf log message.");
-        error = GITERR_OS;
+        GIT2R_ERROR_SET_STR(GIT2R_ERROR_OS, "Failed to snprintf log message.");
+        error = GIT2R_ERROR_OS;
         goto cleanup;
     }
 
@@ -396,8 +397,8 @@ static int git2r_merge(
     case GIT_MERGE_PREFERENCE_NONE:
         if (merge_analysis & GIT_MERGE_ANALYSIS_FASTFORWARD) {
             if (1 != n) {
-                giterr_set_str(
-                    GITERR_NONE,
+                GIT2R_ERROR_SET_STR(
+                    GIT2R_ERROR_NONE,
                     "Unable to perform Fast-Forward merge "
                     "with mith multiple merge heads.");
                 return GIT_ERROR;
@@ -438,8 +439,8 @@ static int git2r_merge(
     case GIT_MERGE_PREFERENCE_FASTFORWARD_ONLY:
         if (merge_analysis & GIT_MERGE_ANALYSIS_FASTFORWARD) {
             if (1 != n) {
-                giterr_set_str(
-                    GITERR_NONE,
+                GIT2R_ERROR_SET_STR(
+                    GIT2R_ERROR_NONE,
                     "Unable to perform Fast-Forward merge "
                     "with mith multiple merge heads.");
                 return GIT_ERROR;
@@ -451,12 +452,12 @@ static int git2r_merge(
                 repository,
                 name);
         } else {
-            giterr_set_str(GITERR_NONE, "Unable to perform Fast-Forward merge.");
+            GIT2R_ERROR_SET_STR(GIT2R_ERROR_NONE, "Unable to perform Fast-Forward merge.");
             return GIT_ERROR;
         }
         break;
     default:
-        giterr_set_str(GITERR_NONE, "Unknown merge option");
+        GIT2R_ERROR_SET_STR(GIT2R_ERROR_NONE, "Unknown merge option");
         return GIT_ERROR;
     }
 
@@ -532,7 +533,7 @@ SEXP git2r_merge_branch(SEXP branch, SEXP merger, SEXP commit_on_success, SEXP f
 
     merge_heads = calloc(1, sizeof(git_annotated_commit*));
     if (NULL == merge_heads) {
-        giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
+        GIT2R_ERROR_SET_STR(GIT2R_ERROR_NONE, git2r_err_alloc_memory_buffer);
         goto cleanup;
     }
 
@@ -546,14 +547,14 @@ SEXP git2r_merge_branch(SEXP branch, SEXP merger, SEXP commit_on_success, SEXP f
     buf_len = strlen(name) + sizeof("merge ");
     buf = malloc(buf_len);
     if (!buf) {
-        giterr_set_oom();
-        error = GITERR_NOMEMORY;
+        GIT2R_ERROR_SET_OOM();
+        error = GIT2R_ERROR_NOMEMORY;
         goto cleanup;
     }
     error = snprintf(buf, buf_len, "merge %s", name);
     if (error < 0 || error >= buf_len) {
-        giterr_set_str(GITERR_OS, "Failed to snprintf log message.");
-        error = GITERR_OS;
+        GIT2R_ERROR_SET_STR(GIT2R_ERROR_OS, "Failed to snprintf log message.");
+        error = GIT2R_ERROR_OS;
         goto cleanup;
     }
 
@@ -584,7 +585,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -610,7 +611,7 @@ static int git2r_merge_heads_from_fetch_heads(
 
     *merge_heads = calloc(n, sizeof(git_annotated_commit*));
     if (!(*merge_heads)) {
-        giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
+        GIT2R_ERROR_SET_STR(GIT2R_ERROR_NONE, git2r_err_alloc_memory_buffer);
         return GIT_ERROR;
     }
 
@@ -711,7 +712,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }

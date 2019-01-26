@@ -87,7 +87,7 @@ SEXP git2r_revparse_single(SEXP repo, SEXP revision)
         git2r_tree_init((git_tree*)treeish, repo, result);
         break;
     default:
-        giterr_set_str(GITERR_NONE, git2r_err_revparse_single);
+        GIT2R_ERROR_SET_STR(GIT2R_ERROR_NONE, git2r_err_revparse_single);
         error = GIT_ERROR;
         break;
     }
@@ -109,7 +109,7 @@ cleanup:
         } else {
             git2r_error(
                 __func__,
-                giterr_last(),
+                GIT2R_ERROR_LAST(),
                 NULL,
                 NULL);
         }
