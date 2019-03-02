@@ -34,6 +34,6 @@ commit(repo, "First commit message")
 tag(repo, "Tagname", "Tag message")
 
 is_tag(tags(repo)[[1]])
-is_tag(last_commit(repo)[[1]])
+is_tag(last_commit(repo))
 }
 }
