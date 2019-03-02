@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -64,6 +64,32 @@ tag <- function(object = ".",
     invisible(.Call(git2r_tag_create, object, name, message, tagger))
 }
 
+##' Check if object is a git_tag object
+##'
+##' @param object Check if object is a git_tag object
+##' @return TRUE if object is a git_tag, else FALSE
+##' @export
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a user
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##'
+##' ## Commit a text file
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit(repo, "First commit message")
+##'
+##' ## Create tag
+##' tag(repo, "Tagname", "Tag message")
+##'
+##' is_tag(tags(repo)[[1]])
+##' is_tag(last_commit(repo))
+##' }
 is_tag <- function(object) {
     inherits(object, "git_tag")
 }
