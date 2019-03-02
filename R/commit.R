@@ -17,10 +17,14 @@
 ##' Ahead Behind
 ##'
 ##' Count the number of unique commits between two commit objects.
-##' @param local a git_commit object.
-##' @param upstream a git_commit object.
+##' @param local a git_commit object. Can also be a tag or a branch,
+##'     and in that case the commit will be the target of the tag or
+##'     branch.
+##' @param upstream a git_commit object. Can also be a tag or a
+##'     branch, and in that case the commit will be the target of the
+##'     tag or branch.
 ##' @return An integer vector of length 2 with number of commits that
-##' the upstream commit is ahead and behind the local commit
+##'     the upstream commit is ahead and behind the local commit
 ##' @export
 ##' @examples \dontrun{
 ##' ## Create a directory in tempdir
@@ -36,6 +40,7 @@
 ##'            con = file.path(path, "test.txt"))
 ##' add(repo, "test.txt")
 ##' commit_1 <- commit(repo, "Commit message 1")
+##' tag_1 <- tag(repo, "Tagname1", "Tag message 1")
 ##'
 ##' # Change file and commit
 ##' writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -43,10 +48,24 @@
 ##'              con = file.path(path, "test.txt"))
 ##' add(repo, "test.txt")
 ##' commit_2 <- commit(repo, "Commit message 2")
+##' tag_2 <- tag(repo, "Tagname2", "Tag message 2")
 ##'
 ##' ahead_behind(commit_1, commit_2)
+##' ahead_behind(tag_1, tag_2)
 ##' }
 ahead_behind <- function(local = NULL, upstream = NULL) {
+    if (is_tag(local)) {
+        local <- lookup(local$repo, local$target)
+    } else if (is_branch(local)) {
+        local <- lookup(local$repo, branch_target(local))
+    }
+
+    if (is_tag(upstream)) {
+        upstream <- lookup(upstream$repo, upstream$target)
+    } else if (is_branch(upstream)) {
+        upstream <- lookup(upstream$repo, branch_target(upstream))
+    }
+
     .Call(git2r_graph_ahead_behind, local, upstream)
 }
 
