@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -315,9 +315,12 @@ last_commit <- function(repo = ".") {
 ##' Descendant
 ##'
 ##' Determine if a commit is the descendant of another commit
-##' @param commit a git_commit object.
+##' @param commit a git_commit object. Can also be a tag or a branch,
+##'     and in that case the commit will be the target of the tag or
+##'     branch.
 ##' @param ancestor a git_commit object to check if ancestor to
-##'     \code{commit}.
+##'     \code{commit}. Can also be a tag or a branch, and in that case
+##'     the commit will be the target of the tag or branch.
 ##' @return TRUE if \code{commit} is descendant of \code{ancestor},
 ##'     else FALSE
 ##' @export
@@ -336,6 +339,7 @@ last_commit <- function(repo = ".") {
 ##'            con = file.path(path, "test.txt"))
 ##' add(repo, "test.txt")
 ##' commit_1 <- commit(repo, "Commit message 1")
+##' tag_1 <- tag(repo, "Tagname1", "Tag message 1")
 ##'
 ##' # Change file and commit
 ##' writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -343,11 +347,26 @@ last_commit <- function(repo = ".") {
 ##'              con = file.path(path, "test.txt"))
 ##' add(repo, "test.txt")
 ##' commit_2 <- commit(repo, "Commit message 2")
+##' tag_2 <- tag(repo, "Tagname2", "Tag message 2")
 ##'
 ##' descendant_of(commit_1, commit_2)
 ##' descendant_of(commit_2, commit_1)
+##' descendant_of(tag_1, tag_2)
+##' descendant_of(tag_2, tag_1)
 ##' }
 descendant_of <- function(commit = NULL, ancestor = NULL) {
+    if (is_tag(commit)) {
+        commit <- lookup(commit$repo, commit$target)
+    } else if (is_branch(commit)) {
+        commit <- lookup(commit$repo, branch_target(commit))
+    }
+
+    if (is_tag(ancestor)) {
+        ancestor <- lookup(ancestor$repo, ancestor$target)
+    } else if (is_branch(ancestor)) {
+        ancestor <- lookup(ancestor$repo, branch_target(ancestor))
+    }
+
     .Call(git2r_graph_descendant_of, commit, ancestor)
 }
 
