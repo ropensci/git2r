@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2018 The git2r contributors
+ *  Copyright (C) 2013-2019 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -93,7 +93,7 @@ static const R_CallMethodDef callMethods[] =
     CALLDEF(git2r_config_get_logical, 2),
     CALLDEF(git2r_config_get_string, 2),
     CALLDEF(git2r_config_set, 2),
-    CALLDEF(git2r_diff, 5),
+    CALLDEF(git2r_diff, 12),
     CALLDEF(git2r_graph_ahead_behind, 2),
     CALLDEF(git2r_graph_descendant_of, 2),
     CALLDEF(git2r_index_add_all, 3),

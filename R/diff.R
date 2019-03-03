@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -113,7 +113,24 @@ summary.git_diff <- function(object, ...) {
 ##' @param filename If as_char is TRUE, then the diff can be written
 ##'     to a file with name filename (the file is overwritten if it
 ##'     exists). Default is NULL.
-##' @param ... Additional arguments affecting the diff produced
+##' @param context_lines The number of unchanged lines that define the
+##'     boundary of a hunk (and to display before and after). Defaults
+##'     to 3.
+##' @param interhunk_lines The maximum number of unchanged lines
+##'     between hunk boundaries before the hunks will be merged into
+##'     one. Defaults to 0.
+##' @param old_prefix The virtual "directory" prefix for old file
+##'     names in hunk headers. Default is "a".
+##' @param new_prefix The virtual "directory" prefix for new file
+##'     names in hunk headers. Defaults to "b".
+##' @param id_abbrev The abbreviation length to use when formatting
+##'     object ids. Defaults to the value of 'core.abbrev' from the
+##'     config, or 7 if NULL.
+##' @param path A character vector of paths / fnmatch patterns to
+##'     constrain diff. Default is NULL which include all paths.
+##' @param max_size A size (in bytes) above which a blob will be
+##'     marked as binary automatically; pass a negative value to
+##'     disable. Defaults to 512MB when max_size is NULL.
 ##' @return A \code{git_diff} object if as_char is FALSE. If as_char
 ##'     is TRUE and filename is NULL, a character string, else NULL.
 ##' @examples
@@ -182,6 +199,13 @@ diff.git_repository <- function(x,
                                 index    = FALSE,
                                 as_char  = FALSE,
                                 filename = NULL,
+                                context_lines = 3,
+                                interhunk_lines = 0,
+                                old_prefix = "a",
+                                new_prefix = "b",
+                                id_abbrev = NULL,
+                                path = NULL,
+                                max_size = NULL,
                                 ...)
 {
     if (as_char) {
@@ -200,19 +224,35 @@ diff.git_repository <- function(x,
         filename <- NULL
     }
 
-    .Call(git2r_diff, x, NULL, NULL, index, filename)
+    if (!is.null(id_abbrev))
+        id_abbrev <- as.integer(id_abbrev)
+
+    if (!is.null(max_size))
+        max_size <- as.integer(max_size)
+
+    .Call(git2r_diff, x, NULL, NULL, index, filename,
+          as.integer(context_lines), as.integer(interhunk_lines),
+          old_prefix, new_prefix, id_abbrev, path, max_size)
 }
 
 ##' @rdname diff-methods
 ##' @param new_tree The new git_tree object to compare, or NULL.  If
 ##'     NULL, then we use the working directory or the index (see the
 ##'     \code{index} argument).
+##' @param ... Not used.
 ##' @export
 diff.git_tree <- function(x,
                           new_tree = NULL,
                           index    = FALSE,
                           as_char  = FALSE,
                           filename = NULL,
+                          context_lines = 3,
+                          interhunk_lines = 0,
+                          old_prefix = "a",
+                          new_prefix = "b",
+                          id_abbrev = NULL,
+                          path = NULL,
+                          max_size = NULL,
                           ...)
 {
     if (as_char) {
@@ -240,7 +280,15 @@ diff.git_tree <- function(x,
         }
     }
 
-    .Call(git2r_diff, NULL, x, new_tree, index, filename)
+    if (!is.null(id_abbrev))
+        id_abbrev <- as.integer(id_abbrev)
+
+    if (!is.null(max_size))
+        max_size <- as.integer(max_size)
+
+    .Call(git2r_diff, NULL, x, new_tree, index, filename,
+          as.integer(context_lines), as.integer(interhunk_lines),
+          old_prefix, new_prefix, id_abbrev, path, max_size)
 }
 
 ##' @export

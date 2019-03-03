@@ -34,11 +34,11 @@ int git2r_diff_count(git_diff *diff, size_t *num_files,
 		     size_t *max_hunks, size_t *max_lines);
 int git2r_diff_format_to_r(git_diff *diff, SEXP dest);
 int git2r_diff_print(git_diff *diff, SEXP filename, SEXP* buf_r);
-SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename);
-SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename);
-SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename);
-SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename);
-SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename);
+SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename, git_diff_options *opts);
+SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename, git_diff_options *opts);
+SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename, git_diff_options *opts);
+SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename, git_diff_options *opts);
+SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename, git_diff_options *opts);
 
 /**
  * Diff
@@ -68,45 +68,115 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename);
  * diff is written to a character vector. If filename is a character
  * vector of length one with non-NA value, the diff is written to a
  * file with name filename (the file is overwritten if it exists).
+ * @param context_lines The number of unchanged lines that define the
+ * boundary of a hunk (and to display before and after).
+ * @param interhunk_lines The maximum number of unchanged lines
+ * between hunk boundaries before the hunks will be merged into one.
+ * @param old_prefix The virtual "directory" prefix for old file
+ * names in hunk headers.
+ * @param new_prefix The virtual "directory" prefix for new file
+ * names in hunk headers.
+ * @param id_abbrev The abbreviation length to use when formatting
+ * object ids. Defaults to the value of 'core.abbrev' from the
+ * config, or 7 if NULL.
+ * @param path A character vector of paths / fnmatch patterns to
+ *     constrain diff. Default is NULL which include all paths.
+ * @param max_size A size (in bytes) above which a blob will be
+ * marked as binary automatically; pass a negative value to
+ * disable. Defaults to 512MB when max_size is NULL.
  * @return A S3 class git_diff object if filename equals R_NilValue. A
  * character vector with diff if filename has length 0. Oterwise NULL.
  */
-SEXP git2r_diff(SEXP repo, SEXP tree1, SEXP tree2, SEXP index, SEXP filename)
+SEXP git2r_diff(
+    SEXP repo,
+    SEXP tree1,
+    SEXP tree2,
+    SEXP index,
+    SEXP filename,
+    SEXP context_lines,
+    SEXP interhunk_lines,
+    SEXP old_prefix,
+    SEXP new_prefix,
+    SEXP id_abbrev,
+    SEXP path,
+    SEXP max_size)
 {
     int c_index;
+    git_diff_options opts = GIT_DIFF_OPTIONS_INIT;
 
     if (git2r_arg_check_logical(index))
         git2r_error(__func__, NULL, "'index'", git2r_err_logical_arg);
-
     c_index = LOGICAL(index)[0];
+
+    if (git2r_arg_check_integer_gte_zero(context_lines))
+        git2r_error(__func__, NULL, "'context_lines'", git2r_err_integer_gte_zero_arg);
+    opts.context_lines = INTEGER(context_lines)[0];
+
+    if (git2r_arg_check_integer_gte_zero(interhunk_lines))
+        git2r_error(__func__, NULL, "'interhunk_lines'", git2r_err_integer_gte_zero_arg);
+    opts.interhunk_lines = INTEGER(interhunk_lines)[0];
+
+    if (git2r_arg_check_string(old_prefix))
+        git2r_error(__func__, NULL, "'old_prefix'", git2r_err_string_arg);
+    opts.old_prefix = CHAR(STRING_ELT(old_prefix, 0));
+
+    if (git2r_arg_check_string(new_prefix))
+        git2r_error(__func__, NULL, "'new_prefix'", git2r_err_string_arg);
+    opts.new_prefix = CHAR(STRING_ELT(new_prefix, 0));
+
+    if (!Rf_isNull(id_abbrev)) {
+        if (git2r_arg_check_integer_gte_zero(id_abbrev))
+            git2r_error(__func__, NULL, "'id_abbrev'",
+                        git2r_err_integer_gte_zero_arg);
+        opts.id_abbrev = INTEGER(id_abbrev)[0];
+    }
+
+    if (!Rf_isNull(path)) {
+        int error;
+
+        if (git2r_arg_check_string_vec(path))
+            git2r_error(__func__, NULL, "'path'", git2r_err_string_vec_arg);
+
+        error = git2r_copy_string_vec(&(opts.pathspec), path);
+        if (error || !opts.pathspec.count) {
+            free(opts.pathspec.strings);
+            git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+        }
+    }
+
+    if (!Rf_isNull(max_size)) {
+        if (git2r_arg_check_integer(max_size))
+            git2r_error(__func__, NULL, "'max_size'", git2r_err_integer_arg);
+        opts.max_size = INTEGER(max_size)[0];
+    }
 
     if (Rf_isNull(tree1) && ! c_index) {
 	if (!Rf_isNull(tree2))
 	    git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
-	return git2r_diff_index_to_wd(repo, filename);
+	return git2r_diff_index_to_wd(repo, filename, &opts);
     }
 
     if (Rf_isNull(tree1) && c_index) {
 	if (!Rf_isNull(tree2))
 	    git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
-	return git2r_diff_head_to_index(repo, filename);
+	return git2r_diff_head_to_index(repo, filename, &opts);
     }
 
     if (!Rf_isNull(tree1) && Rf_isNull(tree2) && !c_index) {
 	if (!Rf_isNull(repo))
 	    git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
-	return git2r_diff_tree_to_wd(tree1, filename);
+	return git2r_diff_tree_to_wd(tree1, filename, &opts);
     }
 
     if (!Rf_isNull(tree1) && Rf_isNull(tree2) && c_index) {
 	if (!Rf_isNull(repo))
 	    git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
-	return git2r_diff_tree_to_index(tree1, filename);
+	return git2r_diff_tree_to_index(tree1, filename, &opts);
     }
 
     if (!Rf_isNull(repo))
         git2r_error(__func__, NULL, git2r_err_diff_arg, NULL);
-    return git2r_diff_tree_to_tree(tree1, tree2, filename);
+    return git2r_diff_tree_to_tree(tree1, tree2, filename, &opts);
 }
 
 /**
@@ -120,10 +190,12 @@ SEXP git2r_diff(SEXP repo, SEXP tree1, SEXP tree2, SEXP index, SEXP filename)
  * diff is written to a character vector. If filename is a character
  * vector of length one with non-NA value, the diff is written to a
  * file with name filename (the file is overwritten if it exists).
+ * @param opts Structure describing options about how the diff
+ * should be executed.
  * @return A S3 class git_diff object if filename equals R_NilValue. A
  * character vector with diff if filename has length 0. Oterwise NULL.
  */
-SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename)
+SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename, git_diff_options *opts)
 {
     int error, nprotect = 0;
     git_repository *repository = NULL;
@@ -138,9 +210,9 @@ SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
     error = git_diff_index_to_workdir(&diff,
-				    repository,
-				    /*index=*/ NULL,
-				    /*opts=*/ NULL);
+                                      repository,
+                                      /*index=*/ NULL,
+                                      opts);
 
     if (error)
 	goto cleanup;
@@ -180,6 +252,7 @@ SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename)
     }
 
 cleanup:
+    free(opts->pathspec.strings);
     git_diff_free(diff);
     git_repository_free(repository);
 
@@ -202,10 +275,12 @@ cleanup:
  * diff is written to a character vector. If filename is a character
  * vector of length one with non-NA value, the diff is written to a
  * file with name filename (the file is overwritten if it exists).
+ * @param opts Structure describing options about how the diff
+ * should be executed.
  * @return A S3 class git_diff object if filename equals R_NilValue. A
  * character vector with diff if filename has length 0. Oterwise NULL.
  */
-SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
+SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename, git_diff_options *opts)
 {
     int error, nprotect = 0;
     git_repository *repository = NULL;
@@ -234,7 +309,7 @@ SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
         repository,
         head,
         /* index= */ NULL,
-        /* opts = */ NULL);
+        opts);
     if (error)
 	goto cleanup;
 
@@ -283,6 +358,7 @@ SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename)
     }
 
 cleanup:
+    free(opts->pathspec.strings);
     git_tree_free(head);
     git_object_free(obj);
     git_diff_free(diff);
@@ -307,10 +383,12 @@ cleanup:
  * diff is written to a character vector. If filename is a character
  * vector of length one with non-NA value, the diff is written to a
  * file with name filename (the file is overwritten if it exists).
+ * @param opts Structure describing options about how the diff
+ * should be executed.
  * @return A S3 class git_diff object if filename equals R_NilValue. A
  * character vector with diff if filename has length 0. Oterwise NULL.
  */
-SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
+SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename, git_diff_options *opts)
 {
     int error, nprotect = 0;
     git_repository *repository = NULL;
@@ -340,7 +418,7 @@ SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
     if (error)
 	goto cleanup;
 
-    error = git_diff_tree_to_workdir(&diff, repository, c_tree, /* opts = */ NULL);
+    error = git_diff_tree_to_workdir(&diff, repository, c_tree, opts);
     if (error)
 	goto cleanup;
 
@@ -388,6 +466,7 @@ SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename)
     }
 
 cleanup:
+    free(opts->pathspec.strings);
     git_diff_free(diff);
     git_tree_free(c_tree);
     git_object_free(obj);
@@ -412,10 +491,12 @@ cleanup:
  * diff is written to a character vector. If filename is a character
  * vector of length one with non-NA value, the diff is written to a
  * file with name filename (the file is overwritten if it exists).
+ * @param opts Structure describing options about how the diff
+ * should be executed.
  * @return A S3 class git_diff object if filename equals R_NilValue. A
  * character vector with diff if filename has length 0. Oterwise NULL.
  */
-SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
+SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename, git_diff_options *opts)
 {
     int error, nprotect = 0;
     git_repository *repository = NULL;
@@ -450,7 +531,7 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
         repository,
         c_tree,
         /* index= */ NULL,
-        /* opts= */ NULL);
+        opts);
     if (error)
 	goto cleanup;
 
@@ -498,6 +579,7 @@ SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename)
     }
 
 cleanup:
+    free(opts->pathspec.strings);
     git_diff_free(diff);
     git_tree_free(c_tree);
     git_object_free(obj);
@@ -523,10 +605,12 @@ cleanup:
  * diff is written to a character vector. If filename is a character
  * vector of length one with non-NA value, the diff is written to a
  * file with name filename (the file is overwritten if it exists).
+ * @param opts Structure describing options about how the diff
+ * should be executed.
  * @return A S3 class git_diff object if filename equals R_NilValue. A
  * character vector with diff if filename has length 0. Oterwise NULL.
  */
-SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
+SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename, git_diff_options *opts)
 {
     int error, nprotect = 0;
     git_repository *repository = NULL;
@@ -576,7 +660,7 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
         repository,
         c_tree1,
         c_tree2,
-        /* opts= */ NULL);
+        opts);
     if (error)
 	goto cleanup;
 
@@ -624,6 +708,7 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename)
     }
 
 cleanup:
+    free(opts->pathspec.strings);
     git_diff_free(diff);
     git_tree_free(c_tree1);
     git_tree_free(c_tree2);
