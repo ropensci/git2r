@@ -88,7 +88,10 @@ cred_token <- function(token = "GITHUB_PAT") {
 ##'
 ##' @family git credential functions
 ##' @param username The username of the credential
-##' @param password The password of the credential
+##' @param password The password of the credential. If getPass is installed
+##'     and the only input is username, \code{getPass::getPass()} will be
+##'     called to allow for interactive and obfuscated interactive
+##'     input of the password.
 ##' @return A list of class \code{cred_user_pass} with entries:
 ##' \describe{
 ##'   \item{username}{
@@ -105,6 +108,15 @@ cred_token <- function(token = "GITHUB_PAT") {
 ##' cred_user_pass("Random Developer", "SecretPassword")
 ##' }
 cred_user_pass <- function(username = NULL, password = NULL) {
+
+  if (!is.null(username)) {
+    if (is.null(password)) {
+      if (requireNamespace("getPass", quietly = TRUE)) {
+        password <- getPass::getPass()
+      }
+    }
+  }
+
   structure(list(username = username, password = password),
             class = "cred_user_pass")
 }
