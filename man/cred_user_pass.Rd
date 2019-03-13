@@ -9,7 +9,10 @@ cred_user_pass(username = NULL, password = NULL)
 \arguments{
 \item{username}{The username of the credential}
 
-\item{password}{The password of the credential}
+\item{password}{The password of the credential. If getPass is installed
+and the only input is username, \code{getPass::getPass()} will be
+called to allow for interactive and obfuscated interactive
+input of the password.}
 }
 \value{
 A list of class \code{cred_user_pass} with entries:
