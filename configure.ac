@@ -358,16 +358,6 @@ else
     CPPFLAGS="${CPPFLAGS} -DGIT_SSH"
 fi
 
-# Check for iconv
-case "${host_os}" in
-    darwin*)
-        AM_ICONV
-        if test "x${am_cv_func_iconv}" = xyes; then
-            CPPFLAGS="${CPPFLAGS} -DGIT_USE_ICONV"
-        fi
-    ;;
-esac
-
 # Configuration specific for solaris
 case "${host_os}" in
     solaris*)
