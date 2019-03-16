@@ -248,14 +248,15 @@ static int git2r_note_foreach_cb(
     const git_oid *annotated_object_id,
     void *payload)
 {
+    int error = 0, nprotect = 0;
     git2r_note_foreach_cb_data *cb_data = (git2r_note_foreach_cb_data*)payload;
 
     /* Check if we have a list to populate */
     if (!Rf_isNull(cb_data->list)) {
-        int error;
         SEXP note;
 
         PROTECT(note = Rf_mkNamed(VECSXP, git2r_S3_items__git_note));
+        nprotect++;
         Rf_setAttrib(
             note,
             R_ClassSymbol,
@@ -268,18 +269,19 @@ static int git2r_note_foreach_cb(
             cb_data->notes_ref,
             cb_data->repo,
             note);
-        if (error) {
-            UNPROTECT(1);
-            return error;
-        }
+        if (error)
+            goto cleanup;
 
         SET_VECTOR_ELT(cb_data->list, cb_data->n, note);
-        UNPROTECT(1);
     }
 
     cb_data->n += 1;
 
-    return 0;
+cleanup:
+    if (nprotect)
+        UNPROTECT(nprotect);
+
+    return error;
 }
 
 /**
