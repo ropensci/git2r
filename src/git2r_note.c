@@ -249,12 +249,11 @@ static int git2r_note_foreach_cb(
     void *payload)
 {
     int error = 0, nprotect = 0;
+    SEXP note;
     git2r_note_foreach_cb_data *cb_data = (git2r_note_foreach_cb_data*)payload;
 
     /* Check if we have a list to populate */
     if (!Rf_isNull(cb_data->list)) {
-        SEXP note;
-
         PROTECT(note = Rf_mkNamed(VECSXP, git2r_S3_items__git_note));
         nprotect++;
         Rf_setAttrib(
