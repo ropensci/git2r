@@ -31,7 +31,7 @@ void git_hash_ctx_cleanup(git_hash_ctx *ctx);
 # include "hash/hash_generic.h"
 #endif
 
-/* int git_hash_global_init(void); */
+int git_hash_global_init(void);
 
 typedef struct {
 	void *data;
