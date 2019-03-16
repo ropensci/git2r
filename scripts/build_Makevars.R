@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -70,7 +70,7 @@ build_Makevars.in <- function() {
     on.exit(close(Makevars))
 
     files <- list(libgit2 = o_files("src/libgit2/src"),
-                  libgit2.sha1dc = o_files("src/libgit2/src/hash/sha1dc"),
+                  libgit2.sha1 = o_files("src/libgit2/src/hash"),
                   libgit2.streams = o_files("src/libgit2/src/streams"),
                   libgit2.transports =
                       o_files("src/libgit2/src/transports",
