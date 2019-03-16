@@ -130,7 +130,6 @@ sync_libgit2:
 	-rm -f src/libgit2/src/hash/hash_generic.h
 	-rm -f src/libgit2/src/hash/hash_mbedtls.c
 	-rm -f src/libgit2/src/hash/hash_mbedtls.h
-	-rm -f src/libgit2/src/hash/hash_openssl.h
 	-rm -f src/libgit2/src/hash/hash_win32.c
 	-rm -f src/libgit2/src/hash/hash_win32.h
 	-rm -f src/libgit2/src/transports/auth_negotiate.c
