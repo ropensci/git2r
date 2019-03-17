@@ -20,6 +20,12 @@ AC_CONFIG_SRCDIR([src/git2r.c])
 AC_CONFIG_AUX_DIR([tools])
 AC_CANONICAL_HOST
 
+m4_include([tools/iconv.m4])
+m4_include([tools/lib-ld.m4])
+m4_include([tools/lib-link.m4])
+m4_include([tools/lib-prefix.m4])
+m4_include([tools/pkg.m4])
+
 # Checks for programs.
 AC_PROG_CC
 
@@ -357,6 +363,16 @@ if test "x${have_ssh2}" = xno; then
 else
     CPPFLAGS="${CPPFLAGS} -DGIT_SSH"
 fi
+
+# Check for iconv
+case "${host_os}" in
+    darwin*)
+        AM_ICONV
+        if test "x${am_cv_func_iconv}" = xyes; then
+            CPPFLAGS="${CPPFLAGS} -DGIT_USE_ICONV"
+        fi
+    ;;
+esac
 
 # Configuration specific for solaris
 case "${host_os}" in
