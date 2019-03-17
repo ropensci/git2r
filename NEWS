@@ -1,6 +1,36 @@
 git2r 0.24.0.9001
 -----------------
 
+CHANGES
+
+* Updated the bundled libgit2 source code to version '0.28.1'.
+
+* Added additional parameters to the 'diff' function to control the
+  output, see the documentation.
+
+* Added getPass option to the password argument in 'cred_user_pass'
+  (Annie Wang in PR #383)
+
+* Changed the 'print' functions to return its argument invisibly.
+
+* Changed the 'git_config_files' function to return a 'data.frame'
+
+* Changed the 'ahead_behind' function to accept a tag or a branch for
+  the local and upstrean commit.
+
+* Changed the 'descendent_of' function to accept a tag or a branch for
+  the 'commit' and 'ancestor' commit.
+
+BUG FIXES
+
+* Fixed memory protection errors in the git2r C source code reported
+  by the 'rchk' tool.
+
+* Fixed listing of 'commits' from a shallow repository.
+
+* Fixed the configuration script to include the missing macro
+  'AM_ICONV'.
+
 git2r 0.24.0
 ------------
 
