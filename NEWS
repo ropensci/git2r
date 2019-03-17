@@ -1,3 +1,10 @@
+git2r 0.25.1
+------------
+
+BUG FIXES
+
+* Fixed significant warning from 'R CMD check'
+
 git2r 0.25.0
 ------------
 
