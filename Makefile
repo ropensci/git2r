@@ -31,16 +31,16 @@ check:
 
 # Check reverse dependencies
 #
-# 1) Install packages (in ./revdep/lib) to check reverse dependencies.
-# 2) Check reverse dependencies using 'R CMD check'.
-# 3) Collect results from '00check.log' files.
+# 1) Install packages (in ../revdep/lib) to check the reverse dependencies.
+# 2) Check the reverse dependencies using 'R CMD check'.
+# 3) Collect results from the '00check.log' files.
 revdep: revdep_install revdep_check revdep_results
 
 # Install packages to check reverse dependencies
 revdep_install: clean
-	mkdir -p revdep/lib
-	cd .. && R CMD INSTALL --library=$(PKG_NAME)/revdep/lib $(PKG_NAME)
-	R_LIBS_USER=./revdep/lib Rscript --vanilla \
+	mkdir -p ../revdep/lib
+	cd .. && R CMD INSTALL --library=revdep/lib $(PKG_NAME)
+	R_LIBS_USER=../revdep/lib Rscript --vanilla \
           -e "options(repos = c(CRAN='https://cran.r-project.org'))" \
           -e "pkg <- tools::package_dependencies('$(PKG_NAME)', which = 'all', reverse = TRUE)" \
           -e "pkg <- as.character(unlist(pkg))" \
@@ -51,14 +51,14 @@ revdep_install: clean
           -e "    biocLite('BiocInstaller')" \
           -e "}" \
           -e "install.packages(pkg, dependencies = TRUE)" \
-          -e "download.packages(pkg, destdir = 'revdep')"
+          -e "download.packages(pkg, destdir = '../revdep')"
 
 # Check reverse dependencies with 'R CMD check'
 revdep_check:
-	$(foreach var,$(wildcard revdep/*.tar.gz),R_LIBS_USER=./revdep/lib \
+	$(foreach var,$(wildcard ../revdep/*.tar.gz),R_LIBS_USER=../revdep/lib \
           _R_CHECK_CRAN_INCOMING_=FALSE R --vanilla CMD check --as-cran \
-          --no-stop-on-test-error --output=revdep $(var) \
-          | tee --append revdep/00revdep.log;)
+          --no-stop-on-test-error --output=../revdep $(var) \
+          | tee --append ../revdep/00revdep.log;)
 
 # Collect results from checking reverse dependencies
 revdep_results:
@@ -67,7 +67,7 @@ revdep_results:
           -e "pkg <- tools::package_dependencies('$(PKG_NAME)', which = 'all', reverse = TRUE)" \
           -e "pkg <- as.character(unlist(pkg))" \
           -e "results <- do.call('rbind', lapply(pkg, function(x) {" \
-          -e "    filename <- paste0('revdep/', x, '.Rcheck/00check.log')" \
+          -e "    filename <- paste0('../revdep/', x, '.Rcheck/00check.log')" \
           -e "    if (file.exists(filename)) {" \
           -e "        lines <- readLines(filename)" \
           -e "        status <- sub('^Status: ', '', lines[grep('^Status: ', lines)])" \
@@ -147,7 +147,7 @@ configure: configure.ac
 
 clean:
 	./cleanup
-	-rm -rf revdep
+	-rm -rf ../revdep
 
 .PHONY: all readme install roxygen sync_libgit2 Makevars check check_gctorture \
         check_valgrind revdep revdep_install revdep_check revdep_results valgrind \
