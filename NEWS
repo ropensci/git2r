@@ -1,6 +1,16 @@
 git2r 0.25.1.9000
 -----------------
 
+CHANGES
+
+* Improved the build configuration script: if the system installation
+  of libgit2 is to old, use the bundled libgit2 instead of raising an
+  error.
+
+BUG FIXES
+
+* Fixed the broken build on Solaris.
+
 git2r 0.25.1
 ------------
 
