@@ -99,13 +99,21 @@ CC=`"${RBIN}" CMD config CC`
 CFLAGS=`"${RBIN}" CMD config CFLAGS`
 CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
 
-################# Begin configuration to use system libgit2 ##################
+# If a system installation of libgit2 is available, check that the version
+# works with git2r.
 if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
-
     AC_MSG_CHECKING([whether the libgit2 version will work in git2r])
     libgit2_ver_ok=no
     ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E tools/version.c >/dev/null 2>&1 && libgit2_ver_ok=yes
     AC_MSG_RESULT([${libgit2_ver_ok}])
+
+    if test "x${libgit2_ver_ok}" = xno; then
+        USE_BUNDLED_LIBGIT2=yes
+    fi
+fi
+
+################# Begin configuration to use system libgit2 ##################
+if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
 
     # The function 'git_buf_free' is deprecated in libgit2. Use
     # 'git_buf_dispose', if available, instead.
@@ -159,23 +167,6 @@ if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
     echo "  PKG_LIBS: ${PKG_LIBS}"
     echo ""
     echo "--------------------------------------------------"
-
-    if test "x${libgit2_ver_ok}" = xno; then
-        AC_MSG_FAILURE([
-  ---------------------------------------------
-   The libgit2 library that is required to build git2r was not found.
-
-   Please install:
-     libgit2-dev   (package on e.g. Debian and Ubuntu)
-     libgit2-devel (package on e.g. Fedora, CentOS and RHEL)
-     libgit2       (Homebrew package on macOS)
-   and try again.
-
-   If the libgit2 library is installed on your system but the git2r configuration is
-   unable to find it, you can specify the include and lib path to libgit2 with:
-   R CMD INSTALL git2r --configure-vars='INCLUDE_DIR=path/to/include LIB_DIR=path/to/lib'
-  ---------------------------------------------])
-    fi
 
     AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS}"])
     AC_SUBST([PKG_LIBS], ["${PKG_LIBS}"])
@@ -409,7 +400,6 @@ case "${host_os}" in
         fi
     ;;
 esac
-
 
 # Add definitions specific for solaris
 case "${host_os}" in
