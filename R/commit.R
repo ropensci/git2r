@@ -244,6 +244,10 @@ commits <- function(repo        = ".",
     }
 
     repo <- lookup_repository(repo)
+    if (is_empty(repo))
+        return(list())
+
+    sha <- sha(repository_head(repo))
     if (is_shallow(repo)) {
         ## FIXME: Remove this if-statement when libgit2 supports
         ## shallow clones, see #219.  Note: This workaround does not
@@ -253,7 +257,7 @@ commits <- function(repo        = ".",
         result <- list()
 
         ## Get latest commit
-        x <- lookup(repo, branch_target(repository_head(repo)))
+        x <- lookup(repo, sha)
 
         ## Repeat until no more parent commits
         repeat {
@@ -274,7 +278,7 @@ commits <- function(repo        = ".",
         return(result)
     }
 
-    .Call(git2r_revwalk_list, repo, topological, time, reverse, n)
+    .Call(git2r_revwalk_list, repo, sha, topological, time, reverse, n)
 }
 
 ##' Last commit
