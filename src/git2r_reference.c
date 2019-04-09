@@ -29,10 +29,11 @@
  * Init slots in S3 class git_reference.
  *
  * @param source A git_reference pointer
+ * @param repo S3 class git_repository that contains the reference
  * @param dest S3 class git_reference to initialize
  * @return void
  */
-static void git2r_reference_init(git_reference *source, SEXP dest)
+static void git2r_reference_init(git_reference *source, SEXP repo, SEXP dest)
 {
     char sha[GIT_OID_HEXSZ + 1];
 
@@ -81,6 +82,8 @@ static void git2r_reference_init(git_reference *source, SEXP dest)
             git2r_S3_item__git_reference__target,
             Rf_ScalarString(NA_STRING));
     }
+
+    SET_VECTOR_ELT(dest, git2r_S3_item__git_reference__repo, Rf_duplicate(repo));
 }
 
 /**
@@ -115,7 +118,7 @@ SEXP git2r_reference_dwim(SEXP repo, SEXP shorthand)
     nprotect++;
     Rf_setAttrib(result, R_ClassSymbol,
                  Rf_mkString(git2r_S3_class__git_reference));
-    git2r_reference_init(reference, result);
+    git2r_reference_init(reference, repo, result);
 
 cleanup:
     git_reference_free(reference);
@@ -174,7 +177,7 @@ SEXP git2r_reference_list(SEXP repo)
             reference = Rf_mkNamed(VECSXP, git2r_S3_items__git_reference));
         Rf_setAttrib(reference, R_ClassSymbol,
                      Rf_mkString(git2r_S3_class__git_reference));
-        git2r_reference_init(ref, reference);
+        git2r_reference_init(ref, repo, reference);
         SET_STRING_ELT(names, i, Rf_mkChar(ref_list.strings[i]));
 
         git_reference_free(ref);
