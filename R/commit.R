@@ -54,19 +54,9 @@
 ##' ahead_behind(tag_1, tag_2)
 ##' }
 ahead_behind <- function(local = NULL, upstream = NULL) {
-    if (is_tag(local)) {
-        local <- lookup(local$repo, local$target)
-    } else if (is_branch(local)) {
-        local <- lookup(local$repo, branch_target(local))
-    }
-
-    if (is_tag(upstream)) {
-        upstream <- lookup(upstream$repo, upstream$target)
-    } else if (is_branch(upstream)) {
-        upstream <- lookup(upstream$repo, branch_target(upstream))
-    }
-
-    .Call(git2r_graph_ahead_behind, local, upstream)
+    .Call(git2r_graph_ahead_behind,
+          lookup_commit(local),
+          lookup_commit(upstream))
 }
 
 ##' Add sessionInfo to message
