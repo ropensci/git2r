@@ -53,8 +53,8 @@ tag <- function(object = ".",
     object <- lookup_repository(object)
 
     stopifnot(is.character(message),
-              identical(length(message), 1L),
-              nchar(message[1]) > 0)
+              identical(length(message), 1L))
+
     if (isTRUE(session))
         message <- add_session_info(message)
 
