@@ -551,6 +551,65 @@ lookup <- function(repo = ".", sha = NULL) {
     .Call(git2r_object_lookup, lookup_repository(repo), sha)
 }
 
+##' Lookup the commit related to a git object
+##'
+##' Lookup the commit related to a git_reference, git_tag or
+##' git_branch object.
+##' @param object a git object to get the related commit from.
+##' @return A git commit object.
+##' @export
+##' @examples \dontrun{
+##' ## Create a directory in tempdir
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##'
+##' ## Initialize a repository
+##' repo <- init(path)
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##'
+##' ## Create a file, add and commit
+##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+##'            con = file.path(path, "test.txt"))
+##' add(repo, "test.txt")
+##' commit(repo, "Commit message 1")
+##'
+##' ## Get the commit pointed to by the 'master' branch
+##' lookup_commit(repository_head(repo))
+##'
+##' ## Create a tag
+##' a_tag <- tag(repo, "Tagname", "Tag message")
+##'
+##' ## Get the commit pointed to by 'a_tag'
+##' lookup_commit(a_tag)
+##' }
+lookup_commit <- function(object) {
+    UseMethod("lookup_commit", object)
+}
+
+##' @rdname lookup_commit
+##' @export
+lookup_commit.git_branch <- function(object) {
+    lookup(object$repo, branch_target(object))
+}
+
+##' @rdname lookup_commit
+##' @export
+lookup_commit.git_commit <- function(object) {
+    object
+}
+
+##' @rdname lookup_commit
+##' @export
+lookup_commit.git_tag <- function(object) {
+    lookup(object$repo, object$target)
+}
+
+##' @rdname lookup_commit
+##' @export
+lookup_commit.git_reference <- function(object) {
+    lookup_commit(lookup(object$repo, object$sha))
+}
+
 ##' @export
 print.git_repository <- function(x, ...) {
     if (any(is_empty(x), is.null(repository_head(x)))) {
