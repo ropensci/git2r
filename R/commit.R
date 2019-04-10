@@ -349,19 +349,9 @@ last_commit <- function(repo = ".") {
 ##' descendant_of(tag_2, tag_1)
 ##' }
 descendant_of <- function(commit = NULL, ancestor = NULL) {
-    if (is_tag(commit)) {
-        commit <- lookup(commit$repo, commit$target)
-    } else if (is_branch(commit)) {
-        commit <- lookup(commit$repo, branch_target(commit))
-    }
-
-    if (is_tag(ancestor)) {
-        ancestor <- lookup(ancestor$repo, ancestor$target)
-    } else if (is_branch(ancestor)) {
-        ancestor <- lookup(ancestor$repo, branch_target(ancestor))
-    }
-
-    .Call(git2r_graph_descendant_of, commit, ancestor)
+    .Call(git2r_graph_descendant_of,
+          lookup_commit(commit),
+          lookup_commit(ancestor))
 }
 
 ##' Check if object is a git_commit object
