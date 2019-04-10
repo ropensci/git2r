@@ -5,7 +5,7 @@
 \title{Commits}
 \usage{
 commits(repo = ".", topological = TRUE, time = TRUE,
-  reverse = FALSE, n = NULL)
+  reverse = FALSE, n = NULL, ref = NULL)
 }
 \arguments{
 \item{repo}{a path to a repository or a \code{git_repository}
@@ -23,6 +23,9 @@ with topological and/or time sorting. Default is FALSE.}
 
 \item{n}{The upper limit of the number of commits to output. The
 default is NULL for unlimited number of commits.}
+
+\item{ref}{The name of a reference to list commits from e.g. a tag
+or a branch. The default is NULL for the current branch.}
 }
 \value{
 list of commits in repository
@@ -53,6 +56,9 @@ writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
 add(repo, "example.txt")
 commit(repo, "Second commit message")
 
+## Create a tag
+tag(repo, "Tagname", "Tag message")
+
 ## Change file again and commit
 writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
              "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad",
@@ -61,7 +67,25 @@ writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
 add(repo, "example.txt")
 commit(repo, "Third commit message")
 
-## List commits in repository
+## List the commits in the repository
 commits(repo)
+
+## List the commits starting from the tag
+commits(repo, ref = "Tagname")
+
+## Create and checkout 'dev' branch in the repo
+checkout(repo, "dev", create = TRUE)
+
+## Add changes to the 'dev' branch
+writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+             "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
+           file.path(path, "example.txt"))
+add(repo, "example.txt")
+commit(repo, "Commit message in dev branch")
+
+## Checkout the 'master' branch again and list the commits
+## starting from the 'dev' branch.
+checkout(repo, "master")
+commits(repo, ref = "dev")
 }
 }

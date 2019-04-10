@@ -178,6 +178,8 @@ commit <- function(repo      = ".",
 ##'     with topological and/or time sorting. Default is FALSE.
 ##' @param n The upper limit of the number of commits to output. The
 ##'     default is NULL for unlimited number of commits.
+##' @param ref The name of a reference to list commits from e.g. a tag
+##'     or a branch. The default is NULL for the current branch.
 ##' @return list of commits in repository
 ##' @export
 ##' @examples
@@ -203,6 +205,9 @@ commit <- function(repo      = ".",
 ##' add(repo, "example.txt")
 ##' commit(repo, "Second commit message")
 ##'
+##' ## Create a tag
+##' tag(repo, "Tagname", "Tag message")
+##'
 ##' ## Change file again and commit
 ##' writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
 ##'              "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad",
@@ -211,14 +216,33 @@ commit <- function(repo      = ".",
 ##' add(repo, "example.txt")
 ##' commit(repo, "Third commit message")
 ##'
-##' ## List commits in repository
+##' ## List the commits in the repository
 ##' commits(repo)
+##'
+##' ## List the commits starting from the tag
+##' commits(repo, ref = "Tagname")
+##'
+##' ## Create and checkout 'dev' branch in the repo
+##' checkout(repo, "dev", create = TRUE)
+##'
+##' ## Add changes to the 'dev' branch
+##' writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+##'              "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
+##'            file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit(repo, "Commit message in dev branch")
+##'
+##' ## Checkout the 'master' branch again and list the commits
+##' ## starting from the 'dev' branch.
+##' checkout(repo, "master")
+##' commits(repo, ref = "dev")
 ##' }
 commits <- function(repo        = ".",
                     topological = TRUE,
                     time        = TRUE,
                     reverse     = FALSE,
-                    n           = NULL)
+                    n           = NULL,
+                    ref         = NULL)
 {
     ## Check limit in number of commits
     if (is.null(n)) {
@@ -237,7 +261,12 @@ commits <- function(repo        = ".",
     if (is_empty(repo))
         return(list())
 
-    sha <- sha(repository_head(repo))
+    if (is.null(ref)) {
+        sha <- sha(repository_head(repo))
+    } else {
+        sha <- sha(lookup_commit(.Call(git2r_reference_dwim, repo, ref)))
+    }
+
     if (is_shallow(repo)) {
         ## FIXME: Remove this if-statement when libgit2 supports
         ## shallow clones, see #219.  Note: This workaround does not
