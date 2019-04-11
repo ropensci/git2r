@@ -23,6 +23,7 @@
 ##'     parameter is \code{NULL}.
 ##' @param session Add sessionInfo to tag message. Default is FALSE.
 ##' @param tagger The tagger (author) of the tag
+##' @param force Overwrite existing tag. Default = FALSE
 ##' @return invisible(\code{git_tag}) object
 ##' @export
 ##' @examples
@@ -62,7 +63,8 @@ tag <- function(object = ".",
                 name    = NULL,
                 message = NULL,
                 session = FALSE,
-                tagger  = NULL)
+                tagger  = NULL,
+                force   = FALSE)
 {
     object <- lookup_repository(object)
 
@@ -72,7 +74,7 @@ tag <- function(object = ".",
     if (is.null(tagger))
         tagger <- default_signature(object)
 
-    invisible(.Call(git2r_tag_create, object, name, message, tagger))
+    invisible(.Call(git2r_tag_create, object, name, message, tagger, force))
 }
 
 ##' Check if object is a git_tag object

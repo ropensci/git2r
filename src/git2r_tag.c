@@ -89,12 +89,13 @@ void git2r_tag_init(git_tag *source, SEXP repo, SEXP dest)
  * @param name Name for the tag.
  * @param message The tag message.
  * @param tagger The tagger (author) of the tag
+ * @param force Overwrite existing tag.
  * @return S3 object of class git_tag or git_commit
  */
-SEXP git2r_tag_create(SEXP repo, SEXP name, SEXP message, SEXP tagger)
+SEXP git2r_tag_create(SEXP repo, SEXP name, SEXP message, SEXP tagger, SEXP force)
 {
     SEXP result = R_NilValue;
-    int error, nprotect = 0;
+    int error, nprotect = 0, overwrite = 0;
     git_oid oid;
     git_repository *repository = NULL;
     git_signature *sig_tagger = NULL;
@@ -110,6 +111,8 @@ SEXP git2r_tag_create(SEXP repo, SEXP name, SEXP message, SEXP tagger)
         if (git2r_arg_check_signature(tagger))
             git2r_error(__func__, NULL, "'tagger'", git2r_err_signature_arg);
     }
+    if (git2r_arg_check_logical(force))
+        git2r_error(__func__, NULL, "'force'", git2r_err_logical_arg);
 
     repository = git2r_repository_open(repo);
     if (!repository)
@@ -119,13 +122,16 @@ SEXP git2r_tag_create(SEXP repo, SEXP name, SEXP message, SEXP tagger)
     if (error)
         goto cleanup;
 
+    if (LOGICAL(force)[0])
+        overwrite = 1;
+
     if (Rf_isNull(message)) {
         error = git_tag_create_lightweight(
             &oid,
             repository,
             CHAR(STRING_ELT(name, 0)),
             target,
-            0);
+            overwrite);
         if (error)
             goto cleanup;
 
@@ -150,7 +156,7 @@ SEXP git2r_tag_create(SEXP repo, SEXP name, SEXP message, SEXP tagger)
             target,
             sig_tagger,
             CHAR(STRING_ELT(message, 0)),
-            0);
+            overwrite);
         if (error)
             goto cleanup;
 

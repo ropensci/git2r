@@ -5,7 +5,7 @@
 \title{Create tag targeting HEAD commit in repository}
 \usage{
 tag(object = ".", name = NULL, message = NULL, session = FALSE,
-  tagger = NULL)
+  tagger = NULL, force = FALSE)
 }
 \arguments{
 \item{object}{The repository \code{object}.}
@@ -19,6 +19,8 @@ parameter is \code{NULL}.}
 \item{session}{Add sessionInfo to tag message. Default is FALSE.}
 
 \item{tagger}{The tagger (author) of the tag}
+
+\item{force}{Overwrite existing tag. Default = FALSE}
 }
 \value{
 invisible(\code{git_tag}) object
