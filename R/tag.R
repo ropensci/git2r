@@ -18,7 +18,9 @@
 ##'
 ##' @param object The repository \code{object}.
 ##' @param name Name for the tag.
-##' @param message The tag message.
+##' @param message The tag message. Specify a tag message to create an
+##'     annotated tag. A lightweight tag is created if the message
+##'     parameter is \code{NULL}.
 ##' @param session Add sessionInfo to tag message. Default is FALSE.
 ##' @param tagger The tagger (author) of the tag
 ##' @return invisible(\code{git_tag}) object
@@ -34,12 +36,24 @@
 ##' config(repo, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Commit a text file
-##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' filename <- file.path(path, "example.txt")
+##' writeLines("Hello world!", filename)
 ##' add(repo, "example.txt")
 ##' commit(repo, "First commit message")
 ##'
-##' ## Create tag
-##' tag(repo, "Tagname", "Tag message")
+##' ## Create an annotated tag
+##' tag(repo, "v1.0", "Tag message")
+##'
+##' ## List tags
+##' tags(repo)
+##'
+##' ## Make a change to the text file and commit.
+##' writeLines(c("Hello world!", "HELLO WORLD!"), filename)
+##' add(repo, "example.txt")
+##' commit(repo, "Second commit message")
+##'
+##' ## Create a lightweight tag
+##' tag(repo, "v2.0")
 ##'
 ##' ## List tags
 ##' tags(repo)
@@ -51,9 +65,6 @@ tag <- function(object = ".",
                 tagger  = NULL)
 {
     object <- lookup_repository(object)
-
-    stopifnot(is.character(message),
-              identical(length(message), 1L))
 
     if (isTRUE(session))
         message <- add_session_info(message)
