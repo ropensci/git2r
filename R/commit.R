@@ -180,6 +180,8 @@ commit <- function(repo      = ".",
 ##'     default is NULL for unlimited number of commits.
 ##' @param ref The name of a reference to list commits from e.g. a tag
 ##'     or a branch. The default is NULL for the current branch.
+##' @param path The path to a file. Only commits that touch this file will be
+##'     returned.
 ##' @return list of commits in repository
 ##' @export
 ##' @examples
@@ -236,13 +238,17 @@ commit <- function(repo      = ".",
 ##' ## starting from the 'dev' branch.
 ##' checkout(repo, "master")
 ##' commits(repo, ref = "dev")
+##'
+##' ## Limit the commits to those that touch example.txt
+##' commits(repo, path = "example.txt")
 ##' }
 commits <- function(repo        = ".",
                     topological = TRUE,
                     time        = TRUE,
                     reverse     = FALSE,
                     n           = NULL,
-                    ref         = NULL)
+                    ref         = NULL,
+                    path        = NULL)
 {
     ## Check limit in number of commits
     if (is.null(n)) {
@@ -255,6 +261,12 @@ commits <- function(repo        = ".",
         n <- as.integer(n)
     } else {
         stop("'n' must be integer")
+    }
+
+    if (!is.null(path)) {
+        if (!(is.character(path) && length(path) == 1)) {
+            stop("path must be a single file")
+        }
     }
 
     repo <- lookup_repository(repo)
@@ -297,21 +309,10 @@ commits <- function(repo        = ".",
         return(result)
     }
 
-    .Call(git2r_revwalk_list, repo, sha, topological, time, reverse, n)
-}
+     if (!is.null(path))
+         return(.Call(git2r_revwalk_list2, repo, path))
 
-##' @export
-touching_commits <- function (repo = ".", path = NULL) {
-  if (is.null(path))
-    path <- ""
-  if (path == "")
-    return(commits(repo))
-  else {
-    repo <- lookup_repository(repo)
-    out  <- .Call(git2r_revwalk_list2, repo, path)
-    i    <- sapply(out,function (x) !is.null(x))
-    return(out[i])
-  }
+    .Call(git2r_revwalk_list, repo, sha, topological, time, reverse, n)
 }
 
 ##' Last commit

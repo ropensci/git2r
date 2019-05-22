@@ -189,29 +189,30 @@ SEXP git2r_revwalk_list2 (SEXP repo, SEXP path) {
   git_commit       *commit     = NULL;
   git_tree         *tree       = NULL;
 
-  // Set up git pathspec.
+  /* Set up git pathspec. */
   pathlength = strlen(CHAR(STRING_ELT(path,0)));
   p = malloc(pathlength + 1);
   strcpy(p,CHAR(STRING_ELT(path,0)));
   diffopts.pathspec.strings = &p;
   diffopts.pathspec.count = 1;
   git_pathspec_new(&ps,&diffopts.pathspec);
- 
-  // Open the repository.
-  repo_path = git2r_get_list_element(repo,"path");
-  error = git_repository_open_ext(&repository,CHAR(STRING_ELT(repo_path,0)),
-				  0,NULL);
-  if (error)
-    git2r_error(__func__,NULL,git2r_err_invalid_repository,NULL);
 
-  // If there are no commits, create an empty list.
+    if (git2r_arg_check_string(path))
+        git2r_error(__func__, NULL, "'path'", git2r_err_string_arg);
+
+    /* Open the repository. */
+    repository = git2r_repository_open(repo);
+    if (!repository)
+        git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
+
+  /* If there are no commits, create an empty list. */
   if (git_repository_is_empty(repository)) {
     PROTECT(result = Rf_allocVector(VECSXP, 0));
     nprotect++;
     goto cleanup;
   }
 
-  // Create a new revwalker.
+  /* Create a new revwalker. */
   error = git_revwalk_new(&walker,repository);
   if (error)
     goto cleanup;
@@ -220,14 +221,14 @@ SEXP git2r_revwalk_list2 (SEXP repo, SEXP path) {
   if (error)
     goto cleanup;
 
-  // Count number of revisions before creating the list.
+  /* Count number of revisions before creating the list. */
   n = git2r_revwalk_count(walker,-1);
 
-  // Create the list to store the result.
+  /* Create the list to store the result. */
   PROTECT(result = Rf_allocVector(VECSXP, n));
   nprotect++;
 
-  // Restart the revwalker.
+  /* Restart the revwalker. */
   git_revwalk_reset(walker);
   git_revwalk_sorting(walker,sort_mode);
   error = git_revwalk_push_head(walker);
@@ -249,7 +250,7 @@ SEXP git2r_revwalk_list2 (SEXP repo, SEXP path) {
     if (error)
       goto cleanup;
 
-    // Check whether it is a "touching" commit.
+    /* Check whether it is a "touching" commit. */
     parents = (int) git_commit_parentcount(commit);
     unmatched = parents;
     if (parents == 0) {
@@ -407,7 +408,7 @@ cleanup:
     return result;
 }
 
-// Helper to find how many files in a commit changed from its nth parent.
+/* Helper to find how many files in a commit changed from its nth parent. */
 static int match_with_parent (git_commit *commit, int i,
 			      git_diff_options *opts) {
   git_commit *parent;

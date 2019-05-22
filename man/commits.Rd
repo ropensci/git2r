@@ -5,7 +5,7 @@
 \title{Commits}
 \usage{
 commits(repo = ".", topological = TRUE, time = TRUE,
-  reverse = FALSE, n = NULL, ref = NULL)
+  reverse = FALSE, n = NULL, ref = NULL, path = NULL)
 }
 \arguments{
 \item{repo}{a path to a repository or a \code{git_repository}
@@ -26,6 +26,9 @@ default is NULL for unlimited number of commits.}
 
 \item{ref}{The name of a reference to list commits from e.g. a tag
 or a branch. The default is NULL for the current branch.}
+
+\item{path}{The path to a file. Only commits that touch this file will be
+returned.}
 }
 \value{
 list of commits in repository
@@ -87,5 +90,8 @@ commit(repo, "Commit message in dev branch")
 ## starting from the 'dev' branch.
 checkout(repo, "master")
 commits(repo, ref = "dev")
+
+## Limit the commits to those that touch example.txt
+commits(repo, path = "example.txt")
 }
 }
