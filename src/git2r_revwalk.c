@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2018 The git2r contributors
+ *  Copyright (C) 2013-2019 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -20,7 +20,9 @@
 
 #include "git2r_arg.h"
 #include "git2r_commit.h"
+#include "git2r_deprecated.h"
 #include "git2r_error.h"
+#include "git2r_oid.h"
 #include "git2r_repository.h"
 #include "git2r_S3.h"
 
@@ -54,6 +56,7 @@ static int git2r_revwalk_count(git_revwalk *walker, int max_n)
  * List revisions
  *
  * @param repo S3 class git_repository
+ * @param sha id of the commit to start from.
  * @param topological Sort the commits by topological order; Can be
  * combined with time.
  * @param time Sort the commits by commit time; can be combined with
@@ -65,6 +68,7 @@ static int git2r_revwalk_count(git_revwalk *walker, int max_n)
  */
 SEXP git2r_revwalk_list(
     SEXP repo,
+    SEXP sha,
     SEXP topological,
     SEXP time,
     SEXP reverse,
@@ -76,7 +80,10 @@ SEXP git2r_revwalk_list(
     unsigned int sort_mode = GIT_SORT_NONE;
     git_revwalk *walker = NULL;
     git_repository *repository = NULL;
+    git_oid oid;
 
+    if (git2r_arg_check_sha(sha))
+        git2r_error(__func__, NULL, "'sha'", git2r_err_sha_arg);
     if (git2r_arg_check_logical(topological))
         git2r_error(__func__, NULL, "'topological'", git2r_err_logical_arg);
     if (git2r_arg_check_logical(time))
@@ -108,7 +115,8 @@ SEXP git2r_revwalk_list(
     if (error)
         goto cleanup;
 
-    error = git_revwalk_push_head(walker);
+    git2r_oid_from_sha_sexp(sha, &oid);
+    error = git_revwalk_push(walker, &oid);
     if (error)
         goto cleanup;
     git_revwalk_sorting(walker, sort_mode);
@@ -121,7 +129,7 @@ SEXP git2r_revwalk_list(
     nprotect++;
 
     git_revwalk_reset(walker);
-    error = git_revwalk_push_head(walker);
+    error = git_revwalk_push(walker, &oid);
     if (error)
         goto cleanup;
     git_revwalk_sorting(walker, sort_mode);
@@ -160,7 +168,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -394,7 +402,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }

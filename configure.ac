@@ -1,5 +1,5 @@
 # git2r, R bindings to the libgit2 library.
-# Copyright (C) 2013-2018 The git2r contributors
+# Copyright (C) 2013-2019 The git2r contributors
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2,
@@ -19,6 +19,12 @@ AC_INIT([git2r], [see.DESCRIPTION.file], [https://github.com/ropensci/git2r/issu
 AC_CONFIG_SRCDIR([src/git2r.c])
 AC_CONFIG_AUX_DIR([tools])
 AC_CANONICAL_HOST
+
+m4_include([tools/iconv.m4])
+m4_include([tools/lib-ld.m4])
+m4_include([tools/lib-link.m4])
+m4_include([tools/lib-prefix.m4])
+m4_include([tools/pkg.m4])
 
 # Checks for programs.
 AC_PROG_CC
@@ -93,25 +99,65 @@ CC=`"${RBIN}" CMD config CC`
 CFLAGS=`"${RBIN}" CMD config CFLAGS`
 CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
 
-################# Begin configuration to use system libgit2 ##################
+# If a system installation of libgit2 is available, check that the version
+# works with git2r.
 if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
-
     AC_MSG_CHECKING([whether the libgit2 version will work in git2r])
     libgit2_ver_ok=no
     ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E tools/version.c >/dev/null 2>&1 && libgit2_ver_ok=yes
     AC_MSG_RESULT([${libgit2_ver_ok}])
 
+    if test "x${libgit2_ver_ok}" = xno; then
+        USE_BUNDLED_LIBGIT2=yes
+    fi
+fi
+
+################# Begin configuration to use system libgit2 ##################
+if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
+
     # The function 'git_buf_free' is deprecated in libgit2. Use
     # 'git_buf_dispose', if available, instead.
     AC_MSG_CHECKING([whether the libgit2 function git_buf_dispose is available])
     have_buf_dispose=no
-    AC_LANG_CONFTEST(
-    [AC_LANG_PROGRAM([[#include <git2.h>]], [[ git_buf_dispose(NULL); ]])])
+    AC_LANG_CONFTEST([AC_LANG_PROGRAM(
+    [[#include <git2.h>]],
+    [[git_buf_dispose(NULL);]])])
     PKG_CFLAGS="${PKG_CFLAGS} -Werror" "$RBIN" CMD SHLIB conftest.c \
     1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD && have_buf_dispose=yes
     AC_MSG_RESULT([${have_buf_dispose}])
     if test "x${have_buf_dispose}" = xyes; then
-        PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_BUF_DISPOSE"
+        PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_HAVE_BUF_DISPOSE"
+    fi
+
+    # The constants GIT_OBJ_ANY, GIT_OBJ_BLOB, GIT_OBJ_COMMIT,
+    # GIT_OBJ_TAG_GIT_OBJ_TREE and GIT_REF_OID are deprecated in
+    # libgit2. Use GIT_OBJECT_ANY, GIT_OBJECT_BLOB, GIT_OBJECT_COMMIT,
+    # GIT_OBJECT_TAG_GIT_OBJECT_TREE and GIT_REFERENCE_DIRECT, if
+    # available, instead.
+    AC_MSG_CHECKING([whether the libgit2 constant GIT_OBJECT_ANY is available])
+    have_git_object_any=no
+    AC_LANG_CONFTEST([AC_LANG_PROGRAM(
+    [[#include <git2.h>]],
+    [[git_object_typeisloose(GIT_OBJECT_ANY);]])])
+    PKG_CFLAGS="${PKG_CFLAGS} -Werror" "$RBIN" CMD SHLIB conftest.c \
+    1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD && have_git_object_any=yes
+    AC_MSG_RESULT([${have_git_object_any}])
+    if test "x${have_git_object_any}" = xyes; then
+        PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_HAVE_OBJECT_ANY"
+    fi
+
+    # Several libgit2 error functions and enumaration values have been
+    # deprecated, use newer versions.
+    AC_MSG_CHECKING([whether the libgit2 function git_error_last is available])
+    have_git_error_last=no
+    AC_LANG_CONFTEST([AC_LANG_PROGRAM(
+    [[#include <git2.h>]],
+    [[git_error_last();]])])
+    PKG_CFLAGS="${PKG_CFLAGS} -Werror" "$RBIN" CMD SHLIB conftest.c \
+    1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD && have_git_error_last=yes
+    AC_MSG_RESULT([${have_git_error_last}])
+    if test "x${have_git_error_last}" = xyes; then
+        PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_HAVE_GIT_ERROR"
     fi
 
     # For debugging
@@ -121,23 +167,6 @@ if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
     echo "  PKG_LIBS: ${PKG_LIBS}"
     echo ""
     echo "--------------------------------------------------"
-
-    if test "x${libgit2_ver_ok}" = xno; then
-        AC_MSG_FAILURE([
-  ---------------------------------------------
-   The libgit2 library that is required to build git2r was not found.
-
-   Please install:
-     libgit2-dev   (package on e.g. Debian and Ubuntu)
-     libgit2-devel (package on e.g. Fedora, CentOS and RHEL)
-     libgit2       (Homebrew package on macOS)
-   and try again.
-
-   If the libgit2 library is installed on your system but the git2r configuration is
-   unable to find it, you can specify the include and lib path to libgit2 with:
-   R CMD INSTALL git2r --configure-vars='INCLUDE_DIR=path/to/include LIB_DIR=path/to/lib'
-  ---------------------------------------------])
-    fi
 
     AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS}"])
     AC_SUBST([PKG_LIBS], ["${PKG_LIBS}"])
@@ -355,8 +384,22 @@ CPPFLAGS="-I. -Ilibgit2/src -Ilibgit2/include -Ilibgit2/deps/http-parser ${CPPFL
 CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DLIBGIT2_NO_FEATURES_H -DR_NO_REMAP -DSTRICT_R_HEADERS"
 
 # Specify sha1 implementation
-CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_COLLISIONDETECT=1 -DSHA1DC_NO_STANDARD_INCLUDES=1"
-CPPFLAGS="${CPPFLAGS} -DSHA1DC_CUSTOM_INCLUDE_SHA1_C=\\\"common.h\\\" -DSHA1DC_CUSTOM_INCLUDE_UBC_CHECK_C=\\\"common.h\\\""
+case "${host_os}" in
+    darwin*)
+        CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_COLLISIONDETECT=1 -DSHA1DC_NO_STANDARD_INCLUDES=1"
+        CPPFLAGS="${CPPFLAGS} -DSHA1DC_CUSTOM_INCLUDE_SHA1_C=\\\"common.h\\\" -DSHA1DC_CUSTOM_INCLUDE_UBC_CHECK_C=\\\"common.h\\\""
+        GIT2R_SRC_SHA1DC="libgit2/src/hash/sha1dc/sha1.o libgit2/src/hash/sha1dc/ubc_check.o"
+    ;;
+    *)
+        if test "x${have_ssl}" = xyes; then
+            CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_OPENSSL=1"
+        else
+            CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_COLLISIONDETECT=1 -DSHA1DC_NO_STANDARD_INCLUDES=1"
+            CPPFLAGS="${CPPFLAGS} -DSHA1DC_CUSTOM_INCLUDE_SHA1_C=\\\"common.h\\\" -DSHA1DC_CUSTOM_INCLUDE_UBC_CHECK_C=\\\"common.h\\\""
+            GIT2R_SRC_SHA1DC="libgit2/src/hash/sha1dc/sha1.o libgit2/src/hash/sha1dc/ubc_check.o"
+        fi
+    ;;
+esac
 
 # Add definitions specific for solaris
 case "${host_os}" in
@@ -407,9 +450,21 @@ fi
 
 # The function 'git_buf_free' is deprecated in libgit2. Use
 # 'git_buf_dispose' instead.
-CPPFLAGS="${CPPFLAGS} -DGIT2R_BUF_DISPOSE"
+#
+CPPFLAGS="${CPPFLAGS} -DGIT_DEPRECATE_HARD -DGIT2R_HAVE_BUF_DISPOSE"
+
+# The constants GIT_OBJ_ANY, GIT_OBJ_BLOB, GIT_OBJ_COMMIT,
+# GIT_OBJ_TAG_GIT_OBJ_TREE and GIT_REF_OID are deprecated in
+# libgit2. Use GIT_OBJECT_ANY, GIT_OBJECT_BLOB, GIT_OBJECT_COMMIT,
+# GIT_OBJECT_TAG_GIT_OBJECT_TREE and GIT_REFERENCE_DIRECT instead.
+CPPFLAGS="${CPPFLAGS} -DGIT2R_HAVE_OBJECT_ANY"
+
+# Several libgit2 error functions and enumaration values have been
+# deprecated, use newer versions.
+CPPFLAGS="${CPPFLAGS} -DGIT2R_HAVE_GIT_ERROR"
 
 AC_SUBST(GIT2R_SRC_REGEX)
+AC_SUBST(GIT2R_SRC_SHA1DC)
 AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS} ${LIBSSH2_CFLAGS}"])
 AC_SUBST([PKG_CPPFLAGS], ["${CPPFLAGS}"])
 AC_SUBST([PKG_LIBS], ["${LIBS} ${LIBSSH2_LIBS} ${LIBICONV}"])

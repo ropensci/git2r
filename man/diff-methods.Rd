@@ -6,10 +6,14 @@
 \title{Changes between commits, trees, working tree, etc.}
 \usage{
 \method{diff}{git_repository}(x, index = FALSE, as_char = FALSE,
-  filename = NULL, ...)
+  filename = NULL, context_lines = 3, interhunk_lines = 0,
+  old_prefix = "a", new_prefix = "b", id_abbrev = NULL,
+  path = NULL, max_size = NULL, ...)
 
 \method{diff}{git_tree}(x, new_tree = NULL, index = FALSE,
-  as_char = FALSE, filename = NULL, ...)
+  as_char = FALSE, filename = NULL, context_lines = 3,
+  interhunk_lines = 0, old_prefix = "a", new_prefix = "b",
+  id_abbrev = NULL, path = NULL, max_size = NULL, ...)
 }
 \arguments{
 \item{x}{A \code{git_repository} object or the old \code{git_tree}
@@ -33,7 +37,32 @@ character string?. Default is FALSE.}
 to a file with name filename (the file is overwritten if it
 exists). Default is NULL.}
 
-\item{...}{Additional arguments affecting the diff produced}
+\item{context_lines}{The number of unchanged lines that define the
+boundary of a hunk (and to display before and after). Defaults
+to 3.}
+
+\item{interhunk_lines}{The maximum number of unchanged lines
+between hunk boundaries before the hunks will be merged into
+one. Defaults to 0.}
+
+\item{old_prefix}{The virtual "directory" prefix for old file
+names in hunk headers. Default is "a".}
+
+\item{new_prefix}{The virtual "directory" prefix for new file
+names in hunk headers. Defaults to "b".}
+
+\item{id_abbrev}{The abbreviation length to use when formatting
+object ids. Defaults to the value of 'core.abbrev' from the
+config, or 7 if NULL.}
+
+\item{path}{A character vector of paths / fnmatch patterns to
+constrain diff. Default is NULL which include all paths.}
+
+\item{max_size}{A size (in bytes) above which a blob will be
+marked as binary automatically; pass a negative value to
+disable. Defaults to 512MB when max_size is NULL.}
+
+\item{...}{Not used.}
 
 \item{new_tree}{The new git_tree object to compare, or NULL.  If
 NULL, then we use the working directory or the index (see the

@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -18,10 +18,69 @@
 ##'
 ##' @param object The repository \code{object}.
 ##' @param name Name for the tag.
-##' @param message The tag message.
+##' @param message The tag message. Specify a tag message to create an
+##'     annotated tag. A lightweight tag is created if the message
+##'     parameter is \code{NULL}.
 ##' @param session Add sessionInfo to tag message. Default is FALSE.
 ##' @param tagger The tagger (author) of the tag
+##' @param force Overwrite existing tag. Default = FALSE
 ##' @return invisible(\code{git_tag}) object
+##' @export
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a user
+##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##'
+##' ## Commit a text file
+##' filename <- file.path(path, "example.txt")
+##' writeLines("Hello world!", filename)
+##' add(repo, "example.txt")
+##' commit(repo, "First commit message")
+##'
+##' ## Create an annotated tag
+##' tag(repo, "v1.0", "Tag message")
+##'
+##' ## List tags
+##' tags(repo)
+##'
+##' ## Make a change to the text file and commit.
+##' writeLines(c("Hello world!", "HELLO WORLD!"), filename)
+##' add(repo, "example.txt")
+##' commit(repo, "Second commit message")
+##'
+##' ## Create a lightweight tag
+##' tag(repo, "v2.0")
+##'
+##' ## List tags
+##' tags(repo)
+##' }
+tag <- function(object = ".",
+                name    = NULL,
+                message = NULL,
+                session = FALSE,
+                tagger  = NULL,
+                force   = FALSE)
+{
+    object <- lookup_repository(object)
+
+    if (isTRUE(session))
+        message <- add_session_info(message)
+
+    if (is.null(tagger))
+        tagger <- default_signature(object)
+
+    invisible(.Call(git2r_tag_create, object, name, message, tagger, force))
+}
+
+##' Check if object is a git_tag object
+##'
+##' @param object Check if object is a git_tag object
+##' @return TRUE if object is a git_tag, else FALSE
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -41,29 +100,9 @@
 ##' ## Create tag
 ##' tag(repo, "Tagname", "Tag message")
 ##'
-##' ## List tags
-##' tags(repo)
+##' is_tag(tags(repo)[[1]])
+##' is_tag(last_commit(repo))
 ##' }
-tag <- function(object = ".",
-                name    = NULL,
-                message = NULL,
-                session = FALSE,
-                tagger  = NULL)
-{
-    object <- lookup_repository(object)
-
-    stopifnot(is.character(message),
-              identical(length(message), 1L),
-              nchar(message[1]) > 0)
-    if (isTRUE(session))
-        message <- add_session_info(message)
-
-    if (is.null(tagger))
-        tagger <- default_signature(object)
-
-    invisible(.Call(git2r_tag_create, object, name, message, tagger))
-}
-
 is_tag <- function(object) {
     inherits(object, "git_tag")
 }

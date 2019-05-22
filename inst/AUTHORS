@@ -50,6 +50,7 @@ Dmitry Kakurin
 Dmitry Kovega
 Emeric Fermas
 Emmanuel Rodriguez
+Eric Myhre
 Florian Forster
 Holger Weiss
 Ingmar Vanhassel
@@ -106,8 +107,13 @@ Vicent Marti
 Other authors in alphabetical order
 -----------------------------------
 
+Bruno Haible    tools/iconv.m4 and tools/lib-link.m4, tools/lib-prefix.m4
+Dan Nicholson   Macros to locate and utilise pkg-config (tools/pkg.m4)
+Dan Shumow      SHA1 collision detection (src/libgit2/src/hash/sha1dc/*)
 Davide Libenzi  LibXDiff (src/libgit2/xdiff/*)
 Francois Pinard Common wrapper for a few potentially missing GNU programs (tools/missing)
 Isamu Hasegawa  Extended regular expression matching and search library (src/regex/*)
 Linus Torvalds  src/libgit2/date.c
+Marc Stevens    SHA1 collision detection (src/libgit2/src/hash/sha1dc/*)
 Per Bothner     Attempt to guess a canonical system name (tools/config.guess)
+Scott James Remnant Macros to locate and utilise pkg-config (tools/pkg.m4)

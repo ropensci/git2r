@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2018 The git2r contributors
+ *  Copyright (C) 2013-2019 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -21,6 +21,7 @@
 #include "git2r_arg.h"
 #include "git2r_blob.h"
 #include "git2r_commit.h"
+#include "git2r_deprecated.h"
 #include "git2r_error.h"
 #include "git2r_repository.h"
 #include "git2r_S3.h"
@@ -88,59 +89,90 @@ void git2r_tag_init(git_tag *source, SEXP repo, SEXP dest)
  * @param name Name for the tag.
  * @param message The tag message.
  * @param tagger The tagger (author) of the tag
- * @return S3 object of class git_tag
+ * @param force Overwrite existing tag.
+ * @return S3 object of class git_tag or git_commit
  */
-SEXP git2r_tag_create(SEXP repo, SEXP name, SEXP message, SEXP tagger)
+SEXP git2r_tag_create(SEXP repo, SEXP name, SEXP message, SEXP tagger, SEXP force)
 {
     SEXP result = R_NilValue;
-    int error, nprotect = 0;
+    int error, nprotect = 0, overwrite = 0;
     git_oid oid;
     git_repository *repository = NULL;
     git_signature *sig_tagger = NULL;
     git_tag *tag = NULL;
     git_object *target = NULL;
+    git_commit *commit = NULL;
 
     if (git2r_arg_check_string(name))
         git2r_error(__func__, NULL, "'name'", git2r_err_string_arg);
-    if (git2r_arg_check_string(message))
-        git2r_error(__func__, NULL, "'message'", git2r_err_string_arg);
-    if (git2r_arg_check_signature(tagger))
-        git2r_error(__func__, NULL, "'tagger'", git2r_err_signature_arg);
+    if (!Rf_isNull(message)) {
+        if (git2r_arg_check_string(message))
+            git2r_error(__func__, NULL, "'message'", git2r_err_string_arg);
+        if (git2r_arg_check_signature(tagger))
+            git2r_error(__func__, NULL, "'tagger'", git2r_err_signature_arg);
+    }
+    if (git2r_arg_check_logical(force))
+        git2r_error(__func__, NULL, "'force'", git2r_err_logical_arg);
 
     repository = git2r_repository_open(repo);
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-    error = git2r_signature_from_arg(&sig_tagger, tagger);
-    if (error)
-        goto cleanup;
-
     error = git_revparse_single(&target, repository, "HEAD^{commit}");
     if (error)
         goto cleanup;
 
-    error = git_tag_create(
-        &oid,
-        repository,
-        CHAR(STRING_ELT(name, 0)),
-        target,
-        sig_tagger,
-        CHAR(STRING_ELT(message, 0)),
-        0);
-    if (error)
-        goto cleanup;
+    if (LOGICAL(force)[0])
+        overwrite = 1;
 
-    error = git_tag_lookup(&tag, repository, &oid);
-    if (error)
-        goto cleanup;
+    if (Rf_isNull(message)) {
+        error = git_tag_create_lightweight(
+            &oid,
+            repository,
+            CHAR(STRING_ELT(name, 0)),
+            target,
+            overwrite);
+        if (error)
+            goto cleanup;
 
-    PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_tag));
-    nprotect++;
-    Rf_setAttrib(result, R_ClassSymbol,
-                 Rf_mkString(git2r_S3_class__git_tag));
-    git2r_tag_init(tag, repo, result);
+        error = git_commit_lookup(&commit, repository, &oid);
+        if (error)
+            goto cleanup;
+
+        PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_commit));
+        nprotect++;
+        Rf_setAttrib(result, R_ClassSymbol,
+                     Rf_mkString(git2r_S3_class__git_commit));
+        git2r_commit_init(commit, repo, result);
+    } else {
+        error = git2r_signature_from_arg(&sig_tagger, tagger);
+        if (error)
+            goto cleanup;
+
+        error = git_tag_create(
+            &oid,
+            repository,
+            CHAR(STRING_ELT(name, 0)),
+            target,
+            sig_tagger,
+            CHAR(STRING_ELT(message, 0)),
+            overwrite);
+        if (error)
+            goto cleanup;
+
+        error = git_tag_lookup(&tag, repository, &oid);
+        if (error)
+            goto cleanup;
+
+        PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_tag));
+        nprotect++;
+        Rf_setAttrib(result, R_ClassSymbol,
+                     Rf_mkString(git2r_S3_class__git_tag));
+        git2r_tag_init(tag, repo, result);
+    }
 
 cleanup:
+    git_commit_free(commit);
     git_tag_free(tag);
     git_signature_free(sig_tagger);
     git_object_free(target);
@@ -150,7 +182,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -179,7 +211,7 @@ SEXP git2r_tag_delete(SEXP repo, SEXP name)
     git_repository_free(repository);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return R_NilValue;
 }
@@ -211,14 +243,14 @@ static int git2r_tag_foreach_cb(const char *name, git_oid *oid, void *payload)
     /* Check if we have a list to populate */
     if (!Rf_isNull(cb_data->tags)) {
         int skip = 0;
-        SEXP item, tag;
+        SEXP item = R_NilValue, tag;
 
-        error = git_object_lookup(&object, cb_data->repository, oid, GIT_OBJ_ANY);
+        error = git_object_lookup(&object, cb_data->repository, oid, GIT2R_OBJECT_ANY);
         if (error)
             goto cleanup;
 
         switch (git_object_type(object)) {
-        case GIT_OBJ_COMMIT:
+        case GIT2R_OBJECT_COMMIT:
             PROTECT(item = Rf_mkNamed(VECSXP, git2r_S3_items__git_commit));
             Rf_setAttrib(
                 item,
@@ -226,7 +258,7 @@ static int git2r_tag_foreach_cb(const char *name, git_oid *oid, void *payload)
                 Rf_mkString(git2r_S3_class__git_commit));
             git2r_commit_init((git_commit*)object, cb_data->repo, item);
             break;
-        case GIT_OBJ_TREE:
+        case GIT2R_OBJECT_TREE:
             PROTECT(item = Rf_mkNamed(VECSXP, git2r_S3_items__git_tree));
             Rf_setAttrib(
                 item,
@@ -234,7 +266,7 @@ static int git2r_tag_foreach_cb(const char *name, git_oid *oid, void *payload)
                 Rf_mkString(git2r_S3_class__git_tree));
             git2r_tree_init((git_tree*)object, cb_data->repo, item);
             break;
-        case GIT_OBJ_BLOB:
+        case GIT2R_OBJECT_BLOB:
             PROTECT(item = Rf_mkNamed(VECSXP, git2r_S3_items__git_blob));
             Rf_setAttrib(
                 item,
@@ -242,7 +274,7 @@ static int git2r_tag_foreach_cb(const char *name, git_oid *oid, void *payload)
                 Rf_mkString(git2r_S3_class__git_blob));
             git2r_blob_init((git_blob*)object, cb_data->repo, item);
             break;
-        case GIT_OBJ_TAG:
+        case GIT2R_OBJECT_TAG:
             PROTECT(item = Rf_mkNamed(VECSXP, git2r_S3_items__git_tag));
             Rf_setAttrib(
                 item,
@@ -326,7 +358,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }

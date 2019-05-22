@@ -5,7 +5,7 @@
 \title{Push}
 \usage{
 push(object = ".", name = NULL, refspec = NULL, force = FALSE,
-  credentials = NULL)
+  credentials = NULL, set_upstream = FALSE)
 }
 \arguments{
 \item{object}{path to repository, or a \code{git_repository} or
@@ -21,6 +21,9 @@ with care. Default is FALSE.}
 \item{credentials}{The credentials for remote repository
 access. Default is NULL. To use and query an ssh-agent for the
 ssh key credentials, let this parameter be NULL (the default).}
+
+\item{set_upstream}{Set the current local branch to track the
+remote branch. Default is FALSE.}
 }
 \value{
 invisible(NULL)
@@ -36,6 +39,9 @@ path_repo <- tempfile(pattern="git2r-")
 dir.create(path_bare)
 dir.create(path_repo)
 repo_bare <- init(path_bare, bare = TRUE)
+
+## Clone the bare repository. This creates remote-tracking
+## branches for each branch in the cloned repository.
 repo <- clone(path_bare, path_repo)
 
 ## Config user and commit a file
@@ -48,8 +54,16 @@ add(repo, "example.txt")
 commit(repo, "First commit message")
 
 ## Push commits from repository to bare repository
-## Adds an upstream tracking branch to branch 'master'
 push(repo, "origin", "refs/heads/master")
+
+## Now, unset the remote-tracking branch to NULL to demonstrate
+## the 'set_upstream' argument. Then push with 'set_upstream = TRUE'
+## to add the upstream tracking branch to branch 'master' again.
+branch_get_upstream(repository_head(repo))
+branch_set_upstream(repository_head(repo), NULL)
+branch_get_upstream(repository_head(repo))
+push(repo, "origin", "refs/heads/master", set_upstream = TRUE)
+branch_get_upstream(repository_head(repo))
 
 ## Change file and commit
 writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",

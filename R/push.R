@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -36,6 +36,8 @@ get_upstream_name <- function(object) {
 ##' @param credentials The credentials for remote repository
 ##'     access. Default is NULL. To use and query an ssh-agent for the
 ##'     ssh key credentials, let this parameter be NULL (the default).
+##' @param set_upstream Set the current local branch to track the
+##'     remote branch. Default is FALSE.
 ##' @return invisible(NULL)
 ##' @seealso \code{\link{cred_user_pass}}, \code{\link{cred_ssh_key}}
 ##' @export
@@ -47,6 +49,9 @@ get_upstream_name <- function(object) {
 ##' dir.create(path_bare)
 ##' dir.create(path_repo)
 ##' repo_bare <- init(path_bare, bare = TRUE)
+##'
+##' ## Clone the bare repository. This creates remote-tracking
+##' ## branches for each branch in the cloned repository.
 ##' repo <- clone(path_bare, path_repo)
 ##'
 ##' ## Config user and commit a file
@@ -59,8 +64,16 @@ get_upstream_name <- function(object) {
 ##' commit(repo, "First commit message")
 ##'
 ##' ## Push commits from repository to bare repository
-##' ## Adds an upstream tracking branch to branch 'master'
 ##' push(repo, "origin", "refs/heads/master")
+##'
+##' ## Now, unset the remote-tracking branch to NULL to demonstrate
+##' ## the 'set_upstream' argument. Then push with 'set_upstream = TRUE'
+##' ## to add the upstream tracking branch to branch 'master' again.
+##' branch_get_upstream(repository_head(repo))
+##' branch_set_upstream(repository_head(repo), NULL)
+##' branch_get_upstream(repository_head(repo))
+##' push(repo, "origin", "refs/heads/master", set_upstream = TRUE)
+##' branch_get_upstream(repository_head(repo))
 ##'
 ##' ## Change file and commit
 ##' writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -76,11 +89,12 @@ get_upstream_name <- function(object) {
 ##' commits(repo)
 ##' commits(repo_bare)
 ##' }
-push <- function(object      = ".",
-                 name        = NULL,
-                 refspec     = NULL,
-                 force       = FALSE,
-                 credentials = NULL)
+push <- function(object       = ".",
+                 name         = NULL,
+                 refspec      = NULL,
+                 force        = FALSE,
+                 credentials  = NULL,
+                 set_upstream = FALSE)
 {
     if (is_branch(object)) {
         name <- get_upstream_name(object)
@@ -110,6 +124,12 @@ push <- function(object      = ".",
     }
 
     .Call(git2r_push, object, name, refspec, credentials)
+
+    if (isTRUE(set_upstream)) {
+        b <- repository_head(object)
+        if (is_local(b))
+            branch_set_upstream(b, paste0(name, "/", b$name))
+    }
 
     invisible(NULL)
 }

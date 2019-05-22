@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -86,9 +86,16 @@ stopifnot(identical(branch_remote_url(branch_get_upstream(repository_head(repo_2
 pull(repo_2)
 stopifnot(identical(length(commits(repo_2)), 3L))
 
-## Check references in repo_1 and repo_2
+## Check references in repo_1 and repo_2. Must clear the repo item
+## since the repositories have different paths.
 stopifnot(identical(length(references(repo_1)), 2L))
-stopifnot(identical(references(repo_1), references(repo_2)))
+ref_1 <- references(repo_1)
+ref_1[[1]]$repo <- NULL
+ref_1[[2]]$repo <- NULL
+ref_2 <- references(repo_2)
+ref_2[[1]]$repo <- NULL
+ref_2[[2]]$repo <- NULL
+stopifnot(identical(ref_1, ref_2))
 
 ref_1 <- references(repo_1)[["refs/heads/master"]]
 stopifnot(identical(ref_1$name, "refs/heads/master"))

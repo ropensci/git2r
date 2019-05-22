@@ -73,40 +73,40 @@ typedef struct {
 
 /** Error classes */
 typedef enum {
-	GITERR_NONE = 0,
-	GITERR_NOMEMORY,
-	GITERR_OS,
-	GITERR_INVALID,
-	GITERR_REFERENCE,
-	GITERR_ZLIB,
-	GITERR_REPOSITORY,
-	GITERR_CONFIG,
-	GITERR_REGEX,
-	GITERR_ODB,
-	GITERR_INDEX,
-	GITERR_OBJECT,
-	GITERR_NET,
-	GITERR_TAG,
-	GITERR_TREE,
-	GITERR_INDEXER,
-	GITERR_SSL,
-	GITERR_SUBMODULE,
-	GITERR_THREAD,
-	GITERR_STASH,
-	GITERR_CHECKOUT,
-	GITERR_FETCHHEAD,
-	GITERR_MERGE,
-	GITERR_SSH,
-	GITERR_FILTER,
-	GITERR_REVERT,
-	GITERR_CALLBACK,
-	GITERR_CHERRYPICK,
-	GITERR_DESCRIBE,
-	GITERR_REBASE,
-	GITERR_FILESYSTEM,
-	GITERR_PATCH,
-	GITERR_WORKTREE,
-	GITERR_SHA1
+	GIT_ERROR_NONE = 0,
+	GIT_ERROR_NOMEMORY,
+	GIT_ERROR_OS,
+	GIT_ERROR_INVALID,
+	GIT_ERROR_REFERENCE,
+	GIT_ERROR_ZLIB,
+	GIT_ERROR_REPOSITORY,
+	GIT_ERROR_CONFIG,
+	GIT_ERROR_REGEX,
+	GIT_ERROR_ODB,
+	GIT_ERROR_INDEX,
+	GIT_ERROR_OBJECT,
+	GIT_ERROR_NET,
+	GIT_ERROR_TAG,
+	GIT_ERROR_TREE,
+	GIT_ERROR_INDEXER,
+	GIT_ERROR_SSL,
+	GIT_ERROR_SUBMODULE,
+	GIT_ERROR_THREAD,
+	GIT_ERROR_STASH,
+	GIT_ERROR_CHECKOUT,
+	GIT_ERROR_FETCHHEAD,
+	GIT_ERROR_MERGE,
+	GIT_ERROR_SSH,
+	GIT_ERROR_FILTER,
+	GIT_ERROR_REVERT,
+	GIT_ERROR_CALLBACK,
+	GIT_ERROR_CHERRYPICK,
+	GIT_ERROR_DESCRIBE,
+	GIT_ERROR_REBASE,
+	GIT_ERROR_FILESYSTEM,
+	GIT_ERROR_PATCH,
+	GIT_ERROR_WORKTREE,
+	GIT_ERROR_SHA1
 } git_error_t;
 
 /**
@@ -120,12 +120,12 @@ typedef enum {
  *
  * @return A git_error object.
  */
-GIT_EXTERN(const git_error *) giterr_last(void);
+GIT_EXTERN(const git_error *) git_error_last(void);
 
 /**
  * Clear the last library error that occurred for this thread.
  */
-GIT_EXTERN(void) giterr_clear(void);
+GIT_EXTERN(void) git_error_clear(void);
 
 /**
  * Set the error message string for this thread.
@@ -143,18 +143,18 @@ GIT_EXTERN(void) giterr_clear(void);
  *                    general subsystem that is responsible for the error.
  * @param string The formatted error message to keep
  */
-GIT_EXTERN(void) giterr_set_str(int error_class, const char *string);
+GIT_EXTERN(void) git_error_set_str(int error_class, const char *string);
 
 /**
  * Set the error message to a special value for memory allocation failure.
  *
- * The normal `giterr_set_str()` function attempts to `strdup()` the string
- * that is passed in.  This is not a good idea when the error in question
- * is a memory allocation failure.  That circumstance has a special setter
- * function that sets the error string to a known and statically allocated
- * internal value.
+ * The normal `git_error_set_str()` function attempts to `strdup()` the
+ * string that is passed in.  This is not a good idea when the error in
+ * question is a memory allocation failure.  That circumstance has a
+ * special setter function that sets the error string to a known and
+ * statically allocated internal value.
  */
-GIT_EXTERN(void) giterr_set_oom(void);
+GIT_EXTERN(void) git_error_set_oom(void);
 
 /** @} */
 GIT_END_DECL

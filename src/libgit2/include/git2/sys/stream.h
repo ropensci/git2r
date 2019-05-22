@@ -31,13 +31,13 @@ typedef struct git_stream {
 
 	int encrypted;
 	int proxy_support;
-	int (*connect)(struct git_stream *);
-	int (*certificate)(git_cert **, struct git_stream *);
-	int (*set_proxy)(struct git_stream *, const git_proxy_options *proxy_opts);
-	ssize_t (*read)(struct git_stream *, void *, size_t);
-	ssize_t (*write)(struct git_stream *, const char *, size_t, int);
-	int (*close)(struct git_stream *);
-	void (*free)(struct git_stream *);
+	int GIT_CALLBACK(connect)(struct git_stream *);
+	int GIT_CALLBACK(certificate)(git_cert **, struct git_stream *);
+	int GIT_CALLBACK(set_proxy)(struct git_stream *, const git_proxy_options *proxy_opts);
+	ssize_t GIT_CALLBACK(read)(struct git_stream *, void *, size_t);
+	ssize_t GIT_CALLBACK(write)(struct git_stream *, const char *, size_t, int);
+	int GIT_CALLBACK(close)(struct git_stream *);
+	void GIT_CALLBACK(free)(struct git_stream *);
 } git_stream;
 
 typedef struct {
@@ -54,7 +54,7 @@ typedef struct {
 	 *             service name
 	 * @return 0 or an error code
 	 */
-	int (*init)(git_stream **out, const char *host, const char *port);
+	int GIT_CALLBACK(init)(git_stream **out, const char *host, const char *port);
 
 	/**
 	 * Called to create a new connection on top of the given stream.  If
@@ -68,7 +68,7 @@ typedef struct {
 	 *             for certificate validation
 	 * @return 0 or an error code
 	 */
-	int (*wrap)(git_stream **out, git_stream *in, const char *host);
+	int GIT_CALLBACK(wrap)(git_stream **out, git_stream *in, const char *host);
 } git_stream_registration;
 
 /**
@@ -98,31 +98,40 @@ typedef enum {
 GIT_EXTERN(int) git_stream_register(
 	git_stream_t type, git_stream_registration *registration);
 
+#ifndef GIT_DEPRECATE_HARD
+
 /** @name Deprecated TLS Stream Registration Functions
  *
- * These typedefs and functions are retained for backward compatibility.
- * The newer versions of these functions and structures should be preferred
- * in all new code.
+ * These functions are retained for backward compatibility.  The newer
+ * versions of these values should be preferred in all new code.
+ *
+ * There is no plan to remove these backward compatibility values at
+ * this time.
  */
-
 /**@{*/
 
 /**
  * @deprecated Provide a git_stream_registration to git_stream_register
  * @see git_stream_registration
  */
-typedef int (*git_stream_cb)(git_stream **out, const char *host, const char *port);
+typedef int GIT_CALLBACK(git_stream_cb)(git_stream **out, const char *host, const char *port);
 
 /**
  * Register a TLS stream constructor for the library to use.  This stream
- * will not support HTTP CONNECT proxies.
+ * will not support HTTP CONNECT proxies.  This internally calls
+ * `git_stream_register` and is preserved for backward compatibility.
+ *
+ * This function is deprecated, but there is no plan to remove this
+ * function at this time.
  *
  * @deprecated Provide a git_stream_registration to git_stream_register
  * @see git_stream_register
  */
 GIT_EXTERN(int) git_stream_register_tls(git_stream_cb ctor);
 
- /**@}*/
+/**@}*/
+
+#endif
 
 GIT_END_DECL
 

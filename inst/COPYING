@@ -908,3 +908,15 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
+
+----------------------------------------------------------------------
+
+src/libgit2/src/hash/sha1dc/sha1.c
+src/libgit2/src/hash/sha1dc/sha1.h
+src/libgit2/src/hash/sha1dc/ubc_check.c
+src/libgit2/src/hash/sha1dc/ubc_check.h
+
+Copyright 2017 Marc Stevens <marc@marc-stevens.nl>, Dan Shumow <danshu@microsoft.com>
+Distributed under the MIT Software License.
+See accompanying file LICENSE.txt or copy at
+https://opensource.org/licenses/MIT
