@@ -285,10 +285,13 @@ cleanup:
     free(p);
     git_revwalk_free(walker);
     git_repository_free(repository);
+
     if (nprotect)
         UNPROTECT(nprotect);
+
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+
     return result;
 }
 
