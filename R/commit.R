@@ -314,7 +314,8 @@ commits <- function(repo        = ".",
                                reverse, path)
          path_commits <- vapply(path_revwalk, function(x) !is.null(x),
                                 logical(1))
-         return(path_revwalk[path_commits])
+         if (n == -1L) max_n <- sum(path_commits) else max_n <- n
+         return(path_revwalk[path_commits][seq_len(max_n)])
      }
 
     .Call(git2r_revwalk_list, repo, sha, topological, time, reverse, n)

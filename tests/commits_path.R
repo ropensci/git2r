@@ -55,6 +55,7 @@ c6 <- commit(repo, "commit 6")
 commits_all <- commits(repo)
 stopifnot(length(commits_all) == 6)
 
+# Test path
 commits_odd <- commits(repo, path = "odd.txt")
 stopifnot(length(commits_odd) == 3)
 stopifnot(commits_odd[[1]]$sha == c5$sha)
@@ -67,6 +68,7 @@ stopifnot(commits_even[[1]]$sha == c6$sha)
 stopifnot(commits_even[[2]]$sha == c4$sha)
 stopifnot(commits_even[[3]]$sha == c2$sha)
 
+# Test reverse
 commits_odd_rev <- commits(repo, reverse = TRUE, path = "odd.txt")
 stopifnot(length(commits_odd_rev) == 3)
 stopifnot(commits_odd_rev[[1]]$sha == c1$sha)
@@ -78,6 +80,25 @@ stopifnot(length(commits_even_rev) == 3)
 stopifnot(commits_even_rev[[1]]$sha == c2$sha)
 stopifnot(commits_even_rev[[2]]$sha == c4$sha)
 stopifnot(commits_even_rev[[3]]$sha == c6$sha)
+
+# Test n
+commits_odd_n <- commits(repo, n = 2, path = "odd.txt")
+stopifnot(length(commits_odd_n) == 2)
+stopifnot(commits_odd_n[[1]]$sha == c5$sha)
+stopifnot(commits_odd_n[[2]]$sha == c3$sha)
+
+commits_even_n <- commits(repo, n = 2, path = "even.txt")
+stopifnot(length(commits_even_n) == 2)
+stopifnot(commits_even_n[[1]]$sha == c6$sha)
+stopifnot(commits_even_n[[2]]$sha == c4$sha)
+
+commits_odd_0 <- commits(repo, n = 0, path = "odd.txt")
+stopifnot(length(commits_odd_0) == 0)
+stopifnot(identical(commits_odd_0, list()))
+
+commits_even_0 <- commits(repo, n = 0, path = "even.txt")
+stopifnot(length(commits_even_0) == 0)
+stopifnot(identical(commits_even_0, list()))
 
 ## Cleanup
 unlink(path, recursive=TRUE)
