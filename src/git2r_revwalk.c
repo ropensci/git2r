@@ -174,7 +174,6 @@ cleanup:
 }
 
 SEXP git2r_revwalk_list2 (SEXP repo, SEXP path) {
-    SEXP repo_path;
     SEXP result = R_NilValue;
     int  error = GIT_OK;
     int  nprotect = 0;
