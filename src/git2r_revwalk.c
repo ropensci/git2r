@@ -173,20 +173,35 @@ cleanup:
     return result;
 }
 
-SEXP git2r_revwalk_list2 (SEXP repo, SEXP path) {
+SEXP git2r_revwalk_list2 (
+    SEXP repo,
+    SEXP topological,
+    SEXP time,
+    SEXP reverse,
+    SEXP path)
+{
     SEXP result = R_NilValue;
     int  error = GIT_OK;
     int  nprotect = 0;
     int  i, n, parents, unmatched;
     int  pathlength;
     git_diff_options diffopts    = GIT_DIFF_OPTIONS_INIT;
-    unsigned int     sort_mode   = GIT_SORT_TIME;
+    unsigned int     sort_mode   = GIT_SORT_NONE;
     char             *p          = NULL;
     git_pathspec     *ps         = NULL;
     git_revwalk      *walker     = NULL;
     git_repository   *repository = NULL;
     git_commit       *commit     = NULL;
     git_tree         *tree       = NULL;
+
+    if (git2r_arg_check_logical(topological))
+        git2r_error(__func__, NULL, "'topological'", git2r_err_logical_arg);
+    if (git2r_arg_check_logical(time))
+        git2r_error(__func__, NULL, "'time'", git2r_err_logical_arg);
+    if (git2r_arg_check_logical(reverse))
+        git2r_error(__func__, NULL, "'reverse'", git2r_err_logical_arg);
+    if (git2r_arg_check_string(path))
+        git2r_error(__func__, NULL, "'path'", git2r_err_string_arg);
 
     /* Set up git pathspec. */
     pathlength = strlen(CHAR(STRING_ELT(path,0)));
@@ -195,9 +210,6 @@ SEXP git2r_revwalk_list2 (SEXP repo, SEXP path) {
     diffopts.pathspec.strings = &p;
     diffopts.pathspec.count = 1;
     git_pathspec_new(&ps,&diffopts.pathspec);
-
-    if (git2r_arg_check_string(path))
-        git2r_error(__func__, NULL, "'path'", git2r_err_string_arg);
 
     /* Open the repository. */
     repository = git2r_repository_open(repo);
@@ -210,6 +222,13 @@ SEXP git2r_revwalk_list2 (SEXP repo, SEXP path) {
         nprotect++;
         goto cleanup;
     }
+
+    if (LOGICAL(topological)[0])
+        sort_mode |= GIT_SORT_TOPOLOGICAL;
+    if (LOGICAL(time)[0])
+        sort_mode |= GIT_SORT_TIME;
+    if (LOGICAL(reverse)[0])
+        sort_mode |= GIT_SORT_REVERSE;
 
     /* Create a new revwalker. */
     error = git_revwalk_new(&walker,repository);

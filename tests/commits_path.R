@@ -67,5 +67,17 @@ stopifnot(commits_even[[1]]$sha == c6$sha)
 stopifnot(commits_even[[2]]$sha == c4$sha)
 stopifnot(commits_even[[3]]$sha == c2$sha)
 
+commits_odd_rev <- commits(repo, reverse = TRUE, path = "odd.txt")
+stopifnot(length(commits_odd_rev) == 3)
+stopifnot(commits_odd_rev[[1]]$sha == c1$sha)
+stopifnot(commits_odd_rev[[2]]$sha == c3$sha)
+stopifnot(commits_odd_rev[[3]]$sha == c5$sha)
+
+commits_even_rev <- commits(repo, reverse = TRUE, path = "even.txt")
+stopifnot(length(commits_even_rev) == 3)
+stopifnot(commits_even_rev[[1]]$sha == c2$sha)
+stopifnot(commits_even_rev[[2]]$sha == c4$sha)
+stopifnot(commits_even_rev[[3]]$sha == c6$sha)
+
 ## Cleanup
 unlink(path, recursive=TRUE)
