@@ -178,6 +178,7 @@ SEXP git2r_revwalk_list2 (
     SEXP topological,
     SEXP time,
     SEXP reverse,
+    SEXP max_n,
     SEXP path)
 {
     SEXP result = R_NilValue;
@@ -200,6 +201,8 @@ SEXP git2r_revwalk_list2 (
         git2r_error(__func__, NULL, "'time'", git2r_err_logical_arg);
     if (git2r_arg_check_logical(reverse))
         git2r_error(__func__, NULL, "'reverse'", git2r_err_logical_arg);
+    if (git2r_arg_check_integer(max_n))
+        git2r_error(__func__, NULL, "'max_n'", git2r_err_integer_arg);
     if (git2r_arg_check_string(path))
         git2r_error(__func__, NULL, "'path'", git2r_err_string_arg);
 
@@ -240,7 +243,7 @@ SEXP git2r_revwalk_list2 (
         goto cleanup;
 
     /* Count number of revisions before creating the list. */
-    n = git2r_revwalk_count(walker,-1);
+    n = git2r_revwalk_count(walker, INTEGER(max_n)[0]);
 
     /* Create the list to store the result. */
     PROTECT(result = Rf_allocVector(VECSXP, n));
