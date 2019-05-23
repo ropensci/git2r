@@ -174,28 +174,28 @@ cleanup:
 }
 
 SEXP git2r_revwalk_list2 (SEXP repo, SEXP path) {
-  SEXP repo_path;
-  SEXP result = R_NilValue;
-  int  error = GIT_OK;
-  int  nprotect = 0;
-  int  i, n, parents, unmatched;
-  int  pathlength; 
-  git_diff_options diffopts    = GIT_DIFF_OPTIONS_INIT;
-  unsigned int     sort_mode   = GIT_SORT_TIME;
-  char             *p          = NULL;
-  git_pathspec     *ps         = NULL;
-  git_revwalk      *walker     = NULL;
-  git_repository   *repository = NULL;
-  git_commit       *commit     = NULL;
-  git_tree         *tree       = NULL;
+    SEXP repo_path;
+    SEXP result = R_NilValue;
+    int  error = GIT_OK;
+    int  nprotect = 0;
+    int  i, n, parents, unmatched;
+    int  pathlength;
+    git_diff_options diffopts    = GIT_DIFF_OPTIONS_INIT;
+    unsigned int     sort_mode   = GIT_SORT_TIME;
+    char             *p          = NULL;
+    git_pathspec     *ps         = NULL;
+    git_revwalk      *walker     = NULL;
+    git_repository   *repository = NULL;
+    git_commit       *commit     = NULL;
+    git_tree         *tree       = NULL;
 
-  /* Set up git pathspec. */
-  pathlength = strlen(CHAR(STRING_ELT(path,0)));
-  p = malloc(pathlength + 1);
-  strcpy(p,CHAR(STRING_ELT(path,0)));
-  diffopts.pathspec.strings = &p;
-  diffopts.pathspec.count = 1;
-  git_pathspec_new(&ps,&diffopts.pathspec);
+    /* Set up git pathspec. */
+    pathlength = strlen(CHAR(STRING_ELT(path,0)));
+    p = malloc(pathlength + 1);
+    strcpy(p,CHAR(STRING_ELT(path,0)));
+    diffopts.pathspec.strings = &p;
+    diffopts.pathspec.count = 1;
+    git_pathspec_new(&ps,&diffopts.pathspec);
 
     if (git2r_arg_check_string(path))
         git2r_error(__func__, NULL, "'path'", git2r_err_string_arg);
@@ -205,91 +205,91 @@ SEXP git2r_revwalk_list2 (SEXP repo, SEXP path) {
     if (!repository)
         git2r_error(__func__, NULL, git2r_err_invalid_repository, NULL);
 
-  /* If there are no commits, create an empty list. */
-  if (git_repository_is_empty(repository)) {
-    PROTECT(result = Rf_allocVector(VECSXP, 0));
-    nprotect++;
-    goto cleanup;
-  }
-
-  /* Create a new revwalker. */
-  error = git_revwalk_new(&walker,repository);
-  if (error)
-    goto cleanup;
-  git_revwalk_sorting(walker,sort_mode);
-  error = git_revwalk_push_head(walker);
-  if (error)
-    goto cleanup;
-
-  /* Count number of revisions before creating the list. */
-  n = git2r_revwalk_count(walker,-1);
-
-  /* Create the list to store the result. */
-  PROTECT(result = Rf_allocVector(VECSXP, n));
-  nprotect++;
-
-  /* Restart the revwalker. */
-  git_revwalk_reset(walker);
-  git_revwalk_sorting(walker,sort_mode);
-  error = git_revwalk_push_head(walker);
-  if (error)
-    goto cleanup;
-  
-  for (i = 0; i < n; i++) {
-    SEXP item;
-    git_oid oid;
-
-    error = git_revwalk_next(&oid, walker);
-    if (error) {
-      if (GIT_ITEROVER == error)
-	error = GIT_OK;
-      goto cleanup;
+    /* If there are no commits, create an empty list. */
+    if (git_repository_is_empty(repository)) {
+        PROTECT(result = Rf_allocVector(VECSXP, 0));
+        nprotect++;
+        goto cleanup;
     }
-    
-    error = git_commit_lookup(&commit, repository, &oid);
+
+    /* Create a new revwalker. */
+    error = git_revwalk_new(&walker,repository);
     if (error)
-      goto cleanup;
+        goto cleanup;
+    git_revwalk_sorting(walker,sort_mode);
+    error = git_revwalk_push_head(walker);
+    if (error)
+        goto cleanup;
 
-    /* Check whether it is a "touching" commit. */
-    parents = (int) git_commit_parentcount(commit);
-    unmatched = parents;
-    if (parents == 0) {
-      git_commit_tree(&tree, commit);
-      if (git_pathspec_match_tree(NULL,tree,GIT_PATHSPEC_NO_MATCH_ERROR,ps)
-	  != 0)
-	unmatched = 1;
-	git_tree_free(tree);
-      } else if (parents == 1) {
-	unmatched = match_with_parent(commit, 0, &diffopts) ? 0 : 1;
-      } else {
-	for (i = 0; i < parents; ++i) {
-	  if (match_with_parent(commit, i, &diffopts))
-	    unmatched--;
-	}
-      }
-      
-    if (unmatched > 0)
-      continue;
-    
-    SET_VECTOR_ELT(
-      result,
-      i,
-      item = Rf_mkNamed(VECSXP, git2r_S3_items__git_commit));
-    Rf_setAttrib(item, R_ClassSymbol,
-		 Rf_mkString(git2r_S3_class__git_commit));
-    git2r_commit_init(commit, repo, item);
-    git_commit_free(commit);
-  }
+    /* Count number of revisions before creating the list. */
+    n = git2r_revwalk_count(walker,-1);
 
-  cleanup:
+    /* Create the list to store the result. */
+    PROTECT(result = Rf_allocVector(VECSXP, n));
+    nprotect++;
+
+    /* Restart the revwalker. */
+    git_revwalk_reset(walker);
+    git_revwalk_sorting(walker,sort_mode);
+    error = git_revwalk_push_head(walker);
+    if (error)
+        goto cleanup;
+
+    for (i = 0; i < n; i++) {
+        SEXP item;
+        git_oid oid;
+
+        error = git_revwalk_next(&oid, walker);
+        if (error) {
+            if (GIT_ITEROVER == error)
+                error = GIT_OK;
+            goto cleanup;
+        }
+
+        error = git_commit_lookup(&commit, repository, &oid);
+        if (error)
+            goto cleanup;
+
+        /* Check whether it is a "touching" commit. */
+        parents = (int) git_commit_parentcount(commit);
+        unmatched = parents;
+        if (parents == 0) {
+            git_commit_tree(&tree, commit);
+            if (git_pathspec_match_tree(NULL,tree,GIT_PATHSPEC_NO_MATCH_ERROR,ps)
+                    != 0)
+                unmatched = 1;
+            git_tree_free(tree);
+        } else if (parents == 1) {
+            unmatched = match_with_parent(commit, 0, &diffopts) ? 0 : 1;
+        } else {
+            for (i = 0; i < parents; ++i) {
+                if (match_with_parent(commit, i, &diffopts))
+                    unmatched--;
+            }
+        }
+
+        if (unmatched > 0)
+            continue;
+
+        SET_VECTOR_ELT(
+            result,
+            i,
+            item = Rf_mkNamed(VECSXP, git2r_S3_items__git_commit));
+        Rf_setAttrib(item, R_ClassSymbol,
+                     Rf_mkString(git2r_S3_class__git_commit));
+        git2r_commit_init(commit, repo, item);
+        git_commit_free(commit);
+    }
+
+cleanup:
     free(p);
     git_revwalk_free(walker);
     git_repository_free(repository);
     if (nprotect)
-      UNPROTECT(nprotect);
+        UNPROTECT(nprotect);
     if (error)
-      git2r_error(__func__, giterr_last(), NULL, NULL);
-  return result;
+        git2r_error(__func__, giterr_last(), NULL, NULL);
+    return result;
 }
 
 /**
@@ -410,23 +410,23 @@ cleanup:
 
 /* Helper to find how many files in a commit changed from its nth parent. */
 static int match_with_parent (git_commit *commit, int i,
-			      git_diff_options *opts) {
-  git_commit *parent;
-  git_tree *a, *b;
-  git_diff *diff;
-  int ndeltas;
-  
-  git_commit_parent(&parent, commit, (size_t) i);
-  git_commit_tree(&a, parent);
-  git_commit_tree(&b, commit);
-  git_diff_tree_to_tree(&diff, git_commit_owner(commit), a, b, opts);
-  
-  ndeltas = (int) git_diff_num_deltas(diff);
-  
-  git_diff_free(diff);
-  git_tree_free(a);
-  git_tree_free(b);
-  git_commit_free(parent);
-  
-  return ndeltas > 0;
+                              git_diff_options *opts) {
+    git_commit *parent;
+    git_tree *a, *b;
+    git_diff *diff;
+    int ndeltas;
+
+    git_commit_parent(&parent, commit, (size_t) i);
+    git_commit_tree(&a, parent);
+    git_commit_tree(&b, commit);
+    git_diff_tree_to_tree(&diff, git_commit_owner(commit), a, b, opts);
+
+    ndeltas = (int) git_diff_num_deltas(diff);
+
+    git_diff_free(diff);
+    git_tree_free(a);
+    git_tree_free(b);
+    git_commit_free(parent);
+
+    return ndeltas > 0;
 }
