@@ -175,6 +175,7 @@ cleanup:
 
 SEXP git2r_revwalk_list2 (
     SEXP repo,
+    SEXP sha,
     SEXP topological,
     SEXP time,
     SEXP reverse,
@@ -193,7 +194,10 @@ SEXP git2r_revwalk_list2 (
     git_repository   *repository = NULL;
     git_commit       *commit     = NULL;
     git_tree         *tree       = NULL;
+    git_oid oid;
 
+    if (git2r_arg_check_sha(sha))
+        git2r_error(__func__, NULL, "'sha'", git2r_err_sha_arg);
     if (git2r_arg_check_logical(topological))
         git2r_error(__func__, NULL, "'topological'", git2r_err_logical_arg);
     if (git2r_arg_check_logical(time))
@@ -234,6 +238,12 @@ SEXP git2r_revwalk_list2 (
     error = git_revwalk_new(&walker,repository);
     if (error)
         goto cleanup;
+
+    git2r_oid_from_sha_sexp(sha, &oid);
+    error = git_revwalk_push(walker, &oid);
+    if (error)
+        goto cleanup;
+
     git_revwalk_sorting(walker,sort_mode);
     error = git_revwalk_push_head(walker);
     if (error)
@@ -249,7 +259,7 @@ SEXP git2r_revwalk_list2 (
     /* Restart the revwalker. */
     git_revwalk_reset(walker);
     git_revwalk_sorting(walker,sort_mode);
-    error = git_revwalk_push_head(walker);
+    error = git_revwalk_push(walker, &oid);
     if (error)
         goto cleanup;
 

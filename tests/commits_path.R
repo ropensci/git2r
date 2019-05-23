@@ -100,5 +100,28 @@ commits_even_0 <- commits(repo, n = 0, path = "even.txt")
 stopifnot(length(commits_even_0) == 0)
 stopifnot(identical(commits_even_0, list()))
 
+# Test ref
+checkout(repo, branch = "test-ref", create = TRUE)
+
+writeLines("7", file.path(path, "odd.txt"))
+add(repo, "odd.txt")
+c7 <- commit(repo, "commit 7")
+
+writeLines("8", file.path(path, "even.txt"))
+add(repo, "even.txt")
+c8 <- commit(repo, "commit 8")
+
+commits_odd_ref <- commits(repo, ref = "master", path = "odd.txt")
+stopifnot(length(commits_odd_ref) == 3)
+stopifnot(commits_odd_ref[[1]]$sha == c5$sha)
+stopifnot(commits_odd_ref[[2]]$sha == c3$sha)
+stopifnot(commits_odd_ref[[3]]$sha == c1$sha)
+
+commits_even_ref <- commits(repo, ref = "master", path = "even.txt")
+stopifnot(length(commits_even_ref) == 3)
+stopifnot(commits_even_ref[[1]]$sha == c6$sha)
+stopifnot(commits_even_ref[[2]]$sha == c4$sha)
+stopifnot(commits_even_ref[[3]]$sha == c2$sha)
+
 ## Cleanup
 unlink(path, recursive=TRUE)

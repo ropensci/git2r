@@ -310,8 +310,8 @@ commits <- function(repo        = ".",
     }
 
      if (!is.null(path)) {
-         path_revwalk <- .Call(git2r_revwalk_list2, repo, topological, time,
-                               reverse, path)
+         path_revwalk <- .Call(git2r_revwalk_list2, repo, sha, topological,
+                               time, reverse, path)
          path_commits <- vapply(path_revwalk, function(x) !is.null(x),
                                 logical(1))
          if (n == -1L) max_n <- sum(path_commits) else max_n <- n
