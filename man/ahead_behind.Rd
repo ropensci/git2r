@@ -7,13 +7,17 @@
 ahead_behind(local = NULL, upstream = NULL)
 }
 \arguments{
-\item{local}{a git_commit object.}
+\item{local}{a git_commit object. Can also be a tag or a branch,
+and in that case the commit will be the target of the tag or
+branch.}
 
-\item{upstream}{a git_commit object.}
+\item{upstream}{a git_commit object. Can also be a tag or a
+branch, and in that case the commit will be the target of the
+tag or branch.}
 }
 \value{
 An integer vector of length 2 with number of commits that
-the upstream commit is ahead and behind the local commit
+    the upstream commit is ahead and behind the local commit
 }
 \description{
 Count the number of unique commits between two commit objects.
@@ -33,6 +37,7 @@ writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
            con = file.path(path, "test.txt"))
 add(repo, "test.txt")
 commit_1 <- commit(repo, "Commit message 1")
+tag_1 <- tag(repo, "Tagname1", "Tag message 1")
 
 # Change file and commit
 writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -40,7 +45,9 @@ writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
              con = file.path(path, "test.txt"))
 add(repo, "test.txt")
 commit_2 <- commit(repo, "Commit message 2")
+tag_2 <- tag(repo, "Tagname2", "Tag message 2")
 
 ahead_behind(commit_1, commit_2)
+ahead_behind(tag_1, tag_2)
 }
 }

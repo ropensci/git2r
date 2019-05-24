@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2018 The git2r contributors
+ *  Copyright (C) 2013-2019 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -19,6 +19,7 @@
 #include <git2.h>
 
 #include "git2r_arg.h"
+#include "git2r_deprecated.h"
 #include "git2r_error.h"
 #include "git2r_reference.h"
 #include "git2r_repository.h"
@@ -28,10 +29,11 @@
  * Init slots in S3 class git_reference.
  *
  * @param source A git_reference pointer
+ * @param repo S3 class git_repository that contains the reference
  * @param dest S3 class git_reference to initialize
  * @return void
  */
-static void git2r_reference_init(git_reference *source, SEXP dest)
+static void git2r_reference_init(git_reference *source, SEXP repo, SEXP dest)
 {
     char sha[GIT_OID_HEXSZ + 1];
 
@@ -46,11 +48,11 @@ static void git2r_reference_init(git_reference *source, SEXP dest)
         Rf_mkString(git_reference_shorthand(source)));
 
     switch (git_reference_type(source)) {
-    case GIT_REF_OID:
+    case GIT2R_REFERENCE_DIRECT:
         SET_VECTOR_ELT(
             dest,
             git2r_S3_item__git_reference__type,
-            Rf_ScalarInteger(GIT_REF_OID));
+            Rf_ScalarInteger(GIT2R_REFERENCE_DIRECT));
 
         git_oid_fmt(sha, git_reference_target(source));
         sha[GIT_OID_HEXSZ] = '\0';
@@ -59,11 +61,11 @@ static void git2r_reference_init(git_reference *source, SEXP dest)
             git2r_S3_item__git_reference__sha,
             Rf_mkString(sha));
         break;
-    case GIT_REF_SYMBOLIC:
+    case GIT2R_REFERENCE_SYMBOLIC:
         SET_VECTOR_ELT(
             dest,
             git2r_S3_item__git_reference__type,
-            Rf_ScalarInteger(GIT_REF_SYMBOLIC));
+            Rf_ScalarInteger(GIT2R_REFERENCE_SYMBOLIC));
 
         SET_VECTOR_ELT(
             dest,
@@ -80,6 +82,8 @@ static void git2r_reference_init(git_reference *source, SEXP dest)
             git2r_S3_item__git_reference__target,
             Rf_ScalarString(NA_STRING));
     }
+
+    SET_VECTOR_ELT(dest, git2r_S3_item__git_reference__repo, Rf_duplicate(repo));
 }
 
 /**
@@ -114,7 +118,7 @@ SEXP git2r_reference_dwim(SEXP repo, SEXP shorthand)
     nprotect++;
     Rf_setAttrib(result, R_ClassSymbol,
                  Rf_mkString(git2r_S3_class__git_reference));
-    git2r_reference_init(reference, result);
+    git2r_reference_init(reference, repo, result);
 
 cleanup:
     git_reference_free(reference);
@@ -124,7 +128,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -173,7 +177,7 @@ SEXP git2r_reference_list(SEXP repo)
             reference = Rf_mkNamed(VECSXP, git2r_S3_items__git_reference));
         Rf_setAttrib(reference, R_ClassSymbol,
                      Rf_mkString(git2r_S3_class__git_reference));
-        git2r_reference_init(ref, reference);
+        git2r_reference_init(ref, repo, reference);
         SET_STRING_ELT(names, i, Rf_mkChar(ref_list.strings[i]));
 
         git_reference_free(ref);
@@ -187,7 +191,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }

@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -45,6 +45,7 @@ tools::assertError(commit(repo, ""))
 ## Commit
 commit_1 <- commit(repo, "Commit message", session = TRUE)
 summary(commit_1)
+tag_1 <- tag(repo, "Tagname1", "Tag message 1")
 
 ## Check commit
 stopifnot(identical(commit_1$author$name, "Alice"))
@@ -68,10 +69,15 @@ writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test.txt"))
 add(repo, "test.txt")
 commit_2 <- commit(repo, "Commit message 2")
 summary(commit_2)
+tag_2 <- tag(repo, "Tagname2", "Tag message 2")
 
 ## Check relationship
 stopifnot(identical(descendant_of(commit_2, commit_1), TRUE))
 stopifnot(identical(descendant_of(commit_1, commit_2), FALSE))
+stopifnot(identical(descendant_of(tag_2, tag_1), TRUE))
+stopifnot(identical(descendant_of(tag_1, tag_2), FALSE))
+stopifnot(identical(descendant_of(branches(repo)[[1]], commit_1), TRUE))
+stopifnot(identical(descendant_of(commit_1, branches(repo)[[1]]), FALSE))
 stopifnot(identical(length(parents(commit_2)), 1L))
 stopifnot(identical(parents(commit_2)[[1]], commit_1))
 

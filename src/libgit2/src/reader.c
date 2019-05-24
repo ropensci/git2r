@@ -32,11 +32,17 @@ static int tree_reader_read(
 	tree_reader *reader = (tree_reader *)_reader;
 	git_tree_entry *tree_entry = NULL;
 	git_blob *blob = NULL;
+	git_off_t blobsize;
 	int error;
 
 	if ((error = git_tree_entry_bypath(&tree_entry, reader->tree, filename)) < 0 ||
-	    (error = git_blob_lookup(&blob, git_tree_owner(reader->tree), git_tree_entry_id(tree_entry))) < 0 ||
-	    (error = git_buf_set(out, git_blob_rawcontent(blob), git_blob_rawsize(blob))) < 0)
+	    (error = git_blob_lookup(&blob, git_tree_owner(reader->tree), git_tree_entry_id(tree_entry))) < 0)
+		goto done;
+
+	blobsize = git_blob_rawsize(blob);
+	GIT_ERROR_CHECK_BLOBSIZE(blobsize);
+
+	if ((error = git_buf_set(out, git_blob_rawcontent(blob), (size_t)blobsize)) < 0)
 		goto done;
 
 	if (out_id)
@@ -58,7 +64,7 @@ int git_reader_for_tree(git_reader **out, git_tree *tree)
 	assert(out && tree);
 
 	reader = git__calloc(1, sizeof(tree_reader));
-	GITERR_CHECK_ALLOC(reader);
+	GIT_ERROR_CHECK_ALLOC(reader);
 
 	reader->reader.read = tree_reader_read;
 	reader->tree = tree;
@@ -99,7 +105,7 @@ static int workdir_reader_read(
 		if (error == -1 && errno == ENOENT)
 			error = GIT_ENOTFOUND;
 
-		giterr_set(GITERR_OS, "could not stat '%s'", path.ptr);
+		git_error_set(GIT_ERROR_OS, "could not stat '%s'", path.ptr);
 		goto done;
 	}
 
@@ -155,7 +161,7 @@ int git_reader_for_workdir(
 	assert(out && repo);
 
 	reader = git__calloc(1, sizeof(workdir_reader));
-	GITERR_CHECK_ALLOC(reader);
+	GIT_ERROR_CHECK_ALLOC(reader);
 
 	reader->reader.read = workdir_reader_read;
 	reader->repo = repo;
@@ -220,7 +226,7 @@ int git_reader_for_index(
 	assert(out && repo);
 
 	reader = git__calloc(1, sizeof(index_reader));
-	GITERR_CHECK_ALLOC(reader);
+	GIT_ERROR_CHECK_ALLOC(reader);
 
 	reader->reader.read = index_reader_read;
 	reader->repo = repo;

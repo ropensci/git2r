@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2018 The git2r contributors
+ *  Copyright (C) 2013-2019 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -93,7 +93,7 @@ static const R_CallMethodDef callMethods[] =
     CALLDEF(git2r_config_get_logical, 2),
     CALLDEF(git2r_config_get_string, 2),
     CALLDEF(git2r_config_set, 2),
-    CALLDEF(git2r_diff, 5),
+    CALLDEF(git2r_diff, 12),
     CALLDEF(git2r_graph_ahead_behind, 2),
     CALLDEF(git2r_graph_descendant_of, 2),
     CALLDEF(git2r_index_add_all, 3),
@@ -140,8 +140,8 @@ static const R_CallMethodDef callMethods[] =
     CALLDEF(git2r_reset_default, 2),
     CALLDEF(git2r_revparse_single, 2),
     CALLDEF(git2r_revwalk_contributions, 4),
-    CALLDEF(git2r_revwalk_list, 5),
-    CALLDEF(git2r_revwalk_list2, 2),
+    CALLDEF(git2r_revwalk_list, 6),
+    CALLDEF(git2r_revwalk_list2, 6),
     CALLDEF(git2r_signature_default, 1),
     CALLDEF(git2r_ssl_cert_locations, 2),
     CALLDEF(git2r_stash_apply, 2),
@@ -150,7 +150,7 @@ static const R_CallMethodDef callMethods[] =
     CALLDEF(git2r_stash_pop, 2),
     CALLDEF(git2r_stash_save, 6),
     CALLDEF(git2r_status_list, 6),
-    CALLDEF(git2r_tag_create, 4),
+    CALLDEF(git2r_tag_create, 5),
     CALLDEF(git2r_tag_delete, 2),
     CALLDEF(git2r_tag_list, 1),
     CALLDEF(git2r_tree_walk, 2),

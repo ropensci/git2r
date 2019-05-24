@@ -7,10 +7,13 @@
 descendant_of(commit = NULL, ancestor = NULL)
 }
 \arguments{
-\item{commit}{a git_commit object.}
+\item{commit}{a git_commit object. Can also be a tag or a branch,
+and in that case the commit will be the target of the tag or
+branch.}
 
 \item{ancestor}{a git_commit object to check if ancestor to
-\code{commit}.}
+\code{commit}. Can also be a tag or a branch, and in that case
+the commit will be the target of the tag or branch.}
 }
 \value{
 TRUE if \code{commit} is descendant of \code{ancestor},
@@ -34,6 +37,7 @@ writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
            con = file.path(path, "test.txt"))
 add(repo, "test.txt")
 commit_1 <- commit(repo, "Commit message 1")
+tag_1 <- tag(repo, "Tagname1", "Tag message 1")
 
 # Change file and commit
 writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -41,8 +45,11 @@ writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
              con = file.path(path, "test.txt"))
 add(repo, "test.txt")
 commit_2 <- commit(repo, "Commit message 2")
+tag_2 <- tag(repo, "Tagname2", "Tag message 2")
 
 descendant_of(commit_1, commit_2)
 descendant_of(commit_2, commit_1)
+descendant_of(tag_1, tag_2)
+descendant_of(tag_2, tag_1)
 }
 }

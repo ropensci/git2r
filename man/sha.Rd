@@ -6,6 +6,7 @@
 \alias{sha.git_branch}
 \alias{sha.git_commit}
 \alias{sha.git_note}
+\alias{sha.git_reference}
 \alias{sha.git_reflog_entry}
 \alias{sha.git_tag}
 \alias{sha.git_tree}
@@ -22,6 +23,8 @@ sha(object)
 \method{sha}{git_commit}(object)
 
 \method{sha}{git_note}(object)
+
+\method{sha}{git_reference}(object)
 
 \method{sha}{git_reflog_entry}(object)
 

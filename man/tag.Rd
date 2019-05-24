@@ -5,18 +5,22 @@
 \title{Create tag targeting HEAD commit in repository}
 \usage{
 tag(object = ".", name = NULL, message = NULL, session = FALSE,
-  tagger = NULL)
+  tagger = NULL, force = FALSE)
 }
 \arguments{
 \item{object}{The repository \code{object}.}
 
 \item{name}{Name for the tag.}
 
-\item{message}{The tag message.}
+\item{message}{The tag message. Specify a tag message to create an
+annotated tag. A lightweight tag is created if the message
+parameter is \code{NULL}.}
 
 \item{session}{Add sessionInfo to tag message. Default is FALSE.}
 
 \item{tagger}{The tagger (author) of the tag}
+
+\item{force}{Overwrite existing tag. Default = FALSE}
 }
 \value{
 invisible(\code{git_tag}) object
@@ -35,12 +39,24 @@ repo <- init(path)
 config(repo, user.name="Alice", user.email="alice@example.org")
 
 ## Commit a text file
-writeLines("Hello world!", file.path(path, "example.txt"))
+filename <- file.path(path, "example.txt")
+writeLines("Hello world!", filename)
 add(repo, "example.txt")
 commit(repo, "First commit message")
 
-## Create tag
-tag(repo, "Tagname", "Tag message")
+## Create an annotated tag
+tag(repo, "v1.0", "Tag message")
+
+## List tags
+tags(repo)
+
+## Make a change to the text file and commit.
+writeLines(c("Hello world!", "HELLO WORLD!"), filename)
+add(repo, "example.txt")
+commit(repo, "Second commit message")
+
+## Create a lightweight tag
+tag(repo, "v2.0")
 
 ## List tags
 tags(repo)

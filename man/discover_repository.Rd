@@ -10,7 +10,7 @@ discover_repository(path = ".", ceiling = NULL)
 \item{path}{A character vector specifying the path to a file or
 folder}
 
-\item{ceiling}{The defult is to not use the ceiling argument and
+\item{ceiling}{The default is to not use the ceiling argument and
 start the lookup from path and walk across parent
 directories. When ceiling is 0, the lookup is only in
 path. When ceiling is 1, the lookup is in both the path and

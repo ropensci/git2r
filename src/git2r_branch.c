@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2018 The git2r contributors
+ *  Copyright (C) 2013-2019 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -21,6 +21,7 @@
 #include "git2r_arg.h"
 #include "git2r_branch.h"
 #include "git2r_commit.h"
+#include "git2r_deprecated.h"
 #include "git2r_error.h"
 #include "git2r_reference.h"
 #include "git2r_repository.h"
@@ -156,7 +157,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -195,7 +196,7 @@ cleanup:
     git_repository_free(repository);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return R_NilValue;
 }
@@ -247,7 +248,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -324,7 +325,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -369,7 +370,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -423,14 +424,14 @@ SEXP git2r_branch_upstream_canonical_name(SEXP branch)
     buf_len = branch_name_len + sizeof("branch." ".merge");
     buf = malloc(buf_len);
     if (!buf) {
-        giterr_set_oom();
-        error = GITERR_NOMEMORY;
+        GIT2R_ERROR_SET_OOM();
+        error = GIT2R_ERROR_NOMEMORY;
         goto cleanup;
     }
     error = snprintf(buf, buf_len, "branch.%.*s.merge", (int)branch_name_len, branch_name);
     if (error < 0 || error >= buf_len) {
-        giterr_set_str(GITERR_OS, "Failed to snprintf branch config.");
-        error = GITERR_OS;
+        GIT2R_ERROR_SET_STR(GIT2R_ERROR_OS, "Failed to snprintf branch config.");
+        error = GIT2R_ERROR_OS;
         goto cleanup;
     }
 
@@ -452,7 +453,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -499,11 +500,7 @@ SEXP git2r_branch_remote_name(SEXP branch)
     PROTECT(result = Rf_allocVector(STRSXP, 1));
     nprotect++;
     SET_STRING_ELT(result, 0, Rf_mkChar(buf.ptr));
-#if defined(GIT2R_BUF_DISPOSE)
-    git_buf_dispose(&buf);
-#else
-    git_buf_free(&buf);
-#endif
+    GIT2R_BUF_DISPOSE(&buf);
 
 cleanup:
     git_reference_free(reference);
@@ -513,7 +510,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -562,21 +559,12 @@ SEXP git2r_branch_remote_url(SEXP branch)
     if (error) {
         error = git_remote_create_anonymous(&remote, repository, buf.ptr);
         if (error) {
-#if defined(GIT2R_BUF_DISPOSE)
-            git_buf_dispose(&buf);
-#else
-            git_buf_free(&buf);
-#endif
-
+            GIT2R_BUF_DISPOSE(&buf);
             goto cleanup;
         }
     }
 
-#if defined(GIT2R_BUF_DISPOSE)
-    git_buf_dispose(&buf);
-#else
-    git_buf_free(&buf);
-#endif
+    GIT2R_BUF_DISPOSE(&buf);
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
     nprotect++;
@@ -591,7 +579,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -660,7 +648,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -696,7 +684,7 @@ SEXP git2r_branch_target(SEXP branch)
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
     nprotect++;
-    if (GIT_REF_OID == git_reference_type(reference)) {
+    if (git_reference_type(reference) == GIT2R_REFERENCE_DIRECT) {
         git_oid_fmt(sha, git_reference_target(reference));
         sha[GIT_OID_HEXSZ] = '\0';
         SET_STRING_ELT(result, 0, Rf_mkChar(sha));
@@ -712,7 +700,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -768,7 +756,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -818,7 +806,7 @@ cleanup:
     git_repository_free(repository);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return R_NilValue;
 }

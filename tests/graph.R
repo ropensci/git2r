@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -31,15 +31,21 @@ config(repo, user.name="Alice", user.email="alice@example.org")
 writeLines("Hello world!", file.path(path, "test.txt"))
 add(repo, "test.txt")
 commit_1 <- commit(repo, "First commit message")
+tag_1 <- tag(repo, "Tagname1", "Tag message 1")
 
 ## Change file and commit
 writeLines(c("Hello world!", "HELLO WORLD!"),
            file.path(path, "test.txt"))
 add(repo, "test.txt")
 commit_2 <- commit(repo, "Second commit message")
+tag_2 <- tag(repo, "Tagname2", "Tag message 2")
 
 ## Check ahead behind
 stopifnot(identical(ahead_behind(commit_1, commit_2), c(0L, 1L)))
+stopifnot(identical(ahead_behind(tag_1, tag_2), c(0L, 1L)))
+stopifnot(identical(ahead_behind(tag_2, tag_1), c(1L, 0L)))
+stopifnot(identical(ahead_behind(commit_1, branches(repo)[[1]]), c(0L, 1L)))
+stopifnot(identical(ahead_behind(branches(repo)[[1]], commit_1), c(1L, 0L)))
 
 ## Cleanup
 unlink(path, recursive=TRUE)

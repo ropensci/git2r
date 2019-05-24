@@ -66,7 +66,7 @@ sha.git_note <- function(object) {
     object$sha
 }
 
-##' @rdname sha-methods
+##' @rdname sha
 ##' @export
 sha.git_reference <- function(object) {
     object$sha

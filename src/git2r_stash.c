@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2018 The git2r contributors
+ *  Copyright (C) 2013-2019 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -20,6 +20,7 @@
 
 #include "git2r_arg.h"
 #include "git2r_commit.h"
+#include "git2r_deprecated.h"
 #include "git2r_error.h"
 #include "git2r_repository.h"
 #include "git2r_S3.h"
@@ -61,7 +62,7 @@ SEXP git2r_stash_apply(SEXP repo, SEXP index)
         error = 0;
     git_repository_free(repository);
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return R_NilValue;
 }
@@ -88,7 +89,7 @@ SEXP git2r_stash_drop(SEXP repo, SEXP index)
     error = git_stash_drop(repository, INTEGER(index)[0]);
     git_repository_free(repository);
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return R_NilValue;
 }
@@ -118,7 +119,7 @@ SEXP git2r_stash_pop(SEXP repo, SEXP index)
         error = 0;
     git_repository_free(repository);
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return R_NilValue;
 }
@@ -166,18 +167,19 @@ static int git2r_stash_list_cb(
     const git_oid *stash_id,
     void *payload)
 {
+    int error = 0, nprotect = 0;
+    SEXP stash, class;
     git2r_stash_list_cb_data *cb_data = (git2r_stash_list_cb_data*)payload;
 
     /* Check if we have a list to populate */
     if (!Rf_isNull(cb_data->list)) {
-        int error;
-        SEXP stash, class;
-
         PROTECT(class = Rf_allocVector(STRSXP, 2));
+        nprotect++;
         SET_STRING_ELT(class, 0, Rf_mkChar("git_stash"));
         SET_STRING_ELT(class, 1, Rf_mkChar("git_commit"));
 
         PROTECT(stash = Rf_mkNamed(VECSXP, git2r_S3_items__git_commit));
+        nprotect++;
         Rf_setAttrib(stash, R_ClassSymbol, class);
 
         error = git2r_stash_init(
@@ -186,15 +188,18 @@ static int git2r_stash_list_cb(
             cb_data->repo,
             stash);
         if (error)
-            return error;
+            goto cleanup;
 
         SET_VECTOR_ELT(cb_data->list, cb_data->n, stash);
-        UNPROTECT(2);
     }
 
     cb_data->n += 1;
 
-    return 0;
+cleanup:
+    if (nprotect)
+        UNPROTECT(nprotect);
+
+    return error;
 }
 
 /**
@@ -234,7 +239,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return list;
 }
@@ -321,7 +326,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }

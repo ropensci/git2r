@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2018 The git2r contributors
+ *  Copyright (C) 2013-2019 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -19,6 +19,7 @@
 #include <git2.h>
 
 #include "git2r_arg.h"
+#include "git2r_deprecated.h"
 #include "git2r_error.h"
 #include "git2r_odb.h"
 #include "git2r_repository.h"
@@ -50,7 +51,7 @@ SEXP git2r_odb_hash(SEXP data)
             error = git_odb_hash(&oid,
                                CHAR(STRING_ELT(data, i)),
                                LENGTH(STRING_ELT(data, i)),
-                               GIT_OBJ_BLOB);
+                               GIT2R_OBJECT_BLOB);
             if (error)
                 break;
 
@@ -63,7 +64,7 @@ SEXP git2r_odb_hash(SEXP data)
     UNPROTECT(1);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -94,7 +95,7 @@ SEXP git2r_odb_hashfile(SEXP path)
         } else {
             error = git_odb_hashfile(&oid,
                                    CHAR(STRING_ELT(path, i)),
-                                   GIT_OBJ_BLOB);
+                                   GIT2R_OBJECT_BLOB);
             if (error)
                 break;
 
@@ -107,7 +108,7 @@ SEXP git2r_odb_hashfile(SEXP path)
     UNPROTECT(1);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -165,7 +166,7 @@ static int git2r_odb_objects_cb(const git_oid *oid, void *payload)
 {
     int error;
     size_t len;
-    git_otype type;
+    GIT2R_OBJECT_T type;
     git2r_odb_objects_cb_data *p = (git2r_odb_objects_cb_data*)payload;
 
     error = git_odb_read_header(&len, &type, p->odb, oid);
@@ -173,19 +174,19 @@ static int git2r_odb_objects_cb(const git_oid *oid, void *payload)
         return error;
 
     switch(type) {
-    case GIT_OBJ_COMMIT:
+    case GIT2R_OBJECT_COMMIT:
         if (!Rf_isNull(p->list))
             git2r_add_object(oid, p->list, p->n, "commit", len);
         break;
-    case GIT_OBJ_TREE:
+    case GIT2R_OBJECT_TREE:
         if (!Rf_isNull(p->list))
             git2r_add_object(oid, p->list, p->n, "tree", len);
         break;
-    case GIT_OBJ_BLOB:
+    case GIT2R_OBJECT_BLOB:
         if (!Rf_isNull(p->list))
             git2r_add_object(oid, p->list, p->n, "blob", len);
         break;
-    case GIT_OBJ_TAG:
+    case GIT2R_OBJECT_TAG:
         if (!Rf_isNull(p->list))
             git2r_add_object(oid, p->list, p->n, "tag", len);
         break;
@@ -206,9 +207,9 @@ static int git2r_odb_objects_cb(const git_oid *oid, void *payload)
  */
 SEXP git2r_odb_objects(SEXP repo)
 {
+    const char *names[] = {"sha", "type", "len", ""};
     int i, error, nprotect = 0;
     SEXP result = R_NilValue;
-    SEXP names = R_NilValue;
     git2r_odb_objects_cb_data cb_data = {0, R_NilValue, NULL};
     git_odb *odb = NULL;
     git_repository *repository = NULL;
@@ -227,17 +228,13 @@ SEXP git2r_odb_objects(SEXP repo)
     if (error)
         goto cleanup;
 
-    PROTECT(result = Rf_allocVector(VECSXP, 3));
+    PROTECT(result = Rf_mkNamed(VECSXP, names));
     nprotect++;
-    Rf_setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, 3));
 
     i = 0;
-    SET_VECTOR_ELT(result, i,   Rf_allocVector(STRSXP,  cb_data.n));
-    SET_STRING_ELT(names,  i++, Rf_mkChar("sha"));
-    SET_VECTOR_ELT(result, i,   Rf_allocVector(STRSXP,  cb_data.n));
-    SET_STRING_ELT(names,  i++, Rf_mkChar("type"));
+    SET_VECTOR_ELT(result, i++,   Rf_allocVector(STRSXP,  cb_data.n));
+    SET_VECTOR_ELT(result, i++,   Rf_allocVector(STRSXP,  cb_data.n));
     SET_VECTOR_ELT(result, i,   Rf_allocVector(INTSXP,  cb_data.n));
-    SET_STRING_ELT(names,  i++, Rf_mkChar("len"));
 
     cb_data.list = result;
     cb_data.n = 0;
@@ -251,7 +248,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -292,7 +289,7 @@ static int git2r_odb_add_blob(
     int error;
     int j = 0;
     size_t len;
-    git_otype type;
+    GIT2R_OBJECT_T type;
     char sha[GIT_OID_HEXSZ + 1];
 
     /* Sha */
@@ -352,7 +349,7 @@ static int git2r_odb_tree_blobs(
 
         entry = git_tree_entry_byindex(tree, i);
         switch (git_tree_entry_type(entry)) {
-        case GIT_OBJ_TREE:
+        case GIT2R_OBJECT_TREE:
         {
             char *buf = NULL;
             size_t path_len, buf_len;
@@ -373,8 +370,8 @@ static int git2r_odb_tree_blobs(
             buf = malloc(buf_len);
             if (!buf) {
                 git_tree_free(sub_tree);
-                giterr_set_oom();
-                return GITERR_NOMEMORY;
+                GIT2R_ERROR_SET_OOM();
+                return GIT2R_ERROR_NOMEMORY;
             }
             if (path_len) {
                 sep = "/";
@@ -391,8 +388,8 @@ static int git2r_odb_tree_blobs(
                     when,
                     data);
             } else {
-                giterr_set_str(GITERR_OS, "Failed to snprintf tree path.");
-                error = GITERR_OS;
+                GIT2R_ERROR_SET_STR(GIT2R_ERROR_OS, "Failed to snprintf tree path.");
+                error = GIT2R_ERROR_OS;
             }
 
             free(buf);
@@ -403,7 +400,7 @@ static int git2r_odb_tree_blobs(
 
             break;
         }
-        case GIT_OBJ_BLOB:
+        case GIT2R_OBJECT_BLOB:
             if (!Rf_isNull(data->list)) {
                 error = git2r_odb_add_blob(
                     entry,
@@ -438,14 +435,14 @@ static int git2r_odb_blobs_cb(const git_oid *oid, void *payload)
 {
     int error = GIT_OK;
     size_t len;
-    git_otype type;
+    GIT2R_OBJECT_T type;
     git2r_odb_blobs_cb_data *p = (git2r_odb_blobs_cb_data*)payload;
 
     error = git_odb_read_header(&len, &type, p->odb, oid);
     if (error)
         return error;
 
-    if (GIT_OBJ_COMMIT == type) {
+    if (type == GIT2R_OBJECT_COMMIT) {
         const git_signature *author;
         git_commit *commit = NULL;
         git_tree *tree = NULL;
@@ -492,9 +489,10 @@ static int git2r_odb_blobs_cb(const git_oid *oid, void *payload)
  */
 SEXP git2r_odb_blobs(SEXP repo)
 {
+    const char *names[] = {"sha", "path", "name", "len",
+                           "commit", "author", "when", ""};
     int i, error, nprotect = 0;
     SEXP result = R_NilValue;
-    SEXP names = R_NilValue;
     git2r_odb_blobs_cb_data cb_data = {0, R_NilValue, NULL, NULL};
     git_odb *odb = NULL;
     git_repository *repository = NULL;
@@ -514,25 +512,16 @@ SEXP git2r_odb_blobs(SEXP repo)
     if (error)
         goto cleanup;
 
-    PROTECT(result = Rf_allocVector(VECSXP, 7));
+    PROTECT(result = Rf_mkNamed(VECSXP, names));
     nprotect++;
-    Rf_setAttrib(result, R_NamesSymbol, names = Rf_allocVector(STRSXP, 7));
-
     i = 0;
-    SET_VECTOR_ELT(result, i,   Rf_allocVector(STRSXP,  cb_data.n));
-    SET_STRING_ELT(names,  i++, Rf_mkChar("sha"));
-    SET_VECTOR_ELT(result, i,   Rf_allocVector(STRSXP,  cb_data.n));
-    SET_STRING_ELT(names,  i++, Rf_mkChar("path"));
-    SET_VECTOR_ELT(result, i,   Rf_allocVector(STRSXP,  cb_data.n));
-    SET_STRING_ELT(names,  i++, Rf_mkChar("name"));
-    SET_VECTOR_ELT(result, i,   Rf_allocVector(INTSXP,  cb_data.n));
-    SET_STRING_ELT(names,  i++, Rf_mkChar("len"));
-    SET_VECTOR_ELT(result, i,   Rf_allocVector(STRSXP,  cb_data.n));
-    SET_STRING_ELT(names,  i++, Rf_mkChar("commit"));
-    SET_VECTOR_ELT(result, i,   Rf_allocVector(STRSXP,  cb_data.n));
-    SET_STRING_ELT(names,  i++, Rf_mkChar("author"));
-    SET_VECTOR_ELT(result, i,   Rf_allocVector(REALSXP, cb_data.n));
-    SET_STRING_ELT(names,  i++, Rf_mkChar("when"));
+    SET_VECTOR_ELT(result, i++, Rf_allocVector(STRSXP,  cb_data.n));
+    SET_VECTOR_ELT(result, i++, Rf_allocVector(STRSXP,  cb_data.n));
+    SET_VECTOR_ELT(result, i++, Rf_allocVector(STRSXP,  cb_data.n));
+    SET_VECTOR_ELT(result, i++, Rf_allocVector(INTSXP,  cb_data.n));
+    SET_VECTOR_ELT(result, i++, Rf_allocVector(STRSXP,  cb_data.n));
+    SET_VECTOR_ELT(result, i++, Rf_allocVector(STRSXP,  cb_data.n));
+    SET_VECTOR_ELT(result, i, Rf_allocVector(REALSXP, cb_data.n));
 
     cb_data.list = result;
     cb_data.n = 0;
@@ -546,7 +535,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }

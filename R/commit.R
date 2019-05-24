@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -17,10 +17,14 @@
 ##' Ahead Behind
 ##'
 ##' Count the number of unique commits between two commit objects.
-##' @param local a git_commit object.
-##' @param upstream a git_commit object.
+##' @param local a git_commit object. Can also be a tag or a branch,
+##'     and in that case the commit will be the target of the tag or
+##'     branch.
+##' @param upstream a git_commit object. Can also be a tag or a
+##'     branch, and in that case the commit will be the target of the
+##'     tag or branch.
 ##' @return An integer vector of length 2 with number of commits that
-##' the upstream commit is ahead and behind the local commit
+##'     the upstream commit is ahead and behind the local commit
 ##' @export
 ##' @examples \dontrun{
 ##' ## Create a directory in tempdir
@@ -36,6 +40,7 @@
 ##'            con = file.path(path, "test.txt"))
 ##' add(repo, "test.txt")
 ##' commit_1 <- commit(repo, "Commit message 1")
+##' tag_1 <- tag(repo, "Tagname1", "Tag message 1")
 ##'
 ##' # Change file and commit
 ##' writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -43,11 +48,15 @@
 ##'              con = file.path(path, "test.txt"))
 ##' add(repo, "test.txt")
 ##' commit_2 <- commit(repo, "Commit message 2")
+##' tag_2 <- tag(repo, "Tagname2", "Tag message 2")
 ##'
 ##' ahead_behind(commit_1, commit_2)
+##' ahead_behind(tag_1, tag_2)
 ##' }
 ahead_behind <- function(local = NULL, upstream = NULL) {
-    .Call(git2r_graph_ahead_behind, local, upstream)
+    .Call(git2r_graph_ahead_behind,
+          lookup_commit(local),
+          lookup_commit(upstream))
 }
 
 ##' Add sessionInfo to message
@@ -169,6 +178,10 @@ commit <- function(repo      = ".",
 ##'     with topological and/or time sorting. Default is FALSE.
 ##' @param n The upper limit of the number of commits to output. The
 ##'     default is NULL for unlimited number of commits.
+##' @param ref The name of a reference to list commits from e.g. a tag
+##'     or a branch. The default is NULL for the current branch.
+##' @param path The path to a file. Only commits that touch this file will be
+##'     returned.
 ##' @return list of commits in repository
 ##' @export
 ##' @examples
@@ -194,6 +207,9 @@ commit <- function(repo      = ".",
 ##' add(repo, "example.txt")
 ##' commit(repo, "Second commit message")
 ##'
+##' ## Create a tag
+##' tag(repo, "Tagname", "Tag message")
+##'
 ##' ## Change file again and commit
 ##' writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
 ##'              "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad",
@@ -202,14 +218,37 @@ commit <- function(repo      = ".",
 ##' add(repo, "example.txt")
 ##' commit(repo, "Third commit message")
 ##'
-##' ## List commits in repository
+##' ## List the commits in the repository
 ##' commits(repo)
+##'
+##' ## List the commits starting from the tag
+##' commits(repo, ref = "Tagname")
+##'
+##' ## Create and checkout 'dev' branch in the repo
+##' checkout(repo, "dev", create = TRUE)
+##'
+##' ## Add changes to the 'dev' branch
+##' writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+##'              "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
+##'            file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit(repo, "Commit message in dev branch")
+##'
+##' ## Checkout the 'master' branch again and list the commits
+##' ## starting from the 'dev' branch.
+##' checkout(repo, "master")
+##' commits(repo, ref = "dev")
+##'
+##' ## Limit the commits to those that touch example.txt
+##' commits(repo, path = "example.txt")
 ##' }
 commits <- function(repo        = ".",
                     topological = TRUE,
                     time        = TRUE,
                     reverse     = FALSE,
-                    n           = NULL)
+                    n           = NULL,
+                    ref         = NULL,
+                    path        = NULL)
 {
     ## Check limit in number of commits
     if (is.null(n)) {
@@ -224,7 +263,22 @@ commits <- function(repo        = ".",
         stop("'n' must be integer")
     }
 
+    if (!is.null(path)) {
+        if (!(is.character(path) && length(path) == 1)) {
+            stop("path must be a single file")
+        }
+    }
+
     repo <- lookup_repository(repo)
+    if (is_empty(repo))
+        return(list())
+
+    if (is.null(ref)) {
+        sha <- sha(repository_head(repo))
+    } else {
+        sha <- sha(lookup_commit(.Call(git2r_reference_dwim, repo, ref)))
+    }
+
     if (is_shallow(repo)) {
         ## FIXME: Remove this if-statement when libgit2 supports
         ## shallow clones, see #219.  Note: This workaround does not
@@ -234,7 +288,7 @@ commits <- function(repo        = ".",
         result <- list()
 
         ## Get latest commit
-        x <- lookup(repo, branch_target(repository_head(repo)))
+        x <- lookup(repo, sha)
 
         ## Repeat until no more parent commits
         repeat {
@@ -255,21 +309,16 @@ commits <- function(repo        = ".",
         return(result)
     }
 
-    .Call(git2r_revwalk_list, repo, topological, time, reverse, n)
-}
+     if (!is.null(path)) {
+         path_revwalk <- .Call(git2r_revwalk_list2, repo, sha, topological,
+                               time, reverse, path)
+         path_commits <- vapply(path_revwalk, function(x) !is.null(x),
+                                logical(1))
+         if (n == -1L) max_n <- sum(path_commits) else max_n <- n
+         return(path_revwalk[path_commits][seq_len(max_n)])
+     }
 
-##' @export
-touching_commits <- function (repo = ".", path = NULL) {
-  if (is.null(path))
-    path <- ""
-  if (path == "")
-    return(commits(repo))
-  else {
-    repo <- lookup_repository(repo)
-    out  <- .Call(git2r_revwalk_list2, repo, path)
-    i    <- sapply(out,function (x) !is.null(x))
-    return(out[i])
-  }
+    .Call(git2r_revwalk_list, repo, sha, topological, time, reverse, n)
 }
 
 ##' Last commit
@@ -310,9 +359,12 @@ last_commit <- function(repo = ".") {
 ##' Descendant
 ##'
 ##' Determine if a commit is the descendant of another commit
-##' @param commit a git_commit object.
+##' @param commit a git_commit object. Can also be a tag or a branch,
+##'     and in that case the commit will be the target of the tag or
+##'     branch.
 ##' @param ancestor a git_commit object to check if ancestor to
-##'     \code{commit}.
+##'     \code{commit}. Can also be a tag or a branch, and in that case
+##'     the commit will be the target of the tag or branch.
 ##' @return TRUE if \code{commit} is descendant of \code{ancestor},
 ##'     else FALSE
 ##' @export
@@ -331,6 +383,7 @@ last_commit <- function(repo = ".") {
 ##'            con = file.path(path, "test.txt"))
 ##' add(repo, "test.txt")
 ##' commit_1 <- commit(repo, "Commit message 1")
+##' tag_1 <- tag(repo, "Tagname1", "Tag message 1")
 ##'
 ##' # Change file and commit
 ##' writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -338,12 +391,17 @@ last_commit <- function(repo = ".") {
 ##'              con = file.path(path, "test.txt"))
 ##' add(repo, "test.txt")
 ##' commit_2 <- commit(repo, "Commit message 2")
+##' tag_2 <- tag(repo, "Tagname2", "Tag message 2")
 ##'
 ##' descendant_of(commit_1, commit_2)
 ##' descendant_of(commit_2, commit_1)
+##' descendant_of(tag_1, tag_2)
+##' descendant_of(tag_2, tag_1)
 ##' }
 descendant_of <- function(commit = NULL, ancestor = NULL) {
-    .Call(git2r_graph_descendant_of, commit, ancestor)
+    .Call(git2r_graph_descendant_of,
+          lookup_commit(commit),
+          lookup_commit(ancestor))
 }
 
 ##' Check if object is a git_commit object

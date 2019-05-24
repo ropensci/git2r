@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2018 The git2r contributors
+ *  Copyright (C) 2013-2019 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -20,6 +20,7 @@
 
 #include "git2r_arg.h"
 #include "git2r_cred.h"
+#include "git2r_deprecated.h"
 #include "git2r_error.h"
 #include "git2r_remote.h"
 #include "git2r_repository.h"
@@ -64,7 +65,7 @@ SEXP git2r_remote_add(SEXP repo, SEXP name, SEXP url)
     git_repository_free(repository);
 
     if (error)
-	git2r_error(__func__, giterr_last(), NULL, NULL);
+	git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return R_NilValue;
 }
@@ -168,7 +169,7 @@ SEXP git2r_remote_fetch(
             /* Allocate the strings in refs */
             refs.strings = malloc(refs.count * sizeof(char*));
             if (!refs.strings) {
-                giterr_set_str(GITERR_NONE, git2r_err_alloc_memory_buffer);
+                GIT2R_ERROR_SET_STR(GIT2R_ERROR_NONE, git2r_err_alloc_memory_buffer);
                 error = GIT_ERROR;
                 goto cleanup;
             }
@@ -211,7 +212,7 @@ cleanup:
     if (error)
         git2r_error(
             __func__,
-            giterr_last(),
+            GIT2R_ERROR_LAST(),
             git2r_err_unable_to_authenticate,
             NULL);
 
@@ -253,7 +254,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return list;
 }
@@ -284,7 +285,7 @@ SEXP git2r_remote_remove(SEXP repo, SEXP name)
     git_repository_free(repository);
 
     if (error)
-	git2r_error(__func__, giterr_last(), NULL, NULL);
+	git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return R_NilValue;
 }
@@ -326,7 +327,7 @@ cleanup:
     git_repository_free(repository);
 
     if (error)
-	git2r_error(__func__, giterr_last(), NULL, NULL);
+	git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return R_NilValue;
 }
@@ -363,7 +364,7 @@ SEXP git2r_remote_set_url(SEXP repo, SEXP name, SEXP url)
     git_repository_free(repository);
 
     if (error)
-	git2r_error(__func__, giterr_last(), NULL, NULL);
+	git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return R_NilValue;
 }
@@ -418,7 +419,7 @@ cleanup:
     UNPROTECT(1);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return url;
 }
@@ -500,7 +501,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }

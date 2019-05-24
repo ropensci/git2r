@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2018 The git2r contributors
+ *  Copyright (C) 2013-2019 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -19,6 +19,7 @@
 #include <git2.h>
 
 #include "git2r_arg.h"
+#include "git2r_deprecated.h"
 #include "git2r_error.h"
 #include "git2r_note.h"
 #include "git2r_repository.h"
@@ -189,7 +190,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -222,18 +223,14 @@ SEXP git2r_note_default_ref(SEXP repo)
     SET_STRING_ELT(result, 0, Rf_mkChar(buf.ptr));
 
 cleanup:
-#if defined(GIT2R_BUF_DISPOSE)
-    git_buf_dispose(&buf);
-#else
-    git_buf_free(&buf);
-#endif
+    GIT2R_BUF_DISPOSE(&buf);
     git_repository_free(repository);
 
     if (nprotect)
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -251,14 +248,14 @@ static int git2r_note_foreach_cb(
     const git_oid *annotated_object_id,
     void *payload)
 {
+    int error = 0, nprotect = 0;
+    SEXP note;
     git2r_note_foreach_cb_data *cb_data = (git2r_note_foreach_cb_data*)payload;
 
     /* Check if we have a list to populate */
     if (!Rf_isNull(cb_data->list)) {
-        int error;
-        SEXP note;
-
         PROTECT(note = Rf_mkNamed(VECSXP, git2r_S3_items__git_note));
+        nprotect++;
         Rf_setAttrib(
             note,
             R_ClassSymbol,
@@ -272,15 +269,18 @@ static int git2r_note_foreach_cb(
             cb_data->repo,
             note);
         if (error)
-            return error;
+            goto cleanup;
 
         SET_VECTOR_ELT(cb_data->list, cb_data->n, note);
-        UNPROTECT(1);
     }
 
     cb_data->n += 1;
 
-    return 0;
+cleanup:
+    if (nprotect)
+        UNPROTECT(nprotect);
+
+    return error;
 }
 
 /**
@@ -344,18 +344,14 @@ SEXP git2r_notes(SEXP repo, SEXP ref)
                            &git2r_note_foreach_cb, &cb_data);
 
 cleanup:
-#if defined(GIT2R_BUF_DISPOSE)
-    git_buf_dispose(&buf);
-#else
-    git_buf_free(&buf);
-#endif
+    GIT2R_BUF_DISPOSE(&buf);
     git_repository_free(repository);
 
     if (nprotect)
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
 }
@@ -416,7 +412,7 @@ cleanup:
     git_repository_free(repository);
 
     if (error)
-        git2r_error(__func__, giterr_last(), NULL, NULL);
+        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return R_NilValue;
 }

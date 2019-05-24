@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -101,6 +101,13 @@ stopifnot(identical(commit_2$committer, bare_commit_2$committer))
 stopifnot(identical(commit_2$summary, bare_commit_2$summary))
 stopifnot(identical(commit_2$message, bare_commit_2$message))
 stopifnot(!identical(commit_2$repo, bare_commit_2$repo))
+
+## Check 'set_upstream'
+branch_set_upstream(repository_head(repo), NULL)
+push(repo, "origin", "refs/heads/master")
+stopifnot(is.null(branch_get_upstream(repository_head(repo))))
+push(repo, "origin", "refs/heads/master", set_upstream = TRUE)
+stopifnot(!is.null(branch_get_upstream(repository_head(repo))))
 
 ## Cleanup
 unlink(path_bare, recursive=TRUE)

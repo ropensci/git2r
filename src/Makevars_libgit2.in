@@ -46,8 +46,6 @@ OBJECTS.libgit2 = libgit2/src/alloc.o libgit2/src/annotated_commit.o libgit2/src
     libgit2/src/util.o libgit2/src/varint.o libgit2/src/vector.o \
     libgit2/src/worktree.o libgit2/src/zstream.o
 
-OBJECTS.libgit2.sha1dc = libgit2/src/hash/sha1dc/sha1.o libgit2/src/hash/sha1dc/ubc_check.o
-
 OBJECTS.libgit2.streams = libgit2/src/streams/mbedtls.o libgit2/src/streams/openssl.o libgit2/src/streams/registry.o \
     libgit2/src/streams/socket.o libgit2/src/streams/stransport.o libgit2/src/streams/tls.o
 
@@ -64,9 +62,8 @@ OBJECTS.libgit2.xdiff = libgit2/src/xdiff/xdiffi.o libgit2/src/xdiff/xemit.o lib
 
 OBJECTS.http_parser = libgit2/deps/http-parser/http_parser.o
 
-LIBGIT = $(OBJECTS.libgit2) $(OBJECTS.libgit2.sha1dc) $(OBJECTS.libgit2.streams) \
-    $(OBJECTS.libgit2.transports) $(OBJECTS.libgit2.unix) $(OBJECTS.libgit2.xdiff) \
-    $(OBJECTS.http_parser) @GIT2R_SRC_REGEX@
+LIBGIT = $(OBJECTS.libgit2) $(OBJECTS.libgit2.streams) $(OBJECTS.libgit2.transports) \
+    $(OBJECTS.libgit2.unix) $(OBJECTS.libgit2.xdiff) $(OBJECTS.http_parser) @GIT2R_SRC_REGEX@ @GIT2R_SRC_SHA1DC@
 
 $(SHLIB): libmygit.a
 
