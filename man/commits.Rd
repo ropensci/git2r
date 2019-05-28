@@ -27,8 +27,8 @@ default is NULL for unlimited number of commits.}
 \item{ref}{The name of a reference to list commits from e.g. a tag
 or a branch. The default is NULL for the current branch.}
 
-\item{path}{The path to a file. Only commits that touch this file will be
-returned.}
+\item{path}{The path to a file. Only commits modifying this file 
+will be returned.}
 }
 \value{
 list of commits in repository
