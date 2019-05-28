@@ -180,8 +180,11 @@ commit <- function(repo      = ".",
 ##'     default is NULL for unlimited number of commits.
 ##' @param ref The name of a reference to list commits from e.g. a tag
 ##'     or a branch. The default is NULL for the current branch.
-##' @param path The path to a file. Only commits modifying this file 
-##'     will be returned.
+##' @param path The path to a file. If not NULL, only commits modifying
+##'     this file will be returned. Note that modifying commits that
+##'     occurred before the file was given its present name are not
+##'     returned; that is, the behaviour of \code{git log} with the
+##'     \code{--follow} option is not reproduced.
 ##' @return list of commits in repository
 ##' @export
 ##' @examples
