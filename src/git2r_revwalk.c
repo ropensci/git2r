@@ -173,6 +173,19 @@ cleanup:
     return result;
 }
 
+/**
+ * List revisions modifying a particular path.
+ *
+ * @param repo S3 class git_repository
+ * @param sha id of the commit to start from.
+ * @param topological Sort the commits by topological order; Can be
+ * combined with time.
+ * @param time Sort the commits by commit time; can be combined with
+ * topological.
+ * @param reverse Sort the commits in reverse order
+ * @param path Only commits modifying this path are selected
+ * @return list with S3 class git_commit objects
+ */
 SEXP git2r_revwalk_list2 (
     SEXP repo,
     SEXP sha,
@@ -181,20 +194,18 @@ SEXP git2r_revwalk_list2 (
     SEXP reverse,
     SEXP path)
 {
+    int error = GIT_OK, nprotect = 0;
     SEXP result = R_NilValue;
-    int  error = GIT_OK;
-    int  nprotect = 0;
-    int  i, n, parents, unmatched;
-    int  pathlength;
-    git_diff_options diffopts    = GIT_DIFF_OPTIONS_INIT;
-    unsigned int     sort_mode   = GIT_SORT_NONE;
-    char             *p          = NULL;
-    git_pathspec     *ps         = NULL;
-    git_revwalk      *walker     = NULL;
-    git_repository   *repository = NULL;
-    git_commit       *commit     = NULL;
-    git_tree         *tree       = NULL;
+    int n;
+    unsigned int sort_mode = GIT_SORT_NONE;
+    git_revwalk *walker = NULL;
+    git_repository *repository = NULL;
     git_oid oid;
+  
+    int pathlength;
+    git_diff_options diffopts = GIT_DIFF_OPTIONS_INIT;
+    char             *p       = NULL;
+    git_pathspec     *ps      = NULL;
 
     if (git2r_arg_check_sha(sha))
         git2r_error(__func__, NULL, "'sha'", git2r_err_sha_arg);
@@ -209,10 +220,10 @@ SEXP git2r_revwalk_list2 (
 
     /* Set up git pathspec. */
     pathlength = strlen(CHAR(STRING_ELT(path,0)));
-    p = malloc(pathlength + 1);
+    p          = malloc(pathlength + 1);
     strcpy(p,CHAR(STRING_ELT(path,0)));
     diffopts.pathspec.strings = &p;
-    diffopts.pathspec.count = 1;
+    diffopts.pathspec.count   = 1;
     git_pathspec_new(&ps,&diffopts.pathspec);
 
     /* Open the repository. */
@@ -234,7 +245,7 @@ SEXP git2r_revwalk_list2 (
     if (LOGICAL(reverse)[0])
         sort_mode |= GIT_SORT_REVERSE;
 
-    /* Create a new revwalker. */
+    /* Create a new "revwalker". */
     error = git_revwalk_new(&walker,repository);
     if (error)
         goto cleanup;
@@ -243,7 +254,6 @@ SEXP git2r_revwalk_list2 (
     error = git_revwalk_push(walker, &oid);
     if (error)
         goto cleanup;
-
     git_revwalk_sorting(walker,sort_mode);
     error = git_revwalk_push_head(walker);
     if (error)
@@ -263,9 +273,11 @@ SEXP git2r_revwalk_list2 (
     if (error)
         goto cleanup;
 
-    for (i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
+        git_commit *commit;
         SEXP item;
         git_oid oid;
+	int parents, unmatched;
 
         error = git_revwalk_next(&oid, walker);
         if (error) {
@@ -278,26 +290,28 @@ SEXP git2r_revwalk_list2 (
         if (error)
             goto cleanup;
 
-        /* Check whether it is a "touching" commit. */
+        /* Check whether it is a "touching" commit---that is, a commit
+	   that has modified the selected path. */
         parents = (int) git_commit_parentcount(commit);
         unmatched = parents;
         if (parents == 0) {
-            git_commit_tree(&tree, commit);
-            if (git_pathspec_match_tree(NULL,tree,GIT_PATHSPEC_NO_MATCH_ERROR,ps)
-                    != 0)
-                unmatched = 1;
-            git_tree_free(tree);
-        } else if (parents == 1) {
-            unmatched = match_with_parent(commit, 0, &diffopts) ? 0 : 1;
-        } else {
-            for (i = 0; i < parents; ++i) {
-                if (match_with_parent(commit, i, &diffopts))
-                    unmatched--;
+	    git_tree *tree;
+	    git_commit_tree(&tree, commit);
+	    if (git_pathspec_match_tree(NULL,tree,
+					GIT_PATHSPEC_NO_MATCH_ERROR,ps) != 0)
+	        unmatched = 1;
+	    git_tree_free(tree);
+	} else if (parents == 1) {
+             unmatched = match_with_parent(commit, 0, &diffopts) ? 0 : 1;
+	} else {
+             for (int j = 0; j < parents; j++) {
+	         if (match_with_parent(commit, j, &diffopts))
+		     unmatched--;
             }
-        }
+	}
 
         if (unmatched > 0)
-            continue;
+          continue;
 
         SET_VECTOR_ELT(
             result,
@@ -368,7 +382,7 @@ SEXP git2r_revwalk_contributions(
     if (LOGICAL(topological)[0])
         sort_mode |= GIT_SORT_TOPOLOGICAL;
     if (LOGICAL(time)[0])
-        sort_mode |= GIT_SORT_TIME;
+        sort_mode = GIT_SORT_TIME | (sort_mode & GIT_SORT_REVERSE);
     if (LOGICAL(reverse)[0])
         sort_mode |= GIT_SORT_REVERSE;
 

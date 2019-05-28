@@ -308,17 +308,20 @@ commits <- function(repo        = ".",
 
         return(result)
     }
-
-     if (!is.null(path)) {
-         path_revwalk <- .Call(git2r_revwalk_list2, repo, sha, topological,
-                               time, reverse, path)
-         path_commits <- vapply(path_revwalk, function(x) !is.null(x),
-                                logical(1))
-         if (n == -1L) max_n <- sum(path_commits) else max_n <- n
-         return(path_revwalk[path_commits][seq_len(max_n)])
-     }
-
-    .Call(git2r_revwalk_list, repo, sha, topological, time, reverse, n)
+    if (!is.null(path)) {
+        path_revwalk <- .Call(git2r_revwalk_list2, repo, sha, topological,
+                              time, reverse, path)
+        path_commits <- vapply(path_revwalk, function(x) !is.null(x),
+                               logical(1))
+        if (n == -1L)
+            max_n <- sum(path_commits)
+        else
+            max_n <- n
+        return(path_revwalk[path_commits][seq_len(max_n)])
+    }
+    else
+        return(.Call(git2r_revwalk_list, repo, sha, topological, time,
+                     reverse, n))
 }
 
 ##' Last commit
