@@ -30,8 +30,8 @@ or a branch. The default is NULL for the current branch.}
 \item{path}{The path to a file. If not NULL, only commits modifying
 this file will be returned. Note that modifying commits that
 occurred before the file was given its present name are not
-returned; that is, the behaviour of \code{git log} with the
-\code{--follow} option is not reproduced.}
+returned; that is, the output of \code{git log} with 
+\code{--no-follow} is reproduced.}
 }
 \value{
 list of commits in repository
