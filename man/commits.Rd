@@ -73,11 +73,22 @@ writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
 add(repo, "example.txt")
 commit(repo, "Third commit message")
 
+## Create a new file containing R code, and commit.
+writeLines(c("x <- seq(1,100)",
+             "print(mean(x))"),
+           file.path(path, "mean.R"))
+add(repo, "mean.R")
+commit(repo, "Fourth commit message")
+
 ## List the commits in the repository
 commits(repo)
 
 ## List the commits starting from the tag
 commits(repo, ref = "Tagname")
+
+## List the commits modifying example.txt and mean.R.
+commits(repo, path = "example.txt")
+commits(repo, path = "mean.R")
 
 ## Create and checkout 'dev' branch in the repo
 checkout(repo, "dev", create = TRUE)
@@ -93,8 +104,5 @@ commit(repo, "Commit message in dev branch")
 ## starting from the 'dev' branch.
 checkout(repo, "master")
 commits(repo, ref = "dev")
-
-## Limit the commits to those that touch example.txt
-commits(repo, path = "example.txt")
 }
 }
