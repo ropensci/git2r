@@ -27,7 +27,7 @@ dir.create(path)
 repo <- init(path)
 config(repo, user.name="Alice", user.email="alice@example.org")
 
-# Create two files and alternate commits
+## Create two files and alternate commits
 writeLines("1", file.path(path, "odd.txt"))
 add(repo, "odd.txt")
 c1 <- commit(repo, "commit 1")
@@ -55,7 +55,7 @@ c6 <- commit(repo, "commit 6")
 commits_all <- commits(repo)
 stopifnot(length(commits_all) == 6)
 
-# Test path
+## Test path
 commits_odd <- commits(repo, path = "odd.txt")
 stopifnot(length(commits_odd) == 3)
 stopifnot(commits_odd[[1]]$sha == c5$sha)
@@ -68,7 +68,7 @@ stopifnot(commits_even[[1]]$sha == c6$sha)
 stopifnot(commits_even[[2]]$sha == c4$sha)
 stopifnot(commits_even[[3]]$sha == c2$sha)
 
-# Test reverse
+## Test reverse
 commits_odd_rev <- commits(repo, reverse = TRUE, path = "odd.txt")
 stopifnot(length(commits_odd_rev) == 3)
 stopifnot(commits_odd_rev[[1]]$sha == c1$sha)
@@ -81,7 +81,7 @@ stopifnot(commits_even_rev[[1]]$sha == c2$sha)
 stopifnot(commits_even_rev[[2]]$sha == c4$sha)
 stopifnot(commits_even_rev[[3]]$sha == c6$sha)
 
-# Test n
+## Test n
 commits_odd_n <- commits(repo, n = 2, path = "odd.txt")
 stopifnot(length(commits_odd_n) == 2)
 stopifnot(commits_odd_n[[1]]$sha == c5$sha)
@@ -100,7 +100,7 @@ commits_even_0 <- commits(repo, n = 0, path = "even.txt")
 stopifnot(length(commits_even_0) == 0)
 stopifnot(identical(commits_even_0, list()))
 
-# Test ref
+## Test ref
 checkout(repo, branch = "test-ref", create = TRUE)
 
 writeLines("7", file.path(path, "odd.txt"))
@@ -122,6 +122,59 @@ stopifnot(length(commits_even_ref) == 3)
 stopifnot(commits_even_ref[[1]]$sha == c6$sha)
 stopifnot(commits_even_ref[[2]]$sha == c4$sha)
 stopifnot(commits_even_ref[[3]]$sha == c2$sha)
+
+checkout(repo, branch = "master")
+
+## Test renaming a file (path does not support --follow)
+writeLines("a file to be renamed", file.path(path, "original.txt"))
+add(repo, "original.txt")
+c_original <- commit(repo, "commit original")
+
+commits_original <- commits(repo, path = "original.txt")
+stopifnot(length(commits_original) == 1)
+stopifnot(commits_original[[1]]$sha == c_original$sha)
+
+file.rename(file.path(path, "original.txt"), file.path(path, "new.txt"))
+add(repo, c("original.txt", "new.txt"))
+c_new <- commit(repo, "commit new")
+
+commits_new <- commits(repo, path = "new.txt")
+stopifnot(length(commits_new) == 1)
+stopifnot(commits_new[[1]]$sha == c_new$sha)
+
+## Test merge commits
+writeLines(letters[1:5], file.path(path, "merge.txt"))
+add(repo, "merge.txt")
+c_merge_1 <- commit(repo, "commit merge 1")
+
+checkout(repo, branch = "test-merge", create = TRUE)
+cat("z", file = file.path(path, "merge.txt"), append = TRUE)
+add(repo, "merge.txt")
+c_merge_2 <- commit(repo, "commit merge 2")
+
+checkout(repo, branch = "master")
+writeLines(c("A", letters[2:5]), file.path(path, "merge.txt"))
+add(repo, "merge.txt")
+c_merge_3 <- commit(repo, "commit merge 3")
+
+c_merge_4 <- merge(repo, "test-merge")
+stopifnot(class(c_merge_4) == "git_merge_result")
+
+commits_merge <- commits(repo, path = "merge.txt")
+stopifnot(length(commits_merge) == 4)
+stopifnot(commits_merge[[1]]$sha == c_merge_4$sha)
+stopifnot(commits_merge[[2]]$sha == c_merge_3$sha)
+stopifnot(commits_merge[[3]]$sha == c_merge_2$sha)
+stopifnot(commits_merge[[4]]$sha == c_merge_1$sha)
+
+## Test absolute path
+writeLines("absolute", file.path(path, "abs.txt"))
+add(repo, "abs.txt")
+c_abs <- commit(repo, "commit absolute")
+
+commits_abs <- commits(repo, path = file.path(path, "abs.txt"))
+stopifnot(length(commits_abs) == 1)
+stopifnot(commits_abs[[1]]$sha == c_abs$sha)
 
 ## Cleanup
 unlink(path, recursive=TRUE)
