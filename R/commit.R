@@ -320,6 +320,10 @@ commits <- function(repo        = ".",
         return(result)
     }
     if (!is.null(path)) {
+        repo_wd <- normalizePath(workdir(repo), winslash = "/")
+        if (!length(grep("/$", repo_wd)))
+            repo_wd <- paste0(repo_wd, "/")
+        path <- sanitize_path(path, repo_wd)
         path_revwalk <- .Call(git2r_revwalk_list2, repo, sha, topological,
                               time, reverse, path)
         path_commits <- vapply(path_revwalk, function(x) !is.null(x),

@@ -167,5 +167,14 @@ stopifnot(commits_merge[[2]]$sha == c_merge_3$sha)
 stopifnot(commits_merge[[3]]$sha == c_merge_2$sha)
 stopifnot(commits_merge[[4]]$sha == c_merge_1$sha)
 
+## Test absolute path
+writeLines("absolute", file.path(path, "abs.txt"))
+add(repo, "abs.txt")
+c_abs <- commit(repo, "commit absolute")
+
+commits_abs <- commits(repo, path = file.path(path, "abs.txt"))
+stopifnot(length(commits_abs) == 1)
+stopifnot(commits_abs[[1]]$sha == c_abs$sha)
+
 ## Cleanup
 unlink(path, recursive=TRUE)
