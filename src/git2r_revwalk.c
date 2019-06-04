@@ -201,10 +201,7 @@ SEXP git2r_revwalk_list2 (
     git_revwalk *walker = NULL;
     git_repository *repository = NULL;
     git_oid oid;
-
-    int pathlength;
     git_diff_options diffopts = GIT_DIFF_OPTIONS_INIT;
-    char             *p       = NULL;
     git_pathspec     *ps      = NULL;
 
     if (git2r_arg_check_sha(sha))
@@ -219,12 +216,12 @@ SEXP git2r_revwalk_list2 (
         git2r_error(__func__, NULL, "'path'", git2r_err_string_arg);
 
     /* Set up git pathspec. */
-    pathlength = strlen(CHAR(STRING_ELT(path,0)));
-    p          = malloc(pathlength + 1);
-    strcpy(p,CHAR(STRING_ELT(path,0)));
-    diffopts.pathspec.strings = &p;
-    diffopts.pathspec.count   = 1;
-    git_pathspec_new(&ps,&diffopts.pathspec);
+    error = git2r_copy_string_vec(&(diffopts.pathspec), path);
+    if (error || !diffopts.pathspec.count)
+        goto cleanup;
+    error = git_pathspec_new(&ps, &diffopts.pathspec);
+    if (error)
+        goto cleanup;
 
     /* Open the repository. */
     repository = git2r_repository_open(repo);
@@ -324,7 +321,7 @@ SEXP git2r_revwalk_list2 (
     }
 
 cleanup:
-    free(p);
+    free(diffopts.pathspec.strings);
     git_revwalk_free(walker);
     git_repository_free(repository);
 
