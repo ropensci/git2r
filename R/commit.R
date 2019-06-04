@@ -334,9 +334,8 @@ commits <- function(repo        = ".",
             max_n <- n
         return(path_revwalk[path_commits][seq_len(max_n)])
     }
-    else
-        return(.Call(git2r_revwalk_list, repo, sha, topological, time,
-                     reverse, n))
+
+    .Call(git2r_revwalk_list, repo, sha, topological, time, reverse, n)
 }
 
 ##' Last commit
