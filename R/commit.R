@@ -319,6 +319,7 @@ commits <- function(repo        = ".",
 
         return(result)
     }
+
     if (!is.null(path)) {
         repo_wd <- normalizePath(workdir(repo), winslash = "/")
         if (!length(grep("/$", repo_wd)))
@@ -328,10 +329,13 @@ commits <- function(repo        = ".",
                               time, reverse, path)
         path_commits <- vapply(path_revwalk, function(x) !is.null(x),
                                logical(1))
-        if (n == -1L)
+
+        if (n == -1L) {
             max_n <- sum(path_commits)
-        else
+        } else {
             max_n <- n
+        }
+
         return(path_revwalk[path_commits][seq_len(max_n)])
     }
 
