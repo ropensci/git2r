@@ -183,7 +183,7 @@ commit <- function(repo      = ".",
 ##' @param path The path to a file. If not NULL, only commits modifying
 ##'     this file will be returned. Note that modifying commits that
 ##'     occurred before the file was given its present name are not
-##'     returned; that is, the output of \code{git log} with 
+##'     returned; that is, the output of \code{git log} with
 ##'     \code{--no-follow} is reproduced.
 ##' @return list of commits in repository
 ##' @export
@@ -227,7 +227,7 @@ commit <- function(repo      = ".",
 ##'            file.path(path, "mean.R"))
 ##' add(repo, "mean.R")
 ##' commit(repo, "Fourth commit message")
-##' 
+##'
 ##' ## List the commits in the repository
 ##' commits(repo)
 ##'
@@ -237,7 +237,7 @@ commit <- function(repo      = ".",
 ##' ## List the commits modifying example.txt and mean.R.
 ##' commits(repo, path = "example.txt")
 ##' commits(repo, path = "mean.R")
-##' 
+##'
 ##' ## Create and checkout 'dev' branch in the repo
 ##' checkout(repo, "dev", create = TRUE)
 ##'

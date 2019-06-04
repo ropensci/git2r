@@ -201,7 +201,7 @@ SEXP git2r_revwalk_list2 (
     git_revwalk *walker = NULL;
     git_repository *repository = NULL;
     git_oid oid;
-  
+
     int pathlength;
     git_diff_options diffopts = GIT_DIFF_OPTIONS_INIT;
     char             *p       = NULL;
