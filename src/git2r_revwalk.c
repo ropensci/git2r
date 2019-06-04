@@ -26,9 +26,6 @@
 #include "git2r_repository.h"
 #include "git2r_S3.h"
 
-static int match_with_parent (git_commit *commit, int i,
-			      git_diff_options *opts);
-
 /**
  * Count number of revisions.
  *
@@ -50,6 +47,39 @@ static int git2r_revwalk_count(git_revwalk *walker, int max_n)
     }
 
     return n;
+}
+
+/* Helper to find how many files in a commit changed from its nth
+ * parent. */
+static int git2r_match_with_parent(
+    int *out,
+    git_commit *commit,
+    unsigned int i,
+    git_diff_options *opts)
+{
+    int error;
+    git_commit *parent = NULL;
+    git_tree *a = NULL, *b = NULL;
+    git_diff *diff = NULL;
+
+    if ((error = git_commit_parent(&parent, commit, i)) < 0)
+        goto cleanup;
+    if ((error = git_commit_tree(&a, parent)) < 0)
+        goto cleanup;
+    if ((error = git_commit_tree(&b, commit)) < 0)
+        goto cleanup;
+    if ((error = git_diff_tree_to_tree(&diff, git_commit_owner(commit), a, b, opts)) < 0)
+        goto cleanup;
+
+    *out = (git_diff_num_deltas(diff) > 0);
+
+cleanup:
+    git_diff_free(diff);
+    git_tree_free(a);
+    git_tree_free(b);
+    git_commit_free(parent);
+
+    return error;
 }
 
 /**
@@ -201,10 +231,7 @@ SEXP git2r_revwalk_list2 (
     git_revwalk *walker = NULL;
     git_repository *repository = NULL;
     git_oid oid;
-  
-    int pathlength;
     git_diff_options diffopts = GIT_DIFF_OPTIONS_INIT;
-    char             *p       = NULL;
     git_pathspec     *ps      = NULL;
 
     if (git2r_arg_check_sha(sha))
@@ -219,12 +246,12 @@ SEXP git2r_revwalk_list2 (
         git2r_error(__func__, NULL, "'path'", git2r_err_string_arg);
 
     /* Set up git pathspec. */
-    pathlength = strlen(CHAR(STRING_ELT(path,0)));
-    p          = malloc(pathlength + 1);
-    strcpy(p,CHAR(STRING_ELT(path,0)));
-    diffopts.pathspec.strings = &p;
-    diffopts.pathspec.count   = 1;
-    git_pathspec_new(&ps,&diffopts.pathspec);
+    error = git2r_copy_string_vec(&(diffopts.pathspec), path);
+    if (error || !diffopts.pathspec.count)
+        goto cleanup;
+    error = git_pathspec_new(&ps, &diffopts.pathspec);
+    if (error)
+        goto cleanup;
 
     /* Open the repository. */
     repository = git2r_repository_open(repo);
@@ -246,7 +273,7 @@ SEXP git2r_revwalk_list2 (
         sort_mode |= GIT_SORT_REVERSE;
 
     /* Create a new "revwalker". */
-    error = git_revwalk_new(&walker,repository);
+    error = git_revwalk_new(&walker, repository);
     if (error)
         goto cleanup;
 
@@ -254,13 +281,13 @@ SEXP git2r_revwalk_list2 (
     error = git_revwalk_push(walker, &oid);
     if (error)
         goto cleanup;
-    git_revwalk_sorting(walker,sort_mode);
+    git_revwalk_sorting(walker, sort_mode);
     error = git_revwalk_push_head(walker);
     if (error)
         goto cleanup;
 
     /* Count number of revisions before creating the list. */
-    n = git2r_revwalk_count(walker,-1);
+    n = git2r_revwalk_count(walker, -1);
 
     /* Create the list to store the result. */
     PROTECT(result = Rf_allocVector(VECSXP, n));
@@ -268,7 +295,7 @@ SEXP git2r_revwalk_list2 (
 
     /* Restart the revwalker. */
     git_revwalk_reset(walker);
-    git_revwalk_sorting(walker,sort_mode);
+    git_revwalk_sorting(walker, sort_mode);
     error = git_revwalk_push(walker, &oid);
     if (error)
         goto cleanup;
@@ -277,7 +304,8 @@ SEXP git2r_revwalk_list2 (
         git_commit *commit;
         SEXP item;
         git_oid oid;
-	int parents, unmatched;
+	unsigned int parents, unmatched;
+        int match;
 
         error = git_revwalk_next(&oid, walker);
         if (error) {
@@ -292,26 +320,36 @@ SEXP git2r_revwalk_list2 (
 
         /* Check whether it is a "touching" commit---that is, a commit
 	   that has modified the selected path. */
-        parents = (int) git_commit_parentcount(commit);
+        parents = git_commit_parentcount(commit);
         unmatched = parents;
         if (parents == 0) {
 	    git_tree *tree;
-	    git_commit_tree(&tree, commit);
-	    if (git_pathspec_match_tree(NULL,tree,
-					GIT_PATHSPEC_NO_MATCH_ERROR,ps) != 0)
-	        unmatched = 1;
+	    if ((error = git_commit_tree(&tree, commit)) < 0)
+                goto cleanup;
+            error = git_pathspec_match_tree(
+                NULL, tree, GIT_PATHSPEC_NO_MATCH_ERROR, ps);
 	    git_tree_free(tree);
+	    if (error == GIT_ENOTFOUND) {
+                error = 0;
+	        unmatched = 1;
+            } else if (error < 0) {
+                goto cleanup;
+            }
 	} else if (parents == 1) {
-             unmatched = match_with_parent(commit, 0, &diffopts) ? 0 : 1;
+            if ((error = git2r_match_with_parent(&match, commit, 0, &diffopts)) < 0)
+                goto cleanup;
+            unmatched = match ? 0 : 1;
 	} else {
-             for (int j = 0; j < parents; j++) {
-	         if (match_with_parent(commit, j, &diffopts))
+             for (unsigned int j = 0; j < parents; j++) {
+                 if ((error = git2r_match_with_parent(&match, commit, j, &diffopts)) < 0)
+                     goto cleanup;
+	         if (match && unmatched)
 		     unmatched--;
             }
 	}
 
         if (unmatched > 0)
-          continue;
+            continue;
 
         SET_VECTOR_ELT(
             result,
@@ -324,7 +362,7 @@ SEXP git2r_revwalk_list2 (
     }
 
 cleanup:
-    free(p);
+    free(diffopts.pathspec.strings);
     git_revwalk_free(walker);
     git_repository_free(repository);
 
@@ -451,27 +489,4 @@ cleanup:
         git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
-}
-
-/* Helper to find how many files in a commit changed from its nth parent. */
-static int match_with_parent (git_commit *commit, int i,
-                              git_diff_options *opts) {
-    git_commit *parent;
-    git_tree *a, *b;
-    git_diff *diff;
-    int ndeltas;
-
-    git_commit_parent(&parent, commit, (size_t) i);
-    git_commit_tree(&a, parent);
-    git_commit_tree(&b, commit);
-    git_diff_tree_to_tree(&diff, git_commit_owner(commit), a, b, opts);
-
-    ndeltas = (int) git_diff_num_deltas(diff);
-
-    git_diff_free(diff);
-    git_tree_free(a);
-    git_tree_free(b);
-    git_commit_free(parent);
-
-    return ndeltas > 0;
 }

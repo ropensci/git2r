@@ -183,7 +183,7 @@ commit <- function(repo      = ".",
 ##' @param path The path to a file. If not NULL, only commits modifying
 ##'     this file will be returned. Note that modifying commits that
 ##'     occurred before the file was given its present name are not
-##'     returned; that is, the output of \code{git log} with 
+##'     returned; that is, the output of \code{git log} with
 ##'     \code{--no-follow} is reproduced.
 ##' @return list of commits in repository
 ##' @export
@@ -227,7 +227,7 @@ commit <- function(repo      = ".",
 ##'            file.path(path, "mean.R"))
 ##' add(repo, "mean.R")
 ##' commit(repo, "Fourth commit message")
-##' 
+##'
 ##' ## List the commits in the repository
 ##' commits(repo)
 ##'
@@ -237,7 +237,7 @@ commit <- function(repo      = ".",
 ##' ## List the commits modifying example.txt and mean.R.
 ##' commits(repo, path = "example.txt")
 ##' commits(repo, path = "mean.R")
-##' 
+##'
 ##' ## Create and checkout 'dev' branch in the repo
 ##' checkout(repo, "dev", create = TRUE)
 ##'
@@ -319,6 +319,7 @@ commits <- function(repo        = ".",
 
         return(result)
     }
+
     if (!is.null(path)) {
         repo_wd <- normalizePath(workdir(repo), winslash = "/")
         if (!length(grep("/$", repo_wd)))
@@ -328,15 +329,17 @@ commits <- function(repo        = ".",
                               time, reverse, path)
         path_commits <- vapply(path_revwalk, function(x) !is.null(x),
                                logical(1))
-        if (n == -1L)
+
+        if (n == -1L) {
             max_n <- sum(path_commits)
-        else
+        } else {
             max_n <- n
+        }
+
         return(path_revwalk[path_commits][seq_len(max_n)])
     }
-    else
-        return(.Call(git2r_revwalk_list, repo, sha, topological, time,
-                     reverse, n))
+
+    .Call(git2r_revwalk_list, repo, sha, topological, time, reverse, n)
 }
 
 ##' Last commit
