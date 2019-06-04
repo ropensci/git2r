@@ -273,7 +273,7 @@ SEXP git2r_revwalk_list2 (
         sort_mode |= GIT_SORT_REVERSE;
 
     /* Create a new "revwalker". */
-    error = git_revwalk_new(&walker,repository);
+    error = git_revwalk_new(&walker, repository);
     if (error)
         goto cleanup;
 
@@ -281,13 +281,13 @@ SEXP git2r_revwalk_list2 (
     error = git_revwalk_push(walker, &oid);
     if (error)
         goto cleanup;
-    git_revwalk_sorting(walker,sort_mode);
+    git_revwalk_sorting(walker, sort_mode);
     error = git_revwalk_push_head(walker);
     if (error)
         goto cleanup;
 
     /* Count number of revisions before creating the list. */
-    n = git2r_revwalk_count(walker,-1);
+    n = git2r_revwalk_count(walker, -1);
 
     /* Create the list to store the result. */
     PROTECT(result = Rf_allocVector(VECSXP, n));
@@ -295,7 +295,7 @@ SEXP git2r_revwalk_list2 (
 
     /* Restart the revwalker. */
     git_revwalk_reset(walker);
-    git_revwalk_sorting(walker,sort_mode);
+    git_revwalk_sorting(walker, sort_mode);
     error = git_revwalk_push(walker, &oid);
     if (error)
         goto cleanup;
@@ -324,8 +324,8 @@ SEXP git2r_revwalk_list2 (
         if (parents == 0) {
 	    git_tree *tree;
 	    git_commit_tree(&tree, commit);
-	    if (git_pathspec_match_tree(NULL,tree,
-					GIT_PATHSPEC_NO_MATCH_ERROR,ps) != 0)
+	    if (git_pathspec_match_tree(NULL, tree,
+					GIT_PATHSPEC_NO_MATCH_ERROR, ps) != 0)
 	        unmatched = 1;
 	    git_tree_free(tree);
 	} else if (parents == 1) {
@@ -338,7 +338,7 @@ SEXP git2r_revwalk_list2 (
 	}
 
         if (unmatched > 0)
-          continue;
+            continue;
 
         SET_VECTOR_ELT(
             result,
