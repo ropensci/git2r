@@ -26,9 +26,6 @@
 #include "git2r_repository.h"
 #include "git2r_S3.h"
 
-static int match_with_parent (git_commit *commit, int i,
-			      git_diff_options *opts);
-
 /**
  * Count number of revisions.
  *
@@ -50,6 +47,39 @@ static int git2r_revwalk_count(git_revwalk *walker, int max_n)
     }
 
     return n;
+}
+
+/* Helper to find how many files in a commit changed from its nth
+ * parent. */
+static int git2r_match_with_parent(
+    int *out,
+    git_commit *commit,
+    unsigned int i,
+    git_diff_options *opts)
+{
+    int error;
+    git_commit *parent = NULL;
+    git_tree *a = NULL, *b = NULL;
+    git_diff *diff = NULL;
+
+    if ((error = git_commit_parent(&parent, commit, i)) < 0)
+        goto cleanup;
+    if ((error = git_commit_tree(&a, parent)) < 0)
+        goto cleanup;
+    if ((error = git_commit_tree(&b, commit)) < 0)
+        goto cleanup;
+    if ((error = git_diff_tree_to_tree(&diff, git_commit_owner(commit), a, b, opts)) < 0)
+        goto cleanup;
+
+    *out = (git_diff_num_deltas(diff) > 0);
+
+cleanup:
+    git_diff_free(diff);
+    git_tree_free(a);
+    git_tree_free(b);
+    git_commit_free(parent);
+
+    return error;
 }
 
 /**
@@ -448,27 +478,4 @@ cleanup:
         git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
 
     return result;
-}
-
-/* Helper to find how many files in a commit changed from its nth parent. */
-static int match_with_parent (git_commit *commit, int i,
-                              git_diff_options *opts) {
-    git_commit *parent;
-    git_tree *a, *b;
-    git_diff *diff;
-    int ndeltas;
-
-    git_commit_parent(&parent, commit, (size_t) i);
-    git_commit_tree(&a, parent);
-    git_commit_tree(&b, commit);
-    git_diff_tree_to_tree(&diff, git_commit_owner(commit), a, b, opts);
-
-    ndeltas = (int) git_diff_num_deltas(diff);
-
-    git_diff_free(diff);
-    git_tree_free(a);
-    git_tree_free(b);
-    git_commit_free(parent);
-
-    return ndeltas > 0;
 }
