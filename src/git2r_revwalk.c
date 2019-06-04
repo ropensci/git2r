@@ -304,7 +304,8 @@ SEXP git2r_revwalk_list2 (
         git_commit *commit;
         SEXP item;
         git_oid oid;
-	int parents, unmatched;
+	unsigned int parents, unmatched;
+        int match;
 
         error = git_revwalk_next(&oid, walker);
         if (error) {
@@ -319,20 +320,30 @@ SEXP git2r_revwalk_list2 (
 
         /* Check whether it is a "touching" commit---that is, a commit
 	   that has modified the selected path. */
-        parents = (int) git_commit_parentcount(commit);
+        parents = git_commit_parentcount(commit);
         unmatched = parents;
         if (parents == 0) {
 	    git_tree *tree;
-	    git_commit_tree(&tree, commit);
-	    if (git_pathspec_match_tree(NULL, tree,
-					GIT_PATHSPEC_NO_MATCH_ERROR, ps) != 0)
-	        unmatched = 1;
+	    if ((error = git_commit_tree(&tree, commit)) < 0)
+                goto cleanup;
+            error = git_pathspec_match_tree(
+                NULL, tree, GIT_PATHSPEC_NO_MATCH_ERROR, ps);
 	    git_tree_free(tree);
+	    if (error == GIT_ENOTFOUND) {
+                error = 0;
+	        unmatched = 1;
+            } else if (error < 0) {
+                goto cleanup;
+            }
 	} else if (parents == 1) {
-             unmatched = match_with_parent(commit, 0, &diffopts) ? 0 : 1;
+            if ((error = git2r_match_with_parent(&match, commit, 0, &diffopts)) < 0)
+                goto cleanup;
+            unmatched = match ? 0 : 1;
 	} else {
-             for (int j = 0; j < parents; j++) {
-	         if (match_with_parent(commit, j, &diffopts))
+             for (unsigned int j = 0; j < parents; j++) {
+                 if ((error = git2r_match_with_parent(&match, commit, j, &diffopts)) < 0)
+                     goto cleanup;
+	         if (match && unmatched)
 		     unmatched--;
             }
 	}
