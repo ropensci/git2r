@@ -1,5 +1,12 @@
-git2r 0.25.2.9000
+git2r 0.25.2.9008
 -----------------
+
+IMPROVEMENTS
+
+* The 'path' argument was added to the 'commits' function to make it
+  possible to specify that only commits modifying this file ('path')
+  will be returned to reproduce 'git log' with '--no-follow', see the
+  documentation. (Peter Carbonetto and John Blischak in PR #372)
 
 git2r 0.25.2
 ------------
