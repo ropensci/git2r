@@ -232,13 +232,7 @@ int git_reference_lookup_resolved(
 		 nesting--)
 	{
 		if (nesting != max_nesting) {
-                        /* Fix in git2r to handle a significant
-                           warning from 'R CMD check'
-                           libgit2/src/refs.c:235:4: warning:
-                           ‘strncpy’ specified bound 1024 equals
-                           destination size [-Wstringop-truncation] */
-			strncpy(scan_name, ref->target.symbolic, sizeof(scan_name) - 1);
-			/* strncpy(scan_name, ref->target.symbolic, sizeof(scan_name)); */
+			strncpy(scan_name, ref->target.symbolic, sizeof(scan_name));
 			git_reference_free(ref);
 		}
 
