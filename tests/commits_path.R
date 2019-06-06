@@ -195,6 +195,7 @@ stopifnot(commits_abs[[1]]$sha == c_abs$sha)
 ## * | 7ae2fd5 commit c
 ## |/
 ## * 923f3ea commit base
+Sys.sleep(1)
 writeLines(as.character(1:100), file.path(path, "test-time.txt"))
 add(repo, "test-time.txt")
 c_base <- commit(repo, "commit base")
@@ -236,15 +237,27 @@ stopifnot(identical(
     commits(repo, topological = TRUE, time = FALSE, path = "test-time.txt"),
     list(c_merge_time, c_b, c_a, c_d, c_c, c_base)
 ))
+stopifnot(identical(
+    commits(repo, topological = TRUE, time = FALSE, path = "test-time.txt"),
+    commits(repo, topological = TRUE, time = FALSE)[1:6]
+))
 # time - commits ordered by time they were created, not merged into master
 stopifnot(identical(
     commits(repo, topological = FALSE, time = TRUE, path = "test-time.txt"),
     list(c_merge_time, c_d, c_b, c_c, c_a, c_base)
 ))
+stopifnot(identical(
+    commits(repo, topological = FALSE, time = TRUE, path = "test-time.txt"),
+    commits(repo, topological = FALSE, time = TRUE)[1:6]
+))
 # topological and time - dominated by time
 stopifnot(identical(
     commits(repo, topological = TRUE, time = TRUE, path = "test-time.txt"),
     list(c_merge_time, c_d, c_b, c_c, c_a, c_base)
+))
+stopifnot(identical(
+    commits(repo, topological = TRUE, time = TRUE, path = "test-time.txt"),
+    commits(repo, topological = TRUE, time = TRUE)[1:6]
 ))
 # reverse with topological and/or time
 stopifnot(identical(
