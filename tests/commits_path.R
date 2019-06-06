@@ -176,5 +176,92 @@ commits_abs <- commits(repo, path = file.path(path, "abs.txt"))
 stopifnot(length(commits_abs) == 1)
 stopifnot(commits_abs[[1]]$sha == c_abs$sha)
 
+## Test topological and time
+## Strategy:
+##   - Commit a new file test-time.txt
+##   - Commit a change on branch test-time-1 (a)
+##   - Commit a change on branch test-time-2 (c)
+##   - Commit a change on branch test-time-1 (b)
+##   - Commit a change on branch test-time-2 (d)
+##   - Merge branch test-time-2 into master (fast-forward)
+##   - Merge branch test-time-1 into master (merge commit)
+##
+## $ git log --all --decorate --oneline --graph -n 6
+## *   79e6880 (HEAD -> master) merge test-time-1
+## |\
+## | * e2f18f1 (test-time-1) commit b
+## | * 5f34820 commit a
+## * | b954ec9 (test-time-2) commit d
+## * | 7ae2fd5 commit c
+## |/
+## * 923f3ea commit base
+writeLines(as.character(1:100), file.path(path, "test-time.txt"))
+add(repo, "test-time.txt")
+c_base <- commit(repo, "commit base")
+Sys.sleep(1)
+branch_create(commit = c_base, name = "test-time-1")
+branch_create(commit = c_base, name = "test-time-2")
+
+checkout(repo, branch = "test-time-1")
+writeLines(c("edit", 2:100), file.path(path, "test-time.txt"))
+add(repo, "test-time.txt")
+c_a <- commit(repo, "commit a")
+Sys.sleep(1)
+
+checkout(repo, branch = "test-time-2")
+writeLines(c(1:25, "edit", 27:100), file.path(path, "test-time.txt"))
+add(repo, "test-time.txt")
+c_c <- commit(repo, "commit c")
+Sys.sleep(1)
+
+checkout(repo, branch = "test-time-1")
+writeLines(c(1:50, "edit", 52:100), file.path(path, "test-time.txt"))
+add(repo, "test-time.txt")
+c_b <- commit(repo, "commit b")
+Sys.sleep(1)
+
+checkout(repo, branch = "test-time-2")
+writeLines(c(1:75, "edit", 77:100), file.path(path, "test-time.txt"))
+add(repo, "test-time.txt")
+c_d <- commit(repo, "commit d")
+Sys.sleep(1)
+
+checkout(repo, branch = "master")
+merge(repo, "test-time-2") # Fast-forward
+merge(repo, "test-time-1") # Merge commit
+c_merge_time <- commits(repo, n = 1)[[1]]
+
+# topological - commits in test-time-2 come first because it was merged first
+stopifnot(identical(
+    commits(repo, topological = TRUE, time = FALSE, path = "test-time.txt"),
+    list(c_merge_time, c_b, c_a, c_d, c_c, c_base)
+))
+# time - commits ordered by time they were created, not merged into master
+stopifnot(identical(
+    commits(repo, topological = FALSE, time = TRUE, path = "test-time.txt"),
+    list(c_merge_time, c_d, c_b, c_c, c_a, c_base)
+))
+# topological and time - dominated by time
+stopifnot(identical(
+    commits(repo, topological = TRUE, time = TRUE, path = "test-time.txt"),
+    list(c_merge_time, c_d, c_b, c_c, c_a, c_base)
+))
+# reverse with topological and/or time
+stopifnot(identical(
+    commits(repo, topological = TRUE, time = FALSE, reverse = TRUE,
+            path = "test-time.txt"),
+    rev(list(c_merge_time, c_b, c_a, c_d, c_c, c_base))
+))
+stopifnot(identical(
+    commits(repo, topological = FALSE, time = TRUE, reverse = TRUE,
+            path = "test-time.txt"),
+    rev(list(c_merge_time, c_d, c_b, c_c, c_a, c_base))
+))
+stopifnot(identical(
+    commits(repo, topological = TRUE, time = TRUE, reverse = TRUE,
+            path = "test-time.txt"),
+    rev(list(c_merge_time, c_d, c_b, c_c, c_a, c_base))
+))
+
 ## Cleanup
 unlink(path, recursive=TRUE)
