@@ -420,7 +420,7 @@ SEXP git2r_revwalk_contributions(
     if (LOGICAL(topological)[0])
         sort_mode |= GIT_SORT_TOPOLOGICAL;
     if (LOGICAL(time)[0])
-        sort_mode = GIT_SORT_TIME | (sort_mode & GIT_SORT_REVERSE);
+        sort_mode |= GIT_SORT_TIME;
     if (LOGICAL(reverse)[0])
         sort_mode |= GIT_SORT_REVERSE;
 
