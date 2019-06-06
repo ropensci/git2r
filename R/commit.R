@@ -180,6 +180,11 @@ commit <- function(repo      = ".",
 ##'     default is NULL for unlimited number of commits.
 ##' @param ref The name of a reference to list commits from e.g. a tag
 ##'     or a branch. The default is NULL for the current branch.
+##' @param path The path to a file. If not NULL, only commits modifying
+##'     this file will be returned. Note that modifying commits that
+##'     occurred before the file was given its present name are not
+##'     returned; that is, the output of \code{git log} with
+##'     \code{--no-follow} is reproduced.
 ##' @return list of commits in repository
 ##' @export
 ##' @examples
@@ -216,11 +221,22 @@ commit <- function(repo      = ".",
 ##' add(repo, "example.txt")
 ##' commit(repo, "Third commit message")
 ##'
+##' ## Create a new file containing R code, and commit.
+##' writeLines(c("x <- seq(1,100)",
+##'              "print(mean(x))"),
+##'            file.path(path, "mean.R"))
+##' add(repo, "mean.R")
+##' commit(repo, "Fourth commit message")
+##'
 ##' ## List the commits in the repository
 ##' commits(repo)
 ##'
 ##' ## List the commits starting from the tag
 ##' commits(repo, ref = "Tagname")
+##'
+##' ## List the commits modifying example.txt and mean.R.
+##' commits(repo, path = "example.txt")
+##' commits(repo, path = "mean.R")
 ##'
 ##' ## Create and checkout 'dev' branch in the repo
 ##' checkout(repo, "dev", create = TRUE)
@@ -242,7 +258,8 @@ commits <- function(repo        = ".",
                     time        = TRUE,
                     reverse     = FALSE,
                     n           = NULL,
-                    ref         = NULL)
+                    ref         = NULL,
+                    path        = NULL)
 {
     ## Check limit in number of commits
     if (is.null(n)) {
@@ -255,6 +272,12 @@ commits <- function(repo        = ".",
         n <- as.integer(n)
     } else {
         stop("'n' must be integer")
+    }
+
+    if (!is.null(path)) {
+        if (!(is.character(path) && length(path) == 1)) {
+            stop("path must be a single file")
+        }
     }
 
     repo <- lookup_repository(repo)
@@ -295,6 +318,25 @@ commits <- function(repo        = ".",
         }
 
         return(result)
+    }
+
+    if (!is.null(path)) {
+        repo_wd <- normalizePath(workdir(repo), winslash = "/")
+        if (!length(grep("/$", repo_wd)))
+            repo_wd <- paste0(repo_wd, "/")
+        path <- sanitize_path(path, repo_wd)
+        path_revwalk <- .Call(git2r_revwalk_list2, repo, sha, topological,
+                              time, reverse, path)
+        path_commits <- vapply(path_revwalk, function(x) !is.null(x),
+                               logical(1))
+
+        if (n == -1L) {
+            max_n <- sum(path_commits)
+        } else {
+            max_n <- n
+        }
+
+        return(path_revwalk[path_commits][seq_len(max_n)])
     }
 
     .Call(git2r_revwalk_list, repo, sha, topological, time, reverse, n)

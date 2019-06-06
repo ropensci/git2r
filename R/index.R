@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -95,33 +95,35 @@ add <- function(repo = ".", path = NULL, force = FALSE)
     if (!length(grep("/$", repo_wd)))
         repo_wd <- paste0(repo_wd, "/")
 
-    path <- vapply(path, function(p) {
-        np <- suppressWarnings(normalizePath(p, winslash = "/"))
-
-        ## Check if the normalized path is a non-file e.g. a glob.
-        if (!file.exists(np)) {
-            ## Check if the normalized path starts with a leading './'
-            if (length(grep("^[.]/", np))) {
-                nd <- suppressWarnings(normalizePath(dirname(p), winslash = "/"))
-                if (!length(grep("/$", nd)))
-                    nd <- paste0(nd, "/")
-                np <- paste0(nd, basename(np))
-            }
-        }
-
-        ## Check if the file is in the repository's working directory,
-        ## else let libgit2 handle this path unmodified.
-        if (!length(grep(paste0("^", repo_wd), np)))
-            return(p)
-
-        ## Change the path to be relative to the repository's working
-        ## directory. Substitute common prefix with ""
-        sub(paste0("^", repo_wd), "", np)
-    }, character(1))
+    path <- vapply(path, sanitize_path, character(1), repo_wd = repo_wd)
 
     .Call(git2r_index_add_all, repo, path, isTRUE(force))
 
     invisible(NULL)
+}
+
+sanitize_path <- function(p, repo_wd) {
+    np <- suppressWarnings(normalizePath(p, winslash = "/"))
+
+    ## Check if the normalized path is a non-file e.g. a glob.
+    if (!file.exists(np)) {
+        ## Check if the normalized path starts with a leading './'
+        if (length(grep("^[.]/", np))) {
+            nd <- suppressWarnings(normalizePath(dirname(p), winslash = "/"))
+            if (!length(grep("/$", nd)))
+                nd <- paste0(nd, "/")
+            np <- paste0(nd, basename(np))
+        }
+    }
+
+    ## Check if the file is in the repository's working directory,
+    ## else let libgit2 handle this path unmodified.
+    if (!length(grep(paste0("^", repo_wd), np)))
+        return(p)
+
+    ## Change the path to be relative to the repository's working
+    ## directory. Substitute common prefix with ""
+    sub(paste0("^", repo_wd), "", np)
 }
 
 ##' Remove files from the working tree and from the index
