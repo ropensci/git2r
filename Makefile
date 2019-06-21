@@ -29,6 +29,10 @@ check:
         R CMD check --as-cran --no-manual --no-vignettes \
         --no-build-vignettes --no-stop-on-test-error $(PKG_TAR)
 
+# Build and check package on R-hub
+rhub: clean check
+	cd .. && Rscript -e "rhub::check(path='$(PKG_TAR)', rhub::platforms()[['name']], show_status = FALSE)"
+
 # Check reverse dependencies
 #
 # 1) Install packages (in ../revdep/lib) to check the reverse dependencies.
