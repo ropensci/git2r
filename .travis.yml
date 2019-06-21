@@ -13,6 +13,7 @@ matrix:
     - r: 3.1
     - r: 3.2
     - r: 3.3
+    - r: 3.4
     - r: oldrel
     - r: release
       r_packages: covr
