@@ -467,7 +467,7 @@ static int git2r_odb_blobs_cb(const git_oid *oid, void *payload)
             "",
             sha,
             author->name,
-            (double)(author->when.time),
+            (double)(author->when.time) + 60 * (double)(author->when.offset),
             p);
 
     cleanup:
