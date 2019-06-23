@@ -3,6 +3,21 @@ git2r 0.25.2.9008
 
 IMPROVEMENTS
 
+* Updated the bundled libgit2 source code to version '0.28.2'.
+
+* Added the 'force' argument to the 'tag' function to overwrite an
+  existing tag.
+
+* Allow a zero length tag message.
+
+* Make it possible to create a lighweight tag.
+
+* Added the 'ref' argument to the 'commits' function to give a
+  reference to list commits from.
+
+* Added the utility function 'lookup_commit' to lookup a commit
+  related to a git object.
+
 * The 'path' argument was added to the 'commits' function to make it
   possible to specify that only commits modifying this file ('path')
   will be returned to reproduce 'git log' with '--no-follow', see the
