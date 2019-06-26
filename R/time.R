@@ -21,7 +21,7 @@ as.character.git_time <- function(x, ...) {
 
 ##' @export
 as.POSIXct.git_time <- function(x, ...) {
-    as.POSIXct(x$time + x$offset*60, origin = "1970-01-01", tz = "GMT")
+    as.POSIXct(x$time, origin = "1970-01-01", tz = "GMT")
 }
 
 ## setAs(from = "POSIXlt",
