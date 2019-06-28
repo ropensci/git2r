@@ -23,6 +23,12 @@ IMPROVEMENTS
   will be returned to reproduce 'git log' with '--no-follow', see the
   documentation. (Peter Carbonetto and John Blischak in PR #372)
 
+BUG FIXES
+
+* Removed the timezone offset from the commit time to fix an incorrect
+  time in GMT when reading information from a repository (Thierry
+  Onkelinx in PR #393).
+
 git2r 0.25.2
 ------------
 
