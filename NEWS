@@ -1,3 +1,10 @@
+git2r 0.26.1
+------------
+
+BUG FIXES
+
+* Fixed the broken build on Solaris.
+
 git2r 0.26.0
 ------------
 
