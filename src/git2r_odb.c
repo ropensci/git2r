@@ -379,7 +379,7 @@ static int git2r_odb_tree_blobs(
                 sep = "";
             }
             error = snprintf(buf, buf_len, "%s%s%s", path, sep, entry_name);
-            if (0 <= error && error < buf_len) {
+            if (0 <= error && (size_t)error < buf_len) {
                 error = git2r_odb_tree_blobs(
                     sub_tree,
                     buf,

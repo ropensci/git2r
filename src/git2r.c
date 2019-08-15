@@ -24,12 +24,7 @@
  *
  */
 
-#include <R.h>
-#include <Rinternals.h>
-#include <R_ext/Rdynload.h>
-
-#include <git2.h>
-
+#include "git2r_arg.h"
 #include "git2r_blame.h"
 #include "git2r_blob.h"
 #include "git2r_branch.h"
@@ -181,5 +176,6 @@ R_init_git2r(DllInfo *info)
 void
 R_unload_git2r(DllInfo *info)
 {
+    GIT2R_UNUSED(info);
     git_libgit2_shutdown();
 }

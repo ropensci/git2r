@@ -112,7 +112,7 @@ static int git2r_tree_walk_cb(
 
         /* mode */
         error = snprintf(mode, sizeof(mode), "%06o", git_tree_entry_filemode(entry));
-        if (error < 0 || error >= sizeof(mode)) {
+        if (error < 0 || (size_t)error >= sizeof(mode)) {
             error = -1;
             goto cleanup;
         }

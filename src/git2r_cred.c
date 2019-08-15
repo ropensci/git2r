@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2018 The git2r contributors
+ *  Copyright (C) 2013-2019 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -439,6 +439,8 @@ int git2r_cred_acquire_cb(
 {
     git2r_transfer_data *td;
     SEXP credentials;
+
+    GIT2R_UNUSED(url);
 
     if (!payload)
         return -1;

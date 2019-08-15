@@ -159,7 +159,7 @@ static int git2r_fast_forward_merge(
         goto cleanup;
     }
     error = snprintf(buf, buf_len, "%s: Fast-forward", log_message);
-    if (error < 0 || error >= buf_len) {
+    if (error < 0 || (size_t)error >= buf_len) {
         GIT2R_ERROR_SET_STR(GIT2R_ERROR_OS, "Failed to snprintf log message.");
         error = GIT2R_ERROR_OS;
         goto cleanup;
@@ -552,7 +552,7 @@ SEXP git2r_merge_branch(SEXP branch, SEXP merger, SEXP commit_on_success, SEXP f
         goto cleanup;
     }
     error = snprintf(buf, buf_len, "merge %s", name);
-    if (error < 0 || error >= buf_len) {
+    if (error < 0 || (size_t)error >= buf_len) {
         GIT2R_ERROR_SET_STR(GIT2R_ERROR_OS, "Failed to snprintf log message.");
         error = GIT2R_ERROR_OS;
         goto cleanup;

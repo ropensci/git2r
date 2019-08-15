@@ -171,6 +171,9 @@ static int git2r_stash_list_cb(
     SEXP stash, class;
     git2r_stash_list_cb_data *cb_data = (git2r_stash_list_cb_data*)payload;
 
+    GIT2R_UNUSED(index);
+    GIT2R_UNUSED(message);
+
     /* Check if we have a list to populate */
     if (!Rf_isNull(cb_data->list)) {
         PROTECT(class = Rf_allocVector(STRSXP, 2));

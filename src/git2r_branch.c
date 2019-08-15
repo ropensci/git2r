@@ -429,7 +429,7 @@ SEXP git2r_branch_upstream_canonical_name(SEXP branch)
         goto cleanup;
     }
     error = snprintf(buf, buf_len, "branch.%.*s.merge", (int)branch_name_len, branch_name);
-    if (error < 0 || error >= buf_len) {
+    if (error < 0 || (size_t)error >= buf_len) {
         GIT2R_ERROR_SET_STR(GIT2R_ERROR_OS, "Failed to snprintf branch config.");
         error = GIT2R_ERROR_OS;
         goto cleanup;
