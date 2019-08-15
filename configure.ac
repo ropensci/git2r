@@ -237,15 +237,15 @@ fi
 # Check for zlib
 have_zlib=no
 
-AC_SEARCH_LIBS([inflate], [z], [have_zlib=yes])
+if test [ -n "$PKG_CONFIG" ] ; then
+    PKG_CHECK_MODULES([zlib], [zlib],
+                      [CPPFLAGS="${zlib_CFLAGS} ${CPPFLAGS}"
+                       LIBS="${zlib_LIBS} ${LIBS}"
+                       have_zlib=yes], [ ])
+fi
 
 if test "x${have_zlib}" = xno; then
-    if test [ -n "$PKG_CONFIG" ] ; then
-        PKG_CHECK_MODULES([zlib], [zlib],
-                          [CPPFLAGS="${zlib_CFLAGS} ${CPPFLAGS}"
-                           LIBS="${zlib_LIBS} ${LIBS}"
-                           have_zlib=yes], [ ])
-    fi
+    AC_SEARCH_LIBS([inflate], [z], [have_zlib=yes])
 fi
 
 if test "x${have_zlib}" = xno; then
@@ -281,18 +281,18 @@ case "${host_os}" in
             CPPFLAGS="${CPPFLAGS} -I${OPENSSL_INCLUDES}"
         fi
 
-        AC_SEARCH_LIBS([EVP_EncryptInit],
-                       [crypto],
-                       [AC_SEARCH_LIBS([SSL_library_init], [ssl], [have_ssl=yes])
-                        AC_SEARCH_LIBS([OPENSSL_init_ssl], [ssl], [have_ssl=yes])])
+        if test [ -n "$PKG_CONFIG" ] ; then
+            PKG_CHECK_MODULES([openssl], [openssl],
+                              [CPPFLAGS="${openssl_CFLAGS} ${CPPFLAGS}"
+                               LIBS="${openssl_LIBS} ${LIBS}"
+                               have_ssl=yes], [ ])
+        fi
 
         if test "x${have_ssl}" = xno; then
-            if test [ -n "$PKG_CONFIG" ] ; then
-                PKG_CHECK_MODULES([openssl], [openssl],
-                                  [CPPFLAGS="${openssl_CFLAGS} ${CPPFLAGS}"
-                                   LIBS="${openssl_LIBS} ${LIBS}"
-                                   have_ssl=yes], [ ])
-            fi
+            AC_SEARCH_LIBS([EVP_EncryptInit],
+                           [crypto],
+                           [AC_SEARCH_LIBS([SSL_library_init], [ssl], [have_ssl=yes])
+                            AC_SEARCH_LIBS([OPENSSL_init_ssl], [ssl], [have_ssl=yes])])
         fi
 
         if test "x${have_ssl}" = xyes; then
@@ -321,15 +321,15 @@ esac
 
 # Check for LibSSH2
 have_ssh2=no
-AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
+if test [ -n "$PKG_CONFIG" ] ; then
+    PKG_CHECK_MODULES([libssh2], [libssh2],
+                      [CPPFLAGS="${libssh2_CFLAGS} ${CPPFLAGS}"
+                       LIBS="${libssh2_LIBS} ${LIBS}"
+                       have_ssh2=yes], [ ])
+fi
 
 if test "x${have_ssh2}" = xno; then
-    if test [ -n "$PKG_CONFIG" ] ; then
-        PKG_CHECK_MODULES([libssh2], [libssh2],
-                          [CPPFLAGS="${libssh2_CFLAGS} ${CPPFLAGS}"
-                           LIBS="${libssh2_LIBS} ${LIBS}"
-                           have_ssh2=yes], [ ])
-    fi
+    AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
 fi
 
 if test "x${have_ssh2}" = xno; then
