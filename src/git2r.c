@@ -54,6 +54,7 @@
 #include "git2r_status.h"
 #include "git2r_tag.h"
 #include "git2r_tree.h"
+#include <R_ext/Rdynload.h>
 
 #define CALLDEF(name, n) {#name, (DL_FUNC) &name, n}
 
