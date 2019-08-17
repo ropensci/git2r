@@ -10,9 +10,8 @@ rm_file(repo = ".", path = NULL)
 \item{repo}{a path to a repository or a \code{git_repository}
 object. Default is '.'}
 
-\item{path}{character vector with filenames to remove. The path
-must be relative to the repository's working folder. Only
-files known to Git are removed.}
+\item{path}{character vector with filenames to remove. Only files
+known to Git are removed.}
 }
 \value{
 invisible(NULL)

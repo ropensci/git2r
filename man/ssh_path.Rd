@@ -17,9 +17,9 @@ This function provides a consistent means across OS-types to access the
 \code{.ssh} directory.
 }
 \details{
-On Windows-based systems, 
-\code{path.expand("~")} returns \code{"C:/Users/username/Documents"}, 
-whereas the usual path to the \code{.ssh} directory is 
+On Windows-based systems,
+\code{path.expand("~")} returns \code{"C:/Users/username/Documents"},
+whereas the usual path to the \code{.ssh} directory is
 \code{"C:/Users/username"}.
 
 On other operating systems, \code{path.expand("~")} returns the usual path
