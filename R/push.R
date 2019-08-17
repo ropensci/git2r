@@ -94,8 +94,7 @@ push <- function(object       = ".",
                  refspec      = NULL,
                  force        = FALSE,
                  credentials  = NULL,
-                 set_upstream = FALSE)
-{
+                 set_upstream = FALSE) {
     if (is_branch(object)) {
         name <- get_upstream_name(object)
 

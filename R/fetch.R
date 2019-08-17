@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -95,8 +95,7 @@
 ##' summary(repo)
 ##' }
 fetch <- function(repo = ".", name = NULL, credentials = NULL,
-                  verbose = TRUE, refspec = NULL)
-{
+                  verbose = TRUE, refspec = NULL) {
     invisible(.Call(git2r_remote_fetch, lookup_repository(repo),
                     name, credentials, "fetch", verbose, refspec))
 }

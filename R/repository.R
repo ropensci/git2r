@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -262,8 +262,7 @@ clone <- function(url         = NULL,
                   branch      = NULL,
                   checkout    = TRUE,
                   credentials = NULL,
-                  progress    = TRUE)
-{
+                  progress    = TRUE) {
     .Call(git2r_clone, url, local_path, bare,
           branch, checkout, credentials, progress)
     repository(local_path)

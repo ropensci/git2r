@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -75,16 +75,14 @@ status <- function(repo      = ".",
                    unstaged  = TRUE,
                    untracked = TRUE,
                    ignored   = FALSE,
-                   all_untracked = FALSE)
-{
+                   all_untracked = FALSE) {
     structure(.Call(git2r_status_list, lookup_repository(repo), staged,
                     unstaged, untracked, all_untracked, ignored),
               class = "git_status")
 }
 
 ##' @export
-print.git_status <- function(x, ...)
-{
+print.git_status <- function(x, ...) {
     display_status <- function(title, section) {
         cat(sprintf("%s:\n", title))
 

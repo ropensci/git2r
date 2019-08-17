@@ -206,8 +206,7 @@ diff.git_repository <- function(x,
                                 id_abbrev = NULL,
                                 path = NULL,
                                 max_size = NULL,
-                                ...)
-{
+                                ...) {
     if (as_char) {
         ## Make sure filename is character(0) to write to a
         ## character vector or a character vector with path in
@@ -253,8 +252,7 @@ diff.git_tree <- function(x,
                           id_abbrev = NULL,
                           path = NULL,
                           max_size = NULL,
-                          ...)
-{
+                          ...) {
     if (as_char) {
         ## Make sure filename is character(0) to write to a character
         ## vector or a character vector with path in order to write to

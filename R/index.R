@@ -77,8 +77,7 @@
 ##' add(repo, "./glob_dir/*md")
 ##' status(repo)
 ##' }
-add <- function(repo = ".", path = NULL, force = FALSE)
-{
+add <- function(repo = ".", path = NULL, force = FALSE) {
     ## Documentation for the pathspec argument in the libgit2 function
     ## 'git_index_add_all' that git2r use internally:
     ##

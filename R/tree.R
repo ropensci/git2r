@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -325,8 +325,7 @@ is_tree <- function(object) {
 ##' ## Start in subfolder
 ##' ls_tree(tree = "HEAD:subfolder", repo = repo)
 ##' }
-ls_tree <- function(tree = NULL, repo = ".", recursive = TRUE)
-{
+ls_tree <- function(tree = NULL, repo = ".", recursive = TRUE) {
     if (is.null(tree)) {
         tree <- tree(last_commit(lookup_repository(repo)))
     } else if (is.character(tree)) {

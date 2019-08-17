@@ -64,8 +64,7 @@ tag <- function(object = ".",
                 message = NULL,
                 session = FALSE,
                 tagger  = NULL,
-                force   = FALSE)
-{
+                force   = FALSE) {
     object <- lookup_repository(object)
 
     if (isTRUE(session))

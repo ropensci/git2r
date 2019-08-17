@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -53,8 +53,7 @@
 ##' ## Display configuration
 ##' config(repo)
 ##' }
-config <- function(repo = NULL, global = FALSE, user.name, user.email, ...)
-{
+config <- function(repo = NULL, global = FALSE, user.name, user.email, ...) {
     if (is.null(repo)) {
         repo <- discover_repository(getwd())
         if (!is.null(repo))

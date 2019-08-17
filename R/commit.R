@@ -127,8 +127,7 @@ commit <- function(repo      = ".",
                    all       = FALSE,
                    session   = FALSE,
                    author    = NULL,
-                   committer = NULL)
-{
+                   committer = NULL) {
     repo <- lookup_repository(repo)
     if (is.null(author))
         author <- default_signature(repo)
@@ -259,8 +258,7 @@ commits <- function(repo        = ".",
                     reverse     = FALSE,
                     n           = NULL,
                     ref         = NULL,
-                    path        = NULL)
-{
+                    path        = NULL) {
     ## Check limit in number of commits
     if (is.null(n)) {
         n <- -1L

@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -18,8 +18,7 @@
 ##'
 ##' @param repo The repository.
 ##' @noRd
-previous_branch_name <- function(repo)
-{
+previous_branch_name <- function(repo) {
     branch <- revparse_single(repo, "@{-1}")$sha
 
     branch <- sapply(references(repo), function(x) {
@@ -161,8 +160,7 @@ checkout <- function(object = NULL,
                      create = FALSE,
                      force  = FALSE,
                      path   = NULL,
-                     ...)
-{
+                     ...) {
     if (checkout_git_object(object, force))
         return(invisible(NULL))
 

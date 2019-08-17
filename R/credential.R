@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013 - 2018 The git2r contributors
+## Copyright (C) 2013 - 2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -156,11 +156,10 @@ cred_user_pass <- function(username = NULL, password = NULL) {
 ##' }
 cred_ssh_key <-  function (publickey = ssh_path("id_rsa.pub"),
                            privatekey = ssh_path("id_rsa"),
-                           passphrase = character(0))
-{
+                           passphrase = character(0)) {
   publickey = normalizePath(publickey, mustWork = TRUE)
   privatekey = normalizePath(privatekey, mustWork = TRUE)
-  
+
   if (length(passphrase) == 0) {
     if (ssh_key_needs_passphrase(privatekey)) {
       if (requireNamespace("getPass", quietly = TRUE)) {
@@ -168,7 +167,7 @@ cred_ssh_key <-  function (publickey = ssh_path("id_rsa.pub"),
       }
     }
   }
-  
+
   structure(list(publickey  = publickey,
                  privatekey = privatekey,
                  passphrase = passphrase),
@@ -186,25 +185,25 @@ ssh_key_needs_passphrase <- function(privatekey = ssh_path("id_rsa")) {
 }
 
 ##' Compose usual path to ssh keys
-##' 
+##'
 ##' This function provides a consistent means across OS-types to access the
 ##' \code{.ssh} directory.
-##' 
-##' On Windows-based systems, 
-##' \code{path.expand("~")} returns \code{"C:/Users/username/Documents"}, 
-##' whereas the usual path to the \code{.ssh} directory is 
+##'
+##' On Windows-based systems,
+##' \code{path.expand("~")} returns \code{"C:/Users/username/Documents"},
+##' whereas the usual path to the \code{.ssh} directory is
 ##' \code{"C:/Users/username"}.
-##' 
+##'
 ##' On other operating systems, \code{path.expand("~")} returns the usual path
 ##' to the \code{.ssh} directory.
-##' 
+##'
 ##' Calling \code{ssh_path()} with no arguments will return the usual path to
 ##' the \code{.ssh} directory.
-##' 
+##'
 ##' @param file basename of file for which path is requested
 ##' @return Full path to the file
 ##' @export
-##' @examples 
+##' @examples
 ##' ssh_path()
 ##' ssh_path("is_rsa.pub")
 ssh_path <- function(file = "") {

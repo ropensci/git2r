@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -75,8 +75,7 @@ merge_base <- function(one = NULL, two = NULL) {
 ##' @export
 ##' @template merge-example
 merge.git_branch <- function(x, y = NULL, commit_on_success = TRUE,
-                             merger = NULL, fail = FALSE, ...)
-{
+                             merger = NULL, fail = FALSE, ...) {
     if (is.null(merger))
         merger <- default_signature(x$repo)
     .Call(git2r_merge_branch, x, merger, commit_on_success, fail)
@@ -85,8 +84,7 @@ merge.git_branch <- function(x, y = NULL, commit_on_success = TRUE,
 ##' @export
 ##' @rdname merge
 merge.git_repository <- function(x, y = NULL, commit_on_success = TRUE,
-                                 merger = NULL, fail = FALSE, ...)
-{
+                                 merger = NULL, fail = FALSE, ...) {
     ## Check branch argument
     if (is.null(y) || !is.character(y) || !identical(length(y), 1L))
         stop("'branch' must be a character vector of length one")
@@ -99,8 +97,7 @@ merge.git_repository <- function(x, y = NULL, commit_on_success = TRUE,
 ##' @export
 ##' @rdname merge
 merge.character <- function(x = ".", y = NULL, commit_on_success = TRUE,
-                            merger = NULL, fail = FALSE, ...)
-{
+                            merger = NULL, fail = FALSE, ...) {
     x <- lookup_repository(x)
     merge.git_repository(x, y, commit_on_success, merger, fail)
 }

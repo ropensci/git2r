@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -87,8 +87,7 @@ note_create <- function(object    = NULL,
                         ref       = NULL,
                         author    = NULL,
                         committer = NULL,
-                        force     = FALSE)
-{
+                        force     = FALSE) {
     if (is.null(object))
         stop("'object' is missing")
     if (!any(is_blob(object), is_commit(object), is_tree(object)))
@@ -209,8 +208,7 @@ notes <- function(repo = ".", ref = NULL) {
 ##' }
 note_remove <- function(note      = NULL,
                         author    = NULL,
-                        committer = NULL)
-{
+                        committer = NULL) {
     if (!inherits(note, "git_note"))
         stop("'note' is not a git_note")
     if (is.null(author))
