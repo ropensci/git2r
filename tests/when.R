@@ -20,7 +20,7 @@ library("git2r")
 sessionInfo()
 
 ## Check when method
-w1 = structure(list(time = 1395567947, offset = 60),
+w1 <- structure(list(time = 1395567947, offset = 60),
                class = "git_time")
 stopifnot(identical(when(w1), "2014-03-23 09:45:47"))
 
@@ -28,7 +28,7 @@ s1 <- structure(list(name = "Alice", email = "alice@example.org", when = w1),
                 class = "git_signature")
 stopifnot(identical(when(s1), "2014-03-23 09:45:47"))
 
-w2 = structure(list(time = 1395567950, offset = 60),
+w2 <- structure(list(time = 1395567950, offset = 60),
                class = "git_time")
 s2 <- structure(list(name = "Alice", email = "alice@example.org", when = w2),
                 class = "git_signature")

@@ -20,12 +20,12 @@ library("git2r")
 sessionInfo()
 
 ## Create a directory in tempdir
-path <- tempfile(pattern="git2r-")
+path <- tempfile(pattern = "git2r-")
 dir.create(path)
 
 ## Initialize a repository
 repo <- init(path)
-config(repo, user.name="Alice", user.email="alice@example.org")
+config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Create a file, add, commit
 writeLines("Hello world!", file.path(path, "test.txt"))
@@ -167,4 +167,4 @@ stopifnot(length(grep("Error in 'git2r_diff': Invalid diff parameters",
 ## TODO: printing
 
 ## Cleanup
-unlink(path, recursive=TRUE)
+unlink(path, recursive = TRUE)

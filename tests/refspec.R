@@ -20,8 +20,8 @@ library("git2r")
 sessionInfo()
 
 ## Create directories for repositories in tempdir
-path_bare <- tempfile(pattern="git2r-")
-path_repo <- tempfile(pattern="git2r-")
+path_bare <- tempfile(pattern = "git2r-")
+path_repo <- tempfile(pattern = "git2r-")
 
 dir.create(path_bare)
 dir.create(path_repo)
@@ -31,7 +31,7 @@ bare_repo <- init(path_bare, bare = TRUE)
 
 ## Clone to repo
 repo <- clone(path_bare, path_repo)
-config(repo, user.name="Alice", user.email="alice@example.org")
+config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Add changes to repo
 writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -54,5 +54,5 @@ checkout(commit_1)
 tools::assertError(git2r:::get_refspec(repo))
 
 ## Cleanup
-unlink(path_bare, recursive=TRUE)
-unlink(path_repo, recursive=TRUE)
+unlink(path_bare, recursive = TRUE)
+unlink(path_repo, recursive = TRUE)

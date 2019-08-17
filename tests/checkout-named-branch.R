@@ -20,9 +20,9 @@ library("git2r")
 sessionInfo()
 
 ## Create directories for repositories in tempdir
-path_bare <- tempfile(pattern="git2r-")
-path_repo_1 <- tempfile(pattern="git2r-")
-path_repo_2 <- tempfile(pattern="git2r-")
+path_bare <- tempfile(pattern = "git2r-")
+path_repo_1 <- tempfile(pattern = "git2r-")
+path_repo_2 <- tempfile(pattern = "git2r-")
 
 dir.create(path_bare)
 dir.create(path_repo_1)
@@ -78,6 +78,6 @@ checkout(repo_2, "-")
 stopifnot(identical(repository_head(repo_2)$name, "master"))
 
 ## Cleanup
-unlink(path_bare, recursive=TRUE)
-unlink(path_repo_1, recursive=TRUE)
-unlink(path_repo_2, recursive=TRUE)
+unlink(path_bare, recursive = TRUE)
+unlink(path_repo_1, recursive = TRUE)
+unlink(path_repo_2, recursive = TRUE)

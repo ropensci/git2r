@@ -20,14 +20,14 @@ library("git2r")
 sessionInfo()
 
 ## Create a directory in tempdir
-path <- tempfile(pattern="git2r-")
+path <- tempfile(pattern = "git2r-")
 dir.create(path)
 
 ## Initialize a repository
 repo <- init(path)
 
 ## Config repository
-cfg <- config(repo, user.name="Alice", user.email="alice@example.org")
+cfg <- config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Check configuration
 stopifnot(identical(print(cfg), cfg))
@@ -122,4 +122,4 @@ if (identical(Sys.getenv("APPVEYOR"), "True")) {
 }
 
 ## Cleanup
-unlink(path, recursive=TRUE)
+unlink(path, recursive = TRUE)

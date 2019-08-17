@@ -100,7 +100,7 @@ note_create <- function(object    = NULL,
     stopifnot(is.character(ref), identical(length(ref), 1L))
     if (!length(grep("^refs/notes/", ref)))
         ref <- paste0("refs/notes/", ref)
-    if(is.null(author))
+    if (is.null(author))
         author <- default_signature(repo)
     if (is.null(committer))
         committer <- default_signature(repo)
@@ -156,7 +156,7 @@ note_create <- function(object    = NULL,
 notes <- function(repo = ".", ref = NULL) {
     repo <- lookup_repository(repo)
     if (is.null(ref))
-        ref = note_default_ref(repo)
+        ref <- note_default_ref(repo)
     stopifnot(is.character(ref), identical(length(ref), 1L))
     if (!length(grep("^refs/notes/", ref)))
         ref <- paste0("refs/notes/", ref)

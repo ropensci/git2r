@@ -565,7 +565,7 @@ summary.git_commit <- function(object, ...) {
     if (is_merge_commit) {
         sha <- vapply(po, "[[", character(1), "sha")
         cat(sprintf("Merge:   %s\n", sha[1]))
-        cat(paste0("         ", sha[-1]), sep="\n")
+        cat(paste0("         ", sha[-1]), sep = "\n")
     }
 
     cat(sprintf(paste0("Author:  %s <%s>\n",
@@ -606,7 +606,7 @@ summary.git_commit <- function(object, ...) {
                         ifelse(hpf > 0, " hunk",
                                " hunk (binary file)"))
             phpf <- paste0("  in ", format(hpf), hunk_txt)
-            cat(paste0(plpf, phpf), sep="\n")
+            cat(paste0(plpf, phpf), sep = "\n")
         }
 
         cat("\n")

@@ -20,12 +20,12 @@ library("git2r")
 sessionInfo()
 
 ## Create a directory in tempdir
-path <- tempfile(pattern="git2r-")
+path <- tempfile(pattern = "git2r-")
 dir.create(path)
 
 ## Initialize a repository
 repo <- init(path)
-config(repo, user.name="Alice", user.email="alice@example.org")
+config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Commit without adding changes should produce an error
 tools::assertError(commit(repo, "Test to commit"))
@@ -82,13 +82,13 @@ stopifnot(identical(length(parents(commit_2)), 1L))
 stopifnot(identical(parents(commit_2)[[1]], commit_1))
 
 ## Check contributions
-stopifnot(identical(colnames(contributions(repo, by="author", breaks="day")),
+stopifnot(identical(colnames(contributions(repo, by = "author", breaks = "day")),
                     c("when", "author", "n")))
 stopifnot(identical(colnames(contributions(repo)),
                     c("when", "n")))
 stopifnot(identical(nrow(contributions(repo)), 1L))
 stopifnot(identical(contributions(repo)$n, 2L))
-stopifnot(identical(contributions(repo, by="author", breaks="day")$n, 2L))
+stopifnot(identical(contributions(repo, by = "author", breaks = "day")$n, 2L))
 
 ## Add another commit with 'all' argument
 writeLines(c("Hello world!", "HELLO WORLD!", "HeLlO wOrLd!"),
@@ -196,11 +196,11 @@ stopifnot(length(grep("'commit' must be an S3 class git_commit",
                       res[[1]]$message)) > 0)
 
 ## Cleanup
-unlink(path, recursive=TRUE)
+unlink(path, recursive = TRUE)
 
 if (identical(Sys.getenv("NOT_CRAN"), "true") ||
     identical(Sys.getenv("R_COVR"), "true")) {
-    path <- tempfile(pattern="git2r-")
+    path <- tempfile(pattern = "git2r-")
     dir.create(path)
     setwd(path)
     system("git clone --depth 2 https://github.com/ropensci/git2r.git")
@@ -210,5 +210,5 @@ if (identical(Sys.getenv("NOT_CRAN"), "true") ||
     stopifnot(identical(length(commits(repository("git2r"), n = 1)), 1L))
 
     ## Cleanup
-    unlink(path, recursive=TRUE)
+    unlink(path, recursive = TRUE)
 }

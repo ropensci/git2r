@@ -20,12 +20,12 @@ library("git2r")
 sessionInfo()
 
 ## Create a directory in tempdir
-path <- tempfile(pattern="git2r-")
+path <- tempfile(pattern = "git2r-")
 dir.create(file.path(path, "bundle", "R"), recursive = TRUE)
 
 ## Initialize a repository
 repo <- init(file.path(path, "bundle"))
-config(repo, user.name="Alice", user.email="alice@example.org")
+config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Create a DESCRIPTION file
 writeLines(c(
@@ -52,4 +52,4 @@ bundle_r_package(repo)
 tools::assertError(bundle_r_package(repo))
 
 ## Cleanup
-unlink(path, recursive=TRUE)
+unlink(path, recursive = TRUE)

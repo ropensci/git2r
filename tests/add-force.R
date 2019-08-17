@@ -20,12 +20,12 @@ library("git2r")
 sessionInfo()
 
 ## Create a directory in tempdir
-path <- tempfile(pattern="git2r-")
+path <- tempfile(pattern = "git2r-")
 dir.create(path)
 
 ## Initialize a repository
 repo <- init(path)
-config(repo, user.name="Alice", user.email="alice@example.org")
+config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Create a '.gitignore' file
 writeLines("test.txt", file.path(path, ".gitignore"))
@@ -72,4 +72,4 @@ commit(repo, "Second commit message")
 stopifnot(identical(status(repo, ignored = TRUE), s_3))
 
 ## Cleanup
-unlink(path, recursive=TRUE)
+unlink(path, recursive = TRUE)

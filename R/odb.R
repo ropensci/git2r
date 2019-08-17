@@ -66,11 +66,11 @@
 odb_blobs <- function(repo = ".") {
     blobs <- .Call(git2r_odb_blobs, lookup_repository(repo))
     blobs <- data.frame(blobs, stringsAsFactors = FALSE)
-    blobs <- blobs[order(blobs$when),]
+    blobs <- blobs[order(blobs$when), ]
     index <- paste0(blobs$sha, ":", blobs$path, "/", blobs$name)
-    blobs <- blobs[!duplicated(index),]
+    blobs <- blobs[!duplicated(index), ]
     rownames(blobs) <- NULL
-    blobs$when <- as.POSIXct(blobs$when, origin="1970-01-01", tz="GMT")
+    blobs$when <- as.POSIXct(blobs$when, origin = "1970-01-01", tz = "GMT")
     blobs
 }
 

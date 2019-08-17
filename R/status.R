@@ -86,7 +86,7 @@ print.git_status <- function(x, ...) {
     display_status <- function(title, section) {
         cat(sprintf("%s:\n", title))
 
-        for(i in seq_len(length(section))) {
+        for (i in seq_len(length(section))) {
             label <- names(section)[i]
             label <- paste0(toupper(substr(label, 1, 1)),
                             substr(label, 2, nchar(label)))

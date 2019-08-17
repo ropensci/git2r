@@ -20,7 +20,7 @@ library("git2r")
 sessionInfo()
 
 ## Create a directory in tempdir
-path <- tempfile(pattern="git2r-")
+path <- tempfile(pattern = "git2r-")
 dir.create(path)
 
 ## Initialize a repository
@@ -61,4 +61,4 @@ stopifnot(identical(b$name, c("copy.txt", "test.txt", "test.txt")))
 stopifnot(identical(b$author, c("Alice", "Alice", "Alice")))
 
 ## Cleanup
-unlink(path, recursive=TRUE)
+unlink(path, recursive = TRUE)

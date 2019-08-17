@@ -20,16 +20,16 @@ library("git2r")
 sessionInfo()
 
 ## Create a directory in tempdir
-path <- tempfile(pattern="git2r-")
+path <- tempfile(pattern = "git2r-")
 dir.create(path)
 
 ## Initialize a repository
 repo <- init(path)
-config(repo, user.name="Alice", user.email="alice@example.org")
+config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Create first commit
 writeLines("Hello world!", file.path(path, "test.txt"))
-add(repo, 'test.txt')
+add(repo, "test.txt")
 commit.1 <- commit(repo, "First commit message")
 
 ## Edit file and checkout
@@ -62,14 +62,14 @@ stopifnot(identical(status_obs_2, status_exp_2))
 
 ## Create second commit
 writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test.txt"))
-add(repo, 'test.txt')
+add(repo, "test.txt")
 commit.2 <- commit(repo, "Second commit message")
 tag(repo, "commit.2", "Tag message")
 
 ## Create third commit
 writeLines(c("Hello world!", "HELLO WORLD!", "HeLlO wOrLd!"),
            file.path(path, "test.txt"))
-add(repo, 'test.txt')
+add(repo, "test.txt")
 commit.3 <- commit(repo, "Third commit message")
 
 ## Check HEAD
@@ -103,4 +103,4 @@ if (!is.null(wd))
     setwd(wd)
 
 ## Cleanup
-unlink(path, recursive=TRUE)
+unlink(path, recursive = TRUE)

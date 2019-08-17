@@ -20,7 +20,7 @@ library("git2r")
 sessionInfo()
 
 ## Initialize a temporary repository
-path <- tempfile(pattern="git2r-")
+path <- tempfile(pattern = "git2r-")
 dir.create(path)
 repo <- init(path)
 
@@ -77,4 +77,4 @@ summary(last_commit(repo))
 stopifnot(!file.exists(file.path(path, ".git", "MERGE_HEAD")))
 
 ## Cleanup
-unlink(path, recursive=TRUE)
+unlink(path, recursive = TRUE)

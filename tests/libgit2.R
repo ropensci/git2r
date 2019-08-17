@@ -30,7 +30,7 @@ tools::assertError(ssl_cert_locations())
 if (identical(Sys.getenv("R_COVR"), "true")) {
     if (isTRUE(libgit2_features()$https)) {
         ## Create a directory in tempdir
-        path <- tempfile(pattern="git2r-")
+        path <- tempfile(pattern = "git2r-")
         dir.create(path)
         stopifnot(is.null(ssl_cert_locations(path = path)))
         unlink(path)

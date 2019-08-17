@@ -39,7 +39,7 @@ plot.git_repository <- function(x,
                                 breaks = c("month", "year", "quarter", "week", "day"),
                                 main = NULL,
                                 ...) {
-    breaks = match.arg(breaks)
+    breaks <- match.arg(breaks)
 
     df <- contributions(x, breaks = breaks, by = "commits")
     tmp <- data.frame(when = seq(from = min(df$when),

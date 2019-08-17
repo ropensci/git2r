@@ -58,7 +58,7 @@ references <- function(repo = ".") {
 ##' @export
 format.git_reference <- function(x, ...) {
     if (identical(x$type, 1L))
-        return(sprintf("[%s] %s", substr(x$sha, 1 , 6), x$shorthand))
+        return(sprintf("[%s] %s", substr(x$sha, 1, 6), x$shorthand))
     sprintf("%s => %s", x$name, x$target)
 }
 

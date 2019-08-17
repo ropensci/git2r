@@ -189,7 +189,7 @@ tags <- function(repo = ".") {
 
 ##' @export
 format.git_tag <- function(x, ...) {
-    sprintf("[%s] %s", substr(x$target, 1 , 6), x$name)
+    sprintf("[%s] %s", substr(x$target, 1, 6), x$name)
 }
 
 ##' @export

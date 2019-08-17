@@ -154,11 +154,11 @@ cred_user_pass <- function(username = NULL, password = NULL) {
 ##' repo <- repository("git2r")
 ##' push(repo, credentials = cred)
 ##' }
-cred_ssh_key <-  function (publickey = ssh_path("id_rsa.pub"),
-                           privatekey = ssh_path("id_rsa"),
-                           passphrase = character(0)) {
-  publickey = normalizePath(publickey, mustWork = TRUE)
-  privatekey = normalizePath(privatekey, mustWork = TRUE)
+cred_ssh_key <- function(publickey = ssh_path("id_rsa.pub"),
+                         privatekey = ssh_path("id_rsa"),
+                         passphrase = character(0)) {
+  publickey <- normalizePath(publickey, mustWork = TRUE)
+  privatekey <- normalizePath(privatekey, mustWork = TRUE)
 
   if (length(passphrase) == 0) {
     if (ssh_key_needs_passphrase(privatekey)) {

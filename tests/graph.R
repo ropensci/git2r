@@ -20,12 +20,12 @@ library("git2r")
 sessionInfo()
 
 ## Create a directory in tempdir
-path <- tempfile(pattern="git2r-")
+path <- tempfile(pattern = "git2r-")
 dir.create(path)
 
 ## Initialize a repository
 repo <- init(path)
-config(repo, user.name="Alice", user.email="alice@example.org")
+config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Create a file and commit
 writeLines("Hello world!", file.path(path, "test.txt"))
@@ -48,4 +48,4 @@ stopifnot(identical(ahead_behind(commit_1, branches(repo)[[1]]), c(0L, 1L)))
 stopifnot(identical(ahead_behind(branches(repo)[[1]], commit_1), c(1L, 0L)))
 
 ## Cleanup
-unlink(path, recursive=TRUE)
+unlink(path, recursive = TRUE)

@@ -60,7 +60,7 @@ lines_per_file <- function(diff) {
                 }
             }
         }
-        list(file=x$new_file, del=del, add=add)
+        list(file = x$new_file, del = del, add = add)
     })
 }
 
@@ -86,7 +86,7 @@ summary.git_diff <- function(object, ...) {
                     ifelse(hpf > 0, " hunk",
                            " hunk (binary file)"))
         phpf <- paste0("  in ", format(hpf), hunk_txt)
-        cat("Summary:", paste0(plpf, phpf), sep="\n")
+        cat("Summary:", paste0(plpf, phpf), sep = "\n")
     } else {
         cat("No changes.\n")
     }

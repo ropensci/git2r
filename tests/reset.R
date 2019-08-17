@@ -20,12 +20,12 @@ library("git2r")
 sessionInfo()
 
 ## Create a directory in tempdir
-path <- tempfile(pattern="git2r-")
+path <- tempfile(pattern = "git2r-")
 dir.create(path)
 
 ## Initialize a repository
 repo <- init(path)
-config(repo, user.name="Alice", user.email="alice@example.org")
+config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Create a file
 writeLines("Hello world!", file.path(path, "test-1.txt"))
@@ -76,7 +76,7 @@ commit_1 <- commit(repo, "Commit message")
 ## Make one more commit
 writeLines(c("Hello world!", "HELLO WORLD!", "hello world!"),
            file.path(path, "test-1.txt"))
-add(repo, 'test-1.txt')
+add(repo, "test-1.txt")
 commit(repo, "Next commit message")
 
 ## Create one more file
@@ -114,7 +114,7 @@ stopifnot(identical(length(commits(repo)), 2L))
 stopifnot(identical(commits(repo)[[1]], commit_1))
 
 ## 'hard' reset to first commit
-add(repo, 'test-1.txt')
+add(repo, "test-1.txt")
 commit(repo, "Next commit message")
 reset(commit_1, "hard")
 hard_exp <- structure(list(staged = structure(list(),
@@ -131,4 +131,4 @@ stopifnot(identical(length(commits(repo)), 2L))
 stopifnot(identical(commits(repo)[[1]], commit_1))
 
 ## Cleanup
-unlink(path, recursive=TRUE)
+unlink(path, recursive = TRUE)

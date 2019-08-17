@@ -20,12 +20,12 @@ library("git2r")
 sessionInfo()
 
 ## Create directory for repository in tempdir
-path <- tempfile(pattern="git2r-")
+path <- tempfile(pattern = "git2r-")
 dir.create(path)
 
 ## Create repository
 repo <- init(path)
-config(repo, user.name="Alice", user.email="alice@example.org")
+config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Add changes to repo
 writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -61,4 +61,4 @@ r <- reflog(repo)
 stopifnot(identical(r[[1]]$message, "merge test: Fast-forward"))
 
 ## Cleanup
-unlink(path, recursive=TRUE)
+unlink(path, recursive = TRUE)

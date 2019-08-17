@@ -422,7 +422,7 @@ is_local <- function(branch) {
 print.git_branch <- function(x, ...) {
     sha <- branch_target(x)
     if (!is.na(sha)) {
-        cat(sprintf("[%s] ", substr(sha, 1 , 6)))
+        cat(sprintf("[%s] ", substr(sha, 1, 6)))
     }
 
     if (is_local(x)) {

@@ -20,12 +20,12 @@ library("git2r")
 sessionInfo()
 
 ## Create a directory in tempdir
-path <- tempfile(pattern="git2r-")
+path <- tempfile(pattern = "git2r-")
 dir.create(path)
 
 ## Initialize a repository
 repo <- init(path)
-config(repo, user.name="Alice", user.email="alice@example.org")
+config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Add files
 invisible(lapply(file.path(path, letters[1:4]), writeLines, text = ""))
@@ -43,4 +43,4 @@ tryCatch(rm_file(repo, letters[2:3]), warning = function(w) {stop(w)})
 rm_file(repo, file.path(path, letters[4]))
 
 ## Cleanup
-unlink(path, recursive=TRUE)
+unlink(path, recursive = TRUE)

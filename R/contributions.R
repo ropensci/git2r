@@ -86,7 +86,7 @@ contributions <- function(repo = ".",
 
     ctbs <- .Call(git2r_revwalk_contributions, lookup_repository(repo),
                   TRUE, TRUE, FALSE)
-    ctbs$when <- as.POSIXct(ctbs$when, origin="1970-01-01", tz="GMT")
+    ctbs$when <- as.POSIXct(ctbs$when, origin = "1970-01-01", tz = "GMT")
     ctbs$when <- as.POSIXct(cut(ctbs$when, breaks = breaks))
 
     if (identical(by, "commits")) {
@@ -97,7 +97,7 @@ contributions <- function(repo = ".",
         ## Create an index and tabulate
         ctbs$index <- paste0(ctbs$when, ctbs$author, ctbs$email)
         count <- as.data.frame(table(ctbs$index),
-                               stringsAsFactors=FALSE)
+                               stringsAsFactors = FALSE)
         names(count) <- c("index", "n")
 
         ## Match counts and clean result
@@ -105,7 +105,7 @@ contributions <- function(repo = ".",
         ctbs$n <- count$n[match(ctbs$index, count$index)]
         ctbs <- unique(ctbs[, c("when", "author", "n")])
         ctbs$when <- as.Date(substr(as.character(ctbs$when), 1, 10))
-        ctbs <- ctbs[order(ctbs$when, ctbs$author),]
+        ctbs <- ctbs[order(ctbs$when, ctbs$author), ]
         row.names(ctbs) <- NULL
     }
 

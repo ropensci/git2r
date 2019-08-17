@@ -20,18 +20,18 @@ library("git2r")
 sessionInfo()
 
 ## Create a directory in tempdir
-path <- tempfile(pattern="git2r-")
+path <- tempfile(pattern = "git2r-")
 dir.create(path)
 
 ## Initialize a repository
 repo <- init(path)
-config(repo, user.name="Alice", user.email="alice@example.org")
+config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Create a file
 writeLines("Hello world!", file.path(path, "test-1.txt"))
 
 ## add and commit
-add(repo, 'test-1.txt')
+add(repo, "test-1.txt")
 commit(repo, "Commit message")
 
 ## Pop stash
@@ -44,7 +44,7 @@ stopifnot(identical(c("Hello world!", "HELLO WORLD!"),
                     readLines(file.path(path, "test-1.txt"))))
 
 ## Make one more commit
-add(repo, 'test-1.txt')
+add(repo, "test-1.txt")
 commit(repo, "Next commit message")
 
 ## Check that there are no stashes
@@ -64,7 +64,7 @@ stash_drop(repo, 1)
 stopifnot(identical(stash_list(repo), list()))
 
 ## Make one more commit
-add(repo, 'test-1.txt')
+add(repo, "test-1.txt")
 commit(repo, "Apply stash commit message")
 
 ## Create one more file
@@ -108,4 +108,4 @@ if (!is.null(wd))
 stash_drop(stash_list(repo)[[1]])
 
 ## Cleanup
-unlink(path, recursive=TRUE)
+unlink(path, recursive = TRUE)

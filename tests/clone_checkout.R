@@ -20,8 +20,8 @@ library("git2r")
 sessionInfo()
 
 ## Create 2 directories in tempdir
-path_src <- tempfile(pattern="git2r-")
-path_tgt <- tempfile(pattern="git2r-")
+path_src <- tempfile(pattern = "git2r-")
+path_tgt <- tempfile(pattern = "git2r-")
 dir.create(path_tgt)
 dir.create(path_src)
 
@@ -60,5 +60,5 @@ stopifnot(identical(commit_src$message, commit_tgt$message))
 stopifnot(!identical(commit_src$repo, commit_tgt$repo))
 
 ## Cleanup
-unlink(path_tgt, recursive=TRUE)
-unlink(path_src, recursive=TRUE)
+unlink(path_tgt, recursive = TRUE)
+unlink(path_src, recursive = TRUE)

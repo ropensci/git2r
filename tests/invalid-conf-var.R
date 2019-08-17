@@ -20,7 +20,7 @@ library("git2r")
 sessionInfo()
 
 ## Create a directory in tempdir
-path <- tempfile(pattern="git2r-")
+path <- tempfile(pattern = "git2r-")
 dir.create(path)
 
 ## Initialize a repository
@@ -46,4 +46,4 @@ cfg_obs <- cfg_obs[c("user.name", "user.email", "lol")]
 stopifnot(identical(cfg_obs, cfg_exp))
 
 ## Cleanup
-unlink(path, recursive=TRUE)
+unlink(path, recursive = TRUE)

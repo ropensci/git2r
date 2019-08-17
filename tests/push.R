@@ -20,8 +20,8 @@ library("git2r")
 sessionInfo()
 
 ## Create 2 directories in tempdir
-path_bare <- tempfile(pattern="git2r-")
-path_repo <- tempfile(pattern="git2r-")
+path_bare <- tempfile(pattern = "git2r-")
+path_repo <- tempfile(pattern = "git2r-")
 
 dir.create(path_bare)
 dir.create(path_repo)
@@ -35,7 +35,7 @@ stopifnot(identical(is_bare(bare_repo), TRUE))
 stopifnot(identical(is_bare(repo), FALSE))
 
 ## Config repositories
-config(repo, user.name="Alice", user.email="alice@example.org")
+config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Add changes to repo
 writeLines("Hello world", con = file.path(path_repo, "test.txt"))
@@ -110,5 +110,5 @@ push(repo, "origin", "refs/heads/master", set_upstream = TRUE)
 stopifnot(!is.null(branch_get_upstream(repository_head(repo))))
 
 ## Cleanup
-unlink(path_bare, recursive=TRUE)
-unlink(path_repo, recursive=TRUE)
+unlink(path_bare, recursive = TRUE)
+unlink(path_repo, recursive = TRUE)
