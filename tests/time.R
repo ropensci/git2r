@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -24,7 +24,7 @@ git_t <- structure(list(time = 1395567947, offset = 60),
                    class = "git_time")
 stopifnot(identical(as.character(git_t), "2014-03-23 09:45:47"))
 stopifnot(identical(as.POSIXct(git_t),
-                    as.POSIXct(1395567947, origin="1970-01-01", tz="GMT")))
+                    as.POSIXct(1395567947, origin = "1970-01-01", tz = "GMT")))
 stopifnot(identical(print(git_t), git_t))
 
-as.POSIXct(1395567947, origin="1970-01-01", tz = "-03")
+as.POSIXct(1395567947, origin = "1970-01-01", tz = "-03")

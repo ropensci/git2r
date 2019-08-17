@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -14,7 +14,8 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library("git2r")
+library(git2r)
+source("util/check.R")
 
 ## For debugging
 sessionInfo()
@@ -28,10 +29,9 @@ repo <- init(path)
 config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Status case 1
-status_exp_1 <- structure(list(staged = structure(list(), .Names = character(0)),
-                               unstaged = structure(list(), .Names = character(0)),
-                               untracked = structure(list(), .Names = character(0))),
-                          .Names = c("staged", "unstaged", "untracked"),
+status_exp_1 <- structure(list(staged = empty_named_list(),
+                               unstaged = empty_named_list(),
+                               untracked = empty_named_list()),
                           class = "git_status")
 status_obs_1 <- status(repo)
 stopifnot(identical(print(status_obs_1), status_obs_1))
@@ -42,11 +42,10 @@ stopifnot(identical(capture.output(status(repo)),
                     "working directory clean"))
 
 ## Status case 2, include ignored files
-status_exp_2 <- structure(list(staged = structure(list(), .Names = character(0)),
-                               unstaged = structure(list(), .Names = character(0)),
-                               untracked = structure(list(), .Names = character(0)),
-                               ignored = structure(list(), .Names = character(0))),
-                          .Names = c("staged", "unstaged", "untracked", "ignored"),
+status_exp_2 <- structure(list(staged = empty_named_list(),
+                               unstaged = empty_named_list(),
+                               untracked = empty_named_list(),
+                               ignored = empty_named_list()),
                           class = "git_status")
 status_obs_2 <- status(repo, ignored = TRUE)
 status_obs_2
@@ -63,15 +62,12 @@ writeLines("File-3", file.path(path, "test-3.txt"))
 writeLines("File-4", file.path(path, "test-4.txt"))
 
 ## Status case 3: 4 untracked files
-status_exp_3 <- structure(list(staged = structure(list(), .Names = character(0)),
-                               unstaged = structure(list(), .Names = character(0)),
-                               untracked = structure(list(
-                                   untracked = "test-1.txt",
-                                   untracked = "test-2.txt",
-                                   untracked = "test-3.txt",
-                                   untracked = "test-4.txt"),
-                                   .Names = c("untracked", "untracked", "untracked", "untracked"))),
-                          .Names = c("staged", "unstaged", "untracked"),
+status_exp_3 <- structure(list(staged = empty_named_list(),
+                               unstaged = empty_named_list(),
+                               untracked = list(untracked = "test-1.txt",
+                                                untracked = "test-2.txt",
+                                                untracked = "test-3.txt",
+                                                untracked = "test-4.txt")),
                           class = "git_status")
 status_obs_3 <- status(repo)
 status_obs_3
@@ -84,13 +80,10 @@ add(repo, c("test-1.txt", "test-2.txt"))
 commit(repo, "Commit message")
 
 ## Status case 4: 2 untracked files
-status_exp_4 <- structure(list(staged = structure(list(), .Names = character(0)),
-                               unstaged = structure(list(), .Names = character(0)),
-                               untracked = structure(list(
-                                   untracked = "test-3.txt",
-                                   untracked = "test-4.txt"),
-                                   .Names = c("untracked", "untracked"))),
-                          .Names = c("staged", "unstaged", "untracked"),
+status_exp_4 <- structure(list(staged = empty_named_list(),
+                               unstaged = empty_named_list(),
+                               untracked = list(untracked = "test-3.txt",
+                                                untracked = "test-4.txt")),
                           class = "git_status")
 status_obs_4 <- status(repo)
 status_obs_4
@@ -106,11 +99,10 @@ writeLines(c("File-2", "Hello world"), file.path(path, "test-2.txt"))
 add(repo, "test-1.txt")
 
 ## Status case 5: 1 staged file, 1 unstaged file and 2 untracked files
-status_exp_5 <- structure(list(staged = structure(list(modified = "test-1.txt"), .Names = "modified"),
-                               unstaged = structure(list(modified = "test-2.txt"), .Names = "modified"),
-                               untracked = structure(list(untracked = "test-3.txt", untracked = "test-4.txt"),
-                                   .Names = c("untracked", "untracked"))),
-                          .Names = c("staged", "unstaged", "untracked"),
+status_exp_5 <- structure(list(staged = list(modified = "test-1.txt"),
+                               unstaged = list(modified = "test-2.txt"),
+                               untracked = list(untracked = "test-3.txt",
+                                                untracked = "test-4.txt")),
                           class = "git_status")
 status_obs_5 <- status(repo)
 status_obs_5
@@ -123,14 +115,13 @@ writeLines("test-4.txt", file.path(path, ".gitignore"))
 
 ## Status case 6: 1 staged file, 1 unstaged file, 2 untracked files
 ## and 1 ignored file
-status_exp_6 <- structure(list(staged = structure(list(modified = "test-1.txt"), .Names = "modified"),
-                               unstaged = structure(list(modified = "test-2.txt"), .Names = "modified"),
-                               untracked = structure(list(untracked = ".gitignore", untracked = "test-3.txt"),
-                                   .Names = c("untracked", "untracked")),
-                               ignored = structure(list(ignored = "test-4.txt"), .Names = "ignored")),
-                          .Names = c("staged", "unstaged", "untracked", "ignored"),
+status_exp_6 <- structure(list(staged = list(modified = "test-1.txt"),
+                               unstaged = list(modified = "test-2.txt"),
+                               untracked = list(untracked = ".gitignore",
+                                                untracked = "test-3.txt"),
+                               ignored = list(ignored = "test-4.txt")),
                           class = "git_status")
-status_obs_6 <- status(repo, ignore=TRUE)
+status_obs_6 <- status(repo, ignore = TRUE)
 status_obs_6
 str(status_exp_6)
 str(status_obs_6)

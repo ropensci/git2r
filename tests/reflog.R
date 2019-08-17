@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -35,12 +35,12 @@ writeLines("Hello world!", file.path(path, "test.txt"))
 
 ## add and commit
 add(repo, "test.txt")
-commit.1 <- commit(repo, "Commit message")
+commit_1 <- commit(repo, "Commit message")
 
 ## Check that reflog is not empry
 stopifnot(identical(length(reflog(repo)), 1L))
 reflog_entry <- reflog(repo)[[1]]
-stopifnot(identical(sha(reflog_entry), sha(commit.1)))
+stopifnot(identical(sha(reflog_entry), sha(commit_1)))
 stopifnot(identical(reflog_entry$refname, "HEAD"))
 stopifnot(identical(reflog_entry$index, 0L))
 stopifnot(identical(reflog_entry$committer$email, "alice@example.org"))

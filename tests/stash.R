@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -76,7 +76,7 @@ stopifnot(identical(stash_list(repo), list()))
 ## Stash
 stash(repo)
 stopifnot(identical(stash_list(repo), list()))
-s <- stash(repo, untracked=TRUE)
+s <- stash(repo, untracked = TRUE)
 stopifnot(identical(print(s), s))
 summary(s)
 stopifnot(identical(length(stash_list(repo)), 1L))
@@ -95,7 +95,7 @@ tools::assertError(stash_drop(repo, 0.5))
 writeLines("Hello world!", file.path(path, "test-3.txt"))
 
 ## Create stash in repository
-stash(repo, untracked=TRUE)
+stash(repo, untracked = TRUE)
 stopifnot(identical(length(stash_list(repo)), 1L))
 
 ## Check stash_list method with missing repo argument

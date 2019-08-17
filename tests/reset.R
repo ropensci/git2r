@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -14,7 +14,8 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library("git2r")
+library(git2r)
+source("util/check.R")
 
 ## For debugging
 sessionInfo()
@@ -34,19 +35,17 @@ writeLines("Hello world!", file.path(path, "test-1.txt"))
 add(repo, "test-1.txt")
 stopifnot(identical(
     status(repo),
-    structure(list(
-        staged = list(new = "test-1.txt"),
-        unstaged = structure(list(), .Names = character(0)),
-        untracked = structure(list(), .Names = character(0))),
-        class = "git_status")))
+    structure(list(staged = list(new = "test-1.txt"),
+                   unstaged = empty_named_list(),
+                   untracked = empty_named_list()),
+              class = "git_status")))
 reset(repo, path = "test-1.txt")
 stopifnot(identical(
     status(repo),
-    structure(list(
-        staged = structure(list(), .Names = character(0)),
-        unstaged = structure(list(), .Names = character(0)),
-        untracked = list(untracked = "test-1.txt")),
-        class = "git_status")))
+    structure(list(staged = empty_named_list(),
+                   unstaged = empty_named_list(),
+                   untracked = list(untracked = "test-1.txt")),
+              class = "git_status")))
 
 ## Add and reset a non-empty repository using a path
 add(repo, "test-1.txt")
@@ -55,19 +54,17 @@ writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test-1.txt"))
 add(repo, "test-1.txt")
 stopifnot(identical(
     status(repo),
-    structure(list(
-        staged = list(modified = "test-1.txt"),
-        unstaged = structure(list(), .Names = character(0)),
-        untracked = structure(list(), .Names = character(0))),
-        class = "git_status")))
+    structure(list(staged = list(modified = "test-1.txt"),
+                   unstaged = empty_named_list(),
+                   untracked = empty_named_list()),
+              class = "git_status")))
 reset(repo, path = "test-1.txt")
 stopifnot(identical(
     status(repo),
-    structure(list(
-        staged = structure(list(), .Names = character(0)),
-        unstaged = list(modified = "test-1.txt"),
-        untracked = structure(list(), .Names = character(0))),
-        class = "git_status")))
+    structure(list(staged = empty_named_list(),
+                   unstaged = list(modified = "test-1.txt"),
+                   untracked = empty_named_list()),
+              class = "git_status")))
 
 ## add and commit
 add(repo, "test-1.txt")
@@ -84,13 +81,9 @@ writeLines("Hello world!", file.path(path, "test-2.txt"))
 
 ## 'soft' reset to first commit
 reset(commit_1)
-soft_exp <- structure(list(staged = structure(list(modified = "test-1.txt"),
-                               .Names = "modified"),
-                           unstaged = structure(list(),
-                               .Names = character(0)),
-                           untracked = structure(list(untracked = "test-2.txt"),
-                               .Names = "untracked")),
-                      .Names = c("staged", "unstaged", "untracked"),
+soft_exp <- structure(list(staged = list(modified = "test-1.txt"),
+                           unstaged = empty_named_list(),
+                           untracked = list(untracked = "test-2.txt")),
                       class = "git_status")
 soft_obs <- status(repo)
 stopifnot(identical(soft_obs, soft_exp))
@@ -100,13 +93,9 @@ stopifnot(identical(commits(repo)[[1]], commit_1))
 ## 'mixed' reset to first commit
 commit(repo, "Next commit message")
 reset(commit_1, "mixed")
-mixed_exp <- structure(list(staged = structure(list(),
-                                .Names = character(0)),
-                            unstaged = structure(list(modified = "test-1.txt"),
-                                .Names = "modified"),
-                            untracked = structure(list(untracked = "test-2.txt"),
-                                .Names = "untracked")),
-                       .Names = c("staged", "unstaged", "untracked"),
+mixed_exp <- structure(list(staged = empty_named_list(),
+                            unstaged = list(modified = "test-1.txt"),
+                            untracked = list(untracked = "test-2.txt")),
                        class = "git_status")
 mixed_obs <- status(repo)
 stopifnot(identical(mixed_obs, mixed_exp))
@@ -117,13 +106,9 @@ stopifnot(identical(commits(repo)[[1]], commit_1))
 add(repo, "test-1.txt")
 commit(repo, "Next commit message")
 reset(commit_1, "hard")
-hard_exp <- structure(list(staged = structure(list(),
-                               .Names = character(0)),
-                           unstaged = structure(list(),
-                               .Names = character(0)),
-                           untracked = structure(list(untracked = "test-2.txt"),
-                               .Names = "untracked")),
-                      .Names = c("staged", "unstaged", "untracked"),
+hard_exp <- structure(list(staged = empty_named_list(),
+                           unstaged = empty_named_list(),
+                           untracked = list(untracked = "test-2.txt")),
                       class = "git_status")
 hard_obs <- status(repo)
 stopifnot(identical(hard_obs, hard_exp))

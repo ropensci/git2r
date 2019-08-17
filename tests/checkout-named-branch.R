@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -33,11 +33,12 @@ bare_repo <- init(path_bare, bare = TRUE)
 
 ## Clone to repo 1
 repo_1 <- clone(path_bare, path_repo_1)
-config(repo_1, user.name="Alice", user.email="alice@example.org")
+config(repo_1, user.name = "Alice", user.email = "alice@example.org")
 
 ## Add changes to repo 1 and push to bare
-writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-           con = file.path(path_repo_1, "test.txt"))
+writeLines(
+    "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+    con = file.path(path_repo_1, "test.txt"))
 add(repo_1, "test.txt")
 commit(repo_1, "First commit message")
 push(repo_1, "origin", "refs/heads/master")
@@ -51,27 +52,30 @@ tools::assertError(checkout(repo_1, "dev"))
 checkout(repo_1, "dev", create = TRUE)
 
 ## Add changes to dev branch in repo 1 and push to bare
-writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-             "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
-           con = file.path(path_repo_1, "test.txt"))
+writeLines(
+    c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+      "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
+    con = file.path(path_repo_1, "test.txt"))
 add(repo_1, "test.txt")
 commit(repo_1, "Second commit message")
 push(repo_1, "origin", "refs/heads/dev")
 
 ## Clone to repo 2
 repo_2 <- clone(path_bare, path_repo_2)
-config(repo_2, user.name="Bob", user.email="bob@example.org")
+config(repo_2, user.name = "Bob", user.email = "bob@example.org")
 
-stopifnot(identical("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-                    readLines(file.path(path_repo_2, "test.txt"))))
+stopifnot(identical(
+    "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+    readLines(file.path(path_repo_2, "test.txt"))))
 
 ## Checkout dev branch
 checkout(repo_2, "dev")
 
 ## Check content of file
-stopifnot(identical(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-                      "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
-                    readLines(file.path(path_repo_2, "test.txt"))))
+stopifnot(identical(
+    c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+      "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
+    readLines(file.path(path_repo_2, "test.txt"))))
 
 ## Checkout previous branch
 checkout(repo_2, "-")

@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -32,7 +32,7 @@ writeLines("Hello world!", file.path(path, "test.txt"))
 
 ## add and commit
 add(repo, "test.txt")
-commit.1 <- commit(repo, "Commit message")
+commit_1 <- commit(repo, "Commit message")
 
 ## Check branch
 stopifnot(identical(length(branches(repo)), 1L))
@@ -57,7 +57,7 @@ b <- repository_head(repo)
 stopifnot(identical(print(b), b))
 
 ## Create a branch
-b <- branch_create(commit.1, name = "test")
+b <- branch_create(commit_1, name = "test")
 stopifnot(identical(b$name, "test"))
 stopifnot(identical(b$type, 1L))
 stopifnot(identical(sha(b), branch_target(b)))
@@ -72,17 +72,17 @@ stopifnot(identical(is_branch(5), FALSE))
 ## Add one more commit
 writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test.txt"))
 add(repo, "test.txt")
-commit.2 <- commit(repo, "Another commit message")
+commit_2 <- commit(repo, "Another commit message")
 
 ## Now the first branch should have moved on
 stopifnot(!identical(branch_target(branches(repo)[[1]]),
                      branch_target(branches(repo)[[2]])))
 
 ## Create a branch with the same name should fail
-tools::assertError(branch_create(commit.2, name = "test"))
+tools::assertError(branch_create(commit_2, name = "test"))
 
 ## Force it and check the branches are identical again
-b <- branch_create(commit.2, name = "test", force = TRUE)
+b <- branch_create(commit_2, name = "test", force = TRUE)
 stopifnot(identical(branch_target(branches(repo)[[1]]),
                     branch_target(branches(repo)[[2]])))
 
@@ -119,18 +119,18 @@ stopifnot(identical(length(branches(repo)), 1L))
 writeLines(c("Hello world!", "HELLO WORLD!", "hello world"),
            file.path(path, "test.txt"))
 add(repo, "test.txt")
-commit.3 <- commit(repo, "Another third commit message")
+commit_3 <- commit(repo, "Another third commit message")
 
 ## Create and test renaming of branches
-b.1 <- branch_create(commit.1, name = "test-1")
-b.2 <- branch_create(commit.2, name = "test-2")
-b.3 <- branch_create(commit.3, name = "test-3")
+b_1 <- branch_create(commit_1, name = "test-1")
+b_2 <- branch_create(commit_2, name = "test-2")
+b_3 <- branch_create(commit_3, name = "test-3")
 stopifnot(identical(length(branches(repo)), 4L))
-b.1 <- branch_rename(b.1, name = "test-1-new-name")
+b_1 <- branch_rename(b_1, name = "test-1-new-name")
 stopifnot(identical(length(branches(repo)), 4L))
-stopifnot(identical(b.1$name, "test-1-new-name"))
-tools::assertError(branch_rename(b.1, name = "test-2"))
-branch_rename(b.1, name = "test-2", force = TRUE)
+stopifnot(identical(b_1$name, "test-1-new-name"))
+tools::assertError(branch_rename(b_1, name = "test-2"))
+branch_rename(b_1, name = "test-2", force = TRUE)
 stopifnot(identical(length(branches(repo)), 3L))
 
 ## Check branches method with missing repo argument

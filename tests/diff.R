@@ -36,8 +36,8 @@ commit(repo, "Commit message")
 writeLines("Hello again!\nHere is a second line\nAnd a third",
            file.path(path, "test.txt"))
 diff_1 <- diff(repo)
-diff(repo, as_char=TRUE)
-diff(repo, as_char=TRUE, filename = file.path(path, "test.diff"))
+diff(repo, as_char = TRUE)
+diff(repo, as_char = TRUE, filename = file.path(path, "test.diff"))
 
 stopifnot(identical(diff_1$old, "index"))
 stopifnot(identical(diff_1$new, "workdir"))
@@ -49,9 +49,9 @@ stopifnot(identical(length(diff_1$files[[1]]$hunks[[1]]$lines), 4L))
 ## TODO: check actual diff
 
 ## Diff between index and HEAD is empty
-diff_2 <- diff(repo, index=TRUE)
-diff(repo, as_char=TRUE)
-diff(repo, as_char=TRUE, filename = file.path(path, "test.diff"))
+diff_2 <- diff(repo, index = TRUE)
+diff(repo, as_char = TRUE)
+diff(repo, as_char = TRUE, filename = file.path(path, "test.diff"))
 
 stopifnot(identical(diff_2$old, "HEAD"))
 stopifnot(identical(diff_2$new, "index"))
@@ -59,8 +59,8 @@ stopifnot(identical(diff_2$files, list()))
 
 ## Diff between tree and working dir, same as diff_1
 diff_3 <- diff(tree(commits(repo)[[1]]))
-diff(repo, as_char=TRUE)
-diff(repo, as_char=TRUE, filename = file.path(path, "test.diff"))
+diff(repo, as_char = TRUE)
+diff(repo, as_char = TRUE, filename = file.path(path, "test.diff"))
 
 stopifnot(identical(diff_3$old, tree(commits(repo)[[1]])))
 stopifnot(identical(diff_3$new, "workdir"))
@@ -69,18 +69,18 @@ stopifnot(identical(print(diff_3), diff_3))
 
 ## Add changes, diff between index and HEAD is the same as diff_1
 add(repo, "test.txt")
-diff_4 <- diff(repo, index=TRUE)
-diff(repo, as_char=TRUE)
-diff(repo, as_char=TRUE, filename = file.path(path, "test.diff"))
+diff_4 <- diff(repo, index = TRUE)
+diff(repo, as_char = TRUE)
+diff(repo, as_char = TRUE, filename = file.path(path, "test.diff"))
 
 stopifnot(identical(diff_4$old, "HEAD"))
 stopifnot(identical(diff_4$new, "index"))
 stopifnot(identical(diff_4$files, diff_1$files))
 
 ## Diff between tree and index
-diff_5 <- diff(tree(commits(repo)[[1]]), index=TRUE)
-diff(repo, as_char=TRUE)
-diff(repo, as_char=TRUE, filename = file.path(path, "test.diff"))
+diff_5 <- diff(tree(commits(repo)[[1]]), index = TRUE)
+diff(repo, as_char = TRUE)
+diff(repo, as_char = TRUE, filename = file.path(path, "test.diff"))
 
 stopifnot(identical(diff_5$old, tree(commits(repo)[[1]])))
 stopifnot(identical(diff_5$new, "index"))
@@ -91,8 +91,8 @@ commit(repo, "Second commit")
 tree_1 <- tree(commits(repo)[[2]])
 tree_2 <- tree(commits(repo)[[1]])
 diff_6 <- diff(tree_1, tree_2)
-diff(repo, as_char=TRUE)
-diff(repo, as_char=TRUE, filename = file.path(path, "test.diff"))
+diff(repo, as_char = TRUE)
+diff(repo, as_char = TRUE, filename = file.path(path, "test.diff"))
 
 stopifnot(identical(diff_6$old, tree_1))
 stopifnot(identical(diff_6$new, tree_2))
@@ -108,12 +108,12 @@ stopifnot(identical(length(diff_6), 1L))
 
 ## Binary files
 set.seed(42)
-writeBin(as.raw((sample(0:255, 1000, replace=TRUE))),
-         con=file.path(path, "test.bin"))
+writeBin(as.raw((sample(0:255, 1000, replace = TRUE))),
+         con = file.path(path, "test.bin"))
 add(repo, "test.bin")
-diff_7 <- diff(repo, index=TRUE)
-diff(repo, as_char=TRUE)
-diff(repo, as_char=TRUE, filename = file.path(path, "test.diff"))
+diff_7 <- diff(repo, index = TRUE)
+diff(repo, as_char = TRUE)
+diff(repo, as_char = TRUE, filename = file.path(path, "test.diff"))
 
 stopifnot(any(grepl("binary file", capture.output(summary(diff_7)))))
 
@@ -122,18 +122,21 @@ stopifnot(any(grepl("binary file", capture.output(summary(diff_7)))))
 res <- tools::assertError(
                   .Call(git2r:::git2r_diff, NULL, NULL, NULL, "FALSE",
                         NULL, 3L, 0L, "a", "b", NULL, NULL, NULL))
-stopifnot(length(grep("Error in 'git2r_diff': 'index' must be logical vector of length one with non NA value\n",
+stopifnot(length(grep(paste0("Error in 'git2r_diff': 'index' must be logical ",
+                             "vector of length one with non NA value\n"),
                       res[[1]]$message)) > 0)
 
 ## Check various combinations of diff arguments
 res <- tools::assertError(
-                  .Call(git2r:::git2r_diff, NULL, NULL, tree(commits(repo)[[1]]),
+                  .Call(git2r:::git2r_diff, NULL, NULL,
+                        tree(commits(repo)[[1]]),
                         FALSE, NULL, 3L, 0L, "a", "b", NULL, NULL, NULL))
 stopifnot(length(grep("Error in 'git2r_diff': Invalid diff parameters",
                       res[[1]]$message)) > 0)
 
 res <- tools::assertError(
-                  .Call(git2r:::git2r_diff, NULL, NULL, tree(commits(repo)[[1]]),
+                  .Call(git2r:::git2r_diff, NULL, NULL,
+                        tree(commits(repo)[[1]]),
                         TRUE, NULL, 3L, 0L, "a", "b", NULL, NULL, NULL))
 stopifnot(length(grep("Error in 'git2r_diff': Invalid diff parameters",
                       res[[1]]$message)) > 0)

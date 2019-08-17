@@ -14,7 +14,8 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library("git2r")
+library(git2r)
+source("util/check.R")
 
 ## For debugging
 sessionInfo()
@@ -82,8 +83,9 @@ stopifnot(identical(length(parents(commit_2)), 1L))
 stopifnot(identical(parents(commit_2)[[1]], commit_1))
 
 ## Check contributions
-stopifnot(identical(colnames(contributions(repo, by = "author", breaks = "day")),
-                    c("when", "author", "n")))
+stopifnot(identical(
+    colnames(contributions(repo, by = "author", breaks = "day")),
+    c("when", "author", "n")))
 stopifnot(identical(colnames(contributions(repo)),
                     c("when", "n")))
 stopifnot(identical(nrow(contributions(repo)), 1L))
@@ -95,12 +97,10 @@ writeLines(c("Hello world!", "HELLO WORLD!", "HeLlO wOrLd!"),
            file.path(path, "test.txt"))
 commit(repo, "Commit message 3", all = TRUE)
 
-status_clean <- structure(list(
-  staged = structure(list(), .Names = character(0)),
-  unstaged = structure(list(), .Names = character(0)),
-  untracked = structure(list(), .Names = character(0))),
-  .Names = c("staged", "unstaged", "untracked"),
-  class = "git_status")
+status_clean <- structure(list(staged = empty_named_list(),
+                               unstaged = empty_named_list(),
+                               untracked = empty_named_list()),
+                          class = "git_status")
 stopifnot(identical(status(repo), status_clean))
 
 ## Delete file and commit with 'all' argument

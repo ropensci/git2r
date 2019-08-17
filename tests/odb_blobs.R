@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -25,7 +25,7 @@ dir.create(path)
 
 ## Initialize a repository
 repo <- init(path)
-config(repo, user.name="Alice", user.email="alice@@example.org")
+config(repo, user.name = "Alice", user.email = "alice@@example.org")
 
 ## Create a file, add and commit
 writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -42,7 +42,8 @@ commit(repo, "Commit message 2")
 
 ## Commit same content under different name in a sub-directory
 dir.create(file.path(path, "sub-directory"))
-file.copy(file.path(path, "test.txt"), file.path(path, "sub-directory", "copy.txt"))
+file.copy(file.path(path, "test.txt"),
+          file.path(path, "sub-directory", "copy.txt"))
 add(repo, "sub-directory/copy.txt")
 commit(repo, "Commit message 3")
 
@@ -50,12 +51,13 @@ commit(repo, "Commit message 3")
 b <- odb_blobs(repo)
 
 ## Order the data.frame before checking
-b <- b[order(b$name),]
+b <- b[order(b$name), ]
 
 ## Check blobs
 stopifnot(identical(nrow(b), 3L))
-stopifnot(identical(colnames(b),
-                    c("sha", "path", "name", "len", "commit", "author", "when")))
+stopifnot(identical(
+    colnames(b),
+    c("sha", "path", "name", "len", "commit", "author", "when")))
 stopifnot(identical(b$path, c("sub-directory", "", "")))
 stopifnot(identical(b$name, c("copy.txt", "test.txt", "test.txt")))
 stopifnot(identical(b$author, c("Alice", "Alice", "Alice")))

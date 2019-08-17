@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -41,7 +41,7 @@ tools::assertError(config(repo, test = 5))
 
 ## Check config method with missing repo argument
 wd <- setwd(path)
-cfg <- config(user.name="Alice", user.email="alice@example.org")
+cfg <- config(user.name = "Alice", user.email = "alice@example.org")
 stopifnot("local" %in% names(cfg))
 stopifnot("user.name" %in% names(cfg$local))
 stopifnot(identical(cfg$local$user.name, "Alice"))
@@ -54,21 +54,21 @@ if (!is.null(wd))
     setwd(wd)
 
 ## Delete entries
-cfg <- config(repo, user.name=NULL, user.email=NULL)
+cfg <- config(repo, user.name = NULL, user.email = NULL)
 
 ## Check configuration
 stopifnot(is.null(cfg$local$user.name))
 stopifnot(is.null(cfg$local$user.email))
 
 ## Supply values as objects
-user.name <- "Alice"
-user.email <- "alice@example.org"
-cfg <- config(repo, user.name=user.name, user.email="alice@example.org")
-stopifnot(identical(cfg$local$user.name, user.name))
+user_name <- "Alice"
+user_email <- "alice@example.org"
+cfg <- config(repo, user.name = user_name, user.email = "alice@example.org")
+stopifnot(identical(cfg$local$user.name, user_name))
 stopifnot(identical(cfg$local$user.email, "alice@example.org"))
-cfg <- config(repo, user.name="Alice", user.email=user.email)
+cfg <- config(repo, user.name = "Alice", user.email = user_email)
 stopifnot(identical(cfg$local$user.name, "Alice"))
-stopifnot(identical(cfg$local$user.email, user.email))
+stopifnot(identical(cfg$local$user.email, user_email))
 
 ## Check git config files
 cfg <- git_config_files(repo)

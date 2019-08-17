@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -57,8 +57,8 @@ stopifnot(identical(content(blob),
 
 ## Check content of binary file
 set.seed(42)
-writeBin(as.raw((sample(0:255, 1000, replace=TRUE))),
-         con=file.path(path, "test.bin"))
+writeBin(as.raw((sample(0:255, 1000, replace = TRUE))),
+         con = file.path(path, "test.bin"))
 add(repo, "test.bin")
 commit(repo, "Add binary file")
 blob <- tree(last_commit(repo))["test.bin"]

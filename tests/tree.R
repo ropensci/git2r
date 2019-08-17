@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -38,8 +38,9 @@ commit(repo, "Commit message")
 
 ## Check tree
 stopifnot(is_tree(lookup(repo, "a0b0b9e615e9e433eb5f11859e9feac4564c58c5")))
-stopifnot(identical(sha(lookup(repo, "a0b0b9e615e9e433eb5f11859e9feac4564c58c5")),
-                    "a0b0b9e615e9e433eb5f11859e9feac4564c58c5"))
+stopifnot(identical(
+    sha(lookup(repo, "a0b0b9e615e9e433eb5f11859e9feac4564c58c5")),
+    "a0b0b9e615e9e433eb5f11859e9feac4564c58c5"))
 stopifnot(is_tree(tree(commits(repo)[[1]])))
 stopifnot(identical(lookup(repo, "a0b0b9e615e9e433eb5f11859e9feac4564c58c5"),
                     tree(commits(repo)[[1]])))

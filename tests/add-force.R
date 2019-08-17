@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -14,7 +14,8 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library("git2r")
+library(git2r)
+source("util/check.R")
 
 ## For debugging
 sessionInfo()
@@ -36,12 +37,10 @@ commit(repo, "First commit message")
 writeLines("Hello world!", file.path(path, "test.txt"))
 
 ## Check status
-s_1 <- structure(list(staged = structure(list(), .Names = character(0)),
-                      unstaged = structure(list(), .Names = character(0)),
-                      untracked = structure(list(), .Names = character(0)),
-                      ignored = structure(list(ignored = "test.txt"),
-                          .Names = "ignored")),
-                 .Names = c("staged", "unstaged", "untracked", "ignored"),
+s_1 <- structure(list(staged = empty_named_list(),
+                      unstaged = empty_named_list(),
+                      untracked = empty_named_list(),
+                      ignored = list(ignored = "test.txt")),
                  class = "git_status")
 stopifnot(identical(status(repo, ignored = TRUE), s_1))
 
@@ -50,22 +49,20 @@ add(repo, "test.txt")
 stopifnot(identical(status(repo, ignored = TRUE), s_1))
 
 ## The file is ignored but should be added with force
-s_2 <- structure(list(staged = structure(list(new = "test.txt"), .Names = "new"),
-                      unstaged = structure(list(), .Names = character(0)),
-                      untracked = structure(list(), .Names = character(0)),
-                      ignored = structure(list(), .Names = character(0))),
-                 .Names = c("staged", "unstaged", "untracked", "ignored"),
+s_2 <- structure(list(staged = list(new = "test.txt"),
+                      unstaged = empty_named_list(),
+                      untracked = empty_named_list(),
+                      ignored = empty_named_list()),
                  class = "git_status")
 
 add(repo, "test.txt", force = TRUE)
 stopifnot(identical(status(repo, ignored = TRUE), s_2))
 
 ## Commit and check status
-s_3 <- structure(list(staged = structure(list(), .Names = character(0)),
-                      unstaged = structure(list(), .Names = character(0)),
-                      untracked = structure(list(), .Names = character(0)),
-                      ignored = structure(list(), .Names = character(0))),
-                 .Names = c("staged", "unstaged", "untracked", "ignored"),
+s_3 <- structure(list(staged = empty_named_list(),
+                      unstaged = empty_named_list(),
+                      untracked = empty_named_list(),
+                      ignored = empty_named_list()),
                  class = "git_status")
 
 commit(repo, "Second commit message")

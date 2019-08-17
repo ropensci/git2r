@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -14,7 +14,7 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library("git2r")
+library(git2r)
 
 ## For debugging
 sessionInfo()
@@ -30,14 +30,14 @@ config(repo, user.name = "Alice", user.email = "alice@example.org")
 ## Create a file and commit
 writeLines("Hello world!", file.path(path, "test.txt"))
 add(repo, "test.txt")
-commit.1 <- commit(repo, "First commit message")
+commit_1 <- commit(repo, "First commit message")
 
 ## Create new user and change file
-config(repo, user.name="Bob", user.email="bob@example.org")
+config(repo, user.name = "Bob", user.email = "bob@example.org")
 writeLines(c("Hello world!", "HELLO WORLD!", "HOLA"),
            file.path(path, "test.txt"))
 add(repo, "test.txt")
-commit.2 <- commit(repo, "Second commit message")
+commit_2 <- commit(repo, "Second commit message")
 
 ## Check blame
 b <- blame(repo, "test.txt")
@@ -45,11 +45,11 @@ stopifnot(identical(length(b$hunks), 2L))
 
 ## Hunk: 1
 stopifnot(identical(b$hunks[[1]]$lines_in_hunk, 1L))
-stopifnot(identical(b$hunks[[1]]$final_commit_id, sha(commit.1)))
+stopifnot(identical(b$hunks[[1]]$final_commit_id, sha(commit_1)))
 stopifnot(identical(b$hunks[[1]]$final_start_line_number, 1L))
 stopifnot(identical(b$hunks[[1]]$final_signature$name, "Alice"))
 stopifnot(identical(b$hunks[[1]]$final_signature$email, "alice@example.org"))
-stopifnot(identical(b$hunks[[1]]$orig_commit_id, sha(commit.1)))
+stopifnot(identical(b$hunks[[1]]$orig_commit_id, sha(commit_1)))
 stopifnot(identical(b$hunks[[1]]$orig_start_line_number, 1L))
 stopifnot(identical(b$hunks[[1]]$orig_signature$name, "Alice"))
 stopifnot(identical(b$hunks[[1]]$orig_signature$email, "alice@example.org"))
@@ -58,11 +58,11 @@ stopifnot(identical(b$hunks[[1]]$boundary, TRUE))
 
 ## Hunk: 2
 stopifnot(identical(b$hunks[[2]]$lines_in_hunk, 2L))
-stopifnot(identical(b$hunks[[2]]$final_commit_id, sha(commit.2)))
+stopifnot(identical(b$hunks[[2]]$final_commit_id, sha(commit_2)))
 stopifnot(identical(b$hunks[[2]]$final_start_line_number, 2L))
 stopifnot(identical(b$hunks[[2]]$final_signature$name, "Bob"))
 stopifnot(identical(b$hunks[[2]]$final_signature$email, "bob@example.org"))
-stopifnot(identical(b$hunks[[2]]$orig_commit_id, sha(commit.2)))
+stopifnot(identical(b$hunks[[2]]$orig_commit_id, sha(commit_2)))
 stopifnot(identical(b$hunks[[2]]$orig_start_line_number, 2L))
 stopifnot(identical(b$hunks[[2]]$orig_signature$name, "Bob"))
 stopifnot(identical(b$hunks[[2]]$orig_signature$email, "bob@example.org"))

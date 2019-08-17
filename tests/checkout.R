@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -30,7 +30,7 @@ config(repo, user.name = "Alice", user.email = "alice@example.org")
 ## Create first commit
 writeLines("Hello world!", file.path(path, "test.txt"))
 add(repo, "test.txt")
-commit.1 <- commit(repo, "First commit message")
+commit_1 <- commit(repo, "First commit message")
 
 ## Edit file and checkout
 writeLines(c("Hello world!", "Hello world!"), file.path(path, "test.txt"))
@@ -63,14 +63,14 @@ stopifnot(identical(status_obs_2, status_exp_2))
 ## Create second commit
 writeLines(c("Hello world!", "HELLO WORLD!"), file.path(path, "test.txt"))
 add(repo, "test.txt")
-commit.2 <- commit(repo, "Second commit message")
-tag(repo, "commit.2", "Tag message")
+commit_2 <- commit(repo, "Second commit message")
+tag(repo, "commit_2", "Tag message")
 
 ## Create third commit
 writeLines(c("Hello world!", "HELLO WORLD!", "HeLlO wOrLd!"),
            file.path(path, "test.txt"))
 add(repo, "test.txt")
-commit.3 <- commit(repo, "Third commit message")
+commit_3 <- commit(repo, "Third commit message")
 
 ## Check HEAD
 stopifnot(identical(is_detached(repo), FALSE))
@@ -81,9 +81,9 @@ repo
 summary(repo)
 
 ## Checkout first commit
-checkout(commit.1, TRUE)
+checkout(commit_1, TRUE)
 stopifnot(identical(is_detached(repo), TRUE))
-stopifnot(identical(repository_head(repo), commit.1))
+stopifnot(identical(repository_head(repo), commit_1))
 stopifnot(identical(readLines(file.path(path, "test.txt")), "Hello world!"))
 
 ## Check show and summary

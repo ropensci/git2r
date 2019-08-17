@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -45,7 +45,7 @@ commit_2 <- commit(repo, "Second commit message")
 
 # Checkout master and merge
 b <- branches(repo)
-checkout(b[sapply(b, "[", "name") == "master"][[1]], force=TRUE)
+checkout(b[sapply(b, "[", "name") == "master"][[1]], force = TRUE)
 m <- merge(b[sapply(b, "[", "name") == "test"][[1]])
 
 # Check merge

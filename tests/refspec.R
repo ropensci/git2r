@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -47,7 +47,9 @@ add(repo, "test.txt")
 commit_2 <- commit(repo, "Second commit message")
 
 ## Check remote
-stopifnot(identical(git2r:::get_refspec(repo, spec = "master")$remote, "origin"))
+stopifnot(identical(
+    git2r:::get_refspec(repo, spec = "master")$remote,
+    "origin"))
 
 ## Detach
 checkout(commit_1)

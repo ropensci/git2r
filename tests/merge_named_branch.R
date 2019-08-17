@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -14,7 +14,8 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library("git2r")
+library(git2r)
+source("util/check.R")
 
 ## For debugging
 sessionInfo()
@@ -34,7 +35,7 @@ add(repo, "test.txt")
 commit_1 <- commit(repo, "Commit message 1")
 
 ## Create first branch, checkout, add file and commit
-checkout(repo, "branch1", create=TRUE)
+checkout(repo, "branch1", create = TRUE)
 writeLines("Branch 1", file.path(path, "branch-1.txt"))
 add(repo, "branch-1.txt")
 commit_2 <- commit(repo, "Commit message branch 1")
@@ -56,7 +57,7 @@ stopifnot(identical(merge_base(commit_2, commit_3), commit_1))
 
 ## Checkout master
 b <- branches(repo)
-checkout(b[sapply(b, "[", "name") == "master"][[1]], force=TRUE)
+checkout(b[sapply(b, "[", "name") == "master"][[1]], force = TRUE)
 
 ## Merge branch 1
 m_1 <- merge(repo, "branch1")
@@ -71,7 +72,7 @@ stopifnot(identical(m_2$conflicts, FALSE))
 stopifnot(identical(sha(m_2), sha(commits(repo)[[1]])))
 
 ## Create third branch, checkout, change file and commit
-checkout(repo, "branch3", create=TRUE)
+checkout(repo, "branch3", create = TRUE)
 writeLines(c("Lorem ipsum dolor amet sit, consectetur adipisicing elit, sed do",
              "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
            con = file.path(path, "test.txt"))
@@ -79,7 +80,7 @@ add(repo, "test.txt")
 commit(repo, "Commit message branch 3")
 
 ## Checkout master and create a change that creates a merge conflict
-checkout(repo, "master", force=TRUE)
+checkout(repo, "master", force = TRUE)
 writeLines(c("Lorem ipsum dolor sit amet, adipisicing consectetur elit, sed do",
              "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
            con = file.path(path, "test.txt"))
@@ -95,13 +96,9 @@ stopifnot(identical(sha(m_3), NA_character_))
 
 ## Check status; Expect to have one unstaged unmerged conflict.
 stopifnot(identical(status(repo),
-                    structure(list(staged = structure(list(),
-                                       .Names = character(0)),
-                                   unstaged = structure(list(conflicted = "test.txt"),
-                                       .Names = "conflicted"),
-                                   untracked = structure(list(),
-                                       .Names = character(0))),
-                              .Names = c("staged", "unstaged", "untracked"),
+                    structure(list(staged = empty_named_list(),
+                                   unstaged = list(conflicted = "test.txt"),
+                                   untracked = empty_named_list()),
                               class = "git_status")))
 
 ## Cleanup

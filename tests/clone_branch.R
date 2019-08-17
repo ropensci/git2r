@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -33,7 +33,7 @@ bare_repo <- init(path_bare, bare = TRUE)
 
 ## Clone to repo 1
 repo_1 <- clone(path_bare, path_repo_1)
-config(repo_1, user.name="Alice", user.email="alice@example.org")
+config(repo_1, user.name = "Alice", user.email = "alice@example.org")
 
 ## Add changes to repo 1
 writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
@@ -52,10 +52,11 @@ add(repo_1, "test-1.txt")
 commit(repo_1, "Second commit message")
 
 ## Add more changes to repo 1
-writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-             "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad",
-             "minim veniam, quis nostrud exercitation ullamco laboris nisi ut"),
-           con = file.path(path_repo_1, "test-1.txt"))
+writeLines(
+    c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+      "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad",
+      "minim veniam, quis nostrud exercitation ullamco laboris nisi ut"),
+    con = file.path(path_repo_1, "test-1.txt"))
 add(repo_1, "test-1.txt")
 commit(repo_1, "Third commit message")
 
@@ -68,7 +69,7 @@ branches(repo_1)[["origin/master"]]
 
 ## Clone to repo 2
 repo_2 <- clone(url = path_bare, local_path = path_repo_2, branch = "dev")
-config(repo_2, user.name="Bob", user.email="bob@example.org")
+config(repo_2, user.name = "Bob", user.email = "bob@example.org")
 
 ## Check branch and commits
 stopifnot(identical(length(commits(repo_2)), 3L))

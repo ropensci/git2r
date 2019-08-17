@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -27,7 +27,7 @@ dir.create(path_src)
 
 ## Initialize a repository
 repo_src <- init(path_src)
-config(repo_src, user.name="Alice", user.email="alice@example.org")
+config(repo_src, user.name = "Alice", user.email = "alice@example.org")
 
 ## Add commit to repo
 filename <- "test.txt"
