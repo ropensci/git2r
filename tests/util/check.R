@@ -17,3 +17,14 @@
 empty_named_list <- function() {
     structure(list(), .Names = character(0))
 }
+
+## Raise an error if the error message doesn't match.
+check_error <- function(current, target, exact = FALSE) {
+    if (isTRUE(exact)) {
+        stopifnot(identical(current[[1]]$message, target))
+    } else {
+        stopifnot(length(grep(target, current[[1]]$message)) > 0)
+    }
+
+    invisible(NULL)
+}
