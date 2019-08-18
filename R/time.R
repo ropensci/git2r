@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -23,21 +23,6 @@ as.character.git_time <- function(x, ...) {
 as.POSIXct.git_time <- function(x, ...) {
     as.POSIXct(x$time, origin = "1970-01-01", tz = "GMT")
 }
-
-## setAs(from = "POSIXlt",
-##       to   = "git_time",
-##       def=function(from)
-##       {
-##           if (is.null(from$gmtoff) || is.na(from$gmtoff)) {
-##               offset <- 0
-##           } else {
-##               offset <- from$gmtoff / 60
-##           }
-
-##           structure(list(time = as.numeric(from), offset = offset),
-##                     class = "git_time")
-##       }
-## )
 
 ##' @export
 print.git_time <- function(x, ...) {
