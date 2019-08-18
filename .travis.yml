@@ -32,7 +32,7 @@ after_failure:
 
 after_success:
   - test ${R_CODECOV} && Rscript -e "covr::coveralls(exclusions=list.files('src/libgit2', pattern='[.](c|h)$', full.names=TRUE, recursive=TRUE))"
-  - test ${R_LINTR} && Rscript -e "lintr::lint_package(linters = lintr::with_defaults(object_name_linter = NULL))"
+  - test ${R_LINTR} && Rscript -e "lintr::lint_package(linters = lintr::with_defaults(object_name_linter = NULL, object_usage_linter = NULL))"
   - cat "${RCHECK_DIR}/00install.out"
 
 notifications:
