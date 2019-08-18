@@ -46,6 +46,7 @@ temp_file_1 <- tempfile()
 temp_file_2 <- tempfile()
 writeLines("Hello, world!", temp_file_1)
 writeLines("test content", temp_file_2)
-blob_list_2 <- blob_create(repo, c(temp_file_1, temp_file_2), relative = FALSE)
+blob_list_2 <- blob_create(repo, c(temp_file_1, temp_file_2),
+                           relative = FALSE)
 }
 }

@@ -45,7 +45,7 @@ repo_bare <- init(path_bare, bare = TRUE)
 repo <- clone(path_bare, path_repo)
 
 ## Config user and commit a file
-config(repo, user.name="Alice", user.email="alice@example.org")
+config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Write to a file and commit
 writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",

@@ -31,7 +31,7 @@ dir.create(path)
 repo <- init(path)
 
 ## Create a user
-config(repo, user.name="Alice", user.email="alice@example.org")
+config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Create a file
 writeLines("Hello world!", file.path(path, "file-to-remove.txt"))

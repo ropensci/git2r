@@ -25,7 +25,7 @@ Remove the note for an object
 path <- tempfile(pattern="git2r-")
 dir.create(path)
 repo <- init(path)
-config(repo, user.name="Alice", user.email="alice@example.org")
+config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Create a file, add and commit
 writeLines("Hello world!", file.path(path, "example.txt"))

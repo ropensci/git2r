@@ -36,7 +36,7 @@ dir.create(path)
 repo <- init(path)
 
 ## Create a user
-config(repo, user.name="Alice", user.email="alice@example.org")
+config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Commit a text file
 filename <- file.path(path, "example.txt")

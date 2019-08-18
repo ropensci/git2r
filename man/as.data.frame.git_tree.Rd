@@ -48,7 +48,7 @@ dir.create(file.path(path, "subfolder"))
 repo <- init(path)
 
 ## Create a user
-config(repo, user.name="Alice", user.email="alice@example.org")
+config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Create three files and commit
 writeLines("First file",  file.path(path, "example-1.txt"))
@@ -61,7 +61,7 @@ commit(repo, "Commit message")
 tree(last_commit(repo))
 
 ## Coerce tree to a data.frame
-df <- as(tree(last_commit(repo)), "data.frame")
+df <- as.data.frame(tree(last_commit(repo)))
 df
 }
 }

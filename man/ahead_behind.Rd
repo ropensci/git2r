@@ -30,19 +30,20 @@ dir.create(path)
 
 ## Initialize a repository
 repo <- init(path)
-config(repo, user.name="Alice", user.email="alice@example.org")
+config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Create a file, add and commit
-writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-           con = file.path(path, "test.txt"))
+lines <- "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do"
+writeLines(lines, file.path(path, "test.txt"))
 add(repo, "test.txt")
 commit_1 <- commit(repo, "Commit message 1")
 tag_1 <- tag(repo, "Tagname1", "Tag message 1")
 
 # Change file and commit
-writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-             "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
-             con = file.path(path, "test.txt"))
+lines <- c(
+  "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+  "eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+writeLines(lines, file.path(path, "test.txt"))
 add(repo, "test.txt")
 commit_2 <- commit(repo, "Commit message 2")
 tag_2 <- tag(repo, "Tagname2", "Tag message 2")
