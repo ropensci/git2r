@@ -54,11 +54,11 @@ repo_bare <- init(path_bare, bare = TRUE)
 repo_1 <- clone(path_bare, path_repo_1)
 
 ## Config first user and commit a file
-config(repo_1, user.name="Alice", user.email="alice@example.org")
+config(repo_1, user.name = "Alice", user.email = "alice@example.org")
 
 ## Write to a file and commit
-writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-           file.path(path_repo_1, "example.txt"))
+lines <- "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do"
+writeLines(lines, file.path(path_repo_1, "example.txt"))
 add(repo_1, "example.txt")
 commit(repo_1, "First commit message")
 
@@ -68,12 +68,13 @@ push(repo_1, "origin", "refs/heads/master")
 
 ## Clone to second repository
 repo_2 <- clone(path_bare, path_repo_2)
-config(repo_2, user.name="Bob", user.email="bob@example.org")
+config(repo_2, user.name = "Bob", user.email = "bob@example.org")
 
 ## Change file and commit
-writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-             "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
-           file.path(path_repo_1, "example.txt"))
+lines <- c(
+  "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+  "eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+writeLines(lines, file.path(path_repo_1, "example.txt"))
 add(repo_1, "example.txt")
 commit(repo_1, "Second commit message")
 
@@ -84,10 +85,11 @@ push(repo_1)
 pull(repo_2)
 
 ## Change file again and commit. This time in repository 2
-writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-             "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad",
-             "minim veniam, quis nostrud exercitation ullamco laboris nisi ut"),
-           file.path(path_repo_2, "example.txt"))
+lines <- c(
+  "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+  "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad",
+  "minim veniam, quis nostrud exercitation ullamco laboris nisi ut")
+writeLines(lines, file.path(path_repo_2, "example.txt"))
 add(repo_2, "example.txt")
 commit(repo_2, "Third commit message")
 

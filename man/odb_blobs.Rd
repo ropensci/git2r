@@ -41,21 +41,23 @@ repo <- init(path)
 config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Create a file, add and commit
-writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-           con = file.path(path, "test.txt"))
+lines <- "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do"
+writeLines(lines, file.path(path, "test.txt"))
 add(repo, "test.txt")
 commit(repo, "Commit message 1")
 
 ## Change file and commit
-writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-             "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
-             con = file.path(path, "test.txt"))
+lines <- c(
+  "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+  "eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+writeLines(lines, file.path(path, "test.txt"))
 add(repo, "test.txt")
 commit(repo, "Commit message 2")
 
 ## Commit same content under different name in a sub-directory
 dir.create(file.path(path, "sub-directory"))
-file.copy(file.path(path, "test.txt"), file.path(path, "sub-directory", "copy.txt"))
+file.copy(file.path(path, "test.txt"),
+          file.path(path, "sub-directory", "copy.txt"))
 add(repo, "sub-directory/copy.txt")
 commit(repo, "Commit message 3")
 
