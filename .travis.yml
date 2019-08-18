@@ -1,9 +1,8 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 
 language: r
-sudo: false
 cache: packages
-warnings_are_errors: false
+warnings_are_errors: true
 fortran: false
 latex: false
 pandoc: false
@@ -17,7 +16,8 @@ matrix:
     - r: oldrel
     - r: release
       r_packages: covr
-      env: R_CODECOV=true
+      r_github_packages: jimhester/lintr
+      env: R_CODECOV=true R_LINTR=true
     - r: devel
     - os: osx
       brew_packages: libgit2
@@ -32,6 +32,7 @@ after_failure:
 
 after_success:
   - test ${R_CODECOV} && Rscript -e "covr::coveralls(exclusions=list.files('src/libgit2', pattern='[.](c|h)$', full.names=TRUE, recursive=TRUE))"
+  - test ${R_LINTR} && Rscript -e "lintr::lint_package(linters = lintr::with_defaults(object_name_linter = NULL))"
   - cat "${RCHECK_DIR}/00install.out"
 
 notifications:
