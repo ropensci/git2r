@@ -24,7 +24,7 @@ dir.create(path)
 repo <- init(path)
 
 ## Create a user
-config(repo, user.name="Alice", user.email="alice@example.org")
+config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Check if it's an empty repository
 is_empty(repo)

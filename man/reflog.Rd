@@ -27,26 +27,28 @@ dir.create(path)
 repo <- init(path)
 
 ## Config user
-config(repo, user.name="Alice", user.email="alice@example.org")
+config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Write to a file and commit
-writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-           file.path(path, "example.txt"))
+lines <- "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do"
+writeLines(lines, file.path(path, "example.txt"))
 add(repo, "example.txt")
 commit(repo, "First commit message")
 
 ## Change file and commit
-writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-             "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
-           file.path(path, "example.txt"))
+lines <- c(
+  "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+  "eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+writeLines(lines, file.path(path, "example.txt"))
 add(repo, "example.txt")
 commit(repo, "Second commit message")
 
 ## Change file again and commit
-writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-             "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad",
-             "minim veniam, quis nostrud exercitation ullamco laboris nisi ut"),
-           file.path(path, "example.txt"))
+lines <- c(
+  "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+  "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad",
+  "minim veniam, quis nostrud exercitation ullamco laboris nisi ut")
+writeLines(lines, file.path(path, "example.txt"))
 add(repo, "example.txt")
 commit(repo, "Third commit message")
 

@@ -23,18 +23,19 @@ Check if HEAD of repository is detached
 path <- tempfile(pattern="git2r-")
 dir.create(path)
 repo <- init(path)
-config(repo, user.name="Alice", user.email="alice@example.org")
+config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Create a file, add and commit
-writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-           file.path(path, "example.txt"))
+lines <- "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do"
+writeLines(lines, file.path(path, "example.txt"))
 add(repo, "example.txt")
 commit_1 <- commit(repo, "Commit message 1")
 
 ## Change file, add and commit
-writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-             "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
-             file.path(path, "example.txt"))
+lines <- c(
+  "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+  "eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+writeLines(lines, file.path(path, "example.txt"))
 add(repo, "example.txt")
 commit(repo, "Commit message 2")
 

@@ -26,26 +26,28 @@ dir.create(path_repo_2)
 repo_1 <- init(path_repo_1)
 
 ## Config user and commit a file
-config(repo_1, user.name="Alice", user.email="alice@example.org")
+config(repo_1, user.name = "Alice", user.email = "alice@example.org")
 
 ## Write to a file and commit
-writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-           file.path(path_repo_1, "example.txt"))
+lines <- "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do"
+writeLines(lines, file.path(path_repo_1, "example.txt"))
 add(repo_1, "example.txt")
 commit(repo_1, "First commit message")
 
 ## Change file and commit
-writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-             "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
-           file.path(path_repo_1, "example.txt"))
+lines <- c(
+  "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+  "eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+writeLines(lines, file.path(path_repo_1, "example.txt"))
 add(repo_1, "example.txt")
 commit(repo_1, "Second commit message")
 
 ## Change file again and commit.
-writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-             "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad",
-             "minim veniam, quis nostrud exercitation ullamco laboris nisi ut"),
-           file.path(path_repo_1, "example.txt"))
+lines <- c(
+  "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+  "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad",
+  "minim veniam, quis nostrud exercitation ullamco laboris nisi ut")
+writeLines(lines, file.path(path_repo_1, "example.txt"))
 add(repo_1, "example.txt")
 commit(repo_1, "Third commit message")
 
