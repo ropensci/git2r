@@ -30,8 +30,8 @@
 ##' config(repo, user.name = "Alice", user.email = "alice@@example.org")
 ##'
 ##' ## Create a file, add and commit
-##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-##'            con = file.path(path, "test.txt"))
+##' lines <- "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do"
+##' writeLines(lines, file.path(path, "test.txt"))
 ##' add(repo, "test.txt")
 ##' commit(repo, "Commit message 1")
 ##'

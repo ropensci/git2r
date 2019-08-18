@@ -60,7 +60,8 @@ punch_card <- function(repo = ".", main = NULL, ...) {
 
     ## Convert key to Weekday and Hour
     df$Weekday <- sapply(strsplit(df$key, "-"), "[", 1)
-    df$Weekday <- factor(df$Weekday, levels = c(6, 5, 4, 3, 2, 1, 0), labels = wd)
+    df$Weekday <- factor(df$Weekday, levels = c(6, 5, 4, 3, 2, 1, 0),
+                         labels = wd)
     df$Hour <- as.integer(sapply(strsplit(df$key, "-"), "[", 2))
     df$key <- paste0(df$Weekday, "-", df$Hour)
 
@@ -73,7 +74,8 @@ punch_card <- function(repo = ".", main = NULL, ...) {
             xaxt = "n", yaxt = "n", inches = FALSE,
             fg = "white", bg = "black", add = TRUE, ...)
     h <- 0:23
-    h <- paste0(ifelse(h > 9, as.character(h), paste0("0", as.character(h))), ":00")
+    h <- paste0(ifelse(h > 9, as.character(h), paste0("0", as.character(h))),
+                ":00")
     axis(1, at = 0:23, labels = h)
     axis(2, at = 1:7, labels = wd)
 

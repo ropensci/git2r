@@ -69,8 +69,8 @@
 ##' repo_1 <- clone(path_bare, path_repo_1)
 ##' repo_2 <- clone(path_bare, path_repo_2)
 ##'
-##' config(repo_1, user.name="Alice", user.email="alice@@example.org")
-##' config(repo_2, user.name="Bob", user.email="bob@@example.org")
+##' config(repo_1, user.name = "Alice", user.email = "alice@@example.org")
+##' config(repo_2, user.name = "Bob", user.email = "bob@@example.org")
 ##'
 ##' ## Add changes to repo 1
 ##' writeLines("Lorem ipsum dolor sit amet",
@@ -121,8 +121,8 @@ fetch <- function(repo = ".", name = NULL, credentials = NULL,
 ##' repo_1 <- clone(path_bare, path_repo_1)
 ##' repo_2 <- clone(path_bare, path_repo_2)
 ##'
-##' config(repo_1, user.name="Alice", user.email="alice@@example.org")
-##' config(repo_2, user.name="Bob", user.email="bob@@example.org")
+##' config(repo_1, user.name = "Alice", user.email = "alice@@example.org")
+##' config(repo_2, user.name = "Bob", user.email = "bob@@example.org")
 ##'
 ##' ## Add changes to repo 1
 ##' writeLines("Lorem ipsum dolor sit amet",

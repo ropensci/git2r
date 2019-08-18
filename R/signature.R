@@ -45,7 +45,7 @@
 ##' default_signature(repo)
 ##'
 ##' ## Change user
-##' config(repo, user.name="Bob", user.email="bob@@example.org")
+##' config(repo, user.name = "Bob", user.email = "bob@@example.org")
 ##'
 ##' ## Get the default signature
 ##' default_signature(repo)

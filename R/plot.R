@@ -36,7 +36,11 @@
 ##' plot(repo)
 ##' }
 plot.git_repository <- function(x,
-                                breaks = c("month", "year", "quarter", "week", "day"),
+                                breaks = c("month",
+                                           "year",
+                                           "quarter",
+                                           "week",
+                                           "day"),
                                 main = NULL,
                                 ...) {
     breaks <- match.arg(breaks)
