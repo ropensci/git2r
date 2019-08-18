@@ -38,10 +38,10 @@ commit_1 <- commit(repo, "First commit message")
 tag(repo, "Tagname", "Tag message")
 
 ## First, get SHAs to lookup in the repository
-sha_commit <- commit_1@sha
-sha_tree <- tree(commit_1)@sha
-sha_blob <- tree(commit_1)["example.txt"]$sha
-sha_tag <- tags(repo)[[1]]@sha
+sha_commit <- sha(commit_1)
+sha_tree <- sha(tree(commit_1))
+sha_blob <- sha(tree(commit_1)["example.txt"])
+sha_tag <- sha(tags(repo)[[1]])
 
 ## SHAs
 sha_commit

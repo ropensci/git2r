@@ -32,6 +32,6 @@ add(repo, "example.txt")
 commit(repo, "Commit message")
 
 ## Get HEAD of repository
-head(repo)
+repository_head(repo)
 }
 }
