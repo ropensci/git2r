@@ -59,7 +59,7 @@ stash_object <- function(object) {
 ##' repo <- init(path)
 ##'
 ##' # Configure a user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##' config(repo, user.name = "Alice", user.email = "alice@@example.org")
 ##'
 ##' # Create a file, add and commit
 ##' writeLines("Hello world!", file.path(path, "test.txt"))
@@ -115,7 +115,7 @@ stash_apply <- function(object = ".", index = 1) {
 ##' repo <- init(path)
 ##'
 ##' # Configure a user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##' config(repo, user.name = "Alice", user.email = "alice@@example.org")
 ##'
 ##' # Create a file, add and commit
 ##' writeLines("Hello world!", file.path(path, "test.txt"))
@@ -172,7 +172,7 @@ stash_drop <- function(object = ".", index = 1) {
 ##' repo <- init(path)
 ##'
 ##' # Configure a user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##' config(repo, user.name = "Alice", user.email = "alice@@example.org")
 ##'
 ##' # Create a file, add and commit
 ##' writeLines("Hello world!", file.path(path, "test.txt"))
@@ -219,7 +219,7 @@ stash <- function(repo = ".",
 ##' repo <- init(path)
 ##'
 ##' # Configure a user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##' config(repo, user.name = "Alice", user.email = "alice@@example.org")
 ##'
 ##' # Create a file, add and commit
 ##' writeLines("Hello world!", file.path(path, "test-1.txt"))
@@ -272,7 +272,7 @@ stash_list <- function(repo = ".") {
 ##' repo <- init(path)
 ##'
 ##' # Configure a user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##' config(repo, user.name = "Alice", user.email = "alice@@example.org")
 ##'
 ##' # Create a file, add and commit
 ##' writeLines("Hello world!", file.path(path, "test.txt"))
@@ -335,7 +335,7 @@ print.git_stash <- function(x, ...) {
 ##' repo <- init(path)
 ##'
 ##' # Configure a user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##' config(repo, user.name = "Alice", user.email = "alice@@example.org")
 ##'
 ##' # Create a file, add and commit
 ##' writeLines("Hello world!", file.path(path, "test.txt"))

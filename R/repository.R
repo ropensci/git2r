@@ -73,7 +73,7 @@
 ##' commit(repo, "Commit third file")
 ##'
 ##' ## Coerce commits to a data.frame
-##' df <- as(repo, "data.frame")
+##' df <- as.data.frame(repo)
 ##' df
 ##' }
 as.data.frame.git_repository <- function(x, ...) {

@@ -51,7 +51,8 @@ checkout_commit <- function(object, force) {
 
 checkout_tag <- function(object, force) {
     .Call(git2r_checkout_tree, object$repo, object$target, force)
-    .Call(git2r_repository_set_head_detached, lookup(object$repo, object$target))
+    .Call(git2r_repository_set_head_detached,
+          lookup(object$repo, object$target))
 }
 
 checkout_git_object <- function(object, force) {
@@ -113,8 +114,8 @@ checkout_git_object <- function(object, force) {
 ##' config(repo_1, user.name="Alice", user.email="alice@@example.org")
 ##'
 ##' ## Add changes to repo 1 and push to bare
-##' writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-##'            con = file.path(path_repo_1, "test.txt"))
+##' lines <- "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do"
+##' writeLines(lines, file.path(path_repo_1, "test.txt"))
 ##' add(repo_1, "test.txt")
 ##' commit(repo_1, "First commit message")
 ##' push(repo_1, "origin", "refs/heads/master")
@@ -123,9 +124,10 @@ checkout_git_object <- function(object, force) {
 ##' checkout(repo_1, "dev", create = TRUE)
 ##'
 ##' ## Add changes to 'dev' branch in repo 1 and push to bare
-##' writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-##'              "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
-##'            con = file.path(path_repo_1, "test.txt"))
+##' lines <- c(
+##'   "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
+##'   "eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+##' writeLines(lines, file.path(path_repo_1, "test.txt"))
 ##' add(repo_1, "test.txt")
 ##' commit(repo_1, "Second commit message")
 ##' push(repo_1, "origin", "refs/heads/dev")

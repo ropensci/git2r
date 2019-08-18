@@ -27,7 +27,7 @@
 ##' path <- tempfile(pattern="git2r-")
 ##' dir.create(path)
 ##' repo <- init(path)
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##' config(repo, user.name = "Alice", user.email = "alice@@example.org")
 ##'
 ##' ## View default notes reference
 ##' note_default_ref(repo)
@@ -54,7 +54,7 @@ note_default_ref <- function(repo = ".") {
 ##' path <- tempfile(pattern="git2r-")
 ##' dir.create(path)
 ##' repo <- init(path)
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##' config(repo, user.name = "Alice", user.email = "alice@@example.org")
 ##'
 ##' ## Create a file, add and commit
 ##' writeLines("Hello world!", file.path(path, "example.txt"))
@@ -121,7 +121,7 @@ note_create <- function(object    = NULL,
 ##' path <- tempfile(pattern="git2r-")
 ##' dir.create(path)
 ##' repo <- init(path)
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##' config(repo, user.name = "Alice", user.email = "alice@@example.org")
 ##'
 ##' ## Create a file, add and commit
 ##' writeLines("Hello world!", file.path(path, "example.txt"))
@@ -176,7 +176,7 @@ notes <- function(repo = ".", ref = NULL) {
 ##' path <- tempfile(pattern="git2r-")
 ##' dir.create(path)
 ##' repo <- init(path)
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##' config(repo, user.name = "Alice", user.email = "alice@@example.org")
 ##'
 ##' ## Create a file, add and commit
 ##' writeLines("Hello world!", file.path(path, "example.txt"))

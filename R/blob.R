@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -49,7 +49,8 @@
 ##' temp_file_2 <- tempfile()
 ##' writeLines("Hello, world!", temp_file_1)
 ##' writeLines("test content", temp_file_2)
-##' blob_list_2 <- blob_create(repo, c(temp_file_1, temp_file_2), relative = FALSE)
+##' blob_list_2 <- blob_create(repo, c(temp_file_1, temp_file_2),
+##'                            relative = FALSE)
 ##' }
 blob_create <- function(repo = ".", path = NULL, relative = TRUE) {
     repo <- lookup_repository(repo)
@@ -73,7 +74,7 @@ blob_create <- function(repo = ".", path = NULL, relative = TRUE) {
 ##' repo <- init(path)
 ##'
 ##' ## Create a user and commit a file
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##' config(repo, user.name = "Alice", user.email = "alice@@example.org")
 ##' writeLines("Hello world!", file.path(path, "example.txt"))
 ##' add(repo, "example.txt")
 ##' commit(repo, "First commit message")
@@ -148,7 +149,7 @@ hashfile <- function(path = NULL) {
 ##' repo <- init(path)
 ##'
 ##' ## Create a user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##' config(repo, user.name = "Alice", user.email = "alice@@example.org")
 ##'
 ##' ## Commit a text file
 ##' writeLines("Hello world!", file.path(path, "example.txt"))
@@ -189,7 +190,7 @@ is_binary <- function(blob = NULL) {
 ##' repo <- init(path)
 ##'
 ##' ## Create a user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##' config(repo, user.name = "Alice", user.email = "alice@@example.org")
 ##'
 ##' ## Commit a text file
 ##' writeLines("Hello world!", file.path(path, "example.txt"))
@@ -218,7 +219,7 @@ is_blob <- function(object) {
 ##' repo <- init(path)
 ##'
 ##' ## Create a user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##' config(repo, user.name = "Alice", user.email = "alice@@example.org")
 ##'
 ##' ## Commit a text file
 ##' writeLines("Hello world!", file.path(path, "example.txt"))

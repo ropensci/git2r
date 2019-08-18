@@ -52,7 +52,7 @@
 ##' repo <- init(path)
 ##'
 ##' ## Create a user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##' config(repo, user.name = "Alice", user.email = "alice@@example.org")
 ##'
 ##' ## Create three files and commit
 ##' writeLines("First file",  file.path(path, "example-1.txt"))
@@ -65,7 +65,7 @@
 ##' tree(last_commit(repo))
 ##'
 ##' ## Coerce tree to a data.frame
-##' df <- as(tree(last_commit(repo)), "data.frame")
+##' df <- as.data.frame(tree(last_commit(repo)))
 ##' df
 ##' }
 as.data.frame.git_tree <- function(x, ...) {
@@ -94,7 +94,7 @@ base::as.data.frame
 ##' repo <- init(path)
 ##'
 ##' ## Create a user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##' config(repo, user.name = "Alice", user.email = "alice@@example.org")
 ##'
 ##' ## Create three files and commit
 ##' writeLines("First file",  file.path(path, "example-1.txt"))
@@ -129,7 +129,7 @@ as.list.git_tree <- function(x, ...) {
 ##' repo <- init(path)
 ##'
 ##' ## Create a first user and commit a file
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##' config(repo, user.name = "Alice", user.email = "alice@@example.org")
 ##' writeLines("Hello world!", file.path(path, "example.txt"))
 ##' add(repo, "example.txt")
 ##' commit(repo, "First commit message")
@@ -161,7 +161,7 @@ print.git_tree <- function(x, ...) {
 ##' repo <- init(path)
 ##'
 ##' ## Create a user and commit a file
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##' config(repo, user.name = "Alice", user.email = "alice@@example.org")
 ##' writeLines("Hello world!", file.path(path, "example.txt"))
 ##' add(repo, "example.txt")
 ##' commit(repo, "First commit message")
@@ -191,7 +191,7 @@ summary.git_tree <- function(object, ...) {
 ##' repo <- init(path)
 ##'
 ##' ##' Create a user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##' config(repo, user.name = "Alice", user.email = "alice@@example.org")
 ##'
 ##' ##' Create three files and commit
 ##' writeLines("First file",  file.path(path, "example-1.txt"))
@@ -259,7 +259,7 @@ length.git_tree <- function(x) {
 ##' repo <- init(path)
 ##'
 ##' ## Create a user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##' config(repo, user.name = "Alice", user.email = "alice@@example.org")
 ##'
 ##' ## Commit a text file
 ##' writeLines("Hello world!", file.path(path, "example.txt"))
@@ -303,7 +303,7 @@ is_tree <- function(object) {
 ##' repo <- init(path)
 ##'
 ##' ## Create a user
-##' config(repo, user.name="Alice", user.email="alice@@example.org")
+##' config(repo, user.name = "Alice", user.email = "alice@@example.org")
 ##'
 ##' ## Create three files and commit
 ##' writeLines("First file",  file.path(path, "example-1.txt"))
