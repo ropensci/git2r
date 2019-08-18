@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -80,7 +80,9 @@
 ##' reset(commit_1, "hard")
 ##' status(repo)
 ##' }
-reset <- function(object, reset_type = c("soft", "mixed", "hard"), path = NULL) {
+reset <- function(object,
+                  reset_type = c("soft", "mixed", "hard"),
+                  path = NULL) {
     if (is_commit(object)) {
         reset_type <- switch(match.arg(reset_type),
                              soft  = 1L,
