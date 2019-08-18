@@ -23,9 +23,9 @@ dir.create(path)
 repo <- init(path)
 
 ## Config user and commit a file
-config(repo, user.name="Alice", user.email="alice@example.org")
-writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
-           file.path(path, "example.txt"))
+config(repo, user.name = "Alice", user.email = "alice@example.org")
+lines <- "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do"
+writeLines(lines, file.path(path, "example.txt"))
 add(repo, "example.txt")
 commit(repo, "First commit message")
 
