@@ -1,8 +1,17 @@
 citHeader(paste0("See AUTHORS file for a list of all authors.\n",
                  "To cite git2r in publications, please use:"))
 
-year <- "2018"
-vers <- "0.21.0"
+published <- utils::packageDescription("git2r")$`Date/Publication`
+year <-
+    if (getRversion() >= as.package_version("3.5.0")) {
+        utils::packageDate("git2r")
+    } else if (!is.null(published)){
+        published
+    } else {
+        Sys.Date()
+    }
+year <- format(year, "%Y")
+vers <- utils::packageVersion("git2r")
 pkg.url <- "https://CRAN.R-project.org/package=git2r"
 
 citEntry(entry = "Manual",
