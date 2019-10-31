@@ -330,6 +330,8 @@ ls_tree <- function(tree = NULL, repo = ".", recursive = TRUE) {
         tree <- tree(last_commit(lookup_repository(repo)))
     } else if (is.character(tree)) {
         tree <- revparse_single(repo = lookup_repository(repo), revision = tree)
+        if (!is_tree(tree))
+            tree <- tree(tree)
     }
 
     data.frame(.Call(git2r_tree_walk, tree, recursive),
