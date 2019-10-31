@@ -20,13 +20,13 @@ library("git2r")
 sessionInfo()
 
 ## Initialize a temporary repository
-path <- tempfile(pattern="git2r-")
+path <- tempfile(pattern = "git2r-")
 dir.create(path)
 dir.create(file.path(path, "subfolder"))
 repo <- init(path)
 
 ## Create a user
-config(repo, user.name="Alice", user.email="alice@example.org")
+config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Create three files and commit
 writeLines("First file",  file.path(path, "example-1.txt"))
