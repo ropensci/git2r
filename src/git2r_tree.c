@@ -102,8 +102,12 @@ static int git2r_tree_walk_cb(
     int error = 0;
     git2r_tree_walk_cb_data *p = (git2r_tree_walk_cb_data*)payload;
 
-    if (!p->recursive && *root)
+    if (p->recursive) {
+        if (git_tree_entry_type(entry) != GIT2R_OBJECT_BLOB)
+            return 0;
+    } else if (*root) {
         return 1;
+    }
 
     if (!Rf_isNull(p->list)) {
         char mode[23]; /* enums are int/32-bit, but this is enough for even a 64-bit int */
