@@ -7,6 +7,11 @@ fortran: false
 latex: false
 pandoc: false
 
+addons:
+  apt:
+    packages:
+      - devscripts
+
 matrix:
   include:
     - r: 3.1
