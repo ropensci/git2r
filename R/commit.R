@@ -184,6 +184,32 @@ get_upper_limit_of_commits <- function(n) {
     n
 }
 
+shallow_commits <- function(repo, sha, n) {
+    ## List to hold result
+    result <- list()
+
+    ## Get latest commit
+    x <- lookup(repo, sha)
+
+    ## Repeat until no more parent commits
+    repeat {
+        if (n == 0) {
+            break
+        } else if (n > 0) {
+            n <- n - 1
+        }
+
+        if (is.null(x))
+            break
+        result[[length(result) + 1]] <- x
+
+        ## Get parent to commit
+        x <- tryCatch(parents(x)[[1]], error = function(e) NULL)
+    }
+
+    result
+}
+
 ##' Commits
 ##'
 ##' @template repo-param
@@ -304,30 +330,7 @@ commits <- function(repo        = ".",
         ## FIXME: Remove this if-statement when libgit2 supports
         ## shallow clones, see #219.  Note: This workaround does not
         ## use the 'topological', 'time' and 'reverse' flags.
-
-        ## List to hold result
-        result <- list()
-
-        ## Get latest commit
-        x <- lookup(repo, sha)
-
-        ## Repeat until no more parent commits
-        repeat {
-            if (n == 0) {
-                break
-            } else if (n > 0) {
-                n <- n - 1
-            }
-
-            if (is.null(x))
-                break
-            result[[length(result) + 1]] <- x
-
-            ## Get parent to commit
-            x <- tryCatch(parents(x)[[1]], error = function(e) NULL)
-        }
-
-        return(result)
+        return(shallow_commits(repo, sha, n))
     }
 
     if (!is.null(path)) {
