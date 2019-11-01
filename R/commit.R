@@ -166,6 +166,24 @@ commit <- function(repo      = ".",
     .Call(git2r_commit, repo, message, author, committer)
 }
 
+##' Check limit in number of commits
+##' @noRd
+get_upper_limit_of_commits <- function(n) {
+    if (is.null(n)) {
+        n <- -1L
+    } else if (is.numeric(n)) {
+        if (!identical(length(n), 1L))
+            stop("'n' must be integer")
+        if (abs(n - round(n)) >= .Machine$double.eps^0.5)
+            stop("'n' must be integer")
+        n <- as.integer(n)
+    } else {
+        stop("'n' must be integer")
+    }
+
+    n
+}
+
 ##' Commits
 ##'
 ##' @template repo-param
@@ -264,17 +282,7 @@ commits <- function(repo        = ".",
                     ref         = NULL,
                     path        = NULL) {
     ## Check limit in number of commits
-    if (is.null(n)) {
-        n <- -1L
-    } else if (is.numeric(n)) {
-        if (!identical(length(n), 1L))
-            stop("'n' must be integer")
-        if (abs(n - round(n)) >= .Machine$double.eps^0.5)
-            stop("'n' must be integer")
-        n <- as.integer(n)
-    } else {
-        stop("'n' must be integer")
-    }
+    n <- get_upper_limit_of_commits(n)
 
     if (!is.null(path)) {
         if (!(is.character(path) && length(path) == 1)) {
