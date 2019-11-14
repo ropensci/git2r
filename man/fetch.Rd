@@ -4,8 +4,13 @@
 \alias{fetch}
 \title{Fetch new data and update tips}
 \usage{
-fetch(repo = ".", name = NULL, credentials = NULL, verbose = TRUE,
-  refspec = NULL)
+fetch(
+  repo = ".",
+  name = NULL,
+  credentials = NULL,
+  verbose = TRUE,
+  refspec = NULL
+)
 }
 \arguments{
 \item{repo}{a path to a repository or a \code{git_repository}

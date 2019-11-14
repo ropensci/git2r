@@ -4,8 +4,14 @@
 \alias{push}
 \title{Push}
 \usage{
-push(object = ".", name = NULL, refspec = NULL, force = FALSE,
-  credentials = NULL, set_upstream = FALSE)
+push(
+  object = ".",
+  name = NULL,
+  refspec = NULL,
+  force = FALSE,
+  credentials = NULL,
+  set_upstream = FALSE
+)
 }
 \arguments{
 \item{object}{path to repository, or a \code{git_repository} or

@@ -4,8 +4,11 @@
 \alias{cred_ssh_key}
 \title{Create a new passphrase-protected ssh key credential object}
 \usage{
-cred_ssh_key(publickey = ssh_path("id_rsa.pub"),
-  privatekey = ssh_path("id_rsa"), passphrase = character(0))
+cred_ssh_key(
+  publickey = ssh_path("id_rsa.pub"),
+  privatekey = ssh_path("id_rsa"),
+  passphrase = character(0)
+)
 }
 \arguments{
 \item{publickey}{The path to the public key of the
@@ -47,7 +50,9 @@ push(repo, credentials = cred)
 }
 }
 \seealso{
-Other git credential functions: \code{\link{cred_env}},
-  \code{\link{cred_token}}, \code{\link{cred_user_pass}}
+Other git credential functions: 
+\code{\link{cred_env}()},
+\code{\link{cred_token}()},
+\code{\link{cred_user_pass}()}
 }
 \concept{git credential functions}

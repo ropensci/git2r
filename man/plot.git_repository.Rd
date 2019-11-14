@@ -4,8 +4,12 @@
 \alias{plot.git_repository}
 \title{Plot commits over time}
 \usage{
-\method{plot}{git_repository}(x, breaks = c("month", "year", "quarter",
-  "week", "day"), main = NULL, ...)
+\method{plot}{git_repository}(
+  x,
+  breaks = c("month", "year", "quarter", "week", "day"),
+  main = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{The repository to plot}

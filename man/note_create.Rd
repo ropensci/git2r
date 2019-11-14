@@ -4,8 +4,14 @@
 \alias{note_create}
 \title{Add note for a object}
 \usage{
-note_create(object = NULL, message = NULL, ref = NULL,
-  author = NULL, committer = NULL, force = FALSE)
+note_create(
+  object = NULL,
+  message = NULL,
+  ref = NULL,
+  author = NULL,
+  committer = NULL,
+  force = FALSE
+)
 }
 \arguments{
 \item{object}{The object to annotate (git_blob, git_commit or

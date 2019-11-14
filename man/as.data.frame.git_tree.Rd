@@ -21,19 +21,19 @@ The entries in a tree are coerced to a \code{data.frame}
 The \code{data.frame} have the following columns:
 \describe{
 
-\item{filemode}{
+  \item{filemode}{
     The UNIX file attributes of a tree entry
   }
 
-\item{type}{
+  \item{type}{
     String representation of the tree entry type
   }
 
-\item{sha}{
+  \item{sha}{
     The sha of a tree entry
   }
 
-\item{name}{
+  \item{name}{
     The filename of a tree entry
   }
 

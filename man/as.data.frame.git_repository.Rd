@@ -21,27 +21,27 @@ The commits in the repository are coerced to a \code{data.frame}
 The \code{data.frame} have the following columns:
 \describe{
 
-\item{sha}{
+  \item{sha}{
     The 40 character hexadecimal string of the SHA-1
   }
 
-\item{summary}{
+  \item{summary}{
     the short "summary" of the git commit message.
   }
 
-\item{message}{
+  \item{message}{
     the full message of a commit
   }
 
-\item{author}{
+  \item{author}{
     full name of the author
   }
 
-\item{email}{
+  \item{email}{
     email of the author
   }
 
-\item{when}{
+  \item{when}{
     time when the commit happened
   }
 

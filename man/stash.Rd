@@ -4,8 +4,14 @@
 \alias{stash}
 \title{Stash}
 \usage{
-stash(repo = ".", message = as.character(Sys.time()), index = FALSE,
-  untracked = FALSE, ignored = FALSE, stasher = NULL)
+stash(
+  repo = ".",
+  message = as.character(Sys.time()),
+  index = FALSE,
+  untracked = FALSE,
+  ignored = FALSE,
+  stasher = NULL
+)
 }
 \arguments{
 \item{repo}{a path to a repository or a \code{git_repository}

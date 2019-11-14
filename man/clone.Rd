@@ -4,8 +4,15 @@
 \alias{clone}
 \title{Clone a remote repository}
 \usage{
-clone(url = NULL, local_path = NULL, bare = FALSE, branch = NULL,
-  checkout = TRUE, credentials = NULL, progress = TRUE)
+clone(
+  url = NULL,
+  local_path = NULL,
+  bare = FALSE,
+  branch = NULL,
+  checkout = TRUE,
+  credentials = NULL,
+  progress = TRUE
+)
 }
 \arguments{
 \item{url}{The remote repository to clone}

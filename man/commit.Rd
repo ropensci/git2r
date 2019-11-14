@@ -4,8 +4,14 @@
 \alias{commit}
 \title{Commit}
 \usage{
-commit(repo = ".", message = NULL, all = FALSE, session = FALSE,
-  author = NULL, committer = NULL)
+commit(
+  repo = ".",
+  message = NULL,
+  all = FALSE,
+  session = FALSE,
+  author = NULL,
+  committer = NULL
+)
 }
 \arguments{
 \item{repo}{a path to a repository or a \code{git_repository}

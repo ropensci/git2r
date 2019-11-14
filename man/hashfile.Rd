@@ -22,11 +22,11 @@ The blob is not written to the object database.
 ## on Windows. The example use writeChar to have more control.
 path <- tempfile()
 f <- file(path, "wb")
-writeChar("Hello, world!\\n", f, eos = NULL)
+writeChar("Hello, world!\n", f, eos = NULL)
 close(f)
 
 ## Generate hash
 hashfile(path)
-identical(hashfile(path), hash("Hello, world!\\n"))
+identical(hashfile(path), hash("Hello, world!\n"))
 }
 }

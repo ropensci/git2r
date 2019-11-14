@@ -14,7 +14,7 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{base}{\code{\link[base]{diff}}, \code{\link[base]{merge}}, \code{\link[base]{as.data.frame}}}
+  \item{base}{\code{\link[base]{as.data.frame}}, \code{\link[base]{diff}}, \code{\link[base]{merge}}}
 
   \item{utils}{\code{\link[utils]{head}}}
 }}
