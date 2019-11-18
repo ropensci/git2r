@@ -23,10 +23,14 @@ sessionInfo()
 w1 <- structure(list(time = 1395567947, offset = 60),
                class = "git_time")
 stopifnot(identical(when(w1), "2014-03-23 09:45:47"))
+stopifnot(identical(when(w1, origin = "1980-02-02", tz = "Europe/Stockholm"),
+                    "2024-04-23 11:45:47"))
 
 s1 <- structure(list(name = "Alice", email = "alice@example.org", when = w1),
                 class = "git_signature")
 stopifnot(identical(when(s1), "2014-03-23 09:45:47"))
+stopifnot(identical(when(s1, origin = "1980-02-02", tz = "Europe/Stockholm"),
+                    "2024-04-23 11:45:47"))
 
 w2 <- structure(list(time = 1395567950, offset = 60),
                class = "git_time")
@@ -39,6 +43,8 @@ c1 <- structure(list(sha = "166f3f779fd7e4165aaa43f2828050ce040052b0",
                      message = "A commit message"),
                 class = "git_commit")
 stopifnot(identical(when(c1), "2014-03-23 09:45:47"))
+stopifnot(identical(when(c1, origin = "1980-02-02", tz = "Europe/Stockholm"),
+                    "2024-04-23 11:45:47"))
 
 t1 <- structure(list(sha = "166f3f779fd7e4165aaa43f2828050ce040052b0",
                      message = "A tag message",
@@ -47,3 +53,5 @@ t1 <- structure(list(sha = "166f3f779fd7e4165aaa43f2828050ce040052b0",
                      target = "166f3f779fd7e4165aaa43f2828050ce040052b0"),
                 class = "git_tag")
 stopifnot(identical(when(t1), "2014-03-23 09:45:47"))
+stopifnot(identical(when(t1, origin = "1980-02-02", tz = "Europe/Stockholm"),
+                    "2024-04-23 11:45:47"))
