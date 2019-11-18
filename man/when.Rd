@@ -4,7 +4,7 @@
 \alias{when}
 \title{When}
 \usage{
-when(object, origin = "1970-01-01", tz = "GMT")
+when(object, origin = "1970-01-01", tz = "GMT", usetz = TRUE)
 }
 \arguments{
 \item{object}{the \code{object} to extract the time slot from.}
@@ -17,6 +17,10 @@ when(object, origin = "1970-01-01", tz = "GMT")
     but \code{""} is the current time zone, and \code{"GMT"} is UTC
     (Universal Time, Coordinated).  Invalid values are most commonly
     treated as UTC, on some platforms with a warning.}
+
+\item{usetz}{logical.  Should the time zone abbreviation be appended
+    to the output?  This is used in printing times, and more reliable
+    than using \code{"\%Z"}.}
 }
 \value{
 A \code{character} vector of length one.

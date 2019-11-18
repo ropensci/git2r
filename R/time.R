@@ -22,6 +22,7 @@
 ##' use your local timezone, set \code{tz = Sys.timezone()}.
 ##'
 ##' @inheritParams base::as.POSIXct
+##' @inheritParams base::strptime
 ##' @seealso \code{\link{when}}
 ##' @name git_time
 ##' @examples
@@ -48,8 +49,14 @@ NULL
 
 ##' @rdname git_time
 ##' @export
-as.character.git_time <- function(x,  origin = "1970-01-01", tz = "GMT", ...) {
-    as.character(as.POSIXct(x, origin = origin, tz = tz), ...)
+as.character.git_time <- function(x,  origin = "1970-01-01", tz = "GMT", usetz = TRUE, ...) {
+    as.character(format(as.POSIXct(x, origin = origin, tz = tz), usetz = usetz), ...)
+}
+
+##' @rdname git_time
+##' @export
+format.git_time <- function(x,  origin = "1970-01-01", tz = "GMT", usetz = TRUE, ...) {
+    format(as.POSIXct(x, origin = origin, tz = tz), usetz = usetz, ...)
 }
 
 ##' @rdname git_time
@@ -60,7 +67,7 @@ as.POSIXct.git_time <- function(x, origin = "1970-01-01", tz = "GMT", ...) {
 
 ##' @rdname git_time
 ##' @export
-print.git_time <- function(x,  origin = "1970-01-01", tz = "GMT", ...) {
-    cat(sprintf("%s\n", as.character(x, origin = origin, tz = tz, ...)))
+print.git_time <- function(x,  origin = "1970-01-01", tz = "GMT", usetz = TRUE, ...) {
+    cat(sprintf("%s\n", as.character(x, origin = origin, tz = tz, usetz = usetz, ...)))
     invisible(x)
 }

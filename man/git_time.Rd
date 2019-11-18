@@ -3,15 +3,18 @@
 \name{git_time}
 \alias{git_time}
 \alias{as.character.git_time}
+\alias{format.git_time}
 \alias{as.POSIXct.git_time}
 \alias{print.git_time}
 \title{Time}
 \usage{
-\method{as.character}{git_time}(x, origin = "1970-01-01", tz = "GMT", ...)
+\method{as.character}{git_time}(x, origin = "1970-01-01", tz = "GMT", usetz = TRUE, ...)
+
+\method{format}{git_time}(x, origin = "1970-01-01", tz = "GMT", usetz = TRUE, ...)
 
 \method{as.POSIXct}{git_time}(x, origin = "1970-01-01", tz = "GMT", ...)
 
-\method{print}{git_time}(x, origin = "1970-01-01", tz = "GMT", ...)
+\method{print}{git_time}(x, origin = "1970-01-01", tz = "GMT", usetz = TRUE, ...)
 }
 \arguments{
 \item{x}{\R  object to be converted.}
@@ -24,6 +27,10 @@
     but \code{""} is the current time zone, and \code{"GMT"} is UTC
     (Universal Time, Coordinated).  Invalid values are most commonly
     treated as UTC, on some platforms with a warning.}
+
+\item{usetz}{logical.  Should the time zone abbreviation be appended
+    to the output?  This is used in printing times, and more reliable
+    than using \code{"\%Z"}.}
 
 \item{...}{further arguments to be passed to or from other methods.}
 }
