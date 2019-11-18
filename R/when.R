@@ -21,6 +21,7 @@
 ##' @param object the \code{object} to extract the time slot from.
 ##' @inheritParams base::as.POSIXct
 ##' @return A \code{character} vector of length one.
+##' @seealso \code{\link{git_time}}
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -40,6 +41,7 @@
 ##'
 ##' when(commits(repo)[[1]])
 ##' when(tags(repo)[[1]])
+##' when(tags(repo)[[1]], tz = Sys.timezone())
 ##' }
 when <- function(object, origin = "1970-01-01", tz = "GMT") {
     if (inherits(object, "git_commit"))

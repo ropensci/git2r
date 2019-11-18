@@ -14,18 +14,53 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+##' Time
+##'
+##' The class \code{git_time} stores the time a Git object was created.
+##'
+##' The default is to use \code{origin = "1970-01-01"} and \code{tz = "GMT"}. To
+##' use your local timezone, set \code{tz = Sys.timezone()}.
+##'
+##' @inheritParams base::as.POSIXct
+##' @seealso \code{\link{when}}
+##' @name git_time
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a first user and commit a file
+##' config(repo, user.name = "Alice", user.email = "alice@@example.org")
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit(repo, "First commit message")
+##'
+##' ## Create tag
+##' tag(repo, "Tagname", "Tag message")
+##'
+##' as.POSIXct(commits(repo)[[1]]$author$when)
+##' as.POSIXct(tags(repo)[[1]]$tagger$when)
+##' as.POSIXct(tags(repo)[[1]]$tagger$when, tz = Sys.timezone())
+##' }
+NULL
+
+##' @rdname git_time
 ##' @export
 as.character.git_time <- function(x,  origin = "1970-01-01", tz = "GMT", ...) {
-    as.character(as.POSIXct(x, origin = origin, tz = tz))
+    as.character(as.POSIXct(x, origin = origin, tz = tz), ...)
 }
 
+##' @rdname git_time
 ##' @export
 as.POSIXct.git_time <- function(x, origin = "1970-01-01", tz = "GMT", ...) {
-    as.POSIXct(x$time, origin = origin, tz = tz)
+    as.POSIXct(x$time, origin = origin, tz = tz, ...)
 }
 
+##' @rdname git_time
 ##' @export
 print.git_time <- function(x,  origin = "1970-01-01", tz = "GMT", ...) {
-    cat(sprintf("%s\n", as.character(x, origin = origin, tz = tz)))
+    cat(sprintf("%s\n", as.character(x, origin = origin, tz = tz, ...)))
     invisible(x)
 }
