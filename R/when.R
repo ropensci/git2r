@@ -19,7 +19,10 @@
 ##' Help method to extract the time as a character string from a
 ##' git_commit, git_signature, git_tag and git_time object.
 ##' @param object the \code{object} to extract the time slot from.
+##' @inheritParams base::as.POSIXct
+##' @inheritParams base::strptime
 ##' @return A \code{character} vector of length one.
+##' @seealso \code{\link{git_time}}
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -39,17 +42,18 @@
 ##'
 ##' when(commits(repo)[[1]])
 ##' when(tags(repo)[[1]])
+##' when(tags(repo)[[1]], tz = Sys.timezone())
 ##' }
-when <- function(object) {
+when <- function(object, tz = "GMT", origin = "1970-01-01", usetz = TRUE) {
     if (inherits(object, "git_commit"))
-        return(as.character(object$author$when))
+        return(as.character(object$author$when, tz = tz, origin = origin, usetz = usetz))
     if (inherits(object, "git_signature"))
-        return(as.character(object$when))
+        return(as.character(object$when, tz = tz, origin = origin, usetz = usetz))
     if (inherits(object, "git_stash"))
-        return(as.character(object$stasher$when))
+        return(as.character(object$stasher$when, tz = tz, origin = origin, usetz = usetz))
     if (inherits(object, "git_tag"))
-        return(as.character(object$tagger$when))
+        return(as.character(object$tagger$when, tz = tz, origin = origin, usetz = usetz))
     if (inherits(object, "git_time"))
-        return(as.character(object))
+        return(as.character(object, tz = tz, origin = origin, usetz = usetz))
     stop("Invalid 'object'")
 }

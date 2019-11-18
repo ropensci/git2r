@@ -14,18 +14,60 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+##' Time
+##'
+##' The class \code{git_time} stores the time a Git object was created.
+##'
+##' The default is to use \code{tz = "GMT"} and \code{origin = "1970-01-01"}. To
+##' use your local timezone, set \code{tz = Sys.timezone()}.
+##'
+##' @inheritParams base::as.POSIXct
+##' @inheritParams base::strptime
+##' @seealso \code{\link{when}}
+##' @name git_time
+##' @examples
+##' \dontrun{
+##' ## Initialize a temporary repository
+##' path <- tempfile(pattern="git2r-")
+##' dir.create(path)
+##' repo <- init(path)
+##'
+##' ## Create a first user and commit a file
+##' config(repo, user.name = "Alice", user.email = "alice@@example.org")
+##' writeLines("Hello world!", file.path(path, "example.txt"))
+##' add(repo, "example.txt")
+##' commit(repo, "First commit message")
+##'
+##' ## Create tag
+##' tag(repo, "Tagname", "Tag message")
+##'
+##' as.POSIXct(commits(repo)[[1]]$author$when)
+##' as.POSIXct(tags(repo)[[1]]$tagger$when)
+##' as.POSIXct(tags(repo)[[1]]$tagger$when, tz = Sys.timezone())
+##' }
+NULL
+
+##' @rdname git_time
 ##' @export
-as.character.git_time <- function(x, ...) {
-    as.character(as.POSIXct(x))
+as.character.git_time <- function(x,  tz = "GMT", origin = "1970-01-01", usetz = TRUE, ...) {
+    as.character(format(as.POSIXct(x, tz = tz, origin = origin), usetz = usetz), ...)
 }
 
+##' @rdname git_time
 ##' @export
-as.POSIXct.git_time <- function(x, ...) {
-    as.POSIXct(x$time, origin = "1970-01-01", tz = "GMT")
+format.git_time <- function(x,  tz = "GMT", origin = "1970-01-01", usetz = TRUE, ...) {
+    format(as.POSIXct(x, tz = tz, origin = origin), usetz = usetz, ...)
 }
 
+##' @rdname git_time
 ##' @export
-print.git_time <- function(x, ...) {
-    cat(sprintf("%s\n", as.character(x)))
+as.POSIXct.git_time <- function(x, tz = "GMT", origin = "1970-01-01", ...) {
+    as.POSIXct(x$time, tz = tz, origin = origin, ...)
+}
+
+##' @rdname git_time
+##' @export
+print.git_time <- function(x,  tz = "GMT", origin = "1970-01-01", usetz = TRUE, ...) {
+    cat(sprintf("%s\n", as.character(x, tz = tz, origin = origin, usetz = usetz, ...)))
     invisible(x)
 }
