@@ -28,3 +28,17 @@ stopifnot(identical(as.POSIXct(git_t),
 stopifnot(identical(print(git_t), git_t))
 
 as.POSIXct(1395567947, origin = "1970-01-01", tz = "-03")
+
+## Test that origin/tz can be passed to as.POSIXct
+stopifnot(identical(as.POSIXct(git_t, origin = "1980-02-02", tz = "Europe/Stockholm"),
+                    as.POSIXct(1395567947, origin = "1980-02-02", tz = "Europe/Stockholm")))
+
+## Test that origin/tz can be passed to as.character
+stopifnot(identical(as.character(git_t, origin = "1980-02-02", tz = "Europe/Stockholm"),
+                    "2024-04-23 11:45:47"))
+
+## Test that origin/tz can be passed to print
+stopifnot(identical(
+    utils::capture.output(print(git_t, origin = "1980-02-02", tz = "Europe/Stockholm")),
+    "2024-04-23 11:45:47"
+))

@@ -15,17 +15,17 @@
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 ##' @export
-as.character.git_time <- function(x, ...) {
-    as.character(as.POSIXct(x))
+as.character.git_time <- function(x,  origin = "1970-01-01", tz = "GMT", ...) {
+    as.character(as.POSIXct(x, origin = origin, tz = tz))
 }
 
 ##' @export
-as.POSIXct.git_time <- function(x, ...) {
-    as.POSIXct(x$time, origin = "1970-01-01", tz = "GMT")
+as.POSIXct.git_time <- function(x, origin = "1970-01-01", tz = "GMT", ...) {
+    as.POSIXct(x$time, origin = origin, tz = tz)
 }
 
 ##' @export
-print.git_time <- function(x, ...) {
-    cat(sprintf("%s\n", as.character(x)))
+print.git_time <- function(x,  origin = "1970-01-01", tz = "GMT", ...) {
+    cat(sprintf("%s\n", as.character(x, origin = origin, tz = tz)))
     invisible(x)
 }
