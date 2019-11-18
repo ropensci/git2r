@@ -8,25 +8,25 @@
 \alias{print.git_time}
 \title{Time}
 \usage{
-\method{as.character}{git_time}(x, origin = "1970-01-01", tz = "GMT", usetz = TRUE, ...)
+\method{as.character}{git_time}(x, tz = "GMT", origin = "1970-01-01", usetz = TRUE, ...)
 
-\method{format}{git_time}(x, origin = "1970-01-01", tz = "GMT", usetz = TRUE, ...)
+\method{format}{git_time}(x, tz = "GMT", origin = "1970-01-01", usetz = TRUE, ...)
 
-\method{as.POSIXct}{git_time}(x, origin = "1970-01-01", tz = "GMT", ...)
+\method{as.POSIXct}{git_time}(x, tz = "GMT", origin = "1970-01-01", ...)
 
-\method{print}{git_time}(x, origin = "1970-01-01", tz = "GMT", usetz = TRUE, ...)
+\method{print}{git_time}(x, tz = "GMT", origin = "1970-01-01", usetz = TRUE, ...)
 }
 \arguments{
 \item{x}{\R  object to be converted.}
-
-\item{origin}{a date-time object, or something which can be coerced by
-    \code{as.POSIXct(tz = "GMT")} to such an object.}
 
 \item{tz}{time zone specification to be used for the conversion,
     \emph{if one is required}.  System-specific (see \link[base]{time zones}),
     but \code{""} is the current time zone, and \code{"GMT"} is UTC
     (Universal Time, Coordinated).  Invalid values are most commonly
     treated as UTC, on some platforms with a warning.}
+
+\item{origin}{a date-time object, or something which can be coerced by
+    \code{as.POSIXct(tz = "GMT")} to such an object.}
 
 \item{usetz}{logical.  Should the time zone abbreviation be appended
     to the output?  This is used in printing times, and more reliable
@@ -38,7 +38,7 @@
 The class \code{git_time} stores the time a Git object was created.
 }
 \details{
-The default is to use \code{origin = "1970-01-01"} and \code{tz = "GMT"}. To
+The default is to use \code{tz = "GMT"} and \code{origin = "1970-01-01"}. To
 use your local timezone, set \code{tz = Sys.timezone()}.
 }
 \examples{

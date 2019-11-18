@@ -18,7 +18,7 @@
 ##'
 ##' The class \code{git_time} stores the time a Git object was created.
 ##'
-##' The default is to use \code{origin = "1970-01-01"} and \code{tz = "GMT"}. To
+##' The default is to use \code{tz = "GMT"} and \code{origin = "1970-01-01"}. To
 ##' use your local timezone, set \code{tz = Sys.timezone()}.
 ##'
 ##' @inheritParams base::as.POSIXct
@@ -49,25 +49,25 @@ NULL
 
 ##' @rdname git_time
 ##' @export
-as.character.git_time <- function(x,  origin = "1970-01-01", tz = "GMT", usetz = TRUE, ...) {
-    as.character(format(as.POSIXct(x, origin = origin, tz = tz), usetz = usetz), ...)
+as.character.git_time <- function(x,  tz = "GMT", origin = "1970-01-01", usetz = TRUE, ...) {
+    as.character(format(as.POSIXct(x, tz = tz, origin = origin), usetz = usetz), ...)
 }
 
 ##' @rdname git_time
 ##' @export
-format.git_time <- function(x,  origin = "1970-01-01", tz = "GMT", usetz = TRUE, ...) {
-    format(as.POSIXct(x, origin = origin, tz = tz), usetz = usetz, ...)
+format.git_time <- function(x,  tz = "GMT", origin = "1970-01-01", usetz = TRUE, ...) {
+    format(as.POSIXct(x, tz = tz, origin = origin), usetz = usetz, ...)
 }
 
 ##' @rdname git_time
 ##' @export
-as.POSIXct.git_time <- function(x, origin = "1970-01-01", tz = "GMT", ...) {
-    as.POSIXct(x$time, origin = origin, tz = tz, ...)
+as.POSIXct.git_time <- function(x, tz = "GMT", origin = "1970-01-01", ...) {
+    as.POSIXct(x$time, tz = tz, origin = origin, ...)
 }
 
 ##' @rdname git_time
 ##' @export
-print.git_time <- function(x,  origin = "1970-01-01", tz = "GMT", usetz = TRUE, ...) {
-    cat(sprintf("%s\n", as.character(x, origin = origin, tz = tz, usetz = usetz, ...)))
+print.git_time <- function(x,  tz = "GMT", origin = "1970-01-01", usetz = TRUE, ...) {
+    cat(sprintf("%s\n", as.character(x, tz = tz, origin = origin, usetz = usetz, ...)))
     invisible(x)
 }
