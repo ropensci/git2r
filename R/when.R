@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2019 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -46,14 +46,19 @@
 ##' }
 when <- function(object, tz = "GMT", origin = "1970-01-01", usetz = TRUE) {
     if (inherits(object, "git_commit"))
-        return(as.character(object$author$when, tz = tz, origin = origin, usetz = usetz))
+        return(as.character(object$author$when, tz = tz, origin = origin,
+                            usetz = usetz))
     if (inherits(object, "git_signature"))
-        return(as.character(object$when, tz = tz, origin = origin, usetz = usetz))
+        return(as.character(object$when, tz = tz, origin = origin,
+                            usetz = usetz))
     if (inherits(object, "git_stash"))
-        return(as.character(object$stasher$when, tz = tz, origin = origin, usetz = usetz))
+        return(as.character(object$stasher$when, tz = tz, origin = origin,
+                            usetz = usetz))
     if (inherits(object, "git_tag"))
-        return(as.character(object$tagger$when, tz = tz, origin = origin, usetz = usetz))
+        return(as.character(object$tagger$when, tz = tz, origin = origin,
+                            usetz = usetz))
     if (inherits(object, "git_time"))
-        return(as.character(object, tz = tz, origin = origin, usetz = usetz))
+        return(as.character(object, tz = tz, origin = origin,
+                            usetz = usetz))
     stop("Invalid 'object'")
 }

@@ -14,7 +14,7 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library("git2r")
+library(git2r)
 
 ## For debugging
 sessionInfo()
@@ -31,21 +31,27 @@ stopifnot(identical(print(git_t), git_t))
 as.POSIXct(1395567947, origin = "1970-01-01", tz = "-03")
 
 ## Test that origin/tz can be passed to as.POSIXct
-stopifnot(identical(as.POSIXct(git_t, tz = "Europe/Stockholm", origin = "1980-02-02"),
-                    as.POSIXct(1395567947, tz = "Europe/Stockholm", origin = "1980-02-02")))
+stopifnot(identical(as.POSIXct(git_t, tz = "Europe/Stockholm",
+                               origin = "1980-02-02"),
+                    as.POSIXct(1395567947, tz = "Europe/Stockholm",
+                               origin = "1980-02-02")))
 
 ## Test that origin/tz can be passed to as.character
-stopifnot(identical(as.character(git_t, tz = "Europe/Stockholm", origin = "1980-02-02"),
+stopifnot(identical(as.character(git_t, tz = "Europe/Stockholm",
+                                 origin = "1980-02-02"),
                     "2024-04-23 11:45:47 CEST"))
-stopifnot(identical(as.character(git_t, tz = "Europe/Stockholm", origin = "1980-02-02", usetz = FALSE),
+stopifnot(identical(as.character(git_t, tz = "Europe/Stockholm",
+                                 origin = "1980-02-02", usetz = FALSE),
                     "2024-04-23 11:45:47"))
 
 ## Test that origin/tz can be passed to print
 stopifnot(identical(
-    utils::capture.output(print(git_t, tz = "Europe/Stockholm", origin = "1980-02-02")),
+    utils::capture.output(print(git_t, tz = "Europe/Stockholm",
+                                origin = "1980-02-02")),
     "2024-04-23 11:45:47 CEST"
 ))
 stopifnot(identical(
-    utils::capture.output(print(git_t, tz = "Europe/Stockholm", origin = "1980-02-02", usetz = FALSE)),
+    utils::capture.output(print(git_t, tz = "Europe/Stockholm",
+                                origin = "1980-02-02", usetz = FALSE)),
     "2024-04-23 11:45:47"
 ))
