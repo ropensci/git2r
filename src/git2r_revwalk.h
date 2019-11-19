@@ -24,6 +24,6 @@
 
 SEXP git2r_revwalk_contributions(SEXP repo, SEXP topological, SEXP time, SEXP reverse);
 SEXP git2r_revwalk_list(SEXP repo, SEXP sha, SEXP topological, SEXP time, SEXP reverse, SEXP max_n);
-SEXP git2r_revwalk_list2(SEXP repo, SEXP sha, SEXP topological, SEXP time, SEXP reverse, SEXP path);
+SEXP git2r_revwalk_list2(SEXP repo, SEXP sha, SEXP topological, SEXP time, SEXP reverse, SEXP max_n, SEXP path);
 
 #endif

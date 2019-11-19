@@ -213,6 +213,8 @@ cleanup:
  * @param time Sort the commits by commit time; can be combined with
  * topological.
  * @param reverse Sort the commits in reverse order
+ * @param max_n n The upper limit of the number of commits to
+ * output. Use max_n < 0 for unlimited number of commits.
  * @param path Only commits modifying this path are selected
  * @return list with S3 class git_commit objects
  */
@@ -222,9 +224,10 @@ SEXP git2r_revwalk_list2 (
     SEXP topological,
     SEXP time,
     SEXP reverse,
+    SEXP max_n,
     SEXP path)
 {
-    int error = GIT_OK, nprotect = 0;
+    int i = 0, error = GIT_OK, nprotect = 0;
     SEXP result = R_NilValue;
     int n;
     unsigned int sort_mode = GIT_SORT_NONE;
@@ -242,6 +245,8 @@ SEXP git2r_revwalk_list2 (
         git2r_error(__func__, NULL, "'time'", git2r_err_logical_arg);
     if (git2r_arg_check_logical(reverse))
         git2r_error(__func__, NULL, "'reverse'", git2r_err_logical_arg);
+    if (git2r_arg_check_integer(max_n))
+        git2r_error(__func__, NULL, "'max_n'", git2r_err_integer_arg);
     if (git2r_arg_check_string(path))
         git2r_error(__func__, NULL, "'path'", git2r_err_string_arg);
 
@@ -286,12 +291,11 @@ SEXP git2r_revwalk_list2 (
     if (error)
         goto cleanup;
 
-    /* Count number of revisions before creating the list. */
-    n = git2r_revwalk_count(walker, -1);
-
-    /* Create the list to store the result. */
-    PROTECT(result = Rf_allocVector(VECSXP, n));
-    nprotect++;
+    n = Rf_asInteger(max_n);
+    if (n < 0) {
+        /* Count number of revisions before creating the list. */
+        n = git2r_revwalk_count(walker, n);
+    }
 
     /* Restart the revwalker. */
     git_revwalk_reset(walker);
@@ -300,7 +304,11 @@ SEXP git2r_revwalk_list2 (
     if (error)
         goto cleanup;
 
-    for (int i = 0; i < n; i++) {
+    /* Create the list to store the result. */
+    PROTECT(result = Rf_allocVector(VECSXP, n));
+    nprotect++;
+
+    while (i < n) {
         git_commit *commit;
         SEXP item;
         git_oid oid;
@@ -359,6 +367,7 @@ SEXP git2r_revwalk_list2 (
                      Rf_mkString(git2r_S3_class__git_commit));
         git2r_commit_init(commit, repo, item);
         git_commit_free(commit);
+        i++;
     }
 
 cleanup:
