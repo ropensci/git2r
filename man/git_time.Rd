@@ -38,8 +38,9 @@
 The class \code{git_time} stores the time a Git object was created.
 }
 \details{
-The default is to use \code{tz = "GMT"} and \code{origin = "1970-01-01"}. To
-use your local timezone, set \code{tz = Sys.timezone()}.
+The default is to use \code{tz = "GMT"} and \code{origin =
+"1970-01-01"}. To use your local timezone, set \code{tz =
+Sys.timezone()}.
 }
 \examples{
 \dontrun{

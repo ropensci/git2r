@@ -30,9 +30,9 @@ bundle_r_package(repo)
 
 ## Build and install bundled package
 wd <- setwd(dirname(path))
-system(sprintf("R CMD build %s", path))
+system(sprintf("R CMD build \%s", path))
 pkg <- list.files(".", pattern = "[.]tar[.]gz$")
-system(sprintf("R CMD INSTALL %s", pkg))
+system(sprintf("R CMD INSTALL \%s", pkg))
 setwd(wd)
 
 ## Reload package
