@@ -44,7 +44,7 @@ $ make install
 
 ### Repository
 
-The central object in the `git2r` package is the S4 class
+The central object in the `git2r` package is the S3 class
 `git_repository`. The following three methods can instantiate a
 repository; `init`, `repository` and `clone`.
 
@@ -220,7 +220,7 @@ commits(repo)[[1]] # Truncated here for readability
 ```coffee
 
 ## Get HEAD of repository
-head(repo)
+repository_head(repo)
 ```
 
 ```
@@ -230,7 +230,7 @@ head(repo)
 ```coffee
 
 ## Check if HEAD is head
-is_head(head(repo))
+is_head(repository_head(repo))
 ```
 
 ```
@@ -240,7 +240,7 @@ is_head(head(repo))
 ```coffee
 
 ## Check if HEAD is local
-is_local(head(repo))
+is_local(repository_head(repo))
 ```
 
 ```
