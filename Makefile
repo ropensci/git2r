@@ -115,11 +115,9 @@ valgrind:
 # 3) Build and check updated package 'make check'
 sync_libgit2:
 	-rm -f src/libgit2/deps/http-parser/*
-	-rm -f src/libgit2/deps/regex/*
 	-rm -rf src/libgit2/include
 	-rm -rf src/libgit2/src
 	-cp -f ../libgit2/deps/http-parser/* src/libgit2/deps/http-parser
-	-cp -f ../libgit2/deps/regex/* src/libgit2/deps/regex
 	-cp -r ../libgit2/include/ src/libgit2/include
 	-rm -f src/libgit2/include/git2/inttypes.h
 	-rm -f src/libgit2/include/git2/stdint.h
