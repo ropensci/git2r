@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2018 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,18 +16,19 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include "git2r_deprecated.h"
 #include "git2r_S3.h"
 #include "git2r_transfer.h"
 
 /**
  * Init slots in S3 class git_transfer_progress
  *
- * @param source A git_transfer_progress object
+ * @param source A GIT2R_INDEXER_PROGRESS object
  * @param dest S3 class git_transfer_progress to initialize
  * @return void
  */
 void git2r_transfer_progress_init(
-    const git_transfer_progress *source,
+    const GIT2R_INDEXER_PROGRESS *source,
     SEXP dest)
 {
     SET_VECTOR_ELT(
