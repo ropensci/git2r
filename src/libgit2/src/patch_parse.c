@@ -33,7 +33,19 @@ typedef struct {
 	char *old_prefix, *new_prefix;
 } git_patch_parsed;
 
-static int header_path_len(git_patch_parse_ctx *ctx)
+static int git_parse_err(const char *fmt, ...) GIT_FORMAT_PRINTF(1, 2);
+static int git_parse_err(const char *fmt, ...)
+{
+	va_list ap;
+
+	va_start(ap, fmt);
+	git_error_vset(GIT_ERROR_PATCH, fmt, ap);
+	va_end(ap);
+
+	return -1;
+}
+
+static size_t header_path_len(git_patch_parse_ctx *ctx)
 {
 	bool inquote = 0;
 	bool quoted = git_parse_ctx_contains_s(&ctx->parse_ctx, "\"");
@@ -219,9 +231,9 @@ static int parse_header_git_deletedfilemode(
 	git_patch_parsed *patch,
 	git_patch_parse_ctx *ctx)
 {
-	git__free((char *)patch->base.delta->old_file.path);
+	git__free((char *)patch->base.delta->new_file.path);
 
-	patch->base.delta->old_file.path = NULL;
+	patch->base.delta->new_file.path = NULL;
 	patch->base.delta->status = GIT_DELTA_DELETED;
 	patch->base.delta->nfiles = 1;
 
@@ -232,9 +244,9 @@ static int parse_header_git_newfilemode(
 	git_patch_parsed *patch,
 	git_patch_parse_ctx *ctx)
 {
-	git__free((char *)patch->base.delta->new_file.path);
+	git__free((char *)patch->base.delta->old_file.path);
 
-	patch->base.delta->new_file.path = NULL;
+	patch->base.delta->old_file.path = NULL;
 	patch->base.delta->status = GIT_DELTA_ADDED;
 	patch->base.delta->nfiles = 1;
 
@@ -479,7 +491,7 @@ done:
 
 static int parse_int(int *out, git_patch_parse_ctx *ctx)
 {
-	git_off_t num;
+	int64_t num;
 
 	if (git_parse_advance_digit(&num, &ctx->parse_ctx, 10) < 0 || !git__is_int(num))
 		return -1;
@@ -753,7 +765,7 @@ static int parse_patch_binary_side(
 {
 	git_diff_binary_t type = GIT_DIFF_BINARY_NONE;
 	git_buf base85 = GIT_BUF_INIT, decoded = GIT_BUF_INIT;
-	git_off_t len;
+	int64_t len;
 	int error = 0;
 
 	if (git_parse_ctx_contains_s(&ctx->parse_ctx, "literal ")) {
@@ -871,6 +883,11 @@ static int parse_patch_binary_nodata(
 
 	if (!old || !new)
 		return git_parse_err("corrupt binary data without paths at line %"PRIuZ, ctx->parse_ctx.line_num);
+
+	if (patch->base.delta->status == GIT_DELTA_ADDED)
+		old = "/dev/null";
+	else if (patch->base.delta->status == GIT_DELTA_DELETED)
+		new = "/dev/null";
 
 	if (git_parse_advance_expected_str(&ctx->parse_ctx, "Binary files ") < 0 ||
 	    git_parse_advance_expected_str(&ctx->parse_ctx, old) < 0 ||
@@ -1008,13 +1025,17 @@ static int check_filenames(git_patch_parsed *patch)
 	/* Prefer the rename filenames as they are unambiguous and unprefixed */
 	if (patch->rename_old_path)
 		patch->base.delta->old_file.path = patch->rename_old_path;
-	else
+	else if (prefixed_old)
 		patch->base.delta->old_file.path = prefixed_old + old_prefixlen;
+	else
+		patch->base.delta->old_file.path = NULL;
 
 	if (patch->rename_new_path)
 		patch->base.delta->new_file.path = patch->rename_new_path;
-	else
+	else if (prefixed_new)
 		patch->base.delta->new_file.path = prefixed_new + new_prefixlen;
+	else
+		patch->base.delta->new_file.path = NULL;
 
 	if (!patch->base.delta->old_file.path &&
 	    !patch->base.delta->new_file.path)

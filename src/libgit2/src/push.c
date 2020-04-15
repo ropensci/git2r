@@ -196,7 +196,7 @@ int git_push_update_tips(git_push *push, const git_remote_callbacks *callbacks)
 			continue;
 
 		/* Update the remote ref */
-		if (git_oid_iszero(&push_spec->loid)) {
+		if (git_oid_is_zero(&push_spec->loid)) {
 			error = git_reference_lookup(&remote_ref, push->remote->repo, git_buf_cstr(&remote_ref_name));
 
 			if (error >= 0) {
@@ -281,7 +281,7 @@ static int queue_objects(git_push *push)
 		git_object_t type;
 		size_t size;
 
-		if (git_oid_iszero(&spec->loid))
+		if (git_oid_is_zero(&spec->loid))
 			/*
 			 * Delete reference on remote side;
 			 * nothing to do here.
@@ -319,7 +319,7 @@ static int queue_objects(git_push *push)
 		if (!spec->refspec.force) {
 			git_oid base;
 
-			if (git_oid_iszero(&spec->roid))
+			if (git_oid_is_zero(&spec->roid))
 				continue;
 
 			if (!git_odb_exists(push->repo->_odb, &spec->roid)) {
@@ -346,7 +346,7 @@ static int queue_objects(git_push *push)
 	}
 
 	git_vector_foreach(&push->remote->refs, i, head) {
-		if (git_oid_iszero(&head->oid))
+		if (git_oid_is_zero(&head->oid))
 			continue;
 
 		/* TODO */
@@ -547,9 +547,14 @@ void git_push_free(git_push *push)
 	git__free(push);
 }
 
-int git_push_init_options(git_push_options *opts, unsigned int version)
+int git_push_options_init(git_push_options *opts, unsigned int version)
 {
 	GIT_INIT_STRUCTURE_FROM_TEMPLATE(
 		opts, version, git_push_options, GIT_PUSH_OPTIONS_INIT);
 	return 0;
+}
+
+int git_push_init_options(git_push_options *opts, unsigned int version)
+{
+	return git_push_options_init(opts, version);
 }

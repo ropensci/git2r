@@ -647,6 +647,8 @@ extern bool git_path_isvalid(
  */
 int git_path_normalize_slashes(git_buf *out, const char *path);
 
+bool git_path_supports_symlinks(const char *dir);
+
 /**
  * Validate a system file's ownership
  *

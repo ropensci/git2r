@@ -38,7 +38,7 @@ struct tree_walk_context {
 
 struct pack_write_context {
 	git_indexer *indexer;
-	git_transfer_progress *stats;
+	git_indexer_progress *stats;
 };
 
 struct walk_object {
@@ -141,12 +141,10 @@ int git_packbuilder_new(git_packbuilder **out, git_repository *repo)
 	pb = git__calloc(1, sizeof(*pb));
 	GIT_ERROR_CHECK_ALLOC(pb);
 
-	pb->object_ix = git_oidmap_alloc();
-	if (!pb->object_ix)
+	if (git_oidmap_new(&pb->object_ix) < 0)
 		goto on_error;
 
-	pb->walk_objects = git_oidmap_alloc();
-	if (!pb->walk_objects)
+	if (git_oidmap_new(&pb->walk_objects) < 0)
 		goto on_error;
 
 	git_pool_init(&pb->object_pool, sizeof(struct walk_object));
@@ -194,24 +192,26 @@ unsigned int git_packbuilder_set_threads(git_packbuilder *pb, unsigned int n)
 	return pb->nr_threads;
 }
 
-static void rehash(git_packbuilder *pb)
+static int rehash(git_packbuilder *pb)
 {
 	git_pobject *po;
-	size_t pos, i;
-	int ret;
+	size_t i;
 
 	git_oidmap_clear(pb->object_ix);
+
 	for (i = 0, po = pb->object_list; i < pb->nr_objects; i++, po++) {
-		pos = git_oidmap_put(pb->object_ix, &po->id, &ret);
-		git_oidmap_set_value_at(pb->object_ix, pos, po);
+		if (git_oidmap_set(pb->object_ix, &po->id, po) < 0)
+			return -1;
 	}
+
+	return 0;
 }
 
 int git_packbuilder_insert(git_packbuilder *pb, const git_oid *oid,
 			   const char *name)
 {
 	git_pobject *po;
-	size_t newsize, pos;
+	size_t newsize;
 	int ret;
 
 	assert(pb && oid);
@@ -223,7 +223,7 @@ int git_packbuilder_insert(git_packbuilder *pb, const git_oid *oid,
 
 	if (pb->nr_objects >= pb->nr_alloc) {
 		GIT_ERROR_CHECK_ALLOC_ADD(&newsize, pb->nr_alloc, 1024);
-		GIT_ERROR_CHECK_ALLOC_MULTIPLY(&newsize, newsize, 3 / 2);
+		GIT_ERROR_CHECK_ALLOC_MULTIPLY(&newsize, newsize / 2, 3);
 
 		if (!git__is_uint32(newsize)) {
 			git_error_set(GIT_ERROR_NOMEMORY, "packfile too large to fit in memory.");
@@ -235,7 +235,9 @@ int git_packbuilder_insert(git_packbuilder *pb, const git_oid *oid,
 		pb->object_list = git__reallocarray(pb->object_list,
 			pb->nr_alloc, sizeof(*po));
 		GIT_ERROR_CHECK_ALLOC(pb->object_list);
-		rehash(pb);
+
+		if (rehash(pb) < 0)
+			return -1;
 	}
 
 	po = pb->object_list + pb->nr_objects;
@@ -248,13 +250,10 @@ int git_packbuilder_insert(git_packbuilder *pb, const git_oid *oid,
 	git_oid_cpy(&po->id, oid);
 	po->hash = name_hash(name);
 
-	pos = git_oidmap_put(pb->object_ix, &po->id, &ret);
-	if (ret < 0) {
+	if (git_oidmap_set(pb->object_ix, &po->id, po) < 0) {
 		git_error_set_oom();
-		return ret;
+		return -1;
 	}
-	assert(ret != 0);
-	git_oidmap_set_value_at(pb->object_ix, pos, po);
 
 	pb->done = false;
 
@@ -514,15 +513,12 @@ static int cb_tag_foreach(const char *name, git_oid *oid, void *data)
 {
 	git_packbuilder *pb = data;
 	git_pobject *po;
-	size_t pos;
 
 	GIT_UNUSED(name);
 
-	pos = git_oidmap_lookup_index(pb->object_ix, oid);
-	if (!git_oidmap_valid_index(pb->object_ix, pos))
+	if ((po = git_oidmap_get(pb->object_ix, oid)) == NULL)
 		return 0;
 
-	po = git_oidmap_value_at(pb->object_ix, pos);
 	po->tagged = 1;
 
 	/* TODO: peel objects */
@@ -1383,12 +1379,12 @@ int git_packbuilder_write(
 	git_packbuilder *pb,
 	const char *path,
 	unsigned int mode,
-	git_transfer_progress_cb progress_cb,
+	git_indexer_progress_cb progress_cb,
 	void *progress_cb_payload)
 {
 	git_indexer_options opts = GIT_INDEXER_OPTIONS_INIT;
 	git_indexer *indexer;
-	git_transfer_progress stats;
+	git_indexer_progress stats;
 	struct pack_write_context ctx;
 	int t;
 
@@ -1401,7 +1397,7 @@ int git_packbuilder_write(
 		&indexer, path, mode, pb->odb, &opts) < 0)
 		return -1;
 
-	if (!git_repository__cvar(&t, pb->repo, GIT_CVAR_FSYNCOBJECTFILES) && t)
+	if (!git_repository__configmap_lookup(&t, pb->repo, GIT_CONFIGMAP_FSYNCOBJECTFILES) && t)
 		git_indexer__set_fsync(indexer, 1);
 
 	ctx.indexer = indexer;
@@ -1539,18 +1535,15 @@ static int lookup_walk_object(struct walk_object **out, git_packbuilder *pb, con
 
 static int retrieve_object(struct walk_object **out, git_packbuilder *pb, const git_oid *id)
 {
-	int error;
-	size_t pos;
 	struct walk_object *obj;
+	int error;
 
-	pos = git_oidmap_lookup_index(pb->walk_objects, id);
-	if (git_oidmap_valid_index(pb->walk_objects, pos)) {
-		obj = git_oidmap_value_at(pb->walk_objects, pos);
-	} else {
+	if ((obj = git_oidmap_get(pb->walk_objects, id)) == NULL) {
 		if ((error = lookup_walk_object(&obj, pb, id)) < 0)
 			return error;
 
-		git_oidmap_insert(pb->walk_objects, &obj->id, obj, &error);
+		if ((error = git_oidmap_set(pb->walk_objects, &obj->id, obj)) < 0)
+			return error;
 	}
 
 	*out = obj;

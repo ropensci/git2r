@@ -11,10 +11,10 @@
 #include "git2/oid.h"
 
 #include "buffer.h"
-#include "fileops.h"
+#include "futils.h"
 #include "filebuf.h"
-#include "netops.h"
 #include "refs.h"
+#include "net.h"
 #include "repository.h"
 
 int git_fetchhead_ref_cmp(const void *a, const void *b)
@@ -39,18 +39,18 @@ int git_fetchhead_ref_cmp(const void *a, const void *b)
 
 static char *sanitized_remote_url(const char *remote_url)
 {
-	gitno_connection_data url = {0};
+	git_net_url url = GIT_NET_URL_INIT;
 	char *sanitized = NULL;
 	int error;
 
-	if (gitno_connection_data_from_url(&url, remote_url, NULL) == 0) {
+	if (git_net_url_parse(&url, remote_url) == 0) {
 		git_buf buf = GIT_BUF_INIT;
 
-		git__free(url.user);
-		git__free(url.pass);
-		url.user = url.pass = NULL;
+		git__free(url.username);
+		git__free(url.password);
+		url.username = url.password = NULL;
 
-		if ((error = gitno_connection_data_fmt(&buf, &url)) < 0)
+		if ((error = git_net_url_fmt(&buf, &url)) < 0)
 			goto fallback;
 
 		sanitized = git_buf_detach(&buf);
@@ -60,7 +60,7 @@ fallback:
 	if (!sanitized)
 		sanitized = git__strdup(remote_url);
 
-	gitno_connection_data_free_ptrs(&url);
+	git_net_url_dispose(&url);
 	return sanitized;
 }
 

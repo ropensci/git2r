@@ -323,7 +323,7 @@ typedef struct {
  * @param version The struct version; pass `GIT_REPOSITORY_INIT_OPTIONS_VERSION`.
  * @return Zero on success; -1 on failure.
  */
-GIT_EXTERN(int) git_repository_init_init_options(
+GIT_EXTERN(int) git_repository_init_options_init(
 	git_repository_init_options *opts,
 	unsigned int version);
 
@@ -438,7 +438,8 @@ typedef enum {
 	GIT_REPOSITORY_ITEM_HOOKS,
 	GIT_REPOSITORY_ITEM_LOGS,
 	GIT_REPOSITORY_ITEM_MODULES,
-	GIT_REPOSITORY_ITEM_WORKTREES
+	GIT_REPOSITORY_ITEM_WORKTREES,
+	GIT_REPOSITORY_ITEM__LAST
 } git_repository_item_t;
 
 /**
@@ -640,6 +641,18 @@ GIT_EXTERN(int) git_repository_message_remove(git_repository *repo);
  */
 GIT_EXTERN(int) git_repository_state_cleanup(git_repository *repo);
 
+/**
+ * Callback used to iterate over each FETCH_HEAD entry
+ *
+ * @see git_repository_fetchhead_foreach
+ *
+ * @param ref_name The reference name
+ * @param remote_url The remote URL
+ * @param oid The reference target OID
+ * @param is_merge Was the reference the result of a merge
+ * @param payload Payload passed to git_repository_fetchhead_foreach
+ * @return non-zero to terminate the iteration
+ */
 typedef int GIT_CALLBACK(git_repository_fetchhead_foreach_cb)(const char *ref_name,
 	const char *remote_url,
 	const git_oid *oid,
@@ -662,6 +675,15 @@ GIT_EXTERN(int) git_repository_fetchhead_foreach(
 	git_repository_fetchhead_foreach_cb callback,
 	void *payload);
 
+/**
+ * Callback used to iterate over each MERGE_HEAD entry
+ *
+ * @see git_repository_mergehead_foreach
+ *
+ * @param oid The merge OID
+ * @param payload Payload passed to git_repository_mergehead_foreach
+ * @return non-zero to terminate the iteration
+ */
 typedef int GIT_CALLBACK(git_repository_mergehead_foreach_cb)(const git_oid *oid,
 	void *payload);
 

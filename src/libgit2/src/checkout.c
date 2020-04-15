@@ -7,8 +7,6 @@
 
 #include "checkout.h"
 
-#include <assert.h>
-
 #include "git2/repository.h"
 #include "git2/refs.h"
 #include "git2/tree.h"
@@ -1391,7 +1389,7 @@ static bool should_remove_existing(checkout_data *data)
 {
 	int ignorecase;
 
-	if (git_repository__cvar(&ignorecase, data->repo, GIT_CVAR_IGNORECASE) < 0) {
+	if (git_repository__configmap_lookup(&ignorecase, data->repo, GIT_CONFIGMAP_IGNORECASE) < 0) {
 		ignorecase = 0;
 	}
 
@@ -1893,11 +1891,18 @@ static int checkout_create_the_new(
 				return error;
 		}
 
-		if (actions[i] & CHECKOUT_ACTION__UPDATE_BLOB) {
-			error = checkout_blob(data, &delta->new_file);
-			if (error < 0)
+		if (actions[i] & CHECKOUT_ACTION__UPDATE_BLOB && !S_ISLNK(delta->new_file.mode)) {
+			if ((error = checkout_blob(data, &delta->new_file)) < 0)
 				return error;
+			data->completed_steps++;
+			report_progress(data, delta->new_file.path);
+		}
+	}
 
+	git_vector_foreach(&data->diff->deltas, i, delta) {
+		if (actions[i] & CHECKOUT_ACTION__UPDATE_BLOB && S_ISLNK(delta->new_file.mode)) {
+			if ((error = checkout_blob(data, &delta->new_file)) < 0)
+				return error;
 			data->completed_steps++;
 			report_progress(data, delta->new_file.path);
 		}
@@ -2463,12 +2468,12 @@ static int checkout_data_init(
 
 	data->pfx = git_pathspec_prefix(&data->opts.paths);
 
-	if ((error = git_repository__cvar(
-			 &data->can_symlink, repo, GIT_CVAR_SYMLINKS)) < 0)
+	if ((error = git_repository__configmap_lookup(
+			 &data->can_symlink, repo, GIT_CONFIGMAP_SYMLINKS)) < 0)
 		goto cleanup;
 
-	if ((error = git_repository__cvar(
-			 &data->respect_filemode, repo, GIT_CVAR_FILEMODE)) < 0)
+	if ((error = git_repository__configmap_lookup(
+			 &data->respect_filemode, repo, GIT_CONFIGMAP_FILEMODE)) < 0)
 		goto cleanup;
 
 	if (!data->opts.baseline && !data->opts.baseline_index) {
@@ -2518,11 +2523,11 @@ static int checkout_data_init(
 	git_pool_init(&data->pool, 1);
 
 	if ((error = git_vector_init(&data->removes, 0, git__strcmp_cb)) < 0 ||
-		(error = git_vector_init(&data->remove_conflicts, 0, NULL)) < 0 ||
-		(error = git_vector_init(&data->update_conflicts, 0, NULL)) < 0 ||
-		(error = git_buf_puts(&data->target_path, data->opts.target_directory)) < 0 ||
-		(error = git_path_to_dir(&data->target_path)) < 0 ||
-		(error = git_strmap_alloc(&data->mkdir_map)) < 0)
+	    (error = git_vector_init(&data->remove_conflicts, 0, NULL)) < 0 ||
+	    (error = git_vector_init(&data->update_conflicts, 0, NULL)) < 0 ||
+	    (error = git_buf_puts(&data->target_path, data->opts.target_directory)) < 0 ||
+	    (error = git_path_to_dir(&data->target_path)) < 0 ||
+	    (error = git_strmap_new(&data->mkdir_map)) < 0)
 		goto cleanup;
 
 	data->target_len = git_buf_len(&data->target_path);
@@ -2791,9 +2796,14 @@ int git_checkout_head(
 	return git_checkout_tree(repo, NULL, opts);
 }
 
-int git_checkout_init_options(git_checkout_options *opts, unsigned int version)
+int git_checkout_options_init(git_checkout_options *opts, unsigned int version)
 {
 	GIT_INIT_STRUCTURE_FROM_TEMPLATE(
 		opts, version, git_checkout_options, GIT_CHECKOUT_OPTIONS_INIT);
 	return 0;
+}
+
+int git_checkout_init_options(git_checkout_options *opts, unsigned int version)
+{
+	return git_checkout_options_init(opts, version);
 }

@@ -217,7 +217,7 @@ GIT_EXTERN(int) git_tag_annotation_create(
  * @param force Overwrite existing tags
  * @return 0 on success; error code otherwise
  */
-GIT_EXTERN(int) git_tag_create_frombuffer(
+GIT_EXTERN(int) git_tag_create_from_buffer(
 	git_oid *oid,
 	git_repository *repo,
 	const char *buffer,
@@ -317,7 +317,16 @@ GIT_EXTERN(int) git_tag_list_match(
 	const char *pattern,
 	git_repository *repo);
 
-
+/**
+ * Callback used to iterate over tag names
+ *
+ * @see git_tag_foreach
+ *
+ * @param name The tag name
+ * @param oid The tag's OID
+ * @param payload Payload passed to git_tag_foreach
+ * @return non-zero to terminate the iteration
+ */
 typedef int GIT_CALLBACK(git_tag_foreach_cb)(const char *name, git_oid *oid, void *payload);
 
 /**

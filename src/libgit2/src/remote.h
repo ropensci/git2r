@@ -29,7 +29,7 @@ struct git_remote {
 	git_transport *transport;
 	git_repository *repo;
 	git_push *push;
-	git_transfer_progress stats;
+	git_indexer_progress stats;
 	unsigned int need_pack;
 	git_remote_autotag_option_t download_tags;
 	int prune_refs;
@@ -45,7 +45,7 @@ typedef struct git_remote_connection_opts {
 
 int git_remote__connect(git_remote *remote, git_direction direction, const git_remote_callbacks *callbacks, const git_remote_connection_opts *conn);
 
-const char* git_remote__urlfordirection(struct git_remote *remote, int direction);
+int git_remote__urlfordirection(git_buf *url_out, struct git_remote *remote, int direction, const git_remote_callbacks *callbacks);
 int git_remote__get_http_proxy(git_remote *remote, bool use_ssl, char **proxy_url);
 
 git_refspec *git_remote__matching_refspec(git_remote *remote, const char *refname);

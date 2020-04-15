@@ -122,7 +122,7 @@ typedef int GIT_CALLBACK(git_submodule_cb)(
  * Submodule update options structure
  *
  * Initialize with `GIT_SUBMODULE_UPDATE_OPTIONS_INIT`. Alternatively, you can
- * use `git_submodule_update_init_options`.
+ * use `git_submodule_update_options_init`.
  *
  */
 typedef struct git_submodule_update_options {
@@ -168,7 +168,7 @@ typedef struct git_submodule_update_options {
  * @param version The struct version; pass `GIT_SUBMODULE_UPDATE_OPTIONS_VERSION`.
  * @return Zero on success; -1 on failure.
  */
-GIT_EXTERN(int) git_submodule_update_init_options(
+GIT_EXTERN(int) git_submodule_update_options_init(
 	git_submodule_update_options *opts, unsigned int version);
 
 /**
@@ -263,7 +263,8 @@ GIT_EXTERN(int) git_submodule_foreach(
  * from the working directory to the new repo.
  *
  * To fully emulate "git submodule add" call this function, then open the
- * submodule repo and perform the clone step as needed.  Lastly, call
+ * submodule repo and perform the clone step as needed (if you don't need
+ * anything custom see `git_submodule_add_clone()`). Lastly, call
  * `git_submodule_add_finalize()` to wrap up adding the new submodule and
  * .gitmodules to the index to be ready to commit.
  *
@@ -284,6 +285,22 @@ GIT_EXTERN(int) git_submodule_add_setup(
 	const char *url,
 	const char *path,
 	int use_gitlink);
+
+/**
+ * Perform the clone step for a newly created submodule.
+ *
+ * This performs the necessary `git_clone` to setup a newly-created submodule.
+ *
+ * @param out The newly created repository object. Optional.
+ * @param submodule The submodule currently waiting for its clone.
+ * @param opts The options to use.
+ *
+ * @return 0 on success, -1 on other errors (see git_clone).
+ */
+GIT_EXTERN(int) git_submodule_clone(
+	git_repository **out,
+	git_submodule *submodule,
+	const git_submodule_update_options *opts);
 
 /**
  * Resolve the setup of a new git submodule.

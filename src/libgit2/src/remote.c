@@ -136,35 +136,6 @@ cleanup:
 	return 0;
 }
 
-#if 0
-/* We could export this as a helper */
-static int get_check_cert(int *out, git_repository *repo)
-{
-	git_config *cfg;
-	const char *val;
-	int error = 0;
-
-	assert(out && repo);
-
-	/* By default, we *DO* want to verify the certificate. */
-	*out = 1;
-
-	/* Go through the possible sources for SSL verification settings, from
-	 * most specific to least specific. */
-
-	/* GIT_SSL_NO_VERIFY environment variable */
-	if ((val = p_getenv("GIT_SSL_NO_VERIFY")) != NULL)
-		return git_config_parse_bool(out, val);
-
-	/* http.sslVerify config setting */
-	if ((error = git_repository_config__weakptr(&cfg, repo)) < 0)
-		return error;
-
-	*out = git_config__get_bool_force(cfg, "http.sslverify", 1);
-	return 0;
-}
-#endif
-
 static int canonicalize_url(git_buf *out, const char *in)
 {
 	if (in == NULL || strlen(in) == 0) {
@@ -217,11 +188,16 @@ static int ensure_remote_doesnot_exist(git_repository *repo, const char *name)
 	return GIT_EEXISTS;
 }
 
-int git_remote_create_init_options(git_remote_create_options *opts, unsigned int version)
+int git_remote_create_options_init(git_remote_create_options *opts, unsigned int version)
 {
 	GIT_INIT_STRUCTURE_FROM_TEMPLATE(
 		opts, version, git_remote_create_options, GIT_REMOTE_CREATE_OPTIONS_INIT);
 	return 0;
+}
+
+int git_remote_create_init_options(git_remote_create_options *opts, unsigned int version)
+{
+	return git_remote_create_options_init(opts, version);
 }
 
 int git_remote_create_with_opts(git_remote **out, const char *url, const git_remote_create_options *opts)
@@ -670,21 +646,44 @@ int git_remote_set_pushurl(git_repository *repo, const char *remote, const char*
 	return set_url(repo, remote, CONFIG_PUSHURL_FMT, url);
 }
 
-const char* git_remote__urlfordirection(git_remote *remote, int direction)
+static int resolve_url(git_buf *resolved_url, const char *url, int direction, const git_remote_callbacks *callbacks)
 {
-	assert(remote);
+	int status;
 
+	if (callbacks && callbacks->resolve_url) {
+		git_buf_clear(resolved_url);
+		status = callbacks->resolve_url(resolved_url, url, direction, callbacks->payload);
+		if (status != GIT_PASSTHROUGH) {
+			git_error_set_after_callback_function(status, "git_resolve_url_cb");
+			git_buf_sanitize(resolved_url);
+			return status;
+		}
+	}
+
+	return git_buf_sets(resolved_url, url);
+}
+
+int git_remote__urlfordirection(git_buf *url_out, struct git_remote *remote, int direction, const git_remote_callbacks *callbacks)
+{
+	const char *url = NULL;
+
+	assert(remote);
 	assert(direction == GIT_DIRECTION_FETCH || direction == GIT_DIRECTION_PUSH);
 
 	if (direction == GIT_DIRECTION_FETCH) {
-		return remote->url;
+		url = remote->url;
+	} else if (direction == GIT_DIRECTION_PUSH) {
+		url = remote->pushurl ? remote->pushurl : remote->url;
 	}
 
-	if (direction == GIT_DIRECTION_PUSH) {
-		return remote->pushurl ? remote->pushurl : remote->url;
+	if (!url) {
+		git_error_set(GIT_ERROR_INVALID,
+			"malformed remote '%s' - missing %s URL",
+			remote->name ? remote->name : "(anonymous)",
+			direction == GIT_DIRECTION_FETCH ? "fetch" : "push");
+		return GIT_EINVALID;
 	}
-
-	return NULL;
+	return resolve_url(url_out, url, direction, callbacks);
 }
 
 int set_transport_callbacks(git_transport *t, const git_remote_callbacks *cbs)
@@ -707,11 +706,11 @@ static int set_transport_custom_headers(git_transport *t, const git_strarray *cu
 int git_remote__connect(git_remote *remote, git_direction direction, const git_remote_callbacks *callbacks, const git_remote_connection_opts *conn)
 {
 	git_transport *t;
-	const char *url;
+	git_buf url = GIT_BUF_INIT;
 	int flags = GIT_TRANSPORTFLAGS_NONE;
 	int error;
 	void *payload = NULL;
-	git_cred_acquire_cb credentials = NULL;
+	git_credential_acquire_cb credentials = NULL;
 	git_transport_cb transport = NULL;
 
 	assert(remote);
@@ -728,39 +727,38 @@ int git_remote__connect(git_remote *remote, git_direction direction, const git_r
 
 	t = remote->transport;
 
-	url = git_remote__urlfordirection(remote, direction);
-	if (url == NULL) {
-		git_error_set(GIT_ERROR_INVALID,
-			"Malformed remote '%s' - missing %s URL",
-			remote->name ? remote->name : "(anonymous)",
-			direction == GIT_DIRECTION_FETCH ? "fetch" : "push");
-		return -1;
-	}
+	if ((error = git_remote__urlfordirection(&url, remote, direction, callbacks)) < 0)
+		goto on_error;
 
 	/* If we don't have a transport object yet, and the caller specified a
 	 * custom transport factory, use that */
 	if (!t && transport &&
 		(error = transport(&t, remote, payload)) < 0)
-		return error;
+		goto on_error;
 
 	/* If we still don't have a transport, then use the global
 	 * transport registrations which map URI schemes to transport factories */
-	if (!t && (error = git_transport_new(&t, remote, url)) < 0)
-		return error;
+	if (!t && (error = git_transport_new(&t, remote, url.ptr)) < 0)
+		goto on_error;
 
 	if ((error = set_transport_custom_headers(t, conn->custom_headers)) != 0)
 		goto on_error;
 
 	if ((error = set_transport_callbacks(t, callbacks)) < 0 ||
-	    (error = t->connect(t, url, credentials, payload, conn->proxy, direction, flags)) != 0)
+	    (error = t->connect(t, url.ptr, credentials, payload, conn->proxy, direction, flags)) != 0)
 		goto on_error;
 
 	remote->transport = t;
 
+	git_buf_dispose(&url);
+
 	return 0;
 
 on_error:
-	t->free(t);
+	if (t)
+		t->free(t);
+
+	git_buf_dispose(&url);
 
 	if (t == remote->transport)
 		remote->transport = NULL;
@@ -1678,20 +1676,24 @@ int git_remote_connected(const git_remote *remote)
 	return remote->transport->is_connected(remote->transport);
 }
 
-void git_remote_stop(git_remote *remote)
+int git_remote_stop(git_remote *remote)
 {
 	assert(remote);
 
 	if (remote->transport && remote->transport->cancel)
 		remote->transport->cancel(remote->transport);
+
+	return 0;
 }
 
-void git_remote_disconnect(git_remote *remote)
+int git_remote_disconnect(git_remote *remote)
 {
 	assert(remote);
 
 	if (git_remote_connected(remote))
 		remote->transport->close(remote->transport);
+
+	return 0;
 }
 
 void git_remote_free(git_remote *remote)
@@ -1770,7 +1772,7 @@ int git_remote_list(git_strarray *remotes_list, git_repository *repo)
 	return 0;
 }
 
-const git_transfer_progress* git_remote_stats(git_remote *remote)
+const git_indexer_progress *git_remote_stats(git_remote *remote)
 {
 	assert(remote);
 	return &remote->stats;

@@ -7,8 +7,6 @@
 
 #include "apply.h"
 
-#include <assert.h>
-
 #include "git2/apply.h"
 #include "git2/patch.h"
 #include "git2/filter.h"
@@ -18,14 +16,11 @@
 #include "git2/repository.h"
 #include "array.h"
 #include "patch.h"
-#include "fileops.h"
+#include "futils.h"
 #include "delta.h"
 #include "zstream.h"
 #include "reader.h"
 #include "index.h"
-
-#define apply_err(...) \
-	( git_error_set(GIT_ERROR_PATCH, __VA_ARGS__), GIT_EAPPLYFAIL )
 
 typedef struct {
 	/* The lines that we allocate ourself are allocated out of the pool.
@@ -34,6 +29,18 @@ typedef struct {
 	git_pool pool;
 	git_vector lines;
 } patch_image;
+
+static int apply_err(const char *fmt, ...) GIT_FORMAT_PRINTF(1, 2);
+static int apply_err(const char *fmt, ...)
+{
+	va_list ap;
+
+	va_start(ap, fmt);
+	git_error_vset(GIT_ERROR_PATCH, fmt, ap);
+	va_end(ap);
+
+	return GIT_EAPPLYFAIL;
+}
 
 static void patch_line_init(
 	git_diff_line *out,
@@ -450,7 +457,6 @@ static int apply_one(
 	git_filemode_t pre_filemode;
 	git_index_entry pre_entry, post_entry;
 	bool skip_preimage = false;
-	size_t pos;
 	int error;
 
 	if ((error = git_patch_from_diff(&patch, diff, i)) < 0)
@@ -475,8 +481,7 @@ static int apply_one(
 	 */
 	if (delta->status != GIT_DELTA_RENAMED &&
 	    delta->status != GIT_DELTA_ADDED) {
-		pos = git_strmap_lookup_index(removed_paths, delta->old_file.path);
-		if (git_strmap_valid_index(removed_paths, pos)) {
+		if (git_strmap_exists(removed_paths, delta->old_file.path)) {
 			error = apply_err("path '%s' has been renamed or deleted", delta->old_file.path);
 			goto done;
 		}
@@ -545,7 +550,7 @@ static int apply_one(
 	if (delta->status != GIT_DELTA_DELETED) {
 		if ((error = git_apply__patch(&post_contents, &filename, &mode,
 				pre_contents.ptr, pre_contents.size, patch, opts)) < 0 ||
-			(error = git_blob_create_frombuffer(&post_id, repo,
+			(error = git_blob_create_from_buffer(&post_id, repo,
 				post_contents.ptr, post_contents.size)) < 0)
 			goto done;
 
@@ -560,7 +565,7 @@ static int apply_one(
 
 	if (delta->status == GIT_DELTA_RENAMED ||
 	    delta->status == GIT_DELTA_DELETED)
-		git_strmap_insert(removed_paths, delta->old_file.path, (char *)delta->old_file.path, &error);
+		error = git_strmap_set(removed_paths, delta->old_file.path, (char *) delta->old_file.path);
 
 	if (delta->status == GIT_DELTA_RENAMED ||
 	    delta->status == GIT_DELTA_ADDED)
@@ -588,7 +593,7 @@ static int apply_deltas(
 	size_t i;
 	int error = 0;
 
-	if (git_strmap_alloc(&removed_paths) < 0)
+	if (git_strmap_new(&removed_paths) < 0)
 		return -1;
 
 	for (i = 0; i < git_diff_num_deltas(diff); i++) {
@@ -761,6 +766,13 @@ done:
 	return error;
 }
 
+int git_apply_options_init(git_apply_options *opts, unsigned int version)
+{
+	GIT_INIT_STRUCTURE_FROM_TEMPLATE(
+		opts, version, git_apply_options, GIT_APPLY_OPTIONS_INIT);
+	return 0;
+}
+
 /*
  * Handle the three application options ("locations"):
  *
@@ -831,11 +843,15 @@ int git_apply(
 	    (error = git_reader_for_index(&post_reader, repo, postimage)) < 0)
 		goto done;
 
-	if ((error = git_repository_index(&index, repo)) < 0 ||
-	    (error = git_indexwriter_init(&indexwriter, index)) < 0)
-		goto done;
+	if (!(opts.flags & GIT_APPLY_CHECK))
+		if ((error = git_repository_index(&index, repo)) < 0 ||
+		    (error = git_indexwriter_init(&indexwriter, index)) < 0)
+			goto done;
 
 	if ((error = apply_deltas(repo, pre_reader, preimage, post_reader, postimage, diff, &opts)) < 0)
+		goto done;
+
+	if ((opts.flags & GIT_APPLY_CHECK))
 		goto done;
 
 	switch (location) {

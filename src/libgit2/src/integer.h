@@ -8,16 +8,23 @@
 #define INCLUDE_integer_h__
 
 /** @return true if p fits into the range of a size_t */
-GIT_INLINE(int) git__is_sizet(git_off_t p)
+GIT_INLINE(int) git__is_sizet(int64_t p)
 {
 	size_t r = (size_t)p;
-	return p == (git_off_t)r;
+	return p == (int64_t)r;
 }
 
 /** @return true if p fits into the range of an ssize_t */
 GIT_INLINE(int) git__is_ssizet(size_t p)
 {
 	ssize_t r = (ssize_t)p;
+	return p == (size_t)r;
+}
+
+/** @return true if p fits into the range of a uint16_t */
+GIT_INLINE(int) git__is_uint16(size_t p)
+{
+	uint16_t r = (uint16_t)p;
 	return p == (size_t)r;
 }
 
@@ -29,10 +36,10 @@ GIT_INLINE(int) git__is_uint32(size_t p)
 }
 
 /** @return true if p fits into the range of an unsigned long */
-GIT_INLINE(int) git__is_ulong(git_off_t p)
+GIT_INLINE(int) git__is_ulong(int64_t p)
 {
 	unsigned long r = (unsigned long)p;
-	return p == (git_off_t)r;
+	return p == (int64_t)r;
 }
 
 /** @return true if p fits into the range of an int */

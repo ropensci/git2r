@@ -288,7 +288,7 @@ static int note_write(
 
 	/* TODO: should we apply filters? */
 	/* create note object */
-	if ((error = git_blob_create_frombuffer(&oid, repo, note, strlen(note))) < 0)
+	if ((error = git_blob_create_from_buffer(&oid, repo, note, strlen(note))) < 0)
 		goto cleanup;
 
 	if ((error = manipulate_note_in_tree_r(
@@ -320,7 +320,7 @@ static int note_new(
 	git_blob *blob)
 {
 	git_note *note = NULL;
-	git_off_t blobsize;
+	git_object_size_t blobsize;
 
 	note = git__malloc(sizeof(git_note));
 	GIT_ERROR_CHECK_ALLOC(note);

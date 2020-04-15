@@ -21,6 +21,7 @@
 bool git_object__strict_input_validation = true;
 
 extern int git_odb_hash(git_oid *out, const void *data, size_t len, git_object_t type);
+size_t git_object__size(git_object_t type);
 
 typedef struct {
 	const char	*str;	/* type name string */
@@ -200,7 +201,7 @@ int git_object_lookup_prefix(
 				if (type != GIT_OBJECT_ANY && type != object->cached.type) {
 					git_object_free(object);
 					git_error_set(GIT_ERROR_INVALID,
-						"the requested type does not match the type in ODB");
+						"the requested type does not match the type in the ODB");
 					return GIT_ENOTFOUND;
 				}
 
@@ -496,7 +497,7 @@ int git_object_short_id(git_buf *out, const git_object *obj)
 	git_buf_sanitize(out);
 	repo = git_object_owner(obj);
 
-	if ((error = git_repository__cvar(&len, repo, GIT_CVAR_ABBREV)) < 0)
+	if ((error = git_repository__configmap_lookup(&len, repo, GIT_CONFIGMAP_ABBREV)) < 0)
 		return error;
 
 	if ((error = git_repository_odb(&odb, repo)) < 0)
@@ -549,4 +550,3 @@ bool git_object__is_valid(
 
 	return true;
 }
-

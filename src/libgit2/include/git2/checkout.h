@@ -106,10 +106,22 @@ GIT_BEGIN_DECL
 typedef enum {
 	GIT_CHECKOUT_NONE = 0, /**< default is a dry run, no actual updates */
 
-	/** Allow safe updates that cannot overwrite uncommitted data */
+	/**
+	 * Allow safe updates that cannot overwrite uncommitted data.
+	 * If the uncommitted changes don't conflict with the checked out files,
+	 * the checkout will still proceed, leaving the changes intact.
+	 *
+	 * Mutually exclusive with GIT_CHECKOUT_FORCE.
+	 * GIT_CHECKOUT_FORCE takes precedence over GIT_CHECKOUT_SAFE.
+	 */
 	GIT_CHECKOUT_SAFE = (1u << 0),
 
-	/** Allow all updates to force working directory to look like index */
+	/**
+	 * Allow all updates to force working directory to look like index.
+	 *
+	 * Mutually exclusive with GIT_CHECKOUT_SAFE.
+	 * GIT_CHECKOUT_FORCE takes precedence over GIT_CHECKOUT_SAFE.
+	 */
 	GIT_CHECKOUT_FORCE = (1u << 1),
 
 
@@ -213,6 +225,7 @@ typedef enum {
 	GIT_CHECKOUT_NOTIFY_ALL       = 0x0FFFFu
 } git_checkout_notify_t;
 
+/** Checkout performance-reporting structure */
 typedef struct {
 	size_t mkdir_calls;
 	size_t stat_calls;
@@ -244,11 +257,11 @@ typedef void GIT_CALLBACK(git_checkout_perfdata_cb)(
  * Checkout options structure
  *
  * Initialize with `GIT_CHECKOUT_OPTIONS_INIT`. Alternatively, you can
- * use `git_checkout_init_options`.
+ * use `git_checkout_options_init`.
  *
  */
 typedef struct git_checkout_options {
-	unsigned int version;
+	unsigned int version; /**< The version */
 
 	unsigned int checkout_strategy; /**< default will be a safe checkout */
 
@@ -258,29 +271,46 @@ typedef struct git_checkout_options {
 	int file_open_flags;    /**< default is O_CREAT | O_TRUNC | O_WRONLY */
 
 	unsigned int notify_flags; /**< see `git_checkout_notify_t` above */
+
+	/**
+	 * Optional callback to get notifications on specific file states.
+	 * @see git_checkout_notify_t
+	 */
 	git_checkout_notify_cb notify_cb;
+
+	/** Payload passed to notify_cb */
 	void *notify_payload;
 
 	/** Optional callback to notify the consumer of checkout progress. */
 	git_checkout_progress_cb progress_cb;
+
+	/** Payload passed to progress_cb */
 	void *progress_payload;
 
-	/** When not zeroed out, array of fnmatch patterns specifying which
-	 *  paths should be taken into account, otherwise all files.  Use
-	 *  GIT_CHECKOUT_DISABLE_PATHSPEC_MATCH to treat as simple list.
+	/**
+	 * A list of wildmatch patterns or paths.
+	 *
+	 * By default, all paths are processed. If you pass an array of wildmatch
+	 * patterns, those will be used to filter which paths should be taken into
+	 * account.
+	 *
+	 * Use GIT_CHECKOUT_DISABLE_PATHSPEC_MATCH to treat as a simple list.
 	 */
 	git_strarray paths;
 
-	/** The expected content of the working directory; defaults to HEAD.
-	 *  If the working directory does not match this baseline information,
-	 *  that will produce a checkout conflict.
+	/**
+	 * The expected content of the working directory; defaults to HEAD.
+	 *
+	 * If the working directory does not match this baseline information,
+	 * that will produce a checkout conflict.
 	 */
 	git_tree *baseline;
 
-	/** Like `baseline` above, though expressed as an index.  This
-	 *  option overrides `baseline`.
+	/**
+	 * Like `baseline` above, though expressed as an index.  This
+	 * option overrides `baseline`.
 	 */
-	git_index *baseline_index; /**< expected content of workdir, expressed as an index. */
+	git_index *baseline_index;
 
 	const char *target_directory; /**< alternative checkout path to workdir */
 
@@ -290,6 +320,8 @@ typedef struct git_checkout_options {
 
 	/** Optional callback to notify the consumer of performance data. */
 	git_checkout_perfdata_cb perfdata_cb;
+
+	/** Payload passed to perfdata_cb */
 	void *perfdata_payload;
 } git_checkout_options;
 
@@ -306,7 +338,7 @@ typedef struct git_checkout_options {
  * @param version The struct version; pass `GIT_CHECKOUT_OPTIONS_VERSION`.
  * @return Zero on success; -1 on failure.
  */
-GIT_EXTERN(int) git_checkout_init_options(
+GIT_EXTERN(int) git_checkout_options_init(
 	git_checkout_options *opts,
 	unsigned int version);
 

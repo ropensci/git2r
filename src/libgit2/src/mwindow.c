@@ -8,7 +8,7 @@
 #include "mwindow.h"
 
 #include "vector.h"
-#include "fileops.h"
+#include "futils.h"
 #include "map.h"
 #include "global.h"
 #include "strmap.h"
@@ -44,15 +44,14 @@ int git_mwindow_global_init(void)
 	assert(!git__pack_cache);
 
 	git__on_shutdown(git_mwindow_files_free);
-	return git_strmap_alloc(&git__pack_cache);
+	return git_strmap_new(&git__pack_cache);
 }
 
 int git_mwindow_get_pack(struct git_pack_file **out, const char *path)
 {
-	int error;
-	char *packname;
-	size_t pos;
 	struct git_pack_file *pack;
+	char *packname;
+	int error;
 
 	if ((error = git_packfile__name(&packname, path)) < 0)
 		return error;
@@ -62,13 +61,11 @@ int git_mwindow_get_pack(struct git_pack_file **out, const char *path)
 		return -1;
 	}
 
-	pos = git_strmap_lookup_index(git__pack_cache, packname);
+	pack = git_strmap_get(git__pack_cache, packname);
 	git__free(packname);
 
-	if (git_strmap_valid_index(git__pack_cache, pos)) {
-		pack = git_strmap_value_at(git__pack_cache, pos);
+	if (pack != NULL) {
 		git_atomic_inc(&pack->refcount);
-
 		git_mutex_unlock(&git__mwindow_mutex);
 		*out = pack;
 		return 0;
@@ -82,7 +79,7 @@ int git_mwindow_get_pack(struct git_pack_file **out, const char *path)
 
 	git_atomic_inc(&pack->refcount);
 
-	git_strmap_insert(git__pack_cache, pack->pack_name, pack, &error);
+	error = git_strmap_set(git__pack_cache, pack->pack_name, pack);
 	git_mutex_unlock(&git__mwindow_mutex);
 
 	if (error < 0) {
@@ -97,7 +94,6 @@ int git_mwindow_get_pack(struct git_pack_file **out, const char *path)
 void git_mwindow_put_pack(struct git_pack_file *pack)
 {
 	int count;
-	size_t pos;
 
 	if (git_mutex_lock(&git__mwindow_mutex) < 0)
 		return;
@@ -105,13 +101,12 @@ void git_mwindow_put_pack(struct git_pack_file *pack)
 	/* put before get would be a corrupted state */
 	assert(git__pack_cache);
 
-	pos = git_strmap_lookup_index(git__pack_cache, pack->pack_name);
 	/* if we cannot find it, the state is corrupted */
-	assert(git_strmap_valid_index(git__pack_cache, pos));
+	assert(git_strmap_exists(git__pack_cache, pack->pack_name));
 
 	count = git_atomic_dec(&pack->refcount);
 	if (count == 0) {
-		git_strmap_delete_at(git__pack_cache, pos);
+		git_strmap_delete(git__pack_cache, pack->pack_name);
 		git_packfile_free(pack);
 	}
 
@@ -172,11 +167,11 @@ void git_mwindow_free_all_locked(git_mwindow_file *mwf)
 /*
  * Check if a window 'win' contains the address 'offset'
  */
-int git_mwindow_contains(git_mwindow *win, git_off_t offset)
+int git_mwindow_contains(git_mwindow *win, off64_t offset)
 {
-	git_off_t win_off = win->offset;
+	off64_t win_off = win->offset;
 	return win_off <= offset
-		&& offset <= (git_off_t)(win_off + win->window_map.len);
+		&& offset <= (off64_t)(win_off + win->window_map.len);
 }
 
 /*
@@ -251,12 +246,12 @@ static int git_mwindow_close_lru(git_mwindow_file *mwf)
 static git_mwindow *new_window(
 	git_mwindow_file *mwf,
 	git_file fd,
-	git_off_t size,
-	git_off_t offset)
+	off64_t size,
+	off64_t offset)
 {
 	git_mwindow_ctl *ctl = &mem_ctl;
 	size_t walign = git_mwindow__window_size / 2;
-	git_off_t len;
+	off64_t len;
 	git_mwindow *w;
 
 	w = git__malloc(sizeof(*w));
@@ -268,8 +263,8 @@ static git_mwindow *new_window(
 	w->offset = (offset / walign) * walign;
 
 	len = size - w->offset;
-	if (len > (git_off_t)git_mwindow__window_size)
-		len = (git_off_t)git_mwindow__window_size;
+	if (len > (off64_t)git_mwindow__window_size)
+		len = (off64_t)git_mwindow__window_size;
 
 	ctl->mapped += (size_t)len;
 
@@ -316,7 +311,7 @@ static git_mwindow *new_window(
 unsigned char *git_mwindow_open(
 	git_mwindow_file *mwf,
 	git_mwindow **cursor,
-	git_off_t offset,
+	off64_t offset,
 	size_t extra,
 	unsigned int *left)
 {

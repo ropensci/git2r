@@ -33,12 +33,7 @@ GIT_INLINE(void) attr_cache_unlock(git_attr_cache *cache)
 GIT_INLINE(git_attr_file_entry *) attr_cache_lookup_entry(
 	git_attr_cache *cache, const char *path)
 {
-	size_t pos = git_strmap_lookup_index(cache->files, path);
-
-	if (git_strmap_valid_index(cache->files, pos))
-		return git_strmap_value_at(cache->files, pos);
-	else
-		return NULL;
+	return git_strmap_get(cache->files, path);
 }
 
 int git_attr_cache__alloc_file_entry(
@@ -59,7 +54,7 @@ int git_attr_cache__alloc_file_entry(
 			cachesize++;
 	}
 
-	ce = git_pool_mallocz(pool, (uint32_t)cachesize);
+	ce = git_pool_mallocz(pool, cachesize);
 	GIT_ERROR_CHECK_ALLOC(ce);
 
 	if (baselen) {
@@ -80,18 +75,16 @@ int git_attr_cache__alloc_file_entry(
 static int attr_cache_make_entry(
 	git_attr_file_entry **out, git_repository *repo, const char *path)
 {
-	int error = 0;
 	git_attr_cache *cache = git_repository_attr_cache(repo);
 	git_attr_file_entry *entry = NULL;
+	int error;
 
-	error = git_attr_cache__alloc_file_entry(
-		&entry, git_repository_workdir(repo), path, &cache->pool);
+	if ((error = git_attr_cache__alloc_file_entry(&entry, git_repository_workdir(repo),
+						      path, &cache->pool)) < 0)
+		return error;
 
-	if (!error) {
-		git_strmap_insert(cache->files, entry->path, entry, &error);
-		if (error > 0)
-			error = 0;
-	}
+	if ((error = git_strmap_set(cache->files, entry->path, entry)) < 0)
+		return error;
 
 	*out = entry;
 	return error;
@@ -215,7 +208,8 @@ int git_attr_cache__get(
 	git_attr_file_source source,
 	const char *base,
 	const char *filename,
-	git_attr_file_parser parser)
+	git_attr_file_parser parser,
+	bool allow_macros)
 {
 	int error = 0;
 	git_attr_cache *cache = git_repository_attr_cache(repo);
@@ -228,7 +222,7 @@ int git_attr_cache__get(
 
 	/* load file if we don't have one or if existing one is out of date */
 	if (!file || (error = git_attr_file__out_of_date(repo, attr_session, file)) > 0)
-		error = git_attr_file__load(&updated, repo, attr_session, entry, source, parser);
+		error = git_attr_file__load(&updated, repo, attr_session, entry, source, parser, allow_macros);
 
 	/* if we loaded the file, insert into and/or update cache */
 	if (updated) {
@@ -265,18 +259,14 @@ bool git_attr_cache__is_cached(
 	const char *filename)
 {
 	git_attr_cache *cache = git_repository_attr_cache(repo);
-	git_strmap *files;
-	size_t pos;
 	git_attr_file_entry *entry;
+	git_strmap *files;
 
 	if (!cache || !(files = cache->files))
 		return false;
 
-	pos = git_strmap_lookup_index(files, filename);
-	if (!git_strmap_valid_index(files, pos))
+	if ((entry = git_strmap_get(files, filename)) == NULL)
 		return false;
-
-	entry = git_strmap_value_at(files, pos);
 
 	return entry && (entry->file[source] != NULL);
 }
@@ -400,8 +390,8 @@ int git_attr_cache__init(git_repository *repo)
 	/* allocate hashtable for attribute and ignore file contents,
 	 * hashtable for attribute macros, and string pool
 	 */
-	if ((ret = git_strmap_alloc(&cache->files)) < 0 ||
-		(ret = git_strmap_alloc(&cache->macros)) < 0)
+	if ((ret = git_strmap_new(&cache->files)) < 0 ||
+	    (ret = git_strmap_new(&cache->macros)) < 0)
 		goto cancel;
 
 	git_pool_init(&cache->pool, 1);
@@ -421,7 +411,7 @@ cancel:
 	return ret;
 }
 
-void git_attr_cache_flush(git_repository *repo)
+int git_attr_cache_flush(git_repository *repo)
 {
 	git_attr_cache *cache;
 
@@ -430,40 +420,50 @@ void git_attr_cache_flush(git_repository *repo)
 	 */
 	if (repo && (cache = git__swap(repo->attrcache, NULL)) != NULL)
 		attr_cache__free(cache);
+
+	return 0;
 }
 
 int git_attr_cache__insert_macro(git_repository *repo, git_attr_rule *macro)
 {
 	git_attr_cache *cache = git_repository_attr_cache(repo);
-	git_strmap *macros = cache->macros;
-	int error;
+	git_attr_rule *preexisting;
+	bool locked = false;
+	int error = 0;
 
-	/* TODO: generate warning log if (macro->assigns.length == 0) */
-	if (macro->assigns.length == 0)
-		return 0;
-
-	if (attr_cache_lock(cache) < 0) {
-		git_error_set(GIT_ERROR_OS, "unable to get attr cache lock");
-		error = -1;
-	} else {
-		git_strmap_insert(macros, macro->match.pattern, macro, &error);
-		git_mutex_unlock(&cache->lock);
+	/*
+	 * Callers assume that if we return success, that the
+	 * macro will have been adopted by the attributes cache.
+	 * Thus, we have to free the macro here if it's not being
+	 * added to the cache.
+	 *
+	 * TODO: generate warning log if (macro->assigns.length == 0)
+	 */
+	if (macro->assigns.length == 0) {
+		git_attr_rule__free(macro);
+		goto out;
 	}
 
-	return (error < 0) ? -1 : 0;
+	if ((error = attr_cache_lock(cache)) < 0)
+		goto out;
+	locked = true;
+
+	if ((preexisting = git_strmap_get(cache->macros, macro->match.pattern)) != NULL)
+	    git_attr_rule__free(preexisting);
+
+	if ((error = git_strmap_set(cache->macros, macro->match.pattern, macro)) < 0)
+	    goto out;
+
+out:
+	if (locked)
+		attr_cache_unlock(cache);
+	return error;
 }
 
 git_attr_rule *git_attr_cache__lookup_macro(
 	git_repository *repo, const char *name)
 {
 	git_strmap *macros = git_repository_attr_cache(repo)->macros;
-	size_t pos;
 
-	pos = git_strmap_lookup_index(macros, name);
-
-	if (!git_strmap_valid_index(macros, pos))
-		return NULL;
-
-	return (git_attr_rule *)git_strmap_value_at(macros, pos);
+	return git_strmap_get(macros, name);
 }
-

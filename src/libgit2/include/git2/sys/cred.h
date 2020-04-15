@@ -4,14 +4,12 @@
  * This file is part of libgit2, distributed under the GNU GPL v2 with
  * a Linking Exception. For full terms see the included COPYING file.
  */
+#ifndef INCLUDE_sys_git_cred_h__
+#define INCLUDE_sys_git_cred_h__
 
-#ifndef INCLUDE_stdalloc_h__
-#define INCLUDE_stdalloc_h__
-
-#include "alloc.h"
-
-#include "common.h"
-
-int git_stdalloc_init_allocator(git_allocator *allocator);
+/* These declarations have moved. */
+#ifndef GIT_DEPRECATE_HARD
+# include "git2/sys/credential.h"
+#endif
 
 #endif

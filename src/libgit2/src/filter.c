@@ -8,7 +8,7 @@
 #include "filter.h"
 
 #include "common.h"
-#include "fileops.h"
+#include "futils.h"
 #include "hash.h"
 #include "repository.h"
 #include "global.h"
@@ -385,7 +385,7 @@ uint16_t git_filter_source_filemode(const git_filter_source *src)
 
 const git_oid *git_filter_source_id(const git_filter_source *src)
 {
-	return git_oid_iszero(&src->oid) ? NULL : &src->oid;
+	return git_oid_is_zero(&src->oid) ? NULL : &src->oid;
 }
 
 git_filter_mode_t git_filter_source_mode(const git_filter_source *src)
@@ -428,13 +428,21 @@ static int filter_list_check_attributes(
 	git_filter_def *fdef,
 	const git_filter_source *src)
 {
-	int error;
-	size_t i;
 	const char **strs = git__calloc(fdef->nattrs, sizeof(const char *));
+	uint32_t flags = 0;
+	size_t i;
+	int error;
+
 	GIT_ERROR_CHECK_ALLOC(strs);
 
+	if ((src->flags & GIT_FILTER_NO_SYSTEM_ATTRIBUTES) != 0)
+		flags |= GIT_ATTR_CHECK_NO_SYSTEM;
+
+	if ((src->flags & GIT_FILTER_ATTRIBUTES_FROM_HEAD) != 0)
+		flags |= GIT_ATTR_CHECK_INCLUDE_HEAD;
+
 	error = git_attr_get_many_with_session(
-		strs, repo, attr_session, 0, src->path, fdef->nattrs, fdef->attrs);
+		strs, repo, attr_session, flags, src->path, fdef->nattrs, fdef->attrs);
 
 	/* if no values were found but no matches are needed, it's okay! */
 	if (error == GIT_ENOTFOUND && !fdef->nmatches) {
@@ -445,7 +453,7 @@ static int filter_list_check_attributes(
 
 	for (i = 0; !error && i < fdef->nattrs; ++i) {
 		const char *want = fdef->attrs[fdef->nattrs + i];
-		git_attr_t want_type, found_type;
+		git_attr_value_t want_type, found_type;
 
 		if (!want)
 			continue;
@@ -455,7 +463,7 @@ static int filter_list_check_attributes(
 
 		if (want_type != found_type)
 			error = GIT_ENOTFOUND;
-		else if (want_type == GIT_ATTR_VALUE_T &&
+		else if (want_type == GIT_ATTR_VALUE_STRING &&
 				strcmp(want, strs[i]) &&
 				strcmp(want, "*"))
 			error = GIT_ENOTFOUND;
@@ -756,7 +764,7 @@ int git_filter_list_apply_to_file(
 
 static int buf_from_blob(git_buf *out, git_blob *blob)
 {
-	git_off_t rawsize = git_blob_rawsize(blob);
+	git_object_size_t rawsize = git_blob_rawsize(blob);
 
 	if (!git__is_sizet(rawsize)) {
 		git_error_set(GIT_ERROR_OS, "blob is too large to filter");

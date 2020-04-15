@@ -134,7 +134,7 @@ int git_fetch_negotiate(git_remote *remote, const git_fetch_options *opts)
 int git_fetch_download_pack(git_remote *remote, const git_remote_callbacks *callbacks)
 {
 	git_transport *t = remote->transport;
-	git_transfer_progress_cb progress = NULL;
+	git_indexer_progress_cb progress = NULL;
 	void *payload = NULL;
 
 	if (!remote->need_pack)
@@ -148,9 +148,14 @@ int git_fetch_download_pack(git_remote *remote, const git_remote_callbacks *call
 	return t->download_pack(t, remote->repo, &remote->stats, progress, payload);
 }
 
-int git_fetch_init_options(git_fetch_options *opts, unsigned int version)
+int git_fetch_options_init(git_fetch_options *opts, unsigned int version)
 {
 	GIT_INIT_STRUCTURE_FROM_TEMPLATE(
 		opts, version, git_fetch_options, GIT_FETCH_OPTIONS_INIT);
 	return 0;
+}
+
+int git_fetch_init_options(git_fetch_options *opts, unsigned int version)
+{
+	return git_fetch_options_init(opts, version);
 }

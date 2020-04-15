@@ -78,20 +78,24 @@ static int read_variable_cb(
 static int config_memory_open(git_config_backend *backend, git_config_level_t level, const git_repository *repo)
 {
 	config_memory_backend *memory_backend = (config_memory_backend *) backend;
+	git_config_parser parser = GIT_PARSE_CTX_INIT;
 	config_memory_parse_data parse_data;
-	git_config_parser reader;
+	int error;
 
 	GIT_UNUSED(repo);
 
-	if (memory_backend->cfg.size == 0)
-		return 0;
-
-	git_parse_ctx_init(&reader.ctx, memory_backend->cfg.ptr, memory_backend->cfg.size);
-	reader.file = NULL;
+	if ((error = git_config_parser_init(&parser, "in-memory", memory_backend->cfg.ptr,
+					    memory_backend->cfg.size)) < 0)
+		goto out;
 	parse_data.entries = memory_backend->entries;
 	parse_data.level = level;
 
-	return git_config_parse(&reader, NULL, read_variable_cb, NULL, NULL, &parse_data);
+	if ((error = git_config_parse(&parser, NULL, read_variable_cb, NULL, NULL, &parse_data)) < 0)
+		goto out;
+
+out:
+	git_config_parser_dispose(&parser);
+	return error;
 }
 
 static int config_memory_get(git_config_backend *backend, const char *key, git_config_entry **out)
@@ -166,14 +170,6 @@ static int config_memory_unlock(git_config_backend *backend, int success)
 	return config_error_readonly();
 }
 
-static int config_memory_snapshot(git_config_backend **out, git_config_backend *backend)
-{
-	GIT_UNUSED(out);
-	GIT_UNUSED(backend);
-	git_error_set(GIT_ERROR_CONFIG, "this backend does not support snapshots");
-	return -1;
-}
-
 static void config_memory_free(git_config_backend *_backend)
 {
 	config_memory_backend *backend = (config_memory_backend *)_backend;
@@ -215,7 +211,7 @@ int git_config_backend_from_string(git_config_backend **out, const char *cfg, si
 	backend->parent.iterator = config_memory_iterator;
 	backend->parent.lock = config_memory_lock;
 	backend->parent.unlock = config_memory_unlock;
-	backend->parent.snapshot = config_memory_snapshot;
+	backend->parent.snapshot = git_config_backend_snapshot;
 	backend->parent.free = config_memory_free;
 
 	*out = (git_config_backend *)backend;

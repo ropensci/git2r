@@ -12,7 +12,7 @@
 #include "git2/index.h"
 #include "git2/sys/filter.h"
 
-#include "fileops.h"
+#include "futils.h"
 #include "hash.h"
 #include "filter.h"
 #include "buf_text.h"
@@ -44,11 +44,11 @@ struct crlf_filter {
 
 static git_crlf_t check_crlf(const char *value)
 {
-	if (GIT_ATTR_TRUE(value))
+	if (GIT_ATTR_IS_TRUE(value))
 		return GIT_CRLF_TEXT;
-	else if (GIT_ATTR_FALSE(value))
+	else if (GIT_ATTR_IS_FALSE(value))
 		return GIT_CRLF_BINARY;
-	else if (GIT_ATTR_UNSPECIFIED(value))
+	else if (GIT_ATTR_IS_UNSPECIFIED(value))
 		;
 	else if (strcmp(value, "input") == 0)
 		return GIT_CRLF_TEXT_INPUT;
@@ -58,9 +58,9 @@ static git_crlf_t check_crlf(const char *value)
 	return GIT_CRLF_UNDEFINED;
 }
 
-static git_cvar_value check_eol(const char *value)
+static git_configmap_value check_eol(const char *value)
 {
-	if (GIT_ATTR_UNSPECIFIED(value))
+	if (GIT_ATTR_IS_UNSPECIFIED(value))
 		;
 	else if (strcmp(value, "lf") == 0)
 		return GIT_EOL_LF;
@@ -78,7 +78,7 @@ static int has_cr_in_index(const git_filter_source *src)
 	const git_index_entry *entry;
 	git_blob *blob;
 	const void *blobcontent;
-	git_off_t blobsize;
+	git_object_size_t blobsize;
 	bool found_cr;
 
 	if (!path)
@@ -127,7 +127,7 @@ static int text_eol_is_crlf(struct crlf_attrs *ca)
 	return 0;
 }
 
-static git_cvar_value output_eol(struct crlf_attrs *ca)
+static git_configmap_value output_eol(struct crlf_attrs *ca)
 {
 	switch (ca->crlf_action) {
 	case GIT_CRLF_BINARY:
@@ -293,12 +293,12 @@ static int convert_attrs(
 
 	memset(ca, 0, sizeof(struct crlf_attrs));
 
-	if ((error = git_repository__cvar(&ca->auto_crlf,
-		 git_filter_source_repo(src), GIT_CVAR_AUTO_CRLF)) < 0 ||
-		(error = git_repository__cvar(&ca->safe_crlf,
-		 git_filter_source_repo(src), GIT_CVAR_SAFE_CRLF)) < 0 ||
-		(error = git_repository__cvar(&ca->core_eol,
-		 git_filter_source_repo(src), GIT_CVAR_EOL)) < 0)
+	if ((error = git_repository__configmap_lookup(&ca->auto_crlf,
+		 git_filter_source_repo(src), GIT_CONFIGMAP_AUTO_CRLF)) < 0 ||
+		(error = git_repository__configmap_lookup(&ca->safe_crlf,
+		 git_filter_source_repo(src), GIT_CONFIGMAP_SAFE_CRLF)) < 0 ||
+		(error = git_repository__configmap_lookup(&ca->core_eol,
+		 git_filter_source_repo(src), GIT_CONFIGMAP_EOL)) < 0)
 		return error;
 
 	/* downgrade FAIL to WARN if ALLOW_UNSAFE option is used */
