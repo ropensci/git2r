@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -35,6 +35,7 @@
 
 #include "git2r_arg.h"
 #include "git2r_cred.h"
+#include "git2r_deprecated.h"
 #include "git2r_S3.h"
 #include "git2r_transfer.h"
 
@@ -78,12 +79,12 @@ static int git2r_getenv(char **out, SEXP obj, const char *slot)
  * @return 0 on success, else -1.
  */
 static int git2r_cred_ssh_key(
-    git_cred **cred,
+    GIT2R_CREDENTIAL **cred,
     const char *username_from_url,
     unsigned int allowed_types,
     SEXP credentials)
 {
-    if (GIT_CREDTYPE_SSH_KEY & allowed_types) {
+    if (GIT2R_CREDENTIAL_SSH_KEY & allowed_types) {
         SEXP elem;
         const char *publickey;
         const char *privatekey = NULL;
@@ -96,7 +97,7 @@ static int git2r_cred_ssh_key(
         if (Rf_length(elem) && (NA_STRING != STRING_ELT(elem, 0)))
             passphrase = CHAR(STRING_ELT(elem, 0));
 
-        if (git_cred_ssh_key_new(
+        if (GIT2R_CREDENTIAL_SSH_KEY_NEW(
                 cred, username_from_url, publickey, privatekey, passphrase))
             return -1;
 
@@ -115,11 +116,11 @@ static int git2r_cred_ssh_key(
  * @return 0 on success, else -1.
  */
 static int git2r_cred_env(
-    git_cred **cred,
+    GIT2R_CREDENTIAL **cred,
     unsigned int allowed_types,
     SEXP credentials)
 {
-    if (GIT_CREDTYPE_USERPASS_PLAINTEXT & allowed_types) {
+    if (GIT2R_CREDENTIAL_USERPASS_PLAINTEXT & allowed_types) {
         int error;
         char *username = NULL;
         char *password = NULL;
@@ -134,7 +135,8 @@ static int git2r_cred_env(
         if (error)
             goto cleanup;
 
-        error = git_cred_userpass_plaintext_new(cred, username, password);
+        error = GIT2R_CREDENTIAL_USERPASS_PLAINTEXT_NEW(
+            cred, username, password);
 
     cleanup:
         free(username);
@@ -158,11 +160,11 @@ static int git2r_cred_env(
  * @return 0 on success, else -1.
  */
 static int git2r_cred_token(
-    git_cred **cred,
+    GIT2R_CREDENTIAL **cred,
     unsigned int allowed_types,
     SEXP credentials)
 {
-    if (GIT_CREDTYPE_USERPASS_PLAINTEXT & allowed_types) {
+    if (GIT2R_CREDENTIAL_USERPASS_PLAINTEXT & allowed_types) {
         int error;
         char *token = NULL;
 
@@ -172,7 +174,7 @@ static int git2r_cred_token(
         if (error)
             goto cleanup;
 
-        error = git_cred_userpass_plaintext_new(cred, " ", token);
+        error = GIT2R_CREDENTIAL_USERPASS_PLAINTEXT_NEW(cred, " ", token);
 
     cleanup:
         free(token);
@@ -195,17 +197,17 @@ static int git2r_cred_token(
  * @return 0 on success, else -1.
  */
 static int git2r_cred_user_pass(
-    git_cred **cred,
+    GIT2R_CREDENTIAL **cred,
     unsigned int allowed_types,
     SEXP credentials)
 {
-    if (GIT_CREDTYPE_USERPASS_PLAINTEXT & allowed_types) {
+    if (GIT2R_CREDENTIAL_USERPASS_PLAINTEXT & allowed_types) {
         const char *username;
         const char *password;
 
         username = CHAR(STRING_ELT(git2r_get_list_element(credentials, "username"), 0));
         password = CHAR(STRING_ELT(git2r_get_list_element(credentials, "password"), 0));
-        if (git_cred_userpass_plaintext_new(cred, username, password))
+        if (GIT2R_CREDENTIAL_USERPASS_PLAINTEXT_NEW(cred, username, password))
             return -1;
 
         return 0;
@@ -347,7 +349,7 @@ static int git2r_cred_user_pass(
 /* } */
 
 /* static int git2r_cred_default_ssh_key( */
-/*     git_cred **cred, */
+/*     GIT2R_CREDENTIAL **cred, */
 /*     const char *username_from_url) */
 /* { */
 /* #ifdef WIN32 */
@@ -431,7 +433,7 @@ static int git2r_cred_user_pass(
  * @return 0 on success, else -1.
  */
 int git2r_cred_acquire_cb(
-    git_cred **cred,
+    GIT2R_CREDENTIAL **cred,
     const char *url,
     const char *username_from_url,
     unsigned int allowed_types,
@@ -448,11 +450,11 @@ int git2r_cred_acquire_cb(
     td = (git2r_transfer_data*)payload;
     credentials = td->credentials;
     if (Rf_isNull(credentials)) {
-        if (GIT_CREDTYPE_SSH_KEY & allowed_types) {
+        if (GIT2R_CREDENTIAL_SSH_KEY & allowed_types) {
 	    if (td->use_ssh_agent) {
                 /* Try to get credentials from the ssh-agent. */
                 td->use_ssh_agent = 0;
-                if (git_cred_ssh_key_from_agent(cred, username_from_url) == 0)
+                if (GIT2R_CREDENTIAL_SSH_KEY_FROM_AGENT(cred, username_from_url) == 0)
                     return 0;
             }
 

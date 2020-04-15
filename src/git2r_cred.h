@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -20,9 +20,10 @@
 #define INCLUDE_git2r_cred_h
 
 #include <git2.h>
+#include "git2r_deprecated.h"
 
 int git2r_cred_acquire_cb(
-    git_cred **out,
+    GIT2R_CREDENTIAL **out,
     const char *url,
     const char *username_from_url,
     unsigned int allowed_types,

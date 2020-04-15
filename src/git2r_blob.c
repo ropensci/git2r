@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -100,7 +100,7 @@ SEXP git2r_blob_create_fromdisk(SEXP repo, SEXP path)
             git_blob *blob = NULL;
             SEXP item;
 
-            error = git_blob_create_fromdisk(
+            error = GIT2R_BLOB_CREATE_FROM_DISK(
                 &oid,
                 repository,
                 CHAR(STRING_ELT(path, i)));
@@ -167,7 +167,7 @@ SEXP git2r_blob_create_fromworkdir(SEXP repo, SEXP relative_path)
             git_blob *blob = NULL;
             SEXP item;
 
-            error = git_blob_create_fromworkdir(
+            error = GIT2R_BLOB_CREATE_FROM_WORKDIR(
                 &oid,
                 repository,
                 CHAR(STRING_ELT(relative_path, i)));

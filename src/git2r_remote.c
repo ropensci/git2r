@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -95,7 +95,7 @@ static int git2r_update_tips_cb(
         git_oid_fmt(b_str, b);
         b_str[GIT_OID_HEXSZ] = '\0';
 
-        if (git_oid_iszero(a)) {
+        if (GIT2R_OID_IS_ZERO(a)) {
             Rprintf("[new]     %.20s %s\n", b_str, refname);
         } else {
             char a_str[GIT_OID_HEXSZ + 1];
@@ -130,7 +130,7 @@ SEXP git2r_remote_fetch(
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;
-    const git_transfer_progress *stats;
+    const GIT2R_INDEXER_PROGRESS *stats;
     git_remote *remote = NULL;
     git_repository *repository = NULL;
     git_fetch_options fetch_opts = GIT_FETCH_OPTIONS_INIT;
