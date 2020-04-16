@@ -623,8 +623,8 @@ ac_includes_default="\
 #endif"
 
 ac_subst_vars='PKG_CPPFLAGS
-GIT2R_SRC_SHA1DC
-GIT2R_SRC_REGEX
+GIT2R_SRC_SHA1
+PCRE
 LTLIBICONV
 LIBICONV
 EGREP
@@ -6569,6 +6569,50 @@ _ACEOF
     ;;
 esac
 
+# Check for pcre
+# Extract the first word of "pcre-config", so it can be a program name with args.
+set dummy pcre-config; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_PCRE+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$PCRE"; then
+  ac_cv_prog_PCRE="$PCRE" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_PCRE="yes"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+PCRE=$ac_cv_prog_PCRE
+if test -n "$PCRE"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PCRE" >&5
+$as_echo "$PCRE" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+if test "x${PCRE}" = xyes; then
+    PCRE_CFLAGS=`pcre-config --cflags`
+    PCRE_LIBS=`pcre-config --libs`
+    CPPFLAGS="${CPPFLAGS} -DGIT_REGEX_PCRE"
+fi
+
 # Configuration specific for solaris
 case "${host_os}" in
     solaris*)
@@ -6702,15 +6746,16 @@ case "${host_os}" in
     darwin*)
         CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_COLLISIONDETECT=1 -DSHA1DC_NO_STANDARD_INCLUDES=1"
         CPPFLAGS="${CPPFLAGS} -DSHA1DC_CUSTOM_INCLUDE_SHA1_C=\\\"common.h\\\" -DSHA1DC_CUSTOM_INCLUDE_UBC_CHECK_C=\\\"common.h\\\""
-        GIT2R_SRC_SHA1DC="libgit2/src/hash/sha1dc/sha1.o libgit2/src/hash/sha1dc/ubc_check.o"
+        GIT2R_SRC_SHA1="libgit2/src/hash/sha1/sha1dc/sha1.o libgit2/src/hash/sha1/sha1dc/ubc_check.o"
     ;;
     *)
         if test "x${have_ssl}" = xyes; then
             CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_OPENSSL=1"
+            GIT2R_SRC_SHA1="libgit2/src/hash/sha1/openssl.o"
         else
             CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_COLLISIONDETECT=1 -DSHA1DC_NO_STANDARD_INCLUDES=1"
             CPPFLAGS="${CPPFLAGS} -DSHA1DC_CUSTOM_INCLUDE_SHA1_C=\\\"common.h\\\" -DSHA1DC_CUSTOM_INCLUDE_UBC_CHECK_C=\\\"common.h\\\""
-            GIT2R_SRC_SHA1DC="libgit2/src/hash/sha1dc/sha1.o libgit2/src/hash/sha1dc/ubc_check.o"
+            GIT2R_SRC_SHA1="libgit2/src/hash/sha1/sha1dc/sha1.o libgit2/src/hash/sha1/sha1dc/ubc_check.o"
         fi
     ;;
 esac
@@ -6932,13 +6977,17 @@ CPPFLAGS="${CPPFLAGS} -DGIT2R_HAVE_OBJECT_ANY"
 # deprecated, use newer versions.
 CPPFLAGS="${CPPFLAGS} -DGIT2R_HAVE_GIT_ERROR"
 
+# libgit v0.99.0: Several structures, enums and values have been
+# renamed in libgit version 0.99.0. The former names are deprecated.
+# See https://github.com/libgit2/libgit2/releases/tag/v0.99.0
+CPPFLAGS="${CPPFLAGS} -DGIT2R_LIBGIT2_V0_99_0_RENAMES"
 
 
-PKG_CFLAGS="${PKG_CFLAGS} ${LIBSSH2_CFLAGS}"
+PKG_CFLAGS="${PKG_CFLAGS} ${LIBSSH2_CFLAGS} ${PCRE_CFLAGS}"
 
 PKG_CPPFLAGS="${CPPFLAGS}"
 
-PKG_LIBS="${LIBS} ${LIBSSH2_LIBS} ${LIBICONV}"
+PKG_LIBS="${LIBS} ${LIBSSH2_LIBS} ${PCRE_LIBS} ${LIBICONV}"
 
 
 ac_config_files="$ac_config_files src/Makevars_libgit2"

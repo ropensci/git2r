@@ -1,5 +1,5 @@
 # git2r, R bindings to the libgit2 library.
-# Copyright (C) 2013-2019 The git2r contributors
+# Copyright (C) 2013-2020 The git2r contributors
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2,
@@ -365,6 +365,14 @@ case "${host_os}" in
     ;;
 esac
 
+# Check for pcre
+AC_CHECK_PROG(PCRE,pcre-config,yes)
+if test "x${PCRE}" = xyes; then
+    PCRE_CFLAGS=`pcre-config --cflags`
+    PCRE_LIBS=`pcre-config --libs`
+    CPPFLAGS="${CPPFLAGS} -DGIT_REGEX_PCRE"
+fi
+
 # Configuration specific for solaris
 case "${host_os}" in
     solaris*)
@@ -388,15 +396,16 @@ case "${host_os}" in
     darwin*)
         CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_COLLISIONDETECT=1 -DSHA1DC_NO_STANDARD_INCLUDES=1"
         CPPFLAGS="${CPPFLAGS} -DSHA1DC_CUSTOM_INCLUDE_SHA1_C=\\\"common.h\\\" -DSHA1DC_CUSTOM_INCLUDE_UBC_CHECK_C=\\\"common.h\\\""
-        GIT2R_SRC_SHA1DC="libgit2/src/hash/sha1dc/sha1.o libgit2/src/hash/sha1dc/ubc_check.o"
+        GIT2R_SRC_SHA1="libgit2/src/hash/sha1/sha1dc/sha1.o libgit2/src/hash/sha1/sha1dc/ubc_check.o"
     ;;
     *)
         if test "x${have_ssl}" = xyes; then
             CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_OPENSSL=1"
+            GIT2R_SRC_SHA1="libgit2/src/hash/sha1/openssl.o"
         else
             CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_COLLISIONDETECT=1 -DSHA1DC_NO_STANDARD_INCLUDES=1"
             CPPFLAGS="${CPPFLAGS} -DSHA1DC_CUSTOM_INCLUDE_SHA1_C=\\\"common.h\\\" -DSHA1DC_CUSTOM_INCLUDE_UBC_CHECK_C=\\\"common.h\\\""
-            GIT2R_SRC_SHA1DC="libgit2/src/hash/sha1dc/sha1.o libgit2/src/hash/sha1dc/ubc_check.o"
+            GIT2R_SRC_SHA1="libgit2/src/hash/sha1/sha1dc/sha1.o libgit2/src/hash/sha1/sha1dc/ubc_check.o"
         fi
     ;;
 esac
@@ -463,11 +472,15 @@ CPPFLAGS="${CPPFLAGS} -DGIT2R_HAVE_OBJECT_ANY"
 # deprecated, use newer versions.
 CPPFLAGS="${CPPFLAGS} -DGIT2R_HAVE_GIT_ERROR"
 
-AC_SUBST(GIT2R_SRC_REGEX)
-AC_SUBST(GIT2R_SRC_SHA1DC)
-AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS} ${LIBSSH2_CFLAGS}"])
+# libgit v0.99.0: Several structures, enums and values have been
+# renamed in libgit version 0.99.0. The former names are deprecated.
+# See https://github.com/libgit2/libgit2/releases/tag/v0.99.0
+CPPFLAGS="${CPPFLAGS} -DGIT2R_LIBGIT2_V0_99_0_RENAMES"
+
+AC_SUBST(GIT2R_SRC_SHA1)
+AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS} ${LIBSSH2_CFLAGS} ${PCRE_CFLAGS}"])
 AC_SUBST([PKG_CPPFLAGS], ["${CPPFLAGS}"])
-AC_SUBST([PKG_LIBS], ["${LIBS} ${LIBSSH2_LIBS} ${LIBICONV}"])
+AC_SUBST([PKG_LIBS], ["${LIBS} ${LIBSSH2_LIBS} ${PCRE_LIBS} ${LIBICONV}"])
 
 AC_CONFIG_FILES([src/Makevars_libgit2])
 
