@@ -114,9 +114,8 @@ fi
 
 ################# Begin configuration to use system libgit2 ##################
 if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
-
-    # The function 'git_buf_free' is deprecated in libgit2. Use
-    # 'git_buf_dispose', if available, instead.
+    # The function 'git_buf_free' is deprecated in libgit2
+    # v0.28.0. Use 'git_buf_dispose', if available, instead.
     AC_MSG_CHECKING([whether the libgit2 function git_buf_dispose is available])
     have_buf_dispose=no
     AC_LANG_CONFTEST([AC_LANG_PROGRAM(
@@ -131,9 +130,9 @@ if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
 
     # The constants GIT_OBJ_ANY, GIT_OBJ_BLOB, GIT_OBJ_COMMIT,
     # GIT_OBJ_TAG_GIT_OBJ_TREE and GIT_REF_OID are deprecated in
-    # libgit2. Use GIT_OBJECT_ANY, GIT_OBJECT_BLOB, GIT_OBJECT_COMMIT,
-    # GIT_OBJECT_TAG_GIT_OBJECT_TREE and GIT_REFERENCE_DIRECT, if
-    # available, instead.
+    # libgit2 v0.28.0. Use GIT_OBJECT_ANY, GIT_OBJECT_BLOB,
+    # GIT_OBJECT_COMMIT, GIT_OBJECT_TAG_GIT_OBJECT_TREE and
+    # GIT_REFERENCE_DIRECT, if available, instead.
     AC_MSG_CHECKING([whether the libgit2 constant GIT_OBJECT_ANY is available])
     have_git_object_any=no
     AC_LANG_CONFTEST([AC_LANG_PROGRAM(
@@ -158,6 +157,22 @@ if test "x${USE_BUNDLED_LIBGIT2}" = xno; then
     AC_MSG_RESULT([${have_git_error_last}])
     if test "x${have_git_error_last}" = xyes; then
         PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_HAVE_GIT_ERROR"
+    fi
+
+    # libgit v0.99.0: Several structures, enums and values have been
+    # renamed in libgit version 0.99.0. The former names are
+    # deprecated.  See
+    # https://github.com/libgit2/libgit2/releases/tag/v0.99.0
+    AC_MSG_CHECKING([whether the libgit2 function git_oid_is_zero is available])
+    have_git_oid_is_zero=no
+    AC_LANG_CONFTEST([AC_LANG_PROGRAM(
+    [[#include <git2.h>]],
+    [[git_oid_is_zero(NULL);]])])
+    PKG_CFLAGS="${PKG_CFLAGS} -Werror" "$RBIN" CMD SHLIB conftest.c \
+    1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD && have_git_oid_is_zero=yes
+    AC_MSG_RESULT([${have_git_oid_is_zero}])
+    if test "x${have_git_oid_is_zero}" = xyes; then
+        PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_LIBGIT2_V0_99_0_RENAMES"
     fi
 
     # For debugging
