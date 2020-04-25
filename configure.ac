@@ -337,22 +337,18 @@ esac
 # Check for LibSSH2
 have_ssh2=no
 if test [ -n "$PKG_CONFIG" ] ; then
-    PKG_CHECK_MODULES([libssh2], [libssh2],
+    PKG_CHECK_MODULES([libssh2], [libssh2 >= 1.8],
                       [CPPFLAGS="${libssh2_CFLAGS} ${CPPFLAGS}"
                        LIBS="${libssh2_LIBS} ${LIBS}"
                        have_ssh2=yes], [ ])
 fi
 
 if test "x${have_ssh2}" = xno; then
-    AC_SEARCH_LIBS([libssh2_version], [ssh2], [have_ssh2=yes])
-fi
-
-if test "x${have_ssh2}" = xno; then
     AC_MSG_WARN([
   ---------------------------------------------
-   Unable to find the LibSSH2 library on this
-   system. Building a version without support
-   for SSH transport.
+   Unable to find the LibSSH2 (ver >= v1.8)
+   library on this system. Building git2r
+   without support for SSH transport.
 
    To build with SSH support, please install:
      libssh2-1-dev (package on e.g. Debian and Ubuntu)
@@ -480,9 +476,9 @@ CPPFLAGS="${CPPFLAGS} -DGIT2R_HAVE_GIT_ERROR"
 
 AC_SUBST(GIT2R_SRC_REGEX)
 AC_SUBST(GIT2R_SRC_SHA1DC)
-AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS} ${LIBSSH2_CFLAGS}"])
+AC_SUBST([PKG_CFLAGS], ["${PKG_CFLAGS}"])
 AC_SUBST([PKG_CPPFLAGS], ["${CPPFLAGS}"])
-AC_SUBST([PKG_LIBS], ["${LIBS} ${LIBSSH2_LIBS} ${LIBICONV}"])
+AC_SUBST([PKG_LIBS], ["${LIBS} ${LIBICONV}"])
 
 AC_CONFIG_FILES([src/Makevars_libgit2])
 
