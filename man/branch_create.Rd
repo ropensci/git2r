@@ -4,10 +4,12 @@
 \alias{branch_create}
 \title{Create a branch}
 \usage{
-branch_create(commit = NULL, name = NULL, force = FALSE)
+branch_create(commit = last_commit(), name = NULL, force = FALSE)
 }
 \arguments{
-\item{commit}{Commit to which branch should point.}
+\item{commit}{Commit to which the branch should point. The default
+is to use the \code{last_commit()} function to determine the
+commit to which the branch should point.}
 
 \item{name}{Name for the branch}
 

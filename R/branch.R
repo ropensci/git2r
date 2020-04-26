@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2019 The git2r contributors
+## Copyright (C) 2013-2020 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -16,7 +16,9 @@
 
 ##' Create a branch
 ##'
-##' @param commit Commit to which branch should point.
+##' @param commit Commit to which the branch should point. The default
+##'     is to use the \code{last_commit()} function to determine the
+##'     commit to which the branch should point.
 ##' @param name Name for the branch
 ##' @param force Overwrite existing branch. Default = FALSE
 ##' @return invisible git_branch object
@@ -50,7 +52,8 @@
 ##' ## Force it
 ##' branch_2 <- branch_create(commit_2, name = "test-branch", force = TRUE)
 ##' }
-branch_create <- function(commit = NULL, name = NULL, force = FALSE) {
+branch_create <- function(commit = last_commit(), name = NULL,
+                          force = FALSE) {
     invisible(.Call(git2r_branch_create, name, commit, force))
 }
 
