@@ -1,6 +1,27 @@
 git2r (development version)
 ---------------------------
 
+IMPROVEMENTS
+
+* Updated the bundled libgit2 source code to version '0.28.5'.
+
+* Updated the build configuration script to be able to build git2r
+  with a system installation of libgit2 version >= 1.0.
+
+* The build configuration script checks for minimum required version
+  of libssh2 (version >= 1.8). Issue #420.
+
+* Updated to use roxygen2 version 7.1.0 to build the documentation.
+
+* Make it easier to view and change the timezone (John Blischak in
+  #408).
+
+* Fixed 'ls_tree' to handle content in subfolder, see description in
+  PR #402.
+
+* The 'branch_create' function has been changed to use the
+  'last_commit()' function as default to determine the commit to which
+  the new branch should point.
 
 git2r 0.26.1
 ------------
