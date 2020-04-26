@@ -2,7 +2,7 @@
 
 language: r
 cache: packages
-warnings_are_errors: true
+# warnings_are_errors: true
 fortran: false
 latex: false
 pandoc: false
