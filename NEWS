@@ -8,6 +8,8 @@ IMPROVEMENTS
 * Updated the build configuration script to be able to build git2r
   with a system installation of libgit2 version >= 1.0.
 
+* Updated to use libgit2 version 1.0.0 on Windows.
+
 * The build configuration script checks for minimum required version
   of libssh2 (version >= 1.8). Issue #420.
 
