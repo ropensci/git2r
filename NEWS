@@ -1,6 +1,9 @@
 git2r (development version)
 ---------------------------
 
+git2r 0.27.0
+------------
+
 IMPROVEMENTS
 
 * Updated the bundled libgit2 source code to version '0.28.5'.
