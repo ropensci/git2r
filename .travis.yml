@@ -22,7 +22,7 @@ matrix:
     - r: release
       r_packages: covr
       r_github_packages: jimhester/lintr
-      env: R_CODECOV=true R_LINTR=true
+      env: R_CODECOV=true
     - r: devel
     - os: osx
       brew_packages: libgit2
