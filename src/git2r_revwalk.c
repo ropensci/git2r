@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -348,11 +348,13 @@ SEXP git2r_revwalk_list2 (
                 goto cleanup;
             unmatched = match ? 0 : 1;
 	} else {
-             for (unsigned int j = 0; j < parents; j++) {
-                 if ((error = git2r_match_with_parent(&match, commit, j, &diffopts)) < 0)
-                     goto cleanup;
-	         if (match && unmatched)
-		     unmatched--;
+            unsigned int j;
+
+            for (j = 0; j < parents; j++) {
+                if ((error = git2r_match_with_parent(&match, commit, j, &diffopts)) < 0)
+                    goto cleanup;
+                if (match && unmatched)
+                    unmatched--;
             }
 	}
 
