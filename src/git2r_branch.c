@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include <git2.h>
 
 #include "git2r_arg.h"
@@ -37,7 +38,11 @@
  * @param n The number of branches
  * @return 0 on success, or an error code.
  */
-static int git2r_branch_count(git_repository *repo, int flags, size_t *n)
+static int
+git2r_branch_count(
+    git_repository *repo,
+    int flags,
+    size_t *n)
 {
     int error;
     git_branch_iterator *iter;
@@ -75,7 +80,8 @@ static int git2r_branch_count(git_repository *repo, int flags, size_t *n)
  * @param dest S3 class git_branch to initialize
  * @return int; < 0 if error, else 0
  */
-int git2r_branch_init(
+int attribute_hidden
+git2r_branch_init(
     const git_reference *source,
     git_branch_t type,
     SEXP repo,
@@ -103,7 +109,8 @@ cleanup:
  * @param force Overwrite existing branch
  * @return S3 class git_branch
  */
-SEXP git2r_branch_create(
+SEXP attribute_hidden
+git2r_branch_create(
     SEXP branch_name,
     SEXP commit,
     SEXP force)
@@ -168,7 +175,9 @@ cleanup:
  * @param branch S3 class git_branch
  * @return R_NilValue
  */
-SEXP git2r_branch_delete(SEXP branch)
+SEXP attribute_hidden
+git2r_branch_delete(
+    SEXP branch)
 {
     int error;
     const char *name;
@@ -207,7 +216,9 @@ cleanup:
  * @param branch S3 class git_branch
  * @return TRUE if head, FALSE if not
  */
-SEXP git2r_branch_is_head(SEXP branch)
+SEXP attribute_hidden
+git2r_branch_is_head(
+    SEXP branch)
 {
     SEXP result = R_NilValue;
     int error, nprotect = 0;
@@ -261,7 +272,10 @@ cleanup:
  *        are 1 (LOCAL), 2 (REMOTE) and 3 (ALL)
  * @return VECXSP with S3 objects of class git_branch
  */
-SEXP git2r_branch_list(SEXP repo, SEXP flags)
+SEXP attribute_hidden
+git2r_branch_list(
+    SEXP repo,
+    SEXP flags)
 {
     SEXP names, result = R_NilValue;
     int error, nprotect = 0;
@@ -336,7 +350,9 @@ cleanup:
  * @param branch S3 class git_branch
  * @return character string with full name of branch.
  */
-SEXP git2r_branch_canonical_name(SEXP branch)
+SEXP attribute_hidden
+git2r_branch_canonical_name(
+    SEXP branch)
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;
@@ -382,7 +398,9 @@ cleanup:
  * @param branch S3 class git_branch.
  * @return Character vector of length one with upstream canonical name.
  */
-SEXP git2r_branch_upstream_canonical_name(SEXP branch)
+SEXP attribute_hidden
+git2r_branch_upstream_canonical_name(
+    SEXP branch)
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;
@@ -464,7 +482,9 @@ cleanup:
  * @param branch S3 class git_branch
  * @return character string with remote name.
  */
-SEXP git2r_branch_remote_name(SEXP branch)
+SEXP attribute_hidden
+git2r_branch_remote_name(
+    SEXP branch)
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;
@@ -521,7 +541,9 @@ cleanup:
  * @param branch S3 class git_branch
  * @return character string with remote url.
  */
-SEXP git2r_branch_remote_url(SEXP branch)
+SEXP attribute_hidden
+git2r_branch_remote_url(
+    SEXP branch)
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;
@@ -592,7 +614,8 @@ cleanup:
  * @param force Overwrite existing branch
  * @return The renamed S3 class git_branch
  */
-SEXP git2r_branch_rename(
+SEXP attribute_hidden
+git2r_branch_rename(
     SEXP branch,
     SEXP new_branch_name,
     SEXP force)
@@ -659,7 +682,9 @@ cleanup:
  * @param branch S3 class git_branch
  * @return The 40 character sha if the reference is direct, else NA
  */
-SEXP git2r_branch_target(SEXP branch)
+SEXP attribute_hidden
+git2r_branch_target(
+    SEXP branch)
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;
@@ -711,7 +736,9 @@ cleanup:
  * @param branch S3 class git_branch
  * @return S3 class git_branch or R_NilValue if no remote tracking branch.
  */
-SEXP git2r_branch_get_upstream(SEXP branch)
+SEXP attribute_hidden
+git2r_branch_get_upstream(
+    SEXP branch)
 {
     int error, nprotect = 0;
     SEXP repo, result = R_NilValue;
@@ -770,7 +797,10 @@ cleanup:
  * upstream. Pass NULL to unset.
  * @return R_NilValue
  */
-SEXP git2r_branch_set_upstream(SEXP branch, SEXP upstream_name)
+SEXP attribute_hidden
+git2r_branch_set_upstream(
+    SEXP branch,
+    SEXP upstream_name)
 {
     int error;
     SEXP repo;

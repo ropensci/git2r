@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include <git2.h>
 #include "git2r_arg.h"
 #include "git2r_deprecated.h"
@@ -27,7 +28,8 @@
  *
  * @return A VECSXP with threads, https and ssh set to TRUE/FALSE
  */
-SEXP git2r_libgit2_features(void)
+SEXP attribute_hidden
+git2r_libgit2_features(void)
 {
     const char *names[] = {"threads", "https", "ssh", ""};
     int value = git_libgit2_features();
@@ -47,7 +49,8 @@ SEXP git2r_libgit2_features(void)
  *
  * @return A VECSXP with major, minor and rev.
  */
-SEXP git2r_libgit2_version(void)
+SEXP attribute_hidden
+git2r_libgit2_version(void)
 {
     const char *names[] = {"major", "minor", "rev", ""};
     SEXP version;
@@ -73,7 +76,10 @@ SEXP git2r_libgit2_version(void)
  * one per file. Default NULL.
  * @return NULL
  */
-SEXP git2r_ssl_cert_locations(SEXP filename, SEXP path)
+SEXP attribute_hidden
+git2r_ssl_cert_locations(
+    SEXP filename,
+    SEXP path)
 {
     const char *f = NULL;
     const char *p = NULL;

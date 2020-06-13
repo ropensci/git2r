@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include <git2.h>
 
 #include "git2r_arg.h"
@@ -38,7 +39,10 @@
  * working directory will be replaced with the content of the index.
  * @return R_NilValue
  */
-SEXP git2r_reset(SEXP commit, SEXP reset_type)
+SEXP attribute_hidden
+git2r_reset(
+    SEXP commit,
+    SEXP reset_type)
 {
     int error;
     SEXP repo;
@@ -82,7 +86,10 @@ cleanup:
  * @param path The paths to reset
  * @return R_NilValue
  */
-SEXP git2r_reset_default(SEXP repo, SEXP path)
+SEXP attribute_hidden
+git2r_reset_default(
+    SEXP repo,
+    SEXP path)
 {
     int error = 0;
     git_strarray pathspec = {0};

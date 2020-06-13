@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include "git2r_error.h"
 #include "git2r_deprecated.h"
 #include "git2r_repository.h"
@@ -28,7 +29,9 @@
  * @param repo S3 class git_repository
  * @return S3 class git_signature
  */
-SEXP git2r_signature_default(SEXP repo)
+SEXP attribute_hidden
+git2r_signature_default(
+    SEXP repo)
 {
     int error, nprotect = 0;
     git_repository *repository = NULL;
@@ -69,7 +72,10 @@ cleanup:
  * @param signature SEXP argument with S3 class git_signature
  * @return 0 or an error code
  */
-int git2r_signature_from_arg(git_signature **out, SEXP signature)
+int attribute_hidden
+git2r_signature_from_arg(
+    git_signature **out,
+    SEXP signature)
 {
     SEXP when = git2r_get_list_element(signature, "when");
 
@@ -88,7 +94,10 @@ int git2r_signature_from_arg(git_signature **out, SEXP signature)
  * @param dest S3 class git_signature to initialize
  * @return void
  */
-void git2r_signature_init(const git_signature *source, SEXP dest)
+void attribute_hidden
+git2r_signature_init(
+    const git_signature *source,
+    SEXP dest)
 {
     SEXP when;
 

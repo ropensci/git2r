@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include <git2.h>
 
 #include "git2r_arg.h"
@@ -36,7 +37,12 @@
  * @param dest S3 class git_blame to initialize
  * @return void
  */
-void git2r_blame_init(git_blame *source, SEXP repo, SEXP path, SEXP dest)
+void static
+git2r_blame_init(
+    git_blame *source,
+    SEXP repo,
+    SEXP path,
+    SEXP dest)
 {
     SEXP hunks;
     size_t i, n;
@@ -146,7 +152,10 @@ void git2r_blame_init(git_blame *source, SEXP repo, SEXP path, SEXP dest)
  * @param path The path to the file to get the blame
  * @return S3 class git_blame
  */
-SEXP git2r_blame_file(SEXP repo, SEXP path)
+SEXP attribute_hidden
+git2r_blame_file(
+    SEXP repo,
+    SEXP path)
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;

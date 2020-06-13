@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include "git2r_deprecated.h"
 #include "git2r_S3.h"
 #include "git2r_transfer.h"
@@ -27,7 +28,8 @@
  * @param dest S3 class git_transfer_progress to initialize
  * @return void
  */
-void git2r_transfer_progress_init(
+void attribute_hidden
+git2r_transfer_progress_init(
     const GIT2R_INDEXER_PROGRESS *source,
     SEXP dest)
 {

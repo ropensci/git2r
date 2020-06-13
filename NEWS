@@ -1,6 +1,13 @@
 git2r (development version)
 ---------------------------
 
+git2r 0.27.1
+------------
+
+CHANGES
+
+* Fixed the CITATION file to pass 'R CMD check' without a NOTE.
+
 git2r 0.27.0
 ------------
 

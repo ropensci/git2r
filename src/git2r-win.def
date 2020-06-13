@@ -1,0 +1,4 @@
+LIBRARY git2r.dll
+EXPORTS
+ R_init_git2r
+ R_unload_git2r

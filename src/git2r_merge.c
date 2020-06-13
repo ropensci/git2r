@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include <git2.h>
 
 #include "git2r_arg.h"
@@ -27,7 +28,8 @@
 #include "git2r_S3.h"
 #include "git2r_signature.h"
 
-int git2r_commit_create(
+int
+git2r_commit_create(
     git_oid *out,
     git_repository *repository,
     git_index *index,
@@ -43,7 +45,10 @@ int git2r_commit_create(
  * @return The commit of a merge base between 'one' and 'two'
  *         or NULL if not found
  */
-SEXP git2r_merge_base(SEXP one, SEXP two)
+SEXP attribute_hidden
+git2r_merge_base(
+    SEXP one,
+    SEXP two)
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;
@@ -116,7 +121,8 @@ cleanup:
  * @param log_message First part of the one line long message in the reflog
  * @return 0 on success, or error code
  */
-static int git2r_fast_forward_merge(
+static int
+git2r_fast_forward_merge(
     SEXP merge_result,
     const git_annotated_commit *merge_head,
     git_repository *repository,
@@ -224,7 +230,8 @@ cleanup:
  * @param merge_opts Merge options
  * @return 0 on success, or error code
  */
-static int git2r_normal_merge(
+static int
+git2r_normal_merge(
     SEXP merge_result,
     const git_annotated_commit **merge_heads,
     size_t n,
@@ -332,7 +339,8 @@ cleanup:
  * continue resolving conflicts.
  * @return 0 on success, or error code
  */
-static int git2r_merge(
+static int
+git2r_merge(
     SEXP merge_result,
     git_repository *repository,
     const git_annotated_commit **merge_heads,
@@ -472,7 +480,10 @@ static int git2r_merge(
  * @param count The number of merge heads.
  * @return void
  */
-static void git2r_merge_heads_free(git_annotated_commit **merge_heads, size_t n)
+static void
+git2r_merge_heads_free(
+    git_annotated_commit **merge_heads,
+    size_t n)
 {
     if (merge_heads) {
         size_t i = 0;
@@ -497,7 +508,12 @@ static void git2r_merge_heads_free(git_annotated_commit **merge_heads, size_t n)
  * continue resolving conflicts.
  * @return S3 class git_merge_result
  */
-SEXP git2r_merge_branch(SEXP branch, SEXP merger, SEXP commit_on_success, SEXP fail)
+SEXP attribute_hidden
+git2r_merge_branch(
+    SEXP branch,
+    SEXP merger,
+    SEXP commit_on_success,
+    SEXP fail)
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;
@@ -600,7 +616,8 @@ cleanup:
  * @param n Length of fetch_heads list.
  * @return 0 on success, or error code
  */
-static int git2r_merge_heads_from_fetch_heads(
+static int
+git2r_merge_heads_from_fetch_heads(
     git_annotated_commit ***merge_heads,
     git_repository *repository,
     SEXP fetch_heads,
@@ -653,7 +670,10 @@ cleanup:
  * merge that creates a merge commit.
  * @return List of git_annotated_commit objects.
  */
-SEXP git2r_merge_fetch_heads(SEXP fetch_heads, SEXP merger)
+SEXP attribute_hidden
+git2r_merge_fetch_heads(
+    SEXP fetch_heads,
+    SEXP merger)
 {
     int error, nprotect = 0;
     size_t n = 0;

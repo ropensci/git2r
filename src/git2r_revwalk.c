@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include <git2.h>
 
 #include "git2r_arg.h"
@@ -34,7 +35,10 @@
  * output. Use max_n < 0 for unlimited number of commits.
  * @return The number of revisions
  */
-static int git2r_revwalk_count(git_revwalk *walker, int max_n)
+static int
+git2r_revwalk_count(
+    git_revwalk *walker,
+    int max_n)
 {
     int n = 0;
     git_oid oid;
@@ -51,7 +55,8 @@ static int git2r_revwalk_count(git_revwalk *walker, int max_n)
 
 /* Helper to find how many files in a commit changed from its nth
  * parent. */
-static int git2r_match_with_parent(
+static int
+git2r_match_with_parent(
     int *out,
     git_commit *commit,
     unsigned int i,
@@ -96,7 +101,8 @@ cleanup:
  * output. Use max_n < 0 for unlimited number of commits.
  * @return list with S3 class git_commit objects
  */
-SEXP git2r_revwalk_list(
+SEXP attribute_hidden
+git2r_revwalk_list(
     SEXP repo,
     SEXP sha,
     SEXP topological,
@@ -218,7 +224,8 @@ cleanup:
  * @param path Only commits modifying this path are selected
  * @return list with S3 class git_commit objects
  */
-SEXP git2r_revwalk_list2 (
+SEXP attribute_hidden
+git2r_revwalk_list2 (
     SEXP repo,
     SEXP sha,
     SEXP topological,
@@ -348,11 +355,13 @@ SEXP git2r_revwalk_list2 (
                 goto cleanup;
             unmatched = match ? 0 : 1;
 	} else {
-             for (unsigned int j = 0; j < parents; j++) {
-                 if ((error = git2r_match_with_parent(&match, commit, j, &diffopts)) < 0)
-                     goto cleanup;
-	         if (match && unmatched)
-		     unmatched--;
+            unsigned int j;
+
+            for (j = 0; j < parents; j++) {
+                if ((error = git2r_match_with_parent(&match, commit, j, &diffopts)) < 0)
+                    goto cleanup;
+                if (match && unmatched)
+                    unmatched--;
             }
 	}
 
@@ -395,7 +404,8 @@ cleanup:
  * @param reverse Sort the commits in reverse order
  * @return list with S3 class git_commit objects
  */
-SEXP git2r_revwalk_contributions(
+SEXP attribute_hidden
+git2r_revwalk_contributions(
     SEXP repo,
     SEXP topological,
     SEXP time,

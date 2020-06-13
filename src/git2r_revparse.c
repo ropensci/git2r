@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include <git2.h>
 
 #include "git2r_arg.h"
@@ -36,7 +37,10 @@
  * http://git-scm.com/docs/git-rev-parse.html#_specifying_revisions
  * @return S3 object of class git_commit, git_tag or git_tree.
  */
-SEXP git2r_revparse_single(SEXP repo, SEXP revision)
+SEXP attribute_hidden
+git2r_revparse_single(
+    SEXP repo,
+    SEXP revision)
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;

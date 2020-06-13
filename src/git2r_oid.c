@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2015 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include "git2r_oid.h"
 
 /**
@@ -26,7 +27,10 @@
  * @param oid result is written into the oid
  * @return void
  */
-void git2r_oid_from_sha_sexp(SEXP sha, git_oid *oid)
+void attribute_hidden
+git2r_oid_from_sha_sexp(
+    SEXP sha,
+    git_oid *oid)
 {
     size_t len;
 

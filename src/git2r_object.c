@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include <git2.h>
 
 #include "git2r_arg.h"
@@ -35,7 +36,10 @@
  * @param sha 4 to 40 char hexadecimal string
  * @return S3 object with lookup
  */
-SEXP git2r_object_lookup(SEXP repo, SEXP sha)
+SEXP attribute_hidden
+git2r_object_lookup(
+    SEXP repo,
+    SEXP sha)
 {
     int error, nprotect = 0;
     size_t len;

@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include <git2.h>
 
 #include "git2r_arg.h"
@@ -48,7 +49,8 @@ typedef struct {
  * @param dest S3 class git_note to initialize
  * @return int 0 on success, or an error code.
  */
-static int git2r_note_init(
+static int
+git2r_note_init(
     const git_oid *blob_id,
     const git_oid *annotated_object_id,
     git_repository *repository,
@@ -108,7 +110,8 @@ static int git2r_note_init(
  * @param force Overwrite existing note
  * @return S3 class git_note
  */
-SEXP git2r_note_create(
+SEXP attribute_hidden
+git2r_note_create(
     SEXP repo,
     SEXP sha,
     SEXP message,
@@ -203,7 +206,9 @@ cleanup:
  * @return Character vector of length one with name of default
  * reference
  */
-SEXP git2r_note_default_ref(SEXP repo)
+SEXP attribute_hidden
+git2r_note_default_ref(
+    SEXP repo)
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;
@@ -243,7 +248,8 @@ cleanup:
  * @param payload Payload data passed to `git_note_foreach`
  * @return int 0 or error code
  */
-static int git2r_note_foreach_cb(
+static int
+git2r_note_foreach_cb(
     const git_oid *blob_id,
     const git_oid *annotated_object_id,
     void *payload)
@@ -290,7 +296,10 @@ cleanup:
  * @param ref Optional reference to read from.
  * @return VECXSP with S3 objects of class git_note
  */
-SEXP git2r_notes(SEXP repo, SEXP ref)
+SEXP attribute_hidden
+git2r_notes(
+    SEXP repo,
+    SEXP ref)
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;
@@ -364,7 +373,11 @@ cleanup:
  * @param committer Signature of the notes commit committer
  * @return R_NilValue
  */
-SEXP git2r_note_remove(SEXP note, SEXP author, SEXP committer)
+SEXP attribute_hidden
+git2r_note_remove(
+    SEXP note,
+    SEXP author,
+    SEXP committer)
 {
     int error;
     SEXP repo;

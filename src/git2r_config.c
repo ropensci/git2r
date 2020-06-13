@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include <git2.h>
 
 #include "git2r_arg.h"
@@ -32,7 +33,8 @@
  * @param n_level array to store the number of variables
  * @param 0 on succes, or error code
  */
-static int git2r_config_count_variables(
+static int
+git2r_config_count_variables(
     const git_config *cfg,
     size_t *n_level)
 {
@@ -96,7 +98,8 @@ cleanup:
  * @param name name of the level to initialize
  * @return index of the config level list in the owning list
  */
-static size_t git2r_config_list_init(
+static size_t
+git2r_config_list_init(
     SEXP list,
     size_t level,
     size_t *n_level,
@@ -133,7 +136,8 @@ static size_t git2r_config_list_init(
  * @param entry the config entry to add
  * @return void
  */
-static void git2r_config_list_add_entry(
+static void
+git2r_config_list_add_entry(
     SEXP list,
     size_t level,
     size_t *i_level,
@@ -162,7 +166,8 @@ static void git2r_config_list_add_entry(
  * @param n_level vector with number of entries per level
  * @return 0 if OK, else error code
  */
-static int git2r_config_list_variables(
+static int
+git2r_config_list_variables(
     git_config *cfg,
     SEXP list,
     size_t *n_level)
@@ -239,7 +244,11 @@ cleanup:
  * @param snapshot Open a snapshot of the configuration.
  * @return 0 on success, or an error code.
  */
-static int git2r_config_open(git_config **out, SEXP repo, int snapshot)
+static int
+git2r_config_open(
+    git_config **out,
+    SEXP repo,
+    int snapshot)
 {
     int error;
 
@@ -279,7 +288,9 @@ static int git2r_config_open(git_config **out, SEXP repo, int snapshot)
  * @param repo S3 class git_repository
  * @return VECSXP list with variables by level
  */
-SEXP git2r_config_get(SEXP repo)
+SEXP attribute_hidden
+git2r_config_get(
+    SEXP repo)
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;
@@ -326,7 +337,10 @@ cleanup:
  * @param variables list of variables. If variable is NULL, it's deleted.
  * @return R_NilValue
  */
-SEXP git2r_config_set(SEXP repo, SEXP variables)
+SEXP attribute_hidden
+git2r_config_set(
+    SEXP repo,
+    SEXP variables)
 {
     int error = 0, nprotect = 0;
     SEXP names;
@@ -388,7 +402,10 @@ cleanup:
  * @return If the variable exists, a character vector of length one
  * with the value, else R_NilValue.
  */
-SEXP git2r_config_get_string(SEXP repo, SEXP name)
+SEXP attribute_hidden
+git2r_config_get_string(
+    SEXP repo,
+    SEXP name)
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;
@@ -433,7 +450,10 @@ cleanup:
  * @return If the variable exists, a logical vector of length one
  * with TRUE or FALSE, else R_NilValue.
  */
-SEXP git2r_config_get_logical(SEXP repo, SEXP name)
+SEXP attribute_hidden
+git2r_config_get_logical(
+    SEXP repo,
+    SEXP name)
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;
@@ -478,7 +498,9 @@ cleanup:
  *
  * @return path if a configuration file has been found, else NA.
  */
-SEXP git2r_config_find_file(SEXP level)
+SEXP attribute_hidden
+git2r_config_find_file(
+    SEXP level)
 {
     int not_found = 1;
     SEXP result;

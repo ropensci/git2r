@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include <git2.h>
 
 #include "git2r_arg.h"
@@ -45,7 +46,10 @@ typedef struct {
  * @param index The index to the stash. 0 is the most recent stash.
  * @return R_NilValue
  */
-SEXP git2r_stash_apply(SEXP repo, SEXP index)
+SEXP attribute_hidden
+git2r_stash_apply(
+    SEXP repo,
+    SEXP index)
 {
     int error;
     git_repository *repository = NULL;
@@ -74,7 +78,10 @@ SEXP git2r_stash_apply(SEXP repo, SEXP index)
  * @param index The index to the stash. 0 is the most recent stash.
  * @return R_NilValue
  */
-SEXP git2r_stash_drop(SEXP repo, SEXP index)
+SEXP attribute_hidden
+git2r_stash_drop(
+    SEXP repo,
+    SEXP index)
 {
     int error;
     git_repository *repository = NULL;
@@ -102,7 +109,10 @@ SEXP git2r_stash_drop(SEXP repo, SEXP index)
  * @param index The index to the stash. 0 is the most recent stash.
  * @return R_NilValue
  */
-SEXP git2r_stash_pop(SEXP repo, SEXP index)
+SEXP attribute_hidden
+git2r_stash_pop(
+    SEXP repo,
+    SEXP index)
 {
     int error;
     git_repository *repository = NULL;
@@ -133,7 +143,8 @@ SEXP git2r_stash_pop(SEXP repo, SEXP index)
  * @param dest S3 class git_stash to initialize
  * @return int 0 on success, or an error code.
  */
-int git2r_stash_init(
+static int
+git2r_stash_init(
     const git_oid *source,
     git_repository *repository,
     SEXP repo,
@@ -161,7 +172,8 @@ int git2r_stash_init(
  * @param payload Pointer to a git2r_stash_list_cb_data data structure.
  * @return 0 if OK, else error code
  */
-static int git2r_stash_list_cb(
+static int
+git2r_stash_list_cb(
     size_t index,
     const char* message,
     const git_oid *stash_id,
@@ -211,7 +223,9 @@ cleanup:
  * @param repo S3 class git_repository
  * @return VECXSP with S3 objects of class git_stash
  */
-SEXP git2r_stash_list(SEXP repo)
+SEXP attribute_hidden
+git2r_stash_list(
+    SEXP repo)
 {
     SEXP list = R_NilValue;
     int error, nprotect = 0;
@@ -261,7 +275,8 @@ cleanup:
  * @param stasher Signature with stasher and time of stash
  * @return S3 class git_stash
  */
-SEXP git2r_stash_save(
+SEXP attribute_hidden
+git2r_stash_save(
     SEXP repo,
     SEXP message,
     SEXP index,

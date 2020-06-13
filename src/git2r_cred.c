@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include <R.h>
 #include <Rinternals.h>
 
@@ -51,7 +52,10 @@
  *   environmental variable.
  * @return 0 on success, else -1.
  */
-static int git2r_getenv(char **out, SEXP obj, const char *slot)
+static int
+git2r_getenv(
+    char **out, SEXP obj,
+    const char *slot)
 {
     const char *buf;
 
@@ -78,7 +82,8 @@ static int git2r_getenv(char **out, SEXP obj, const char *slot)
  * @param credentials The S3 class object with credentials.
  * @return 0 on success, else -1.
  */
-static int git2r_cred_ssh_key(
+static int
+git2r_cred_ssh_key(
     GIT2R_CREDENTIAL **cred,
     const char *username_from_url,
     unsigned int allowed_types,
@@ -115,7 +120,8 @@ static int git2r_cred_ssh_key(
  * @param credentials The S3 class object with credentials.
  * @return 0 on success, else -1.
  */
-static int git2r_cred_env(
+static int
+git2r_cred_env(
     GIT2R_CREDENTIAL **cred,
     unsigned int allowed_types,
     SEXP credentials)
@@ -159,7 +165,8 @@ static int git2r_cred_env(
  * @param credentials The S3 class object with credentials.
  * @return 0 on success, else -1.
  */
-static int git2r_cred_token(
+static int
+git2r_cred_token(
     GIT2R_CREDENTIAL **cred,
     unsigned int allowed_types,
     SEXP credentials)
@@ -196,7 +203,8 @@ static int git2r_cred_token(
  * @param credentials The S3 class object with credentials.
  * @return 0 on success, else -1.
  */
-static int git2r_cred_user_pass(
+static int
+git2r_cred_user_pass(
     GIT2R_CREDENTIAL **cred,
     unsigned int allowed_types,
     SEXP credentials)
@@ -432,7 +440,8 @@ static int git2r_cred_user_pass(
  * @param payload The payload provided when specifying this callback.
  * @return 0 on success, else -1.
  */
-int git2r_cred_acquire_cb(
+int attribute_hidden
+git2r_cred_acquire_cb(
     GIT2R_CREDENTIAL **cred,
     const char *url,
     const char *username_from_url,

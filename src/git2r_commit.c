@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include <git2.h>
 
 #include "git2r_arg.h"
@@ -34,7 +35,9 @@
  * @param repository The repository
  * @return 0 if ok, else error code.
  */
-static int git2r_any_changes_in_index(git_repository *repository)
+static int
+git2r_any_changes_in_index(
+    git_repository *repository)
 {
     int error;
     int changes_in_index = 0;
@@ -86,7 +89,10 @@ cleanup:
  * @param n_parents The number of parents.
  * @return void
  */
-static void git2r_parents_free(git_commit **parents, size_t n_parents)
+static void
+git2r_parents_free(
+    git_commit **parents,
+    size_t n_parents)
 {
     if (parents) {
         size_t i;
@@ -117,7 +123,8 @@ typedef struct {
  * @param payload Payload data passed to 'git_repository_mergehead_foreach'
  * @return 0
  */
-static int git2r_repository_mergehead_foreach_cb(
+static int
+git2r_repository_mergehead_foreach_cb(
     const git_oid *oid,
     void *payload)
 {
@@ -143,7 +150,8 @@ static int git2r_repository_mergehead_foreach_cb(
  * @param repository The repository
  * @return 0 on succes, or error code
  */
-static int git2r_retrieve_parents(
+static int
+git2r_retrieve_parents(
     git_commit ***parents,
     size_t *n_parents,
     git_repository *repository)
@@ -214,7 +222,8 @@ static int git2r_retrieve_parents(
  * @param committer Who is the committer
  * @return 0 on success, or error code
  */
-int git2r_commit_create(
+int attribute_hidden
+git2r_commit_create(
     git_oid *out,
     git_repository *repository,
     git_index *index,
@@ -271,7 +280,8 @@ cleanup:
  * @param committer S3 class git_signature
  * @return S3 class git_commit
  */
-SEXP git2r_commit(
+SEXP attribute_hidden
+git2r_commit(
     SEXP repo,
     SEXP message,
     SEXP author,
@@ -357,7 +367,8 @@ cleanup:
  * @param commit S3 class git_commit
  * @return 0 or an error code
  */
-int git2r_commit_lookup(
+int attribute_hidden
+git2r_commit_lookup(
     git_commit **out,
     git_repository *repository,
     SEXP commit)
@@ -376,7 +387,9 @@ int git2r_commit_lookup(
  * @param commit S3 class git_commit or git_stash
  * @return S3 class git_tree
  */
-SEXP git2r_commit_tree(SEXP commit)
+SEXP attribute_hidden
+git2r_commit_tree(
+    SEXP commit)
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;
@@ -429,7 +442,11 @@ cleanup:
  * @param dest S3 class git_commit to initialize
  * @return void
  */
-void git2r_commit_init(git_commit *source, SEXP repo, SEXP dest)
+void attribute_hidden
+git2r_commit_init(
+    git_commit *source,
+    SEXP repo,
+    SEXP dest)
 {
     const char *str;
     const git_signature *signature;
@@ -488,7 +505,9 @@ void git2r_commit_init(git_commit *source, SEXP repo, SEXP dest)
  * @param commit S3 class git_commit
  * @return list of S3 class git_commit objects
  */
-SEXP git2r_commit_parent_list(SEXP commit)
+SEXP attribute_hidden
+git2r_commit_parent_list(
+    SEXP commit)
 {
     int error, nprotect = 0;
     size_t i, n;
