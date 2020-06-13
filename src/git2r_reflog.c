@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include <git2.h>
 
 #include "git2r_arg.h"
@@ -36,7 +37,8 @@
  * @param dest S3 class git_reflog_entry to initialize
  * @return void
  */
-void git2r_reflog_entry_init(
+static void
+git2r_reflog_entry_init(
     const git_reflog_entry *source,
     size_t index,
     SEXP repo,
@@ -109,7 +111,10 @@ void git2r_reflog_entry_init(
  * @param ref Reference to read from.
  * @return VECXSP with S3 objects of class git_reflog
  */
-SEXP git2r_reflog_list(SEXP repo, SEXP ref)
+SEXP attribute_hidden
+git2r_reflog_list(
+    SEXP repo,
+    SEXP ref)
 {
     int error, nprotect = 0;
     size_t i, n;

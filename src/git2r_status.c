@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include "git2r_arg.h"
 #include "git2r_deprecated.h"
 #include "git2r_error.h"
@@ -28,7 +29,9 @@
  * @param status_list Representation of a status collection
  * @return The number of files
  */
-static size_t git2r_status_count_ignored(git_status_list *status_list)
+static size_t
+git2r_status_count_ignored(
+    git_status_list *status_list)
 {
     size_t i = 0;
     size_t ignored = 0;
@@ -50,7 +53,9 @@ static size_t git2r_status_count_ignored(git_status_list *status_list)
  * @param status_list Representation of a status collection
  * @return The number of changes
  */
-static size_t git2r_status_count_staged(git_status_list *status_list)
+static size_t
+git2r_status_count_staged(
+    git_status_list *status_list)
 {
     size_t i = 0;
     size_t changes = 0;
@@ -83,7 +88,9 @@ static size_t git2r_status_count_staged(git_status_list *status_list)
  * @param status_list Representation of a status collection
  * @return The number of changes
  */
-static size_t git2r_status_count_unstaged(git_status_list *status_list)
+static size_t
+git2r_status_count_unstaged(
+    git_status_list *status_list)
 {
     size_t i = 0;
     size_t changes = 0;
@@ -118,7 +125,9 @@ static size_t git2r_status_count_unstaged(git_status_list *status_list)
  * @param status_list Representation of a status collection
  * @return The number of files
  */
-static size_t git2r_status_count_untracked(git_status_list *status_list)
+static size_t
+git2r_status_count_untracked(
+    git_status_list *status_list)
 {
     size_t i = 0;
     size_t untracked = 0;
@@ -143,7 +152,8 @@ static size_t git2r_status_count_untracked(git_status_list *status_list)
  * @param status_list Representation of a status collection
  * @return void
  */
-static void git2r_status_list_ignored(
+static void
+git2r_status_list_ignored(
     SEXP list,
     size_t list_index,
     git_status_list *status_list)
@@ -178,7 +188,8 @@ static void git2r_status_list_ignored(
  * @param status_list Representation of a status collection
  * @return void
  */
-static void git2r_status_list_staged(
+static void
+git2r_status_list_staged(
     SEXP list,
     size_t list_index,
     git_status_list *status_list)
@@ -243,7 +254,8 @@ static void git2r_status_list_staged(
  * @param status_list Representation of a status collection
  * @return void
  */
-static void git2r_status_list_unstaged(
+static void
+git2r_status_list_unstaged(
     SEXP list,
     size_t list_index,
     git_status_list *status_list)
@@ -310,7 +322,8 @@ static void git2r_status_list_unstaged(
  * @param status_list Representation of a status collection
  * @return void
  */
-static void git2r_status_list_untracked(
+static void
+git2r_status_list_untracked(
     SEXP list,
     size_t list_index,
     git_status_list *status_list)
@@ -351,7 +364,8 @@ static void git2r_status_list_untracked(
  * @param ignored Include ignored files.
  * @return VECXSP with status
  */
-SEXP git2r_status_list(
+SEXP attribute_hidden
+git2r_status_list(
     SEXP repo,
     SEXP staged,
     SEXP unstaged,

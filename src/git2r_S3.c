@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2018 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include <string.h>
 
 #include "git2r_S3.h"
@@ -110,7 +111,10 @@ const char *git2r_S3_items__git_tree[] = {
  * From the manual 'Writing R Extensions'
  * (https://cran.r-project.org/doc/manuals/r-release/R-exts.html)
  */
-SEXP git2r_get_list_element(SEXP list, const char *str)
+SEXP attribute_hidden
+git2r_get_list_element(
+    SEXP list,
+    const char *str)
 {
     int i = 0;
     SEXP elmt = R_NilValue, names = Rf_getAttrib(list, R_NamesSymbol);

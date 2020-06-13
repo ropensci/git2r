@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2018 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include <Rinternals.h>
 #include <git2.h>
 
@@ -94,7 +95,8 @@ const char git2r_err_tree_arg[] =
  * @param msg2 Optional text argument, e.g. used during argument
  * checking to pass the error message to the variable name in 'msg1'.
  */
-void git2r_error(
+void attribute_hidden
+git2r_error(
     const char *func_name,
     const git_error *err,
     const char *msg1,

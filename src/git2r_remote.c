@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include <git2.h>
 
 #include "git2r_arg.h"
@@ -37,7 +38,11 @@
  * @param url The url of the remote
  * @return R_NilValue
  */
-SEXP git2r_remote_add(SEXP repo, SEXP name, SEXP url)
+SEXP attribute_hidden
+git2r_remote_add(
+    SEXP repo,
+    SEXP name,
+    SEXP url)
 {
     int error;
     git_repository *repository = NULL;
@@ -82,7 +87,8 @@ SEXP git2r_remote_add(SEXP repo, SEXP name, SEXP url)
  * @param payload Callback data.
  * @return 0
  */
-static int git2r_update_tips_cb(
+static int
+git2r_update_tips_cb(
     const char *refname,
     const git_oid *a,
     const git_oid *b,
@@ -120,7 +126,8 @@ static int git2r_update_tips_cb(
  *        to use the base refspecs.
  * @return R_NilValue
  */
-SEXP git2r_remote_fetch(
+SEXP attribute_hidden
+git2r_remote_fetch(
     SEXP repo,
     SEXP name,
     SEXP credentials,
@@ -225,7 +232,9 @@ cleanup:
  * @param repo S3 class git_repository
  * @return Character vector with name of the remotes
  */
-SEXP git2r_remote_list(SEXP repo)
+SEXP attribute_hidden
+git2r_remote_list(
+    SEXP repo)
 {
     int error, nprotect = 0;
     size_t i;
@@ -268,7 +277,10 @@ cleanup:
  * @param name The name of the remote to remove
  * @return R_NilValue
  */
-SEXP git2r_remote_remove(SEXP repo, SEXP name)
+SEXP attribute_hidden
+git2r_remote_remove(
+    SEXP repo,
+    SEXP name)
 {
     int error;
     git_repository *repository = NULL;
@@ -298,7 +310,11 @@ SEXP git2r_remote_remove(SEXP repo, SEXP name)
  * @param newname The new name of the remote
  * @return R_NilValue
  */
-SEXP git2r_remote_rename(SEXP repo, SEXP oldname, SEXP newname)
+SEXP attribute_hidden
+git2r_remote_rename(
+    SEXP repo,
+    SEXP oldname,
+    SEXP newname)
 {
     int error;
     git_strarray problems = {0};
@@ -342,7 +358,11 @@ cleanup:
  * @param url The url to set
  * @return R_NilValue
  */
-SEXP git2r_remote_set_url(SEXP repo, SEXP name, SEXP url)
+SEXP attribute_hidden
+git2r_remote_set_url(
+    SEXP repo,
+    SEXP name,
+    SEXP url)
 {
     int error;
     git_repository *repository = NULL;
@@ -378,7 +398,10 @@ SEXP git2r_remote_set_url(SEXP repo, SEXP name, SEXP url)
  * vector
  * @return Character vector with url for each remote
  */
-SEXP git2r_remote_url(SEXP repo, SEXP remote)
+SEXP attribute_hidden
+git2r_remote_url(
+    SEXP repo,
+    SEXP remote)
 {
     int error = GIT_OK;
     SEXP url;
@@ -432,7 +455,11 @@ cleanup:
  * @param name Character vector with URL of remote.
  * @return Character vector for each reference with the associated commit IDs.
  */
-SEXP git2r_remote_ls(SEXP name, SEXP repo, SEXP credentials)
+SEXP attribute_hidden
+git2r_remote_ls(
+    SEXP name,
+    SEXP repo,
+    SEXP credentials)
 {
     const char *name_ = NULL;
     SEXP result = R_NilValue;

@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include "git2r_arg.h"
 #include "git2r_blob.h"
 #include "git2r_deprecated.h"
@@ -29,7 +30,9 @@
  * @param blob S3 class git_blob
  * @return content
  */
-SEXP git2r_blob_content(SEXP blob)
+SEXP attribute_hidden
+git2r_blob_content(
+    SEXP blob)
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;
@@ -77,7 +80,10 @@ cleanup:
  * @param path The file from which the blob will be created.
  * @return list of S3 class git_blob objects
  */
-SEXP git2r_blob_create_fromdisk(SEXP repo, SEXP path)
+SEXP attribute_hidden
+git2r_blob_create_fromdisk(
+    SEXP repo,
+    SEXP path)
 {
     SEXP result = R_NilValue;
     int error = 0, nprotect = 0;
@@ -144,7 +150,10 @@ cleanup:
  * created, relative to the repository's working dir.
  * @return list of S3 class git_blob objects
  */
-SEXP git2r_blob_create_fromworkdir(SEXP repo, SEXP relative_path)
+SEXP attribute_hidden
+git2r_blob_create_fromworkdir(
+    SEXP repo,
+    SEXP relative_path)
 {
     SEXP result = R_NilValue;
     int error = 0, nprotect = 0;
@@ -207,7 +216,11 @@ cleanup:
  * @param dest S3 class git_blob to initialize
  * @return void
  */
-void git2r_blob_init(const git_blob *source, SEXP repo, SEXP dest)
+void attribute_hidden
+git2r_blob_init(
+    const git_blob *source,
+    SEXP repo,
+    SEXP dest)
 {
     const git_oid *oid;
     char sha[GIT_OID_HEXSZ + 1];
@@ -224,7 +237,9 @@ void git2r_blob_init(const git_blob *source, SEXP repo, SEXP dest)
  * @param blob S3 class git_blob
  * @return TRUE if binary data, FALSE if not
  */
-SEXP git2r_blob_is_binary(SEXP blob)
+SEXP attribute_hidden
+git2r_blob_is_binary(
+    SEXP blob)
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;
@@ -273,7 +288,9 @@ cleanup:
  * @param blob S3 class git_blob
  * @return size
  */
-SEXP git2r_blob_rawsize(SEXP blob)
+SEXP attribute_hidden
+git2r_blob_rawsize(
+    SEXP blob)
 {
     int error;
     SEXP sha;

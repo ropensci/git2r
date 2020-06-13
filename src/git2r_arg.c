@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include <git2.h>
 
 #include "git2r_arg.h"
@@ -29,7 +30,9 @@
  * @param arg the arg to check
  * @return 0 if OK, else -1
  */
-int git2r_arg_check_blob(SEXP arg)
+int attribute_hidden
+git2r_arg_check_blob(
+    SEXP arg)
 {
     if (!Rf_isNewList(arg) || !Rf_inherits(arg, "git_blob"))
         return -1;
@@ -46,7 +49,9 @@ int git2r_arg_check_blob(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else -1
  */
-int git2r_arg_check_branch(SEXP arg)
+int attribute_hidden
+git2r_arg_check_branch(
+    SEXP arg)
 {
     SEXP slot;
 
@@ -76,7 +81,9 @@ int git2r_arg_check_branch(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else -1
  */
-int git2r_arg_check_commit(SEXP arg)
+int attribute_hidden
+git2r_arg_check_commit(
+    SEXP arg)
 {
     if (!Rf_isNewList(arg) || !Rf_inherits(arg, "git_commit"))
         return -1;
@@ -93,7 +100,9 @@ int git2r_arg_check_commit(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else -1
  */
-int git2r_arg_check_commit_stash(SEXP arg)
+int attribute_hidden
+git2r_arg_check_commit_stash(
+    SEXP arg)
 {
     if (!Rf_isNewList(arg))
         return -1;
@@ -113,7 +122,9 @@ int git2r_arg_check_commit_stash(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else -1
  */
-int git2r_arg_check_credentials(SEXP arg)
+int attribute_hidden
+git2r_arg_check_credentials(
+    SEXP arg)
 {
     /* It's ok if the credentials is R_NilValue */
     if (Rf_isNull(arg))
@@ -179,7 +190,9 @@ int git2r_arg_check_credentials(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else -1
  */
-int git2r_arg_check_fetch_heads(SEXP arg)
+int attribute_hidden
+git2r_arg_check_fetch_heads(
+    SEXP arg)
 {
     const char *repo = NULL;
     size_t i,n;
@@ -219,7 +232,9 @@ int git2r_arg_check_fetch_heads(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else -1
  */
-int git2r_arg_check_filename(SEXP arg)
+int attribute_hidden
+git2r_arg_check_filename(
+    SEXP arg)
 {
     if (Rf_isNull(arg))
         return 0;
@@ -247,7 +262,9 @@ int git2r_arg_check_filename(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else -1
  */
-int git2r_arg_check_sha(SEXP arg)
+int attribute_hidden
+git2r_arg_check_sha(
+    SEXP arg)
 {
     size_t len;
 
@@ -267,7 +284,9 @@ int git2r_arg_check_sha(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else -1
  */
-int git2r_arg_check_integer(SEXP arg)
+int attribute_hidden
+git2r_arg_check_integer(
+    SEXP arg)
 {
     if (!Rf_isInteger(arg) || 1 != Rf_length(arg) || NA_INTEGER == INTEGER(arg)[0])
         return -1;
@@ -280,7 +299,9 @@ int git2r_arg_check_integer(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else -1
  */
-int git2r_arg_check_integer_gte_zero(SEXP arg)
+int attribute_hidden
+git2r_arg_check_integer_gte_zero(
+    SEXP arg)
 {
     if (git2r_arg_check_integer(arg))
         return -1;
@@ -295,7 +316,9 @@ int git2r_arg_check_integer_gte_zero(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else -1
  */
-int git2r_arg_check_list(SEXP arg)
+int attribute_hidden
+git2r_arg_check_list(
+    SEXP arg)
 {
     if (!Rf_isNewList(arg))
         return -1;
@@ -309,7 +332,9 @@ int git2r_arg_check_list(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else -1
  */
-int git2r_arg_check_logical(SEXP arg)
+int attribute_hidden
+git2r_arg_check_logical(
+    SEXP arg)
 {
     if (!Rf_isLogical(arg) || 1 != Rf_length(arg) || NA_LOGICAL == LOGICAL(arg)[0])
         return -1;
@@ -322,7 +347,9 @@ int git2r_arg_check_logical(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else -1
  */
-int git2r_arg_check_note(SEXP arg)
+int attribute_hidden
+git2r_arg_check_note(
+    SEXP arg)
 {
     if (!Rf_isNewList(arg) || !Rf_inherits(arg, "git_note"))
         return -1;
@@ -342,7 +369,9 @@ int git2r_arg_check_note(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else -1
  */
-int git2r_arg_check_real(SEXP arg)
+int attribute_hidden
+git2r_arg_check_real(
+    SEXP arg)
 {
     if (!Rf_isReal(arg) || 1 != Rf_length(arg) || !R_finite(REAL(arg)[0]))
         return -1;
@@ -355,7 +384,9 @@ int git2r_arg_check_real(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else -1
  */
-int git2r_arg_check_repository(SEXP arg)
+int attribute_hidden
+git2r_arg_check_repository(
+    SEXP arg)
 {
     if (!Rf_isNewList(arg) || !Rf_inherits(arg, "git_repository"))
         return -1;
@@ -372,7 +403,10 @@ int git2r_arg_check_repository(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else -1
  */
-int git2r_arg_check_same_repo(SEXP arg1, SEXP arg2)
+int attribute_hidden
+git2r_arg_check_same_repo(
+    SEXP arg1,
+    SEXP arg2)
 {
     SEXP path1, path2;
 
@@ -393,7 +427,9 @@ int git2r_arg_check_same_repo(SEXP arg1, SEXP arg2)
  * @param arg the arg to check
  * @return 0 if OK, else -1
  */
-int git2r_arg_check_signature(SEXP arg)
+int attribute_hidden
+git2r_arg_check_signature(
+    SEXP arg)
 {
     SEXP when;
 
@@ -422,7 +458,9 @@ int git2r_arg_check_signature(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else -1
  */
-int git2r_arg_check_string(SEXP arg)
+int attribute_hidden
+git2r_arg_check_string(
+    SEXP arg)
 {
     if (git2r_arg_check_string_vec(arg) < 0)
         return -1;
@@ -439,7 +477,9 @@ int git2r_arg_check_string(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else -1
  */
-int git2r_arg_check_string_vec(SEXP arg)
+int attribute_hidden
+git2r_arg_check_string_vec(
+    SEXP arg)
 {
     if (!Rf_isString(arg))
         return -1;
@@ -454,7 +494,10 @@ int git2r_arg_check_string_vec(SEXP arg)
  * @return 0 if OK, else error code
  */
 
-int git2r_copy_string_vec(git_strarray *dst, SEXP src)
+int attribute_hidden
+git2r_copy_string_vec(
+    git_strarray *dst,
+    SEXP src)
 {
     size_t i, len;
 
@@ -489,7 +532,9 @@ int git2r_copy_string_vec(git_strarray *dst, SEXP src)
  * @param arg the arg to check
  * @return 0 if OK, else -1
  */
-int git2r_arg_check_tag(SEXP arg)
+int attribute_hidden
+git2r_arg_check_tag(
+    SEXP arg)
 {
     if (!Rf_isNewList(arg) || !Rf_inherits(arg, "git_tag"))
         return -1;
@@ -506,7 +551,9 @@ int git2r_arg_check_tag(SEXP arg)
  * @param arg the arg to check
  * @return 0 if OK, else -1
  */
-int git2r_arg_check_tree(SEXP arg)
+int attribute_hidden
+git2r_arg_check_tree(
+    SEXP arg)
 {
     if (!Rf_isNewList(arg) || !Rf_inherits(arg, "git_tree"))
         return -1;

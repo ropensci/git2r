@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include <git2.h>
 
 #include "git2r_arg.h"
@@ -33,7 +34,10 @@
  * @return Integer vector of length two with the values ahead and
  * behind.
  */
-SEXP git2r_graph_ahead_behind(SEXP local, SEXP upstream)
+SEXP attribute_hidden
+git2r_graph_ahead_behind(
+    SEXP local,
+    SEXP upstream)
 {
     size_t ahead, behind;
     int error, nprotect = 0;
@@ -92,7 +96,10 @@ cleanup:
  * @param ancestor A potential ancestor commit.
  * @return TRUE or FALSE
  */
-SEXP git2r_graph_descendant_of(SEXP commit, SEXP ancestor)
+SEXP attribute_hidden
+git2r_graph_descendant_of(
+    SEXP commit,
+    SEXP ancestor)
 {
     int error, descendant_of = 0;
     SEXP commit_repo, commit_sha;

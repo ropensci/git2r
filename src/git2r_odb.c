@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include <git2.h>
 
 #include "git2r_arg.h"
@@ -31,7 +32,9 @@
  * @param data STRSXP with character vectors to hash
  * @return A STRSXP with character vector of sha values
  */
-SEXP git2r_odb_hash(SEXP data)
+SEXP attribute_hidden
+git2r_odb_hash(
+    SEXP data)
 {
     SEXP result;
     int error = GIT_OK;
@@ -76,7 +79,9 @@ SEXP git2r_odb_hash(SEXP data)
  * @param path STRSXP with file vectors to hash
  * @return A STRSXP with character vector of sha values
  */
-SEXP git2r_odb_hashfile(SEXP path)
+SEXP attribute_hidden
+git2r_odb_hashfile(
+    SEXP path)
 {
     SEXP result;
     int error = GIT_OK;
@@ -133,7 +138,8 @@ typedef struct {
  * @param repo The S3 class that contains the object
  * @return void
  */
-static void git2r_add_object(
+static void
+git2r_add_object(
     const git_oid *oid,
     SEXP list,
     size_t i,
@@ -162,7 +168,10 @@ static void git2r_add_object(
  * @param payload Payload data
  * @return int 0 or error code
  */
-static int git2r_odb_objects_cb(const git_oid *oid, void *payload)
+static int
+git2r_odb_objects_cb(
+    const git_oid *oid,
+    void *payload)
 {
     int error;
     size_t len;
@@ -205,7 +214,9 @@ static int git2r_odb_objects_cb(const git_oid *oid, void *payload)
  * @param repo S3 class git_repository
  * @return list with sha's for commit's, tree's, blob's and tag's
  */
-SEXP git2r_odb_objects(SEXP repo)
+SEXP attribute_hidden
+git2r_odb_objects(
+    SEXP repo)
 {
     const char *names[] = {"sha", "type", "len", ""};
     int i, error, nprotect = 0;
@@ -276,7 +287,8 @@ typedef struct {
  * @param when Time of the commit
  * @return 0 or error code
  */
-static int git2r_odb_add_blob(
+static int
+git2r_odb_add_blob(
     const git_tree_entry *entry,
     git_odb *odb,
     SEXP list,
@@ -332,7 +344,8 @@ static int git2r_odb_add_blob(
  * @param data The callback data when iterating over odb objects
  * @return 0 or error code
  */
-static int git2r_odb_tree_blobs(
+static int
+git2r_odb_tree_blobs(
     const git_tree *tree,
     const char *path,
     const char *commit,
@@ -431,7 +444,10 @@ static int git2r_odb_tree_blobs(
  * @param payload Payload data
  * @return int 0 or error code
  */
-static int git2r_odb_blobs_cb(const git_oid *oid, void *payload)
+static int
+git2r_odb_blobs_cb(
+    const git_oid *oid,
+    void *payload)
 {
     int error = GIT_OK;
     size_t len;
@@ -487,7 +503,9 @@ static int git2r_odb_blobs_cb(const git_oid *oid, void *payload)
  * @param repo S3 class git_repository
  * @return A list with blob entries
  */
-SEXP git2r_odb_blobs(SEXP repo)
+SEXP attribute_hidden
+git2r_odb_blobs(
+    SEXP repo)
 {
     const char *names[] = {"sha", "path", "name", "len",
                            "commit", "author", "when", ""};

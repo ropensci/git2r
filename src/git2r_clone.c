@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include <git2.h>
 
 #include "git2r_arg.h"
@@ -33,7 +34,8 @@
  * structure
  * @return 0
  */
-static int git2r_clone_progress(
+static int
+git2r_clone_progress(
     const GIT2R_INDEXER_PROGRESS *progress,
     void *payload)
 {
@@ -77,7 +79,8 @@ static int git2r_clone_progress(
  * @param progress show progress
  * @return R_NilValue
  */
-SEXP git2r_clone(
+SEXP attribute_hidden
+git2r_clone(
     SEXP url,
     SEXP local_path,
     SEXP bare,

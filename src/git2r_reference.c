@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include <git2.h>
 
 #include "git2r_arg.h"
@@ -33,7 +34,11 @@
  * @param dest S3 class git_reference to initialize
  * @return void
  */
-static void git2r_reference_init(git_reference *source, SEXP repo, SEXP dest)
+static void
+git2r_reference_init(
+    git_reference *source,
+    SEXP repo,
+    SEXP dest)
 {
     char sha[GIT_OID_HEXSZ + 1];
 
@@ -93,7 +98,10 @@ static void git2r_reference_init(git_reference *source, SEXP repo, SEXP dest)
  * @param shorthand The short name for the reference
  * @return S3 class git_reference object
  */
-SEXP git2r_reference_dwim(SEXP repo, SEXP shorthand)
+SEXP attribute_hidden
+git2r_reference_dwim(
+    SEXP repo,
+    SEXP shorthand)
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;
@@ -139,7 +147,9 @@ cleanup:
  * @param repo S3 class git_repository
  * @return VECXSP with S3 objects of class git_reference
  */
-SEXP git2r_reference_list(SEXP repo)
+SEXP attribute_hidden
+git2r_reference_list(
+    SEXP repo)
 {
     int error, nprotect = 0;
     size_t i;

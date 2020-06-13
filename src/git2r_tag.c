@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include <git2.h>
 
 #include "git2r_arg.h"
@@ -37,7 +38,11 @@
  * @param dest S3 class git_tag to initialize
  * @return void
  */
-void git2r_tag_init(git_tag *source, SEXP repo, SEXP dest)
+void attribute_hidden
+git2r_tag_init(
+    git_tag *source,
+    SEXP repo,
+    SEXP dest)
 {
     const git_signature *tagger;
     const git_oid *oid;
@@ -92,7 +97,13 @@ void git2r_tag_init(git_tag *source, SEXP repo, SEXP dest)
  * @param force Overwrite existing tag.
  * @return S3 object of class git_tag or git_commit
  */
-SEXP git2r_tag_create(SEXP repo, SEXP name, SEXP message, SEXP tagger, SEXP force)
+SEXP attribute_hidden
+git2r_tag_create(
+    SEXP repo,
+    SEXP name,
+    SEXP message,
+    SEXP tagger,
+    SEXP force)
 {
     SEXP result = R_NilValue;
     int error, nprotect = 0, overwrite = 0;
@@ -194,7 +205,10 @@ cleanup:
  * @param name Name of the tag to be deleted
  * @return R_NilValue
  */
-SEXP git2r_tag_delete(SEXP repo, SEXP name)
+SEXP attribute_hidden
+git2r_tag_delete(
+    SEXP repo,
+    SEXP name)
 {
     int error;
     git_repository *repository = NULL;
@@ -234,7 +248,11 @@ typedef struct {
  * @param payload Payload data passed to 'git_tag_foreach'
  * @return 0 on success, else error code
  */
-static int git2r_tag_foreach_cb(const char *name, git_oid *oid, void *payload)
+static int
+git2r_tag_foreach_cb(
+    const char *name,
+    git_oid *oid,
+    void *payload)
 {
     int error = 0;
     git_object *object = NULL;
@@ -316,7 +334,9 @@ cleanup:
  * @param repo S3 class git_repository
  * @return VECXSP with S3 objects of class git_tag
  */
-SEXP git2r_tag_list(SEXP repo)
+SEXP attribute_hidden
+git2r_tag_list(
+    SEXP repo)
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;

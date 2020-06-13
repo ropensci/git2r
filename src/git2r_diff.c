@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2020 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -16,6 +16,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <R_ext/Visibility.h>
 #include "git2r_arg.h"
 #include "git2r_deprecated.h"
 #include "git2r_diff.h"
@@ -30,15 +31,45 @@
 #include <stdlib.h>
 #include <string.h>
 
-int git2r_diff_count(git_diff *diff, size_t *num_files,
-		     size_t *max_hunks, size_t *max_lines);
-int git2r_diff_format_to_r(git_diff *diff, SEXP dest);
-int git2r_diff_print(git_diff *diff, SEXP filename, SEXP* buf_r);
-SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename, git_diff_options *opts);
-SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename, git_diff_options *opts);
-SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename, git_diff_options *opts);
-SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename, git_diff_options *opts);
-SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename, git_diff_options *opts);
+static int
+git2r_diff_count(
+    git_diff *diff, size_t *num_files,
+    size_t *max_hunks, size_t *max_lines);
+
+static int
+git2r_diff_format_to_r(
+    git_diff *diff,
+    SEXP dest);
+
+SEXP git2r_diff_index_to_wd(
+    SEXP repo,
+    SEXP filename,
+    git_diff_options *opts);
+
+SEXP
+git2r_diff_head_to_index(
+    SEXP repo,
+    SEXP filename,
+    git_diff_options *opts);
+
+SEXP
+git2r_diff_tree_to_wd(
+    SEXP tree,
+    SEXP filename,
+    git_diff_options *opts);
+
+SEXP
+git2r_diff_tree_to_index(
+    SEXP tree,
+    SEXP filename,
+    git_diff_options *opts);
+
+SEXP
+git2r_diff_tree_to_tree(
+    SEXP tree1,
+    SEXP tree2,
+    SEXP filename,
+    git_diff_options *opts);
 
 /**
  * Diff
@@ -87,7 +118,8 @@ SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename, git_diff_opt
  * @return A S3 class git_diff object if filename equals R_NilValue. A
  * character vector with diff if filename has length 0. Oterwise NULL.
  */
-SEXP git2r_diff(
+SEXP attribute_hidden
+git2r_diff(
     SEXP repo,
     SEXP tree1,
     SEXP tree2,
@@ -195,7 +227,11 @@ SEXP git2r_diff(
  * @return A S3 class git_diff object if filename equals R_NilValue. A
  * character vector with diff if filename has length 0. Oterwise NULL.
  */
-SEXP git2r_diff_index_to_wd(SEXP repo, SEXP filename, git_diff_options *opts)
+SEXP attribute_hidden
+git2r_diff_index_to_wd(
+    SEXP repo,
+    SEXP filename,
+    git_diff_options *opts)
 {
     int error, nprotect = 0;
     git_repository *repository = NULL;
@@ -280,7 +316,11 @@ cleanup:
  * @return A S3 class git_diff object if filename equals R_NilValue. A
  * character vector with diff if filename has length 0. Oterwise NULL.
  */
-SEXP git2r_diff_head_to_index(SEXP repo, SEXP filename, git_diff_options *opts)
+SEXP attribute_hidden
+git2r_diff_head_to_index(
+    SEXP repo,
+    SEXP filename,
+    git_diff_options *opts)
 {
     int error, nprotect = 0;
     git_repository *repository = NULL;
@@ -388,7 +428,11 @@ cleanup:
  * @return A S3 class git_diff object if filename equals R_NilValue. A
  * character vector with diff if filename has length 0. Oterwise NULL.
  */
-SEXP git2r_diff_tree_to_wd(SEXP tree, SEXP filename, git_diff_options *opts)
+SEXP attribute_hidden
+git2r_diff_tree_to_wd(
+    SEXP tree,
+    SEXP filename,
+    git_diff_options *opts)
 {
     int error, nprotect = 0;
     git_repository *repository = NULL;
@@ -496,7 +540,11 @@ cleanup:
  * @return A S3 class git_diff object if filename equals R_NilValue. A
  * character vector with diff if filename has length 0. Oterwise NULL.
  */
-SEXP git2r_diff_tree_to_index(SEXP tree, SEXP filename, git_diff_options *opts)
+SEXP attribute_hidden
+git2r_diff_tree_to_index(
+    SEXP tree,
+    SEXP filename,
+    git_diff_options *opts)
 {
     int error, nprotect = 0;
     git_repository *repository = NULL;
@@ -610,7 +658,12 @@ cleanup:
  * @return A S3 class git_diff object if filename equals R_NilValue. A
  * character vector with diff if filename has length 0. Oterwise NULL.
  */
-SEXP git2r_diff_tree_to_tree(SEXP tree1, SEXP tree2, SEXP filename, git_diff_options *opts)
+SEXP attribute_hidden
+git2r_diff_tree_to_tree(
+    SEXP tree1,
+    SEXP tree2,
+    SEXP filename,
+    git_diff_options *opts)
 {
     int error, nprotect = 0;
     git_repository *repository = NULL;
@@ -744,9 +797,11 @@ typedef struct {
  * @param payload A pointer to the git2r_diff_count_payload data structure
  * @return 0
  */
-int git2r_diff_count_file_cb(const git_diff_delta *delta,
-			     float progress,
-			     void *payload)
+static int
+git2r_diff_count_file_cb(
+    const git_diff_delta *delta,
+    float progress,
+    void *payload)
 {
     git2r_diff_count_payload *n = payload;
 
@@ -766,9 +821,11 @@ int git2r_diff_count_file_cb(const git_diff_delta *delta,
  * @param payload A pointer to the git2r_diff_count_payload data structure
  * @return 0
  */
-int git2r_diff_count_hunk_cb(const git_diff_delta *delta,
-			     const git_diff_hunk *hunk,
-			     void *payload)
+static int
+git2r_diff_count_hunk_cb(
+    const git_diff_delta *delta,
+    const git_diff_hunk *hunk,
+    void *payload)
 {
     git2r_diff_count_payload *n = payload;
 
@@ -791,10 +848,12 @@ int git2r_diff_count_hunk_cb(const git_diff_delta *delta,
  * @param payload A pointer to the git2r_diff_count_payload data structure
  * @return 0
  */
-int git2r_diff_count_line_cb(const git_diff_delta *delta,
-			     const git_diff_hunk *hunk,
-			     const git_diff_line *line,
-			     void *payload)
+static int
+git2r_diff_count_line_cb(
+    const git_diff_delta *delta,
+    const git_diff_hunk *hunk,
+    const git_diff_line *line,
+    void *payload)
 {
     git2r_diff_count_payload *n = payload;
 
@@ -818,10 +877,12 @@ int git2r_diff_count_line_cb(const git_diff_delta *delta,
  * @param max_lines Pointer where to save the maximum number of lines
  * @return 0 if OK, else -1
  */
-int git2r_diff_count(git_diff *diff,
-                     size_t *num_files,
-		     size_t *max_hunks,
-                     size_t *max_lines)
+static int
+git2r_diff_count(
+    git_diff *diff,
+    size_t *num_files,
+    size_t *max_hunks,
+    size_t *max_lines)
 {
     int error;
     git2r_diff_count_payload n = { 0, 0, 0 };
@@ -854,14 +915,18 @@ typedef struct {
     size_t file_ptr, hunk_ptr, line_ptr;
 } git2r_diff_payload;
 
-int git2r_diff_get_hunk_cb(const git_diff_delta *delta,
-			   const git_diff_hunk *hunk,
-			   void *payload);
+static int
+git2r_diff_get_hunk_cb(
+    const git_diff_delta *delta,
+    const git_diff_hunk *hunk,
+    void *payload);
 
-int git2r_diff_get_line_cb(const git_diff_delta *delta,
-			   const git_diff_hunk *hunk,
-			   const git_diff_line *line,
-			   void *payload);
+static int
+git2r_diff_get_line_cb(
+    const git_diff_delta *delta,
+    const git_diff_hunk *hunk,
+    const git_diff_line *line,
+    void *payload);
 
 /**
  * Callback per file in the diff
@@ -871,9 +936,11 @@ int git2r_diff_get_line_cb(const git_diff_delta *delta,
  * @param payload A pointer to the git2r_diff_payload data structure
  * @return 0
  */
-int git2r_diff_get_file_cb(const git_diff_delta *delta,
-			   float progress,
-			   void *payload)
+static int
+git2r_diff_get_file_cb(
+    const git_diff_delta *delta,
+    float progress,
+    void *payload)
 {
     git2r_diff_payload *p = (git2r_diff_payload *) payload;
 
@@ -938,9 +1005,11 @@ int git2r_diff_get_file_cb(const git_diff_delta *delta,
  * @param payload Pointer to a git2r_diff_payload data structure
  * @return 0
  */
-int git2r_diff_get_hunk_cb(const git_diff_delta *delta,
-			   const git_diff_hunk *hunk,
-			   void *payload)
+static int
+git2r_diff_get_hunk_cb(
+    const git_diff_delta *delta,
+    const git_diff_hunk *hunk,
+    void *payload)
 {
     git2r_diff_payload *p = (git2r_diff_payload *) payload;
 
@@ -1017,10 +1086,12 @@ int git2r_diff_get_hunk_cb(const git_diff_delta *delta,
  * @param payload Pointer to a git2r_diff_payload data structure
  * @return 0
  */
-int git2r_diff_get_line_cb(const git_diff_delta *delta,
-			   const git_diff_hunk *hunk,
-			   const git_diff_line *line,
-			   void *payload)
+static int
+git2r_diff_get_line_cb(
+    const git_diff_delta *delta,
+    const git_diff_hunk *hunk,
+    const git_diff_line *line,
+    void *payload)
 {
     git2r_diff_payload *p = (git2r_diff_payload *) payload;
     static char short_buffer[200];
@@ -1093,7 +1164,10 @@ int git2r_diff_get_line_cb(const git_diff_delta *delta,
  * @param dest The S3 class git_diff to hold the formated diff
  * @return 0 if OK, else error code
  */
-int git2r_diff_format_to_r(git_diff *diff, SEXP dest)
+static int
+git2r_diff_format_to_r(
+    git_diff *diff,
+    SEXP dest)
 {
     int error, nprotect = 0;
     git2r_diff_payload payload = { /* result=   */ R_NilValue,
