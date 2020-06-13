@@ -9,6 +9,11 @@ PKG_TAR=$(PKG_NAME)_$(PKG_VERSION).tar.gz
 install:
 	cd .. && R CMD INSTALL $(PKG_NAME)
 
+# Check visibility of C entry points
+check_visibility:
+	cd .. && R CMD INSTALL $(PKG_NAME)
+	nm -g src/git2r.so | grep " T " | grep 2 && exit 0 || exit 1
+
 # Build documentation with roxygen
 # 1) Remove old doc
 # 2) Generate documentation
