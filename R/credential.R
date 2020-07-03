@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013 - 2019 The git2r contributors
+## Copyright (C) 2013 - 2020 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -46,8 +46,8 @@
 ##' push(repo, credentials = cred)
 ##' }
 cred_env <- function(username = NULL, password = NULL) {
-  structure(list(username = username, password = password),
-            class = "cred_env")
+    structure(list(username = username, password = password),
+              class = "cred_env")
 }
 
 ##' Create a new personal access token credential object
@@ -81,7 +81,7 @@ cred_env <- function(username = NULL, password = NULL) {
 ##' push(repo, credentials = cred)
 ##' }
 cred_token <- function(token = "GITHUB_PAT") {
-  structure(list(token = token), class = "cred_token")
+    structure(list(token = token), class = "cred_token")
 }
 
 ##' Create a new plain-text username and password credential object
@@ -108,17 +108,16 @@ cred_token <- function(token = "GITHUB_PAT") {
 ##' cred_user_pass("Random Developer", "SecretPassword")
 ##' }
 cred_user_pass <- function(username = NULL, password = NULL) {
-
-  if (!is.null(username)) {
-    if (is.null(password)) {
-      if (requireNamespace("getPass", quietly = TRUE)) {
-        password <- getPass::getPass()
-      }
+    if (!is.null(username)) {
+        if (is.null(password)) {
+            if (requireNamespace("getPass", quietly = TRUE)) {
+                password <- getPass::getPass()
+            }
+        }
     }
-  }
 
-  structure(list(username = username, password = password),
-            class = "cred_user_pass")
+    structure(list(username = username, password = password),
+              class = "cred_user_pass")
 }
 
 ##' Create a new passphrase-protected ssh key credential object
@@ -157,21 +156,21 @@ cred_user_pass <- function(username = NULL, password = NULL) {
 cred_ssh_key <- function(publickey = ssh_path("id_rsa.pub"),
                          privatekey = ssh_path("id_rsa"),
                          passphrase = character(0)) {
-  publickey <- normalizePath(publickey, mustWork = TRUE)
-  privatekey <- normalizePath(privatekey, mustWork = TRUE)
+    publickey <- normalizePath(publickey, mustWork = TRUE)
+    privatekey <- normalizePath(privatekey, mustWork = TRUE)
 
-  if (length(passphrase) == 0) {
-    if (ssh_key_needs_passphrase(privatekey)) {
-      if (requireNamespace("getPass", quietly = TRUE)) {
-        passphrase <- getPass::getPass()
-      }
+    if (length(passphrase) == 0) {
+        if (ssh_key_needs_passphrase(privatekey)) {
+            if (requireNamespace("getPass", quietly = TRUE)) {
+                passphrase <- getPass::getPass()
+            }
+        }
     }
-  }
 
-  structure(list(publickey  = publickey,
-                 privatekey = privatekey,
-                 passphrase = passphrase),
-            class = "cred_ssh_key")
+    structure(list(publickey  = publickey,
+                   privatekey = privatekey,
+                   passphrase = passphrase),
+              class = "cred_ssh_key")
 }
 
 ##' Check if private key is passphrase protected
@@ -179,9 +178,11 @@ cred_ssh_key <- function(publickey = ssh_path("id_rsa.pub"),
 ##' credential. Default is \code{ssh_path("id_rsa")}
 ##' @noRd
 ssh_key_needs_passphrase <- function(privatekey = ssh_path("id_rsa")) {
-  private_content <- readLines(privatekey, n = 3)
-  contains_encrypted <- grepl("encrypted", private_content, ignore.case = TRUE)
-  any(contains_encrypted)
+    private_content <- readLines(privatekey, n = 3)
+    contains_encrypted <- grepl("encrypted",
+                                private_content,
+                                ignore.case = TRUE)
+    any(contains_encrypted)
 }
 
 ##' Compose usual path to ssh keys
@@ -207,15 +208,16 @@ ssh_key_needs_passphrase <- function(privatekey = ssh_path("id_rsa")) {
 ##' ssh_path()
 ##' ssh_path("is_rsa.pub")
 ssh_path <- function(file = "") {
-  file.path(home_dir(), ".ssh", file)
+    file.path(home_dir(), ".ssh", file)
 }
 
 # Return the user's home directory regardless of operating system
 home_dir <- function() {
-  if (.Platform$OS.type == "windows") {
-    home <- Sys.getenv("USERPROFILE")
-  } else {
-    home <- path.expand("~")
-  }
-  return(home)
+    if (.Platform$OS.type == "windows") {
+        home <- Sys.getenv("USERPROFILE")
+    } else {
+        home <- path.expand("~")
+    }
+
+    home
 }
