@@ -88,8 +88,8 @@ cred_token <- function(token = "GITHUB_PAT") {
 ##'
 ##' @family git credential functions
 ##' @param username The username of the credential
-##' @param password The password of the credential. If getPass is installed
-##'     and the only input is username, \code{getPass::getPass()} will be
+##' @param password The password of the credential. If askpass is installed
+##'     and the only input is username, \code{askpass::askpass()} will be
 ##'     called to allow for interactive and obfuscated interactive
 ##'     input of the password.
 ##' @return A list of class \code{cred_user_pass} with entries:
@@ -110,8 +110,8 @@ cred_token <- function(token = "GITHUB_PAT") {
 cred_user_pass <- function(username = NULL, password = NULL) {
     if (!is.null(username)) {
         if (is.null(password)) {
-            if (requireNamespace("getPass", quietly = TRUE)) {
-                password <- getPass::getPass()
+            if (requireNamespace("askpass", quietly = TRUE)) {
+                password <- askpass::askpass()
             }
         }
     }
@@ -128,8 +128,8 @@ cred_user_pass <- function(username = NULL, password = NULL) {
 ##' @param privatekey The path to the private key of the
 ##'     credential. Default is \code{ssh_path("id_rsa")}
 ##' @param passphrase The passphrase of the credential. Default is
-##'     \code{character(0)}. If getPass is installed and private key
-##'     is passphrase protected \code{getPass::getPass()} will be
+##'     \code{character(0)}. If askpass is installed and private key
+##'     is passphrase protected \code{askpass::askpass()} will be
 ##'     called to allow for interactive and obfuscated interactive
 ##'     input of the passphrase.
 ##' @return A list of class \code{cred_ssh_key} with entries:
@@ -161,8 +161,8 @@ cred_ssh_key <- function(publickey = ssh_path("id_rsa.pub"),
 
     if (length(passphrase) == 0) {
         if (ssh_key_needs_passphrase(privatekey)) {
-            if (requireNamespace("getPass", quietly = TRUE)) {
-                passphrase <- getPass::getPass()
+            if (requireNamespace("askpass", quietly = TRUE)) {
+                passphrase <- askpass::askpass()
             }
         }
     }

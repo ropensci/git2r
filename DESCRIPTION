@@ -18,7 +18,7 @@ Imports:
 Depends:
     R (>= 3.1)
 Suggests:
-    getPass
+    askpass
 Type: Package
 LazyData: true
 Biarch: true
