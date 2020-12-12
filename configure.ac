@@ -1,5 +1,5 @@
 # git2r, R bindings to the libgit2 library.
-# Copyright (C) 2013-2019 The git2r contributors
+# Copyright (C) 2013-2020 The git2r contributors
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2,
@@ -25,6 +25,11 @@ m4_include([tools/lib-ld.m4])
 m4_include([tools/lib-link.m4])
 m4_include([tools/lib-prefix.m4])
 m4_include([tools/pkg.m4])
+
+# System libgit2
+AC_ARG_WITH([libgit2],
+AS_HELP_STRING([--without-libgit2],
+[Ignore presence of a system libgit2 library and instead use the internal git2r libgit2 library]))
 
 # Checks for programs.
 AC_PROG_CC
@@ -57,7 +62,9 @@ LIBGIT2_MIN_VERSION=0.26.0
 
 # Check if building against bundled libgit2 or system libgit2
 USE_BUNDLED_LIBGIT2=yes
-if test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
+if test "x$with_libgit2" = "xno"; then
+    AC_MSG_NOTICE([ignore presence of a system libgit2 library])
+elif test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
     if test [ -n "$PKG_CONFIG" ] ; then
         # Check if libgit2 is installed and have a version that is
         # compatible with git2r.
@@ -194,9 +201,14 @@ fi
 ################# Begin configuration to build bundled libgit2 ###############
 if test "x${USE_BUNDLED_LIBGIT2}" = xyes; then
 
-AC_MSG_NOTICE([Package dependency requirement 'libgit2 >= ${LIBGIT2_MIN_VERSION}' could not be satisfied.])
+if test "x$with_libgit2" = "xyes"; then
+    AC_MSG_FAILURE([system libgit2 requested but not found])
+elif test "x$with_libgit2" = "xno"; then
+    AC_MSG_NOTICE([attempting configuration of bundled libgit2])
+else
+    AC_MSG_NOTICE([package dependency requirement 'libgit2 >= ${LIBGIT2_MIN_VERSION}' could not be satisfied.])
 
-echo "
+    echo "
   -----------------------------------------------------------------------
 
    Unable to find the libgit2 library on this system. Building 'git2r'
@@ -235,7 +247,8 @@ echo "
 
 "
 
-AC_MSG_NOTICE([Attempting configuration of bundled libgit2])
+    AC_MSG_NOTICE([attempting configuration of bundled libgit2])
+fi
 
 # Use R to determine architecture of the machine
 AC_MSG_CHECKING([size of void*])

@@ -700,6 +700,7 @@ SHELL'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
+with_libgit2
 with_gnu_ld
 enable_rpath
 with_libiconv_prefix
@@ -1340,6 +1341,8 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --without-libgit2       Ignore presence of a system libgit2 library and
+                          instead use the internal git2r libgit2 library
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
   --with-libiconv-prefix[=DIR]  search for libiconv in DIR/include and DIR/lib
   --without-libiconv-prefix     don't search for libiconv in includedir and libdir
@@ -2293,6 +2296,14 @@ case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
 
 
 
+# System libgit2
+
+# Check whether --with-libgit2 was given.
+if test "${with_libgit2+set}" = set; then :
+  withval=$with_libgit2;
+fi
+
+
 # Checks for programs.
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
@@ -3234,7 +3245,10 @@ LIBGIT2_MIN_VERSION=0.26.0
 
 # Check if building against bundled libgit2 or system libgit2
 USE_BUNDLED_LIBGIT2=yes
-if test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
+if test "x$with_libgit2" = "xno"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: ignore presence of a system libgit2 library" >&5
+$as_echo "$as_me: ignore presence of a system libgit2 library" >&6;}
+elif test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
     if test  -n "$PKG_CONFIG"  ; then
         # Check if libgit2 is installed and have a version that is
         # compatible with git2r.
@@ -4606,10 +4620,19 @@ fi
 ################# Begin configuration to build bundled libgit2 ###############
 if test "x${USE_BUNDLED_LIBGIT2}" = xyes; then
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: Package dependency requirement 'libgit2 >= ${LIBGIT2_MIN_VERSION}' could not be satisfied." >&5
-$as_echo "$as_me: Package dependency requirement 'libgit2 >= ${LIBGIT2_MIN_VERSION}' could not be satisfied." >&6;}
+if test "x$with_libgit2" = "xyes"; then
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "system libgit2 requested but not found
+See \`config.log' for more details" "$LINENO" 5; }
+elif test "x$with_libgit2" = "xno"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: attempting configuration of bundled libgit2" >&5
+$as_echo "$as_me: attempting configuration of bundled libgit2" >&6;}
+else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: package dependency requirement 'libgit2 >= ${LIBGIT2_MIN_VERSION}' could not be satisfied." >&5
+$as_echo "$as_me: package dependency requirement 'libgit2 >= ${LIBGIT2_MIN_VERSION}' could not be satisfied." >&6;}
 
-echo "
+    echo "
   -----------------------------------------------------------------------
 
    Unable to find the libgit2 library on this system. Building 'git2r'
@@ -4648,8 +4671,9 @@ echo "
 
 "
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: Attempting configuration of bundled libgit2" >&5
-$as_echo "$as_me: Attempting configuration of bundled libgit2" >&6;}
+    { $as_echo "$as_me:${as_lineno-$LINENO}: attempting configuration of bundled libgit2" >&5
+$as_echo "$as_me: attempting configuration of bundled libgit2" >&6;}
+fi
 
 # Use R to determine architecture of the machine
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking size of void*" >&5
