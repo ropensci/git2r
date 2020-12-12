@@ -19,3 +19,4 @@
 ^.*\.a$
 ^confdefs\.h$
 ^\.covrignore$
+^\.github$
