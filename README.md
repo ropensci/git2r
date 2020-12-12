@@ -1,4 +1,3 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/h2vunr0lfqt8b45g/branch/master?svg=true)](https://ci.appveyor.com/project/karthik/git2r)
 [![CRAN status](http://www.r-pkg.org/badges/version/git2r)](http://cran.r-project.org/web/packages/git2r/index.html)
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/last-month/git2r)](http://cran.r-project.org/web/packages/git2r/index.html)
 [![Coverage Status](https://coveralls.io/repos/github/ropensci/git2r/badge.svg?branch=master)](https://coveralls.io/github/ropensci/git2r?branch=master)

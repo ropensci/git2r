@@ -9,7 +9,6 @@
 ^revdep$
 ^scripts$
 ^CONTRIBUTING.md$
-^appveyor\.yml
 ^tools/README\.md$
 ^.*\.Rproj$
 ^\.Rproj\.user$
