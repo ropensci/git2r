@@ -20,9 +20,12 @@
 ##' @noRd
 previous_branch_name <- function(repo) {
     branch <- revparse_single(repo, "@{-1}")$sha
-
     branch <- sapply(references(repo), function(x) {
-        ifelse(x$sha == branch, x$shorthand, NA_character_)
+        if (is.null(x$sha))
+            return(NA_character_)
+        if (x$sha == branch)
+            return(x$shorthand)
+        NA_character_
     })
     branch <- branch[vapply(branch, Negate(is.na), logical(1))]
 
