@@ -28,6 +28,7 @@
 #include <git2.h>
 #include <git2/sys/diff.h>
 
+#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -211,6 +212,33 @@ git2r_diff(
     return git2r_diff_tree_to_tree(tree1, tree2, filename, &opts);
 }
 
+static int
+git2r_diff_print_cb(
+    const git_diff_delta *delta,
+    const git_diff_hunk *hunk,
+    const git_diff_line *line,
+    void *payload)
+{
+    int error;
+
+    GIT2R_UNUSED(delta);
+    GIT2R_UNUSED(hunk);
+
+    if (line->origin == GIT_DIFF_LINE_CONTEXT ||
+        line->origin == GIT_DIFF_LINE_ADDITION ||
+        line->origin == GIT_DIFF_LINE_DELETION) {
+        while ((error = fputc(line->origin, (FILE *)payload)) == EINTR)
+            continue;
+        if (error == EOF)
+            return -1;
+    }
+
+    if (fwrite(line->content, line->content_len, 1, (FILE *)payload) != 1)
+        return -1;
+
+    return 0;
+}
+
 /**
  * Create a diff between the repository index and the workdir
  * directory.
@@ -280,7 +308,7 @@ git2r_diff_index_to_wd(
         error = git_diff_print(
             diff,
             GIT_DIFF_FORMAT_PATCH,
-            git_diff_print_callback__to_file_handle,
+            git2r_diff_print_cb,
             fp);
 
         if (fp)
