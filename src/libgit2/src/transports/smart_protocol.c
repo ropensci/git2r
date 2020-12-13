@@ -17,6 +17,7 @@
 #include "pack-objects.h"
 #include "remote.h"
 #include "util.h"
+#include "revwalk.h"
 
 #define NETWORK_XFER_THRESHOLD (100*1024)
 /* The minimal interval between progress updates (in seconds). */
@@ -63,7 +64,9 @@ int git_smart__store_refs(transport_smart *t, int flushes)
 			continue;
 		}
 
-		gitno_consume(buf, line_end);
+		if (gitno_consume(buf, line_end) < 0)
+			return -1;
+
 		if (pkt->type == GIT_PKT_ERR) {
 			git_error_set(GIT_ERROR_NET, "remote error: %s", ((git_pkt_err *)pkt)->error);
 			git__free(pkt);
@@ -235,7 +238,9 @@ static int recv_pkt(git_pkt **out_pkt, git_pkt_type *out_type, gitno_buffer *buf
 		}
 	} while (error);
 
-	gitno_consume(buf, line_end);
+	if (gitno_consume(buf, line_end) < 0)
+		return -1;
+
 	if (out_type != NULL)
 		*out_type = pkt->type;
 	if (out_pkt != NULL)
@@ -268,50 +273,6 @@ static int store_common(transport_smart *t)
 	} while (1);
 
 	return 0;
-}
-
-static int fetch_setup_walk(git_revwalk **out, git_repository *repo)
-{
-	git_revwalk *walk = NULL;
-	git_strarray refs;
-	unsigned int i;
-	git_reference *ref = NULL;
-	int error;
-
-	if ((error = git_reference_list(&refs, repo)) < 0)
-		return error;
-
-	if ((error = git_revwalk_new(&walk, repo)) < 0)
-		return error;
-
-	git_revwalk_sorting(walk, GIT_SORT_TIME);
-
-	for (i = 0; i < refs.count; ++i) {
-		git_reference_free(ref);
-		ref = NULL;
-
-		/* No tags */
-		if (!git__prefixcmp(refs.strings[i], GIT_REFS_TAGS_DIR))
-			continue;
-
-		if ((error = git_reference_lookup(&ref, repo, refs.strings[i])) < 0)
-			goto on_error;
-
-		if (git_reference_type(ref) == GIT_REFERENCE_SYMBOLIC)
-			continue;
-
-		if ((error = git_revwalk_push(walk, git_reference_target(ref))) < 0)
-			goto on_error;
-	}
-
-	*out = walk;
-
-on_error:
-	if (error)
-		git_revwalk_free(walk);
-	git_reference_free(ref);
-	git_strarray_free(&refs);
-	return error;
 }
 
 static int wait_while_ack(gitno_buffer *buf)
@@ -347,6 +308,7 @@ static int wait_while_ack(gitno_buffer *buf)
 int git_smart__negotiate_fetch(git_transport *transport, git_repository *repo, const git_remote_head * const *wants, size_t count)
 {
 	transport_smart *t = (transport_smart *)transport;
+	git_revwalk__push_options opts = GIT_REVWALK__PUSH_OPTIONS_INIT;
 	gitno_buffer *buf = &t->buffer;
 	git_buf data = GIT_BUF_INIT;
 	git_revwalk *walk = NULL;
@@ -358,7 +320,11 @@ int git_smart__negotiate_fetch(git_transport *transport, git_repository *repo, c
 	if ((error = git_pkt_buffer_wants(wants, count, &t->caps, &data)) < 0)
 		return error;
 
-	if ((error = fetch_setup_walk(&walk, repo)) < 0)
+	if ((error = git_revwalk_new(&walk, repo)) < 0)
+		goto on_error;
+
+	opts.insert_by_date = 1;
+	if ((error = git_revwalk__push_glob(walk, "refs/*", &opts)) < 0)
 		goto on_error;
 
 	/*
@@ -409,7 +375,7 @@ int git_smart__negotiate_fetch(git_transport *transport, git_repository *repo, c
 				} else if (pkt_type == GIT_PKT_NAK) {
 					continue;
 				} else {
-					git_error_set(GIT_ERROR_NET, "Unexpected pkt type");
+					git_error_set(GIT_ERROR_NET, "unexpected pkt type");
 					error = -1;
 					goto on_error;
 				}
@@ -477,7 +443,7 @@ int git_smart__negotiate_fetch(git_transport *transport, git_repository *repo, c
 			return error;
 
 		if (pkt_type != GIT_PKT_ACK && pkt_type != GIT_PKT_NAK) {
-			git_error_set(GIT_ERROR_NET, "Unexpected pkt type");
+			git_error_set(GIT_ERROR_NET, "unexpected pkt type");
 			return -1;
 		}
 	} else {
@@ -492,13 +458,13 @@ on_error:
 	return error;
 }
 
-static int no_sideband(transport_smart *t, struct git_odb_writepack *writepack, gitno_buffer *buf, git_transfer_progress *stats)
+static int no_sideband(transport_smart *t, struct git_odb_writepack *writepack, gitno_buffer *buf, git_indexer_progress *stats)
 {
 	int recvd;
 
 	do {
 		if (t->cancelled.val) {
-			git_error_set(GIT_ERROR_NET, "The fetch was cancelled by the user");
+			git_error_set(GIT_ERROR_NET, "the fetch was cancelled by the user");
 			return GIT_EUSER;
 		}
 
@@ -519,9 +485,9 @@ static int no_sideband(transport_smart *t, struct git_odb_writepack *writepack, 
 
 struct network_packetsize_payload
 {
-	git_transfer_progress_cb callback;
+	git_indexer_progress_cb callback;
 	void *payload;
-	git_transfer_progress *stats;
+	git_indexer_progress *stats;
 	size_t last_fired_bytes;
 };
 
@@ -546,8 +512,8 @@ static int network_packetsize(size_t received, void *payload)
 int git_smart__download_pack(
 	git_transport *transport,
 	git_repository *repo,
-	git_transfer_progress *stats,
-	git_transfer_progress_cb transfer_progress_cb,
+	git_indexer_progress *stats,
+	git_indexer_progress_cb progress_cb,
 	void *progress_payload)
 {
 	transport_smart *t = (transport_smart *)transport;
@@ -557,10 +523,10 @@ int git_smart__download_pack(
 	int error = 0;
 	struct network_packetsize_payload npp = {0};
 
-	memset(stats, 0, sizeof(git_transfer_progress));
+	memset(stats, 0, sizeof(git_indexer_progress));
 
-	if (transfer_progress_cb) {
-		npp.callback = transfer_progress_cb;
+	if (progress_cb) {
+		npp.callback = progress_cb;
 		npp.payload = progress_payload;
 		npp.stats = stats;
 		t->packetsize_cb = &network_packetsize;
@@ -569,11 +535,11 @@ int git_smart__download_pack(
 		/* We might have something in the buffer already from negotiate_fetch */
 		if (t->buffer.offset > 0 && !t->cancelled.val)
 			if (t->packetsize_cb(t->buffer.offset, t->packetsize_payload))
-				git_atomic_set(&t->cancelled, 1);
+				git_atomic32_set(&t->cancelled, 1);
 	}
 
 	if ((error = git_repository_odb__weakptr(&odb, repo)) < 0 ||
-		((error = git_odb_write_pack(&writepack, odb, transfer_progress_cb, progress_payload)) != 0))
+		((error = git_odb_write_pack(&writepack, odb, progress_cb, progress_payload)) != 0))
 		goto done;
 
 	/*
@@ -604,7 +570,14 @@ int git_smart__download_pack(
 			} else if (pkt->type == GIT_PKT_PROGRESS) {
 				if (t->progress_cb) {
 					git_pkt_progress *p = (git_pkt_progress *) pkt;
-					error = t->progress_cb(p->data, p->len, t->message_cb_payload);
+
+					if (p->len > INT_MAX) {
+						git_error_set(GIT_ERROR_NET, "oversized progress message");
+						error = GIT_ERROR;
+						goto done;
+					}
+
+					error = t->progress_cb(p->data, (int)p->len, t->message_cb_payload);
 				}
 			} else if (pkt->type == GIT_PKT_DATA) {
 				git_pkt_data *p = (git_pkt_data *) pkt;
@@ -626,7 +599,7 @@ int git_smart__download_pack(
 	} while (1);
 
 	/*
-	 * Trailing execution of transfer_progress_cb, if necessary...
+	 * Trailing execution of progress_cb, if necessary...
 	 * Only the callback through the npp datastructure currently
 	 * updates the last_fired_bytes value. It is possible that
 	 * progress has already been reported with the correct
@@ -645,7 +618,7 @@ int git_smart__download_pack(
 done:
 	if (writepack)
 		writepack->free(writepack);
-	if (transfer_progress_cb) {
+	if (progress_cb) {
 		t->packetsize_cb = NULL;
 		t->packetsize_payload = NULL;
 	}
@@ -822,7 +795,8 @@ static int parse_report(transport_smart *transport, git_push *push)
 			continue;
 		}
 
-		gitno_consume(buf, line_end);
+		if (gitno_consume(buf, line_end) < 0)
+			return -1;
 
 		error = 0;
 
@@ -839,7 +813,14 @@ static int parse_report(transport_smart *transport, git_push *push)
 			case GIT_PKT_PROGRESS:
 				if (transport->progress_cb) {
 					git_pkt_progress *p = (git_pkt_progress *) pkt;
-					error = transport->progress_cb(p->data, p->len, transport->message_cb_payload);
+
+					if (p->len > INT_MAX) {
+						git_error_set(GIT_ERROR_NET, "oversized progress message");
+						error = GIT_ERROR;
+						goto done;
+					}
+
+					error = transport->progress_cb(p->data, (int)p->len, transport->message_cb_payload);
 				}
 				break;
 			default:
@@ -855,7 +836,7 @@ static int parse_report(transport_smart *transport, git_push *push)
 			if (data_pkt_buf.size > 0) {
 				/* If there was data remaining in the pack data buffer,
 				 * then the server sent a partial pkt-line */
-				git_error_set(GIT_ERROR_NET, "Incomplete pack data pkt-line");
+				git_error_set(GIT_ERROR_NET, "incomplete pack data pkt-line");
 				error = GIT_ERROR;
 			}
 			goto done;
@@ -963,7 +944,7 @@ static int update_refs_from_report(
 
 	/* Remove any refs which we updated to have a zero OID. */
 	git_vector_rforeach(refs, i, ref) {
-		if (git_oid_iszero(&ref->head.oid)) {
+		if (git_oid_is_zero(&ref->head.oid)) {
 			git_vector_remove(refs, i);
 			git_pkt_free((git_pkt *)ref);
 		}
@@ -978,7 +959,7 @@ struct push_packbuilder_payload
 {
 	git_smart_subtransport_stream *stream;
 	git_packbuilder *pb;
-	git_push_transfer_progress cb;
+	git_push_transfer_progress_cb cb;
 	void *cb_payload;
 	size_t last_bytes;
 	double last_progress_report_time;

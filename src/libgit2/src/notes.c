@@ -288,7 +288,7 @@ static int note_write(
 
 	/* TODO: should we apply filters? */
 	/* create note object */
-	if ((error = git_blob_create_frombuffer(&oid, repo, note, strlen(note))) < 0)
+	if ((error = git_blob_create_from_buffer(&oid, repo, note, strlen(note))) < 0)
 		goto cleanup;
 
 	if ((error = manipulate_note_in_tree_r(
@@ -320,7 +320,7 @@ static int note_new(
 	git_blob *blob)
 {
 	git_note *note = NULL;
-	git_off_t blobsize;
+	git_object_size_t blobsize;
 
 	note = git__malloc(sizeof(git_note));
 	GIT_ERROR_CHECK_ALLOC(note);
@@ -627,11 +627,11 @@ int git_note_default_ref(git_buf *out, git_repository *repo)
 	char *default_ref;
 	int error;
 
-	assert(out && repo);
+	GIT_ASSERT_ARG(out);
+	GIT_ASSERT_ARG(repo);
 
-	git_buf_sanitize(out);
-
-	if ((error = note_get_default_ref(&default_ref, repo)) < 0)
+	if ((error = git_buf_sanitize(out)) < 0 ||
+	    (error = note_get_default_ref(&default_ref, repo)) < 0)
 		return error;
 
 	git_buf_attach(out, default_ref, strlen(default_ref));
@@ -640,25 +640,25 @@ int git_note_default_ref(git_buf *out, git_repository *repo)
 
 const git_signature *git_note_committer(const git_note *note)
 {
-	assert(note);
+	GIT_ASSERT_ARG_WITH_RETVAL(note, NULL);
 	return note->committer;
 }
 
 const git_signature *git_note_author(const git_note *note)
 {
-	assert(note);
+	GIT_ASSERT_ARG_WITH_RETVAL(note, NULL);
 	return note->author;
 }
 
-const char * git_note_message(const git_note *note)
+const char *git_note_message(const git_note *note)
 {
-	assert(note);
+	GIT_ASSERT_ARG_WITH_RETVAL(note, NULL);
 	return note->message;
 }
 
-const git_oid * git_note_id(const git_note *note)
+const git_oid *git_note_id(const git_note *note)
 {
-	assert(note);
+	GIT_ASSERT_ARG_WITH_RETVAL(note, NULL);
 	return &note->id;
 }
 
@@ -808,8 +808,11 @@ int git_note_next(
 
 	git_oid_cpy(note_id, &item->id);
 
-	if (!(error = process_entry_path(item->path, annotated_id)))
-		git_iterator_advance(NULL, it);
+	if ((error = process_entry_path(item->path, annotated_id)) < 0)
+		return error;
 
-	return error;
+	if ((error = git_iterator_advance(NULL, it)) < 0 && error != GIT_ITEROVER)
+		return error;
+
+	return 0;
 }

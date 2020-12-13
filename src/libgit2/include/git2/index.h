@@ -143,6 +143,7 @@ typedef enum {
 	GIT_INDEX_ADD_CHECK_PATHSPEC = (1u << 2),
 } git_index_add_option_t;
 
+/** Git index stage states */
 typedef enum {
 	/**
 	 * Match any index stage.
@@ -554,8 +555,7 @@ GIT_EXTERN(int) git_index_add_bypath(git_index *index, const char *path);
  *
  * If a previous index entry exists that has the same path as the
  * given 'entry', it will be replaced.  Otherwise, the 'entry' will be
- * added. The `id` and the `file_size` of the 'entry' are updated with the
- * real value of the blob.
+ * added.
  *
  * This forces the file to be added to the index, not looking
  * at gitignore rules.  Those rules can be evaluated through
@@ -571,7 +571,7 @@ GIT_EXTERN(int) git_index_add_bypath(git_index *index, const char *path);
  * @param len length of the data
  * @return 0 or an error code
  */
-GIT_EXTERN(int) git_index_add_frombuffer(
+GIT_EXTERN(int) git_index_add_from_buffer(
 	git_index *index,
 	const git_index_entry *entry,
 	const void *buffer, size_t len);

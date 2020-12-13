@@ -9,6 +9,7 @@
 
 #include "common.h"
 #include "oid.h"
+#include "indexer.h"
 
 /**
  * @file git2/pack.h
@@ -154,7 +155,7 @@ GIT_EXTERN(int) git_packbuilder_write_buf(git_buf *buf, git_packbuilder *pb);
  * Write the new pack and corresponding index file to path.
  *
  * @param pb The packbuilder
- * @param path to the directory where the packfile and index should be stored
+ * @param path Path to the directory where the packfile and index should be stored, or NULL for default location
  * @param mode permissions to use creating a packfile or 0 for defaults
  * @param progress_cb function to call with progress information from the indexer (optional)
  * @param progress_cb_payload payload for the progress callback (optional)
@@ -165,7 +166,7 @@ GIT_EXTERN(int) git_packbuilder_write(
 	git_packbuilder *pb,
 	const char *path,
 	unsigned int mode,
-	git_transfer_progress_cb progress_cb,
+	git_indexer_progress_cb progress_cb,
 	void *progress_cb_payload);
 
 /**
@@ -178,6 +179,16 @@ GIT_EXTERN(int) git_packbuilder_write(
 */
 GIT_EXTERN(const git_oid *) git_packbuilder_hash(git_packbuilder *pb);
 
+/**
+ * Callback used to iterate over packed objects
+ *
+ * @see git_packbuilder_foreach
+ *
+ * @param buf A pointer to the object's data
+ * @param size The size of the underlying object
+ * @param payload Payload passed to git_packbuilder_foreach
+ * @return non-zero to terminate the iteration
+ */
 typedef int GIT_CALLBACK(git_packbuilder_foreach_cb)(void *buf, size_t size, void *payload);
 
 /**

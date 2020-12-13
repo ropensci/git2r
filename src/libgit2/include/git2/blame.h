@@ -47,13 +47,15 @@ typedef enum {
 	 * to canonical real names and email addresses. The mailmap will be read
 	 * from the working directory, or HEAD in a bare repository. */
 	GIT_BLAME_USE_MAILMAP = (1<<5),
+	/** Ignore whitespace differences */
+	GIT_BLAME_IGNORE_WHITESPACE = (1<<6),
 } git_blame_flag_t;
 
 /**
  * Blame options structure
  *
  * Initialize with `GIT_BLAME_OPTIONS_INIT`. Alternatively, you can
- * use `git_blame_init_options`.
+ * use `git_blame_options_init`.
  *
  */
 typedef struct git_blame_options {
@@ -100,7 +102,7 @@ typedef struct git_blame_options {
  * @param version The struct version; pass `GIT_BLAME_OPTIONS_VERSION`.
  * @return Zero on success; -1 on failure.
  */
-GIT_EXTERN(int) git_blame_init_options(
+GIT_EXTERN(int) git_blame_options_init(
 	git_blame_options *opts,
 	unsigned int version);
 

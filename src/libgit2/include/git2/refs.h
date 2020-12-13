@@ -422,7 +422,26 @@ GIT_EXTERN(int) git_reference_remove(git_repository *repo, const char *name);
  */
 GIT_EXTERN(int) git_reference_list(git_strarray *array, git_repository *repo);
 
+/**
+ * Callback used to iterate over references
+ *
+ * @see git_reference_foreach
+ *
+ * @param reference The reference object
+ * @param payload Payload passed to git_reference_foreach
+ * @return non-zero to terminate the iteration
+ */
 typedef int GIT_CALLBACK(git_reference_foreach_cb)(git_reference *reference, void *payload);
+
+/**
+ * Callback used to iterate over reference names
+ *
+ * @see git_reference_foreach_name
+ *
+ * @param name The reference name
+ * @param payload Payload passed to git_reference_foreach_name
+ * @return non-zero to terminate the iteration
+ */
 typedef int GIT_CALLBACK(git_reference_foreach_name_cb)(const char *name, void *payload);
 
 /**
@@ -724,10 +743,11 @@ GIT_EXTERN(int) git_reference_peel(
  *    the characters '~', '^', ':', '\\', '?', '[', and '*', and the
  *    sequences ".." and "@{" which have special meaning to revparse.
  *
+ * @param valid output pointer to set with validity of given reference name
  * @param refname name to be checked.
- * @return 1 if the reference name is acceptable; 0 if it isn't
+ * @return 0 on success or an error code
  */
-GIT_EXTERN(int) git_reference_is_valid_name(const char *refname);
+GIT_EXTERN(int) git_reference_name_is_valid(int *valid, const char *refname);
 
 /**
  * Get the reference's short name

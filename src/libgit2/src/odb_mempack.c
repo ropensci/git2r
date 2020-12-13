@@ -10,7 +10,7 @@
 #include "git2/object.h"
 #include "git2/sys/odb_backend.h"
 #include "git2/sys/mempack.h"
-#include "fileops.h"
+#include "futils.h"
 #include "hash.h"
 #include "odb.h"
 #include "array.h"
@@ -37,15 +37,9 @@ static int impl__write(git_odb_backend *_backend, const git_oid *oid, const void
 {
 	struct memory_packer_db *db = (struct memory_packer_db *)_backend;
 	struct memobject *obj = NULL;
-	size_t pos;
 	size_t alloc_len;
-	int rval;
 
-	pos = git_oidmap_put(db->objects, oid, &rval);
-	if (rval < 0)
-		return -1;
-
-	if (rval == 0)
+	if (git_oidmap_exists(db->objects, oid))
 		return 0;
 
 	GIT_ERROR_CHECK_ALLOC_ADD(&alloc_len, sizeof(struct memobject), len);
@@ -57,8 +51,8 @@ static int impl__write(git_odb_backend *_backend, const git_oid *oid, const void
 	obj->len = len;
 	obj->type = type;
 
-	git_oidmap_set_key_at(db->objects, pos, &obj->oid);
-	git_oidmap_set_value_at(db->objects, pos, obj);
+	if (git_oidmap_set(db->objects, &obj->oid, obj) < 0)
+		return -1;
 
 	if (type == GIT_OBJECT_COMMIT) {
 		struct memobject **store = git_array_alloc(db->commits);
@@ -79,14 +73,10 @@ static int impl__exists(git_odb_backend *backend, const git_oid *oid)
 static int impl__read(void **buffer_p, size_t *len_p, git_object_t *type_p, git_odb_backend *backend, const git_oid *oid)
 {
 	struct memory_packer_db *db = (struct memory_packer_db *)backend;
-	struct memobject *obj = NULL;
-	size_t pos;
+	struct memobject *obj;
 
-	pos = git_oidmap_lookup_index(db->objects, oid);
-	if (!git_oidmap_valid_index(db->objects, pos))
+	if ((obj = git_oidmap_get(db->objects, oid)) == NULL)
 		return GIT_ENOTFOUND;
-
-	obj = git_oidmap_value_at(db->objects, pos);
 
 	*len_p = obj->len;
 	*type_p = obj->type;
@@ -100,14 +90,10 @@ static int impl__read(void **buffer_p, size_t *len_p, git_object_t *type_p, git_
 static int impl__read_header(size_t *len_p, git_object_t *type_p, git_odb_backend *backend, const git_oid *oid)
 {
 	struct memory_packer_db *db = (struct memory_packer_db *)backend;
-	struct memobject *obj = NULL;
-	size_t pos;
+	struct memobject *obj;
 
-	pos = git_oidmap_lookup_index(db->objects, oid);
-	if (!git_oidmap_valid_index(db->objects, pos))
+	if ((obj = git_oidmap_get(db->objects, oid)) == NULL)
 		return GIT_ENOTFOUND;
-
-	obj = git_oidmap_value_at(db->objects, pos);
 
 	*len_p = obj->len;
 	*type_p = obj->type;
@@ -124,6 +110,8 @@ int git_mempack_dump(git_buf *pack, git_repository *repo, git_odb_backend *_back
 	if (git_packbuilder_new(&packbuilder, repo) < 0)
 		return -1;
 
+	git_packbuilder_set_threads(packbuilder, 0);
+
 	for (i = 0; i < db->commits.size; ++i) {
 		struct memobject *commit = db->commits.ptr[i];
 
@@ -139,7 +127,7 @@ cleanup:
 	return err;
 }
 
-void git_mempack_reset(git_odb_backend *_backend)
+int git_mempack_reset(git_odb_backend *_backend)
 {
 	struct memory_packer_db *db = (struct memory_packer_db *)_backend;
 	struct memobject *object = NULL;
@@ -151,6 +139,8 @@ void git_mempack_reset(git_odb_backend *_backend)
 	git_array_clear(db->commits);
 
 	git_oidmap_clear(db->objects);
+
+	return 0;
 }
 
 static void impl__free(git_odb_backend *_backend)
@@ -166,12 +156,13 @@ int git_mempack_new(git_odb_backend **out)
 {
 	struct memory_packer_db *db;
 
-	assert(out);
+	GIT_ASSERT_ARG(out);
 
 	db = git__calloc(1, sizeof(struct memory_packer_db));
 	GIT_ERROR_CHECK_ALLOC(db);
 
-	db->objects = git_oidmap_alloc();
+	if (git_oidmap_new(&db->objects) < 0)
+		return -1;
 
 	db->parent.version = GIT_ODB_BACKEND_VERSION;
 	db->parent.read = &impl__read;

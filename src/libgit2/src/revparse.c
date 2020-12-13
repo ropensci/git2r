@@ -7,11 +7,10 @@
 
 #include "common.h"
 
-#include <assert.h>
-
 #include "buffer.h"
 #include "tree.h"
 #include "refdb.h"
+#include "regexp.h"
 
 #include "git2.h"
 
@@ -42,7 +41,7 @@ static int maybe_abbrev(git_object** out, git_repository *repo, const char *spec
 	return maybe_sha_or_abbrev(out, repo, spec, speclen);
 }
 
-static int build_regex(regex_t *regex, const char *pattern)
+static int build_regex(git_regexp *regex, const char *pattern)
 {
 	int error;
 
@@ -51,13 +50,11 @@ static int build_regex(regex_t *regex, const char *pattern)
 		return GIT_EINVALIDSPEC;
 	}
 
-	error = p_regcomp(regex, pattern, REG_EXTENDED);
+	error = git_regexp_compile(regex, pattern, 0);
 	if (!error)
 		return 0;
 
-	error = git_error_set_regex(regex, error);
-
-	regfree(regex);
+	git_regexp_dispose(regex);
 
 	return error;
 }
@@ -66,7 +63,7 @@ static int maybe_describe(git_object**out, git_repository *repo, const char *spe
 {
 	const char *substr;
 	int error;
-	regex_t regex;
+	git_regexp regex;
 
 	substr = strstr(spec, "-g");
 
@@ -76,8 +73,8 @@ static int maybe_describe(git_object**out, git_repository *repo, const char *spe
 	if (build_regex(&regex, ".+-[0-9]+-g[0-9a-fA-F]+") < 0)
 		return -1;
 
-	error = regexec(&regex, spec, 0, NULL, 0);
-	regfree(&regex);
+	error = git_regexp_match(&regex, spec);
+	git_regexp_dispose(&regex);
 
 	if (error)
 		return GIT_ENOTFOUND;
@@ -143,12 +140,11 @@ static int retrieve_previously_checked_out_branch_or_revision(git_object **out, 
 {
 	git_reference *ref = NULL;
 	git_reflog *reflog = NULL;
-	regex_t preg;
+	git_regexp preg;
 	int error = -1;
 	size_t i, numentries, cur;
 	const git_reflog_entry *entry;
 	const char *msg;
-	regmatch_t regexmatches[2];
 	git_buf buf = GIT_BUF_INIT;
 
 	cur = position;
@@ -168,12 +164,14 @@ static int retrieve_previously_checked_out_branch_or_revision(git_object **out, 
 	numentries  = git_reflog_entrycount(reflog);
 
 	for (i = 0; i < numentries; i++) {
+		git_regmatch regexmatches[2];
+
 		entry = git_reflog_entry_byindex(reflog, i);
 		msg = git_reflog_entry_message(entry);
 		if (!msg)
 			continue;
 
-		if (regexec(&preg, msg, 2, regexmatches, 0))
+		if (git_regexp_search(&preg, msg, 2, regexmatches) < 0)
 			continue;
 
 		cur--;
@@ -181,7 +179,8 @@ static int retrieve_previously_checked_out_branch_or_revision(git_object **out, 
 		if (cur > 0)
 			continue;
 
-		git_buf_put(&buf, msg+regexmatches[1].rm_so, regexmatches[1].rm_eo - regexmatches[1].rm_so);
+		if ((git_buf_put(&buf, msg+regexmatches[1].start, regexmatches[1].end - regexmatches[1].start)) < 0)
+			goto cleanup;
 
 		if ((error = git_reference_dwim(base_ref, repo, git_buf_cstr(&buf))) == 0)
 			goto cleanup;
@@ -199,7 +198,7 @@ static int retrieve_previously_checked_out_branch_or_revision(git_object **out, 
 cleanup:
 	git_reference_free(ref);
 	git_buf_dispose(&buf);
-	regfree(&preg);
+	git_regexp_dispose(&preg);
 	git_reflog_free(reflog);
 	return error;
 }
@@ -318,7 +317,7 @@ static int handle_at_syntax(git_object **out, git_reference **ref, const char *s
 	git_buf identifier = GIT_BUF_INIT;
 	git_time_t timestamp;
 
-	assert(*out == NULL);
+	GIT_ASSERT(*out == NULL);
 
 	if (git_buf_put(&identifier, spec, identifier_len) < 0)
 		return -1;
@@ -448,7 +447,7 @@ cleanup:
 	return error;
 }
 
-static int walk_and_search(git_object **out, git_revwalk *walk, regex_t *regex)
+static int walk_and_search(git_object **out, git_revwalk *walk, git_regexp *regex)
 {
 	int error;
 	git_oid oid;
@@ -460,7 +459,7 @@ static int walk_and_search(git_object **out, git_revwalk *walk, regex_t *regex)
 		if ((error < 0) && (error != GIT_ENOTFOUND))
 			return -1;
 
-		if (!regexec(regex, git_commit_message((git_commit*)obj), 0, NULL, 0)) {
+		if (!git_regexp_match(regex, git_commit_message((git_commit*)obj))) {
 			*out = obj;
 			return 0;
 		}
@@ -476,7 +475,7 @@ static int walk_and_search(git_object **out, git_revwalk *walk, regex_t *regex)
 
 static int handle_grep_syntax(git_object **out, git_repository *repo, const git_oid *spec_oid, const char *pattern)
 {
-	regex_t preg;
+	git_regexp preg;
 	git_revwalk *walk = NULL;
 	int error;
 
@@ -497,7 +496,7 @@ static int handle_grep_syntax(git_object **out, git_repository *repo, const git_
 	error = walk_and_search(out, walk, &preg);
 
 cleanup:
-	regfree(&preg);
+	git_regexp_dispose(&preg);
 	git_revwalk_free(walk);
 
 	return error;
@@ -525,7 +524,7 @@ static int extract_curly_braces_content(git_buf *buf, const char *spec, size_t *
 {
 	git_buf_clear(buf);
 
-	assert(spec[*pos] == '^' || spec[*pos] == '@');
+	GIT_ASSERT_ARG(spec[*pos] == '^' || spec[*pos] == '@');
 
 	(*pos)++;
 
@@ -538,7 +537,8 @@ static int extract_curly_braces_content(git_buf *buf, const char *spec, size_t *
 		if (spec[*pos] == '\0')
 			return GIT_EINVALIDSPEC;
 
-		git_buf_putc(buf, spec[(*pos)++]);
+		if (git_buf_putc(buf, spec[(*pos)++]) < 0)
+			return -1;
 	}
 
 	(*pos)++;
@@ -550,7 +550,7 @@ static int extract_path(git_buf *buf, const char *spec, size_t *pos)
 {
 	git_buf_clear(buf);
 
-	assert(spec[*pos] == ':');
+	GIT_ASSERT_ARG(spec[*pos] == ':');
 
 	(*pos)++;
 
@@ -568,7 +568,7 @@ static int extract_how_many(int *n, const char *spec, size_t *pos)
 	int parsed, accumulated;
 	char kind = spec[*pos];
 
-	assert(spec[*pos] == '^' || spec[*pos] == '~');
+	GIT_ASSERT_ARG(spec[*pos] == '^' || spec[*pos] == '~');
 
 	accumulated = 0;
 
@@ -586,7 +586,7 @@ static int extract_how_many(int *n, const char *spec, size_t *pos)
 			*pos = end_ptr - spec;
 		}
 
-	} 	while (spec[(*pos)] == kind && kind == '~');
+	} while (spec[(*pos)] == kind && kind == '~');
 
 	*n = accumulated;
 
@@ -660,7 +660,7 @@ static int ensure_left_hand_identifier_is_not_known_yet(git_object *object, git_
 	return GIT_EINVALIDSPEC;
 }
 
-int revparse__ext(
+static int revparse(
 	git_object **object_out,
 	git_reference **reference_out,
 	size_t *identifier_len_out,
@@ -676,7 +676,10 @@ int revparse__ext(
 
 	bool should_return_reference = true;
 
-	assert(object_out && reference_out && repo && spec);
+	GIT_ASSERT_ARG(object_out);
+	GIT_ASSERT_ARG(reference_out);
+	GIT_ASSERT_ARG(repo);
+	GIT_ASSERT_ARG(spec);
 
 	*object_out = NULL;
 	*reference_out = NULL;
@@ -836,7 +839,7 @@ int git_revparse_ext(
 	git_object *obj = NULL;
 	git_reference *ref = NULL;
 
-	if ((error = revparse__ext(&obj, &ref, &identifier_len, repo, spec)) < 0)
+	if ((error = revparse(&obj, &ref, &identifier_len, repo, spec)) < 0)
 		goto cleanup;
 
 	*object_out = obj;
@@ -882,7 +885,9 @@ int git_revparse(
 	const char *dotdot;
 	int error = 0;
 
-	assert(revspec && repo && spec);
+	GIT_ASSERT_ARG(revspec);
+	GIT_ASSERT_ARG(repo);
+	GIT_ASSERT_ARG(spec);
 
 	memset(revspec, 0x0, sizeof(*revspec));
 

@@ -18,7 +18,7 @@
 #include "buffer.h"
 #include "common.h"
 #include "strnlen.h"
-#include "thread-utils.h"
+#include "thread.h"
 
 #define ARRAY_SIZE(x) (sizeof(x)/sizeof(x[0]))
 #define bitsizeof(x) (CHAR_BIT * sizeof(x))
@@ -28,6 +28,17 @@
 #endif
 #ifndef max
 # define max(a,b) ((a) > (b) ? (a) : (b))
+#endif
+
+#if defined(__GNUC__)
+# define GIT_CONTAINER_OF(ptr, type, member) \
+	__builtin_choose_expr( \
+	    __builtin_offsetof(type, member) == 0 && \
+	    __builtin_types_compatible_p(typeof(&((type *) 0)->member), typeof(ptr)), \
+		((type *) (ptr)), \
+		(void)0)
+#else
+# define GIT_CONTAINER_OF(ptr, type, member) (type *)(ptr)
 #endif
 
 #define GIT_DATE_RFC2822_SZ  32
@@ -126,10 +137,6 @@ extern void git__tsort_r(
 extern void git__qsort_r(
 	void *els, size_t nel, size_t elsize, git__sort_r_cmp cmp, void *payload);
 
-extern void git__insertsort_r(
-	void *els, size_t nel, size_t elsize, void *swapel,
-	git__sort_r_cmp cmp, void *payload);
-
 /**
  * @param position If non-NULL, this will be set to the position where the
  * 		element is or would be inserted if not found.
@@ -150,40 +157,41 @@ extern int git__bsearch_r(
 	void *payload,
 	size_t *position);
 
+#define git__strcmp strcmp
+#define git__strncmp strncmp
+
 extern int git__strcmp_cb(const void *a, const void *b);
 extern int git__strcasecmp_cb(const void *a, const void *b);
 
-extern int git__strcmp(const char *a, const char *b);
 extern int git__strcasecmp(const char *a, const char *b);
-extern int git__strncmp(const char *a, const char *b, size_t sz);
 extern int git__strncasecmp(const char *a, const char *b, size_t sz);
 
 extern int git__strcasesort_cmp(const char *a, const char *b);
 
 typedef struct {
-	git_atomic refcount;
+	git_atomic32 refcount;
 	void *owner;
 } git_refcount;
 
 typedef void (*git_refcount_freeptr)(void *r);
 
 #define GIT_REFCOUNT_INC(r) { \
-	git_atomic_inc(&(r)->rc.refcount);	\
+	git_atomic32_inc(&(r)->rc.refcount);	\
 }
 
 #define GIT_REFCOUNT_DEC(_r, do_free) { \
 	git_refcount *r = &(_r)->rc; \
-	int val = git_atomic_dec(&r->refcount); \
+	int val = git_atomic32_dec(&r->refcount); \
 	if (val <= 0 && r->owner == NULL) { do_free(_r); } \
 }
 
 #define GIT_REFCOUNT_OWN(r, o) { \
-	(r)->rc.owner = o; \
+	(void)git_atomic_swap((r)->rc.owner, o); \
 }
 
-#define GIT_REFCOUNT_OWNER(r) ((r)->rc.owner)
+#define GIT_REFCOUNT_OWNER(r) git_atomic_load((r)->rc.owner)
 
-#define GIT_REFCOUNT_VAL(r) git_atomic_get((r)->rc.refcount)
+#define GIT_REFCOUNT_VAL(r) git_atomic32_get((r)->rc.refcount)
 
 
 static signed char from_hex[] = {
@@ -349,22 +357,9 @@ GIT_INLINE(void) git__memzero(void *data, size_t size)
 
 GIT_INLINE(double) git__timer(void)
 {
-	/* We need the initial tick count to detect if the tick
-	 * count has rolled over. */
-	static DWORD initial_tick_count = 0;
-
-	/* GetTickCount returns the number of milliseconds that have
+	/* GetTickCount64 returns the number of milliseconds that have
 	 * elapsed since the system was started. */
-	DWORD count = GetTickCount();
-
-	if(initial_tick_count == 0) {
-		initial_tick_count = count;
-	} else if (count < initial_tick_count) {
-		/* The tick count has rolled over - adjust for it. */
-		count = (0xFFFFFFFF - initial_tick_count) + count;
-	}
-
-	return (double) count / (double) 1000;
+	return (double) GetTickCount64() / (double) 1000;
 }
 
 #elif __APPLE__
@@ -418,6 +413,10 @@ GIT_INLINE(double) git__timer(void)
 #endif
 
 extern int git__getenv(git_buf *out, const char *name);
+
+extern int git__online_cpus(void);
+
+GIT_INLINE(int) git__noop(void) { return 0; }
 
 #include "alloc.h"
 

@@ -126,7 +126,10 @@ int git_cherrypick_commit(
 	git_tree *parent_tree = NULL, *our_tree = NULL, *cherrypick_tree = NULL;
 	int parent = 0, error = 0;
 
-	assert(out && repo && cherrypick_commit && our_commit);
+	GIT_ASSERT_ARG(out);
+	GIT_ASSERT_ARG(repo);
+	GIT_ASSERT_ARG(cherrypick_commit);
+	GIT_ASSERT_ARG(our_commit);
 
 	if (git_commit_parentcount(cherrypick_commit) > 1) {
 		if (!mainline)
@@ -177,7 +180,8 @@ int git_cherrypick(
 	git_indexwriter indexwriter = GIT_INDEXWRITER_INIT;
 	int error = 0;
 
-	assert(repo && commit);
+	GIT_ASSERT_ARG(repo);
+	GIT_ASSERT_ARG(commit);
 
 	GIT_ERROR_CHECK_VERSION(given_opts, GIT_CHERRYPICK_OPTIONS_VERSION, "git_cherrypick_options");
 
@@ -221,10 +225,18 @@ done:
 	return error;
 }
 
-int git_cherrypick_init_options(
+int git_cherrypick_options_init(
 	git_cherrypick_options *opts, unsigned int version)
 {
 	GIT_INIT_STRUCTURE_FROM_TEMPLATE(
 		opts, version, git_cherrypick_options, GIT_CHERRYPICK_OPTIONS_INIT);
 	return 0;
 }
+
+#ifndef GIT_DEPRECATE_HARD
+int git_cherrypick_init_options(
+	git_cherrypick_options *opts, unsigned int version)
+{
+	return git_cherrypick_options_init(opts, version);
+}
+#endif

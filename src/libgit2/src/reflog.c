@@ -12,12 +12,8 @@
 #include "signature.h"
 #include "refdb.h"
 
-#include <git2/sys/refdb_backend.h>
-
-git_reflog_entry *git_reflog_entry__alloc(void)
-{
-	return git__calloc(1, sizeof(git_reflog_entry));
-}
+#include "git2/sys/refdb_backend.h"
+#include "git2/sys/reflog.h"
 
 void git_reflog_entry__free(git_reflog_entry *entry)
 {
@@ -54,7 +50,9 @@ int git_reflog_read(git_reflog **reflog, git_repository *repo,  const char *name
 	git_refdb *refdb;
 	int error;
 
-	assert(reflog && repo && name);
+	GIT_ASSERT_ARG(reflog);
+	GIT_ASSERT_ARG(repo);
+	GIT_ASSERT_ARG(name);
 
 	if ((error = git_repository_refdb__weakptr(&refdb, repo)) < 0)
 		return error;
@@ -66,7 +64,8 @@ int git_reflog_write(git_reflog *reflog)
 {
 	git_refdb *db;
 
-	assert(reflog && reflog->db);
+	GIT_ASSERT_ARG(reflog);
+	GIT_ASSERT_ARG(reflog->db);
 
 	db = reflog->db;
 	return db->backend->reflog_write(db->backend, reflog);
@@ -74,11 +73,12 @@ int git_reflog_write(git_reflog *reflog)
 
 int git_reflog_append(git_reflog *reflog, const git_oid *new_oid, const git_signature *committer, const char *msg)
 {
-	git_reflog_entry *entry;
 	const git_reflog_entry *previous;
-	const char *newline;
+	git_reflog_entry *entry;
 
-	assert(reflog && new_oid && committer);
+	GIT_ASSERT_ARG(reflog);
+	GIT_ASSERT_ARG(new_oid);
+	GIT_ASSERT_ARG(committer);
 
 	entry = git__calloc(1, sizeof(git_reflog_entry));
 	GIT_ERROR_CHECK_ALLOC(entry);
@@ -87,19 +87,18 @@ int git_reflog_append(git_reflog *reflog, const git_oid *new_oid, const git_sign
 		goto cleanup;
 
 	if (msg != NULL) {
-		if ((entry->msg = git__strdup(msg)) == NULL)
+		size_t i, msglen = strlen(msg);
+
+		if ((entry->msg = git__strndup(msg, msglen)) == NULL)
 			goto cleanup;
 
-		newline = strchr(msg, '\n');
-
-		if (newline) {
-			if (newline[1] != '\0') {
-				git_error_set(GIT_ERROR_INVALID, "reflog message cannot contain newline");
-				goto cleanup;
-			}
-
-			entry->msg[newline - msg] = '\0';
-		}
+		/*
+		 * Replace all newlines with spaces, except for
+		 * the final trailing newline.
+		 */
+		for (i = 0; i < msglen; i++)
+			if (entry->msg[i] == '\n')
+				entry->msg[i] = ' ';
 	}
 
 	previous = git_reflog_entry_byindex(reflog, 0);
@@ -145,13 +144,13 @@ int git_reflog_delete(git_repository *repo, const char *name)
 
 size_t git_reflog_entrycount(git_reflog *reflog)
 {
-	assert(reflog);
+	GIT_ASSERT_ARG_WITH_RETVAL(reflog, 0);
 	return reflog->entries.length;
 }
 
-const git_reflog_entry * git_reflog_entry_byindex(const git_reflog *reflog, size_t idx)
+const git_reflog_entry *git_reflog_entry_byindex(const git_reflog *reflog, size_t idx)
 {
-	assert(reflog);
+	GIT_ASSERT_ARG_WITH_RETVAL(reflog, NULL);
 
 	if (idx >= reflog->entries.length)
 		return NULL;
@@ -160,27 +159,27 @@ const git_reflog_entry * git_reflog_entry_byindex(const git_reflog *reflog, size
 		&reflog->entries, reflog_inverse_index(idx, reflog->entries.length));
 }
 
-const git_oid * git_reflog_entry_id_old(const git_reflog_entry *entry)
+const git_oid *git_reflog_entry_id_old(const git_reflog_entry *entry)
 {
-	assert(entry);
+	GIT_ASSERT_ARG_WITH_RETVAL(entry, NULL);
 	return &entry->oid_old;
 }
 
-const git_oid * git_reflog_entry_id_new(const git_reflog_entry *entry)
+const git_oid *git_reflog_entry_id_new(const git_reflog_entry *entry)
 {
-	assert(entry);
+	GIT_ASSERT_ARG_WITH_RETVAL(entry, NULL);
 	return &entry->oid_cur;
 }
 
-const git_signature * git_reflog_entry_committer(const git_reflog_entry *entry)
+const git_signature *git_reflog_entry_committer(const git_reflog_entry *entry)
 {
-	assert(entry);
+	GIT_ASSERT_ARG_WITH_RETVAL(entry, NULL);
 	return entry->committer;
 }
 
-const char * git_reflog_entry_message(const git_reflog_entry *entry)
+const char *git_reflog_entry_message(const git_reflog_entry *entry)
 {
-	assert(entry);
+	GIT_ASSERT_ARG_WITH_RETVAL(entry, NULL);
 	return entry->msg;
 }
 

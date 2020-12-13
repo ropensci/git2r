@@ -57,7 +57,7 @@ typedef struct {
  *        `GIT_MERGE_FILE_INPUT_VERSION` here.
  * @return Zero on success; -1 on failure.
  */
-GIT_EXTERN(int) git_merge_file_init_input(
+GIT_EXTERN(int) git_merge_file_input_init(
 	git_merge_file_input *opts,
 	unsigned int version);
 
@@ -192,7 +192,7 @@ typedef struct {
 	git_merge_file_favor_t favor;
 
 	/** see `git_merge_file_flag_t` above */
-	git_merge_file_flag_t flags;
+	uint32_t flags;
 
 	/** The size of conflict markers (eg, "<<<<<<<").  Default is
 	 * GIT_MERGE_CONFLICT_MARKER_SIZE. */
@@ -212,9 +212,7 @@ typedef struct {
  * @param version The struct version; pass `GIT_MERGE_FILE_OPTIONS_VERSION`.
  * @return Zero on success; -1 on failure.
  */
-GIT_EXTERN(int) git_merge_file_init_options(
-	git_merge_file_options *opts,
-	unsigned int version);
+GIT_EXTERN(int) git_merge_file_options_init(git_merge_file_options *opts, unsigned int version);
 
 /**
  * Information about file-level merging
@@ -249,7 +247,7 @@ typedef struct {
 	unsigned int version;
 
 	/** See `git_merge_flag_t` above */
-	git_merge_flag_t flags;
+	uint32_t flags;
 
 	/**
 	 * Similarity to consider a file renamed (default 50).  If
@@ -293,7 +291,7 @@ typedef struct {
 	git_merge_file_favor_t file_favor;
 
 	/** see `git_merge_file_flag_t` above */
-	git_merge_file_flag_t file_flags;
+	uint32_t file_flags;
 } git_merge_options;
 
 #define GIT_MERGE_OPTIONS_VERSION 1
@@ -310,9 +308,7 @@ typedef struct {
  * @param version The struct version; pass `GIT_MERGE_OPTIONS_VERSION`.
  * @return Zero on success; -1 on failure.
  */
-GIT_EXTERN(int) git_merge_init_options(
-	git_merge_options *opts,
-	unsigned int version);
+GIT_EXTERN(int) git_merge_options_init(git_merge_options *opts, unsigned int version);
 
 /**
  * The results of `git_merge_analysis` indicate the merge opportunities.

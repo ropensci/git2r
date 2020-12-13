@@ -7,9 +7,10 @@
 
 #include "common.h"
 
-#include "global.h"
+#include "threadstate.h"
 #include "posix.h"
 #include "buffer.h"
+#include "libgit2.h"
 
 /********************************************
  * New error handling
@@ -20,20 +21,25 @@ static git_error g_git_oom_error = {
 	GIT_ERROR_NOMEMORY
 };
 
+static git_error g_git_uninitialized_error = {
+	"libgit2 has not been initialized; you must call git_libgit2_init",
+	GIT_ERROR_INVALID
+};
+
 static void set_error_from_buffer(int error_class)
 {
-	git_error *error = &GIT_GLOBAL->error_t;
-	git_buf *buf = &GIT_GLOBAL->error_buf;
+	git_error *error = &GIT_THREADSTATE->error_t;
+	git_buf *buf = &GIT_THREADSTATE->error_buf;
 
 	error->message = buf->ptr;
 	error->klass = error_class;
 
-	GIT_GLOBAL->last_error = error;
+	GIT_THREADSTATE->last_error = error;
 }
 
 static void set_error(int error_class, char *string)
 {
-	git_buf *buf = &GIT_GLOBAL->error_buf;
+	git_buf *buf = &GIT_THREADSTATE->error_buf;
 
 	git_buf_clear(buf);
 	if (string) {
@@ -46,24 +52,29 @@ static void set_error(int error_class, char *string)
 
 void git_error_set_oom(void)
 {
-	GIT_GLOBAL->last_error = &g_git_oom_error;
+	GIT_THREADSTATE->last_error = &g_git_oom_error;
 }
 
-void git_error_set(int error_class, const char *string, ...)
+void git_error_set(int error_class, const char *fmt, ...)
 {
-	va_list arglist;
+	va_list ap;
+
+	va_start(ap, fmt);
+	git_error_vset(error_class, fmt, ap);
+	va_end(ap);
+}
+
+void git_error_vset(int error_class, const char *fmt, va_list ap)
+{
 #ifdef GIT_WIN32
 	DWORD win32_error_code = (error_class == GIT_ERROR_OS) ? GetLastError() : 0;
 #endif
 	int error_code = (error_class == GIT_ERROR_OS) ? errno : 0;
-	git_buf *buf = &GIT_GLOBAL->error_buf;
+	git_buf *buf = &GIT_THREADSTATE->error_buf;
 
 	git_buf_clear(buf);
-	if (string) {
-		va_start(arglist, string);
-		git_buf_vprintf(buf, string, arglist);
-		va_end(arglist);
-
+	if (fmt) {
+		git_buf_vprintf(buf, fmt, ap);
 		if (error_class == GIT_ERROR_OS)
 			git_buf_PUTS(buf, ": ");
 	}
@@ -90,41 +101,32 @@ void git_error_set(int error_class, const char *string, ...)
 		set_error_from_buffer(error_class);
 }
 
-void git_error_set_str(int error_class, const char *string)
+int git_error_set_str(int error_class, const char *string)
 {
-	git_buf *buf = &GIT_GLOBAL->error_buf;
+	git_buf *buf = &GIT_THREADSTATE->error_buf;
 
-	assert(string);
+	GIT_ASSERT_ARG(string);
 
-	if (!string)
-		return;
+	if (!string) {
+		git_error_set(GIT_ERROR_INVALID, "unspecified caller error");
+		return -1;
+	}
 
 	git_buf_clear(buf);
 	git_buf_puts(buf, string);
-	if (!git_buf_oom(buf))
-		set_error_from_buffer(error_class);
-}
 
-int git_error_set_regex(const regex_t *regex, int error_code)
-{
-	char error_buf[1024];
+	if (git_buf_oom(buf))
+		return -1;
 
-	assert(error_code);
-
-	regerror(error_code, regex, error_buf, sizeof(error_buf));
-	git_error_set_str(GIT_ERROR_REGEX, error_buf);
-
-	if (error_code == REG_NOMATCH)
-		return GIT_ENOTFOUND;
-
-	return GIT_EINVALIDSPEC;
+	set_error_from_buffer(error_class);
+	return 0;
 }
 
 void git_error_clear(void)
 {
-	if (GIT_GLOBAL->last_error != NULL) {
+	if (GIT_THREADSTATE->last_error != NULL) {
 		set_error(0, NULL);
-		GIT_GLOBAL->last_error = NULL;
+		GIT_THREADSTATE->last_error = NULL;
 	}
 
 	errno = 0;
@@ -135,13 +137,17 @@ void git_error_clear(void)
 
 const git_error *git_error_last(void)
 {
-	return GIT_GLOBAL->last_error;
+	/* If the library is not initialized, return a static error. */
+	if (!git_libgit2_init_count())
+		return &g_git_uninitialized_error;
+
+	return GIT_THREADSTATE->last_error;
 }
 
 int git_error_state_capture(git_error_state *state, int error_code)
 {
-	git_error *error = GIT_GLOBAL->last_error;
-	git_buf *error_buf = &GIT_GLOBAL->error_buf;
+	git_error *error = GIT_THREADSTATE->last_error;
+	git_buf *error_buf = &GIT_THREADSTATE->error_buf;
 
 	memset(state, 0, sizeof(git_error_state));
 
@@ -214,6 +220,7 @@ void git_error_system_set(int code)
 
 /* Deprecated error values and functions */
 
+#ifndef GIT_DEPRECATE_HARD
 const git_error *giterr_last(void)
 {
 	return git_error_last();
@@ -233,3 +240,4 @@ void giterr_set_oom(void)
 {
 	git_error_set_oom();
 }
+#endif

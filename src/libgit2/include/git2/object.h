@@ -21,6 +21,8 @@
  */
 GIT_BEGIN_DECL
 
+#define GIT_OBJECT_SIZE_MAX UINT64_MAX
+
 /**
  * Lookup a reference to one of the objects in a repository.
  *
@@ -184,20 +186,6 @@ GIT_EXTERN(git_object_t) git_object_string2type(const char *str);
  * false otherwise.
  */
 GIT_EXTERN(int) git_object_typeisloose(git_object_t type);
-
-/**
- * Get the size in bytes for the structure which
- * acts as an in-memory representation of any given
- * object type.
- *
- * For all the core types, this would the equivalent
- * of calling `sizeof(git_commit)` if the core types
- * were not opaque on the external API.
- *
- * @param type object type to get its size
- * @return size in bytes of the object
- */
-GIT_EXTERN(size_t) git_object__size(git_object_t type);
 
 /**
  * Recursively peel an object until an object of the specified type is met.

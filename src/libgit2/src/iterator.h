@@ -17,12 +17,12 @@
 typedef struct git_iterator git_iterator;
 
 typedef enum {
-	GIT_ITERATOR_TYPE_EMPTY = 0,
-	GIT_ITERATOR_TYPE_TREE = 1,
-	GIT_ITERATOR_TYPE_INDEX = 2,
-	GIT_ITERATOR_TYPE_WORKDIR = 3,
-	GIT_ITERATOR_TYPE_FS = 4,
-} git_iterator_type_t;
+	GIT_ITERATOR_EMPTY = 0,
+	GIT_ITERATOR_TREE = 1,
+	GIT_ITERATOR_INDEX = 2,
+	GIT_ITERATOR_WORKDIR = 3,
+	GIT_ITERATOR_FS = 4,
+} git_iterator_t;
 
 typedef enum {
 	/** ignore case for entry sort order */
@@ -78,7 +78,7 @@ typedef struct {
 } git_iterator_callbacks;
 
 struct git_iterator {
-	git_iterator_type_t type;
+	git_iterator_t type;
 	git_iterator_callbacks *cb;
 
 	git_repository *repo;
@@ -238,7 +238,7 @@ GIT_INLINE(int) git_iterator_reset(git_iterator *iter)
 extern int git_iterator_reset_range(
 	git_iterator *iter, const char *start, const char *end);
 
-GIT_INLINE(git_iterator_type_t) git_iterator_type(git_iterator *iter)
+GIT_INLINE(git_iterator_t) git_iterator_type(git_iterator *iter)
 {
 	return iter->type;
 }
@@ -263,7 +263,7 @@ GIT_INLINE(bool) git_iterator_ignore_case(git_iterator *iter)
 	return ((iter->flags & GIT_ITERATOR_IGNORE_CASE) != 0);
 }
 
-extern void git_iterator_set_ignore_case(
+extern int git_iterator_set_ignore_case(
 	git_iterator *iter, bool ignore_case);
 
 extern int git_iterator_current_tree_entry(

@@ -8,7 +8,7 @@
 #include "status.h"
 
 #include "git2.h"
-#include "fileops.h"
+#include "futils.h"
 #include "hash.h"
 #include "vector.h"
 #include "tree.h"
@@ -16,6 +16,7 @@
 #include "repository.h"
 #include "ignore.h"
 #include "index.h"
+#include "wildmatch.h"
 
 #include "git2/diff.h"
 #include "diff.h"
@@ -85,15 +86,15 @@ static unsigned int workdir_delta2status(
 			/* if OIDs don't match, we might need to calculate them now to
 			 * discern between RENAMED vs RENAMED+MODIFED
 			 */
-			if (git_oid_iszero(&idx2wd->old_file.id) &&
-				diff->old_src == GIT_ITERATOR_TYPE_WORKDIR &&
+			if (git_oid_is_zero(&idx2wd->old_file.id) &&
+				diff->old_src == GIT_ITERATOR_WORKDIR &&
 				!git_diff__oid_for_file(
 					&idx2wd->old_file.id, diff, idx2wd->old_file.path,
 					idx2wd->old_file.mode, idx2wd->old_file.size))
 			idx2wd->old_file.flags |= GIT_DIFF_FLAG_VALID_ID;
 
-			if (git_oid_iszero(&idx2wd->new_file.id) &&
-				diff->new_src == GIT_ITERATOR_TYPE_WORKDIR &&
+			if (git_oid_is_zero(&idx2wd->new_file.id) &&
+				diff->new_src == GIT_ITERATOR_WORKDIR &&
 				!git_diff__oid_for_file(
 					&idx2wd->new_file.id, diff, idx2wd->new_file.path,
 					idx2wd->new_file.mode, idx2wd->new_file.size))
@@ -280,7 +281,7 @@ int git_status_list_new(
 	if ((error = git_repository__ensure_not_bare(repo, "status")) < 0 ||
 		(error = git_repository_index(&index, repo)) < 0)
 		return error;
-	
+
 	if (opts != NULL && opts->baseline != NULL) {
 		head = opts->baseline;
 	} else {
@@ -390,14 +391,14 @@ done:
 
 size_t git_status_list_entrycount(git_status_list *status)
 {
-	assert(status);
+	GIT_ASSERT_ARG_WITH_RETVAL(status, 0);
 
 	return status->paired.length;
 }
 
 const git_status_entry *git_status_byindex(git_status_list *status, size_t i)
 {
-	assert(status);
+	GIT_ASSERT_ARG_WITH_RETVAL(status, NULL);
 
 	return git_vector_get(&status->paired, i);
 }
@@ -456,7 +457,7 @@ struct status_file_info {
 	char *expected;
 	unsigned int count;
 	unsigned int status;
-	int fnm_flags;
+	int wildmatch_flags;
 	int ambiguous;
 };
 
@@ -468,11 +469,11 @@ static int get_one_status(const char *path, unsigned int status, void *data)
 	sfi->count++;
 	sfi->status = status;
 
-	strcomp = (sfi->fnm_flags & FNM_CASEFOLD) ? git__strcasecmp : git__strcmp;
+	strcomp = (sfi->wildmatch_flags & WM_CASEFOLD) ? git__strcasecmp : git__strcmp;
 
 	if (sfi->count > 1 ||
 		(strcomp(sfi->expected, path) != 0 &&
-		 p_fnmatch(sfi->expected, path, sfi->fnm_flags) != 0))
+		 wildmatch(sfi->expected, path, sfi->wildmatch_flags) != 0))
 	{
 		sfi->ambiguous = true;
 		return GIT_EAMBIGUOUS; /* git_error_set will be done by caller */
@@ -491,7 +492,9 @@ int git_status_file(
 	struct status_file_info sfi = {0};
 	git_index *index;
 
-	assert(status_flags && repo && path);
+	GIT_ASSERT_ARG(status_flags);
+	GIT_ASSERT_ARG(repo);
+	GIT_ASSERT_ARG(path);
 
 	if ((error = git_repository_index__weakptr(&index, repo)) < 0)
 		return error;
@@ -499,7 +502,7 @@ int git_status_file(
 	if ((sfi.expected = git__strdup(path)) == NULL)
 		return -1;
 	if (index->ignore_case)
-		sfi.fnm_flags = FNM_CASEFOLD;
+		sfi.wildmatch_flags = WM_CASEFOLD;
 
 	opts.show = GIT_STATUS_SHOW_INDEX_AND_WORKDIR;
 	opts.flags = GIT_STATUS_OPT_INCLUDE_IGNORED |
@@ -540,17 +543,25 @@ int git_status_should_ignore(
 	return git_ignore_path_is_ignored(ignored, repo, path);
 }
 
-int git_status_init_options(git_status_options *opts, unsigned int version)
+int git_status_options_init(git_status_options *opts, unsigned int version)
 {
 	GIT_INIT_STRUCTURE_FROM_TEMPLATE(
 		opts, version, git_status_options, GIT_STATUS_OPTIONS_INIT);
 	return 0;
 }
 
+#ifndef GIT_DEPRECATE_HARD
+int git_status_init_options(git_status_options *opts, unsigned int version)
+{
+	return git_status_options_init(opts, version);
+}
+#endif
+
 int git_status_list_get_perfdata(
 	git_diff_perfdata *out, const git_status_list *status)
 {
-	assert(out);
+	GIT_ASSERT_ARG(out);
+
 	GIT_ERROR_CHECK_VERSION(out, GIT_DIFF_PERFDATA_VERSION, "git_diff_perfdata");
 
 	out->stat_calls = 0;

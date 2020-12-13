@@ -11,7 +11,6 @@
 
 #include <fcntl.h>
 #include <time.h>
-#include "fnmatch.h"
 
 /* stat: file mode type testing macros */
 #ifndef S_IFGITLINK
@@ -88,6 +87,18 @@
  * mingw lacks EAFNOSUPPORT. */
 #ifndef EAFNOSUPPORT
 #define EAFNOSUPPORT (INT_MAX-1)
+#endif
+
+/* Provide a 64-bit size for offsets. */
+
+#if defined(_MSC_VER)
+typedef __int64 off64_t;
+#elif defined(__HAIKU__)
+typedef __haiku_std_int64 off64_t;
+#elif defined(__APPLE__)
+typedef __int64_t off64_t;
+#else
+typedef int64_t off64_t;
 #endif
 
 typedef int git_file;

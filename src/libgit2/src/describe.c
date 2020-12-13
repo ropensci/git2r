@@ -16,10 +16,11 @@
 #include "commit_list.h"
 #include "oidmap.h"
 #include "refs.h"
+#include "repository.h"
 #include "revwalk.h"
 #include "tag.h"
 #include "vector.h"
-#include "repository.h"
+#include "wildmatch.h"
 
 /* Ported from https://github.com/git/git/blob/89dde7882f71f846ccd0359756d27bebc31108de/builtin/describe.c */
 
@@ -36,12 +37,7 @@ struct commit_name {
 
 static void *oidmap_value_bykey(git_oidmap *map, const git_oid *key)
 {
-	size_t pos = git_oidmap_lookup_index(map, key);
-
-	if (!git_oidmap_valid_index(map, pos))
-		return NULL;
-
-	return git_oidmap_value_at(map, pos);
+	return git_oidmap_get(map, key);
 }
 
 static struct commit_name *find_commit_name(
@@ -124,13 +120,8 @@ static int add_to_known_names(
 		e->path = git__strdup(path);
 		git_oid_cpy(&e->peeled, peeled);
 
-		if (!found) {
-			int ret;
-
-			git_oidmap_insert(names, &e->peeled, e, &ret);
-			if (ret < 0)
-				return -1;
-		}
+		if (!found && git_oidmap_set(names, &e->peeled, e) < 0)
+			return -1;
 	}
 	else
 		git_tag_free(tag);
@@ -224,7 +215,7 @@ static int get_name(const char *refname, void *payload)
 		return 0;
 
 	/* Accept only tags that match the pattern, if given */
-	if (data->opts->pattern && (!is_tag || p_fnmatch(data->opts->pattern,
+	if (data->opts->pattern && (!is_tag || wildmatch(data->opts->pattern,
 		refname + strlen(GIT_REFS_TAGS_DIR), 0)))
 				return 0;
 
@@ -664,7 +655,8 @@ int git_describe_commit(
 	int error = -1;
 	git_describe_options normalized;
 
-	assert(committish);
+	GIT_ASSERT_ARG(result);
+	GIT_ASSERT_ARG(committish);
 
 	data.result = git__calloc(1, sizeof(git_describe_result));
 	GIT_ERROR_CHECK_ALLOC(data.result);
@@ -681,8 +673,8 @@ int git_describe_commit(
 		"git_describe_options");
 	data.opts = &normalized;
 
-	data.names = git_oidmap_alloc();
-	GIT_ERROR_CHECK_ALLOC(data.names);
+	if ((error = git_oidmap_new(&data.names)) < 0)
+		return error;
 
 	/** TODO: contains to be implemented */
 
@@ -694,7 +686,7 @@ int git_describe_commit(
 			get_name, &data)) < 0)
 				goto cleanup;
 
-	if (git_oidmap_size(data.names) == 0 && !opts->show_commit_oid_as_fallback) {
+	if (git_oidmap_size(data.names) == 0 && !normalized.show_commit_oid_as_fallback) {
 		git_error_set(GIT_ERROR_DESCRIBE, "cannot describe - "
 			"no reference found, cannot describe anything.");
 		error = -1;
@@ -769,7 +761,7 @@ static int normalize_format_options(
 	const git_describe_format_options *src)
 {
 	if (!src) {
-		git_describe_init_format_options(dst, GIT_DESCRIBE_FORMAT_OPTIONS_VERSION);
+		git_describe_format_options_init(dst, GIT_DESCRIBE_FORMAT_OPTIONS_VERSION);
 		return 0;
 	}
 
@@ -784,12 +776,14 @@ int git_describe_format(git_buf *out, const git_describe_result *result, const g
 	struct commit_name *name;
 	git_describe_format_options opts;
 
-	assert(out && result);
+	GIT_ASSERT_ARG(out);
+	GIT_ASSERT_ARG(result);
 
 	GIT_ERROR_CHECK_VERSION(given, GIT_DESCRIBE_FORMAT_OPTIONS_VERSION, "git_describe_format_options");
 	normalize_format_options(&opts, given);
 
-	git_buf_sanitize(out);
+	if ((error = git_buf_sanitize(out)) < 0)
+		return error;
 
 
 	if (opts.always_use_long_format && opts.abbreviated_size == 0) {
@@ -878,16 +872,30 @@ void git_describe_result_free(git_describe_result *result)
 	git__free(result);
 }
 
-int git_describe_init_options(git_describe_options *opts, unsigned int version)
+int git_describe_options_init(git_describe_options *opts, unsigned int version)
 {
 	GIT_INIT_STRUCTURE_FROM_TEMPLATE(
 		opts, version, git_describe_options, GIT_DESCRIBE_OPTIONS_INIT);
 	return 0;
 }
 
-int git_describe_init_format_options(git_describe_format_options *opts, unsigned int version)
+#ifndef GIT_DEPRECATE_HARD
+int git_describe_init_options(git_describe_options *opts, unsigned int version)
+{
+	return git_describe_options_init(opts, version);
+}
+#endif
+
+int git_describe_format_options_init(git_describe_format_options *opts, unsigned int version)
 {
 	GIT_INIT_STRUCTURE_FROM_TEMPLATE(
 		opts, version, git_describe_format_options, GIT_DESCRIBE_FORMAT_OPTIONS_INIT);
 	return 0;
 }
+
+#ifndef GIT_DEPRECATE_HARD
+int git_describe_init_format_options(git_describe_format_options *opts, unsigned int version)
+{
+	return git_describe_format_options_init(opts, version);
+}
+#endif

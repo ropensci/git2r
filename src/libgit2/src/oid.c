@@ -9,7 +9,7 @@
 
 #include "git2/oid.h"
 #include "repository.h"
-#include "global.h"
+#include "threadstate.h"
 #include <string.h>
 #include <limits.h>
 
@@ -26,7 +26,8 @@ int git_oid_fromstrn(git_oid *out, const char *str, size_t length)
 	size_t p;
 	int v;
 
-	assert(out && str);
+	GIT_ASSERT_ARG(out);
+	GIT_ASSERT_ARG(str);
 
 	if (!length)
 		return oid_error_invalid("too short");
@@ -64,13 +65,13 @@ GIT_INLINE(char) *fmt_one(char *str, unsigned int val)
 	return str;
 }
 
-void git_oid_nfmt(char *str, size_t n, const git_oid *oid)
+int git_oid_nfmt(char *str, size_t n, const git_oid *oid)
 {
 	size_t i, max_i;
 
 	if (!oid) {
 		memset(str, 0, n);
-		return;
+		return 0;
 	}
 	if (n > GIT_OID_HEXSZ) {
 		memset(&str[GIT_OID_HEXSZ], 0, n - GIT_OID_HEXSZ);
@@ -84,14 +85,16 @@ void git_oid_nfmt(char *str, size_t n, const git_oid *oid)
 
 	if (n & 1)
 		*str++ = to_hex[oid->id[i] >> 4];
+
+	return 0;
 }
 
-void git_oid_fmt(char *str, const git_oid *oid)
+int git_oid_fmt(char *str, const git_oid *oid)
 {
-	git_oid_nfmt(str, GIT_OID_HEXSZ, oid);
+	return git_oid_nfmt(str, GIT_OID_HEXSZ, oid);
 }
 
-void git_oid_pathfmt(char *str, const git_oid *oid)
+int git_oid_pathfmt(char *str, const git_oid *oid)
 {
 	size_t i;
 
@@ -99,11 +102,13 @@ void git_oid_pathfmt(char *str, const git_oid *oid)
 	*str++ = '/';
 	for (i = 1; i < sizeof(oid->id); i++)
 		str = fmt_one(str, oid->id[i]);
+
+	return 0;
 }
 
 char *git_oid_tostr_s(const git_oid *oid)
 {
-	char *str = GIT_GLOBAL->oid_fmt;
+	char *str = GIT_THREADSTATE->oid_fmt;
 	git_oid_nfmt(str, GIT_OID_HEXSZ + 1, oid);
 	return str;
 }
@@ -167,14 +172,16 @@ void git_oid__writebuf(git_buf *buf, const char *header, const git_oid *oid)
 	git_buf_putc(buf, '\n');
 }
 
-void git_oid_fromraw(git_oid *out, const unsigned char *raw)
+int git_oid_fromraw(git_oid *out, const unsigned char *raw)
 {
 	memcpy(out->id, raw, sizeof(out->id));
+	return 0;
 }
 
-void git_oid_cpy(git_oid *out, const git_oid *src)
+int git_oid_cpy(git_oid *out, const git_oid *src)
 {
 	memcpy(out->id, src->id, sizeof(out->id));
+	return 0;
 }
 
 int git_oid_cmp(const git_oid *a, const git_oid *b)
@@ -237,7 +244,7 @@ int git_oid_streq(const git_oid *oid_a, const char *str)
 	return git_oid_strcmp(oid_a, str) == 0 ? 0 : -1;
 }
 
-int git_oid_iszero(const git_oid *oid_a)
+int git_oid_is_zero(const git_oid *oid_a)
 {
 	const unsigned char *a = oid_a->id;
 	unsigned int i;
@@ -246,6 +253,13 @@ int git_oid_iszero(const git_oid *oid_a)
 			return 0;
 	return 1;
 }
+
+#ifndef GIT_DEPRECATE_HARD
+int git_oid_iszero(const git_oid *oid_a)
+{
+	return git_oid_is_zero(oid_a);
+}
+#endif
 
 typedef short node_index;
 
@@ -303,7 +317,7 @@ git_oid_shorten *git_oid_shorten_new(size_t min_length)
 {
 	git_oid_shorten *os;
 
-	assert((size_t)((int)min_length) == min_length);
+	GIT_ASSERT_ARG_WITH_RETVAL((size_t)((int)min_length) == min_length, NULL);
 
 	os = git__calloc(1, sizeof(git_oid_shorten));
 	if (os == NULL)

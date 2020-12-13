@@ -11,10 +11,10 @@
 #include "git2/oid.h"
 
 #include "buffer.h"
-#include "fileops.h"
+#include "futils.h"
 #include "filebuf.h"
-#include "netops.h"
 #include "refs.h"
+#include "net.h"
 #include "repository.h"
 
 int git_fetchhead_ref_cmp(const void *a, const void *b)
@@ -39,18 +39,18 @@ int git_fetchhead_ref_cmp(const void *a, const void *b)
 
 static char *sanitized_remote_url(const char *remote_url)
 {
-	gitno_connection_data url = {0};
+	git_net_url url = GIT_NET_URL_INIT;
 	char *sanitized = NULL;
 	int error;
 
-	if (gitno_connection_data_from_url(&url, remote_url, NULL) == 0) {
+	if (git_net_url_parse(&url, remote_url) == 0) {
 		git_buf buf = GIT_BUF_INIT;
 
-		git__free(url.user);
-		git__free(url.pass);
-		url.user = url.pass = NULL;
+		git__free(url.username);
+		git__free(url.password);
+		url.username = url.password = NULL;
 
-		if ((error = gitno_connection_data_fmt(&buf, &url)) < 0)
+		if ((error = git_net_url_fmt(&buf, &url)) < 0)
 			goto fallback;
 
 		sanitized = git_buf_detach(&buf);
@@ -60,7 +60,7 @@ fallback:
 	if (!sanitized)
 		sanitized = git__strdup(remote_url);
 
-	gitno_connection_data_free_ptrs(&url);
+	git_net_url_dispose(&url);
 	return sanitized;
 }
 
@@ -73,7 +73,8 @@ int git_fetchhead_ref_create(
 {
 	git_fetchhead_ref *fetchhead_ref;
 
-	assert(out && oid);
+	GIT_ASSERT_ARG(out);
+	GIT_ASSERT_ARG(oid);
 
 	*out = NULL;
 
@@ -108,7 +109,8 @@ static int fetchhead_ref_write(
 	const char *type, *name;
 	int head = 0;
 
-	assert(file && fetchhead_ref);
+	GIT_ASSERT_ARG(file);
+	GIT_ASSERT_ARG(fetchhead_ref);
 
 	git_oid_fmt(oid, &fetchhead_ref->oid);
 	oid[GIT_OID_HEXSZ] = '\0';
@@ -145,7 +147,8 @@ int git_fetchhead_write(git_repository *repo, git_vector *fetchhead_refs)
 	unsigned int i;
 	git_fetchhead_ref *fetchhead_ref;
 
-	assert(repo && fetchhead_refs);
+	GIT_ASSERT_ARG(repo);
+	GIT_ASSERT_ARG(fetchhead_refs);
 
 	if (git_buf_joinpath(&path, repo->gitdir, GIT_FETCH_HEAD_FILE) < 0)
 		return -1;
@@ -279,7 +282,8 @@ int git_repository_fetchhead_foreach(git_repository *repo,
 	size_t line_num = 0;
 	int error = 0;
 
-	assert(repo && cb);
+	GIT_ASSERT_ARG(repo);
+	GIT_ASSERT_ARG(cb);
 
 	if (git_buf_joinpath(&path, repo->gitdir, GIT_FETCH_HEAD_FILE) < 0)
 		return -1;

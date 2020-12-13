@@ -138,7 +138,7 @@ static ssize_t socket_write(git_stream *stream, const char *data, size_t len, in
 	errno = 0;
 
 	if ((written = p_send(st->s, data, len, flags)) < 0) {
-		net_set_error("Error sending data");
+		net_set_error("error sending data");
 		return -1;
 	}
 
@@ -151,7 +151,7 @@ static ssize_t socket_read(git_stream *stream, void *data, size_t len)
 	git_socket_stream *st = (git_socket_stream *) stream;
 
 	if ((ret = p_recv(st->s, data, len, 0)) < 0)
-		net_set_error("Error receiving socket data");
+		net_set_error("error receiving socket data");
 
 	return ret;
 }
@@ -183,7 +183,9 @@ static int default_socket_stream_new(
 {
 	git_socket_stream *st;
 
-	assert(out && host && port);
+	GIT_ASSERT_ARG(out);
+	GIT_ASSERT_ARG(host);
+	GIT_ASSERT_ARG(port);
 
 	st = git__calloc(1, sizeof(git_socket_stream));
 	GIT_ERROR_CHECK_ALLOC(st);
@@ -217,7 +219,9 @@ int git_socket_stream_new(
 	git_stream_registration custom = {0};
 	int error;
 
-	assert(out && host && port);
+	GIT_ASSERT_ARG(out);
+	GIT_ASSERT_ARG(host);
+	GIT_ASSERT_ARG(port);
 
 	if ((error = git_stream_registry_lookup(&custom, GIT_STREAM_STANDARD)) == 0)
 		init = custom.init;

@@ -120,14 +120,14 @@ typedef int GIT_CALLBACK(git_stash_apply_progress_cb)(
  * Stash application options structure
  *
  * Initialize with `GIT_STASH_APPLY_OPTIONS_INIT`. Alternatively, you can
- * use `git_stash_apply_init_options`.
+ * use `git_stash_apply_options_init`.
  *
  */
 typedef struct git_stash_apply_options {
 	unsigned int version;
 
-	/** See `git_stash_apply_flags_t`, above. */
-	git_stash_apply_flags flags;
+	/** See `git_stash_apply_flags`, above. */
+	uint32_t flags;
 
 	/** Options to use when writing files to the working directory. */
 	git_checkout_options checkout_options;
@@ -153,7 +153,7 @@ typedef struct git_stash_apply_options {
  * @param version The struct version; pass `GIT_STASH_APPLY_OPTIONS_VERSION`.
  * @return Zero on success; -1 on failure.
  */
-GIT_EXTERN(int) git_stash_apply_init_options(
+GIT_EXTERN(int) git_stash_apply_options_init(
 	git_stash_apply_options *opts, unsigned int version);
 
 /**

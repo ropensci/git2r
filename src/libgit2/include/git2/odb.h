@@ -11,6 +11,7 @@
 #include "types.h"
 #include "oid.h"
 #include "oidarray.h"
+#include "indexer.h"
 
 /**
  * @file git2/odb.h
@@ -293,7 +294,7 @@ GIT_EXTERN(int) git_odb_write(git_oid *out, git_odb *odb, const void *data, size
  * @param type type of the object that will be written
  * @return 0 if the stream was created; error code otherwise
  */
-GIT_EXTERN(int) git_odb_open_wstream(git_odb_stream **out, git_odb *db, git_off_t size, git_object_t type);
+GIT_EXTERN(int) git_odb_open_wstream(git_odb_stream **out, git_odb *db, git_object_size_t size, git_object_t type);
 
 /**
  * Write to an odb stream
@@ -391,7 +392,7 @@ GIT_EXTERN(int) git_odb_open_rstream(
 GIT_EXTERN(int) git_odb_write_pack(
 	git_odb_writepack **out,
 	git_odb *db,
-	git_transfer_progress_cb progress_cb,
+	git_indexer_progress_cb progress_cb,
 	void *progress_payload);
 
 /**

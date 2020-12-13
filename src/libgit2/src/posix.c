@@ -28,11 +28,11 @@ int p_getaddrinfo(
 
 	GIT_UNUSED(hints);
 
-	if ((ainfo = malloc(sizeof(struct addrinfo))) == NULL)
+	if ((ainfo = git__malloc(sizeof(struct addrinfo))) == NULL)
 		return -1;
 
 	if ((ainfo->ai_hostent = gethostbyname(host)) == NULL) {
-		free(ainfo);
+		git__free(ainfo);
 		return -2;
 	}
 
@@ -65,7 +65,7 @@ int p_getaddrinfo(
 	ai = ainfo;
 
 	for (p = 1; ainfo->ai_hostent->h_addr_list[p] != NULL; p++) {
-		if (!(ai->ai_next = malloc(sizeof(struct addrinfo)))) {
+		if (!(ai->ai_next = git__malloc(sizeof(struct addrinfo)))) {
 			p_freeaddrinfo(ainfo);
 			return -1;
 		}
@@ -89,7 +89,7 @@ void p_freeaddrinfo(struct addrinfo *info)
 
 	while(p != NULL) {
 		next = p->ai_next;
-		free(p);
+		git__free(p);
 		p = next;
 	}
 }
@@ -129,7 +129,8 @@ int p_getcwd(char *buffer_out, size_t size)
 {
 	char *cwd_buffer;
 
-	assert(buffer_out && size > 0);
+	GIT_ASSERT_ARG(buffer_out);
+	GIT_ASSERT_ARG(size > 0);
 
 	cwd_buffer = getcwd(buffer_out, size);
 
@@ -196,7 +197,7 @@ int p_write(git_file fd, const void *buf, size_t cnt)
 	while (cnt) {
 		ssize_t r;
 #ifdef GIT_WIN32
-		assert((size_t)((unsigned int)cnt) == cnt);
+		GIT_ASSERT((size_t)((unsigned int)cnt) == cnt);
 		r = write(fd, b, (unsigned int)cnt);
 #else
 		r = write(fd, b, cnt);
@@ -235,7 +236,7 @@ int git__mmap_alignment(size_t *alignment)
 }
 
 
-int p_mmap(git_map *out, size_t len, int prot, int flags, int fd, git_off_t offset)
+int p_mmap(git_map *out, size_t len, int prot, int flags, int fd, off64_t offset)
 {
 	GIT_MMAP_VALIDATE(out, len, prot, flags);
 
@@ -247,7 +248,7 @@ int p_mmap(git_map *out, size_t len, int prot, int flags, int fd, git_off_t offs
 		return -1;
 	}
 
-	out->data = malloc(len);
+	out->data = git__malloc(len);
 	GIT_ERROR_CHECK_ALLOC(out->data);
 
 	if (!git__is_ssizet(len) ||
@@ -263,8 +264,8 @@ int p_mmap(git_map *out, size_t len, int prot, int flags, int fd, git_off_t offs
 
 int p_munmap(git_map *map)
 {
-	assert(map != NULL);
-	free(map->data);
+	GIT_ASSERT_ARG(map);
+	git__free(map->data);
 
 	return 0;
 }

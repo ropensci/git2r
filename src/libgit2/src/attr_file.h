@@ -14,7 +14,7 @@
 #include "vector.h"
 #include "pool.h"
 #include "buffer.h"
-#include "fileops.h"
+#include "futils.h"
 
 #define GIT_ATTR_FILE			".gitattributes"
 #define GIT_ATTR_FILE_INREPO	"attributes"
@@ -32,19 +32,17 @@
 #define GIT_ATTR_FNMATCH_MATCH_ALL	(1U << 8)
 #define GIT_ATTR_FNMATCH_ALLOWNEG   (1U << 9)
 #define GIT_ATTR_FNMATCH_ALLOWMACRO (1U << 10)
-#define GIT_ATTR_FNMATCH_LEADINGDIR (1U << 11)
-#define GIT_ATTR_FNMATCH_NOLEADINGDIR (1U << 12)
 
 #define GIT_ATTR_FNMATCH__INCOMING \
-	(GIT_ATTR_FNMATCH_ALLOWSPACE | GIT_ATTR_FNMATCH_ALLOWNEG | \
-	 GIT_ATTR_FNMATCH_ALLOWMACRO | GIT_ATTR_FNMATCH_NOLEADINGDIR)
+	(GIT_ATTR_FNMATCH_ALLOWSPACE | GIT_ATTR_FNMATCH_ALLOWNEG | GIT_ATTR_FNMATCH_ALLOWMACRO)
 
 typedef enum {
 	GIT_ATTR_FILE__IN_MEMORY   = 0,
 	GIT_ATTR_FILE__FROM_FILE   = 1,
 	GIT_ATTR_FILE__FROM_INDEX  = 2,
+	GIT_ATTR_FILE__FROM_HEAD   = 3,
 
-	GIT_ATTR_FILE_NUM_SOURCES  = 3
+	GIT_ATTR_FILE_NUM_SOURCES  = 4
 } git_attr_file_source;
 
 extern const char *git_attr__true;
@@ -134,7 +132,8 @@ extern int git_attr_get_many_with_session(
 typedef int (*git_attr_file_parser)(
 	git_repository *repo,
 	git_attr_file *file,
-	const char *data);
+	const char *data,
+	bool allow_macros);
 
 /*
  * git_attr_file API
@@ -153,7 +152,8 @@ int git_attr_file__load(
 	git_attr_session *attr_session,
 	git_attr_file_entry *ce,
 	git_attr_file_source source,
-	git_attr_file_parser parser);
+	git_attr_file_parser parser,
+	bool allow_macros);
 
 int git_attr_file__load_standalone(
 	git_attr_file **out, const char *path);
@@ -162,7 +162,7 @@ int git_attr_file__out_of_date(
 	git_repository *repo, git_attr_session *session, git_attr_file *file);
 
 int git_attr_file__parse_buffer(
-	git_repository *repo, git_attr_file *attrs, const char *data);
+	git_repository *repo, git_attr_file *attrs, const char *data, bool allow_macros);
 
 int git_attr_file__clear_rules(
 	git_attr_file *file, bool need_lock);

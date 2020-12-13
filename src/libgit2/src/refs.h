@@ -45,7 +45,6 @@ extern bool git_reference__enable_symbolic_ref_target_validation;
 #define GIT_REBASE_APPLY_DIR "rebase-apply/"
 #define GIT_REBASE_APPLY_REBASING_FILE GIT_REBASE_APPLY_DIR "rebasing"
 #define GIT_REBASE_APPLY_APPLYING_FILE GIT_REBASE_APPLY_DIR "applying"
-#define GIT_REFS_HEADS_MASTER_FILE GIT_REFS_HEADS_DIR "master"
 
 #define GIT_SEQUENCER_DIR "sequencer/"
 #define GIT_SEQUENCER_HEAD_FILE GIT_SEQUENCER_DIR "head"
@@ -75,14 +74,22 @@ struct git_reference {
 	char name[GIT_FLEX_ARRAY];
 };
 
-git_reference *git_reference__set_name(git_reference *ref, const char *name);
+/**
+ * Reallocate the reference with a new name
+ *
+ * Note that this is a dangerous operation, as on success, all existing
+ * pointers to the old reference will now be dangling. Only call this on objects
+ * you control, possibly using `git_reference_dup`.
+ */
+git_reference *git_reference__realloc(git_reference **ptr_to_ref, const char *name);
 
 int git_reference__normalize_name(git_buf *buf, const char *name, unsigned int flags);
 int git_reference__update_terminal(git_repository *repo, const char *ref_name, const git_oid *oid, const git_signature *sig, const char *log_message);
-int git_reference__is_valid_name(const char *refname, unsigned int flags);
+int git_reference__name_is_valid(int *valid, const char *name, unsigned int flags);
 int git_reference__is_branch(const char *ref_name);
 int git_reference__is_remote(const char *ref_name);
 int git_reference__is_tag(const char *ref_name);
+int git_reference__is_note(const char *ref_name);
 const char *git_reference__shorthand(const char *name);
 
 /**
@@ -107,24 +114,6 @@ int git_reference_lookup_resolved(
 	git_repository *repo,
 	const char *name,
 	int max_deref);
-
-/**
- * Read reference from a file.
- *
- * This function will read in the file at `path`. If it is a
- * symref, it will return a new unresolved symbolic reference
- * with the given name pointing to the reference pointed to by
- * the file. If it is not a symbolic reference, it will return
- * the resolved reference.
- *
- * Note that because the refdb is not involved for symbolic references, they
- * won't be owned, hence you should either not make the returned reference
- * 'externally visible', or perform the lookup before returning it to the user.
- */
-int git_reference__read_head(
-	git_reference **out,
-	git_repository *repo,
-	const char *path);
 
 int git_reference__log_signature(git_signature **out, git_repository *repo);
 

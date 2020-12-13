@@ -137,7 +137,7 @@ typedef struct {
 	git_transport parent;
 	git_remote *owner;
 	char *url;
-	git_cred_acquire_cb cred_acquire_cb;
+	git_credential_acquire_cb cred_acquire_cb;
 	void *cred_acquire_payload;
 	git_proxy_options proxy;
 	int direction;
@@ -153,7 +153,7 @@ typedef struct {
 	git_vector refs;
 	git_vector heads;
 	git_vector common;
-	git_atomic cancelled;
+	git_atomic32 cancelled;
 	packetsize_cb packetsize_cb;
 	void *packetsize_payload;
 	unsigned rpc : 1,
@@ -177,8 +177,8 @@ int git_smart__negotiate_fetch(
 int git_smart__download_pack(
 	git_transport *transport,
 	git_repository *repo,
-	git_transfer_progress *stats,
-	git_transfer_progress_cb progress_cb,
+	git_indexer_progress *stats,
+	git_indexer_progress_cb progress_cb,
 	void *progress_payload);
 
 /* smart.c */

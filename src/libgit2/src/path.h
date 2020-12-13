@@ -67,8 +67,6 @@ extern int git_path_basename_r(git_buf *buffer, const char *path);
  */
 extern size_t git_path_basename_offset(git_buf *buffer);
 
-extern const char *git_path_topdir(const char *path);
-
 /**
  * Find offset to root of path if path has one.
  *
@@ -646,6 +644,8 @@ extern bool git_path_isvalid(
  * Convert any backslashes into slashes
  */
 int git_path_normalize_slashes(git_buf *out, const char *path);
+
+bool git_path_supports_symlinks(const char *dir);
 
 /**
  * Validate a system file's ownership

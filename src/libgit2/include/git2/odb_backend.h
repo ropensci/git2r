@@ -9,6 +9,7 @@
 
 #include "common.h"
 #include "types.h"
+#include "indexer.h"
 
 /**
  * @file git2/backend.h
@@ -86,8 +87,8 @@ struct git_odb_stream {
 	unsigned int mode;
 	void *hash_ctx;
 
-	git_off_t declared_size;
-	git_off_t received_bytes;
+	git_object_size_t declared_size;
+	git_object_size_t received_bytes;
 
 	/**
 	 * Write at most `len` bytes into `buffer` and advance the stream.
@@ -124,8 +125,8 @@ struct git_odb_stream {
 struct git_odb_writepack {
 	git_odb_backend *backend;
 
-	int GIT_CALLBACK(append)(git_odb_writepack *writepack, const void *data, size_t size, git_transfer_progress *stats);
-	int GIT_CALLBACK(commit)(git_odb_writepack *writepack, git_transfer_progress *stats);
+	int GIT_CALLBACK(append)(git_odb_writepack *writepack, const void *data, size_t size, git_indexer_progress *stats);
+	int GIT_CALLBACK(commit)(git_odb_writepack *writepack, git_indexer_progress *stats);
 	void GIT_CALLBACK(free)(git_odb_writepack *writepack);
 };
 

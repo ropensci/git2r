@@ -69,7 +69,7 @@ extern int git_buf_try_grow(
  * git_buf__initbuf. If a buffer with a non-NULL ptr is passed in, this method
  * assures that the buffer is '\0'-terminated.
  */
-extern void git_buf_sanitize(git_buf *buf);
+extern int git_buf_sanitize(git_buf *buf);
 
 extern void git_buf_swap(git_buf *buf_a, git_buf *buf_b);
 extern char *git_buf_detach(git_buf *buf);
@@ -113,6 +113,7 @@ int git_buf_puts(git_buf *buf, const char *string);
 int git_buf_printf(git_buf *buf, const char *format, ...) GIT_FORMAT_PRINTF(2, 3);
 int git_buf_vprintf(git_buf *buf, const char *format, va_list ap);
 void git_buf_clear(git_buf *buf);
+void git_buf_consume_bytes(git_buf *buf, size_t len);
 void git_buf_consume(git_buf *buf, const char *end);
 void git_buf_truncate(git_buf *buf, size_t len);
 void git_buf_shorten(git_buf *buf, size_t amount);
@@ -144,7 +145,7 @@ GIT_INLINE(size_t) git_buf_len(const git_buf *buf)
 	return buf->size;
 }
 
-void git_buf_copy_cstr(char *data, size_t datasize, const git_buf *buf);
+int git_buf_copy_cstr(char *data, size_t datasize, const git_buf *buf);
 
 #define git_buf_PUTS(buf, str) git_buf_put(buf, str, sizeof(str) - 1)
 
