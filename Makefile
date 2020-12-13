@@ -38,6 +38,13 @@ check:
 rhub: clean check
 	cd .. && Rscript -e "rhub::check(path='$(PKG_TAR)', rhub::platforms()[['name']], show_status = FALSE)"
 
+# Build and check package on https://win-builder.r-project.org/
+.PHONY: winbuilder
+winbuilder: clean check
+	cd .. && curl -T $(PKG_TAR) ftp://win-builder.r-project.org/R-oldrelease/
+	cd .. && curl -T $(PKG_TAR) ftp://win-builder.r-project.org/R-release/
+	cd .. && curl -T $(PKG_TAR) ftp://win-builder.r-project.org/R-devel/
+
 # Check reverse dependencies
 #
 # 1) Install packages (in ../revdep/lib) to check the reverse dependencies.
