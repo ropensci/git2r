@@ -1,4 +1,4 @@
-VERSION = 1.0.0
+VERSION = 1.1.0
 RWINLIB = ../windows/libgit2-${VERSION}
 
 PKG_CPPFLAGS = -I${RWINLIB}/include \
