@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2019 The git2r contributors
+## Copyright (C) 2013-2020 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -14,7 +14,7 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library("git2r")
+library(git2r)
 
 ## For debugging
 sessionInfo()
@@ -93,12 +93,17 @@ stopifnot(identical(length(commits(repo_2)), 3L))
 ## since the repositories have different paths.
 stopifnot(identical(length(references(repo_1)), 2L))
 ref_1 <- references(repo_1)
-ref_1[[1]]$repo <- NULL
-ref_1[[2]]$repo <- NULL
+lapply(seq_len(length(ref_1)), function(i) {
+    ref_1[[i]]$repo <<- NULL
+})
 ref_2 <- references(repo_2)
-ref_2[[1]]$repo <- NULL
-ref_2[[2]]$repo <- NULL
-stopifnot(identical(ref_1, ref_2))
+lapply(seq_len(length(ref_2)), function(i) {
+    ref_2[[i]]$repo <<- NULL
+})
+stopifnot(identical(ref_1[["refs/heads/master"]],
+                    ref_2[["refs/heads/master"]]))
+stopifnot(identical(ref_1[["refs/remotes/origin/master"]],
+                    ref_2[["refs/remotes/origin/master"]]))
 
 ref_1 <- references(repo_1)[["refs/heads/master"]]
 stopifnot(identical(ref_1$name, "refs/heads/master"))
