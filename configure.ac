@@ -82,7 +82,7 @@ elif test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
                     BREWDIR=`brew --prefix`
                     USE_BUNDLED_LIBGIT2=no
                 elif test "x${autobrew}" = xyes; then
-                    curl -sfL "https://jeroen.github.io/autobrew/${PKG_BREW_NAME}" > autobrew
+                    curl -sfL "https://autobrew.github.io/scripts/libgit2" > autobrew
                     source autobrew
                     USE_BUNDLED_LIBGIT2=no
                 fi
