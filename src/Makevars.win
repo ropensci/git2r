@@ -7,7 +7,7 @@ PKG_CPPFLAGS = -I${RWINLIB}/include \
         -DGIT2R_HAVE_OBJECT_ANY \
         -DGIT2R_LIBGIT2_V0_99_0_RENAMES
 
-PKG_LIBS = -L${RWINLIB}/lib${R_ARCH} \
+PKG_LIBS = -L${RWINLIB}/lib${R_ARCH}${CRT} \
 	-lgit2 -lssh2 -lz -lssl -lcrypto \
 	-lwinhttp -lws2_32 -lcrypt32 -lole32 -lrpcrt4
 
