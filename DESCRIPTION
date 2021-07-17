@@ -20,7 +20,6 @@ Depends:
 Suggests:
     getPass
 Type: Package
-LazyData: true
 Biarch: true
 NeedsCompilation: yes
 SystemRequirements: By default, git2r uses a system installation of
