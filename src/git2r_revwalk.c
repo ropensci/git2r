@@ -341,8 +341,10 @@ git2r_revwalk_list2 (
         unmatched = parents;
         if (parents == 0) {
 	    git_tree *tree;
-	    if ((error = git_commit_tree(&tree, commit)) < 0)
+	    if ((error = git_commit_tree(&tree, commit)) < 0) {
+                git_commit_free(commit);
                 goto cleanup;
+            }
             error = git_pathspec_match_tree(
                 NULL, tree, GIT_PATHSPEC_NO_MATCH_ERROR, ps);
 	    git_tree_free(tree);
@@ -350,25 +352,32 @@ git2r_revwalk_list2 (
                 error = 0;
 	        unmatched = 1;
             } else if (error < 0) {
+                git_commit_free(commit);
                 goto cleanup;
             }
 	} else if (parents == 1) {
-            if ((error = git2r_match_with_parent(&match, commit, 0, &diffopts)) < 0)
+            if ((error = git2r_match_with_parent(&match, commit, 0, &diffopts)) < 0) {
+                git_commit_free(commit);
                 goto cleanup;
+            }
             unmatched = match ? 0 : 1;
 	} else {
             unsigned int j;
 
             for (j = 0; j < parents; j++) {
-                if ((error = git2r_match_with_parent(&match, commit, j, &diffopts)) < 0)
+                if ((error = git2r_match_with_parent(&match, commit, j, &diffopts)) < 0) {
+                    git_commit_free(commit);
                     goto cleanup;
+                }
                 if (match && unmatched)
                     unmatched--;
             }
 	}
 
-        if (unmatched > 0)
+        if (unmatched > 0) {
+            git_commit_free(commit);
             continue;
+        }
 
         SET_VECTOR_ELT(
             result,
