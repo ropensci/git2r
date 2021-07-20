@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2020 The git2r contributors
+ *  Copyright (C) 2013-2021 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -234,7 +234,9 @@ git2r_revwalk_list2 (
     SEXP max_n,
     SEXP path)
 {
-    int i = 0, error = GIT_OK, nprotect = 0;
+    int i = 0;
+    int error = GIT_OK;
+    int nprotect = 0;
     SEXP result = R_NilValue;
     int n;
     unsigned int sort_mode = GIT_SORT_NONE;
@@ -242,7 +244,7 @@ git2r_revwalk_list2 (
     git_repository *repository = NULL;
     git_oid oid;
     git_diff_options diffopts = GIT_DIFF_OPTIONS_INIT;
-    git_pathspec     *ps      = NULL;
+    git_pathspec *ps = NULL;
 
     if (git2r_arg_check_sha(sha))
         git2r_error(__func__, NULL, "'sha'", git2r_err_sha_arg);
