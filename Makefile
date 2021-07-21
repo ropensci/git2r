@@ -30,7 +30,7 @@ pdf: roxygen
 # Build and check package
 check:
 	cd .. && R CMD build --no-build-vignettes $(PKG_NAME)
-	cd .. && _R_CHECK_CRAN_INCOMING_=FALSE NOT_CRAN=true \
+	cd .. && _R_CHECK_CRAN_INCOMING_=FALSE _R_CHECK_SYSTEM_CLOCK_=0 \
         R CMD check --as-cran --no-manual --no-vignettes \
         --no-build-vignettes --no-stop-on-test-error $(PKG_TAR)
 
