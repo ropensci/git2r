@@ -1,6 +1,23 @@
 git2r (development version)
 ---------------------------
 
+git2r 0.28.0
+------------
+
+IMPROVEMENTS
+
+* Updated to use libgit2 version 1.1.0 on Windows.
+
+* Fix handling of a symbolic reference when checking out previous
+  branch.
+
+* Added a configure option '--without-libgit2' to ignore presence of a
+  system libgit2 library and instead use the internal git2r libgit2
+  library. Usage:
+  R CMD INSTALL --configure-args='--without-libgit2' git2r_x.y.z.tar.gz
+
+* Updated some tests to work with libgit2 version 1.1.0.
+
 git2r 0.27.1
 ------------
 
