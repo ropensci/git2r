@@ -623,7 +623,7 @@ ac_includes_default="\
 #endif"
 
 ac_subst_vars='PKG_CPPFLAGS
-GIT2R_SRC_SHA1DC
+GIT2R_SRC_SHA1
 GIT2R_SRC_REGEX
 LTLIBICONV
 LIBICONV
@@ -6692,15 +6692,16 @@ case "${host_os}" in
     darwin*)
         CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_COLLISIONDETECT=1 -DSHA1DC_NO_STANDARD_INCLUDES=1"
         CPPFLAGS="${CPPFLAGS} -DSHA1DC_CUSTOM_INCLUDE_SHA1_C=\\\"common.h\\\" -DSHA1DC_CUSTOM_INCLUDE_UBC_CHECK_C=\\\"common.h\\\""
-        GIT2R_SRC_SHA1DC="libgit2/src/hash/sha1dc/sha1.o libgit2/src/hash/sha1dc/ubc_check.o"
+        GIT2R_SRC_SHA1="libgit2/src/hash/sha1/collisiondetect.o libgit2/src/hash/sha1/sha1dc/sha1.o libgit2/src/hash/sha1/sha1dc/ubc_check.o"
     ;;
     *)
         if test "x${have_ssl}" = xyes; then
             CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_OPENSSL=1"
+            GIT2R_SRC_SHA1="libgit2/src/hash/sha1/openssl.o"
         else
             CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_COLLISIONDETECT=1 -DSHA1DC_NO_STANDARD_INCLUDES=1"
             CPPFLAGS="${CPPFLAGS} -DSHA1DC_CUSTOM_INCLUDE_SHA1_C=\\\"common.h\\\" -DSHA1DC_CUSTOM_INCLUDE_UBC_CHECK_C=\\\"common.h\\\""
-            GIT2R_SRC_SHA1DC="libgit2/src/hash/sha1dc/sha1.o libgit2/src/hash/sha1dc/ubc_check.o"
+            GIT2R_SRC_SHA1="libgit2/src/hash/sha1/sha1dc/sha1.o libgit2/src/hash/sha1/sha1dc/ubc_check.o"
         fi
     ;;
 esac
@@ -6910,7 +6911,8 @@ fi
 # The function 'git_buf_free' is deprecated in libgit2. Use
 # 'git_buf_dispose' instead.
 #
-CPPFLAGS="${CPPFLAGS} -DGIT_DEPRECATE_HARD -DGIT2R_HAVE_BUF_DISPOSE"
+# CPPFLAGS="${CPPFLAGS} -DGIT_DEPRECATE_HARD -DGIT2R_HAVE_BUF_DISPOSE"
+CPPFLAGS="${CPPFLAGS} -DGIT2R_HAVE_BUF_DISPOSE"
 
 # The constants GIT_OBJ_ANY, GIT_OBJ_BLOB, GIT_OBJ_COMMIT,
 # GIT_OBJ_TAG_GIT_OBJ_TREE and GIT_REF_OID are deprecated in
@@ -6921,6 +6923,14 @@ CPPFLAGS="${CPPFLAGS} -DGIT2R_HAVE_OBJECT_ANY"
 # Several libgit2 error functions and enumaration values have been
 # deprecated, use newer versions.
 CPPFLAGS="${CPPFLAGS} -DGIT2R_HAVE_GIT_ERROR"
+
+# libgit v0.99.0: Several structures, enums and values have been
+# renamed in libgit version 0.99.0. The former names are
+# deprecated.  See
+# https://github.com/libgit2/libgit2/releases/tag/v0.99.0
+CPPFLAGS="${CPPFLAGS} -DGIT2R_LIBGIT2_V0_99_0_RENAMES"
+
+CPPFLAGS="${CPPFLAGS} -DGIT_REGEX_REGCOMP -DTHREADSAFE=OFF"
 
 
 

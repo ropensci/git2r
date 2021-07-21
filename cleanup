@@ -8,8 +8,9 @@ rm -f src/*.o
 rm -f src/*.so
 rm -f src/libmygit.a
 rm -f src/libgit2/src/*.o
-rm -f src/libgit2/src/hash/*.o
-rm -f src/libgit2/src/hash/sha1dc/*.o
+rm -f src/libgit2/src/allocators/*.o
+rm -f src/libgit2/src/hash/sha1/*.o
+rm -f src/libgit2/src/hash/sha1/sha1dc/*.o
 rm -f src/libgit2/src/streams/*.o
 rm -f src/libgit2/src/transports/*.o
 rm -f src/libgit2/src/unix/*.o
