@@ -27,25 +27,25 @@ void git_tag__free(void *_tag)
 
 int git_tag_target(git_object **target, const git_tag *t)
 {
-	GIT_ASSERT_ARG(t);
+	assert(t);
 	return git_object_lookup(target, t->object.repo, &t->target, t->type);
 }
 
 const git_oid *git_tag_target_id(const git_tag *t)
 {
-	GIT_ASSERT_ARG_WITH_RETVAL(t, NULL);
+	assert(t);
 	return &t->target;
 }
 
 git_object_t git_tag_target_type(const git_tag *t)
 {
-	GIT_ASSERT_ARG_WITH_RETVAL(t, GIT_OBJECT_INVALID);
+	assert(t);
 	return t->type;
 }
 
 const char *git_tag_name(const git_tag *t)
 {
-	GIT_ASSERT_ARG_WITH_RETVAL(t, NULL);
+	assert(t);
 	return t->tag_name;
 }
 
@@ -56,7 +56,7 @@ const git_signature *git_tag_tagger(const git_tag *t)
 
 const char *git_tag_message(const git_tag *t)
 {
-	GIT_ASSERT_ARG_WITH_RETVAL(t, NULL);
+	assert(t);
 	return t->message;
 }
 
@@ -259,10 +259,8 @@ static int git_tag_create__internal(
 
 	int error;
 
-	GIT_ASSERT_ARG(repo);
-	GIT_ASSERT_ARG(tag_name);
-	GIT_ASSERT_ARG(target);
-	GIT_ASSERT_ARG(!create_tag_annotation || (tagger && message));
+	assert(repo && tag_name && target);
+	assert(!create_tag_annotation || (tagger && message));
 
 	if (git_object_owner(target) != repo) {
 		git_error_set(GIT_ERROR_INVALID, "the given target does not belong to this repository");
@@ -315,12 +313,7 @@ int git_tag_annotation_create(
 	const git_signature *tagger,
 	const char *message)
 {
-	GIT_ASSERT_ARG(oid);
-	GIT_ASSERT_ARG(repo);
-	GIT_ASSERT_ARG(tag_name);
-	GIT_ASSERT_ARG(target);
-	GIT_ASSERT_ARG(tagger);
-	GIT_ASSERT_ARG(message);
+	assert(oid && repo && tag_name && target && tagger && message);
 
 	return write_tag_annotation(oid, repo, tag_name, target, tagger, message);
 }
@@ -346,8 +339,7 @@ int git_tag_create_from_buffer(git_oid *oid, git_repository *repo, const char *b
 	git_reference *new_ref = NULL;
 	git_buf ref_name = GIT_BUF_INIT;
 
-	GIT_ASSERT_ARG(oid);
-	GIT_ASSERT_ARG(buffer);
+	assert(oid && buffer);
 
 	memset(&tag, 0, sizeof(tag));
 
@@ -462,8 +454,7 @@ int git_tag_foreach(git_repository *repo, git_tag_foreach_cb cb, void *cb_data)
 {
 	tag_cb_data data;
 
-	GIT_ASSERT_ARG(repo);
-	GIT_ASSERT_ARG(cb);
+	assert(repo && cb);
 
 	data.cb = cb;
 	data.cb_data = cb_data;
@@ -502,9 +493,7 @@ int git_tag_list_match(git_strarray *tag_names, const char *pattern, git_reposit
 	tag_filter_data filter;
 	git_vector taglist;
 
-	GIT_ASSERT_ARG(tag_names);
-	GIT_ASSERT_ARG(repo);
-	GIT_ASSERT_ARG(pattern);
+	assert(tag_names && repo && pattern);
 
 	if ((error = git_vector_init(&taglist, 8, NULL)) < 0)
 		return error;
@@ -531,31 +520,6 @@ int git_tag_list(git_strarray *tag_names, git_repository *repo)
 int git_tag_peel(git_object **tag_target, const git_tag *tag)
 {
 	return git_object_peel(tag_target, (const git_object *)tag, GIT_OBJECT_ANY);
-}
-
-int git_tag_name_is_valid(int *valid, const char *name)
-{
-	git_buf ref_name = GIT_BUF_INIT;
-	int error = 0;
-
-	GIT_ASSERT(valid);
-
-	/*
-	 * Discourage tag name starting with dash,
-	 * https://github.com/git/git/commit/4f0accd638b8d2
-	 */
-	if (!name || name[0] == '-')
-		goto done;
-
-	if ((error = git_buf_puts(&ref_name, GIT_REFS_TAGS_DIR)) < 0 ||
-	    (error = git_buf_puts(&ref_name, name)) < 0)
-		goto done;
-
-	error = git_reference_name_is_valid(valid, ref_name.ptr);
-
-done:
-	git_buf_dispose(&ref_name);
-	return error;
 }
 
 /* Deprecated Functions */

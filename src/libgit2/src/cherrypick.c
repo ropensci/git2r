@@ -126,10 +126,7 @@ int git_cherrypick_commit(
 	git_tree *parent_tree = NULL, *our_tree = NULL, *cherrypick_tree = NULL;
 	int parent = 0, error = 0;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(repo);
-	GIT_ASSERT_ARG(cherrypick_commit);
-	GIT_ASSERT_ARG(our_commit);
+	assert(out && repo && cherrypick_commit && our_commit);
 
 	if (git_commit_parentcount(cherrypick_commit) > 1) {
 		if (!mainline)
@@ -180,8 +177,7 @@ int git_cherrypick(
 	git_indexwriter indexwriter = GIT_INDEXWRITER_INIT;
 	int error = 0;
 
-	GIT_ASSERT_ARG(repo);
-	GIT_ASSERT_ARG(commit);
+	assert(repo && commit);
 
 	GIT_ERROR_CHECK_VERSION(given_opts, GIT_CHERRYPICK_OPTIONS_VERSION, "git_cherrypick_options");
 

@@ -57,9 +57,7 @@ struct git_transaction {
 int git_transaction_config_new(git_transaction **out, git_config *cfg)
 {
 	git_transaction *tx;
-
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(cfg);
+	assert(out && cfg);
 
 	tx = git__calloc(1, sizeof(git_transaction));
 	GIT_ERROR_CHECK_ALLOC(tx);
@@ -76,8 +74,7 @@ int git_transaction_new(git_transaction **out, git_repository *repo)
 	git_pool pool;
 	git_transaction *tx = NULL;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(repo);
+	assert(out && repo);
 
 	if ((error = git_pool_init(&pool, 1)) < 0)
 		goto on_error;
@@ -112,8 +109,7 @@ int git_transaction_lock_ref(git_transaction *tx, const char *refname)
 	int error;
 	transaction_node *node;
 
-	GIT_ASSERT_ARG(tx);
-	GIT_ASSERT_ARG(refname);
+	assert(tx && refname);
 
 	node = git_pool_mallocz(&tx->pool, sizeof(transaction_node));
 	GIT_ERROR_CHECK_ALLOC(node);
@@ -180,9 +176,7 @@ int git_transaction_set_target(git_transaction *tx, const char *refname, const g
 	int error;
 	transaction_node *node;
 
-	GIT_ASSERT_ARG(tx);
-	GIT_ASSERT_ARG(refname);
-	GIT_ASSERT_ARG(target);
+	assert(tx && refname && target);
 
 	if ((error = find_locked(&node, tx, refname)) < 0)
 		return error;
@@ -201,9 +195,7 @@ int git_transaction_set_symbolic_target(git_transaction *tx, const char *refname
 	int error;
 	transaction_node *node;
 
-	GIT_ASSERT_ARG(tx);
-	GIT_ASSERT_ARG(refname);
-	GIT_ASSERT_ARG(target);
+	assert(tx && refname && target);
 
 	if ((error = find_locked(&node, tx, refname)) < 0)
 		return error;
@@ -280,9 +272,7 @@ int git_transaction_set_reflog(git_transaction *tx, const char *refname, const g
 	int error;
 	transaction_node *node;
 
-	GIT_ASSERT_ARG(tx);
-	GIT_ASSERT_ARG(refname);
-	GIT_ASSERT_ARG(reflog);
+	assert(tx && refname && reflog);
 
 	if ((error = find_locked(&node, tx, refname)) < 0)
 		return error;
@@ -330,7 +320,7 @@ int git_transaction_commit(git_transaction *tx)
 	transaction_node *node;
 	int error = 0;
 
-	GIT_ASSERT_ARG(tx);
+	assert(tx);
 
 	if (tx->type == TRANSACTION_CONFIG) {
 		error = git_config_unlock(tx->cfg, true);
@@ -365,8 +355,7 @@ void git_transaction_free(git_transaction *tx)
 	transaction_node *node;
 	git_pool pool;
 
-	if (!tx)
-		return;
+	assert(tx);
 
 	if (tx->type == TRANSACTION_CONFIG) {
 		if (tx->cfg) {

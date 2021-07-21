@@ -10,6 +10,7 @@
 #include "http_parser.h"
 #include "vector.h"
 #include "trace.h"
+#include "global.h"
 #include "httpclient.h"
 #include "http.h"
 #include "auth.h"
@@ -145,8 +146,7 @@ bool git_http_response_is_redirect(git_http_response *response)
 
 void git_http_response_dispose(git_http_response *response)
 {
-	if (!response)
-		return;
+	assert(response);
 
 	git__free(response->content_type);
 	git__free(response->location);
@@ -400,7 +400,7 @@ static int on_body(http_parser *parser, const char *buf, size_t len)
 		return 0;
 	}
 
-	GIT_ASSERT(ctx->output_size >= ctx->output_written);
+	assert(ctx->output_size >= ctx->output_written);
 
 	max_len = min(ctx->output_size - ctx->output_written, len);
 	max_len = min(max_len, INT_MAX);
@@ -658,6 +658,11 @@ static int generate_connect_request(
 	return git_buf_oom(buf) ? -1 : 0;
 }
 
+static bool use_connect_proxy(git_http_client *client)
+{
+    return client->proxy.url.host && !strcmp(client->server.url.scheme, "https");
+}
+
 static int generate_request(
 	git_http_client *client,
 	git_http_request *request)
@@ -666,8 +671,7 @@ static int generate_request(
 	size_t i;
 	int error;
 
-	GIT_ASSERT_ARG(client);
-	GIT_ASSERT_ARG(request);
+	assert(client && request);
 
 	git_buf_clear(&client->request_msg);
 	buf = &client->request_msg;
@@ -714,7 +718,8 @@ static int generate_request(
 		git_buf_printf(buf, "Expect: 100-continue\r\n");
 
 	if ((error = apply_server_credentials(buf, client, request)) < 0 ||
-	    (error = apply_proxy_credentials(buf, client, request)) < 0)
+	    (!use_connect_proxy(client) &&
+			(error = apply_proxy_credentials(buf, client, request)) < 0))
 		return error;
 
 	if (request->custom_headers) {
@@ -844,10 +849,7 @@ static int setup_hosts(
 {
 	int ret, diff = 0;
 
-	GIT_ASSERT_ARG(client);
-	GIT_ASSERT_ARG(request);
-
-	GIT_ASSERT(request->url);
+	assert(client && request && request->url);
 
 	if ((ret = server_setup_from_url(&client->server, request->url)) < 0)
 		return ret;
@@ -927,7 +929,7 @@ static int proxy_connect(
 	    (error = git_http_client_skip_body(client)) < 0)
 		goto done;
 
-	GIT_ASSERT(client->state == DONE);
+	assert(client->state == DONE);
 
 	if (response.status == GIT_HTTP_STATUS_PROXY_AUTHENTICATION_REQUIRED) {
 		save_early_response(client, &response);
@@ -1007,8 +1009,7 @@ static int http_client_connect(
 	reset_parser(client);
 
 	/* Reconnect to the proxy if necessary. */
-	use_proxy = client->proxy.url.host &&
-	            !strcmp(client->server.url.scheme, "https");
+	use_proxy = use_connect_proxy(client);
 
 	if (use_proxy) {
 		if (!client->proxy_connected || !client->keepalive ||
@@ -1142,7 +1143,7 @@ GIT_INLINE(int) client_read_and_parse(git_http_client *client)
 		 * final byte when paused in a callback.  Consume that byte.
 		 * https://github.com/nodejs/http-parser/issues/97
 		 */
-		GIT_ASSERT(client->read_buf.size > parsed_len);
+		assert(client->read_buf.size > parsed_len);
 
 		http_parser_pause(parser, 0);
 
@@ -1220,8 +1221,7 @@ int git_http_client_send_request(
 	git_http_response response = {0};
 	int error = -1;
 
-	GIT_ASSERT_ARG(client);
-	GIT_ASSERT_ARG(request);
+	assert(client && request);
 
 	/* If the client did not finish reading, clean up the stream. */
 	if (client->state == READING_BODY)
@@ -1292,7 +1292,7 @@ int git_http_client_send_body(
 	git_buf hdr = GIT_BUF_INIT;
 	int error;
 
-	GIT_ASSERT_ARG(client);
+	assert(client);
 
 	/* If we're waiting for proxy auth, don't sending more requests. */
 	if (client->state == HAS_EARLY_RESPONSE)
@@ -1309,7 +1309,7 @@ int git_http_client_send_body(
 	server = &client->server;
 
 	if (client->request_body_len) {
-		GIT_ASSERT(buffer_len <= client->request_body_remain);
+		assert(buffer_len <= client->request_body_remain);
 
 		if ((error = stream_write(server, buffer, buffer_len)) < 0)
 			goto done;
@@ -1332,8 +1332,7 @@ static int complete_request(git_http_client *client)
 {
 	int error = 0;
 
-	GIT_ASSERT_ARG(client);
-	GIT_ASSERT(client->state == SENDING_BODY);
+	assert(client && client->state == SENDING_BODY);
 
 	if (client->request_body_len && client->request_body_remain) {
 		git_error_set(GIT_ERROR_HTTP, "truncated write");
@@ -1353,8 +1352,7 @@ int git_http_client_read_response(
 	http_parser_context parser_context = {0};
 	int error;
 
-	GIT_ASSERT_ARG(response);
-	GIT_ASSERT_ARG(client);
+	assert(response && client);
 
 	if (client->state == SENDING_BODY) {
 		if ((error = complete_request(client)) < 0)
@@ -1394,7 +1392,7 @@ int git_http_client_read_response(
 			goto done;
 	}
 
-	GIT_ASSERT(client->state == READING_BODY || client->state == DONE);
+	assert(client->state == READING_BODY || client->state == DONE);
 
 done:
 	git_buf_dispose(&parser_context.parse_header_name);
@@ -1447,7 +1445,7 @@ int git_http_client_read_body(
 			break;
 	}
 
-	GIT_ASSERT(parser_context.output_written <= INT_MAX);
+	assert(parser_context.output_written <= INT_MAX);
 	error = (int)parser_context.output_written;
 
 done:
@@ -1483,7 +1481,7 @@ int git_http_client_skip_body(git_http_client *client)
 			              "unexpected data handled in callback");
 			error = -1;
 		}
-	} while (!error);
+	} while (error >= 0 && client->state != DONE);
 
 	if (error < 0)
 		client->connected = 0;
@@ -1501,7 +1499,7 @@ int git_http_client_new(
 {
 	git_http_client *client;
 
-	GIT_ASSERT_ARG(out);
+	assert(out);
 
 	client = git__calloc(1, sizeof(git_http_client));
 	GIT_ERROR_CHECK_ALLOC(client);

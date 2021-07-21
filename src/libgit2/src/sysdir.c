@@ -7,7 +7,7 @@
 
 #include "sysdir.h"
 
-#include "runtime.h"
+#include "global.h"
 #include "buffer.h"
 #include "path.h"
 #include <ctype.h>
@@ -45,7 +45,7 @@ static int get_passwd_home(git_buf *out, uid_t uid)
 	long buflen;
 	int error;
 
-	GIT_ASSERT_ARG(out);
+	assert(out);
 
 	if ((buflen = sysconf(_SC_GETPW_R_SIZE_MAX)) == -1)
 		buflen = 1024;
@@ -189,7 +189,9 @@ int git_sysdir_global_init(void)
 	for (i = 0; !error && i < ARRAY_SIZE(git_sysdir__dirs); i++)
 		error = git_sysdir__dirs[i].guess(&git_sysdir__dirs[i].buf);
 
-	return git_runtime_shutdown_register(git_sysdir_global_shutdown);
+	git__on_shutdown(git_sysdir_global_shutdown);
+
+	return error;
 }
 
 static int git_sysdir_check_selector(git_sysdir_t which)
@@ -204,7 +206,7 @@ static int git_sysdir_check_selector(git_sysdir_t which)
 
 int git_sysdir_get(const git_buf **out, git_sysdir_t which)
 {
-	GIT_ASSERT_ARG(out);
+	assert(out);
 
 	*out = NULL;
 

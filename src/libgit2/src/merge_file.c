@@ -36,10 +36,7 @@ static int merge_file_input_from_index(
 {
 	int error = 0;
 
-	GIT_ASSERT_ARG(input_out);
-	GIT_ASSERT_ARG(odb_object_out);
-	GIT_ASSERT_ARG(odb);
-	GIT_ASSERT_ARG(entry);
+	assert(input_out && odb_object_out && odb && entry);
 
 	if ((error = git_odb_read(odb_object_out, odb, &entry->id)) < 0)
 		goto done;
@@ -244,9 +241,7 @@ int git_merge_file(
 {
 	git_merge_file_input inputs[3] = { {0} };
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(ours);
-	GIT_ASSERT_ARG(theirs);
+	assert(out && ours && theirs);
 
 	memset(out, 0x0, sizeof(git_merge_file_result));
 
@@ -273,10 +268,7 @@ int git_merge_file_from_index(
 	git_odb_object *odb_object[3] = { 0 };
 	int error = 0;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(repo);
-	GIT_ASSERT_ARG(ours);
-	GIT_ASSERT_ARG(theirs);
+	assert(out && repo && ours && theirs);
 
 	memset(out, 0x0, sizeof(git_merge_file_result));
 

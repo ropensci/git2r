@@ -13,8 +13,7 @@ int git_strarray_copy(git_strarray *tgt, const git_strarray *src)
 {
 	size_t i;
 
-	GIT_ASSERT_ARG(tgt);
-	GIT_ASSERT_ARG(src);
+	assert(tgt && src);
 
 	memset(tgt, 0, sizeof(*tgt));
 

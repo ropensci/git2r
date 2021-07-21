@@ -881,8 +881,7 @@ int git__date_rfc2822_fmt(char *out, size_t len, const git_time *date)
 	struct tm gmt;
 	time_t t;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(date);
+	assert(out && date);
 
 	t = (time_t) (date->time + date->offset * 60);
 

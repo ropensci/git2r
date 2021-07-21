@@ -7,9 +7,8 @@
 
 #include "futils.h"
 
-#include "runtime.h"
+#include "global.h"
 #include "strmap.h"
-#include "hash.h"
 #include <ctype.h>
 #if GIT_WIN32
 #include "win32/findfile.h"
@@ -185,8 +184,7 @@ int git_futils_readbuffer_updated(
 	git_buf buf = GIT_BUF_INIT;
 	git_oid checksum_new;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(path && *path);
+	assert(out && path && *path);
 
 	if (updated != NULL)
 		*updated = 0;
@@ -494,7 +492,7 @@ int git_futils_mkdir(
 			goto done;
 		}
 
-		GIT_ASSERT(len);
+		assert(len);
 
 		/*
 		 * We've walked all the given path's parents and it's either relative
@@ -1129,6 +1127,8 @@ int git_futils_filestamp_check(
 void git_futils_filestamp_set(
 	git_futils_filestamp *target, const git_futils_filestamp *source)
 {
+	assert(target);
+
 	if (source)
 		memcpy(target, source, sizeof(*target));
 	else

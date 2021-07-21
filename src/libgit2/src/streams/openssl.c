@@ -11,8 +11,7 @@
 
 #include <ctype.h>
 
-#include "runtime.h"
-#include "settings.h"
+#include "global.h"
 #include "posix.h"
 #include "stream.h"
 #include "streams/socket.h"
@@ -286,7 +285,9 @@ int git_openssl_stream_global_init(void)
 	if (init_bio_method() < 0)
 		goto error;
 
-	return git_runtime_shutdown_register(shutdown_ssl);
+	git__on_shutdown(shutdown_ssl);
+
+	return 0;
 
 error:
 	git_error_set(GIT_ERROR_NET, "could not initialize openssl: %s",
@@ -323,8 +324,8 @@ int git_openssl_set_locking(void)
 	}
 
 	CRYPTO_set_locking_callback(openssl_locking_function);
-	return git_runtime_shutdown_register(shutdown_ssl_locking);
-
+	git__on_shutdown(shutdown_ssl_locking);
+	return 0;
 #elif !defined(OPENSSL_LEGACY_API)
 	return 0;
 #else
@@ -414,8 +415,8 @@ static int ssl_set_error(SSL *ssl, int error)
 
 	err = SSL_get_error(ssl, error);
 
-	GIT_ASSERT(err != SSL_ERROR_WANT_READ);
-	GIT_ASSERT(err != SSL_ERROR_WANT_WRITE);
+	assert(err != SSL_ERROR_WANT_READ);
+	assert(err != SSL_ERROR_WANT_WRITE);
 
 	switch (err) {
 	case SSL_ERROR_WANT_CONNECT:
@@ -757,9 +758,7 @@ static int openssl_stream_wrap(
 {
 	openssl_stream *st;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(in);
-	GIT_ASSERT_ARG(host);
+	assert(out && in && host);
 
 	st = git__calloc(1, sizeof(openssl_stream));
 	GIT_ERROR_CHECK_ALLOC(st);
@@ -802,9 +801,7 @@ int git_openssl_stream_new(git_stream **out, const char *host, const char *port)
 	git_stream *stream = NULL;
 	int error;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(host);
-	GIT_ASSERT_ARG(port);
+	assert(out && host && port);
 
 	if ((error = git_socket_stream_new(&stream, host, port)) < 0)
 		return error;

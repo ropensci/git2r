@@ -11,7 +11,7 @@
 #include "futils.h"
 #include "hash.h"
 #include "repository.h"
-#include "runtime.h"
+#include "global.h"
 #include "git2/sys/filter.h"
 #include "git2/config.h"
 #include "blob.h"
@@ -206,7 +206,7 @@ int git_filter_global_init(void)
 			GIT_FILTER_IDENT, ident, GIT_FILTER_IDENT_PRIORITY) < 0)
 		error = -1;
 
-	error = git_runtime_shutdown_register(git_filter_global_shutdown);
+	git__on_shutdown(git_filter_global_shutdown);
 
 done:
 	if (error) {
@@ -266,8 +266,7 @@ int git_filter_register(
 {
 	int error;
 
-	GIT_ASSERT_ARG(name);
-	GIT_ASSERT_ARG(filter);
+	assert(name && filter);
 
 	if (git_rwlock_wrlock(&filter_registry.lock) < 0) {
 		git_error_set(GIT_ERROR_OS, "failed to lock filter registry");
@@ -294,7 +293,7 @@ int git_filter_unregister(const char *name)
 	git_filter_def *fdef;
 	int error = 0;
 
-	GIT_ASSERT_ARG(name);
+	assert(name);
 
 	/* cannot unregister default filters */
 	if (!strcmp(GIT_FILTER_CRLF, name) || !strcmp(GIT_FILTER_IDENT, name)) {
@@ -619,7 +618,7 @@ int git_filter_list_contains(
 {
 	size_t i;
 
-	GIT_ASSERT_ARG(name);
+	assert(name);
 
 	if (!fl)
 		return 0;
@@ -640,8 +639,7 @@ int git_filter_list_push(
 	git_filter_def *fdef = NULL;
 	git_filter_entry *fe;
 
-	GIT_ASSERT_ARG(fl);
-	GIT_ASSERT_ARG(filter);
+	assert(fl && filter);
 
 	if (git_rwlock_rdlock(&filter_registry.lock) < 0) {
 		git_error_set(GIT_ERROR_OS, "failed to lock filter registry");
@@ -686,8 +684,9 @@ static int buf_stream_write(
 	git_writestream *s, const char *buffer, size_t len)
 {
 	struct buf_stream *buf_stream = (struct buf_stream *)s;
-	GIT_ASSERT_ARG(buf_stream);
-	GIT_ASSERT(buf_stream->complete == 0);
+	assert(buf_stream);
+
+	assert(buf_stream->complete == 0);
 
 	return git_buf_put(buf_stream->target, buffer, len);
 }
@@ -695,9 +694,9 @@ static int buf_stream_write(
 static int buf_stream_close(git_writestream *s)
 {
 	struct buf_stream *buf_stream = (struct buf_stream *)s;
-	GIT_ASSERT_ARG(buf_stream);
+	assert(buf_stream);
 
-	GIT_ASSERT(buf_stream->complete == 0);
+	assert(buf_stream->complete == 0);
 	buf_stream->complete = 1;
 
 	return 0;
@@ -726,9 +725,8 @@ int git_filter_list_apply_to_data(
 	struct buf_stream writer;
 	int error;
 
-	if ((error = git_buf_sanitize(tgt)) < 0 ||
-	    (error = git_buf_sanitize(src)) < 0)
-	    return error;
+	git_buf_sanitize(tgt);
+	git_buf_sanitize(src);
 
 	if (!filters) {
 		git_buf_attach_notowned(tgt, src->ptr, src->size);
@@ -741,7 +739,7 @@ int git_filter_list_apply_to_data(
 		&writer.parent)) < 0)
 			return error;
 
-	GIT_ASSERT(writer.complete);
+	assert(writer.complete);
 	return error;
 }
 
@@ -760,7 +758,7 @@ int git_filter_list_apply_to_file(
 		filters, repo, path, &writer.parent)) < 0)
 			return error;
 
-	GIT_ASSERT(writer.complete);
+	assert(writer.complete);
 	return error;
 }
 
@@ -791,7 +789,7 @@ int git_filter_list_apply_to_blob(
 		filters, blob, &writer.parent)) < 0)
 			return error;
 
-	GIT_ASSERT(writer.complete);
+	assert(writer.complete);
 	return error;
 }
 
@@ -810,7 +808,7 @@ static int proxy_stream_write(
 	git_writestream *s, const char *buffer, size_t len)
 {
 	struct proxy_stream *proxy_stream = (struct proxy_stream *)s;
-	GIT_ASSERT_ARG(proxy_stream);
+	assert(proxy_stream);
 
 	return git_buf_put(&proxy_stream->input, buffer, len);
 }
@@ -822,7 +820,7 @@ static int proxy_stream_close(git_writestream *s)
 	git_error_state error_state = {0};
 	int error;
 
-	GIT_ASSERT_ARG(proxy_stream);
+	assert(proxy_stream);
 
 	error = proxy_stream->filter->apply(
 		proxy_stream->filter,
@@ -834,9 +832,7 @@ static int proxy_stream_close(git_writestream *s)
 	if (error == GIT_PASSTHROUGH) {
 		writebuf = &proxy_stream->input;
 	} else if (error == 0) {
-		if ((error = git_buf_sanitize(proxy_stream->output)) < 0)
-			return error;
-
+		git_buf_sanitize(proxy_stream->output);
 		writebuf = proxy_stream->output;
 	} else {
 		/* close stream before erroring out taking care
@@ -857,12 +853,11 @@ static int proxy_stream_close(git_writestream *s)
 static void proxy_stream_free(git_writestream *s)
 {
 	struct proxy_stream *proxy_stream = (struct proxy_stream *)s;
+	assert(proxy_stream);
 
-	if (proxy_stream) {
-		git_buf_dispose(&proxy_stream->input);
-		git_buf_dispose(&proxy_stream->temp_buf);
-		git__free(proxy_stream);
-	}
+	git_buf_dispose(&proxy_stream->input);
+	git_buf_dispose(&proxy_stream->temp_buf);
+	git__free(proxy_stream);
 }
 
 static int proxy_stream_init(
@@ -916,7 +911,7 @@ static int stream_list_init(
 		git_filter_entry *fe = git_array_get(filters->filters, filter_idx);
 		git_writestream *filter_stream;
 
-		GIT_ASSERT(fe->filter->stream || fe->filter->apply);
+		assert(fe->filter->stream || fe->filter->apply);
 
 		/* If necessary, create a stream that proxies the traditional
 		 * application.
@@ -1009,8 +1004,7 @@ int git_filter_list_stream_data(
 	git_writestream *stream_start;
 	int error, initialized = 0;
 
-	if ((error = git_buf_sanitize(data)) < 0)
-		return error;
+	git_buf_sanitize(data);
 
 	if ((error = stream_list_init(&stream_start, &filter_streams, filters, target)) < 0)
 		goto out;

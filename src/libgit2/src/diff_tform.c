@@ -87,7 +87,7 @@ git_diff_delta *git_diff__merge_like_cgit(
 		a->status == GIT_DELTA_UNREADABLE)
 		return dup;
 
-	GIT_ASSERT_WITH_RETVAL(b->status != GIT_DELTA_UNMODIFIED, NULL);
+	assert(b->status != GIT_DELTA_UNMODIFIED);
 
 	/* A cgit exception is that the diff of a file that is only in the
 	 * index (i.e. not in HEAD nor workdir) is given as empty.
@@ -121,8 +121,7 @@ int git_diff__merge(
 	bool ignore_case, reversed;
 	unsigned int i, j;
 
-	GIT_ASSERT_ARG(onto);
-	GIT_ASSERT_ARG(from);
+	assert(onto && from);
 
 	if (!from->deltas.length)
 		return 0;
@@ -816,7 +815,7 @@ int git_diff_find_similar(
 	diff_find_match *best_match;
 	git_diff_file swap;
 
-	GIT_ASSERT_ARG(diff);
+	assert(diff);
 
 	if ((error = normalize_find_opts(diff, &opts, given_opts)) < 0)
 		return error;
@@ -979,7 +978,7 @@ find_best_matches:
 				src->flags |= GIT_DIFF_FLAG__TO_DELETE;
 				num_rewrites++;
 			} else {
-				GIT_ASSERT(delta_is_split(tgt));
+				assert(delta_is_split(tgt));
 
 				if (best_match->similarity < opts.rename_from_rewrite_threshold)
 					continue;
@@ -989,7 +988,7 @@ find_best_matches:
 				delta_make_rename(tgt, src, best_match->similarity);
 				num_rewrites--;
 
-				GIT_ASSERT(src->status == GIT_DELTA_DELETED);
+				assert(src->status == GIT_DELTA_DELETED);
 				memcpy(&src->old_file, &swap, sizeof(src->old_file));
 				memset(&src->new_file, 0, sizeof(src->new_file));
 				src->new_file.path = src->old_file.path;
@@ -1025,7 +1024,7 @@ find_best_matches:
 
 				num_updates++;
 			} else {
-				GIT_ASSERT(delta_is_split(src));
+				assert(delta_is_split(src));
 
 				if (best_match->similarity < opts.rename_from_rewrite_threshold)
 					continue;
@@ -1039,7 +1038,7 @@ find_best_matches:
 				memcpy(&src->old_file, &swap, sizeof(src->old_file));
 
 				/* if we've just swapped the new element into the correct
-				 * place, clear the SPLIT flag
+				 * place, clear the SPLIT and RENAME_TARGET flags
 				 */
 				if (tgt2src[s].idx == t &&
 					tgt2src[s].similarity >
@@ -1047,7 +1046,7 @@ find_best_matches:
 					src->status     = GIT_DELTA_RENAMED;
 					src->similarity = tgt2src[s].similarity;
 					tgt2src[s].similarity = 0;
-					src->flags &= ~GIT_DIFF_FLAG__TO_SPLIT;
+					src->flags &= ~(GIT_DIFF_FLAG__TO_SPLIT | GIT_DIFF_FLAG__IS_RENAME_TARGET);
 					num_rewrites--;
 				}
 				/* otherwise, if we just overwrote a source, update mapping */

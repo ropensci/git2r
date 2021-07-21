@@ -58,7 +58,7 @@ struct git_pack_idx_header {
 
 typedef struct git_pack_cache_entry {
 	size_t last_usage; /* enough? */
-	git_atomic32 refcount;
+	git_atomic refcount;
 	git_rawobj raw;
 } git_pack_cache_entry;
 
@@ -85,8 +85,8 @@ typedef struct {
 struct git_pack_file {
 	git_mwindow_file mwf;
 	git_map index_map;
-	git_mutex lock; /* protect updates to index_map */
-	git_atomic32 refcount;
+	git_mutex lock; /* protect updates to mwf and index_map */
+	git_atomic refcount;
 
 	uint32_t num_objects;
 	uint32_t num_bad_objects;
@@ -133,14 +133,14 @@ typedef struct git_packfile_stream {
 	git_mwindow *mw;
 } git_packfile_stream;
 
-int git_packfile__object_header(size_t *out, unsigned char *hdr, size_t size, git_object_t type);
+size_t git_packfile__object_header(unsigned char *hdr, size_t size, git_object_t type);
 
 int git_packfile__name(char **out, const char *path);
 
 int git_packfile_unpack_header(
 		size_t *size_p,
 		git_object_t *type_p,
-		struct git_pack_file *p,
+		git_mwindow_file *mwf,
 		git_mwindow **w_curs,
 		off64_t *curpos);
 
@@ -164,7 +164,8 @@ int get_delta_base(
 		git_object_t type,
 		off64_t delta_obj_offset);
 
-void git_packfile_free(struct git_pack_file *p, bool unlink_packfile);
+void git_packfile_close(struct git_pack_file *p, bool unlink_packfile);
+void git_packfile_free(struct git_pack_file *p);
 int git_packfile_alloc(struct git_pack_file **pack_out, const char *path);
 
 int git_pack_entry_find(

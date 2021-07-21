@@ -61,8 +61,7 @@ int git_reader_for_tree(git_reader **out, git_tree *tree)
 {
 	tree_reader *reader;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(tree);
+	assert(out && tree);
 
 	reader = git__calloc(1, sizeof(tree_reader));
 	GIT_ERROR_CHECK_ALLOC(reader);
@@ -159,8 +158,7 @@ int git_reader_for_workdir(
 	workdir_reader *reader;
 	int error;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(repo);
+	assert(out && repo);
 
 	reader = git__calloc(1, sizeof(workdir_reader));
 	GIT_ERROR_CHECK_ALLOC(reader);
@@ -225,8 +223,7 @@ int git_reader_for_index(
 	index_reader *reader;
 	int error;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(repo);
+	assert(out && repo);
 
 	reader = git__calloc(1, sizeof(index_reader));
 	GIT_ERROR_CHECK_ALLOC(reader);
@@ -254,9 +251,7 @@ int git_reader_read(
 	git_reader *reader,
 	const char *filename)
 {
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(reader);
-	GIT_ASSERT_ARG(filename);
+	assert(out && reader && filename);
 
 	return reader->read(out, out_id, out_filemode, reader, filename);
 }

@@ -13,6 +13,8 @@
 #include "odb.h"
 #include "pack.h"
 
+#define GIT_MIDX_FILE_MODE 0444
+
 #define MIDX_SIGNATURE 0x4d494458 /* "MIDX" */
 #define MIDX_VERSION 1
 #define MIDX_OBJECT_ID_VERSION 1
@@ -114,7 +116,7 @@ static int midx_parse_oid_lookup(
 		return midx_error("missing OID Lookup chunk");
 	if (chunk_oid_lookup->length == 0)
 		return midx_error("empty OID Lookup chunk");
-	if (chunk_oid_lookup->length != idx->num_objects * GIT_OID_RAWSZ)
+	if (chunk_oid_lookup->length != idx->num_objects * 20)
 		return midx_error("OID Lookup chunk has wrong length");
 
 	idx->oid_lookup = oid = (git_oid *)(data + chunk_oid_lookup->offset);
@@ -179,9 +181,9 @@ int git_midx_parse(
 					 chunk_object_offsets = {0},
 					 chunk_object_large_offsets = {0};
 
-	GIT_ASSERT_ARG(idx);
+	assert(idx);
 
-	if (size < sizeof(struct git_midx_header) + GIT_OID_RAWSZ)
+	if (size < sizeof(struct git_midx_header) + 20)
 		return midx_error("multi-pack index is too short");
 
 	hdr = ((struct git_midx_header *)data);
@@ -201,7 +203,7 @@ int git_midx_parse(
 	last_chunk_offset =
 			sizeof(struct git_midx_header) +
 			(1 + hdr->chunks) * 12;
-	trailer_offset = size - GIT_OID_RAWSZ;
+	trailer_offset = size - 20;
 	if (trailer_offset < last_chunk_offset)
 		return midx_error("wrong index size");
 	git_oid_cpy(&idx->checksum, (git_oid *)(data + trailer_offset));
@@ -307,10 +309,6 @@ int git_midx_open(
 	idx = git__calloc(1, sizeof(git_midx_file));
 	GIT_ERROR_CHECK_ALLOC(idx);
 
-	error = git_buf_sets(&idx->filename, path);
-	if (error < 0)
-		return error;
-
 	error = git_futils_mmap_ro(&idx->index_map, fd, 0, idx_size);
 	p_close(fd);
 	if (error < 0) {
@@ -327,46 +325,6 @@ int git_midx_open(
 	return 0;
 }
 
-bool git_midx_needs_refresh(
-		const git_midx_file *idx,
-		const char *path)
-{
-	git_file fd = -1;
-	struct stat st;
-	ssize_t bytes_read;
-	git_oid idx_checksum = {{0}};
-
-	/* TODO: properly open the file without access time using O_NOATIME */
-	fd = git_futils_open_ro(path);
-	if (fd < 0)
-		return true;
-
-	if (p_fstat(fd, &st) < 0) {
-		p_close(fd);
-		return true;
-	}
-
-	if (!S_ISREG(st.st_mode) ||
-	    !git__is_sizet(st.st_size) ||
-	    (size_t)st.st_size != idx->index_map.len) {
-		p_close(fd);
-		return true;
-	}
-
-	if (p_lseek(fd, -GIT_OID_RAWSZ, SEEK_END) < 0) {
-		p_close(fd);
-		return true;
-	}
-
-	bytes_read = p_read(fd, &idx_checksum, GIT_OID_RAWSZ);
-	p_close(fd);
-
-	if (bytes_read != GIT_OID_RAWSZ)
-		return true;
-
-	return git_oid_cmp(&idx_checksum, &idx->checksum) == 0;
-}
-
 int git_midx_entry_find(
 		git_midx_entry *e,
 		git_midx_file *idx,
@@ -380,12 +338,12 @@ int git_midx_entry_find(
 	const unsigned char *object_offset;
 	off64_t offset;
 
-	GIT_ASSERT_ARG(idx);
+	assert(idx);
 
 	hi = ntohl(idx->oid_fanout[(int)short_oid->id[0]]);
 	lo = ((short_oid->id[0] == 0x0) ? 0 : ntohl(idx->oid_fanout[(int)short_oid->id[0] - 1]));
 
-	pos = git_pack__lookup_sha1(idx->oid_lookup, GIT_OID_RAWSZ, lo, hi, short_oid->id);
+	pos = git_pack__lookup_sha1(idx->oid_lookup, 20, lo, hi, short_oid->id);
 
 	if (pos >= 0) {
 		/* An object matching exactly the oid was found */
@@ -441,34 +399,13 @@ int git_midx_entry_find(
 	return 0;
 }
 
-int git_midx_foreach_entry(
-		git_midx_file *idx,
-		git_odb_foreach_cb cb,
-		void *data)
+void git_midx_close(git_midx_file *idx)
 {
-	size_t i;
-	int error;
-
-	GIT_ASSERT_ARG(idx);
-
-	for (i = 0; i < idx->num_objects; ++i) {
-		if ((error = cb(&idx->oid_lookup[i], data)) != 0)
-			return git_error_set_after_callback(error);
-	}
-
-	return error;
-}
-
-int git_midx_close(git_midx_file *idx)
-{
-	GIT_ASSERT_ARG(idx);
+	assert(idx);
 
 	if (idx->index_map.data)
 		git_futils_mmap_free(&idx->index_map);
-
 	git_vector_free(&idx->packfile_names);
-
-	return 0;
 }
 
 void git_midx_free(git_midx_file *idx)
@@ -476,7 +413,6 @@ void git_midx_free(git_midx_file *idx)
 	if (!idx)
 		return;
 
-	git_buf_dispose(&idx->filename);
 	git_midx_close(idx);
 	git__free(idx);
 }

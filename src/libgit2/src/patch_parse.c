@@ -1168,8 +1168,7 @@ int git_patch_parse(
 	size_t start, used;
 	int error = 0;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(ctx);
+	assert(out && ctx);
 
 	*out = NULL;
 

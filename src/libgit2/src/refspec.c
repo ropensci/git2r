@@ -24,8 +24,7 @@ int git_refspec__parse(git_refspec *refspec, const char *input, bool is_fetch)
 	int valid = 0;
 	unsigned int flags;
 
-	GIT_ASSERT_ARG(refspec);
-	GIT_ASSERT_ARG(input);
+	assert(refspec && input);
 
 	memset(refspec, 0x0, sizeof(git_refspec));
 	refspec->push = !is_fetch;
@@ -181,8 +180,7 @@ void git_refspec__dispose(git_refspec *refspec)
 int git_refspec_parse(git_refspec **out_refspec, const char *input, int is_fetch)
 {
 	git_refspec *refspec;
-	GIT_ASSERT_ARG(out_refspec);
-	GIT_ASSERT_ARG(input);
+	assert(out_refspec && input);
 
 	*out_refspec = NULL;
 
@@ -221,7 +219,7 @@ const char *git_refspec_string(const git_refspec *refspec)
 
 int git_refspec_force(const git_refspec *refspec)
 {
-	GIT_ASSERT_ARG(refspec);
+	assert(refspec);
 
 	return refspec->force;
 }
@@ -247,11 +245,8 @@ static int refspec_transform(
 {
 	const char *from_star, *to_star;
 	size_t replacement_len, star_offset;
-	int error;
 
-	if ((error = git_buf_sanitize(out)) < 0)
-		return error;
-
+	git_buf_sanitize(out);
 	git_buf_clear(out);
 
 	/*
@@ -263,7 +258,7 @@ static int refspec_transform(
 	from_star = strchr(from, '*');
 	to_star = strchr(to, '*');
 
-	GIT_ASSERT(from_star && to_star);
+	assert(from_star && to_star);
 
 	/* star offset, both in 'from' and in 'name' */
 	star_offset = from_star - from;
@@ -283,14 +278,8 @@ static int refspec_transform(
 
 int git_refspec_transform(git_buf *out, const git_refspec *spec, const char *name)
 {
-	int error;
-
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(spec);
-	GIT_ASSERT_ARG(name);
-
-	if ((error = git_buf_sanitize(out)) < 0)
-		return error;
+	assert(out && spec && name);
+	git_buf_sanitize(out);
 
 	if (!git_refspec_src_matches(spec, name)) {
 		git_error_set(GIT_ERROR_INVALID, "ref '%s' doesn't match the source", name);
@@ -305,14 +294,8 @@ int git_refspec_transform(git_buf *out, const git_refspec *spec, const char *nam
 
 int git_refspec_rtransform(git_buf *out, const git_refspec *spec, const char *name)
 {
-	int error;
-
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(spec);
-	GIT_ASSERT_ARG(name);
-
-	if ((error = git_buf_sanitize(out)) < 0)
-		return error;
+	assert(out && spec && name);
+	git_buf_sanitize(out);
 
 	if (!git_refspec_dst_matches(spec, name)) {
 		git_error_set(GIT_ERROR_INVALID, "ref '%s' doesn't match the destination", name);
@@ -339,15 +322,14 @@ int git_refspec__serialize(git_buf *out, const git_refspec *refspec)
 
 int git_refspec_is_wildcard(const git_refspec *spec)
 {
-	GIT_ASSERT_ARG(spec);
-	GIT_ASSERT_ARG(spec->src);
+	assert(spec && spec->src);
 
 	return (spec->src[strlen(spec->src) - 1] == '*');
 }
 
 git_direction git_refspec_direction(const git_refspec *spec)
 {
-	GIT_ASSERT_ARG(spec);
+	assert(spec);
 
 	return spec->push;
 }
@@ -366,9 +348,7 @@ int git_refspec__dwim_one(git_vector *out, git_refspec *spec, git_vector *refs)
 		NULL
 	};
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(spec);
-	GIT_ASSERT_ARG(refs);
+	assert(out && spec && refs);
 
 	cur = git__calloc(1, sizeof(git_refspec));
 	GIT_ERROR_CHECK_ALLOC(cur);

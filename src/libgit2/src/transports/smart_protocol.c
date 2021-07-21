@@ -64,9 +64,7 @@ int git_smart__store_refs(transport_smart *t, int flushes)
 			continue;
 		}
 
-		if (gitno_consume(buf, line_end) < 0)
-			return -1;
-
+		gitno_consume(buf, line_end);
 		if (pkt->type == GIT_PKT_ERR) {
 			git_error_set(GIT_ERROR_NET, "remote error: %s", ((git_pkt_err *)pkt)->error);
 			git__free(pkt);
@@ -238,9 +236,7 @@ static int recv_pkt(git_pkt **out_pkt, git_pkt_type *out_type, gitno_buffer *buf
 		}
 	} while (error);
 
-	if (gitno_consume(buf, line_end) < 0)
-		return -1;
-
+	gitno_consume(buf, line_end);
 	if (out_type != NULL)
 		*out_type = pkt->type;
 	if (out_pkt != NULL)
@@ -535,7 +531,7 @@ int git_smart__download_pack(
 		/* We might have something in the buffer already from negotiate_fetch */
 		if (t->buffer.offset > 0 && !t->cancelled.val)
 			if (t->packetsize_cb(t->buffer.offset, t->packetsize_payload))
-				git_atomic32_set(&t->cancelled, 1);
+				git_atomic_set(&t->cancelled, 1);
 	}
 
 	if ((error = git_repository_odb__weakptr(&odb, repo)) < 0 ||
@@ -795,8 +791,7 @@ static int parse_report(transport_smart *transport, git_push *push)
 			continue;
 		}
 
-		if (gitno_consume(buf, line_end) < 0)
-			return -1;
+		gitno_consume(buf, line_end);
 
 		error = 0;
 

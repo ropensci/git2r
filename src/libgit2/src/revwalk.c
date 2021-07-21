@@ -99,8 +99,7 @@ int git_revwalk_push(git_revwalk *walk, const git_oid *oid)
 {
 	git_revwalk__push_options opts = GIT_REVWALK__PUSH_OPTIONS_INIT;
 
-	GIT_ASSERT_ARG(walk);
-	GIT_ASSERT_ARG(oid);
+	assert(walk && oid);
 
 	return git_revwalk__push_commit(walk, oid, &opts);
 }
@@ -109,9 +108,7 @@ int git_revwalk_push(git_revwalk *walk, const git_oid *oid)
 int git_revwalk_hide(git_revwalk *walk, const git_oid *oid)
 {
 	git_revwalk__push_options opts = GIT_REVWALK__PUSH_OPTIONS_INIT;
-
-	GIT_ASSERT_ARG(walk);
-	GIT_ASSERT_ARG(oid);
+	assert(walk && oid);
 
 	opts.uninteresting = 1;
 	return git_revwalk__push_commit(walk, oid, &opts);
@@ -136,8 +133,7 @@ int git_revwalk__push_glob(git_revwalk *walk, const char *glob, const git_revwal
 	git_reference_iterator *iter;
 	size_t wildcard;
 
-	GIT_ASSERT_ARG(walk);
-	GIT_ASSERT_ARG(glob);
+	assert(walk && glob);
 
 	if (given_opts)
 		memcpy(&opts, given_opts, sizeof(opts));
@@ -176,9 +172,7 @@ out:
 int git_revwalk_push_glob(git_revwalk *walk, const char *glob)
 {
 	git_revwalk__push_options opts = GIT_REVWALK__PUSH_OPTIONS_INIT;
-
-	GIT_ASSERT_ARG(walk);
-	GIT_ASSERT_ARG(glob);
+	assert(walk && glob);
 
 	return git_revwalk__push_glob(walk, glob, &opts);
 }
@@ -186,9 +180,7 @@ int git_revwalk_push_glob(git_revwalk *walk, const char *glob)
 int git_revwalk_hide_glob(git_revwalk *walk, const char *glob)
 {
 	git_revwalk__push_options opts = GIT_REVWALK__PUSH_OPTIONS_INIT;
-
-	GIT_ASSERT_ARG(walk);
-	GIT_ASSERT_ARG(glob);
+	assert(walk && glob);
 
 	opts.uninteresting = 1;
 	return git_revwalk__push_glob(walk, glob, &opts);
@@ -197,8 +189,7 @@ int git_revwalk_hide_glob(git_revwalk *walk, const char *glob)
 int git_revwalk_push_head(git_revwalk *walk)
 {
 	git_revwalk__push_options opts = GIT_REVWALK__PUSH_OPTIONS_INIT;
-
-	GIT_ASSERT_ARG(walk);
+	assert(walk);
 
 	return git_revwalk__push_ref(walk, GIT_HEAD_FILE, &opts);
 }
@@ -206,8 +197,7 @@ int git_revwalk_push_head(git_revwalk *walk)
 int git_revwalk_hide_head(git_revwalk *walk)
 {
 	git_revwalk__push_options opts = GIT_REVWALK__PUSH_OPTIONS_INIT;
-
-	GIT_ASSERT_ARG(walk);
+	assert(walk);
 
 	opts.uninteresting = 1;
 	return git_revwalk__push_ref(walk, GIT_HEAD_FILE, &opts);
@@ -216,9 +206,7 @@ int git_revwalk_hide_head(git_revwalk *walk)
 int git_revwalk_push_ref(git_revwalk *walk, const char *refname)
 {
 	git_revwalk__push_options opts = GIT_REVWALK__PUSH_OPTIONS_INIT;
-
-	GIT_ASSERT_ARG(walk);
-	GIT_ASSERT_ARG(refname);
+	assert(walk && refname);
 
 	return git_revwalk__push_ref(walk, refname, &opts);
 }
@@ -261,10 +249,7 @@ out:
 int git_revwalk_hide_ref(git_revwalk *walk, const char *refname)
 {
 	git_revwalk__push_options opts = GIT_REVWALK__PUSH_OPTIONS_INIT;
-
-	GIT_ASSERT_ARG(walk);
-	GIT_ASSERT_ARG(refname);
-
+	assert(walk && refname);
 	opts.uninteresting = 1;
 	return git_revwalk__push_ref(walk, refname, &opts);
 }
@@ -709,14 +694,13 @@ void git_revwalk_free(git_revwalk *walk)
 
 git_repository *git_revwalk_repository(git_revwalk *walk)
 {
-	GIT_ASSERT_ARG_WITH_RETVAL(walk, NULL);
-
+	assert(walk);
 	return walk->repo;
 }
 
 int git_revwalk_sorting(git_revwalk *walk, unsigned int sort_mode)
 {
-	GIT_ASSERT_ARG(walk);
+	assert(walk);
 
 	if (walk->walking)
 		git_revwalk_reset(walk);
@@ -748,8 +732,7 @@ int git_revwalk_next(git_oid *oid, git_revwalk *walk)
 	int error;
 	git_commit_list_node *next;
 
-	GIT_ASSERT_ARG(walk);
-	GIT_ASSERT_ARG(oid);
+	assert(walk && oid);
 
 	if (!walk->walking) {
 		if ((error = prepare_walk(walk)) < 0)
@@ -774,7 +757,7 @@ int git_revwalk_reset(git_revwalk *walk)
 {
 	git_commit_list_node *commit;
 
-	GIT_ASSERT_ARG(walk);
+	assert(walk);
 
 	git_oidmap_foreach_value(walk->commits, commit, {
 		commit->seen = 0;
@@ -804,7 +787,7 @@ int git_revwalk_add_hide_cb(
 	git_revwalk_hide_cb hide_cb,
 	void *payload)
 {
-	GIT_ASSERT_ARG(walk);
+	assert(walk);
 
 	if (walk->walking)
 		git_revwalk_reset(walk);

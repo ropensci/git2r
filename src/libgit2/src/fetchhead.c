@@ -73,8 +73,7 @@ int git_fetchhead_ref_create(
 {
 	git_fetchhead_ref *fetchhead_ref;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(oid);
+	assert(out && oid);
 
 	*out = NULL;
 
@@ -109,8 +108,7 @@ static int fetchhead_ref_write(
 	const char *type, *name;
 	int head = 0;
 
-	GIT_ASSERT_ARG(file);
-	GIT_ASSERT_ARG(fetchhead_ref);
+	assert(file && fetchhead_ref);
 
 	git_oid_fmt(oid, &fetchhead_ref->oid);
 	oid[GIT_OID_HEXSZ] = '\0';
@@ -147,8 +145,7 @@ int git_fetchhead_write(git_repository *repo, git_vector *fetchhead_refs)
 	unsigned int i;
 	git_fetchhead_ref *fetchhead_ref;
 
-	GIT_ASSERT_ARG(repo);
-	GIT_ASSERT_ARG(fetchhead_refs);
+	assert(repo && fetchhead_refs);
 
 	if (git_buf_joinpath(&path, repo->gitdir, GIT_FETCH_HEAD_FILE) < 0)
 		return -1;
@@ -282,8 +279,7 @@ int git_repository_fetchhead_foreach(git_repository *repo,
 	size_t line_num = 0;
 	int error = 0;
 
-	GIT_ASSERT_ARG(repo);
-	GIT_ASSERT_ARG(cb);
+	assert(repo && cb);
 
 	if (git_buf_joinpath(&path, repo->gitdir, GIT_FETCH_HEAD_FILE) < 0)
 		return -1;

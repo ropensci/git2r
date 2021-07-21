@@ -140,17 +140,13 @@ void git_buf_free(git_buf *buf)
 }
 #endif
 
-int git_buf_sanitize(git_buf *buf)
+void git_buf_sanitize(git_buf *buf)
 {
 	if (buf->ptr == NULL) {
-		GIT_ASSERT_ARG(buf->size == 0 && buf->asize == 0);
-
+		assert(buf->size == 0 && buf->asize == 0);
 		buf->ptr = git_buf__initbuf;
-	} else if (buf->asize > buf->size) {
+	} else if (buf->asize > buf->size)
 		buf->ptr[buf->size] = '\0';
-	}
-
-	return 0;
 }
 
 void git_buf_clear(git_buf *buf)
@@ -229,7 +225,7 @@ int git_buf_put(git_buf *buf, const char *data, size_t len)
 	if (len) {
 		size_t new_size;
 
-		GIT_ASSERT_ARG(data);
+		assert(data);
 
 		GIT_ERROR_CHECK_ALLOC_ADD(&new_size, buf->size, len);
 		GIT_ERROR_CHECK_ALLOC_ADD(&new_size, new_size, 1);
@@ -243,8 +239,7 @@ int git_buf_put(git_buf *buf, const char *data, size_t len)
 
 int git_buf_puts(git_buf *buf, const char *string)
 {
-	GIT_ASSERT_ARG(string);
-
+	assert(string);
 	return git_buf_put(buf, string, strlen(string));
 }
 
@@ -324,7 +319,7 @@ int git_buf_decode_base64(git_buf *buf, const char *base64, size_t len)
 		return -1;
 	}
 
-	GIT_ASSERT_ARG(len % 4 == 0);
+	assert(len % 4 == 0);
 	GIT_ERROR_CHECK_ALLOC_ADD(&new_size, (len / 4 * 3), buf->size);
 	GIT_ERROR_CHECK_ALLOC_ADD(&new_size, new_size, 1);
 	ENSURE_SIZE(buf, new_size);
@@ -556,26 +551,22 @@ int git_buf_printf(git_buf *buf, const char *format, ...)
 	return r;
 }
 
-int git_buf_copy_cstr(char *data, size_t datasize, const git_buf *buf)
+void git_buf_copy_cstr(char *data, size_t datasize, const git_buf *buf)
 {
 	size_t copylen;
 
-	GIT_ASSERT_ARG(data);
-	GIT_ASSERT_ARG(datasize);
-	GIT_ASSERT_ARG(buf);
+	assert(data && datasize && buf);
 
 	data[0] = '\0';
 
 	if (buf->size == 0 || buf->asize <= 0)
-		return 0;
+		return;
 
 	copylen = buf->size;
 	if (copylen > datasize - 1)
 		copylen = datasize - 1;
 	memmove(data, buf->ptr, copylen);
 	data[copylen] = '\0';
-
-	return 0;
 }
 
 void git_buf_consume_bytes(git_buf *buf, size_t len)
@@ -769,7 +760,7 @@ int git_buf_join(
 
 	/* not safe to have str_b point internally to the buffer */
 	if (buf->size)
-		GIT_ASSERT_ARG(str_b < buf->ptr || str_b >= buf->ptr + buf->size);
+		assert(str_b < buf->ptr || str_b >= buf->ptr + buf->size);
 
 	/* figure out if we need to insert a separator */
 	if (separator && strlen_a) {
@@ -819,9 +810,9 @@ int git_buf_join3(
 	char *tgt;
 
 	/* for this function, disallow pointers into the existing buffer */
-	GIT_ASSERT(str_a < buf->ptr || str_a >= buf->ptr + buf->size);
-	GIT_ASSERT(str_b < buf->ptr || str_b >= buf->ptr + buf->size);
-	GIT_ASSERT(str_c < buf->ptr || str_c >= buf->ptr + buf->size);
+	assert(str_a < buf->ptr || str_a >= buf->ptr + buf->size);
+	assert(str_b < buf->ptr || str_b >= buf->ptr + buf->size);
+	assert(str_c < buf->ptr || str_c >= buf->ptr + buf->size);
 
 	if (separator) {
 		if (len_a > 0) {
@@ -894,9 +885,7 @@ int git_buf_splice(
 	char *splice_loc;
 	size_t new_size, alloc_size;
 
-	GIT_ASSERT(buf);
-	GIT_ASSERT(where <= buf->size);
-	GIT_ASSERT(nb_to_remove <= buf->size - where);
+	assert(buf && where <= buf->size && nb_to_remove <= buf->size - where);
 
 	splice_loc = buf->ptr + where;
 

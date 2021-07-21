@@ -167,7 +167,7 @@ static ssize_t stransport_write(git_stream *stream, const char *data, size_t len
 	if ((ret = SSLWrite(st->ctx, data, data_len, &processed)) != noErr)
 		return stransport_error(ret);
 
-	GIT_ASSERT(processed < SSIZE_MAX);
+	assert(processed < SSIZE_MAX);
 	return (ssize_t)processed;
 }
 
@@ -251,9 +251,7 @@ static int stransport_wrap(
 	stransport_stream *st;
 	OSStatus ret;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(in);
-	GIT_ASSERT_ARG(host);
+	assert(out && in && host);
 
 	st = git__calloc(1, sizeof(stransport_stream));
 	GIT_ERROR_CHECK_ALLOC(st);
@@ -307,8 +305,7 @@ int git_stransport_stream_new(git_stream **out, const char *host, const char *po
 	git_stream *stream = NULL;
 	int error;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(host);
+	assert(out && host);
 
 	error = git_socket_stream_new(&stream, host, port);
 

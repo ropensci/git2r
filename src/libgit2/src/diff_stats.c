@@ -183,8 +183,7 @@ int git_diff_get_stats(
 	git_diff_stats *stats = NULL;
 	int error = 0;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(diff);
+	assert(out && diff);
 
 	stats = git__calloc(1, sizeof(git_diff_stats));
 	GIT_ERROR_CHECK_ALLOC(stats);
@@ -252,7 +251,7 @@ int git_diff_get_stats(
 size_t git_diff_stats_files_changed(
 	const git_diff_stats *stats)
 {
-	GIT_ASSERT_ARG(stats);
+	assert(stats);
 
 	return stats->files_changed;
 }
@@ -260,7 +259,7 @@ size_t git_diff_stats_files_changed(
 size_t git_diff_stats_insertions(
 	const git_diff_stats *stats)
 {
-	GIT_ASSERT_ARG(stats);
+	assert(stats);
 
 	return stats->insertions;
 }
@@ -268,7 +267,7 @@ size_t git_diff_stats_insertions(
 size_t git_diff_stats_deletions(
 	const git_diff_stats *stats)
 {
-	GIT_ASSERT_ARG(stats);
+	assert(stats);
 
 	return stats->deletions;
 }
@@ -283,8 +282,7 @@ int git_diff_stats_to_buf(
 	size_t i;
 	const git_diff_delta *delta;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(stats);
+	assert(out && stats);
 
 	if (format & GIT_DIFF_STATS_NUMBER) {
 		for (i = 0; i < stats->files_changed; ++i) {

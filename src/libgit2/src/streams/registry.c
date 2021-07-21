@@ -9,7 +9,7 @@
 
 #include "streams/registry.h"
 
-#include "runtime.h"
+#include "global.h"
 #include "streams/tls.h"
 #include "streams/mbedtls.h"
 #include "streams/openssl.h"
@@ -33,7 +33,8 @@ int git_stream_registry_global_init(void)
 	if (git_rwlock_init(&stream_registry.lock) < 0)
 		return -1;
 
-	return git_runtime_shutdown_register(shutdown_stream_registry);
+	git__on_shutdown(shutdown_stream_registry);
+	return 0;
 }
 
 GIT_INLINE(void) stream_registration_cpy(
@@ -51,7 +52,7 @@ int git_stream_registry_lookup(git_stream_registration *out, git_stream_t type)
 	git_stream_registration *target;
 	int error = GIT_ENOTFOUND;
 
-	GIT_ASSERT_ARG(out);
+	assert(out);
 
 	switch(type) {
 	case GIT_STREAM_STANDARD:
@@ -61,7 +62,7 @@ int git_stream_registry_lookup(git_stream_registration *out, git_stream_t type)
 		target = &stream_registry.tls_callbacks;
 		break;
 	default:
-		git_error_set(GIT_ERROR_INVALID, "invalid stream type");
+		assert(0);
 		return -1;
 	}
 
@@ -81,7 +82,7 @@ int git_stream_registry_lookup(git_stream_registration *out, git_stream_t type)
 
 int git_stream_register(git_stream_t type, git_stream_registration *registration)
 {
-	GIT_ASSERT(!registration || registration->init);
+	assert(!registration || registration->init);
 
 	GIT_ERROR_CHECK_VERSION(registration, GIT_STREAM_VERSION, "stream_registration");
 

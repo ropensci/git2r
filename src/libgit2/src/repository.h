@@ -152,9 +152,9 @@ struct git_repository {
 
 	unsigned int lru_counter;
 
-	git_atomic32 attr_session_key;
+	git_atomic attr_session_key;
 
-	git_configmap_value configmap_cache[GIT_CONFIGMAP_CACHE_MAX];
+	intptr_t configmap_cache[GIT_CONFIGMAP_CACHE_MAX];
 	git_strmap *submodule_cache;
 };
 

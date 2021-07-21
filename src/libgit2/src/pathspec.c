@@ -289,8 +289,7 @@ int git_pathspec_matches_path(
 	bool no_fnmatch = (flags & GIT_PATHSPEC_NO_GLOB) != 0;
 	bool casefold =  (flags & GIT_PATHSPEC_IGNORE_CASE) != 0;
 
-	GIT_ASSERT_ARG(ps);
-	GIT_ASSERT_ARG(path);
+	assert(ps && path);
 
 	return (0 != git_pathspec__match(
 		&ps->pathspec, path, no_fnmatch, casefold, NULL, NULL));
@@ -527,7 +526,7 @@ int git_pathspec_match_workdir(
 	git_iterator_options iter_opts = GIT_ITERATOR_OPTIONS_INIT;
 	int error = 0;
 
-	GIT_ASSERT_ARG(repo);
+	assert(repo);
 
 	iter_opts.flags = pathspec_match_iter_flags(flags);
 
@@ -549,7 +548,7 @@ int git_pathspec_match_index(
 	git_iterator_options iter_opts = GIT_ITERATOR_OPTIONS_INIT;
 	int error = 0;
 
-	GIT_ASSERT_ARG(index);
+	assert(index);
 
 	iter_opts.flags = pathspec_match_iter_flags(flags);
 
@@ -571,7 +570,7 @@ int git_pathspec_match_tree(
 	git_iterator_options iter_opts = GIT_ITERATOR_OPTIONS_INIT;
 	int error = 0;
 
-	GIT_ASSERT_ARG(tree);
+	assert(tree);
 
 	iter_opts.flags = pathspec_match_iter_flags(flags);
 
@@ -599,7 +598,7 @@ int git_pathspec_match_diff(
 	const git_diff_delta *delta, **match;
 	git_bitvec used_patterns;
 
-	GIT_ASSERT_ARG(diff);
+	assert(diff);
 
 	if (git_bitvec_init(&used_patterns, patterns->length) < 0)
 		return -1;

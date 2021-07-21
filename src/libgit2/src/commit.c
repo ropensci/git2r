@@ -53,8 +53,7 @@ static int git_commit__create_buffer_internal(
 	size_t i = 0;
 	const git_oid *parent;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(tree);
+	assert(out && tree);
 
 	git_oid__writebuf(out, "tree ", tree);
 
@@ -230,8 +229,7 @@ int git_commit_create_v(
 	int error = 0;
 	commit_parent_varargs data;
 
-	GIT_ASSERT_ARG(tree);
-	GIT_ASSERT_ARG(git_tree_owner(tree) == repo);
+	assert(tree && git_tree_owner(tree) == repo);
 
 	data.total = parent_count;
 	va_start(data.args, parent_count);
@@ -308,8 +306,7 @@ int git_commit_create(
 {
 	commit_parent_data data = { parent_count, parents, repo };
 
-	GIT_ASSERT_ARG(tree);
-	GIT_ASSERT_ARG(git_tree_owner(tree) == repo);
+	assert(tree && git_tree_owner(tree) == repo);
 
 	return git_commit__create_internal(
 		id, repo, update_ref, author, committer,
@@ -340,8 +337,7 @@ int git_commit_amend(
 	git_reference *ref;
 	int error;
 
-	GIT_ASSERT_ARG(id);
-	GIT_ASSERT_ARG(commit_to_amend);
+	assert(id && commit_to_amend);
 
 	repo = git_commit_owner(commit_to_amend);
 
@@ -360,7 +356,7 @@ int git_commit_amend(
 		git_oid_cpy(&tree_id, git_tree_id(old_tree));
 		git_tree_free(old_tree);
 	} else {
-		GIT_ASSERT_ARG(git_tree_owner(tree) == repo);
+		assert(git_tree_owner(tree) == repo);
 		git_oid_cpy(&tree_id, git_tree_id(tree));
 	}
 
@@ -396,8 +392,7 @@ static int commit_parse(git_commit *commit, const char *data, size_t size, unsig
 	size_t header_len;
 	git_signature dummy_sig;
 
-	GIT_ASSERT_ARG(commit);
-	GIT_ASSERT_ARG(data);
+	assert(commit && data);
 
 	buffer = buffer_start;
 
@@ -511,28 +506,28 @@ int git_commit__parse(void *_commit, git_odb_object *odb_obj)
 	return git_commit__parse_ext(_commit, odb_obj, 0);
 }
 
-#define GIT_COMMIT_GETTER(_rvalue, _name, _return, _invalid) \
+#define GIT_COMMIT_GETTER(_rvalue, _name, _return) \
 	_rvalue git_commit_##_name(const git_commit *commit) \
 	{\
-		GIT_ASSERT_ARG_WITH_RETVAL(commit, _invalid); \
+		assert(commit); \
 		return _return; \
 	}
 
-GIT_COMMIT_GETTER(const git_signature *, author, commit->author, NULL)
-GIT_COMMIT_GETTER(const git_signature *, committer, commit->committer, NULL)
-GIT_COMMIT_GETTER(const char *, message_raw, commit->raw_message, NULL)
-GIT_COMMIT_GETTER(const char *, message_encoding, commit->message_encoding, NULL)
-GIT_COMMIT_GETTER(const char *, raw_header, commit->raw_header, NULL)
-GIT_COMMIT_GETTER(git_time_t, time, commit->committer->when.time, INT64_MIN)
-GIT_COMMIT_GETTER(int, time_offset, commit->committer->when.offset, -1)
-GIT_COMMIT_GETTER(unsigned int, parentcount, (unsigned int)git_array_size(commit->parent_ids), 0)
-GIT_COMMIT_GETTER(const git_oid *, tree_id, &commit->tree_id, NULL)
+GIT_COMMIT_GETTER(const git_signature *, author, commit->author)
+GIT_COMMIT_GETTER(const git_signature *, committer, commit->committer)
+GIT_COMMIT_GETTER(const char *, message_raw, commit->raw_message)
+GIT_COMMIT_GETTER(const char *, message_encoding, commit->message_encoding)
+GIT_COMMIT_GETTER(const char *, raw_header, commit->raw_header)
+GIT_COMMIT_GETTER(git_time_t, time, commit->committer->when.time)
+GIT_COMMIT_GETTER(int, time_offset, commit->committer->when.offset)
+GIT_COMMIT_GETTER(unsigned int, parentcount, (unsigned int)git_array_size(commit->parent_ids))
+GIT_COMMIT_GETTER(const git_oid *, tree_id, &commit->tree_id)
 
 const char *git_commit_message(const git_commit *commit)
 {
 	const char *message;
 
-	GIT_ASSERT_ARG_WITH_RETVAL(commit, NULL);
+	assert(commit);
 
 	message = commit->raw_message;
 
@@ -549,7 +544,7 @@ const char *git_commit_summary(git_commit *commit)
 	const char *msg, *space;
 	bool space_contains_newline = false;
 
-	GIT_ASSERT_ARG_WITH_RETVAL(commit, NULL);
+	assert(commit);
 
 	if (!commit->summary) {
 		for (msg = git_commit_message(commit), space = NULL; *msg; ++msg) {
@@ -592,7 +587,7 @@ const char *git_commit_body(git_commit *commit)
 {
 	const char *msg, *end;
 
-	GIT_ASSERT_ARG_WITH_RETVAL(commit, NULL);
+	assert(commit);
 
 	if (!commit->body) {
 		/* search for end of summary */
@@ -617,14 +612,14 @@ const char *git_commit_body(git_commit *commit)
 
 int git_commit_tree(git_tree **tree_out, const git_commit *commit)
 {
-	GIT_ASSERT_ARG(commit);
+	assert(commit);
 	return git_tree_lookup(tree_out, commit->object.repo, &commit->tree_id);
 }
 
 const git_oid *git_commit_parent_id(
 	const git_commit *commit, unsigned int n)
 {
-	GIT_ASSERT_ARG_WITH_RETVAL(commit, NULL);
+	assert(commit);
 
 	return git_array_get(commit->parent_ids, n);
 }
@@ -633,7 +628,7 @@ int git_commit_parent(
 	git_commit **parent, const git_commit *commit, unsigned int n)
 {
 	const git_oid *parent_id;
-	GIT_ASSERT_ARG(commit);
+	assert(commit);
 
 	parent_id = git_commit_parent_id(commit, n);
 	if (parent_id == NULL) {
@@ -652,8 +647,7 @@ int git_commit_nth_gen_ancestor(
 	git_commit *current, *parent = NULL;
 	int error;
 
-	GIT_ASSERT_ARG(ancestor);
-	GIT_ASSERT_ARG(commit);
+	assert(ancestor && commit);
 
 	if (git_commit_dup(&current, (git_commit *)commit) < 0)
 		return -1;
@@ -846,8 +840,7 @@ int git_commit_create_buffer(git_buf *out,
 	git_array_oid_t parents_arr = GIT_ARRAY_INIT;
 	const git_oid *tree_id;
 
-	GIT_ASSERT_ARG(tree);
-	GIT_ASSERT_ARG(git_tree_owner(tree) == repo);
+	assert(tree && git_tree_owner(tree) == repo);
 
 	tree_id = git_tree_id(tree);
 
@@ -866,13 +859,11 @@ int git_commit_create_buffer(git_buf *out,
 /**
  * Append to 'out' properly marking continuations when there's a newline in 'content'
  */
-static int format_header_field(git_buf *out, const char *field, const char *content)
+static void format_header_field(git_buf *out, const char *field, const char *content)
 {
 	const char *lf;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(field);
-	GIT_ASSERT_ARG(content);
+	assert(out && field && content);
 
 	git_buf_puts(out, field);
 	git_buf_putc(out, ' ');
@@ -885,8 +876,6 @@ static int format_header_field(git_buf *out, const char *field, const char *cont
 
 	git_buf_puts(out, content);
 	git_buf_putc(out, '\n');
-
-	return git_buf_oom(out) ? -1 : 0;
 }
 
 static const git_oid *commit_parent_from_commit(size_t n, void *payload)
@@ -937,9 +926,7 @@ int git_commit_create_with_signature(
 
 	if (signature != NULL) {
 		field = signature_field ? signature_field : "gpgsig";
-
-		if ((error = format_header_field(&commit, field, signature)) < 0)
-			goto cleanup;
+		format_header_field(&commit, field, signature);
 	}
 
 	git_buf_puts(&commit, header_end);

@@ -26,8 +26,7 @@ static int annotated_commit_init(
 	git_annotated_commit *annotated_commit;
 	int error = 0;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(commit);
+	assert(out && commit);
 
 	*out = NULL;
 
@@ -64,9 +63,7 @@ static int annotated_commit_init_from_id(
 	git_commit *commit = NULL;
 	int error = 0;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(repo);
-	GIT_ASSERT_ARG(id);
+	assert(out && repo && id);
 
 	*out = NULL;
 
@@ -103,9 +100,7 @@ int git_annotated_commit_from_revspec(
 	git_object *obj, *commit;
 	int error;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(repo);
-	GIT_ASSERT_ARG(revspec);
+	assert(out && repo && revspec);
 
 	if ((error = git_revparse_single(&obj, repo, revspec)) < 0)
 		return error;
@@ -131,9 +126,7 @@ int git_annotated_commit_from_ref(
 	git_object *peeled;
 	int error = 0;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(repo);
-	GIT_ASSERT_ARG(ref);
+	assert(out && repo && ref);
 
 	*out = NULL;
 
@@ -161,12 +154,11 @@ int git_annotated_commit_from_head(
 	git_reference *head;
 	int error;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(repo);
+	assert(out && repo);
 
 	*out = NULL;
 
-	if ((error = git_reference_lookup(&head, repo, GIT_HEAD_FILE)) < 0)
+    if ((error = git_reference_lookup(&head, repo, GIT_HEAD_FILE)) < 0)
 		return -1;
 
 	error = git_annotated_commit_from_ref(out, repo, head);
@@ -182,11 +174,7 @@ int git_annotated_commit_from_fetchhead(
 	const char *remote_url,
 	const git_oid *id)
 {
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(repo);
-	GIT_ASSERT_ARG(branch_name);
-	GIT_ASSERT_ARG(remote_url);
-	GIT_ASSERT_ARG(id);
+	assert(repo && id && branch_name && remote_url);
 
 	if (annotated_commit_init_from_id(out, repo, id, branch_name) < 0)
 		return -1;
@@ -204,14 +192,14 @@ int git_annotated_commit_from_fetchhead(
 const git_oid *git_annotated_commit_id(
 	const git_annotated_commit *annotated_commit)
 {
-	GIT_ASSERT_ARG_WITH_RETVAL(annotated_commit, NULL);
+	assert(annotated_commit);
 	return git_commit_id(annotated_commit->commit);
 }
 
 const char *git_annotated_commit_ref(
 	const git_annotated_commit *annotated_commit)
 {
-	GIT_ASSERT_ARG_WITH_RETVAL(annotated_commit, NULL);
+	assert(annotated_commit);
 	return annotated_commit->ref_name;
 }
 

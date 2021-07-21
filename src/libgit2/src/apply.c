@@ -5,6 +5,8 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
+#include "apply.h"
+
 #include "git2/apply.h"
 #include "git2/patch.h"
 #include "git2/filter.h"
@@ -19,7 +21,6 @@
 #include "zstream.h"
 #include "reader.h"
 #include "index.h"
-#include "apply.h"
 
 typedef struct {
 	/* The lines that we allocate ourself are allocated out of the pool.
@@ -398,11 +399,7 @@ int git_apply__patch(
 	unsigned int mode = 0;
 	int error = 0;
 
-	GIT_ASSERT_ARG(contents_out);
-	GIT_ASSERT_ARG(filename_out);
-	GIT_ASSERT_ARG(mode_out);
-	GIT_ASSERT_ARG(source || !source_len);
-	GIT_ASSERT_ARG(patch);
+	assert(contents_out && filename_out && mode_out && (source || !source_len) && patch);
 
 	if (given_opts)
 		memcpy(&ctx.opts, given_opts, sizeof(git_apply_options));
@@ -627,10 +624,7 @@ int git_apply_to_tree(
 	size_t i;
 	int error = 0;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(repo);
-	GIT_ASSERT_ARG(preimage);
-	GIT_ASSERT_ARG(diff);
+	assert(out && repo && preimage && diff);
 
 	*out = NULL;
 
@@ -778,8 +772,6 @@ done:
 
 int git_apply_options_init(git_apply_options *opts, unsigned int version)
 {
-	GIT_ASSERT_ARG(opts);
-
 	GIT_INIT_STRUCTURE_FROM_TEMPLATE(
 		opts, version, git_apply_options, GIT_APPLY_OPTIONS_INIT);
 	return 0;
@@ -813,8 +805,7 @@ int git_apply(
 	git_apply_options opts = GIT_APPLY_OPTIONS_INIT;
 	int error = GIT_EINVALID;
 
-	GIT_ASSERT_ARG(repo);
-	GIT_ASSERT_ARG(diff);
+	assert(repo && diff);
 
 	GIT_ERROR_CHECK_VERSION(
 		given_opts, GIT_APPLY_OPTIONS_VERSION, "git_apply_options");
@@ -838,7 +829,7 @@ int git_apply(
 		error = git_reader_for_workdir(&pre_reader, repo, false);
 		break;
 	default:
-		GIT_ASSERT(false);
+		assert(false);
 	}
 
 	if (error < 0)
@@ -878,7 +869,7 @@ int git_apply(
 		error = git_apply__to_workdir(repo, diff, preimage, postimage, location, &opts);
 		break;
 	default:
-		GIT_ASSERT(false);
+		assert(false);
 	}
 
 	if (error < 0)

@@ -5,36 +5,7 @@
  * a Linking Exception. For full terms see the included COPYING file.
  */
 
-#include "libgit2.h"
-
-#include <git2.h>
-#include "alloc.h"
-#include "cache.h"
 #include "common.h"
-#include "filter.h"
-#include "hash.h"
-#include "index.h"
-#include "merge_driver.h"
-#include "pool.h"
-#include "mwindow.h"
-#include "object.h"
-#include "odb.h"
-#include "refs.h"
-#include "runtime.h"
-#include "sysdir.h"
-#include "thread.h"
-#include "threadstate.h"
-#include "git2/global.h"
-#include "streams/registry.h"
-#include "streams/mbedtls.h"
-#include "streams/openssl.h"
-#include "transports/smart.h"
-#include "transports/http.h"
-#include "transports/ssh.h"
-
-#ifdef GIT_WIN32
-# include "win32/w32_leakcheck.h"
-#endif
 
 #ifdef GIT_OPENSSL
 # include <openssl/err.h>
@@ -44,61 +15,19 @@
 # include <mbedtls/error.h>
 #endif
 
-/* Declarations for tuneable settings */
-extern size_t git_mwindow__window_size;
-extern size_t git_mwindow__mapped_limit;
-extern size_t git_mwindow__file_limit;
-extern size_t git_indexer__max_objects;
-extern bool git_disable_pack_keep_file_checks;
-
-char *git__user_agent;
-char *git__ssl_ciphers;
-
-static void libgit2_settings_global_shutdown(void)
-{
-	git__free(git__user_agent);
-	git__free(git__ssl_ciphers);
-}
-
-static int git_libgit2_settings_global_init(void)
-{
-	return git_runtime_shutdown_register(libgit2_settings_global_shutdown);
-}
-
-int git_libgit2_init(void)
-{
-	static git_runtime_init_fn init_fns[] = {
-#ifdef GIT_WIN32
-		git_win32_leakcheck_global_init,
-#endif
-		git_allocator_global_init,
-		git_threadstate_global_init,
-		git_threads_global_init,
-		git_hash_global_init,
-		git_sysdir_global_init,
-		git_filter_global_init,
-		git_merge_driver_global_init,
-		git_transport_ssh_global_init,
-		git_stream_registry_global_init,
-		git_openssl_stream_global_init,
-		git_mbedtls_stream_global_init,
-		git_mwindow_global_init,
-		git_pool_global_init,
-		git_libgit2_settings_global_init
-	};
-
-	return git_runtime_init(init_fns, ARRAY_SIZE(init_fns));
-}
-
-int git_libgit2_init_count(void)
-{
-	return git_runtime_init_count();
-}
-
-int git_libgit2_shutdown(void)
-{
-	return git_runtime_shutdown();
-}
+#include <git2.h>
+#include "alloc.h"
+#include "sysdir.h"
+#include "cache.h"
+#include "global.h"
+#include "object.h"
+#include "odb.h"
+#include "refs.h"
+#include "index.h"
+#include "transports/smart.h"
+#include "transports/http.h"
+#include "streams/openssl.h"
+#include "streams/mbedtls.h"
 
 int git_libgit2_version(int *major, int *minor, int *rev)
 {
@@ -127,29 +56,40 @@ int git_libgit2_features(void)
 	;
 }
 
-static int config_level_to_sysdir(int *out, int config_level)
+/* Declarations for tuneable settings */
+extern size_t git_mwindow__window_size;
+extern size_t git_mwindow__mapped_limit;
+extern size_t git_mwindow__file_limit;
+extern size_t git_indexer__max_objects;
+extern bool git_disable_pack_keep_file_checks;
+
+static int config_level_to_sysdir(int config_level)
 {
+	int val = -1;
+
 	switch (config_level) {
 	case GIT_CONFIG_LEVEL_SYSTEM:
-		*out = GIT_SYSDIR_SYSTEM;
-		return 0;
-	case GIT_CONFIG_LEVEL_XDG:
-		*out = GIT_SYSDIR_XDG;
-		return 0;
-	case GIT_CONFIG_LEVEL_GLOBAL:
-		*out = GIT_SYSDIR_GLOBAL;
-		return 0;
-	case GIT_CONFIG_LEVEL_PROGRAMDATA:
-		*out = GIT_SYSDIR_PROGRAMDATA;
-		return 0;
-	default:
+		val = GIT_SYSDIR_SYSTEM;
 		break;
+	case GIT_CONFIG_LEVEL_XDG:
+		val = GIT_SYSDIR_XDG;
+		break;
+	case GIT_CONFIG_LEVEL_GLOBAL:
+		val = GIT_SYSDIR_GLOBAL;
+		break;
+	case GIT_CONFIG_LEVEL_PROGRAMDATA:
+		val = GIT_SYSDIR_PROGRAMDATA;
+		break;
+	default:
+		git_error_set(
+			GIT_ERROR_INVALID, "invalid config path selector %d", config_level);
 	}
 
-	git_error_set(
-		GIT_ERROR_INVALID, "invalid config path selector %d", config_level);
-	return -1;
+	return val;
 }
+
+extern char *git__user_agent;
+extern char *git__ssl_ciphers;
 
 const char *git_libgit2__user_agent(void)
 {
@@ -194,15 +134,12 @@ int git_libgit2_opts(int key, ...)
 		break;
 
 	case GIT_OPT_GET_SEARCH_PATH:
-		{
-			int sysdir = va_arg(ap, int);
+		if ((error = config_level_to_sysdir(va_arg(ap, int))) >= 0) {
 			git_buf *out = va_arg(ap, git_buf *);
 			const git_buf *tmp;
-			int level;
 
-			if ((error = config_level_to_sysdir(&level, sysdir)) < 0 ||
-			    (error = git_buf_sanitize(out)) < 0 ||
-			    (error = git_sysdir_get(&tmp, level)) < 0)
+			git_buf_sanitize(out);
+			if ((error = git_sysdir_get(&tmp, error)) < 0)
 				break;
 
 			error = git_buf_sets(out, tmp->ptr);
@@ -210,12 +147,8 @@ int git_libgit2_opts(int key, ...)
 		break;
 
 	case GIT_OPT_SET_SEARCH_PATH:
-		{
-			int level;
-
-			if ((error = config_level_to_sysdir(&level, va_arg(ap, int))) >= 0)
-				error = git_sysdir_set(level, va_arg(ap, const char *));
-		}
+		if ((error = config_level_to_sysdir(va_arg(ap, int))) >= 0)
+			error = git_sysdir_set(error, va_arg(ap, const char *));
 		break;
 
 	case GIT_OPT_SET_CACHE_OBJECT_LIMIT:
@@ -244,8 +177,8 @@ int git_libgit2_opts(int key, ...)
 			git_buf *out = va_arg(ap, git_buf *);
 			const git_buf *tmp;
 
-			if ((error = git_buf_sanitize(out)) < 0 ||
-			    (error = git_sysdir_get(&tmp, GIT_SYSDIR_TEMPLATE)) < 0)
+			git_buf_sanitize(out);
+			if ((error = git_sysdir_get(&tmp, GIT_SYSDIR_TEMPLATE)) < 0)
 				break;
 
 			error = git_buf_sets(out, tmp->ptr);
@@ -314,8 +247,7 @@ int git_libgit2_opts(int key, ...)
 	case GIT_OPT_GET_USER_AGENT:
 		{
 			git_buf *out = va_arg(ap, git_buf *);
-			if ((error = git_buf_sanitize(out)) < 0)
-				break;
+			git_buf_sanitize(out);
 			error = git_buf_sets(out, git__user_agent);
 		}
 		break;

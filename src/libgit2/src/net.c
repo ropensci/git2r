@@ -14,7 +14,7 @@
 #include "posix.h"
 #include "buffer.h"
 #include "http_parser.h"
-#include "runtime.h"
+#include "global.h"
 
 #define DEFAULT_PORT_HTTP  "80"
 #define DEFAULT_PORT_HTTPS "443"
@@ -281,8 +281,7 @@ int git_net_url_apply_redirect(
 	git_net_url tmp = GIT_NET_URL_INIT;
 	int error = 0;
 
-	GIT_ASSERT(url);
-	GIT_ASSERT(redirect_location);
+	assert(url && redirect_location);
 
 	if (redirect_location[0] == '/') {
 		git__free(url->path);

@@ -108,8 +108,7 @@ int git_config_add_file_ondisk(
 	struct stat st;
 	int res;
 
-	GIT_ASSERT_ARG(cfg);
-	GIT_ASSERT_ARG(path);
+	assert(cfg && path);
 
 	res = p_stat(path, &st);
 	if (res < 0 && errno != ENOENT && errno != ENOTDIR) {
@@ -317,8 +316,7 @@ int git_config_add_backend(
 	backend_internal *internal;
 	int result;
 
-	GIT_ASSERT_ARG(cfg);
-	GIT_ASSERT_ARG(backend);
+	assert(cfg && backend);
 
 	GIT_ERROR_CHECK_VERSION(backend, GIT_CONFIG_BACKEND_VERSION, "git_config_backend");
 
@@ -516,8 +514,7 @@ int git_config_backend_foreach_match(
 	git_regexp regex;
 	int error = 0;
 
-	GIT_ASSERT_ARG(backend);
-	GIT_ASSERT_ARG(cb);
+	assert(backend && cb);
 
 	if (regexp && git_regexp_compile(&regex, regexp, 0) < 0)
 		return -1;
@@ -889,8 +886,7 @@ int git_config_get_string_buf(
 	int ret;
 	const char *str;
 
-	if ((ret = git_buf_sanitize(out)) < 0)
-		return ret;
+	git_buf_sanitize(out);
 
 	ret  = get_entry(&entry, cfg, name, true, GET_ALL_ERRORS);
 	str = !ret ? (entry->value ? entry->value : "") : NULL;
@@ -1088,31 +1084,19 @@ void git_config_iterator_free(git_config_iterator *iter)
 
 int git_config_find_global(git_buf *path)
 {
-	int error;
-
-	if ((error = git_buf_sanitize(path)) < 0)
-		return error;
-
+	git_buf_sanitize(path);
 	return git_sysdir_find_global_file(path, GIT_CONFIG_FILENAME_GLOBAL);
 }
 
 int git_config_find_xdg(git_buf *path)
 {
-	int error;
-
-	if ((error = git_buf_sanitize(path)) < 0)
-		return error;
-
+	git_buf_sanitize(path);
 	return git_sysdir_find_xdg_file(path, GIT_CONFIG_FILENAME_XDG);
 }
 
 int git_config_find_system(git_buf *path)
 {
-	int error;
-
-	if ((error = git_buf_sanitize(path)) < 0)
-		return error;
-
+	git_buf_sanitize(path);
 	return git_sysdir_find_system_file(path, GIT_CONFIG_FILENAME_SYSTEM);
 }
 
@@ -1120,9 +1104,7 @@ int git_config_find_programdata(git_buf *path)
 {
 	int ret;
 
-	if ((ret = git_buf_sanitize(path)) < 0)
-		return ret;
-
+	git_buf_sanitize(path);
 	ret = git_sysdir_find_programdata_file(path,
 					       GIT_CONFIG_FILENAME_PROGRAMDATA);
 	if (ret != GIT_OK)
@@ -1200,7 +1182,7 @@ int git_config_lock(git_transaction **out, git_config *cfg)
 	git_config_backend *backend;
 	backend_internal *internal;
 
-	GIT_ASSERT_ARG(cfg);
+	assert(cfg);
 
 	internal = git_vector_get(&cfg->backends, 0);
 	if (!internal || !internal->backend) {
@@ -1220,7 +1202,7 @@ int git_config_unlock(git_config *cfg, int commit)
 	git_config_backend *backend;
 	backend_internal *internal;
 
-	GIT_ASSERT_ARG(cfg);
+	assert(cfg);
 
 	internal = git_vector_get(&cfg->backends, 0);
 	if (!internal || !internal->backend) {
@@ -1378,13 +1360,9 @@ fail_parse:
 
 int git_config_parse_path(git_buf *out, const char *value)
 {
-	int error;
+	assert(out && value);
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(value);
-
-	if ((error = git_buf_sanitize(out)) < 0)
-		return error;
+	git_buf_sanitize(out);
 
 	if (value[0] == '~') {
 		if (value[1] != '\0' && value[1] != '/') {
@@ -1427,8 +1405,7 @@ int git_config__normalize_name(const char *in, char **out)
 {
 	char *name, *fdot, *ldot;
 
-	GIT_ASSERT_ARG(in);
-	GIT_ASSERT_ARG(out);
+	assert(in && out);
 
 	name = git__strdup(in);
 	GIT_ERROR_CHECK_ALLOC(name);

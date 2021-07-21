@@ -29,8 +29,7 @@ static int ntlm_set_challenge(
 {
 	http_auth_ntlm_context *ctx = (http_auth_ntlm_context *)c;
 
-	GIT_ASSERT_ARG(ctx);
-	GIT_ASSERT_ARG(challenge);
+	assert(ctx && challenge);
 
 	git__free(ctx->challenge);
 
@@ -47,7 +46,7 @@ static int ntlm_set_credentials(http_auth_ntlm_context *ctx, git_credential *_cr
 	char *domain = NULL, *domainuser = NULL;
 	int error = 0;
 
-	GIT_ASSERT(_cred->credtype == GIT_CREDENTIAL_USERPASS_PLAINTEXT);
+	assert(_cred->credtype == GIT_CREDENTIAL_USERPASS_PLAINTEXT);
 	cred = (git_credential_userpass_plaintext *)_cred;
 
 	if ((sep = strchr(cred->username, '\\')) != NULL) {
@@ -87,10 +86,7 @@ static int ntlm_next_token(
 	size_t challenge_len, msg_len;
 	int error = -1;
 
-	GIT_ASSERT_ARG(buf);
-	GIT_ASSERT_ARG(ctx);
-
-	GIT_ASSERT(ctx->ntlm);
+	assert(buf && ctx && ctx->ntlm);
 
 	challenge_len = ctx->challenge ? strlen(ctx->challenge) : 0;
 
@@ -166,7 +162,7 @@ static int ntlm_is_complete(git_http_auth_context *c)
 {
 	http_auth_ntlm_context *ctx = (http_auth_ntlm_context *)c;
 
-	GIT_ASSERT_ARG(ctx);
+	assert(ctx);
 	return (ctx->complete == true);
 }
 

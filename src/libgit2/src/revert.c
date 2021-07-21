@@ -129,10 +129,7 @@ int git_revert_commit(
 	git_tree *parent_tree = NULL, *our_tree = NULL, *revert_tree = NULL;
 	int parent = 0, error = 0;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(repo);
-	GIT_ASSERT_ARG(revert_commit);
-	GIT_ASSERT_ARG(our_commit);
+	assert(out && repo && revert_commit && our_commit);
 
 	if (git_commit_parentcount(revert_commit) > 1) {
 		if (!mainline)
@@ -183,8 +180,7 @@ int git_revert(
 	git_indexwriter indexwriter = GIT_INDEXWRITER_INIT;
 	int error;
 
-	GIT_ASSERT_ARG(repo);
-	GIT_ASSERT_ARG(commit);
+	assert(repo && commit);
 
 	GIT_ERROR_CHECK_VERSION(given_opts, GIT_REVERT_OPTIONS_VERSION, "git_revert_options");
 

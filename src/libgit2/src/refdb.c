@@ -24,8 +24,7 @@ int git_refdb_new(git_refdb **out, git_repository *repo)
 {
 	git_refdb *db;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(repo);
+	assert(out && repo);
 
 	db = git__calloc(1, sizeof(*db));
 	GIT_ERROR_CHECK_ALLOC(db);
@@ -42,8 +41,7 @@ int git_refdb_open(git_refdb **out, git_repository *repo)
 	git_refdb *db;
 	git_refdb_backend *dir;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(repo);
+	assert(out && repo);
 
 	*out = NULL;
 
@@ -91,7 +89,7 @@ int git_refdb_set_backend(git_refdb *db, git_refdb_backend *backend)
 
 int git_refdb_compress(git_refdb *db)
 {
-	GIT_ASSERT_ARG(db);
+	assert(db);
 
 	if (db->backend->compress)
 		return db->backend->compress(db->backend);
@@ -116,9 +114,7 @@ void git_refdb_free(git_refdb *db)
 
 int git_refdb_exists(int *exists, git_refdb *refdb, const char *ref_name)
 {
-	GIT_ASSERT_ARG(exists);
-	GIT_ASSERT_ARG(refdb);
-	GIT_ASSERT_ARG(refdb->backend);
+	assert(exists && refdb && refdb->backend);
 
 	return refdb->backend->exists(exists, refdb->backend, ref_name);
 }
@@ -128,10 +124,7 @@ int git_refdb_lookup(git_reference **out, git_refdb *db, const char *ref_name)
 	git_reference *ref;
 	int error;
 
-	GIT_ASSERT_ARG(db);
-	GIT_ASSERT_ARG(db->backend);
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(ref_name);
+	assert(db && db->backend && out && ref_name);
 
 	error = db->backend->lookup(&ref, db->backend, ref_name);
 	if (error < 0)
@@ -241,8 +234,7 @@ void git_refdb_iterator_free(git_reference_iterator *iter)
 
 int git_refdb_write(git_refdb *db, git_reference *ref, int force, const git_signature *who, const char *message, const git_oid *old_id, const char *old_target)
 {
-	GIT_ASSERT_ARG(db);
-	GIT_ASSERT_ARG(db->backend);
+	assert(db && db->backend);
 
 	GIT_REFCOUNT_INC(db);
 	ref->db = db;
@@ -261,9 +253,7 @@ int git_refdb_rename(
 {
 	int error;
 
-	GIT_ASSERT_ARG(db);
-	GIT_ASSERT_ARG(db->backend);
-
+	assert(db && db->backend);
 	error = db->backend->rename(out, db->backend, old_name, new_name, force, who, message);
 	if (error < 0)
 		return error;
@@ -278,9 +268,7 @@ int git_refdb_rename(
 
 int git_refdb_delete(struct git_refdb *db, const char *ref_name, const git_oid *old_id, const char *old_target)
 {
-	GIT_ASSERT_ARG(db);
-	GIT_ASSERT_ARG(db->backend);
-
+	assert(db && db->backend);
 	return db->backend->del(db->backend, ref_name, old_id, old_target);
 }
 
@@ -288,8 +276,7 @@ int git_refdb_reflog_read(git_reflog **out, git_refdb *db,  const char *name)
 {
 	int error;
 
-	GIT_ASSERT_ARG(db);
-	GIT_ASSERT_ARG(db->backend);
+	assert(db && db->backend);
 
 	if ((error = db->backend->reflog_read(out, db->backend, name)) < 0)
 		return error;
@@ -381,16 +368,14 @@ out:
 
 int git_refdb_has_log(git_refdb *db, const char *refname)
 {
-	GIT_ASSERT_ARG(db);
-	GIT_ASSERT_ARG(refname);
+	assert(db && refname);
 
 	return db->backend->has_log(db->backend, refname);
 }
 
 int git_refdb_ensure_log(git_refdb *db, const char *refname)
 {
-	GIT_ASSERT_ARG(db);
-	GIT_ASSERT_ARG(refname);
+	assert(db && refname);
 
 	return db->backend->ensure_log(db->backend, refname);
 }
@@ -404,9 +389,7 @@ int git_refdb_init_backend(git_refdb_backend *backend, unsigned int version)
 
 int git_refdb_lock(void **payload, git_refdb *db, const char *refname)
 {
-	GIT_ASSERT_ARG(payload);
-	GIT_ASSERT_ARG(db);
-	GIT_ASSERT_ARG(refname);
+	assert(payload && db && refname);
 
 	if (!db->backend->lock) {
 		git_error_set(GIT_ERROR_REFERENCE, "backend does not support locking");
@@ -418,7 +401,7 @@ int git_refdb_lock(void **payload, git_refdb *db, const char *refname)
 
 int git_refdb_unlock(git_refdb *db, void *payload, int success, int update_reflog, const git_reference *ref, const git_signature *sig, const char *message)
 {
-	GIT_ASSERT_ARG(db);
+	assert(db);
 
 	return db->backend->unlock(db->backend, payload, success, update_reflog, ref, sig, message);
 }

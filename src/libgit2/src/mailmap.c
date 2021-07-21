@@ -43,8 +43,7 @@ static int mailmap_entry_cmp(const void *a_raw, const void *b_raw)
 	const git_mailmap_entry *b = (const git_mailmap_entry *)b_raw;
 	int cmp;
 
-	GIT_ASSERT_ARG(a && a->replace_email);
-	GIT_ASSERT_ARG(b && b->replace_email);
+	assert(a && b && a->replace_email && b->replace_email);
 
 	cmp = git__strcmp(a->replace_email, b->replace_email);
 	if (cmp)
@@ -186,8 +185,7 @@ static int mailmap_add_entry_unterminated(
 	git_mailmap_entry *entry = git__calloc(1, sizeof(git_mailmap_entry));
 	GIT_ERROR_CHECK_ALLOC(entry);
 
-	GIT_ASSERT_ARG(mm);
-	GIT_ASSERT_ARG(replace_email && *replace_email);
+	assert(mm && replace_email && *replace_email);
 
 	if (real_name_size > 0) {
 		entry->real_name = git__substrdup(real_name, real_name_size);
@@ -292,8 +290,7 @@ static int mailmap_add_blob(
 	git_buf content = GIT_BUF_INIT;
 	int error;
 
-	GIT_ASSERT_ARG(mm);
-	GIT_ASSERT_ARG(repo);
+	assert(mm && repo);
 
 	error = git_revparse_single(&object, repo, rev);
 	if (error < 0)
@@ -353,6 +350,8 @@ static void mailmap_add_from_repository(git_mailmap *mm, git_repository *repo)
 	const char *rev = NULL;
 	const char *path = NULL;
 
+	assert(mm && repo);
+
 	/* If we're in a bare repo, default blob to 'HEAD:.mailmap' */
 	if (repo->is_bare)
 		rev = MM_BLOB_DEFAULT;
@@ -390,14 +389,9 @@ static void mailmap_add_from_repository(git_mailmap *mm, git_repository *repo)
 
 int git_mailmap_from_repository(git_mailmap **out, git_repository *repo)
 {
-	int error;
-
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(repo);
-
-	if ((error = git_mailmap_new(out)) < 0)
+	int error = git_mailmap_new(out);
+	if (error < 0)
 		return error;
-
 	mailmap_add_from_repository(*out, repo);
 	return 0;
 }
@@ -414,7 +408,7 @@ const git_mailmap_entry *git_mailmap_entry_lookup(
 	git_mailmap_entry needle = { NULL };
 	needle.replace_email = (char *)email;
 
-	GIT_ASSERT_ARG_WITH_RETVAL(email, NULL);
+	assert(email);
 
 	if (!mm)
 		return NULL;
@@ -437,8 +431,7 @@ const git_mailmap_entry *git_mailmap_entry_lookup(
 		if (git__strcmp(entry->replace_email, email))
 			break; /* it's a different email, so we're done looking */
 
-		 /* should be specific */
-		GIT_ASSERT_WITH_RETVAL(entry->replace_name, NULL);
+		assert(entry->replace_name); /* should be specific */
 		if (!name || !git__strcmp(entry->replace_name, name))
 			return entry;
 	}
@@ -454,9 +447,7 @@ int git_mailmap_resolve(
 	const char *name, const char *email)
 {
 	const git_mailmap_entry *entry = NULL;
-
-	GIT_ASSERT(name);
-	GIT_ASSERT(email);
+	assert(name && email);
 
 	*real_name = name;
 	*real_email = email;

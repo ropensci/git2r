@@ -37,8 +37,7 @@ int git_worktree_list(git_strarray *wts, git_repository *repo)
 	size_t i, len;
 	int error;
 
-	GIT_ASSERT_ARG(wts);
-	GIT_ASSERT_ARG(repo);
+	assert(wts && repo);
 
 	wts->count = 0;
 	wts->strings = NULL;
@@ -74,8 +73,7 @@ char *git_worktree__read_link(const char *base, const char *file)
 {
 	git_buf path = GIT_BUF_INIT, buf = GIT_BUF_INIT;
 
-	GIT_ASSERT_ARG_WITH_RETVAL(base, NULL);
-	GIT_ASSERT_ARG_WITH_RETVAL(file, NULL);
+	assert(base && file);
 
 	if (git_buf_joinpath(&path, base, file) < 0)
 		goto err;
@@ -108,9 +106,7 @@ static int write_wtfile(const char *base, const char *file, const git_buf *buf)
 	git_buf path = GIT_BUF_INIT;
 	int err;
 
-	GIT_ASSERT_ARG(base);
-	GIT_ASSERT_ARG(file);
-	GIT_ASSERT_ARG(buf);
+	assert(base && file && buf);
 
 	if ((err = git_buf_joinpath(&path, base, file)) < 0)
 		goto out;
@@ -174,8 +170,7 @@ int git_worktree_lookup(git_worktree **out, git_repository *repo, const char *na
 	git_worktree *wt = NULL;
 	int error;
 
-	GIT_ASSERT_ARG(repo);
-	GIT_ASSERT_ARG(name);
+	assert(repo && name);
 
 	*out = NULL;
 
@@ -242,7 +237,7 @@ void git_worktree_free(git_worktree *wt)
 
 int git_worktree_validate(const git_worktree *wt)
 {
-	GIT_ASSERT_ARG(wt);
+	assert(wt);
 
 	if (!is_worktree_dir(wt->gitdir_path)) {
 		git_error_set(GIT_ERROR_WORKTREE,
@@ -309,10 +304,7 @@ int git_worktree_add(git_worktree **out, git_repository *repo,
 	if (opts)
 		memcpy(&wtopts, opts, sizeof(wtopts));
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(repo);
-	GIT_ASSERT_ARG(name);
-	GIT_ASSERT_ARG(worktree);
+	assert(out && repo && name && worktree);
 
 	*out = NULL;
 
@@ -425,7 +417,7 @@ int git_worktree_lock(git_worktree *wt, const char *reason)
 	git_buf buf = GIT_BUF_INIT, path = GIT_BUF_INIT;
 	int error;
 
-	GIT_ASSERT_ARG(wt);
+	assert(wt);
 
 	if ((error = git_worktree_is_locked(NULL, wt)) < 0)
 		goto out;
@@ -456,7 +448,7 @@ int git_worktree_unlock(git_worktree *wt)
 	git_buf path = GIT_BUF_INIT;
 	int error;
 
-	GIT_ASSERT_ARG(wt);
+	assert(wt);
 
 	if ((error = git_worktree_is_locked(NULL, wt)) < 0)
 		return error;
@@ -483,7 +475,7 @@ int git_worktree_is_locked(git_buf *reason, const git_worktree *wt)
 	git_buf path = GIT_BUF_INIT;
 	int error, locked;
 
-	GIT_ASSERT_ARG(wt);
+	assert(wt);
 
 	if (reason)
 		git_buf_clear(reason);
@@ -504,13 +496,13 @@ out:
 
 const char *git_worktree_name(const git_worktree *wt)
 {
-	GIT_ASSERT_ARG_WITH_RETVAL(wt, NULL);
+	assert(wt);
 	return wt->name;
 }
 
 const char *git_worktree_path(const git_worktree *wt)
 {
-	GIT_ASSERT_ARG_WITH_RETVAL(wt, NULL);
+	assert(wt);
 	return wt->worktree_path;
 }
 

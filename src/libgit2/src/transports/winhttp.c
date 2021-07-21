@@ -17,6 +17,7 @@
 #include "smart.h"
 #include "remote.h"
 #include "repository.h"
+#include "global.h"
 #include "http.h"
 #include "git2/sys/credential.h"
 
@@ -50,6 +51,10 @@
 
 #ifndef WINHTTP_FLAG_SECURE_PROTOCOL_TLS1_3
 # define WINHTTP_FLAG_SECURE_PROTOCOL_TLS1_3 0x00002000
+#endif
+
+#ifndef WINHTTP_NO_CLIENT_CERT_CONTEXT
+# define WINHTTP_NO_CLIENT_CERT_CONTEXT NULL
 #endif
 
 #ifndef HTTP_STATUS_PERMANENT_REDIRECT
@@ -111,7 +116,8 @@ typedef struct {
 	DWORD post_body_len;
 	unsigned sent_request : 1,
 		received_response : 1,
-		chunked : 1;
+		chunked : 1,
+		status_sending_request_reached: 1;
 } winhttp_stream;
 
 typedef struct {
@@ -707,30 +713,36 @@ static void CALLBACK winhttp_status(
 	DWORD status;
 
 	GIT_UNUSED(connection);
-	GIT_UNUSED(ctx);
 	GIT_UNUSED(info_len);
 
-	if (code != WINHTTP_CALLBACK_STATUS_SECURE_FAILURE)
-		return;
+	switch (code) {
+		case WINHTTP_CALLBACK_STATUS_SECURE_FAILURE:
+			status = *((DWORD *)info);
 
-	status = *((DWORD *)info);
+			if ((status & WINHTTP_CALLBACK_STATUS_FLAG_CERT_CN_INVALID))
+				git_error_set(GIT_ERROR_HTTP, "SSL certificate issued for different common name");
+			else if ((status & WINHTTP_CALLBACK_STATUS_FLAG_CERT_DATE_INVALID))
+				git_error_set(GIT_ERROR_HTTP, "SSL certificate has expired");
+			else if ((status & WINHTTP_CALLBACK_STATUS_FLAG_INVALID_CA))
+				git_error_set(GIT_ERROR_HTTP, "SSL certificate signed by unknown CA");
+			else if ((status & WINHTTP_CALLBACK_STATUS_FLAG_INVALID_CERT))
+				git_error_set(GIT_ERROR_HTTP, "SSL certificate is invalid");
+			else if ((status & WINHTTP_CALLBACK_STATUS_FLAG_CERT_REV_FAILED))
+				git_error_set(GIT_ERROR_HTTP, "certificate revocation check failed");
+			else if ((status & WINHTTP_CALLBACK_STATUS_FLAG_CERT_REVOKED))
+				git_error_set(GIT_ERROR_HTTP, "SSL certificate was revoked");
+			else if ((status & WINHTTP_CALLBACK_STATUS_FLAG_SECURITY_CHANNEL_ERROR))
+				git_error_set(GIT_ERROR_HTTP, "security libraries could not be loaded");
+			else
+				git_error_set(GIT_ERROR_HTTP, "unknown security error %lu", status);
 
-	if ((status & WINHTTP_CALLBACK_STATUS_FLAG_CERT_CN_INVALID))
-		git_error_set(GIT_ERROR_HTTP, "SSL certificate issued for different common name");
-	else if ((status & WINHTTP_CALLBACK_STATUS_FLAG_CERT_DATE_INVALID))
-		git_error_set(GIT_ERROR_HTTP, "SSL certificate has expired");
-	else if ((status & WINHTTP_CALLBACK_STATUS_FLAG_INVALID_CA))
-		git_error_set(GIT_ERROR_HTTP, "SSL certificate signed by unknown CA");
-	else if ((status & WINHTTP_CALLBACK_STATUS_FLAG_INVALID_CERT))
-		git_error_set(GIT_ERROR_HTTP, "SSL certificate is invalid");
-	else if ((status & WINHTTP_CALLBACK_STATUS_FLAG_CERT_REV_FAILED))
-		git_error_set(GIT_ERROR_HTTP, "certificate revocation check failed");
-	else if ((status & WINHTTP_CALLBACK_STATUS_FLAG_CERT_REVOKED))
-		git_error_set(GIT_ERROR_HTTP, "SSL certificate was revoked");
-	else if ((status & WINHTTP_CALLBACK_STATUS_FLAG_SECURITY_CHANNEL_ERROR))
-		git_error_set(GIT_ERROR_HTTP, "security libraries could not be loaded");
-	else
-		git_error_set(GIT_ERROR_HTTP, "unknown security error %lu", status);
+			break;
+
+		case WINHTTP_CALLBACK_STATUS_SENDING_REQUEST:
+			((winhttp_stream *) ctx)->status_sending_request_reached = 1;
+
+			break;
+	}
 }
 
 static int winhttp_connect(
@@ -825,7 +837,12 @@ static int winhttp_connect(
 		goto on_error;
 	}
 
-	if (WinHttpSetStatusCallback(t->connection, winhttp_status, WINHTTP_CALLBACK_FLAG_SECURE_FAILURE, 0) == WINHTTP_INVALID_STATUS_CALLBACK) {
+	if (WinHttpSetStatusCallback(
+			t->connection,
+			winhttp_status,
+			WINHTTP_CALLBACK_FLAG_SECURE_FAILURE | WINHTTP_CALLBACK_FLAG_SEND_REQUEST,
+			0
+		) == WINHTTP_INVALID_STATUS_CALLBACK) {
 		git_error_set(GIT_ERROR_OS, "failed to set status callback");
 		goto on_error;
 	}
@@ -857,12 +874,12 @@ static int do_send_request(winhttp_stream *s, size_t len, bool chunked)
 			success = WinHttpSendRequest(s->request,
 				WINHTTP_NO_ADDITIONAL_HEADERS, 0,
 				WINHTTP_NO_REQUEST_DATA, 0,
-				WINHTTP_IGNORE_REQUEST_TOTAL_LENGTH, 0);
+				WINHTTP_IGNORE_REQUEST_TOTAL_LENGTH, (DWORD_PTR)s);
 		} else {
 			success = WinHttpSendRequest(s->request,
 				WINHTTP_NO_ADDITIONAL_HEADERS, 0,
 				WINHTTP_NO_REQUEST_DATA, 0,
-				(DWORD)len, 0);
+				(DWORD)len, (DWORD_PTR)s);
 		}
 
 		if (success || GetLastError() != (DWORD)SEC_E_BUFFER_TOO_SMALL)
@@ -883,9 +900,11 @@ static int send_request(winhttp_stream *s, size_t len, bool chunked)
 		int cert_valid = 1;
 		int client_cert_requested = 0;
 		request_failed = 0;
+
 		if ((error = do_send_request(s, len, chunked)) < 0) {
 			send_request_error = GetLastError();
 			request_failed = 1;
+
 			switch (send_request_error) {
 				case ERROR_WINHTTP_SECURE_FAILURE:
 					cert_valid = 0;
@@ -899,7 +918,13 @@ static int send_request(winhttp_stream *s, size_t len, bool chunked)
 			}
 		}
 
-		if (!request_failed || !cert_valid) {
+		/*
+		 * Only check the certificate if we were able to reach the sending request phase, or
+		 * received a secure failure error. Otherwise, the server certificate won't be available
+		 * since the request wasn't able to complete (e.g. proxy auth required)
+		 */
+		if (!cert_valid ||
+			(!request_failed && s->status_sending_request_reached)) {
 			git_error_clear();
 			if ((error = certificate_check(s, cert_valid)) < 0) {
 				if (!git_error_last())
@@ -1026,7 +1051,7 @@ replay:
 		}
 
 		if (s->chunked) {
-			GIT_ASSERT(s->verb == post_verb);
+			assert(s->verb == post_verb);
 
 			/* Flush, if necessary */
 			if (s->chunk_buffer_len > 0 &&
@@ -1077,7 +1102,7 @@ replay:
 				}
 
 				len -= bytes_read;
-				GIT_ASSERT(bytes_read == bytes_written);
+				assert(bytes_read == bytes_written);
 			}
 
 			git__free(buffer);
@@ -1189,7 +1214,7 @@ replay:
 			if (error < 0) {
 				return error;
 			} else if (!error) {
-				GIT_ASSERT(t->server.cred);
+				assert(t->server.cred);
 				winhttp_stream_close(s);
 				goto replay;
 			}
@@ -1203,7 +1228,7 @@ replay:
 			if (error < 0) {
 				return error;
 			} else if (!error) {
-				GIT_ASSERT(t->proxy.cred);
+				assert(t->proxy.cred);
 				winhttp_stream_close(s);
 				goto replay;
 			}
@@ -1289,7 +1314,7 @@ static int winhttp_stream_write_single(
 		return -1;
 	}
 
-	GIT_ASSERT((DWORD)len == bytes_written);
+	assert((DWORD)len == bytes_written);
 
 	return 0;
 }
@@ -1388,7 +1413,7 @@ static int winhttp_stream_write_buffered(
 		return -1;
 	}
 
-	GIT_ASSERT((DWORD)len == bytes_written);
+	assert((DWORD)len == bytes_written);
 
 	s->post_body_len += bytes_written;
 
@@ -1595,7 +1620,7 @@ static int winhttp_action(
 			break;
 
 		default:
-			GIT_ASSERT(0);
+			assert(0);
 	}
 
 	if (!ret)

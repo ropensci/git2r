@@ -65,8 +65,7 @@ int git_signature_new(git_signature **sig_out, const char *name, const char *ema
 {
 	git_signature *p = NULL;
 
-	GIT_ASSERT_ARG(name);
-	GIT_ASSERT_ARG(email);
+	assert(name && email);
 
 	*sig_out = NULL;
 
@@ -280,8 +279,7 @@ int git_signature_from_buffer(git_signature **out, const char *buf)
 	const char *buf_end;
 	int error;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(buf);
+	assert(out && buf);
 
 	*out = NULL;
 
@@ -304,6 +302,8 @@ void git_signature__writebuf(git_buf *buf, const char *header, const git_signatu
 	int offset, hours, mins;
 	char sign;
 
+	assert(buf && sig);
+
 	offset = sig->when.offset;
 	sign = (sig->when.offset < 0 || sig->when.sign == '-') ? '-' : '+';
 
@@ -320,8 +320,7 @@ void git_signature__writebuf(git_buf *buf, const char *header, const git_signatu
 
 bool git_signature__equal(const git_signature *one, const git_signature *two)
 {
-	GIT_ASSERT_ARG(one);
-	GIT_ASSERT_ARG(two);
+	assert(one && two);
 
 	return
 		git__strcmp(one->name, two->name) == 0 &&

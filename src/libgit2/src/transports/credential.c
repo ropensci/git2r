@@ -85,9 +85,7 @@ int git_credential_userpass_plaintext_new(
 {
 	git_credential_userpass_plaintext *c;
 
-	GIT_ASSERT_ARG(cred);
-	GIT_ASSERT_ARG(username);
-	GIT_ASSERT_ARG(password);
+	assert(cred && username && password);
 
 	c = git__malloc(sizeof(git_credential_userpass_plaintext));
 	GIT_ERROR_CHECK_ALLOC(c);
@@ -235,9 +233,7 @@ static int git_credential_ssh_key_type_new(
 {
 	git_credential_ssh_key *c;
 
-	GIT_ASSERT_ARG(username);
-	GIT_ASSERT_ARG(cred);
-	GIT_ASSERT_ARG(privatekey);
+	assert(username && cred && privatekey);
 
 	c = git__calloc(1, sizeof(git_credential_ssh_key));
 	GIT_ERROR_CHECK_ALLOC(c);
@@ -273,9 +269,7 @@ int git_credential_ssh_interactive_new(
 {
 	git_credential_ssh_interactive *c;
 
-	GIT_ASSERT_ARG(out);
-	GIT_ASSERT_ARG(username);
-	GIT_ASSERT_ARG(prompt_callback);
+	assert(out && username && prompt_callback);
 
 	c = git__calloc(1, sizeof(git_credential_ssh_interactive));
 	GIT_ERROR_CHECK_ALLOC(c);
@@ -296,8 +290,7 @@ int git_credential_ssh_interactive_new(
 int git_credential_ssh_key_from_agent(git_credential **cred, const char *username) {
 	git_credential_ssh_key *c;
 
-	GIT_ASSERT_ARG(username);
-	GIT_ASSERT_ARG(cred);
+	assert(username && cred);
 
 	c = git__calloc(1, sizeof(git_credential_ssh_key));
 	GIT_ERROR_CHECK_ALLOC(c);
@@ -324,8 +317,7 @@ int git_credential_ssh_custom_new(
 {
 	git_credential_ssh_custom *c;
 
-	GIT_ASSERT_ARG(username);
-	GIT_ASSERT_ARG(cred);
+	assert(username && cred);
 
 	c = git__calloc(1, sizeof(git_credential_ssh_custom));
 	GIT_ERROR_CHECK_ALLOC(c);
@@ -355,7 +347,7 @@ int git_credential_default_new(git_credential **cred)
 {
 	git_credential_default *c;
 
-	GIT_ASSERT_ARG(cred);
+	assert(cred);
 
 	c = git__calloc(1, sizeof(git_credential_default));
 	GIT_ERROR_CHECK_ALLOC(c);
@@ -372,7 +364,7 @@ int git_credential_username_new(git_credential **cred, const char *username)
 	git_credential_username *c;
 	size_t len, allocsize;
 
-	GIT_ASSERT_ARG(cred);
+	assert(cred);
 
 	len = strlen(username);
 

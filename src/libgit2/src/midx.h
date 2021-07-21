@@ -14,7 +14,6 @@
 
 #include "map.h"
 #include "mwindow.h"
-#include "odb.h"
 
 /*
  * A multi-pack-index file.
@@ -50,9 +49,6 @@ typedef struct git_midx_file {
 
 	/* The trailer of the file. Contains the SHA1-checksum of the whole file. */
 	git_oid checksum;
-
-	/* something like ".git/objects/pack/multi-pack-index". */
-	git_buf filename;
 } git_midx_file;
 
 /*
@@ -70,19 +66,12 @@ typedef struct git_midx_entry {
 int git_midx_open(
 		git_midx_file **idx_out,
 		const char *path);
-bool git_midx_needs_refresh(
-		const git_midx_file *idx,
-		const char *path);
 int git_midx_entry_find(
 		git_midx_entry *e,
 		git_midx_file *idx,
 		const git_oid *short_oid,
 		size_t len);
-int git_midx_foreach_entry(
-		git_midx_file *idx,
-		git_odb_foreach_cb cb,
-		void *data);
-int git_midx_close(git_midx_file *idx);
+void git_midx_close(git_midx_file *idx);
 void git_midx_free(git_midx_file *idx);
 
 /* This is exposed for use in the fuzzers. */

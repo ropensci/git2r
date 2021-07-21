@@ -365,7 +365,7 @@ static int config_file_set_multivar(
 	int result;
 	char *key;
 
-	GIT_ASSERT_ARG(regexp);
+	assert(regexp);
 
 	if ((result = git_config__normalize_name(name, &key)) < 0)
 		return result;
@@ -531,7 +531,7 @@ static char *escape_value(const char *ptr)
 	size_t len;
 	const char *esc;
 
-	GIT_ASSERT_ARG_WITH_RETVAL(ptr, NULL);
+	assert(ptr);
 
 	len = strlen(ptr);
 	if (!len)
