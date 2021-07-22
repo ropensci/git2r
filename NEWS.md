@@ -1,10 +1,11 @@
-git2r (development version)
----------------------------
+# git2r (development version)
 
-git2r 0.28.0
-------------
+* Renamed the NEWS file to NEWS.md and changed to use markdown format
+  style.
 
-IMPROVEMENTS
+# git2r 0.28.0 (2021-01-10)
+
+## IMPROVEMENTS
 
 * Updated to use libgit2 version 1.1.0 on Windows.
 
@@ -18,17 +19,15 @@ IMPROVEMENTS
 
 * Updated some tests to work with libgit2 version 1.1.0.
 
-git2r 0.27.1
-------------
+# git2r 0.27.1 (2020-05-03)
 
-CHANGES
+## CHANGES
 
 * Fixed the CITATION file to pass 'R CMD check' without a NOTE.
 
-git2r 0.27.0
-------------
+# git2r 0.27.0 (2020-05-01)
 
-IMPROVEMENTS
+## IMPROVEMENTS
 
 * Updated the bundled libgit2 source code to version '0.28.5'.
 
@@ -52,17 +51,15 @@ IMPROVEMENTS
   'last_commit()' function as default to determine the commit to which
   the new branch should point.
 
-git2r 0.26.1
-------------
+# git2r 0.26.1 (2019-06-30)
 
-BUG FIXES
+## BUG FIXES
 
 * Fixed the broken build on Solaris.
 
-git2r 0.26.0
-------------
+# git2r 0.26.0 (2019-06-29)
 
-IMPROVEMENTS
+## IMPROVEMENTS
 
 * Updated the bundled libgit2 source code to version '0.28.2'.
 
@@ -84,36 +81,33 @@ IMPROVEMENTS
   will be returned to reproduce 'git log' with '--no-follow', see the
   documentation. (Peter Carbonetto and John Blischak in PR #372)
 
-BUG FIXES
+## BUG FIXES
 
 * Removed the timezone offset from the commit time to fix an incorrect
   time in GMT when reading information from a repository (Thierry
   Onkelinx in PR #393).
 
-git2r 0.25.2
-------------
+# git2r 0.25.2 (2019-03-20)
 
-CHANGES
+## CHANGES
 
 * Improved the build configuration script: if the system installation
   of libgit2 is to old, use the bundled libgit2 instead of raising an
   error.
 
-BUG FIXES
+## BUG FIXES
 
 * Fixed the broken build on Solaris.
 
-git2r 0.25.1
-------------
+# git2r 0.25.1 (2019-03-17)
 
-BUG FIXES
+## BUG FIXES
 
 * Fixed significant warning from 'R CMD check'
 
-git2r 0.25.0
-------------
+# git2r 0.25.0 (2019-03-17)
 
-CHANGES
+## CHANGES
 
 * Updated the bundled libgit2 source code to version '0.28.1'.
 
@@ -133,7 +127,7 @@ CHANGES
 * Changed the 'descendent_of' function to accept a tag or a branch for
   the 'commit' and 'ancestor' commit.
 
-BUG FIXES
+## BUG FIXES
 
 * Fixed memory protection errors in the git2r C source code reported
   by the 'rchk' tool.
@@ -143,12 +137,11 @@ BUG FIXES
 * Fixed the configuration script to include the missing macro
   'AM_ICONV'.
 
-git2r 0.24.0
-------------
+# git2r 0.24.0 (2019-01-07)
 
 This is a bug-fix release.
 
-BUG FIXES
+## BUG FIXES
 
 * Fixed memory protection errors in the git2r C source code reported
   by the 'rchk' tool.
@@ -156,14 +149,13 @@ BUG FIXES
 * Raise an error if the path argument to the 'hashfile' function is
   NA.
 
-git2r 0.23.0
-------------
+# git2r 0.23.0 (2018-07-17)
 
-IMPROVEMENTS
+## IMPROVEMENTS
 
 * Updated the bundled libgit2 source code to v0.27.3 (504bd54).
 
-BREAKING CHANGE
+## BREAKING CHANGE
 
 * On macOS, git2r no longer enables SSH transport by default. This is
   due to the complexity to build the dependencies for SSH transport in
@@ -177,10 +169,9 @@ BREAKING CHANGE
 
   install.packages('git2r', type='source', configure.vars='autobrew=yes')
 
-git2r 0.22.1
-------------
+# git2r 0.22.1 (2018-07-10)
 
-NEW FEATURES
+## NEW FEATURES
 
 * Added the 'git_config_files' method to locate configuration files.
 
@@ -190,7 +181,7 @@ NEW FEATURES
 * Added the 'stash_apply' method to apply a single stashed state from
   the stash list.
 
-IMPROVEMENTS
+## IMPROVEMENTS
 
 * Updated the bundled libgit2 source code to v0.27.2 (8d36dc6).
 
@@ -206,14 +197,14 @@ IMPROVEMENTS
 * Better default location to find ssh keys in 'cred_ssh_key()' (Ian
   Lyttle in PR #317).
 
-BUG FIXES
+## BUG FIXES
 
 * If a merge results in no change, the returned 'git_merge_result' now returns
   'FALSE' for 'fast_forward' and 'conflicts' and 'NA' for 'sha'. Previously it
   returned 'logical(0)' for 'fast_forward' and 'conflicts' and 'character(0)'
   for 'sha'.
 
-BREAKING CHANGES
+## BREAKING CHANGES
 
 * Changed from S4 classes to S3 classes to simplify the design and
   facilitate future development.
@@ -227,40 +218,37 @@ BREAKING CHANGES
 * Changed the 'stash_drop' argument 'index' from zero-based to
   one-based i.e. use index = 1 to drop the first stash.
 
-git2r 0.21.0
-------------
+# git2r 0.21.0 (2018-01-04)
 
 * Added methods 'odb_blobs' and 'odb_objects' with missing repository
   signature. Internally, they use 'getwd' and 'discover_repository' to
   open a repository.
 
-BUG FIXES
+## BUG FIXES
 
 * The bundled libgit2 source code has been reverted to libgit2 v0.26.0
   (15e1193) from 14 June 2017 (same as in git2r v0.19.0) to fix memory
   alignment errors.
 
-git2r 0.20.0
-------------
+# git2r 0.20.0 (2017-12-17)
 
-IMPROVEMENTS
+## IMPROVEMENTS
 
 * Updated the bundled libgit2 source code to commit (fa8cf14) from 16
   December 2017.
 
 * Improvements to the build configuration script.
 
-BUG FIXES
+## BUG FIXES
 
 * Fixed the internal callback for remote host authentication from
   hanging indefinitely when querying an ssh-agent for
   credentials. Now, the callback signals an error instead of trying
   again if the authentication failed the first time.
 
-git2r 0.19.0
-------------
+# git2r 0.19.0 (2017-07-19)
 
-IMPROVEMENTS
+## IMPROVEMENTS
 
 * Updated the bundled libgit2 source code to commit (15e1193)
   (v0.26.0) from 14 June 2017.
@@ -270,7 +258,7 @@ IMPROVEMENTS
   'checkout=FALSE' has similar effect as the git command line option
   '--no-checkout'. Andrzej K. Oles in #282.
 
-BUG FIXES
+## BUG FIXES
 
 * Fixed memory protection errors in the git2r C source code reported
   by the 'rchk' tool.
@@ -285,19 +273,17 @@ BUG FIXES
   machine earlier in order to fix an unsupported architecture error
   encountered on CentOS (#268, #288).
 
-git2r 0.18.0
-------------
+# git2r 0.18.0 (2017-01-01)
 
-BUG FIXES
+## BUG FIXES
 
 * This is a bug-fix release to solve an error introduced in the build
   configuration on mac in version 0.17.0. The package failed with
   'unable to load shared object', see issue #267.
 
-git2r 0.17.0
-------------
+# git2r 0.17.0 (2016-12-29)
 
-IMPROVEMENTS
+## IMPROVEMENTS
 
 * Updated the bundled libgit2 source code to commit (6b0510e) from 20
   December 2016.
@@ -306,10 +292,9 @@ IMPROVEMENTS
   package with SSH transport enabled. Version 1.8.0 of LibSSH2 is
   downloaded and built from 'https://www.libssh2.org/download/'.
 
-git2r 0.16.0
-------------
+# git2r 0.16.0 (2016-11-20)
 
-IMPROVEMENTS
+## IMPROVEMENTS
 
 * Updated libgit2 source code to commit (6b0510e) from
   17 November 2016.
@@ -333,16 +318,15 @@ IMPROVEMENTS
   unstage, i.e. resets the index entries for all paths to their state
   at HEAD
 
-BUG FIXES
+## BUG FIXES
 
 * Build configuration: use portable string equality comparison
   operator. This fixes the build e.g. for those without Bash as
   /bin/sh. (Sander Maijers in PR #243).
 
-git2r 0.15.0
-------------
+# git2r 0.15.0 (2016-05-11)
 
-IMPROVEMENTS
+## IMPROVEMENTS
 
 * Build configuration: 'pkg-config' is now used to find 'libssl', if
   possible (Elias Pipping in PR #231).
@@ -352,15 +336,14 @@ IMPROVEMENTS
 * Added the method 'is_branch' to check if an object is a
   'git_branch'.
 
-BUG FIXES
+## BUG FIXES
 
 * Build configuration: fixed installation with parallel make (Kirill
   Müller in PR #228).
 
-git2r 0.14.0
-------------
+# git2r 0.14.0 (2016-03-13)
 
-IMPROVEMENTS
+## IMPROVEMENTS
 
 * Updated libgit2 source code to commit (785d8c48) from
   2016-03-04. This is release v0.24.0 of libgit2.
@@ -379,10 +362,9 @@ IMPROVEMENTS
 * Added a workaround to the 'commit' method to list commits in a
   shallow clone since the libgit2 library does not yet support this.
 
-git2r 0.13.1
-------------
+# git2r 0.13.1 (2015-12-10)
 
-BUG FIXES
+## BUG FIXES
 
 * This is a bug-fix release to solve problems introduced in version
   0.12.1:
@@ -398,10 +380,9 @@ BUG FIXES
 
   - Several fixes to the build configuration on non-Windows platforms.
 
-git2r 0.12.1
-------------
+# git2r 0.12.1 (2015-12-05)
 
-NEW FEATURES
+## NEW FEATURES
 
 * Add 'remote_ls' method to list references in a remote repository akin to the
   `git ls-remote` command.
@@ -421,7 +402,7 @@ NEW FEATURES
 * Add 'ceiling' argument to 'discover_repository' method to prevent
   search from walking up the parent directories.
 
-CHANGES
+## CHANGES
 
 * Improvments to the cred_* functions documentation.
 
@@ -442,7 +423,7 @@ CHANGES
 
 * Update libgit2 source code to commit (3f5877d) from 2015-11-12.
 
-BUG FIXES
+## BUG FIXES
 
 * Add missing credentials argument to pull method.
 
@@ -451,10 +432,9 @@ BUG FIXES
 
 * Include 'configure.ac' in the distribution.
 
-git2r 0.11.0
-------------
+# git2r 0.11.0 (2015-08-12)
 
-NEW FEATURES
+## NEW FEATURES
 
 * Add punch card plot.
 
@@ -483,14 +463,14 @@ NEW FEATURES
   package with SSH transport enabled. Version 1.6.0 of LibSSH2 is
   downloaded and built from 'https://github.com/libssh2/libssh2'.
 
-IMPROVEMENTS
+## IMPROVEMENTS
 
 * Better summary output from S4 classes 'git_commit' and
   'git_repository'.
 
 * Updated libgit2 source code to commit (98f7bd2) from 2015-08-05.
 
-BUG FIXES
+## BUG FIXES
 
 * Add imports to DESCRIPTION to fix CRAN notes.
 
@@ -504,17 +484,15 @@ BUG FIXES
 
 * Internal refactoring of C code that raise error to prevent segfault.
 
-git2r 0.10.1
-------------
+# git2r 0.10.1 (2015-05-07)
 
-CHANGES
+## CHANGES
 
 * Rename 'bundle_repo' method to 'bundle_r_package'
 
-git2r 0.10.0
-------------
+# git2r 0.10.0 (2015-05-07)
 
-NEW FEATURES
+## NEW FEATURES
 
 * Added method libgit2_sha that returns the commit id of the libgit2
   library that the bundled source code is based on.
@@ -522,7 +500,7 @@ NEW FEATURES
 * Added the method in_repository to determine if a directory is in a
   git repository.
 
-CHANGES
+## CHANGES
 
 * Add brief summary of the five latest commits when summarizing a
   git_respository.
@@ -547,23 +525,21 @@ CHANGES
 * Removed print of the status in the status method. Changed to return
   S3 class git_status.
 
-BUG FIXES
+## BUG FIXES
 
 * Use OPENSSL_INCLUDES variable to build on Solaris.
 
 * Use bundled regex library on Solaris.
 
-git2 0.9
---------
+git2 0.9 (2015-04-25)
 
-CHANGES
+## CHANGES
 
 * Single quote 'libgit2' and 'Git' in Description field
 
-git2 0.8
---------
+git2 0.8 (2015-04-24)
 
-CHANGES
+## CHANGES
 
 * Added bare argument to clone method to create a bare repository
 
@@ -574,7 +550,7 @@ CHANGES
 
 * Internal refactoring of push
 
-NEW FEATURES
+## NEW FEATURES
 
 * Added method rm_file to remove files
 
@@ -596,27 +572,24 @@ NEW FEATURES
 
 * Added plot method
 
-git2 0.7
----------
+git2 0.7 (2015-02-23)
 
-CHANGES
+## CHANGES
 
 * Update libgit2 source code to commit (366e53d)
 
 * Fix configuration of compiler options when the OpenSSL library is
   found on non-Windows platforms
 
-git2r 0.6
----------
+# git2r 0.6 (2015-02-18)
 
-CHANGES
+## CHANGES
 
 * Update Title and Description field in DESCRIPTION file.
 
-git2r 0.5
----------
+# git2r 0.5 (2015-02-17)
 
-CHANGES
+## CHANGES
 
 * Update libgit2 source code to commit (a291790)
 
@@ -627,30 +600,27 @@ CHANGES
 * Fix significant compiler warnings from R CMD check with pedantic
   flag.
 
-git2r 0.4
----------
+# git2r 0.4 (2015-01-13)
 
-CHANGES
+## CHANGES
 
 * Fix build on Windows
 
-git2r 0.3
----------
+# git2r 0.3 (2015-01-13)
 
-CHANGES
+## CHANGES
 
 * Internal refactoring of merge method and merge tests.
 
 * Update libgit2 source code to version v0.22.0
 
-BUG FIXES
+## BUG FIXES
 
 * Fix build on OSX.
 
-git2r 0.2
----------
+# git2r 0.2 (2015-01-05)
 
-NEW FEATURES
+## NEW FEATURES
 
 * Add method 'odb_objects' to list all objects available in the
   database as a data.frame
@@ -658,11 +628,11 @@ NEW FEATURES
 * Add method 'odb_blobs' to list all blobs reachable from the commits
   in the object database.
 
-DOCUMENTATION
+## DOCUMENTATION
 
 * Added examples to all exported methods.
 
-CHANGES
+## CHANGES
 
 * Removed ggplot2 dependency. Moved plot functionality to the ggit
   package (https://github.com/ropensci/ggit).
@@ -673,13 +643,13 @@ CHANGES
 
 * Renamed diff and merge arguments
 
-IMPROVMENTS
+## IMPROVEMENTS
 
 * Better performance when summarizing contributions.
 
 * Improved build of package.
 
-BUG FIXES
+## BUG FIXES
 
 * Fixed memory leaks.
 
@@ -690,10 +660,9 @@ BUG FIXES
 * Fix tree and blob tests to use writeChar instead of writeLines to
   have more control over line endings.
 
-git2r 0.1
----------
+# git2r 0.1 (2014-09-09)
 
-NEW FEATURES
+## NEW FEATURES
 
 * Many new features and methods added, see the documention for a
   description of the methods below:
@@ -719,7 +688,7 @@ NEW FEATURES
 * Improved error messages to give more detailed information including
   which function raised the error.
 
-NEW S4 CLASSES
+## NEW S4 CLASSES
 
 * The following new S4 classes to handle the libgit2 data structures:
   - cred_ssh_key
@@ -739,7 +708,7 @@ NEW S4 CLASSES
   - git_transfer_progress
   - git_tree
 
-CHANGES
+## CHANGES
 
 * Renamed methods:
   - is.bare to is_bare
@@ -750,10 +719,9 @@ CHANGES
 * Rename hex to sha for the 40-character SHA-1 hash in method
   arguments and S4 class slots.
 
-git2r 0.0.8
------------
+# git2r 0.0.8 (2014-03-20)
 
-NEW FEATURES
+## NEW FEATURES
 
 * Added method to clone repository
 
@@ -761,25 +729,23 @@ NEW FEATURES
 
 * Added method status to display state of a repository
 
-git2r 0.0.7
------------
+# git2r 0.0.7 (2014-03-16)
 
-NEW FEATURES
+## NEW FEATURES
 
 * Added method to create a commit
 
-CHANGES
+## CHANGES
 
 * Improved error checking
 
-git2r 0.0.6
------------
+# git2r 0.0.6 (2014-02-21)
 
-NEW FEATURES
+## NEW FEATURES
 
 * Added method init to create a new Git repository
 
-CHANGES
+## CHANGES
 
 * Removed usage of testthat package when testing the package
 
@@ -789,14 +755,13 @@ CHANGES
 * Dropped usage of external pointers, S4 git_repository now keeps
   track of the path of the repository.
 
-git2r 0.0.5
------------
+# git2r 0.0.5 (2014-01-01)
 
-CHANGES
+## CHANGES
 
 * Renamed S4 class repository to git_repository
 
-NEW FEATURES
+## NEW FEATURES
 
 * Added method commits to list all commits in repository
 
@@ -806,10 +771,9 @@ NEW FEATURES
 
 * Added slot walker to S4 class git_repository
 
-git2r 0.0.4
------------
+# git2r 0.0.4 (2013-12-30)
 
-NEW FEATURES
+## NEW FEATURES
 
 * Added method remote_url to get the url a remote in a repository
 
@@ -820,7 +784,7 @@ NEW FEATURES
 * Added S4 class git_signature to hold information of an action
   signature (e.g. for committers, taggers, etc)
 
-CHANGES
+## CHANGES
 
 * Renamed S4 class tag to git_tag
 
@@ -828,10 +792,9 @@ CHANGES
 
 * Renamed S4 class reference to git_reference
 
-git2r 0.0.3
------------
+# git2r 0.0.3 (2013-12-29)
 
-NEW FEATURES
+## NEW FEATURES
 
 * Added method branches to list branches
 
@@ -849,19 +812,17 @@ NEW FEATURES
 
 * Added S4 class reference to hold information of a git reference
 
-git2r 0.0.2
------------
+# git2r 0.0.2 (2013-12-28)
 
-NEW FEATURES
+## NEW FEATURES
 
 * Added is.bare method to check if a repository is bare
 
 * Added is.empty method to check if a repository is empty
 
-git2r 0.0.1
------------
+# git2r 0.0.1 (2013-12-28)
 
-NEW FEATURES
+## NEW FEATURES
 
 * Added S4 class repository to work with a git repository
 
