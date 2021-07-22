@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2019 The git2r contributors
+## Copyright (C) 2013-2021 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -14,7 +14,7 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library("git2r")
+library(git2r)
 
 ## For debugging
 sessionInfo()
@@ -24,7 +24,7 @@ path <- tempfile(pattern = "git2r-")
 dir.create(path)
 
 ## Initialize a repository
-repo <- init(path)
+repo <- init(path, branch = "main")
 config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Create two files and alternate commits
@@ -111,19 +111,19 @@ writeLines("8", file.path(path, "even.txt"))
 add(repo, "even.txt")
 c8 <- commit(repo, "commit 8")
 
-commits_odd_ref <- commits(repo, ref = "master", path = "odd.txt")
+commits_odd_ref <- commits(repo, ref = "main", path = "odd.txt")
 stopifnot(length(commits_odd_ref) == 3)
 stopifnot(commits_odd_ref[[1]]$sha == c5$sha)
 stopifnot(commits_odd_ref[[2]]$sha == c3$sha)
 stopifnot(commits_odd_ref[[3]]$sha == c1$sha)
 
-commits_even_ref <- commits(repo, ref = "master", path = "even.txt")
+commits_even_ref <- commits(repo, ref = "main", path = "even.txt")
 stopifnot(length(commits_even_ref) == 3)
 stopifnot(commits_even_ref[[1]]$sha == c6$sha)
 stopifnot(commits_even_ref[[2]]$sha == c4$sha)
 stopifnot(commits_even_ref[[3]]$sha == c2$sha)
 
-checkout(repo, branch = "master")
+checkout(repo, branch = "main")
 
 ## Test renaming a file (path does not support --follow)
 writeLines("a file to be renamed", file.path(path, "original.txt"))
@@ -152,7 +152,7 @@ cat("z", file = file.path(path, "merge.txt"), append = TRUE)
 add(repo, "merge.txt")
 c_merge_2 <- commit(repo, "commit merge 2")
 
-checkout(repo, branch = "master")
+checkout(repo, branch = "main")
 writeLines(c("A", letters[2:5]), file.path(path, "merge.txt"))
 add(repo, "merge.txt")
 c_merge_3 <- commit(repo, "commit merge 3")
@@ -183,11 +183,11 @@ stopifnot(commits_abs[[1]]$sha == c_abs$sha)
 ##   - Commit a change on branch test-time-2 (c)
 ##   - Commit a change on branch test-time-1 (b)
 ##   - Commit a change on branch test-time-2 (d)
-##   - Merge branch test-time-2 into master (fast-forward)
-##   - Merge branch test-time-1 into master (merge commit)
+##   - Merge branch test-time-2 into main (fast-forward)
+##   - Merge branch test-time-1 into main (merge commit)
 ##
 ## $ git log --all --decorate --oneline --graph -n 6
-## *   79e6880 (HEAD -> master) merge test-time-1
+## *   79e6880 (HEAD -> main) merge test-time-1
 ## |\
 ## | * e2f18f1 (test-time-1) commit b
 ## | * 5f34820 commit a
@@ -227,12 +227,13 @@ add(repo, "test-time.txt")
 c_d <- commit(repo, "commit d")
 Sys.sleep(1)
 
-checkout(repo, branch = "master")
+checkout(repo, branch = "main")
 merge(repo, "test-time-2") # Fast-forward
 merge(repo, "test-time-1") # Merge commit
 c_merge_time <- commits(repo, n = 1)[[1]]
 
-# topological - commits in test-time-2 come first because it was merged first
+## topological - commits in test-time-2 come first because it was
+## merged first
 stopifnot(identical(
     commits(repo, topological = TRUE, time = FALSE, path = "test-time.txt"),
     list(c_merge_time, c_b, c_a, c_d, c_c, c_base)
@@ -241,7 +242,9 @@ stopifnot(identical(
     commits(repo, topological = TRUE, time = FALSE, path = "test-time.txt"),
     commits(repo, topological = TRUE, time = FALSE)[1:6]
 ))
-# time - commits ordered by time they were created, not merged into master
+
+## time - commits ordered by time they were created, not merged into
+## main
 stopifnot(identical(
     commits(repo, topological = FALSE, time = TRUE, path = "test-time.txt"),
     list(c_merge_time, c_d, c_b, c_c, c_a, c_base)
@@ -250,7 +253,8 @@ stopifnot(identical(
     commits(repo, topological = FALSE, time = TRUE, path = "test-time.txt"),
     commits(repo, topological = FALSE, time = TRUE)[1:6]
 ))
-# topological and time - dominated by time
+
+## topological and time - dominated by time
 stopifnot(identical(
     commits(repo, topological = TRUE, time = TRUE, path = "test-time.txt"),
     list(c_merge_time, c_d, c_b, c_c, c_a, c_base)
@@ -259,7 +263,8 @@ stopifnot(identical(
     commits(repo, topological = TRUE, time = TRUE, path = "test-time.txt"),
     commits(repo, topological = TRUE, time = TRUE)[1:6]
 ))
-# reverse with topological and/or time
+
+## reverse with topological and/or time
 stopifnot(identical(
     commits(repo, topological = TRUE, time = FALSE, reverse = TRUE,
             path = "test-time.txt"),

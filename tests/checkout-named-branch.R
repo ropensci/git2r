@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2019 The git2r contributors
+## Copyright (C) 2013-2021 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -14,7 +14,7 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library("git2r")
+library(git2r)
 
 ## For debugging
 sessionInfo()
@@ -41,7 +41,8 @@ writeLines(
     con = file.path(path_repo_1, "test.txt"))
 add(repo_1, "test.txt")
 commit(repo_1, "First commit message")
-push(repo_1, "origin", "refs/heads/master")
+branch_name <- branches(repo_1)[[1]]$name
+push(repo_1, "origin", paste0("refs/heads/", branch_name))
 
 ## Test checkout branch argument
 tools::assertError(checkout(repo_1))
@@ -79,7 +80,7 @@ stopifnot(identical(
 
 ## Checkout previous branch
 checkout(repo_2, "-")
-stopifnot(identical(repository_head(repo_2)$name, "master"))
+stopifnot(identical(repository_head(repo_2)$name, branch_name))
 
 ## Cleanup
 unlink(path_bare, recursive = TRUE)

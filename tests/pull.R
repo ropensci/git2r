@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2020 The git2r contributors
+## Copyright (C) 2013-2021 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -40,7 +40,8 @@ writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
            con = file.path(path_repo_1, "test-1.txt"))
 add(repo_1, "test-1.txt")
 commit_1 <- commit(repo_1, "First commit message")
-push(repo_1, "origin", "refs/heads/master")
+branch_name <- branches(repo_1)[[1]]$name
+push(repo_1, "origin", paste0("refs/heads/", branch_name))
 
 ## Clone to repo 2
 repo_2 <- clone(path_bare, path_repo_2)
@@ -52,7 +53,7 @@ writeLines(c("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
            con = file.path(path_repo_1, "test-1.txt"))
 add(repo_1, "test-1.txt")
 commit_2 <- commit(repo_1, "Second commit message")
-push(repo_1, "origin", "refs/heads/master")
+push(repo_1, "origin", paste0("refs/heads/", branch_name))
 
 ## Pull changes to repo_2
 pull(repo_2)
@@ -80,7 +81,8 @@ commit_3 <- commit(repo_1, "Third commit message")
 push(repo_1)
 
 ## Set remote tracking branch
-branch_set_upstream(repository_head(repo_2), "origin/master")
+branch_set_upstream(repository_head(repo_2),
+                    paste0("origin/", branch_name))
 stopifnot(identical(
     branch_remote_url(branch_get_upstream(repository_head(repo_2))),
     path_bare))
@@ -92,32 +94,36 @@ stopifnot(identical(length(commits(repo_2)), 3L))
 ## Check references in repo_1 and repo_2. Must clear the repo item
 ## since the repositories have different paths.
 stopifnot(identical(length(references(repo_1)), 2L))
+
 ref_1 <- references(repo_1)
 lapply(seq_len(length(ref_1)), function(i) {
     ref_1[[i]]$repo <<- NULL
 })
+
 ref_2 <- references(repo_2)
 lapply(seq_len(length(ref_2)), function(i) {
     ref_2[[i]]$repo <<- NULL
 })
-stopifnot(identical(ref_1[["refs/heads/master"]],
-                    ref_2[["refs/heads/master"]]))
-stopifnot(identical(ref_1[["refs/remotes/origin/master"]],
-                    ref_2[["refs/remotes/origin/master"]]))
 
-ref_1 <- references(repo_1)[["refs/heads/master"]]
-stopifnot(identical(ref_1$name, "refs/heads/master"))
+name <- paste0("refs/heads/", branch_name)
+stopifnot(identical(ref_1[[name]], ref_2[[name]]))
+
+name <- paste0("refs/remotes/", branch_name)
+stopifnot(identical(ref_1[[name]], ref_2[[name]]))
+
+ref_1 <- references(repo_1)[[paste0("refs/heads/", branch_name)]]
+stopifnot(identical(ref_1$name, paste0("refs/heads/", branch_name)))
 stopifnot(identical(ref_1$type, 1L))
 stopifnot(identical(sha(ref_1), sha(commit_3)))
 stopifnot(identical(ref_1$target, NA_character_))
-stopifnot(identical(ref_1$shorthand, "master"))
+stopifnot(identical(ref_1$shorthand, branch_name))
 
-ref_2 <- references(repo_1)[["refs/remotes/origin/master"]]
-stopifnot(identical(ref_2$name, "refs/remotes/origin/master"))
+ref_2 <- references(repo_1)[[paste0("refs/remotes/origin/", branch_name)]]
+stopifnot(identical(ref_2$name, paste0("refs/remotes/origin/", branch_name)))
 stopifnot(identical(ref_2$type, 1L))
 stopifnot(identical(sha(ref_2), sha(commit_3)))
 stopifnot(identical(ref_2$target, NA_character_))
-stopifnot(identical(ref_2$shorthand, "origin/master"))
+stopifnot(identical(ref_2$shorthand, paste0("origin/", branch_name)))
 
 ## Check references with missing repo argument
 wd <- setwd(path_repo_1)

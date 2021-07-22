@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2019 The git2r contributors
+## Copyright (C) 2013-2021 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -14,7 +14,7 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library("git2r")
+library(git2r)
 
 ## For debugging
 sessionInfo()
@@ -24,7 +24,7 @@ path <- tempfile(pattern = "git2r-")
 dir.create(path)
 
 ## Initialize a repository
-repo <- init(path)
+repo <- init(path, branch = "main")
 config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Create a file
@@ -38,9 +38,9 @@ commit_1 <- commit(repo, "Commit message")
 stopifnot(identical(length(branches(repo)), 1L))
 stopifnot(identical(is_head(branches(repo)[[1]]), TRUE))
 stopifnot(identical(is_local(branches(repo)[[1]]), TRUE))
-stopifnot(identical(branches(repo)[[1]]$name, "master"))
+stopifnot(identical(branches(repo)[[1]]$name, "main"))
 stopifnot(identical(branches(repo)[[1]], repository_head(repo)))
-stopifnot(identical(branches(repo)$master, repository_head(repo)))
+stopifnot(identical(branches(repo)$main, repository_head(repo)))
 
 ## Check branch argument
 res <- tools::assertError(is_local(1))

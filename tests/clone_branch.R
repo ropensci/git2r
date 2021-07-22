@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2019 The git2r contributors
+## Copyright (C) 2013-2021 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -14,7 +14,7 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library("git2r")
+library(git2r)
 
 ## For debugging
 sessionInfo()
@@ -40,6 +40,7 @@ writeLines("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do",
            con = file.path(path_repo_1, "test-1.txt"))
 add(repo_1, "test-1.txt")
 commit_1 <- commit(repo_1, "First commit message")
+branch_name <- branches(repo_1)[[1]]$name
 
 ## Create 'dev' branch
 checkout(branch_create(commit_1, name = "dev"))
@@ -61,11 +62,11 @@ add(repo_1, "test-1.txt")
 commit(repo_1, "Third commit message")
 
 ## Push to bare
-push(repo_1, "origin", "refs/heads/master")
+push(repo_1, "origin", paste0("refs/heads/", branch_name))
 push(repo_1, "origin", "refs/heads/dev")
 
 ## Print branch
-branches(repo_1)[["origin/master"]]
+branches(repo_1)[[paste0("origin/", branch_name)]]
 
 ## Clone to repo 2
 repo_2 <- clone(url = path_bare, local_path = path_repo_2, branch = "dev")

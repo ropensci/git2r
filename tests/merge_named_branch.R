@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2019 The git2r contributors
+## Copyright (C) 2013-2021 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -25,7 +25,7 @@ path <- tempfile(pattern = "git2r-")
 dir.create(path)
 
 ## Initialize a repository
-repo <- init(path)
+repo <- init(path, branch = "main")
 config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Create a file, add and commit
@@ -55,9 +55,9 @@ commit_4 <- commit(repo, "Second commit message branch 2")
 ## Check that merge base equals commit_1
 stopifnot(identical(merge_base(commit_2, commit_3), commit_1))
 
-## Checkout master
+## Checkout main
 b <- branches(repo)
-checkout(b[sapply(b, "[", "name") == "master"][[1]], force = TRUE)
+checkout(b[sapply(b, "[", "name") == "main"][[1]], force = TRUE)
 
 ## Merge branch 1
 m_1 <- merge(repo, "branch1")
@@ -79,8 +79,8 @@ writeLines(c("Lorem ipsum dolor amet sit, consectetur adipisicing elit, sed do",
 add(repo, "test.txt")
 commit(repo, "Commit message branch 3")
 
-## Checkout master and create a change that creates a merge conflict
-checkout(repo, "master", force = TRUE)
+## Checkout main and create a change that creates a merge conflict
+checkout(repo, "main", force = TRUE)
 writeLines(c("Lorem ipsum dolor sit amet, adipisicing consectetur elit, sed do",
              "eiusmod tempor incididunt ut labore et dolore magna aliqua."),
            con = file.path(path, "test.txt"))

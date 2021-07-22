@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2019 The git2r contributors
+## Copyright (C) 2013-2021 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -14,7 +14,7 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-library("git2r")
+library(git2r)
 
 ## For debugging
 sessionInfo()
@@ -24,7 +24,7 @@ path <- tempfile(pattern = "git2r-")
 dir.create(path)
 
 ## Initialize a repository
-repo <- init(path)
+repo <- init(path, branch = "main")
 config(repo, user.name = "Alice", user.email = "alice@example.org")
 
 ## Create first commit
@@ -74,7 +74,7 @@ commit_3 <- commit(repo, "Third commit message")
 
 ## Check HEAD
 stopifnot(identical(is_detached(repo), FALSE))
-stopifnot(identical(repository_head(repo)$name, "master"))
+stopifnot(identical(repository_head(repo)$name, "main"))
 
 ## Check show and summary
 repo
