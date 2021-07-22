@@ -268,24 +268,35 @@ cleanup:
  * is created at the pointed path. If FALSE, provided path will be
  * considered as the working directory into which the .git directory
  * will be created.
+ * @param branch Use the specified name for the initial branch in the
+ * newly created repository. If NULL, fall back to the default name.
  * @return R_NilValue
  */
 SEXP attribute_hidden
 git2r_repository_init(
     SEXP path,
-    SEXP bare)
+    SEXP bare,
+    SEXP branch)
 {
     int error;
     git_repository *repository = NULL;
+    git_repository_init_options opts = GIT_REPOSITORY_INIT_OPTIONS_INIT;
 
     if (git2r_arg_check_string(path))
         git2r_error(__func__, NULL, "'path'", git2r_err_string_arg);
     if (git2r_arg_check_logical(bare))
         git2r_error(__func__, NULL, "'bare'", git2r_err_logical_arg);
+    if (!Rf_isNull(branch) && git2r_arg_check_string(branch))
+        git2r_error(__func__, NULL, "'branch'", git2r_err_string_arg);
 
-    error = git_repository_init(&repository,
-                                CHAR(STRING_ELT(path, 0)),
-                                LOGICAL(bare)[0]);
+    if (LOGICAL(bare)[0])
+        opts.flags |= GIT_REPOSITORY_INIT_BARE;
+    if (!Rf_isNull(branch))
+        opts.initial_head = CHAR(STRING_ELT(branch, 0));
+
+    error = git_repository_init_ext(&repository,
+                                    CHAR(STRING_ELT(path, 0)),
+                                    &opts);
     if (error)
         git2r_error(__func__, NULL, git2r_err_repo_init, NULL);
 

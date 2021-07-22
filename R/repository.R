@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2019 The git2r contributors
+## Copyright (C) 2013-2021 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -176,6 +176,9 @@ repository <- function(path = ".", discover = TRUE) {
 ##'     is created at the pointed path. If FALSE, provided path will
 ##'     be considered as the working directory into which the .git
 ##'     directory will be created.
+##' @param branch Use the specified name for the initial branch in the
+##'     newly created repository. If \code{branch=NULL}, fall back to
+##'     the default name.
 ##' @return A \code{git_repository} object
 ##' @export
 ##' @seealso \link{repository}
@@ -193,11 +196,11 @@ repository <- function(path = ".", discover = TRUE) {
 ##' repo_bare <- init(path_bare, bare = TRUE)
 ##' is_bare(repo_bare)
 ##' }
-init <- function(path = ".", bare = FALSE) {
+init <- function(path = ".", bare = FALSE, branch = NULL) {
     path <- normalizePath(path, winslash = "/", mustWork = TRUE)
     if (!file.info(path)$isdir)
         stop("'path' is not a directory")
-    .Call(git2r_repository_init, path, bare)
+    .Call(git2r_repository_init, path, bare, branch)
     repository(path)
 }
 

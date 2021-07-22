@@ -125,7 +125,7 @@ static const R_CallMethodDef callMethods[] =
     CALLDEF(git2r_repository_fetch_heads, 1),
     CALLDEF(git2r_repository_head, 1),
     CALLDEF(git2r_repository_head_detached, 1),
-    CALLDEF(git2r_repository_init, 2),
+    CALLDEF(git2r_repository_init, 3),
     CALLDEF(git2r_repository_is_bare, 1),
     CALLDEF(git2r_repository_is_empty, 1),
     CALLDEF(git2r_repository_is_shallow, 1),
