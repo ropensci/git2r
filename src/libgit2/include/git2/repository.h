@@ -762,13 +762,15 @@ GIT_EXTERN(int) git_repository_mergehead_foreach(
  *
  * @param out Output value of calculated SHA
  * @param repo Repository pointer
- * @param path Path to file on disk whose contents should be hashed. If the
- *             repository is not NULL, this can be a relative path.
+ * @param path Path to file on disk whose contents should be hashed.  This
+ *             may be an absolute path or a relative path, in which case it
+ *             will be treated as a path within the working directory.
  * @param type The object type to hash as (e.g. GIT_OBJECT_BLOB)
  * @param as_path The path to use to look up filtering rules. If this is
- *             NULL, then the `path` parameter will be used instead. If
- *             this is passed as the empty string, then no filters will be
- *             applied when calculating the hash.
+ *             an empty string then no filters will be applied when
+ *             calculating the hash. If this is `NULL` and the `path`
+ *             parameter is a file within the repository's working
+ *             directory, then the `path` will be used.
  * @return 0 on success, or an error code
  */
 GIT_EXTERN(int) git_repository_hashfile(
@@ -797,8 +799,8 @@ GIT_EXTERN(int) git_repository_hashfile(
  * @return 0 on success, or an error code
  */
 GIT_EXTERN(int) git_repository_set_head(
-	git_repository* repo,
-	const char* refname);
+	git_repository *repo,
+	const char *refname);
 
 /**
  * Make the repository HEAD directly point to the Commit.
@@ -817,8 +819,8 @@ GIT_EXTERN(int) git_repository_set_head(
  * @return 0 on success, or an error code
  */
 GIT_EXTERN(int) git_repository_set_head_detached(
-	git_repository* repo,
-	const git_oid* commitish);
+	git_repository *repo,
+	const git_oid *commitish);
 
 /**
  * Make the repository HEAD directly point to the Commit.
@@ -854,7 +856,7 @@ GIT_EXTERN(int) git_repository_set_head_detached_from_annotated(
  * branch or an error code
  */
 GIT_EXTERN(int) git_repository_detach_head(
-	git_repository* repo);
+	git_repository *repo);
 
 /**
  * Repository state

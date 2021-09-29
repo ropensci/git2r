@@ -391,6 +391,20 @@ GIT_EXTERN(int) git_odb_write_pack(
 	void *progress_payload);
 
 /**
+ * Write a `multi-pack-index` file from all the `.pack` files in the ODB.
+ *
+ * If the ODB layer understands pack files, then this will create a file called
+ * `multi-pack-index` next to the `.pack` and `.idx` files, which will contain
+ * an index of all objects stored in `.pack` files. This will allow for
+ * O(log n) lookup for n objects (regardless of how many packfiles there
+ * exist).
+ *
+ * @param db object database where the `multi-pack-index` file will be written.
+ */
+GIT_EXTERN(int) git_odb_write_multi_pack_index(
+	git_odb *db);
+
+/**
  * Determine the object-ID (sha1 hash) of a data buffer
  *
  * The resulting SHA-1 OID will be the identifier for the data
@@ -538,6 +552,21 @@ GIT_EXTERN(size_t) git_odb_num_backends(git_odb *odb);
  * @return 0 on success, GIT_ENOTFOUND if pos is invalid, other errors < 0
  */
 GIT_EXTERN(int) git_odb_get_backend(git_odb_backend **out, git_odb *odb, size_t pos);
+
+/**
+ * Set the git commit-graph for the ODB.
+ *
+ * After a successfull call, the ownership of the cgraph parameter will be
+ * transferred to libgit2, and the caller should not free it.
+ *
+ * The commit-graph can also be unset by explicitly passing NULL as the cgraph
+ * parameter.
+ *
+ * @param odb object database
+ * @param cgraph the git commit-graph
+ * @return 0 on success; error code otherwise
+ */
+GIT_EXTERN(int) git_odb_set_commit_graph(git_odb *odb, git_commit_graph *cgraph);
 
 /** @} */
 GIT_END_DECL
