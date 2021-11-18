@@ -81,9 +81,9 @@ elif test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
                 if test "x${BREW}" = xyes; then
                     BREWDIR=`brew --prefix`
                     USE_BUNDLED_LIBGIT2=no
-                elif test "x${autobrew}" = xyes; then
+                else
                     curl -sfL "https://autobrew.github.io/scripts/libgit2" > autobrew
-                    source autobrew
+                    . autobrew
                     USE_BUNDLED_LIBGIT2=no
                 fi
             ;;
