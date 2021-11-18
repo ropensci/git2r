@@ -1,4 +1,4 @@
-# git2r (development version)
+# git2r 0.29.0 (2021-11-18)
 
 ## CHANGES
 
