@@ -1,5 +1,15 @@
 # git2r (development version)
 
+## CHANGES
+
+* Added a 'branch' argument to the 'init' function to make it possible
+  to specify the branch name.
+
+* Updated the build configuration script on Windows and MacOS to use
+  libgit2 version 1.3.0.
+
+* Updated the bundled libgit2 source code to version 1.3.0.
+
 * Renamed the NEWS file to NEWS.md and changed to use markdown format
   style.
 
