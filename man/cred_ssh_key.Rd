@@ -18,8 +18,8 @@ credential. Default is \code{ssh_path("id_rsa.pub")}}
 credential. Default is \code{ssh_path("id_rsa")}}
 
 \item{passphrase}{The passphrase of the credential. Default is
-\code{character(0)}. If getPass is installed and private key
-is passphrase protected \code{getPass::getPass()} will be
+\code{character(0)}. If askpass is installed and private key
+is passphrase protected \code{askpass::askpass()} will be
 called to allow for interactive and obfuscated interactive
 input of the passphrase.}
 }
