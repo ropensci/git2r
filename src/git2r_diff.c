@@ -861,7 +861,8 @@ git2r_diff_count_hunk_cb(
     GIT2R_UNUSED(hunk);
 
     n->num_hunks += 1;
-    if (n->num_hunks > n->max_hunks) { n->max_hunks = n->num_hunks; }
+    if (n->num_hunks > n->max_hunks)
+        n->max_hunks = n->num_hunks;
     n->num_lines = 0;
     return 0;
 }
@@ -915,12 +916,13 @@ git2r_diff_count(
     int error;
     git2r_diff_count_payload n = { 0, 0, 0 };
 
-    error = git_diff_foreach(diff,
-			   git2r_diff_count_file_cb,
-                           /* binary_cb */ NULL,
-			   git2r_diff_count_hunk_cb,
-			   git2r_diff_count_line_cb,
-			   /* payload= */ (void*) &n);
+    error = git_diff_foreach(
+        diff,
+        git2r_diff_count_file_cb,
+        /* binary_cb */ NULL,
+        git2r_diff_count_hunk_cb,
+        git2r_diff_count_line_cb,
+        /* payload= */ (void*) &n);
 
     if (error)
 	return -1;
