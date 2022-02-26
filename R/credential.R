@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013 - 2019 The git2r contributors
+## Copyright (C) 2013 - 2022 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -57,8 +57,8 @@ cred_env <- function(username = NULL, password = NULL) {
 ##' \code{.Renviron}. This file is read by \emph{R} during startup,
 ##' see \code{\link[base]{Startup}}. On GitHub, personal access tokens
 ##' function like ordinary OAuth access tokens. They can be used
-##' instead of a password for Git over HTTPS, see
-##' \url{https://help.github.com/articles/creating-an-access-token-for-command-line-use}
+##' instead of a password for Git over HTTPS, see the \dQuote{Creating
+##' a personal access token} article on GitHub Docs.
 ##' @family git credential functions
 ##' @param token The name of the environmental variable that holds the
 ##'     personal access token for the authentication. Default is
