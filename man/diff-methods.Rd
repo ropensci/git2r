@@ -96,6 +96,19 @@ A \code{git_diff} object if as_char is FALSE. If as_char
 \description{
 Changes between commits, trees, working tree, etc.
 }
+\section{Line endings}{
+
+
+Different operating systems handle line endings
+differently. Windows uses both a carriage-return character and a
+linefeed character to represent a newline in a file. While Linux
+and macOS use only the linefeed character for a newline in a
+file. To avoid problems in your diffs, you can configure Git to
+properly handle line endings using the \verb{core.autocrlf}
+setting in the Git config file, see the Git documentation
+(\url{https://git-scm.com/}).
+}
+
 \examples{
 \dontrun{
 ## Initialize a repository
