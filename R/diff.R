@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2019 The git2r contributors
+## Copyright (C) 2013-2022 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -207,7 +207,7 @@ diff.git_repository <- function(x,
                                 path = NULL,
                                 max_size = NULL,
                                 ...) {
-    if (as_char) {
+    if (isTRUE(as_char)) {
         ## Make sure filename is character(0) to write to a
         ## character vector or a character vector with path in
         ## order to write to a file.
@@ -253,7 +253,7 @@ diff.git_tree <- function(x,
                           path = NULL,
                           max_size = NULL,
                           ...) {
-    if (as_char) {
+    if (isTRUE(as_char)) {
         ## Make sure filename is character(0) to write to a character
         ## vector or a character vector with path in order to write to
         ## a file.
