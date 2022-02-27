@@ -1,3 +1,11 @@
+# git2r (development version)
+
+## CHANGES
+
+* Added the file 'src/Makevars.ucrt'.
+
+* Added documentation about line endings in the diff function.
+
 # git2r 0.29.0 (2021-11-18)
 
 ## CHANGES
