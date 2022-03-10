@@ -3,6 +3,8 @@
 ## CHANGES
 
 * Added the file 'src/Makevars.ucrt'.
+* Added the build configuration script ('src/Makevars.ucrt') for
+  Windows UCRT. Thanks to Tomas Kalibera for providing the patch.
 
 * Added documentation about line endings in the diff function.
 
