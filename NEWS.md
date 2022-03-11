@@ -2,11 +2,13 @@
 
 ## CHANGES
 
-* Added the file 'src/Makevars.ucrt'.
 * Added the build configuration script ('src/Makevars.ucrt') for
   Windows UCRT. Thanks to Tomas Kalibera for providing the patch.
 
-* Added documentation about line endings in the diff function.
+* Added documentation about line endings in the diff
+  function. Different operating systems handle line endings
+  differently and to avoid problems in diffs, Git can be configured to
+  handle these differences in line endings
 
 # git2r 0.29.0 (2021-11-18)
 
