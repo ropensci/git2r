@@ -1,3 +1,7 @@
+# git2r (development version)
+
+## CHANGES
+
 # git2r 0.30.1 (2022-03-15)
 
 ## CHANGES
