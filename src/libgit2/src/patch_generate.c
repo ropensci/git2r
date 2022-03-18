@@ -261,7 +261,7 @@ static int create_binary(
 	const char *b_data,
 	size_t b_datalen)
 {
-	git_buf deflate = GIT_BUF_INIT, delta = GIT_BUF_INIT;
+	git_str deflate = GIT_STR_INIT, delta = GIT_STR_INIT;
 	size_t delta_data_len = 0;
 	int error;
 
@@ -302,18 +302,18 @@ static int create_binary(
 	if (delta.size && delta.size < deflate.size) {
 		*out_type = GIT_DIFF_BINARY_DELTA;
 		*out_datalen = delta.size;
-		*out_data = git_buf_detach(&delta);
+		*out_data = git_str_detach(&delta);
 		*out_inflatedlen = delta_data_len;
 	} else {
 		*out_type = GIT_DIFF_BINARY_LITERAL;
 		*out_datalen = deflate.size;
-		*out_data = git_buf_detach(&deflate);
+		*out_data = git_str_detach(&deflate);
 		*out_inflatedlen = b_datalen;
 	}
 
 done:
-	git_buf_dispose(&deflate);
-	git_buf_dispose(&delta);
+	git_str_dispose(&deflate);
+	git_str_dispose(&delta);
 
 	return error;
 }
@@ -750,18 +750,34 @@ git_diff_driver *git_patch_generated_driver(git_patch_generated *patch)
 	return patch->ofile.driver;
 }
 
-void git_patch_generated_old_data(
-	char **ptr, size_t *len, git_patch_generated *patch)
+int git_patch_generated_old_data(
+	char **ptr, long *len, git_patch_generated *patch)
 {
+	if (patch->ofile.map.len > LONG_MAX ||
+	    patch->ofile.map.len > GIT_XDIFF_MAX_SIZE) {
+		git_error_set(GIT_ERROR_INVALID, "files too large for diff");
+		return -1;
+	}
+
 	*ptr = patch->ofile.map.data;
-	*len = patch->ofile.map.len;
+	*len = (long)patch->ofile.map.len;
+
+	return 0;
 }
 
-void git_patch_generated_new_data(
-	char **ptr, size_t *len, git_patch_generated *patch)
+int git_patch_generated_new_data(
+	char **ptr, long *len, git_patch_generated *patch)
 {
+	if (patch->ofile.map.len > LONG_MAX ||
+	    patch->ofile.map.len > GIT_XDIFF_MAX_SIZE) {
+		git_error_set(GIT_ERROR_INVALID, "files too large for diff");
+		return -1;
+	}
+
 	*ptr = patch->nfile.map.data;
-	*len = patch->nfile.map.len;
+	*len = (long)patch->nfile.map.len;
+
+	return 0;
 }
 
 static int patch_generated_file_cb(

@@ -9,10 +9,9 @@
 #include "netops.h"
 
 #include <ctype.h>
-#include "git2/errors.h"
 
 #include "posix.h"
-#include "buffer.h"
+#include "str.h"
 #include "http_parser.h"
 #include "runtime.h"
 
@@ -20,6 +19,24 @@
 #define DEFAULT_PORT_HTTPS "443"
 #define DEFAULT_PORT_GIT   "9418"
 #define DEFAULT_PORT_SSH   "22"
+
+bool git_net_str_is_url(const char *str)
+{
+	const char *c;
+
+	for (c = str; *c; c++) {
+		if (*c == ':' && *(c+1) == '/' && *(c+2) == '/')
+			return true;
+
+		if ((*c < 'a' || *c > 'z') &&
+		    (*c < 'A' || *c > 'Z') &&
+		    (*c < '0' || *c > '9') &&
+		    (*c != '+' && *c != '-' && *c != '.'))
+			break;
+	}
+
+	return false;
+}
 
 static const char *default_port_for_scheme(const char *scheme)
 {
@@ -29,7 +46,9 @@ static const char *default_port_for_scheme(const char *scheme)
 		return DEFAULT_PORT_HTTPS;
 	else if (strcmp(scheme, "git") == 0)
 		return DEFAULT_PORT_GIT;
-	else if (strcmp(scheme, "ssh") == 0)
+	else if (strcmp(scheme, "ssh") == 0 ||
+	         strcmp(scheme, "ssh+git") == 0 ||
+		 strcmp(scheme, "git+ssh") == 0)
 		return DEFAULT_PORT_SSH;
 
 	return NULL;
@@ -79,13 +98,13 @@ int git_net_url_parse(git_net_url *url, const char *given)
 {
 	struct http_parser_url u = {0};
 	bool has_scheme, has_host, has_port, has_path, has_query, has_userinfo;
-	git_buf scheme = GIT_BUF_INIT,
-		host = GIT_BUF_INIT,
-		port = GIT_BUF_INIT,
-		path = GIT_BUF_INIT,
-		username = GIT_BUF_INIT,
-		password = GIT_BUF_INIT,
-		query = GIT_BUF_INIT;
+	git_str scheme = GIT_STR_INIT,
+		host = GIT_STR_INIT,
+		port = GIT_STR_INIT,
+		path = GIT_STR_INIT,
+		username = GIT_STR_INIT,
+		password = GIT_STR_INIT,
+		query = GIT_STR_INIT;
 	int error = GIT_EINVALIDSPEC;
 
 	if (http_parser_parse_url(given, strlen(given), false, &u)) {
@@ -103,7 +122,7 @@ int git_net_url_parse(git_net_url *url, const char *given)
 	if (has_scheme) {
 		const char *url_scheme = given + u.field_data[UF_SCHEMA].off;
 		size_t url_scheme_len = u.field_data[UF_SCHEMA].len;
-		git_buf_put(&scheme, url_scheme, url_scheme_len);
+		git_str_put(&scheme, url_scheme, url_scheme_len);
 		git__strntolower(scheme.ptr, scheme.size);
 	} else {
 		git_error_set(GIT_ERROR_NET, "malformed URL '%s'", given);
@@ -113,13 +132,13 @@ int git_net_url_parse(git_net_url *url, const char *given)
 	if (has_host) {
 		const char *url_host = given + u.field_data[UF_HOST].off;
 		size_t url_host_len = u.field_data[UF_HOST].len;
-		git_buf_decode_percent(&host, url_host, url_host_len);
+		git_str_decode_percent(&host, url_host, url_host_len);
 	}
 
 	if (has_port) {
 		const char *url_port = given + u.field_data[UF_PORT].off;
 		size_t url_port_len = u.field_data[UF_PORT].len;
-		git_buf_put(&port, url_port, url_port_len);
+		git_str_put(&port, url_port, url_port_len);
 	} else {
 		const char *default_port = default_port_for_scheme(scheme.ptr);
 
@@ -128,21 +147,21 @@ int git_net_url_parse(git_net_url *url, const char *given)
 			goto done;
 		}
 
-		git_buf_puts(&port, default_port);
+		git_str_puts(&port, default_port);
 	}
 
 	if (has_path) {
 		const char *url_path = given + u.field_data[UF_PATH].off;
 		size_t url_path_len = u.field_data[UF_PATH].len;
-		git_buf_put(&path, url_path, url_path_len);
+		git_str_put(&path, url_path, url_path_len);
 	} else {
-		git_buf_puts(&path, "/");
+		git_str_puts(&path, "/");
 	}
 
 	if (has_query) {
 		const char *url_query = given + u.field_data[UF_QUERY].off;
 		size_t url_query_len = u.field_data[UF_QUERY].len;
-		git_buf_decode_percent(&query, url_query, url_query_len);
+		git_str_decode_percent(&query, url_query, url_query_len);
 	}
 
 	if (has_userinfo) {
@@ -156,41 +175,230 @@ int git_net_url_parse(git_net_url *url, const char *given)
 			const char *url_password = colon + 1;
 			size_t url_password_len = url_userinfo_len - (url_username_len + 1);
 
-			git_buf_decode_percent(&username, url_username, url_username_len);
-			git_buf_decode_percent(&password, url_password, url_password_len);
+			git_str_decode_percent(&username, url_username, url_username_len);
+			git_str_decode_percent(&password, url_password, url_password_len);
 		} else {
-			git_buf_decode_percent(&username, url_userinfo, url_userinfo_len);
+			git_str_decode_percent(&username, url_userinfo, url_userinfo_len);
 		}
 	}
 
-	if (git_buf_oom(&scheme) ||
-	    git_buf_oom(&host) ||
-	    git_buf_oom(&port) ||
-	    git_buf_oom(&path) ||
-	    git_buf_oom(&query) ||
-	    git_buf_oom(&username) ||
-	    git_buf_oom(&password))
+	if (git_str_oom(&scheme) ||
+	    git_str_oom(&host) ||
+	    git_str_oom(&port) ||
+	    git_str_oom(&path) ||
+	    git_str_oom(&query) ||
+	    git_str_oom(&username) ||
+	    git_str_oom(&password))
 		return -1;
 
-	url->scheme = git_buf_detach(&scheme);
-	url->host = git_buf_detach(&host);
-	url->port = git_buf_detach(&port);
-	url->path = git_buf_detach(&path);
-	url->query = git_buf_detach(&query);
-	url->username = git_buf_detach(&username);
-	url->password = git_buf_detach(&password);
+	url->scheme = git_str_detach(&scheme);
+	url->host = git_str_detach(&host);
+	url->port = git_str_detach(&port);
+	url->path = git_str_detach(&path);
+	url->query = git_str_detach(&query);
+	url->username = git_str_detach(&username);
+	url->password = git_str_detach(&password);
 
 	error = 0;
 
 done:
-	git_buf_dispose(&scheme);
-	git_buf_dispose(&host);
-	git_buf_dispose(&port);
-	git_buf_dispose(&path);
-	git_buf_dispose(&query);
-	git_buf_dispose(&username);
-	git_buf_dispose(&password);
+	git_str_dispose(&scheme);
+	git_str_dispose(&host);
+	git_str_dispose(&port);
+	git_str_dispose(&path);
+	git_str_dispose(&query);
+	git_str_dispose(&username);
+	git_str_dispose(&password);
 	return error;
+}
+
+static int scp_invalid(const char *message)
+{
+	git_error_set(GIT_ERROR_NET, "invalid scp-style path: %s", message);
+	return GIT_EINVALIDSPEC;
+}
+
+static bool is_ipv6(const char *str)
+{
+	const char *c;
+	size_t colons = 0;
+
+	if (*str++ != '[')
+		return false;
+
+	for (c = str; *c; c++) {
+		if (*c  == ':')
+			colons++;
+
+		if (*c == ']')
+			return (colons > 1);
+
+		if (*c != ':' &&
+		    (*c < '0' || *c > '9') &&
+		    (*c < 'a' || *c > 'f') &&
+		    (*c < 'A' || *c > 'F'))
+			return false;
+	}
+
+	return false;
+}
+
+static bool has_at(const char *str)
+{
+	const char *c;
+
+	for (c = str; *c; c++) {
+		if (*c == '@')
+			return true;
+
+		if (*c == ':')
+			break;
+	}
+
+	return false;
+}
+
+int git_net_url_parse_scp(git_net_url *url, const char *given)
+{
+	const char *default_port = default_port_for_scheme("ssh");
+	const char *c, *user, *host, *port, *path = NULL;
+	size_t user_len = 0, host_len = 0, port_len = 0;
+	unsigned short bracket = 0;
+
+	enum {
+		NONE,
+		USER,
+		HOST_START, HOST, HOST_END,
+		IPV6, IPV6_END,
+		PORT_START, PORT, PORT_END,
+		PATH_START
+	} state = NONE;
+
+	memset(url, 0, sizeof(git_net_url));
+
+	for (c = given; *c && !path; c++) {
+		switch (state) {
+		case NONE:
+			switch (*c) {
+			case '@':
+				return scp_invalid("unexpected '@'");
+			case ':':
+				return scp_invalid("unexpected ':'");
+			case '[':
+				if (is_ipv6(c)) {
+					state = IPV6;
+					host = c;
+				} else if (bracket++ > 1) {
+					return scp_invalid("unexpected '['");
+				}
+				break;
+			default:
+				if (has_at(c)) {
+					state = USER;
+					user = c;
+				} else {
+					state = HOST;
+					host = c;
+				}
+				break;
+			}
+			break;
+
+		case USER:
+			if (*c == '@') {
+				user_len = (c - user);
+				state = HOST_START;
+			}
+			break;
+
+		case HOST_START:
+			state = (*c == '[') ? IPV6 : HOST;
+			host = c;
+			break;
+
+		case HOST:
+			if (*c == ':') {
+				host_len = (c - host);
+				state = bracket ? PORT_START : PATH_START;
+			} else if (*c == ']') {
+				if (bracket-- == 0)
+					return scp_invalid("unexpected ']'");
+
+				host_len = (c - host);
+				state = HOST_END;
+			}
+			break;
+
+		case HOST_END:
+			if (*c != ':')
+				return scp_invalid("unexpected character after hostname");
+			state = PATH_START;
+			break;
+
+		case IPV6:
+			if (*c == ']')
+				state = IPV6_END;
+			break;
+
+		case IPV6_END:
+			if (*c != ':')
+				return scp_invalid("unexpected character after ipv6 address");
+
+			host_len = (c - host);
+			state = bracket ? PORT_START : PATH_START;
+			break;
+
+		case PORT_START:
+			port = c;
+			state = PORT;
+			break;
+
+		case PORT:
+			if (*c == ']') {
+				if (bracket-- == 0)
+					return scp_invalid("unexpected ']'");
+
+				port_len = c - port;
+				state = PORT_END;
+			}
+			break;
+
+		case PORT_END:
+			if (*c != ':')
+				return scp_invalid("unexpected character after ipv6 address");
+
+			state = PATH_START;
+			break;
+
+		case PATH_START:
+			path = c;
+			break;
+
+		default:
+			GIT_ASSERT("unhandled state");
+		}
+	}
+
+	if (!path)
+		return scp_invalid("path is required");
+
+	GIT_ERROR_CHECK_ALLOC(url->scheme = git__strdup("ssh"));
+
+	if (user_len)
+		GIT_ERROR_CHECK_ALLOC(url->username = git__strndup(user, user_len));
+
+	GIT_ASSERT(host_len);
+	GIT_ERROR_CHECK_ALLOC(url->host = git__strndup(host, host_len));
+
+	if (port_len)
+		GIT_ERROR_CHECK_ALLOC(url->port = git__strndup(port, port_len));
+	else
+		GIT_ERROR_CHECK_ALLOC(url->port = git__strdup(default_port));
+
+	GIT_ASSERT(path);
+	GIT_ERROR_CHECK_ALLOC(url->path = git__strdup(path));
+
+	return 0;
 }
 
 int git_net_url_joinpath(
@@ -198,7 +406,7 @@ int git_net_url_joinpath(
 	git_net_url *one,
 	const char *two)
 {
-	git_buf path = GIT_BUF_INIT;
+	git_str path = GIT_STR_INIT;
 	const char *query;
 	size_t one_len, two_len;
 
@@ -226,14 +434,14 @@ int git_net_url_joinpath(
 		two_len--;
 	}
 
-	git_buf_put(&path, one->path, one_len);
-	git_buf_putc(&path, '/');
-	git_buf_put(&path, two, two_len);
+	git_str_put(&path, one->path, one_len);
+	git_str_putc(&path, '/');
+	git_str_put(&path, two, two_len);
 
-	if (git_buf_oom(&path))
+	if (git_str_oom(&path))
 		return -1;
 
-	out->path = git_buf_detach(&path);
+	out->path = git_str_detach(&path);
 
 	if (one->scheme) {
 		out->scheme = git__strdup(one->scheme);
@@ -316,6 +524,7 @@ static void remove_service_suffix(
 int git_net_url_apply_redirect(
 	git_net_url *url,
 	const char *redirect_location,
+	bool allow_offsite,
 	const char *service_suffix)
 {
 	git_net_url tmp = GIT_NET_URL_INIT;
@@ -340,8 +549,8 @@ int git_net_url_apply_redirect(
 		/* Validate that this is a legal redirection */
 
 		if (original->scheme &&
-			strcmp(original->scheme, tmp.scheme) != 0 &&
-			strcmp(tmp.scheme, "https") != 0) {
+		    strcmp(original->scheme, tmp.scheme) != 0 &&
+		    strcmp(tmp.scheme, "https") != 0) {
 			git_error_set(GIT_ERROR_NET, "cannot redirect from '%s' to '%s'",
 				original->scheme, tmp.scheme);
 
@@ -350,6 +559,7 @@ int git_net_url_apply_redirect(
 		}
 
 		if (original->host &&
+		    !allow_offsite &&
 		    git__strcasecmp(original->host, tmp.host) != 0) {
 			git_error_set(GIT_ERROR_NET, "cannot redirect from '%s' to '%s'",
 				original->host, tmp.host);
@@ -399,53 +609,53 @@ void git_net_url_swap(git_net_url *a, git_net_url *b)
 	memcpy(b, &tmp, sizeof(git_net_url));
 }
 
-int git_net_url_fmt(git_buf *buf, git_net_url *url)
+int git_net_url_fmt(git_str *buf, git_net_url *url)
 {
 	GIT_ASSERT_ARG(url);
 	GIT_ASSERT_ARG(url->scheme);
 	GIT_ASSERT_ARG(url->host);
 
-	git_buf_puts(buf, url->scheme);
-	git_buf_puts(buf, "://");
+	git_str_puts(buf, url->scheme);
+	git_str_puts(buf, "://");
 
 	if (url->username) {
-		git_buf_puts(buf, url->username);
+		git_str_puts(buf, url->username);
 
 		if (url->password) {
-			git_buf_puts(buf, ":");
-			git_buf_puts(buf, url->password);
+			git_str_puts(buf, ":");
+			git_str_puts(buf, url->password);
 		}
 
-		git_buf_putc(buf, '@');
+		git_str_putc(buf, '@');
 	}
 
-	git_buf_puts(buf, url->host);
+	git_str_puts(buf, url->host);
 
 	if (url->port && !git_net_url_is_default_port(url)) {
-		git_buf_putc(buf, ':');
-		git_buf_puts(buf, url->port);
+		git_str_putc(buf, ':');
+		git_str_puts(buf, url->port);
 	}
 
-	git_buf_puts(buf, url->path ? url->path : "/");
+	git_str_puts(buf, url->path ? url->path : "/");
 
 	if (url->query) {
-		git_buf_putc(buf, '?');
-		git_buf_puts(buf, url->query);
+		git_str_putc(buf, '?');
+		git_str_puts(buf, url->query);
 	}
 
-	return git_buf_oom(buf) ? -1 : 0;
+	return git_str_oom(buf) ? -1 : 0;
 }
 
-int git_net_url_fmt_path(git_buf *buf, git_net_url *url)
+int git_net_url_fmt_path(git_str *buf, git_net_url *url)
 {
-	git_buf_puts(buf, url->path ? url->path : "/");
+	git_str_puts(buf, url->path ? url->path : "/");
 
 	if (url->query) {
-		git_buf_putc(buf, '?');
-		git_buf_puts(buf, url->query);
+		git_str_putc(buf, '?');
+		git_str_puts(buf, url->query);
 	}
 
-	return git_buf_oom(buf) ? -1 : 0;
+	return git_str_oom(buf) ? -1 : 0;
 }
 
 static bool matches_pattern(

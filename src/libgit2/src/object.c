@@ -11,6 +11,7 @@
 
 #include "repository.h"
 
+#include "buf.h"
 #include "commit.h"
 #include "hash.h"
 #include "tree.h"
@@ -143,12 +144,17 @@ int git_object__from_odb_object(
 	def = &git_objects_table[odb_obj->cached.type];
 	GIT_ASSERT(def->free && def->parse);
 
-	if ((error = def->parse(object, odb_obj)) < 0)
+	if ((error = def->parse(object, odb_obj)) < 0) {
+		/*
+		 * parse returns EINVALID on invalid data; downgrade
+		 * that to a normal -1 error code.
+		 */
 		def->free(object);
-	else
-		*object_out = git_cache_store_parsed(&repo->objects, object);
+		return -1;
+	}
 
-	return error;
+	*object_out = git_cache_store_parsed(&repo->objects, object);
+	return 0;
 }
 
 void git_object__free(void *obj)
@@ -491,7 +497,7 @@ cleanup:
 	return error;
 }
 
-int git_object_short_id(git_buf *out, const git_object *obj)
+static int git_object__short_id(git_str *out, const git_object *obj)
 {
 	git_repository *repo;
 	int len = GIT_ABBREV_DEFAULT, error;
@@ -500,9 +506,6 @@ int git_object_short_id(git_buf *out, const git_object *obj)
 
 	GIT_ASSERT_ARG(out);
 	GIT_ASSERT_ARG(obj);
-
-	if ((error = git_buf_sanitize(out)) < 0)
-		return error;
 
 	repo = git_object_owner(obj);
 
@@ -526,7 +529,7 @@ int git_object_short_id(git_buf *out, const git_object *obj)
 		len++;
 	}
 
-	if (!error && !(error = git_buf_grow(out, len + 1))) {
+	if (!error && !(error = git_str_grow(out, len + 1))) {
 		git_oid_tostr(out->ptr, len + 1, &id);
 		out->size = len;
 	}
@@ -534,6 +537,11 @@ int git_object_short_id(git_buf *out, const git_object *obj)
 	git_odb_free(odb);
 
 	return error;
+}
+
+int git_object_short_id(git_buf *out, const git_object *obj)
+{
+	GIT_BUF_WRAP_PRIVATE(out, git_object__short_id, obj);
 }
 
 bool git_object__is_valid(
@@ -558,4 +566,36 @@ bool git_object__is_valid(
 	}
 
 	return true;
+}
+
+int git_object_rawcontent_is_valid(
+	int *valid,
+	const char *buf,
+	size_t len,
+	git_object_t type)
+{
+	git_object *obj = NULL;
+	int error;
+
+	GIT_ASSERT_ARG(valid);
+	GIT_ASSERT_ARG(buf);
+
+	/* Blobs are always valid; don't bother parsing. */
+	if (type == GIT_OBJECT_BLOB) {
+		*valid = 1;
+		return 0;
+	}
+
+	error = git_object__from_raw(&obj, buf, len, type);
+	git_object_free(obj);
+
+	if (error == 0) {
+		*valid = 1;
+		return 0;
+	} else if (error == GIT_EINVALID) {
+		*valid = 0;
+		return 0;
+	}
+
+	return error;
 }

@@ -27,7 +27,12 @@ struct git_config {
 	git_vector backends;
 };
 
-extern int git_config__global_location(git_buf *buf);
+extern int git_config__global_location(git_str *buf);
+
+extern int git_config__find_global(git_str *path);
+extern int git_config__find_xdg(git_str *path);
+extern int git_config__find_system(git_str *path);
+extern int git_config__find_programdata(git_str *path);
 
 extern int git_config_rename_section(
 	git_repository *repo,
@@ -50,6 +55,14 @@ extern int git_config__update_entry(
 	const char *value,
 	bool overwrite_existing,
 	bool only_if_existing);
+
+int git_config__get_path(
+	git_str *out,
+	const git_config *cfg,
+	const char *name);
+
+int git_config__get_string_buf(
+	git_str *out, const git_config *cfg, const char *name);
 
 /*
  * Lookup functions that cannot fail.  These functions look up a config
@@ -83,7 +96,7 @@ int git_config_lookup_map_enum(git_configmap_t *type_out,
 /**
  * Unlock the backend with the highest priority
  *
- * Unlocking will allow other writers to updat the configuration
+ * Unlocking will allow other writers to update the configuration
  * file. Optionally, any changes performed since the lock will be
  * applied to the configuration.
  *

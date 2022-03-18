@@ -26,7 +26,7 @@
  */
 typedef struct {
 	git_repository *repo;
-	git_buf dir; /* current directory reflected in ign_path */
+	git_str dir; /* current directory reflected in ign_path */
 	git_attr_file *ign_internal;
 	git_vector ign_path;
 	git_vector ign_global;
@@ -48,7 +48,7 @@ enum {
 	GIT_IGNORE_UNCHECKED = -2,
 	GIT_IGNORE_NOTFOUND = -1,
 	GIT_IGNORE_FALSE = 0,
-	GIT_IGNORE_TRUE = 1,
+	GIT_IGNORE_TRUE = 1
 };
 
 extern int git_ignore__lookup(int *out, git_ignores *ign, const char *path, git_dir_flag dir_flag);

@@ -8,11 +8,11 @@
 #include "merge.h"
 
 #include "posix.h"
-#include "buffer.h"
+#include "str.h"
 #include "repository.h"
 #include "revwalk.h"
 #include "commit_list.h"
-#include "path.h"
+#include "fs_path.h"
 #include "refs.h"
 #include "object.h"
 #include "iterator.h"
@@ -591,7 +591,7 @@ int git_repository_mergehead_foreach(
 	git_repository_mergehead_foreach_cb cb,
 	void *payload)
 {
-	git_buf merge_head_path = GIT_BUF_INIT, merge_head_file = GIT_BUF_INIT;
+	git_str merge_head_path = GIT_STR_INIT, merge_head_file = GIT_STR_INIT;
 	char *buffer, *line;
 	size_t line_num = 1;
 	git_oid oid;
@@ -600,12 +600,12 @@ int git_repository_mergehead_foreach(
 	GIT_ASSERT_ARG(repo);
 	GIT_ASSERT_ARG(cb);
 
-	if ((error = git_buf_joinpath(&merge_head_path, repo->gitdir,
+	if ((error = git_str_joinpath(&merge_head_path, repo->gitdir,
 		GIT_MERGE_HEAD_FILE)) < 0)
 		return error;
 
 	if ((error = git_futils_readbuffer(&merge_head_file,
-		git_buf_cstr(&merge_head_path))) < 0)
+		git_str_cstr(&merge_head_path))) < 0)
 		goto cleanup;
 
 	buffer = merge_head_file.ptr;
@@ -635,8 +635,8 @@ int git_repository_mergehead_foreach(
 	}
 
 cleanup:
-	git_buf_dispose(&merge_head_path);
-	git_buf_dispose(&merge_head_file);
+	git_str_dispose(&merge_head_path);
+	git_str_dispose(&merge_head_file);
 
 	return error;
 }
@@ -893,7 +893,7 @@ static int merge_conflict_invoke_driver(
 	git_merge_driver_source *src)
 {
 	git_index_entry *result;
-	git_buf buf = GIT_BUF_INIT;
+	git_buf buf = {0};
 	const char *path;
 	uint32_t mode;
 	git_odb *odb = NULL;
@@ -2116,11 +2116,11 @@ int git_merge__iterators(
 	file_opts.flags = opts.file_flags;
 
 	/* use the git-inspired labels when virtual base building */
-	if (opts.flags & GIT_MERGE__VIRTUAL_BASE) {
+	if (opts.flags & GIT_MERGE_VIRTUAL_BASE) {
 		file_opts.ancestor_label = "merged common ancestors";
 		file_opts.our_label = "Temporary merge branch 1";
 		file_opts.their_label = "Temporary merge branch 2";
-		file_opts.flags |= GIT_MERGE_FILE_FAVOR__CONFLICTED;
+		file_opts.flags |= GIT_MERGE_FILE_ACCEPT_CONFLICTS;
 		file_opts.marker_size = GIT_MERGE_CONFLICT_MARKER_SIZE + 2;
 	}
 
@@ -2280,7 +2280,7 @@ static int create_virtual_base(
 		memcpy(&virtual_opts, opts, sizeof(git_merge_options));
 
 	virtual_opts.flags &= ~GIT_MERGE_FAIL_ON_CONFLICT;
-	virtual_opts.flags |= GIT_MERGE__VIRTUAL_BASE;
+	virtual_opts.flags |= GIT_MERGE_VIRTUAL_BASE;
 
 	if ((merge_annotated_commits(&index, NULL, repo, one, two,
 			recursion_level + 1, &virtual_opts)) < 0)
@@ -2473,14 +2473,14 @@ static int write_merge_head(
 	size_t heads_len)
 {
 	git_filebuf file = GIT_FILEBUF_INIT;
-	git_buf file_path = GIT_BUF_INIT;
+	git_str file_path = GIT_STR_INIT;
 	size_t i;
 	int error = 0;
 
 	GIT_ASSERT_ARG(repo);
 	GIT_ASSERT_ARG(heads);
 
-	if ((error = git_buf_joinpath(&file_path, repo->gitdir, GIT_MERGE_HEAD_FILE)) < 0 ||
+	if ((error = git_str_joinpath(&file_path, repo->gitdir, GIT_MERGE_HEAD_FILE)) < 0 ||
 		(error = git_filebuf_open(&file, file_path.ptr, GIT_FILEBUF_CREATE_LEADING_DIRS, GIT_MERGE_FILE_MODE)) < 0)
 		goto cleanup;
 
@@ -2495,7 +2495,7 @@ cleanup:
 	if (error < 0)
 		git_filebuf_cleanup(&file);
 
-	git_buf_dispose(&file_path);
+	git_str_dispose(&file_path);
 
 	return error;
 }
@@ -2503,12 +2503,12 @@ cleanup:
 static int write_merge_mode(git_repository *repo)
 {
 	git_filebuf file = GIT_FILEBUF_INIT;
-	git_buf file_path = GIT_BUF_INIT;
+	git_str file_path = GIT_STR_INIT;
 	int error = 0;
 
 	GIT_ASSERT_ARG(repo);
 
-	if ((error = git_buf_joinpath(&file_path, repo->gitdir, GIT_MERGE_MODE_FILE)) < 0 ||
+	if ((error = git_str_joinpath(&file_path, repo->gitdir, GIT_MERGE_MODE_FILE)) < 0 ||
 		(error = git_filebuf_open(&file, file_path.ptr, GIT_FILEBUF_CREATE_LEADING_DIRS, GIT_MERGE_FILE_MODE)) < 0)
 		goto cleanup;
 
@@ -2521,7 +2521,7 @@ cleanup:
 	if (error < 0)
 		git_filebuf_cleanup(&file);
 
-	git_buf_dispose(&file_path);
+	git_str_dispose(&file_path);
 
 	return error;
 }
@@ -2719,7 +2719,7 @@ static int write_merge_msg(
 	size_t heads_len)
 {
 	git_filebuf file = GIT_FILEBUF_INIT;
-	git_buf file_path = GIT_BUF_INIT;
+	git_str file_path = GIT_STR_INIT;
 	struct merge_msg_entry *entries;
 	git_vector matching = GIT_VECTOR_INIT;
 	size_t i;
@@ -2740,7 +2740,7 @@ static int write_merge_msg(
 	for (i = 0; i < heads_len; i++)
 		entries[i].merge_head = heads[i];
 
-	if ((error = git_buf_joinpath(&file_path, repo->gitdir, GIT_MERGE_MSG_FILE)) < 0 ||
+	if ((error = git_str_joinpath(&file_path, repo->gitdir, GIT_MERGE_MSG_FILE)) < 0 ||
 		(error = git_filebuf_open(&file, file_path.ptr, GIT_FILEBUF_CREATE_LEADING_DIRS, GIT_MERGE_FILE_MODE)) < 0 ||
 		(error = git_filebuf_write(&file, "Merge ", 6)) < 0)
 		goto cleanup;
@@ -2822,7 +2822,7 @@ cleanup:
 	if (error < 0)
 		git_filebuf_cleanup(&file);
 
-	git_buf_dispose(&file_path);
+	git_str_dispose(&file_path);
 
 	git_vector_free(&matching);
 	git__free(entries);
@@ -3019,10 +3019,10 @@ static int merge_check_workdir(size_t *conflicts, git_repository *repo, git_inde
 	*conflicts = 0;
 
 	/* We need to have merged at least 1 file for the possibility to exist to
-	 * have conflicts with the workdir. Passing 0 as the pathspec count paramter
+	 * have conflicts with the workdir. Passing 0 as the pathspec count parameter
 	 * will consider all files in the working directory, that is, we may detect
 	 * a conflict if there were untracked files in the workdir prior to starting
-	 * the merge. This typically happens when cherry-picking a commmit whose
+	 * the merge. This typically happens when cherry-picking a commit whose
 	 * changes have already been applied.
 	 */
 	if (merged_paths->length == 0)
@@ -3114,7 +3114,7 @@ int git_merge__append_conflicts_to_merge_msg(
 	git_index *index)
 {
 	git_filebuf file = GIT_FILEBUF_INIT;
-	git_buf file_path = GIT_BUF_INIT;
+	git_str file_path = GIT_STR_INIT;
 	const char *last = NULL;
 	size_t i;
 	int error;
@@ -3122,11 +3122,11 @@ int git_merge__append_conflicts_to_merge_msg(
 	if (!git_index_has_conflicts(index))
 		return 0;
 
-	if ((error = git_buf_joinpath(&file_path, repo->gitdir, GIT_MERGE_MSG_FILE)) < 0 ||
+	if ((error = git_str_joinpath(&file_path, repo->gitdir, GIT_MERGE_MSG_FILE)) < 0 ||
 		(error = git_filebuf_open(&file, file_path.ptr, GIT_FILEBUF_APPEND, GIT_MERGE_FILE_MODE)) < 0)
 		goto cleanup;
 
-	git_filebuf_printf(&file, "\nConflicts:\n");
+	git_filebuf_printf(&file, "\n#Conflicts:\n");
 
 	for (i = 0; i < git_index_entrycount(index); i++) {
 		const git_index_entry *e = git_index_get_byindex(index, i);
@@ -3135,7 +3135,7 @@ int git_merge__append_conflicts_to_merge_msg(
 			continue;
 
 		if (last == NULL || strcmp(e->path, last) != 0)
-			git_filebuf_printf(&file, "\t%s\n", e->path);
+			git_filebuf_printf(&file, "#\t%s\n", e->path);
 
 		last = e->path;
 	}
@@ -3146,7 +3146,7 @@ cleanup:
 	if (error < 0)
 		git_filebuf_cleanup(&file);
 
-	git_buf_dispose(&file_path);
+	git_str_dispose(&file_path);
 
 	return error;
 }

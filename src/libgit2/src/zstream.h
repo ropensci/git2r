@@ -11,11 +11,11 @@
 
 #include <zlib.h>
 
-#include "buffer.h"
+#include "str.h"
 
 typedef enum {
 	GIT_ZSTREAM_INFLATE,
-	GIT_ZSTREAM_DEFLATE,
+	GIT_ZSTREAM_DEFLATE
 } git_zstream_t;
 
 typedef struct {
@@ -48,7 +48,7 @@ bool git_zstream_eos(git_zstream *zstream);
 
 void git_zstream_reset(git_zstream *zstream);
 
-int git_zstream_deflatebuf(git_buf *out, const void *in, size_t in_len);
-int git_zstream_inflatebuf(git_buf *out, const void *in, size_t in_len);
+int git_zstream_deflatebuf(git_str *out, const void *in, size_t in_len);
+int git_zstream_inflatebuf(git_str *out, const void *in, size_t in_len);
 
 #endif

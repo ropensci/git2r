@@ -11,20 +11,23 @@
 
 #include "map.h"
 #include "posix.h"
-#include "path.h"
+#include "fs_path.h"
 #include "pool.h"
 #include "strmap.h"
-#include "oid.h"
+#include "hash.h"
 
 /**
  * Filebuffer methods
  *
  * Read whole files into an in-memory buffer for processing
  */
-extern int git_futils_readbuffer(git_buf *obj, const char *path);
+extern int git_futils_readbuffer(git_str *obj, const char *path);
 extern int git_futils_readbuffer_updated(
-	git_buf *obj, const char *path, git_oid *checksum, int *updated);
-extern int git_futils_readbuffer_fd(git_buf *obj, git_file fd, size_t len);
+	git_str *obj,
+	const char *path,
+	unsigned char checksum[GIT_HASH_SHA1_SIZE],
+	int *updated);
+extern int git_futils_readbuffer_fd(git_str *obj, git_file fd, size_t len);
 
 /* Additional constants for `git_futils_writebuffer`'s `open_flags`.  We
  * support these internally and they will be removed before the `open` call.
@@ -34,7 +37,7 @@ extern int git_futils_readbuffer_fd(git_buf *obj, git_file fd, size_t len);
 #endif
 
 extern int git_futils_writebuffer(
-	const git_buf *buf, const char *path, int open_flags, mode_t mode);
+	const git_str *buf, const char *path, int open_flags, mode_t mode);
 
 /**
  * File utils
@@ -93,7 +96,7 @@ typedef enum {
 	GIT_MKDIR_SKIP_LAST2 = 32,
 	GIT_MKDIR_VERIFY_DIR = 64,
 	GIT_MKDIR_REMOVE_FILES = 128,
-	GIT_MKDIR_REMOVE_SYMLINKS = 256,
+	GIT_MKDIR_REMOVE_SYMLINKS = 256
 } git_futils_mkdir_flags;
 
 struct git_futils_mkdir_perfdata
@@ -156,7 +159,7 @@ typedef enum {
 	GIT_RMDIR_SKIP_NONEMPTY   = (1 << 1),
 	GIT_RMDIR_EMPTY_PARENTS   = (1 << 2),
 	GIT_RMDIR_REMOVE_BLOCKERS = (1 << 3),
-	GIT_RMDIR_SKIP_ROOT       = (1 << 4),
+	GIT_RMDIR_SKIP_ROOT       = (1 << 4)
 } git_futils_rmdir_flags;
 
 /**
@@ -170,11 +173,20 @@ typedef enum {
 extern int git_futils_rmdir_r(const char *path, const char *base, uint32_t flags);
 
 /**
- * Create and open a temporary file with a `_git2_` suffix.
- * Writes the filename into path_out.
+ * Create and open a temporary file with a `_git2_` suffix in a
+ * protected directory; the file created will created will honor
+ * the current `umask`.  Writes the filename into path_out.
+ *
+ * This function uses a high-quality PRNG seeded by the system's
+ * entropy pool _where available_ and falls back to a simple seed
+ * (time plus system information) when not.  This is suitable for
+ * writing within a protected directory, but the system's safe
+ * temporary file creation functions should be preferred where
+ * available when writing into world-writable (temp) directories.
+ *
  * @return On success, an open file descriptor, else an error code < 0.
  */
-extern int git_futils_mktmp(git_buf *path_out, const char *filename, mode_t mode);
+extern int git_futils_mktmp(git_str *path_out, const char *filename, mode_t mode);
 
 /**
  * Move a file on the filesystem, create the
@@ -221,17 +233,17 @@ typedef enum {
 	GIT_CPDIR_OVERWRITE         = (1u << 3),
 	GIT_CPDIR_CHMOD_DIRS        = (1u << 4),
 	GIT_CPDIR_SIMPLE_TO_MODE    = (1u << 5),
-	GIT_CPDIR_LINK_FILES        = (1u << 6),
+	GIT_CPDIR_LINK_FILES        = (1u << 6)
 } git_futils_cpdir_flags;
 
 /**
  * Copy a directory tree.
  *
  * This copies directories and files from one root to another.  You can
- * pass a combinationof GIT_CPDIR flags as defined above.
+ * pass a combination of GIT_CPDIR flags as defined above.
  *
  * If you pass the CHMOD flag, then the dirmode will be applied to all
- * directories that are created during the copy, overiding the natural
+ * directories that are created during the copy, overriding the natural
  * permissions.  If you do not pass the CHMOD flag, then the dirmode
  * will actually be copied from the source files and the `dirmode` arg
  * will be ignored.

@@ -12,8 +12,8 @@
 #include "git2.h"
 #include "vector.h"
 #include "netops.h"
-#include "buffer.h"
 #include "push.h"
+#include "str.h"
 #include "git2/sys/transport.h"
 
 #define GIT_SIDE_BAND_DATA     1
@@ -30,6 +30,8 @@
 #define GIT_CAP_REPORT_STATUS "report-status"
 #define GIT_CAP_THIN_PACK "thin-pack"
 #define GIT_CAP_SYMREF "symref"
+#define GIT_CAP_WANT_TIP_SHA1 "allow-tip-sha1-in-want"
+#define GIT_CAP_WANT_REACHABLE_SHA1 "allow-reachable-sha1-in-want"
 
 extern bool git_smart__ofs_delta_enabled;
 
@@ -46,7 +48,7 @@ typedef enum {
 	GIT_PKT_PROGRESS,
 	GIT_PKT_OK,
 	GIT_PKT_NG,
-	GIT_PKT_UNPACK,
+	GIT_PKT_UNPACK
 } git_pkt_type;
 
 /* Used for multi_ack and multi_ack_detailed */
@@ -119,16 +121,18 @@ typedef struct {
 } git_pkt_unpack;
 
 typedef struct transport_smart_caps {
-	int common:1,
-		ofs_delta:1,
-		multi_ack: 1,
-		multi_ack_detailed: 1,
-		side_band:1,
-		side_band_64k:1,
-		include_tag:1,
-		delete_refs:1,
-		report_status:1,
-		thin_pack:1;
+	unsigned int common:1,
+	             ofs_delta:1,
+	             multi_ack:1,
+	             multi_ack_detailed:1,
+	             side_band:1,
+	             side_band_64k:1,
+	             include_tag:1,
+	             delete_refs:1,
+	             report_status:1,
+	             thin_pack:1,
+	             want_tip_sha1:1,
+	             want_reachable_sha1:1;
 } transport_smart_caps;
 
 typedef int (*packetsize_cb)(size_t received, void *payload);
@@ -137,16 +141,8 @@ typedef struct {
 	git_transport parent;
 	git_remote *owner;
 	char *url;
-	git_credential_acquire_cb cred_acquire_cb;
-	void *cred_acquire_payload;
-	git_proxy_options proxy;
+	git_remote_connect_options connect_opts;
 	int direction;
-	int flags;
-	git_transport_message_cb progress_cb;
-	git_transport_message_cb error_cb;
-	git_transport_certificate_check_cb certificate_check_cb;
-	void *message_cb_payload;
-	git_strarray custom_headers;
 	git_smart_subtransport *wrapped;
 	git_smart_subtransport_stream *current_stream;
 	transport_smart_caps caps;
@@ -157,8 +153,8 @@ typedef struct {
 	packetsize_cb packetsize_cb;
 	void *packetsize_payload;
 	unsigned rpc : 1,
-		have_refs : 1,
-		connected : 1;
+	         have_refs : 1,
+	         connected : 1;
 	gitno_buffer buffer;
 	char buffer_data[65536];
 } transport_smart;
@@ -166,7 +162,7 @@ typedef struct {
 /* smart_protocol.c */
 int git_smart__store_refs(transport_smart *t, int flushes);
 int git_smart__detect_caps(git_pkt_ref *pkt, transport_smart_caps *caps, git_vector *symrefs);
-int git_smart__push(git_transport *transport, git_push *push, const git_remote_callbacks *cbs);
+int git_smart__push(git_transport *transport, git_push *push);
 
 int git_smart__negotiate_fetch(
 	git_transport *transport,
@@ -177,9 +173,7 @@ int git_smart__negotiate_fetch(
 int git_smart__download_pack(
 	git_transport *transport,
 	git_repository *repo,
-	git_indexer_progress *stats,
-	git_indexer_progress_cb progress_cb,
-	void *progress_payload);
+	git_indexer_progress *stats);
 
 /* smart.c */
 int git_smart__negotiation_step(git_transport *transport, void *data, size_t len);
@@ -189,11 +183,11 @@ int git_smart__update_heads(transport_smart *t, git_vector *symrefs);
 
 /* smart_pkt.c */
 int git_pkt_parse_line(git_pkt **head, const char **endptr, const char *line, size_t linelen);
-int git_pkt_buffer_flush(git_buf *buf);
+int git_pkt_buffer_flush(git_str *buf);
 int git_pkt_send_flush(GIT_SOCKET s);
-int git_pkt_buffer_done(git_buf *buf);
-int git_pkt_buffer_wants(const git_remote_head * const *refs, size_t count, transport_smart_caps *caps, git_buf *buf);
-int git_pkt_buffer_have(git_oid *oid, git_buf *buf);
+int git_pkt_buffer_done(git_str *buf);
+int git_pkt_buffer_wants(const git_remote_head * const *refs, size_t count, transport_smart_caps *caps, git_str *buf);
+int git_pkt_buffer_have(git_oid *oid, git_str *buf);
 void git_pkt_free(git_pkt *pkt);
 
 #endif

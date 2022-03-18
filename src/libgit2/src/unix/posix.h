@@ -7,9 +7,7 @@
 #ifndef INCLUDE_unix_posix_h__
 #define INCLUDE_unix_posix_h__
 
-#ifndef LIBGIT2_NO_FEATURES_H
-# include "git2/sys/features.h"
-#endif
+#include "common.h"
 
 #include <stdio.h>
 #include <dirent.h>
@@ -60,7 +58,6 @@ GIT_INLINE(int) p_fsync(int fd)
 #define p_strncasecmp(s1, s2, c) strncasecmp(s1, s2, c)
 #define p_vsnprintf(b, c, f, a) vsnprintf(b, c, f, a)
 #define p_snprintf snprintf
-#define p_mkstemp(p) mkstemp(p)
 #define p_chdir(p) chdir(p)
 #define p_rmdir(p) rmdir(p)
 #define p_access(p,m) access(p,m)

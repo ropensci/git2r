@@ -51,10 +51,10 @@ typedef struct git_midx_file {
 	size_t num_object_large_offsets;
 
 	/* The trailer of the file. Contains the SHA1-checksum of the whole file. */
-	git_oid checksum;
+	unsigned char checksum[GIT_HASH_SHA1_SIZE];
 
 	/* something like ".git/objects/pack/multi-pack-index". */
-	git_buf filename;
+	git_str filename;
 } git_midx_file;
 
 /*
@@ -77,7 +77,7 @@ struct git_midx_writer {
 	 * The path of the directory where the .pack/.idx files are stored. The
 	 * `multi-pack-index` file will be written to the same directory.
 	 */
-	git_buf pack_dir;
+	git_str pack_dir;
 
 	/* The list of `git_pack_file`s. */
 	git_vector packs;

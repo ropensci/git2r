@@ -11,6 +11,9 @@
 
 #include "git2/oid.h"
 
+extern const git_oid git_oid__empty_blob_sha1;
+extern const git_oid git_oid__empty_tree_sha1;
+
 /**
  * Format a git_oid into a newly allocated c-string.
  *
@@ -46,6 +49,18 @@ GIT_INLINE(void) git_oid__cpy_prefix(
 
 	if (len & 1)
 		out->id[len / 2] &= 0xF0;
+}
+
+GIT_INLINE(bool) git_oid__is_hexstr(const char *str)
+{
+	size_t i;
+
+	for (i = 0; str[i] != '\0'; i++) {
+		if (git__fromhex(str[i]) < 0)
+			return false;
+	}
+
+	return (i == GIT_OID_HEXSZ);
 }
 
 #endif

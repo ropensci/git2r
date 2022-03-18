@@ -7,15 +7,11 @@
 #ifndef INCLUDE_util_h__
 #define INCLUDE_util_h__
 
-#include "common.h"
-
 #ifndef GIT_WIN32
 # include <ctype.h>
 #endif
 
-#include "git2/buffer.h"
-
-#include "buffer.h"
+#include "str.h"
 #include "common.h"
 #include "strnlen.h"
 #include "thread.h"
@@ -40,8 +36,6 @@
 #else
 # define GIT_CONTAINER_OF(ptr, type, member) (type *)(ptr)
 #endif
-
-#define GIT_DATE_RFC2822_SZ  32
 
 /**
  * Return the length of a constant string.
@@ -299,26 +293,6 @@ GIT_INLINE(bool) git__isxdigit(int c)
 extern int git__parse_bool(int *out, const char *value);
 
 /*
- * Parse a string into a value as a git_time_t.
- *
- * Sample valid input:
- * - "yesterday"
- * - "July 17, 2003"
- * - "2003-7-17 08:23"
- */
-extern int git__date_parse(git_time_t *out, const char *date);
-
-/*
- * Format a git_time as a RFC2822 string
- *
- * @param out buffer to store formatted date; a '\\0' terminator will automatically be added.
- * @param len size of the buffer; should be atleast `GIT_DATE_RFC2822_SZ` in size;
- * @param date the date to be formatted
- * @return 0 if successful; -1 on error
- */
-extern int git__date_rfc2822_fmt(char *out, size_t len, const git_time *date);
-
-/*
  * Unescapes a string in-place.
  *
  * Edge cases behavior:
@@ -402,7 +376,7 @@ GIT_INLINE(double) git__timer(void)
 
 #endif
 
-extern int git__getenv(git_buf *out, const char *name);
+extern int git__getenv(git_str *out, const char *name);
 
 extern int git__online_cpus(void);
 

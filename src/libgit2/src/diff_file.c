@@ -178,7 +178,7 @@ static int diff_file_content_commit_to_str(
 	git_diff_file_content *fc, bool check_status)
 {
 	char oid[GIT_OID_HEXSZ+1];
-	git_buf content = GIT_BUF_INIT;
+	git_str content = GIT_STR_INIT;
 	const char *status = "";
 
 	if (check_status) {
@@ -217,11 +217,11 @@ static int diff_file_content_commit_to_str(
 	}
 
 	git_oid_tostr(oid, sizeof(oid), &fc->file->id);
-	if (git_buf_printf(&content, "Subproject commit %s%s\n", oid, status) < 0)
+	if (git_str_printf(&content, "Subproject commit %s%s\n", oid, status) < 0)
 		return -1;
 
-	fc->map.len  = git_buf_len(&content);
-	fc->map.data = git_buf_detach(&content);
+	fc->map.len  = git_str_len(&content);
+	fc->map.data = git_str_detach(&content);
 	fc->flags |= GIT_DIFF_FLAG__FREE_DATA;
 
 	return 0;
@@ -270,24 +270,24 @@ static int diff_file_content_load_blob(
 }
 
 static int diff_file_content_load_workdir_symlink_fake(
-	git_diff_file_content *fc, git_buf *path)
+	git_diff_file_content *fc, git_str *path)
 {
-	git_buf target = GIT_BUF_INIT;
+	git_str target = GIT_STR_INIT;
 	int error;
 
 	if ((error = git_futils_readbuffer(&target, path->ptr)) < 0)
 		return error;
 
-	fc->map.len = git_buf_len(&target);
-	fc->map.data = git_buf_detach(&target);
+	fc->map.len = git_str_len(&target);
+	fc->map.data = git_str_detach(&target);
 	fc->flags |= GIT_DIFF_FLAG__FREE_DATA;
 
-	git_buf_dispose(&target);
+	git_str_dispose(&target);
 	return error;
 }
 
 static int diff_file_content_load_workdir_symlink(
-	git_diff_file_content *fc, git_buf *path)
+	git_diff_file_content *fc, git_str *path)
 {
 	ssize_t alloc_len, read_len;
 	int symlink_supported, error;
@@ -309,7 +309,7 @@ static int diff_file_content_load_workdir_symlink(
 
 	fc->flags |= GIT_DIFF_FLAG__FREE_DATA;
 
-	read_len = p_readlink(git_buf_cstr(path), fc->map.data, alloc_len);
+	read_len = p_readlink(git_str_cstr(path), fc->map.data, alloc_len);
 	if (read_len < 0) {
 		git_error_set(GIT_ERROR_OS, "failed to read symlink '%s'", fc->file->path);
 		return -1;
@@ -321,22 +321,31 @@ static int diff_file_content_load_workdir_symlink(
 
 static int diff_file_content_load_workdir_file(
 	git_diff_file_content *fc,
-	git_buf *path,
+	git_str *path,
 	git_diff_options *diff_opts)
 {
 	int error = 0;
 	git_filter_list *fl = NULL;
-	git_file fd = git_futils_open_ro(git_buf_cstr(path));
-	git_buf raw = GIT_BUF_INIT;
+	git_file fd = git_futils_open_ro(git_str_cstr(path));
+	git_str raw = GIT_STR_INIT;
+	git_object_size_t new_file_size = 0;
 
 	if (fd < 0)
 		return fd;
 
-	if (!fc->file->size)
-	    error = git_futils_filesize(&fc->file->size, fd);
+	error = git_futils_filesize(&new_file_size, fd);
 
-	if (error < 0 || !fc->file->size)
+	if (error < 0)
 		goto cleanup;
+
+	if (!(fc->file->flags & GIT_DIFF_FLAG_VALID_SIZE)) {
+		fc->file->size = new_file_size;
+		fc->file->flags |= GIT_DIFF_FLAG_VALID_SIZE;
+	} else if (fc->file->size != new_file_size) {
+		git_error_set(GIT_ERROR_FILESYSTEM, "file changed before we could read it");
+		error = -1;
+		goto cleanup;
+	}
 
 	if ((diff_opts->flags & GIT_DIFF_SHOW_BINARY) == 0 &&
 		diff_file_content_binary_by_size(fc))
@@ -360,7 +369,7 @@ static int diff_file_content_load_workdir_file(
 	}
 
 	if (!(error = git_futils_readbuffer_fd(&raw, fd, (size_t)fc->file->size))) {
-		git_buf out = GIT_BUF_INIT;
+		git_str out = GIT_STR_INIT;
 
 		error = git_filter_list__convert_buf(&out, fl, &raw);
 
@@ -383,7 +392,7 @@ static int diff_file_content_load_workdir(
 	git_diff_options *diff_opts)
 {
 	int error = 0;
-	git_buf path = GIT_BUF_INIT;
+	git_str path = GIT_STR_INIT;
 
 	if (fc->file->mode == GIT_FILEMODE_COMMIT)
 		return diff_file_content_commit_to_str(fc, true);
@@ -406,7 +415,7 @@ static int diff_file_content_load_workdir(
 		fc->file->flags |= GIT_DIFF_FLAG_VALID_ID;
 	}
 
-	git_buf_dispose(&path);
+	git_str_dispose(&path);
 	return error;
 }
 

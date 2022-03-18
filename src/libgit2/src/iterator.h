@@ -11,7 +11,7 @@
 
 #include "git2/index.h"
 #include "vector.h"
-#include "buffer.h"
+#include "str.h"
 #include "ignore.h"
 
 typedef struct git_iterator git_iterator;
@@ -21,7 +21,7 @@ typedef enum {
 	GIT_ITERATOR_TREE = 1,
 	GIT_ITERATOR_INDEX = 2,
 	GIT_ITERATOR_WORKDIR = 3,
-	GIT_ITERATOR_FS = 4,
+	GIT_ITERATOR_FS = 4
 } git_iterator_t;
 
 typedef enum {
@@ -42,7 +42,7 @@ typedef enum {
 	/** descend into symlinked directories */
 	GIT_ITERATOR_DESCEND_SYMLINKS = (1u << 7),
 	/** hash files in workdir or filesystem iterators */
-	GIT_ITERATOR_INCLUDE_HASH = (1u << 8),
+	GIT_ITERATOR_INCLUDE_HASH = (1u << 8)
 } git_iterator_flag_t;
 
 typedef enum {
@@ -278,11 +278,11 @@ extern bool git_iterator_current_tree_is_ignored(git_iterator *iter);
 
 /**
  * Get full path of the current item from a workdir iterator.  This will
- * return NULL for a non-workdir iterator.  The git_buf is still owned by
+ * return NULL for a non-workdir iterator.  The git_str is still owned by
  * the iterator; this is exposed just for efficiency.
  */
 extern int git_iterator_current_workdir_path(
-	git_buf **path, git_iterator *iter);
+	git_str **path, git_iterator *iter);
 
 /**
  * Retrieve the index stored in the iterator.

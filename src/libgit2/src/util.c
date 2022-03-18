@@ -18,7 +18,7 @@
 # endif
 # include <windows.h>
 
-# ifdef HAVE_QSORT_S
+# ifdef GIT_QSORT_S
 #  include <search.h>
 # endif
 #endif
@@ -673,7 +673,7 @@ size_t git__unescape(char *str)
 	return (pos - str);
 }
 
-#if defined(HAVE_QSORT_S) || defined(HAVE_QSORT_R_BSD)
+#if defined(GIT_QSORT_S) || defined(GIT_QSORT_R_BSD)
 typedef struct {
 	git__sort_r_cmp cmp;
 	void *payload;
@@ -688,9 +688,9 @@ static int GIT_LIBGIT2_CALL git__qsort_r_glue_cmp(
 #endif
 
 
-#if !defined(HAVE_QSORT_R_BSD) && \
-	!defined(HAVE_QSORT_R_GNU) && \
-	!defined(HAVE_QSORT_S)
+#if !defined(GIT_QSORT_R_BSD) && \
+	!defined(GIT_QSORT_R_GNU) && \
+	!defined(GIT_QSORT_S)
 static void swap(uint8_t *a, uint8_t *b, size_t elsize)
 {
 	char tmp[256];
@@ -721,12 +721,12 @@ static void insertsort(
 void git__qsort_r(
 	void *els, size_t nel, size_t elsize, git__sort_r_cmp cmp, void *payload)
 {
-#if defined(HAVE_QSORT_R_BSD)
+#if defined(GIT_QSORT_R_BSD)
 	git__qsort_r_glue glue = { cmp, payload };
 	qsort_r(els, nel, elsize, &glue, git__qsort_r_glue_cmp);
-#elif defined(HAVE_QSORT_R_GNU)
+#elif defined(GIT_QSORT_R_GNU)
 	qsort_r(els, nel, elsize, cmp, payload);
-#elif defined(HAVE_QSORT_S)
+#elif defined(GIT_QSORT_S)
 	git__qsort_r_glue glue = { cmp, payload };
 	qsort_s(els, nel, elsize, git__qsort_r_glue_cmp, &glue);
 #else
@@ -735,13 +735,13 @@ void git__qsort_r(
 }
 
 #ifdef GIT_WIN32
-int git__getenv(git_buf *out, const char *name)
+int git__getenv(git_str *out, const char *name)
 {
 	wchar_t *wide_name = NULL, *wide_value = NULL;
 	DWORD value_len;
 	int error = -1;
 
-	git_buf_clear(out);
+	git_str_clear(out);
 
 	if (git__utf8_to_16_alloc(&wide_name, name) < 0)
 		return -1;
@@ -754,7 +754,7 @@ int git__getenv(git_buf *out, const char *name)
 	}
 
 	if (value_len)
-		error = git_buf_put_w(out, wide_value, value_len);
+		error = git_str_put_w(out, wide_value, value_len);
 	else if (GetLastError() == ERROR_SUCCESS || GetLastError() == ERROR_ENVVAR_NOT_FOUND)
 		error = GIT_ENOTFOUND;
 	else
@@ -765,16 +765,16 @@ int git__getenv(git_buf *out, const char *name)
 	return error;
 }
 #else
-int git__getenv(git_buf *out, const char *name)
+int git__getenv(git_str *out, const char *name)
 {
 	const char *val = getenv(name);
 
-	git_buf_clear(out);
+	git_str_clear(out);
 
 	if (!val)
 		return GIT_ENOTFOUND;
 
-	return git_buf_puts(out, val);
+	return git_str_puts(out, val);
 }
 #endif
 

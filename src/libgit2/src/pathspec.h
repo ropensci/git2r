@@ -10,7 +10,7 @@
 #include "common.h"
 
 #include "git2/pathspec.h"
-#include "buffer.h"
+#include "str.h"
 #include "vector.h"
 #include "pool.h"
 #include "array.h"
@@ -25,7 +25,7 @@ struct git_pathspec {
 
 enum {
 	PATHSPEC_DATATYPE_STRINGS = 0,
-	PATHSPEC_DATATYPE_DIFF = 1,
+	PATHSPEC_DATATYPE_DIFF = 1
 };
 
 typedef git_array_t(char *) git_pathspec_string_array_t;

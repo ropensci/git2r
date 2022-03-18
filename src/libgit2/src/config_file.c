@@ -11,7 +11,7 @@
 #include "git2/sys/config.h"
 
 #include "array.h"
-#include "buffer.h"
+#include "str.h"
 #include "config_backend.h"
 #include "config_entries.h"
 #include "config_parse.h"
@@ -19,13 +19,14 @@
 #include "regexp.h"
 #include "sysdir.h"
 #include "wildmatch.h"
+#include "hash.h"
 
 /* Max depth for [include] directives */
 #define MAX_INCLUDE_DEPTH 10
 
 typedef struct config_file {
 	git_futils_filestamp stamp;
-	git_oid checksum;
+	unsigned char checksum[GIT_HASH_SHA1_SIZE];
 	char *path;
 	git_array_t(struct config_file) includes;
 } config_file;
@@ -41,7 +42,7 @@ typedef struct {
 
 	bool locked;
 	git_filebuf locked_buf;
-	git_buf locked_content;
+	git_str locked_content;
 
 	config_file file;
 } config_file_backend;
@@ -108,7 +109,7 @@ static int config_file_open(git_config_backend *cfg, git_config_level_t level, c
 	if ((res = git_config_entries_new(&b->entries)) < 0)
 		return res;
 
-	if (!git_path_exists(b->file.path))
+	if (!git_fs_path_exists(b->file.path))
 		return 0;
 
 	/*
@@ -131,8 +132,8 @@ static int config_file_open(git_config_backend *cfg, git_config_level_t level, c
 static int config_file_is_modified(int *modified, config_file *file)
 {
 	config_file *include;
-	git_buf buf = GIT_BUF_INIT;
-	git_oid hash;
+	git_str buf = GIT_STR_INIT;
+	unsigned char checksum[GIT_HASH_SHA1_SIZE];
 	uint32_t i;
 	int error = 0;
 
@@ -144,10 +145,10 @@ static int config_file_is_modified(int *modified, config_file *file)
 	if ((error = git_futils_readbuffer(&buf, file->path)) < 0)
 		goto out;
 
-	if ((error = git_hash_buf(&hash, buf.ptr, buf.size)) < 0)
+	if ((error = git_hash_buf(checksum, buf.ptr, buf.size, GIT_HASH_ALGORITHM_SHA1)) < 0)
 		goto out;
 
-	if (!git_oid_equal(&hash, &file->checksum)) {
+	if (memcmp(checksum, file->checksum, GIT_HASH_SHA1_SIZE) != 0) {
 		*modified = 1;
 		goto out;
 	}
@@ -159,7 +160,7 @@ check_includes:
 	}
 
 out:
-	git_buf_dispose(&buf);
+	git_str_dispose(&buf);
 
 	return error;
 }
@@ -486,7 +487,7 @@ static int config_file_unlock(git_config_backend *_cfg, int success)
 	}
 
 	git_filebuf_cleanup(&cfg->locked_buf);
-	git_buf_dispose(&cfg->locked_content);
+	git_str_dispose(&cfg->locked_content);
 	cfg->locked = false;
 
 	return error;
@@ -523,19 +524,19 @@ int git_config_backend_from_file(git_config_backend **out, const char *path)
 	return 0;
 }
 
-static int included_path(git_buf *out, const char *dir, const char *path)
+static int included_path(git_str *out, const char *dir, const char *path)
 {
 	/* From the user's home */
 	if (path[0] == '~' && path[1] == '/')
 		return git_sysdir_expand_global_file(out, &path[1]);
 
-	return git_path_join_unrooted(out, path, dir, NULL);
+	return git_fs_path_join_unrooted(out, path, dir, NULL);
 }
 
 /* Escape the values to write them to the file */
 static char *escape_value(const char *ptr)
 {
-	git_buf buf;
+	git_str buf;
 	size_t len;
 	const char *esc;
 
@@ -545,39 +546,39 @@ static char *escape_value(const char *ptr)
 	if (!len)
 		return git__calloc(1, sizeof(char));
 
-	if (git_buf_init(&buf, len) < 0)
+	if (git_str_init(&buf, len) < 0)
 		return NULL;
 
 	while (*ptr != '\0') {
 		if ((esc = strchr(git_config_escaped, *ptr)) != NULL) {
-			git_buf_putc(&buf, '\\');
-			git_buf_putc(&buf, git_config_escapes[esc - git_config_escaped]);
+			git_str_putc(&buf, '\\');
+			git_str_putc(&buf, git_config_escapes[esc - git_config_escaped]);
 		} else {
-			git_buf_putc(&buf, *ptr);
+			git_str_putc(&buf, *ptr);
 		}
 		ptr++;
 	}
 
-	if (git_buf_oom(&buf))
+	if (git_str_oom(&buf))
 		return NULL;
 
-	return git_buf_detach(&buf);
+	return git_str_detach(&buf);
 }
 
 static int parse_include(config_file_parse_data *parse_data, const char *file)
 {
 	config_file *include;
-	git_buf path = GIT_BUF_INIT;
+	git_str path = GIT_STR_INIT;
 	char *dir;
 	int result;
 
 	if (!file)
 		return 0;
 
-	if ((result = git_path_dirname_r(&path, parse_data->file->path)) < 0)
+	if ((result = git_fs_path_dirname_r(&path, parse_data->file->path)) < 0)
 		return result;
 
-	dir = git_buf_detach(&path);
+	dir = git_str_detach(&path);
 	result = included_path(&path, dir, file);
 	git__free(dir);
 
@@ -588,7 +589,7 @@ static int parse_include(config_file_parse_data *parse_data, const char *file)
 	GIT_ERROR_CHECK_ALLOC(include);
 	memset(include, 0, sizeof(*include));
 	git_array_init(include->includes);
-	include->path = git_buf_detach(&path);
+	include->path = git_str_detach(&path);
 
 	result = config_file_read(parse_data->entries, parse_data->repo, include,
 				  parse_data->level, parse_data->depth+1);
@@ -608,38 +609,38 @@ static int do_match_gitdir(
 	const char *condition,
 	bool case_insensitive)
 {
-	git_buf pattern = GIT_BUF_INIT, gitdir = GIT_BUF_INIT;
+	git_str pattern = GIT_STR_INIT, gitdir = GIT_STR_INIT;
 	int error;
 
-	if (condition[0] == '.' && git_path_is_dirsep(condition[1])) {
-		git_path_dirname_r(&pattern, cfg_file);
-		git_buf_joinpath(&pattern, pattern.ptr, condition + 2);
-	} else if (condition[0] == '~' && git_path_is_dirsep(condition[1]))
+	if (condition[0] == '.' && git_fs_path_is_dirsep(condition[1])) {
+		git_fs_path_dirname_r(&pattern, cfg_file);
+		git_str_joinpath(&pattern, pattern.ptr, condition + 2);
+	} else if (condition[0] == '~' && git_fs_path_is_dirsep(condition[1]))
 		git_sysdir_expand_global_file(&pattern, condition + 1);
-	else if (!git_path_is_absolute(condition))
-		git_buf_joinpath(&pattern, "**", condition);
+	else if (!git_fs_path_is_absolute(condition))
+		git_str_joinpath(&pattern, "**", condition);
 	else
-		git_buf_sets(&pattern, condition);
+		git_str_sets(&pattern, condition);
 
-	if (git_path_is_dirsep(condition[strlen(condition) - 1]))
-		git_buf_puts(&pattern, "**");
+	if (git_fs_path_is_dirsep(condition[strlen(condition) - 1]))
+		git_str_puts(&pattern, "**");
 
-	if (git_buf_oom(&pattern)) {
+	if (git_str_oom(&pattern)) {
 		error = -1;
 		goto out;
 	}
 
-	if ((error = git_repository_item_path(&gitdir, repo, GIT_REPOSITORY_ITEM_GITDIR)) < 0)
+	if ((error = git_repository__item_path(&gitdir, repo, GIT_REPOSITORY_ITEM_GITDIR)) < 0)
 		goto out;
 
-	if (git_path_is_dirsep(gitdir.ptr[gitdir.size - 1]))
-		git_buf_truncate(&gitdir, gitdir.size - 1);
+	if (git_fs_path_is_dirsep(gitdir.ptr[gitdir.size - 1]))
+		git_str_truncate(&gitdir, gitdir.size - 1);
 
 	*matches = wildmatch(pattern.ptr, gitdir.ptr,
 			     WM_PATHNAME | (case_insensitive ? WM_CASEFOLD : 0)) == WM_MATCH;
 out:
-	git_buf_dispose(&pattern);
-	git_buf_dispose(&gitdir);
+	git_str_dispose(&pattern);
+	git_str_dispose(&gitdir);
 	return error;
 }
 
@@ -667,7 +668,7 @@ static int conditional_match_onbranch(
 	const char *cfg_file,
 	const char *condition)
 {
-	git_buf reference = GIT_BUF_INIT, buf = GIT_BUF_INIT;
+	git_str reference = GIT_STR_INIT, buf = GIT_STR_INIT;
 	int error;
 
 	GIT_UNUSED(cfg_file);
@@ -680,33 +681,33 @@ static int conditional_match_onbranch(
 	 * an endless recursion.
 	 */
 
-	if ((error = git_buf_joinpath(&buf, git_repository_path(repo), GIT_HEAD_FILE)) < 0 ||
+	if ((error = git_str_joinpath(&buf, git_repository_path(repo), GIT_HEAD_FILE)) < 0 ||
 	    (error = git_futils_readbuffer(&reference, buf.ptr)) < 0)
 		goto out;
-	git_buf_rtrim(&reference);
+	git_str_rtrim(&reference);
 
 	if (git__strncmp(reference.ptr, GIT_SYMREF, strlen(GIT_SYMREF)))
 		goto out;
-	git_buf_consume(&reference, reference.ptr + strlen(GIT_SYMREF));
+	git_str_consume(&reference, reference.ptr + strlen(GIT_SYMREF));
 
 	if (git__strncmp(reference.ptr, GIT_REFS_HEADS_DIR, strlen(GIT_REFS_HEADS_DIR)))
 		goto out;
-	git_buf_consume(&reference, reference.ptr + strlen(GIT_REFS_HEADS_DIR));
+	git_str_consume(&reference, reference.ptr + strlen(GIT_REFS_HEADS_DIR));
 
 	/*
 	 * If the condition ends with a '/', then we should treat it as if
 	 * it had '**' appended.
 	 */
-	if ((error = git_buf_sets(&buf, condition)) < 0)
+	if ((error = git_str_sets(&buf, condition)) < 0)
 		goto out;
-	if (git_path_is_dirsep(condition[strlen(condition) - 1]) &&
-	    (error = git_buf_puts(&buf, "**")) < 0)
+	if (git_fs_path_is_dirsep(condition[strlen(condition) - 1]) &&
+	    (error = git_str_puts(&buf, "**")) < 0)
 		goto out;
 
 	*matches = wildmatch(buf.ptr, reference.ptr, WM_PATHNAME) == WM_MATCH;
 out:
-	git_buf_dispose(&reference);
-	git_buf_dispose(&buf);
+	git_str_dispose(&reference);
+	git_str_dispose(&buf);
 
 	return error;
 
@@ -724,14 +725,25 @@ static const struct {
 static int parse_conditional_include(config_file_parse_data *parse_data, const char *section, const char *file)
 {
 	char *condition;
-	size_t i;
+	size_t section_len, i;
 	int error = 0, matches;
 
 	if (!parse_data->repo || !file)
 		return 0;
 
-	condition = git__substrdup(section + strlen("includeIf."),
-				   strlen(section) - strlen("includeIf.") - strlen(".path"));
+	section_len = strlen(section);
+
+	/*
+	 * We checked that the string starts with `includeIf.` and ends
+	 * in `.path` to get here.  Make sure it consists of more.
+	 */
+	if (section_len < CONST_STRLEN("includeIf.") + CONST_STRLEN(".path"))
+		return 0;
+
+	condition = git__substrdup(section + CONST_STRLEN("includeIf."),
+		section_len - CONST_STRLEN("includeIf.") - CONST_STRLEN(".path"));
+
+	GIT_ERROR_CHECK_ALLOC(condition);
 
 	for (i = 0; i < ARRAY_SIZE(conditions); i++) {
 		if (git__prefixcmp(condition, conditions[i].prefix))
@@ -763,7 +775,7 @@ static int read_on_variable(
 	void *data)
 {
 	config_file_parse_data *parse_data = (config_file_parse_data *)data;
-	git_buf buf = GIT_BUF_INIT;
+	git_str buf = GIT_STR_INIT;
 	git_config_entry *entry;
 	const char *c;
 	int result = 0;
@@ -777,19 +789,19 @@ static int read_on_variable(
 		 * here. Git appears to warn in most cases if it sees
 		 * un-namespaced config options.
 		 */
-		git_buf_puts(&buf, current_section);
-		git_buf_putc(&buf, '.');
+		git_str_puts(&buf, current_section);
+		git_str_putc(&buf, '.');
 	}
 
 	for (c = var_name; *c; c++)
-		git_buf_putc(&buf, git__tolower(*c));
+		git_str_putc(&buf, git__tolower(*c));
 
-	if (git_buf_oom(&buf))
+	if (git_str_oom(&buf))
 		return -1;
 
 	entry = git__calloc(1, sizeof(git_config_entry));
 	GIT_ERROR_CHECK_ALLOC(entry);
-	entry->name = git_buf_detach(&buf);
+	entry->name = git_str_detach(&buf);
 	entry->value = var_value ? git__strdup(var_value) : NULL;
 	entry->level = parse_data->level;
 	entry->include_depth = parse_data->depth;
@@ -856,12 +868,12 @@ static int config_file_read(
 	git_config_level_t level,
 	int depth)
 {
-	git_buf contents = GIT_BUF_INIT;
+	git_str contents = GIT_STR_INIT;
 	struct stat st;
 	int error;
 
 	if (p_stat(file->path, &st) < 0) {
-		error = git_path_set_error(errno, file->path, "stat");
+		error = git_fs_path_set_error(errno, file->path, "stat");
 		goto out;
 	}
 
@@ -869,7 +881,7 @@ static int config_file_read(
 		goto out;
 
 	git_futils_filestamp_set_from_stat(&file->stamp, &st);
-	if ((error = git_hash_buf(&file->checksum, contents.ptr, contents.size)) < 0)
+	if ((error = git_hash_buf(file->checksum, contents.ptr, contents.size, GIT_HASH_ALGORITHM_SHA1)) < 0)
 		goto out;
 
 	if ((error = config_file_read_buffer(entries, repo, file, level, depth,
@@ -877,36 +889,36 @@ static int config_file_read(
 		goto out;
 
 out:
-	git_buf_dispose(&contents);
+	git_str_dispose(&contents);
 	return error;
 }
 
-static int write_section(git_buf *fbuf, const char *key)
+static int write_section(git_str *fbuf, const char *key)
 {
 	int result;
 	const char *dot;
-	git_buf buf = GIT_BUF_INIT;
+	git_str buf = GIT_STR_INIT;
 
 	/* All of this just for [section "subsection"] */
 	dot = strchr(key, '.');
-	git_buf_putc(&buf, '[');
+	git_str_putc(&buf, '[');
 	if (dot == NULL) {
-		git_buf_puts(&buf, key);
+		git_str_puts(&buf, key);
 	} else {
 		char *escaped;
-		git_buf_put(&buf, key, dot - key);
+		git_str_put(&buf, key, dot - key);
 		escaped = escape_value(dot + 1);
 		GIT_ERROR_CHECK_ALLOC(escaped);
-		git_buf_printf(&buf, " \"%s\"", escaped);
+		git_str_printf(&buf, " \"%s\"", escaped);
 		git__free(escaped);
 	}
-	git_buf_puts(&buf, "]\n");
+	git_str_puts(&buf, "]\n");
 
-	if (git_buf_oom(&buf))
+	if (git_str_oom(&buf))
 		return -1;
 
-	result = git_buf_put(fbuf, git_buf_cstr(&buf), buf.size);
-	git_buf_dispose(&buf);
+	result = git_str_put(fbuf, git_str_cstr(&buf), buf.size);
+	git_str_dispose(&buf);
 
 	return result;
 }
@@ -930,8 +942,8 @@ static const char *quotes_for_value(const char *value)
 }
 
 struct write_data {
-	git_buf *buf;
-	git_buf buffered_comment;
+	git_str *buf;
+	git_str buffered_comment;
 	unsigned int in_section : 1,
 		preg_replaced : 1;
 	const char *orig_section;
@@ -942,12 +954,12 @@ struct write_data {
 	const char *value;
 };
 
-static int write_line_to(git_buf *buf, const char *line, size_t line_len)
+static int write_line_to(git_str *buf, const char *line, size_t line_len)
 {
-	int result = git_buf_put(buf, line, line_len);
+	int result = git_str_put(buf, line, line_len);
 
 	if (!result && line_len && line[line_len-1] != '\n')
-		result = git_buf_printf(buf, "\n");
+		result = git_str_printf(buf, "\n");
 
 	return result;
 }
@@ -963,7 +975,7 @@ static int write_value(struct write_data *write_data)
 	int result;
 
 	q = quotes_for_value(write_data->value);
-	result = git_buf_printf(write_data->buf,
+	result = git_str_printf(write_data->buf,
 		"\t%s = %s%s%s\n", write_data->orig_name, q, write_data->value, q);
 
 	/* If we are updating a single name/value, we're done.  Setting `value`
@@ -1002,8 +1014,8 @@ static int write_on_section(
 	 * If there were comments just before this section, dump them as well.
 	 */
 	if (!result) {
-		result = git_buf_put(write_data->buf, write_data->buffered_comment.ptr, write_data->buffered_comment.size);
-		git_buf_clear(&write_data->buffered_comment);
+		result = git_str_put(write_data->buf, write_data->buffered_comment.ptr, write_data->buffered_comment.size);
+		git_str_clear(&write_data->buffered_comment);
 	}
 
 	if (!result)
@@ -1031,10 +1043,10 @@ static int write_on_variable(
 	/*
 	 * If there were comments just before this variable, let's dump them as well.
 	 */
-	if ((error = git_buf_put(write_data->buf, write_data->buffered_comment.ptr, write_data->buffered_comment.size)) < 0)
+	if ((error = git_str_put(write_data->buf, write_data->buffered_comment.ptr, write_data->buffered_comment.size)) < 0)
 		return error;
 
-	git_buf_clear(&write_data->buffered_comment);
+	git_str_clear(&write_data->buffered_comment);
 
 	/* See if we are to update this name/value pair; first examine name */
 	if (write_data->in_section &&
@@ -1081,7 +1093,7 @@ static int write_on_eof(
 	/*
 	 * If we've buffered comments when reaching EOF, make sure to dump them.
 	 */
-	if ((result = git_buf_put(write_data->buf, write_data->buffered_comment.ptr, write_data->buffered_comment.size)) < 0)
+	if ((result = git_str_put(write_data->buf, write_data->buffered_comment.ptr, write_data->buffered_comment.size)) < 0)
 		return result;
 
 	/* If we are at the EOF and have not written our value (again, for a
@@ -1108,7 +1120,7 @@ static int config_file_write(config_file_backend *cfg, const char *orig_key, con
 
 {
 	char *orig_section = NULL, *section = NULL, *orig_name, *name, *ldot;
-	git_buf buf = GIT_BUF_INIT, contents = GIT_BUF_INIT;
+	git_str buf = GIT_STR_INIT, contents = GIT_STR_INIT;
 	git_config_parser parser = GIT_CONFIG_PARSER_INIT;
 	git_filebuf file = GIT_FILEBUF_INIT;
 	struct write_data write_data;
@@ -1117,7 +1129,7 @@ static int config_file_write(config_file_backend *cfg, const char *orig_key, con
 	memset(&write_data, 0, sizeof(write_data));
 
 	if (cfg->locked) {
-		error = git_buf_puts(&contents, git_buf_cstr(&cfg->locked_content) == NULL ? "" : git_buf_cstr(&cfg->locked_content));
+		error = git_str_puts(&contents, git_str_cstr(&cfg->locked_content) == NULL ? "" : git_str_cstr(&cfg->locked_content));
 	} else {
 		if ((error = git_filebuf_open(&file, cfg->file.path, GIT_FILEBUF_HASH_CONTENTS,
 					      GIT_CONFIG_FILE_MODE)) < 0)
@@ -1157,10 +1169,10 @@ static int config_file_write(config_file_backend *cfg, const char *orig_key, con
 	if (cfg->locked) {
 		size_t len = buf.asize;
 		/* Update our copy with the modified contents */
-		git_buf_dispose(&cfg->locked_content);
-		git_buf_attach(&cfg->locked_content, git_buf_detach(&buf), len);
+		git_str_dispose(&cfg->locked_content);
+		git_str_attach(&cfg->locked_content, git_str_detach(&buf), len);
 	} else {
-		git_filebuf_write(&file, git_buf_cstr(&buf), git_buf_len(&buf));
+		git_filebuf_write(&file, git_str_cstr(&buf), git_str_len(&buf));
 
 		if ((error = git_filebuf_commit(&file)) < 0)
 			goto done;
@@ -1172,9 +1184,9 @@ static int config_file_write(config_file_backend *cfg, const char *orig_key, con
 done:
 	git__free(section);
 	git__free(orig_section);
-	git_buf_dispose(&write_data.buffered_comment);
-	git_buf_dispose(&buf);
-	git_buf_dispose(&contents);
+	git_str_dispose(&write_data.buffered_comment);
+	git_str_dispose(&buf);
+	git_str_dispose(&contents);
 	git_filebuf_cleanup(&file);
 	git_config_parser_dispose(&parser);
 

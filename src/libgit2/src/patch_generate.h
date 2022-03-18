@@ -21,7 +21,7 @@ enum {
 	GIT_PATCH_GENERATED_DIFFABLE = (1 << 3),
 	/* the difference between the two sides has been computed */
 	GIT_PATCH_GENERATED_DIFFED = (1 << 4),
-	GIT_PATCH_GENERATED_FLATTENED = (1 << 5),
+	GIT_PATCH_GENERATED_FLATTENED = (1 << 5)
 };
 
 struct git_patch_generated {
@@ -39,10 +39,10 @@ typedef struct git_patch_generated git_patch_generated;
 
 extern git_diff_driver *git_patch_generated_driver(git_patch_generated *);
 
-extern void git_patch_generated_old_data(
-	char **, size_t *, git_patch_generated *);
-extern void git_patch_generated_new_data(
-	char **, size_t *, git_patch_generated *);
+extern int git_patch_generated_old_data(
+	char **, long *, git_patch_generated *);
+extern int git_patch_generated_new_data(
+	char **, long *, git_patch_generated *);
 extern int git_patch_generated_from_diff(
 	git_patch **, git_diff *, size_t);
 

@@ -10,7 +10,7 @@
 
 #include "common.h"
 
-#include "buffer.h"
+#include "str.h"
 #include "hash.h"
 #include "oidmap.h"
 #include "netops.h"
@@ -46,10 +46,10 @@ typedef struct git_pobject {
 	size_t delta_size;
 	size_t z_delta_size;
 
-	int written:1,
-	    recursing:1,
-	    tagged:1,
-	    filled:1;
+	unsigned int written:1,
+	             recursing:1,
+	             tagged:1,
+	             filled:1;
 } git_pobject;
 
 struct git_packbuilder {
@@ -73,7 +73,10 @@ struct git_packbuilder {
 	git_oidmap *walk_objects;
 	git_pool object_pool;
 
+#ifndef GIT_DEPRECATE_HARD
 	git_oid pack_oid; /* hash of written pack */
+#endif
+	char *pack_name; /* name of written pack */
 
 	/* synchronization objects */
 	git_mutex cache_mutex;
@@ -96,6 +99,8 @@ struct git_packbuilder {
 	bool done;
 };
 
-int git_packbuilder_write_buf(git_buf *buf, git_packbuilder *pb);
+int git_packbuilder__write_buf(git_str *buf, git_packbuilder *pb);
+int git_packbuilder__prepare(git_packbuilder *pb);
+
 
 #endif

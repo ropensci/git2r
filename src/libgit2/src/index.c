@@ -20,6 +20,7 @@
 #include "idxmap.h"
 #include "diff.h"
 #include "varint.h"
+#include "path.h"
 
 #include "git2/odb.h"
 #include "git2/oid.h"
@@ -33,7 +34,6 @@ static int index_apply_to_wd_diff(git_index *index, int action, const git_strarr
 
 #define minimal_entry_size (offsetof(struct entry_short, path))
 
-static const size_t INDEX_FOOTER_SIZE = GIT_OID_RAWSZ;
 static const size_t INDEX_HEADER_SIZE = 12;
 
 static const unsigned int INDEX_VERSION_NUMBER_DEFAULT = 2;
@@ -120,7 +120,7 @@ static int read_header(struct index_header *dest, const void *buffer);
 
 static int parse_index(git_index *index, const char *buffer, size_t buffer_size);
 static bool is_index_extended(git_index *index);
-static int write_index(git_oid *checksum, git_index *index, git_filebuf *file);
+static int write_index(unsigned char checksum[GIT_HASH_SHA1_SIZE], size_t *checksum_size, git_index *index, git_filebuf *file);
 
 static void index_entry_free(git_index_entry *entry);
 static void index_entry_reuc_free(git_index_reuc_entry *reuc);
@@ -420,7 +420,7 @@ int git_index_open(git_index **index_out, const char *index_path)
 			goto fail;
 
 		/* Check if index file is stored on disk already */
-		if (git_path_exists(index->index_file_path) == true)
+		if (git_fs_path_exists(index->index_file_path) == true)
 			index->on_disk = 1;
 	}
 
@@ -606,10 +606,12 @@ int git_index_caps(const git_index *index)
 			(index->no_symlinks ? GIT_INDEX_CAPABILITY_NO_SYMLINKS : 0));
 }
 
+#ifndef GIT_DEPRECATE_HARD
 const git_oid *git_index_checksum(git_index *index)
 {
-	return &index->checksum;
+	return (git_oid *)index->checksum;
 }
+#endif
 
 /**
  * Returns 1 for changed, 0 for not changed and <0 for errors
@@ -618,37 +620,38 @@ static int compare_checksum(git_index *index)
 {
 	int fd;
 	ssize_t bytes_read;
-	git_oid checksum = {{ 0 }};
+	unsigned char checksum[GIT_HASH_SHA1_SIZE];
+	size_t checksum_size = GIT_HASH_SHA1_SIZE;
 
 	if ((fd = p_open(index->index_file_path, O_RDONLY)) < 0)
 		return fd;
 
-	if (p_lseek(fd, -20, SEEK_END) < 0) {
+	if (p_lseek(fd, (0 - (ssize_t)checksum_size), SEEK_END) < 0) {
 		p_close(fd);
 		git_error_set(GIT_ERROR_OS, "failed to seek to end of file");
 		return -1;
 	}
 
-	bytes_read = p_read(fd, &checksum, GIT_OID_RAWSZ);
+	bytes_read = p_read(fd, checksum, checksum_size);
 	p_close(fd);
 
-	if (bytes_read < 0)
+	if (bytes_read < (ssize_t)checksum_size)
 		return -1;
 
-	return !!git_oid_cmp(&checksum, &index->checksum);
+	return !!memcmp(checksum, index->checksum, checksum_size);
 }
 
 int git_index_read(git_index *index, int force)
 {
 	int error = 0, updated;
-	git_buf buffer = GIT_BUF_INIT;
+	git_str buffer = GIT_STR_INIT;
 	git_futils_filestamp stamp = index->stamp;
 
 	if (!index->index_file_path)
 		return create_index_error(-1,
 			"failed to read index: The index is in-memory only");
 
-	index->on_disk = git_path_exists(index->index_file_path);
+	index->on_disk = git_fs_path_exists(index->index_file_path);
 
 	if (!index->on_disk) {
 		if (force && (error = git_index_clear(index)) < 0)
@@ -687,7 +690,7 @@ int git_index_read(git_index *index, int force)
 		index->dirty = 0;
 	}
 
-	git_buf_dispose(&buffer);
+	git_str_dispose(&buffer);
 	return error;
 }
 
@@ -700,16 +703,6 @@ int git_index_read_safely(git_index *index)
 	}
 
 	return git_index_read(index, false);
-}
-
-int git_index__changed_relative_to(
-	git_index *index, const git_oid *checksum)
-{
-	/* attempt to update index (ignoring errors) */
-	if (git_index_read(index, false) < 0)
-		git_error_clear();
-
-	return !!git_oid_cmp(&index->checksum, checksum);
 }
 
 static bool is_racy_entry(git_index *index, const git_index_entry *entry)
@@ -944,7 +937,7 @@ static int index_entry_create(
 	if (st)
 		mode = st->st_mode;
 
-	if (!git_path_validate(repo, path, mode, path_valid_flags)) {
+	if (!git_path_is_valid(repo, path, mode, path_valid_flags)) {
 		git_error_set(GIT_ERROR_INDEX, "invalid path: '%s'", path);
 		return -1;
 	}
@@ -969,7 +962,7 @@ static int index_entry_init(
 {
 	int error = 0;
 	git_index_entry *entry = NULL;
-	git_buf path = GIT_BUF_INIT;
+	git_str path = GIT_STR_INIT;
 	struct stat st;
 	git_oid oid;
 	git_repository *repo;
@@ -991,8 +984,8 @@ static int index_entry_init(
 	if (git_repository_workdir_path(&path, repo, rel_path) < 0)
 		return -1;
 
-	error = git_path_lstat(path.ptr, &st);
-	git_buf_dispose(&path);
+	error = git_fs_path_lstat(path.ptr, &st);
+	git_str_dispose(&path);
 
 	if (error < 0)
 		return error;
@@ -1525,7 +1518,7 @@ int git_index_add_from_buffer(
 static int add_repo_as_submodule(git_index_entry **out, git_index *index, const char *path)
 {
 	git_repository *sub;
-	git_buf abspath = GIT_BUF_INIT;
+	git_str abspath = GIT_STR_INIT;
 	git_repository *repo = INDEX_OWNER(index);
 	git_reference *head;
 	git_index_entry *entry;
@@ -1556,7 +1549,7 @@ static int add_repo_as_submodule(git_index_entry **out, git_index *index, const 
 
 	git_reference_free(head);
 	git_repository_free(sub);
-	git_buf_dispose(&abspath);
+	git_str_dispose(&abspath);
 
 	*out = entry;
 	return 0;
@@ -1722,13 +1715,13 @@ int git_index_remove(git_index *index, const char *path, int stage)
 
 int git_index_remove_directory(git_index *index, const char *dir, int stage)
 {
-	git_buf pfx = GIT_BUF_INIT;
+	git_str pfx = GIT_STR_INIT;
 	int error = 0;
 	size_t pos;
 	git_index_entry *entry;
 
-	if (!(error = git_buf_sets(&pfx, dir)) &&
-		!(error = git_path_to_dir(&pfx)))
+	if (!(error = git_str_sets(&pfx, dir)) &&
+		!(error = git_fs_path_to_dir(&pfx)))
 		index_find(&pos, index, pfx.ptr, pfx.size, GIT_INDEX_STAGE_ANY);
 
 	while (!error) {
@@ -1746,7 +1739,7 @@ int git_index_remove_directory(git_index *index, const char *dir, int stage)
 		/* removed entry at 'pos' so we don't need to increment */
 	}
 
-	git_buf_dispose(&pfx);
+	git_str_dispose(&pfx);
 
 	return error;
 }
@@ -2469,8 +2462,9 @@ static int read_entry(
 	git_index_entry entry = {{0}};
 	bool compressed = index->version >= INDEX_VERSION_NUMBER_COMP;
 	char *tmp_path = NULL;
+	size_t checksum_size = GIT_HASH_SHA1_SIZE;
 
-	if (INDEX_FOOTER_SIZE + minimal_entry_size > buffer_size)
+	if (checksum_size + minimal_entry_size > buffer_size)
 		return -1;
 
 	/* buffer is not guaranteed to be aligned */
@@ -2551,7 +2545,7 @@ static int read_entry(
 	if (entry_size == 0)
 		return -1;
 
-	if (INDEX_FOOTER_SIZE + entry_size > buffer_size)
+	if (checksum_size + entry_size > buffer_size)
 		return -1;
 
 	if (index_entry_dup(out, index, &entry) < 0) {
@@ -2585,6 +2579,7 @@ static int read_extension(size_t *read_len, git_index *index, const char *buffer
 {
 	struct index_extension dest;
 	size_t total_size;
+	size_t checksum_size = GIT_HASH_SHA1_SIZE;
 
 	/* buffer is not guaranteed to be aligned */
 	memcpy(&dest, buffer, sizeof(struct index_extension));
@@ -2594,7 +2589,7 @@ static int read_extension(size_t *read_len, git_index *index, const char *buffer
 
 	if (dest.extension_size > total_size ||
 		buffer_size < total_size ||
-		buffer_size - total_size < INDEX_FOOTER_SIZE) {
+		buffer_size - total_size < checksum_size) {
 		index_error_invalid("extension is truncated");
 		return -1;
 	}
@@ -2631,7 +2626,8 @@ static int parse_index(git_index *index, const char *buffer, size_t buffer_size)
 	int error = 0;
 	unsigned int i;
 	struct index_header header = { 0 };
-	git_oid checksum_calculated, checksum_expected;
+	unsigned char checksum[GIT_HASH_SHA1_SIZE];
+	size_t checksum_size = GIT_HASH_SHA1_SIZE;
 	const char *last = NULL;
 	const char *empty = "";
 
@@ -2643,12 +2639,12 @@ static int parse_index(git_index *index, const char *buffer, size_t buffer_size)
 	buffer_size -= _increase;\
 }
 
-	if (buffer_size < INDEX_HEADER_SIZE + INDEX_FOOTER_SIZE)
+	if (buffer_size < INDEX_HEADER_SIZE + checksum_size)
 		return index_error_invalid("insufficient buffer space");
 
 	/* Precalculate the SHA1 of the files's contents -- we'll match it to
 	 * the provided SHA1 in the footer */
-	git_hash_buf(&checksum_calculated, buffer, buffer_size - INDEX_FOOTER_SIZE);
+	git_hash_buf(checksum, buffer, buffer_size - checksum_size, GIT_HASH_ALGORITHM_SHA1);
 
 	/* Parse header */
 	if ((error = read_header(&header, buffer)) < 0)
@@ -2666,7 +2662,7 @@ static int parse_index(git_index *index, const char *buffer, size_t buffer_size)
 		return error;
 
 	/* Parse all the entries */
-	for (i = 0; i < header.entry_count && buffer_size > INDEX_FOOTER_SIZE; ++i) {
+	for (i = 0; i < header.entry_count && buffer_size > checksum_size; ++i) {
 		git_index_entry *entry = NULL;
 		size_t entry_size;
 
@@ -2698,7 +2694,7 @@ static int parse_index(git_index *index, const char *buffer, size_t buffer_size)
 	}
 
 	/* There's still space for some extensions! */
-	while (buffer_size > INDEX_FOOTER_SIZE) {
+	while (buffer_size > checksum_size) {
 		size_t extension_size;
 
 		if ((error = read_extension(&extension_size, index, buffer, buffer_size)) < 0) {
@@ -2708,22 +2704,20 @@ static int parse_index(git_index *index, const char *buffer, size_t buffer_size)
 		seek_forward(extension_size);
 	}
 
-	if (buffer_size != INDEX_FOOTER_SIZE) {
+	if (buffer_size != checksum_size) {
 		error = index_error_invalid(
 			"buffer size does not match index footer size");
 		goto done;
 	}
 
 	/* 160-bit SHA-1 over the content of the index file before this checksum. */
-	git_oid_fromraw(&checksum_expected, (const unsigned char *)buffer);
-
-	if (git_oid__cmp(&checksum_calculated, &checksum_expected) != 0) {
+	if (memcmp(checksum, buffer, checksum_size) != 0) {
 		error = index_error_invalid(
 			"calculated checksum does not match expected");
 		goto done;
 	}
 
-	git_oid_cpy(&index->checksum, &checksum_calculated);
+	memcpy(index->checksum, checksum, checksum_size);
 
 #undef seek_forward
 
@@ -2892,7 +2886,7 @@ done:
 	return error;
 }
 
-static int write_extension(git_filebuf *file, struct index_extension *header, git_buf *data)
+static int write_extension(git_filebuf *file, struct index_extension *header, git_str *data)
 {
 	struct index_extension ondisk;
 
@@ -2904,30 +2898,30 @@ static int write_extension(git_filebuf *file, struct index_extension *header, gi
 	return git_filebuf_write(file, data->ptr, data->size);
 }
 
-static int create_name_extension_data(git_buf *name_buf, git_index_name_entry *conflict_name)
+static int create_name_extension_data(git_str *name_buf, git_index_name_entry *conflict_name)
 {
 	int error = 0;
 
 	if (conflict_name->ancestor == NULL)
-		error = git_buf_put(name_buf, "\0", 1);
+		error = git_str_put(name_buf, "\0", 1);
 	else
-		error = git_buf_put(name_buf, conflict_name->ancestor, strlen(conflict_name->ancestor) + 1);
+		error = git_str_put(name_buf, conflict_name->ancestor, strlen(conflict_name->ancestor) + 1);
 
 	if (error != 0)
 		goto on_error;
 
 	if (conflict_name->ours == NULL)
-		error = git_buf_put(name_buf, "\0", 1);
+		error = git_str_put(name_buf, "\0", 1);
 	else
-		error = git_buf_put(name_buf, conflict_name->ours, strlen(conflict_name->ours) + 1);
+		error = git_str_put(name_buf, conflict_name->ours, strlen(conflict_name->ours) + 1);
 
 	if (error != 0)
 		goto on_error;
 
 	if (conflict_name->theirs == NULL)
-		error = git_buf_put(name_buf, "\0", 1);
+		error = git_str_put(name_buf, "\0", 1);
 	else
-		error = git_buf_put(name_buf, conflict_name->theirs, strlen(conflict_name->theirs) + 1);
+		error = git_str_put(name_buf, conflict_name->theirs, strlen(conflict_name->theirs) + 1);
 
 on_error:
 	return error;
@@ -2935,7 +2929,7 @@ on_error:
 
 static int write_name_extension(git_index *index, git_filebuf *file)
 {
-	git_buf name_buf = GIT_BUF_INIT;
+	git_str name_buf = GIT_STR_INIT;
 	git_vector *out = &index->names;
 	git_index_name_entry *conflict_name;
 	struct index_extension extension;
@@ -2953,28 +2947,28 @@ static int write_name_extension(git_index *index, git_filebuf *file)
 
 	error = write_extension(file, &extension, &name_buf);
 
-	git_buf_dispose(&name_buf);
+	git_str_dispose(&name_buf);
 
 done:
 	return error;
 }
 
-static int create_reuc_extension_data(git_buf *reuc_buf, git_index_reuc_entry *reuc)
+static int create_reuc_extension_data(git_str *reuc_buf, git_index_reuc_entry *reuc)
 {
 	int i;
 	int error = 0;
 
-	if ((error = git_buf_put(reuc_buf, reuc->path, strlen(reuc->path) + 1)) < 0)
+	if ((error = git_str_put(reuc_buf, reuc->path, strlen(reuc->path) + 1)) < 0)
 		return error;
 
 	for (i = 0; i < 3; i++) {
-		if ((error = git_buf_printf(reuc_buf, "%o", reuc->mode[i])) < 0 ||
-			(error = git_buf_put(reuc_buf, "\0", 1)) < 0)
+		if ((error = git_str_printf(reuc_buf, "%o", reuc->mode[i])) < 0 ||
+			(error = git_str_put(reuc_buf, "\0", 1)) < 0)
 			return error;
 	}
 
 	for (i = 0; i < 3; i++) {
-		if (reuc->mode[i] && (error = git_buf_put(reuc_buf, (char *)&reuc->oid[i].id, GIT_OID_RAWSZ)) < 0)
+		if (reuc->mode[i] && (error = git_str_put(reuc_buf, (char *)&reuc->oid[i].id, GIT_OID_RAWSZ)) < 0)
 			return error;
 	}
 
@@ -2983,7 +2977,7 @@ static int create_reuc_extension_data(git_buf *reuc_buf, git_index_reuc_entry *r
 
 static int write_reuc_extension(git_index *index, git_filebuf *file)
 {
-	git_buf reuc_buf = GIT_BUF_INIT;
+	git_str reuc_buf = GIT_STR_INIT;
 	git_vector *out = &index->reuc;
 	git_index_reuc_entry *reuc;
 	struct index_extension extension;
@@ -3001,7 +2995,7 @@ static int write_reuc_extension(git_index *index, git_filebuf *file)
 
 	error = write_extension(file, &extension, &reuc_buf);
 
-	git_buf_dispose(&reuc_buf);
+	git_str_dispose(&reuc_buf);
 
 done:
 	return error;
@@ -3010,7 +3004,7 @@ done:
 static int write_tree_extension(git_index *index, git_filebuf *file)
 {
 	struct index_extension extension;
-	git_buf buf = GIT_BUF_INIT;
+	git_str buf = GIT_STR_INIT;
 	int error;
 
 	if (index->tree == NULL)
@@ -3025,7 +3019,7 @@ static int write_tree_extension(git_index *index, git_filebuf *file)
 
 	error = write_extension(file, &extension, &buf);
 
-	git_buf_dispose(&buf);
+	git_str_dispose(&buf);
 
 	return error;
 }
@@ -3039,15 +3033,20 @@ static void clear_uptodate(git_index *index)
 		entry->flags_extended &= ~GIT_INDEX_ENTRY_UPTODATE;
 }
 
-static int write_index(git_oid *checksum, git_index *index, git_filebuf *file)
+static int write_index(
+	unsigned char checksum[GIT_HASH_SHA1_SIZE],
+	size_t *checksum_size,
+	git_index *index,
+	git_filebuf *file)
 {
-	git_oid hash_final;
 	struct index_header header;
 	bool is_extended;
 	uint32_t index_version_number;
 
 	GIT_ASSERT_ARG(index);
 	GIT_ASSERT_ARG(file);
+
+	*checksum_size = GIT_HASH_SHA1_SIZE;
 
 	if (index->version <= INDEX_VERSION_NUMBER_EXT)  {
 		is_extended = is_index_extended(index);
@@ -3079,11 +3078,10 @@ static int write_index(git_oid *checksum, git_index *index, git_filebuf *file)
 		return -1;
 
 	/* get out the hash for all the contents we've appended to the file */
-	git_filebuf_hash(&hash_final, file);
-	git_oid_cpy(checksum, &hash_final);
+	git_filebuf_hash(checksum, file);
 
 	/* write it at the end of the file */
-	if (git_filebuf_write(file, hash_final.id, GIT_OID_RAWSZ) < 0)
+	if (git_filebuf_write(file, checksum, *checksum_size) < 0)
 		return -1;
 
 	/* file entries are no longer up to date */
@@ -3115,13 +3113,13 @@ static int read_tree_cb(
 {
 	read_tree_data *data = payload;
 	git_index_entry *entry = NULL, *old_entry;
-	git_buf path = GIT_BUF_INIT;
+	git_str path = GIT_STR_INIT;
 	size_t pos;
 
 	if (git_tree_entry__is_tree(tentry))
 		return 0;
 
-	if (git_buf_joinpath(&path, root, tentry->filename) < 0)
+	if (git_str_joinpath(&path, root, tentry->filename) < 0)
 		return -1;
 
 	if (index_entry_create(&entry, INDEX_OWNER(data->index), path.ptr, NULL, false) < 0)
@@ -3143,7 +3141,7 @@ static int read_tree_cb(
 	}
 
 	index_entry_adjust_namemask(entry, path.size);
-	git_buf_dispose(&path);
+	git_str_dispose(&path);
 
 	if (git_vector_insert(data->new_entries, entry) < 0) {
 		index_entry_free(entry);
@@ -3385,7 +3383,7 @@ enum {
 	INDEX_ACTION_NONE = 0,
 	INDEX_ACTION_UPDATE = 1,
 	INDEX_ACTION_REMOVE = 2,
-	INDEX_ACTION_ADDALL = 3,
+	INDEX_ACTION_ADDALL = 3
 };
 
 int git_index_add_all(
@@ -3498,7 +3496,7 @@ static int index_apply_to_wd_diff(git_index *index, int action, const git_strarr
 	}
 
 	/*
-	 * We do the matching ourselves intead of passing the list to
+	 * We do the matching ourselves instead of passing the list to
 	 * diff because we want to tell the callback which one
 	 * matched, which we do not know if we ask diff to filter for us.
 	 */
@@ -3540,7 +3538,7 @@ static int index_apply_to_all(
 	size_t i;
 	git_pathspec ps;
 	const char *match;
-	git_buf path = GIT_BUF_INIT;
+	git_str path = GIT_STR_INIT;
 
 	GIT_ASSERT_ARG(index);
 
@@ -3569,7 +3567,7 @@ static int index_apply_to_all(
 		}
 
 		/* index manipulation may alter entry, so don't depend on it */
-		if ((error = git_buf_sets(&path, entry->path)) < 0)
+		if ((error = git_str_sets(&path, entry->path)) < 0)
 			break;
 
 		switch (action) {
@@ -3598,7 +3596,7 @@ static int index_apply_to_all(
 		}
 	}
 
-	git_buf_dispose(&path);
+	git_str_dispose(&path);
 	git_pathspec__clear(&ps);
 
 	return error;
@@ -3713,8 +3711,9 @@ int git_indexwriter_init_for_operation(
 
 int git_indexwriter_commit(git_indexwriter *writer)
 {
+	unsigned char checksum[GIT_HASH_SHA1_SIZE];
+	size_t checksum_size;
 	int error;
-	git_oid checksum = {{ 0 }};
 
 	if (!writer->should_write)
 		return 0;
@@ -3722,7 +3721,7 @@ int git_indexwriter_commit(git_indexwriter *writer)
 	git_vector_sort(&writer->index->entries);
 	git_vector_sort(&writer->index->reuc);
 
-	if ((error = write_index(&checksum, writer->index, &writer->file)) < 0) {
+	if ((error = write_index(checksum, &checksum_size, writer->index, &writer->file)) < 0) {
 		git_indexwriter_cleanup(writer);
 		return error;
 	}
@@ -3738,7 +3737,7 @@ int git_indexwriter_commit(git_indexwriter *writer)
 
 	writer->index->dirty = 0;
 	writer->index->on_disk = 1;
-	git_oid_cpy(&writer->index->checksum, &checksum);
+	memcpy(writer->index->checksum, checksum, checksum_size);
 
 	git_index_free(writer->index);
 	writer->index = NULL;
