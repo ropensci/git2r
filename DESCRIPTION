@@ -16,7 +16,7 @@ Imports:
     graphics,
     utils
 Depends:
-    R (>= 3.1)
+    R (>= 3.4)
 Suggests:
     getPass
 Type: Package
