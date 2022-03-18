@@ -7,7 +7,7 @@ PKG_LIBS = -L. -lmygit @PKG_LIBS@
 OBJECTS.libgit2 = libgit2/src/alloc.o libgit2/src/annotated_commit.o libgit2/src/apply.o \
     libgit2/src/attr_file.o libgit2/src/attr.o libgit2/src/attrcache.o \
     libgit2/src/blame_git.o libgit2/src/blame.o libgit2/src/blob.o \
-    libgit2/src/branch.o libgit2/src/buffer.o libgit2/src/cache.o \
+    libgit2/src/branch.o libgit2/src/buf.o libgit2/src/cache.o \
     libgit2/src/checkout.o libgit2/src/cherrypick.o libgit2/src/clone.o \
     libgit2/src/commit_graph.o libgit2/src/commit_list.o libgit2/src/commit.o \
     libgit2/src/config_cache.o libgit2/src/config_entries.o libgit2/src/config_file.o \
@@ -18,28 +18,29 @@ OBJECTS.libgit2 = libgit2/src/alloc.o libgit2/src/annotated_commit.o libgit2/src
     libgit2/src/diff_print.o libgit2/src/diff_stats.o libgit2/src/diff_tform.o \
     libgit2/src/diff_xdiff.o libgit2/src/diff.o libgit2/src/email.o \
     libgit2/src/errors.o libgit2/src/fetch.o libgit2/src/fetchhead.o \
-    libgit2/src/filebuf.o libgit2/src/filter.o libgit2/src/futils.o \
-    libgit2/src/graph.o libgit2/src/hash.o libgit2/src/hashsig.o \
-    libgit2/src/ident.o libgit2/src/idxmap.o libgit2/src/ignore.o \
-    libgit2/src/index.o libgit2/src/indexer.o libgit2/src/iterator.o \
-    libgit2/src/libgit2.o libgit2/src/mailmap.o libgit2/src/merge_driver.o \
-    libgit2/src/merge_file.o libgit2/src/merge.o libgit2/src/message.o \
-    libgit2/src/midx.o libgit2/src/mwindow.o libgit2/src/net.o \
-    libgit2/src/netops.o libgit2/src/notes.o libgit2/src/object_api.o \
-    libgit2/src/object.o libgit2/src/odb_loose.o libgit2/src/odb_mempack.o \
-    libgit2/src/odb_pack.o libgit2/src/odb.o libgit2/src/offmap.o \
-    libgit2/src/oid.o libgit2/src/oidarray.o libgit2/src/oidmap.o \
-    libgit2/src/pack-objects.o libgit2/src/pack.o libgit2/src/parse.o \
-    libgit2/src/patch_generate.o libgit2/src/patch_parse.o libgit2/src/patch.o \
-    libgit2/src/path.o libgit2/src/pathspec.o libgit2/src/pool.o \
-    libgit2/src/posix.o libgit2/src/pqueue.o libgit2/src/proxy.o \
-    libgit2/src/push.o libgit2/src/reader.o libgit2/src/rebase.o \
-    libgit2/src/refdb_fs.o libgit2/src/refdb.o libgit2/src/reflog.o \
-    libgit2/src/refs.o libgit2/src/refspec.o libgit2/src/regexp.o \
-    libgit2/src/remote.o libgit2/src/repository.o libgit2/src/reset.o \
-    libgit2/src/revert.o libgit2/src/revparse.o libgit2/src/revwalk.o \
-    libgit2/src/runtime.o libgit2/src/signature.o libgit2/src/sortedcache.o \
-    libgit2/src/stash.o libgit2/src/status.o libgit2/src/strarray.o \
+    libgit2/src/filebuf.o libgit2/src/filter.o libgit2/src/fs_path.o \
+    libgit2/src/futils.o libgit2/src/graph.o libgit2/src/hash.o \
+    libgit2/src/hashsig.o libgit2/src/ident.o libgit2/src/idxmap.o \
+    libgit2/src/ignore.o libgit2/src/index.o libgit2/src/indexer.o \
+    libgit2/src/iterator.o libgit2/src/libgit2.o libgit2/src/mailmap.o \
+    libgit2/src/merge_driver.o libgit2/src/merge_file.o libgit2/src/merge.o \
+    libgit2/src/message.o libgit2/src/midx.o libgit2/src/mwindow.o \
+    libgit2/src/net.o libgit2/src/netops.o libgit2/src/notes.o \
+    libgit2/src/object_api.o libgit2/src/object.o libgit2/src/odb_loose.o \
+    libgit2/src/odb_mempack.o libgit2/src/odb_pack.o libgit2/src/odb.o \
+    libgit2/src/offmap.o libgit2/src/oid.o libgit2/src/oidarray.o \
+    libgit2/src/oidmap.o libgit2/src/pack-objects.o libgit2/src/pack.o \
+    libgit2/src/parse.o libgit2/src/patch_generate.o libgit2/src/patch_parse.o \
+    libgit2/src/patch.o libgit2/src/path.o libgit2/src/pathspec.o \
+    libgit2/src/pool.o libgit2/src/posix.o libgit2/src/pqueue.o \
+    libgit2/src/proxy.o libgit2/src/push.o libgit2/src/rand.o \
+    libgit2/src/reader.o libgit2/src/rebase.o libgit2/src/refdb_fs.o \
+    libgit2/src/refdb.o libgit2/src/reflog.o libgit2/src/refs.o \
+    libgit2/src/refspec.o libgit2/src/regexp.o libgit2/src/remote.o \
+    libgit2/src/repository.o libgit2/src/reset.o libgit2/src/revert.o \
+    libgit2/src/revparse.o libgit2/src/revwalk.o libgit2/src/runtime.o \
+    libgit2/src/signature.o libgit2/src/sortedcache.o libgit2/src/stash.o \
+    libgit2/src/status.o libgit2/src/str.o libgit2/src/strarray.o \
     libgit2/src/strmap.o libgit2/src/submodule.o libgit2/src/sysdir.o \
     libgit2/src/tag.o libgit2/src/thread.o libgit2/src/threadstate.o \
     libgit2/src/trace.o libgit2/src/trailer.o libgit2/src/transaction.o \
