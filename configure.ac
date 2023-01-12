@@ -1,5 +1,5 @@
 # git2r, R bindings to the libgit2 library.
-# Copyright (C) 2013-2020 The git2r contributors
+# Copyright (C) 2013-2022 The git2r contributors
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2,
@@ -30,9 +30,6 @@ m4_include([tools/pkg.m4])
 AC_ARG_WITH([libgit2],
 AS_HELP_STRING([--without-libgit2],
 [Ignore presence of a system libgit2 library and instead use the internal git2r libgit2 library]))
-
-# Checks for programs.
-AC_PROG_CC
 
 ## Check for brew on macOS
 AC_DEFUN([AC_PROG_BREW], [AC_CHECK_PROG(BREW,brew,yes)])
