@@ -7493,8 +7493,6 @@ then :
   CPPFLAGS="${CPPFLAGS} -DGIT_USE_NSEC"
 fi
 
-else
-    CPPFLAGS="${CPPFLAGS} -DGIT_USE_NSEC"
 fi
 
 # Checks for library functions.

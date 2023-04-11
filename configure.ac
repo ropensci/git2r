@@ -451,8 +451,6 @@ elif test "x$ac_cv_member_struct_stat_st_mtimespec" = "xyes"; then
     AC_CHECK_MEMBER([struct stat.st_mtimespec.tv_nsec],
                     [CPPFLAGS="${CPPFLAGS} -DGIT_USE_NSEC"],
                     [], [AC_INCLUDES_DEFAULT])
-else
-    CPPFLAGS="${CPPFLAGS} -DGIT_USE_NSEC"
 fi
 
 # Checks for library functions.
