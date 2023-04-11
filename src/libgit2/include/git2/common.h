@@ -106,11 +106,6 @@ GIT_BEGIN_DECL
 #define GIT_PATH_MAX 4096
 
 /**
- * The string representation of the null object ID.
- */
-#define GIT_OID_HEX_ZERO "0000000000000000000000000000000000000000"
-
-/**
  * Return the version of the libgit2 library
  * being currently used.
  *
@@ -120,6 +115,17 @@ GIT_BEGIN_DECL
  * @return 0 on success or an error code on failure
  */
 GIT_EXTERN(int) git_libgit2_version(int *major, int *minor, int *rev);
+
+/**
+ * Return the prerelease state of the libgit2 library currently being
+ * used.  For nightly builds during active development, this will be
+ * "alpha".  Releases may have a "beta" or release candidate ("rc1",
+ * "rc2", etc) prerelease.  For a final release, this function returns
+ * NULL.
+ *
+ * @return the name of the prerelease state or NULL
+ */
+GIT_EXTERN(const char *) git_libgit2_prerelease(void);
 
 /**
  * Combinations of these values describe the features with which libgit2
@@ -214,7 +220,11 @@ typedef enum {
 	GIT_OPT_SET_ODB_PACKED_PRIORITY,
 	GIT_OPT_SET_ODB_LOOSE_PRIORITY,
 	GIT_OPT_GET_EXTENSIONS,
-	GIT_OPT_SET_EXTENSIONS
+	GIT_OPT_SET_EXTENSIONS,
+	GIT_OPT_GET_OWNER_VALIDATION,
+	GIT_OPT_SET_OWNER_VALIDATION,
+	GIT_OPT_GET_HOMEDIR,
+	GIT_OPT_SET_HOMEDIR
 } git_libgit2_opt_t;
 
 /**
@@ -451,6 +461,24 @@ typedef enum {
  *      > { "!noop", "newext" } indicates that the caller does not want
  *      > to support repositories with the `noop` extension but does want
  *      > to support repositories with the `newext` extension.
+ *
+ *   opts(GIT_OPT_GET_OWNER_VALIDATION, int *enabled)
+ *      > Gets the owner validation setting for repository
+ *      > directories.
+ *
+ *   opts(GIT_OPT_SET_OWNER_VALIDATION, int enabled)
+ *      > Set that repository directories should be owned by the current
+ *      > user. The default is to validate ownership.
+ *
+ *   opts(GIT_OPT_GET_HOMEDIR, git_buf *out)
+ *      > Gets the current user's home directory, as it will be used
+ *      > for file lookups. The path is written to the `out` buffer.
+ *
+ *   opts(GIT_OPT_SET_HOMEDIR, const char *path)
+ *      > Sets the directory used as the current user's home directory,
+ *      > for file lookups.
+ *      >
+ *      > - `path` directory of home directory.
  *
  * @param option Option key
  * @param ... value to set the option

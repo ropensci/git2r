@@ -436,6 +436,8 @@ GIT_EXTERN(int) git_diff_format_email_options_init(
 #define GITERR_WORKTREE GIT_ERROR_WORKTREE
 #define GITERR_SHA1 GIT_ERROR_SHA1
 
+#define GIT_ERROR_SHA1 GIT_ERROR_SHA
+
 /**
  * Return the last `git_error` object that was generated for the
  * current thread.  This is an alias of `git_error_last` and is
@@ -774,6 +776,12 @@ typedef git_trace_cb git_trace_callback;
  * this time.
  */
 /**@{*/
+
+#ifndef GIT_EXPERIMENTAL_SHA256
+# define GIT_OID_RAWSZ    GIT_OID_SHA1_SIZE
+# define GIT_OID_HEXSZ    GIT_OID_SHA1_HEXSIZE
+# define GIT_OID_HEX_ZERO GIT_OID_SHA1_HEXZERO
+#endif
 
 GIT_EXTERN(int) git_oid_iszero(const git_oid *id);
 
