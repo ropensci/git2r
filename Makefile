@@ -134,21 +134,30 @@ sync_libgit2:
 	-rm -f src/libgit2/include/git2/inttypes.h
 	-rm -f src/libgit2/include/git2/stdint.h
 	-cp -r ../libgit2/src/ src/libgit2/src
+	-rm -rf src/libgit2/src/cli
 	-rm -f src/libgit2/deps/http-parser/CMakeLists.txt
 	-rm -f src/libgit2/deps/regex/CMakeLists.txt
+	-rm -f src/libgit2/src/README.md
 	-rm -f src/libgit2/src/CMakeLists.txt
-	-rm -f src/libgit2/src/features.h.in
+	-rm -f src/libgit2/src/libgit2/CMakeLists.txt
+	-rm -f src/libgit2/src/libgit2/experimental.h.in
+	-rm -f src/libgit2/src/libgit2/git2.rc
+	-rm -f src/libgit2/src/util/CMakeLists.txt
+	-rm -f src/libgit2/src/util/git2_features.h.in
 	-rm -f src/libgit2/src/stransport_stream.c
-	-rm -f src/libgit2/src/hash/sha1/common_crypto.c
-	-rm -f src/libgit2/src/hash/sha1/common_crypto.h
-	-rm -f src/libgit2/src/hash/sha1/generic.c
-	-rm -f src/libgit2/src/hash/sha1/generic.h
-	-rm -f src/libgit2/src/hash/sha1/mbedtls.c
-	-rm -f src/libgit2/src/hash/sha1/mbedtls.h
-	-rm -f src/libgit2/src/hash/sha1/win32.c
-	-rm -f src/libgit2/src/hash/sha1/win32.h
-	-rm -f src/libgit2/src/transports/auth_negotiate.c
-	-rm -rf src/libgit2/src/win32
+	-rm -f src/libgit2/src/util/hash/builtin.c
+	-rm -f src/libgit2/src/util/hash/builtin.h
+	-rm -f src/libgit2/src/util/hash/common_crypto.c
+	-rm -f src/libgit2/src/util/hash/common_crypto.h
+	-rm -f src/libgit2/src/util/hash/sha1/generic.c
+	-rm -f src/libgit2/src/util/hash/sha1/generic.h
+	-rm -f src/libgit2/src/util/hash/mbedtls.c
+	-rm -f src/libgit2/src/util/hash/mbedtls.h
+	-rm -f src/libgit2/src/util/hash/win32.c
+	-rm -f src/libgit2/src/util/hash/win32.h
+	-rm -rf src/libgit2/src/util/hash/rfc6234
+	-rm -f src/libgit2/src/libgit2/transports/auth_negotiate.c
+	-rm -rf src/libgit2/src/util/win32
 	Rscript scripts/build_Makevars.R
 
 Makevars:
