@@ -2,6 +2,11 @@
 
 ## CHANGES
 
+* Updated the bundled libgit2 source code to version 1.6.3.
+
+* Fix build failure of bundled libgit2 when structure for nanosecond
+  type is mssing.
+
 # git2r 0.31.0 (2023-01-26)
 
 ## CHANGES
