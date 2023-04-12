@@ -1,4 +1,4 @@
-# git2r (development version)
+# git2r 0.32.0 (2023-04-12)
 
 ## CHANGES
 
