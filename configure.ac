@@ -1,5 +1,5 @@
 # git2r, R bindings to the libgit2 library.
-# Copyright (C) 2013-2022 The git2r contributors
+# Copyright (C) 2013-2023 The git2r contributors
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2,
@@ -399,7 +399,7 @@ case "${host_os}" in
 esac
 
 # Add include paths for git2r
-CPPFLAGS="-I. -Ilibgit2/src -Ilibgit2/include -Ilibgit2/deps/http-parser ${CPPFLAGS}"
+CPPFLAGS="-I. -Ilibgit2/src/libgit2 -Ilibgit2/src/util -Ilibgit2/include -Ilibgit2/deps/http-parser ${CPPFLAGS}"
 
 # Add definitions
 CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DLIBGIT2_NO_FEATURES_H -DR_NO_REMAP -DSTRICT_R_HEADERS"
@@ -413,8 +413,8 @@ case "${host_os}" in
     ;;
     *)
         if test "x${have_ssl}" = xyes; then
-            CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_OPENSSL=1"
-            GIT2R_SRC_SHA1="libgit2/src/hash/sha1/openssl.o"
+            CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_OPENSSL=1 -DGIT_SHA1_OPENSSL_DYNAMIC=1 -DGIT_SHA256_OPENSSL=1"
+            GIT2R_SRC_SHA1="libgit2/src/util/hash/openssl.o"
         else
             CPPFLAGS="${CPPFLAGS} -DGIT_SHA1_COLLISIONDETECT=1 -DSHA1DC_NO_STANDARD_INCLUDES=1"
             CPPFLAGS="${CPPFLAGS} -DSHA1DC_CUSTOM_INCLUDE_SHA1_C=\\\"common.h\\\" -DSHA1DC_CUSTOM_INCLUDE_UBC_CHECK_C=\\\"common.h\\\""
