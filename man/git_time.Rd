@@ -19,11 +19,11 @@
 \arguments{
 \item{x}{\R  object to be converted.}
 
-\item{tz}{time zone specification to be used for the conversion,
-    \emph{if one is required}.  System-specific (see \link[base]{time zones}),
-    but \code{""} is the current time zone, and \code{"GMT"} is UTC
-    (Universal Time, Coordinated).  Invalid values are most commonly
-    treated as UTC, on some platforms with a warning.}
+\item{tz}{a character string.  The time zone specification to be used
+    for the conversion, \emph{if one is required}.  System-specific (see
+    \link[base]{time zones}), but \code{""} is the current time zone, and
+    \code{"GMT"} is UTC (Universal Time, Coordinated).  Invalid values
+    are most commonly treated as UTC, on some platforms with a warning.}
 
 \item{origin}{a date-time object, or something which can be coerced by
     \code{as.POSIXct(tz = "GMT")} to such an object.}
