@@ -8,7 +8,7 @@ PKG_CPPFLAGS = -I${RWINLIB}/include \
         -DGIT2R_LIBGIT2_V0_99_0_RENAMES
 
 PKG_LIBS = -L${RWINLIB}/lib${R_ARCH} \
-	-lgit2 -lssh2 -lz -lssl -lcrypto \
+	-lgit2 -lssh2 -lz -lssl -lcrypto -liconv \
 	-lwinhttp -lws2_32 -lcrypt32 -lole32 -lrpcrt4
 
 all: clean winlibs
