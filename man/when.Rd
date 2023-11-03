@@ -16,7 +16,8 @@ when(object, tz = "GMT", origin = "1970-01-01", usetz = TRUE)
     are most commonly treated as UTC, on some platforms with a warning.}
 
 \item{origin}{a date-time object, or something which can be coerced by
-    \code{as.POSIXct(tz = "GMT")} to such an object.}
+    \code{as.POSIXct(tz = "GMT")} to such an object.  Optional since \R
+    4.3.0, where the equivalent of \code{"1970-01-01"} is used.}
 
 \item{usetz}{logical.  Should the time zone abbreviation be appended
     to the output?  This is used in printing times, and more reliable
