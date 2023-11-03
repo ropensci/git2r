@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2019 The git2r contributors
+## Copyright (C) 2013-2023 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -135,16 +135,16 @@ stopifnot(identical(sapply(blob_list_2, "[[", "sha"),
                       "d670460b4b4aece5915caf5c68d12f560a9fe3e4")))
 
 ## Test arguments
-check_error(assertError(.Call(git2r:::git2r_blob_content, NULL)),
+check_error(assertError(.Call(git2r:::git2r_blob_content, NULL, FALSE)),
             "'blob' must be an S3 class git_blob")
-check_error(assertError(.Call(git2r:::git2r_blob_content, 3)),
+check_error(assertError(.Call(git2r:::git2r_blob_content, 3, FALSE)),
             "'blob' must be an S3 class git_blob")
-check_error(assertError(.Call(git2r:::git2r_blob_content, repo)),
+check_error(assertError(.Call(git2r:::git2r_blob_content, repo, FALSE)),
             "'blob' must be an S3 class git_blob")
 
 b <- blob_list_1[[1]]
 b$sha <- NA_character_
-check_error(assertError(.Call(git2r:::git2r_blob_content, b)),
+check_error(assertError(.Call(git2r:::git2r_blob_content, b, FALSE)),
             "'blob' must be an S3 class git_blob")
 
 check_error(assertError(hashfile(NA)), "invalid 'path' argument")
