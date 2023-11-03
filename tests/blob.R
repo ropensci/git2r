@@ -56,15 +56,18 @@ add(repo, "test.txt")
 blob <- lookup(repo, tree(commit(repo, "New commit message"))$id[1])
 stopifnot(identical(content(blob),
                     c("Hello world!", "HELLO WORLD!", "HeLlO wOrLd!")))
+stopifnot(identical(rawToChar(content(blob, raw = TRUE)),
+                    content(blob, split = FALSE)))
 
 ## Check content of binary file
 set.seed(42)
-writeBin(as.raw((sample(0:255, 1000, replace = TRUE))),
-         con = file.path(path, "test.bin"))
+x <- as.raw((sample(0:255, 1000, replace = TRUE)))
+writeBin(x, con = file.path(path, "test.bin"))
 add(repo, "test.bin")
 commit(repo, "Add binary file")
 blob <- tree(last_commit(repo))["test.bin"]
 stopifnot(identical(content(blob), NA_character_))
+stopifnot(identical(x, content(blob, raw = TRUE)))
 
 ## Hash
 stopifnot(identical(hash("Hello, world!\n"),
