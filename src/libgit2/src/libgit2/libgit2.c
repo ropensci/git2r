@@ -13,6 +13,7 @@
 #include "cache.h"
 #include "common.h"
 #include "filter.h"
+#include "grafts.h"
 #include "hash.h"
 #include "index.h"
 #include "merge_driver.h"
@@ -30,6 +31,7 @@
 #include "streams/registry.h"
 #include "streams/mbedtls.h"
 #include "streams/openssl.h"
+#include "streams/socket.h"
 #include "transports/smart.h"
 #include "transports/http.h"
 #include "transports/ssh.h"
@@ -46,6 +48,8 @@ extern size_t git_indexer__max_objects;
 extern bool git_disable_pack_keep_file_checks;
 extern int git_odb__packed_priority;
 extern int git_odb__loose_priority;
+extern int git_socket_stream__connect_timeout;
+extern int git_socket_stream__timeout;
 
 char *git__user_agent;
 char *git__ssl_ciphers;
@@ -78,6 +82,7 @@ int git_libgit2_init(void)
 		git_merge_driver_global_init,
 		git_transport_ssh_global_init,
 		git_stream_registry_global_init,
+		git_socket_stream_global_init,
 		git_openssl_stream_global_init,
 		git_mbedtls_stream_global_init,
 		git_mwindow_global_init,
@@ -431,6 +436,40 @@ int git_libgit2_opts(int key, ...)
 
 	case GIT_OPT_SET_HOMEDIR:
 		error = git_sysdir_set(GIT_SYSDIR_HOME, va_arg(ap, const char *));
+		break;
+
+	case GIT_OPT_GET_SERVER_CONNECT_TIMEOUT:
+		*(va_arg(ap, int *)) = git_socket_stream__connect_timeout;
+		break;
+
+	case GIT_OPT_SET_SERVER_CONNECT_TIMEOUT:
+		{
+			int timeout = va_arg(ap, int);
+
+			if (timeout < 0) {
+				git_error_set(GIT_ERROR_INVALID, "invalid connect timeout");
+				error = -1;
+			} else {
+				git_socket_stream__connect_timeout = timeout;
+			}
+		}
+		break;
+
+	case GIT_OPT_GET_SERVER_TIMEOUT:
+		*(va_arg(ap, int *)) = git_socket_stream__timeout;
+		break;
+
+	case GIT_OPT_SET_SERVER_TIMEOUT:
+		{
+			int timeout = va_arg(ap, int);
+
+			if (timeout < 0) {
+				git_error_set(GIT_ERROR_INVALID, "invalid timeout");
+				error = -1;
+			} else {
+				git_socket_stream__timeout = timeout;
+			}
+		}
 		break;
 
 	default:
