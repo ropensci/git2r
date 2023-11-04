@@ -127,9 +127,11 @@ valgrind:
 # 3) Build and check updated package 'make check'
 sync_libgit2:
 	-rm -f src/libgit2/deps/http-parser/*
+	-rm -f src/libgit2/deps/xdiff/*
 	-rm -rf src/libgit2/include
 	-rm -rf src/libgit2/src
 	-cp -f ../libgit2/deps/http-parser/* src/libgit2/deps/http-parser
+	-cp -f ../libgit2/deps/xdiff/* src/libgit2/deps/xdiff
 	-cp -r ../libgit2/include/ src/libgit2/include
 	-rm -f src/libgit2/include/git2/inttypes.h
 	-rm -f src/libgit2/include/git2/stdint.h
@@ -137,6 +139,7 @@ sync_libgit2:
 	-rm -rf src/libgit2/src/cli
 	-rm -f src/libgit2/deps/http-parser/CMakeLists.txt
 	-rm -f src/libgit2/deps/regex/CMakeLists.txt
+	-rm -f src/libgit2/deps/xdiff/CMakeLists.txt
 	-rm -f src/libgit2/src/README.md
 	-rm -f src/libgit2/src/CMakeLists.txt
 	-rm -f src/libgit2/src/libgit2/CMakeLists.txt

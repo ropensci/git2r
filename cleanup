@@ -9,10 +9,10 @@ rm -f src/*.so
 rm -f src/libmygit.a
 rm -f src/libgit2/deps/http-parser/*.o
 rm -f src/libgit2/deps/regex/*.o
+rm -f src/libgit2/deps/xdiff/*.o
 rm -f src/libgit2/src/libgit2/*.o
 rm -f src/libgit2/src/libgit2/streams/*.o
 rm -f src/libgit2/src/libgit2/transports/*.o
-rm -f src/libgit2/src/libgit2/xdiff/*.o
 rm -f src/libgit2/src/util/*.o
 rm -f src/libgit2/src/util/allocators/*.o
 rm -f src/libgit2/src/util/hash/*.o

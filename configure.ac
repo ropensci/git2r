@@ -247,6 +247,16 @@ else
     AC_MSG_NOTICE([attempting configuration of bundled libgit2])
 fi
 
+AC_CHECK_DECL(poll,
+              [CPPFLAGS="${CPPFLAGS} -DGIT_IO_POLL"],
+              [],
+              [#include <poll.h>])
+
+AC_CHECK_DECL(select,
+              [CPPFLAGS="${CPPFLAGS} -DGIT_IO_SELECT"],
+              [],
+              [#include <sys/select.h>])
+
 # Use R to determine architecture of the machine
 AC_MSG_CHECKING([size of void*])
 sizeof_voidp=`"${RBIN}" --slave --vanilla -e "cat(.Machine\\$sizeof.pointer)"`
@@ -399,7 +409,7 @@ case "${host_os}" in
 esac
 
 # Add include paths for git2r
-CPPFLAGS="-I. -Ilibgit2/src/libgit2 -Ilibgit2/src/util -Ilibgit2/include -Ilibgit2/deps/http-parser ${CPPFLAGS}"
+CPPFLAGS="-I. -Ilibgit2/src/libgit2 -Ilibgit2/src/util -Ilibgit2/include -Ilibgit2/deps/http-parser -Ilibgit2/deps/xdiff ${CPPFLAGS}"
 
 # Add definitions
 CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DLIBGIT2_NO_FEATURES_H -DR_NO_REMAP -DSTRICT_R_HEADERS"
