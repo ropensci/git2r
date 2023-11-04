@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2019 The git2r contributors
+## Copyright (C) 2013-2023 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -64,7 +64,10 @@ blob_create <- function(repo = ".", path = NULL, relative = TRUE) {
 ##'
 ##' @param blob The blob object.
 ##' @param split Split blob content to text lines. Default TRUE.
-##' @return The content of the blob. NA_character_ if the blob is binary.
+##' @param raw When \code{TRUE}, get the content of the blob as a raw
+##'     vector, else as a character vector. Default is \code{FALSE}.
+##' @return The content of the blob. NA_character_ if the blob is
+##'     binary and \code{raw} is \code{FALSE}.
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -82,14 +85,13 @@ blob_create <- function(repo = ".", path = NULL, relative = TRUE) {
 ##' ## Display content of blob.
 ##' content(tree(commits(repo)[[1]])["example.txt"])
 ##' }
-content <- function(blob = NULL, split = TRUE) {
-    if (is_binary(blob))
-        return(NA_character_)
-
-    ret <- .Call(git2r_blob_content, blob)
+content <- function(blob = NULL, split = TRUE, raw = FALSE) {
+    result <- .Call(git2r_blob_content, blob, raw)
+    if (isTRUE(raw))
+        return(result)
     if (isTRUE(split))
-        ret <- strsplit(ret, "\n")[[1]]
-    ret
+        result <- strsplit(result, "\n")[[1]]
+    result
 }
 
 ##' Determine the sha from a blob string
