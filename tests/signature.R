@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2023 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -18,6 +18,9 @@ library("git2r")
 
 ## For debugging
 sessionInfo()
+libgit2_version()
+libgit2_features()
+
 
 ## Check printing of a class git_signature
 when <- structure(list(time = 1395567947, offset = 60),
