@@ -35,7 +35,7 @@ jobs:
       - name: Install libgit2
         run: |
           if [ "$RUNNER_OS" == "Linux" ]; then
-            apt install libgit2-dev
+            sudo apt-get install -y libgit2-dev
           elif [ "$RUNNER_OS" == "macOS" ]; then
             brew install libgit2
           fi
