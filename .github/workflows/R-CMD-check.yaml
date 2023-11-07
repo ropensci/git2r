@@ -32,6 +32,15 @@ jobs:
       - name: Configure git
         run: git config --global core.autocrlf false
 
+      - name: Install libgit2
+        run: |
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            apt install libgit2-dev
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+            brew install libgit2
+          fi
+        shell: bash
+
       - uses: actions/checkout@v3
 
       - uses: r-lib/actions/setup-pandoc@v2
