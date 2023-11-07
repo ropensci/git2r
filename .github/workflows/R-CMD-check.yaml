@@ -32,11 +32,9 @@ jobs:
       - name: Configure git
         run: git config --global core.autocrlf false
 
-      - name: Install libgit2
+      - name: Install libgit2 on macOS
         run: |
-          if [ "$RUNNER_OS" == "Linux" ]; then
-            sudo apt-get install -y libgit2-dev
-          elif [ "$RUNNER_OS" == "macOS" ]; then
+          if [ "$RUNNER_OS" == "macOS" ]; then
             brew install libgit2
           fi
         shell: bash
