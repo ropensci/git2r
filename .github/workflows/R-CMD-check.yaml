@@ -29,6 +29,9 @@ jobs:
       R_KEEP_PKG_SOURCE: yes
 
     steps:
+      - name: Configure git
+        run: git config --global core.autocrlf false
+
       - uses: actions/checkout@v3
 
       - uses: r-lib/actions/setup-pandoc@v2
