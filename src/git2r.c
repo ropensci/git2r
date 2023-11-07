@@ -61,7 +61,7 @@
 static const R_CallMethodDef callMethods[] =
 {
     CALLDEF(git2r_blame_file, 2),
-    CALLDEF(git2r_blob_content, 1),
+    CALLDEF(git2r_blob_content, 2),
     CALLDEF(git2r_blob_create_fromdisk, 2),
     CALLDEF(git2r_blob_create_fromworkdir, 2),
     CALLDEF(git2r_blob_is_binary, 1),

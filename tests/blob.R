@@ -59,15 +59,18 @@ add(repo, "test.txt")
 blob <- lookup(repo, tree(commit(repo, "New commit message"))$id[1])
 stopifnot(identical(content(blob),
                     c("Hello world!", "HELLO WORLD!", "HeLlO wOrLd!")))
+stopifnot(identical(rawToChar(content(blob, raw = TRUE)),
+                    content(blob, split = FALSE)))
 
 ## Check content of binary file
 set.seed(42)
-writeBin(as.raw((sample(0:255, 1000, replace = TRUE))),
-         con = file.path(path, "test.bin"))
+x <- as.raw((sample(0:255, 1000, replace = TRUE)))
+writeBin(x, con = file.path(path, "test.bin"))
 add(repo, "test.bin")
 commit(repo, "Add binary file")
 blob <- tree(last_commit(repo))["test.bin"]
 stopifnot(identical(content(blob), NA_character_))
+stopifnot(identical(x, content(blob, raw = TRUE)))
 
 ## Hash
 stopifnot(identical(hash("Hello, world!\n"),
@@ -138,16 +141,16 @@ stopifnot(identical(sapply(blob_list_2, "[[", "sha"),
                       "d670460b4b4aece5915caf5c68d12f560a9fe3e4")))
 
 ## Test arguments
-check_error(assertError(.Call(git2r:::git2r_blob_content, NULL)),
+check_error(assertError(.Call(git2r:::git2r_blob_content, NULL, FALSE)),
             "'blob' must be an S3 class git_blob")
-check_error(assertError(.Call(git2r:::git2r_blob_content, 3)),
+check_error(assertError(.Call(git2r:::git2r_blob_content, 3, FALSE)),
             "'blob' must be an S3 class git_blob")
-check_error(assertError(.Call(git2r:::git2r_blob_content, repo)),
+check_error(assertError(.Call(git2r:::git2r_blob_content, repo, FALSE)),
             "'blob' must be an S3 class git_blob")
 
 b <- blob_list_1[[1]]
 b$sha <- NA_character_
-check_error(assertError(.Call(git2r:::git2r_blob_content, b)),
+check_error(assertError(.Call(git2r:::git2r_blob_content, b, FALSE)),
             "'blob' must be an S3 class git_blob")
 
 check_error(assertError(hashfile(NA)), "invalid 'path' argument")

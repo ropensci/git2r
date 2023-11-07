@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2020 The git2r contributors
+ *  Copyright (C) 2013-2023 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -28,11 +28,14 @@
  * Get content of a blob
  *
  * @param blob S3 class git_blob
+ * @param raw If true, return content as a RAWSXP vector, else as a
+ * STRSXP vector.
  * @return content
  */
 SEXP attribute_hidden
 git2r_blob_content(
-    SEXP blob)
+    SEXP blob,
+    SEXP raw)
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;
@@ -43,6 +46,8 @@ git2r_blob_content(
 
     if (git2r_arg_check_blob(blob))
         git2r_error(__func__, NULL, "'blob'", git2r_err_blob_arg);
+    if (git2r_arg_check_logical(raw))
+        git2r_error(__func__, NULL, "'raw'", git2r_err_logical_arg);
 
     repository = git2r_repository_open(git2r_get_list_element(blob, "repo"));
     if (!repository)
@@ -55,9 +60,22 @@ git2r_blob_content(
     if (error)
         goto cleanup;
 
-    PROTECT(result = Rf_allocVector(STRSXP, 1));
-    nprotect++;
-    SET_STRING_ELT(result, 0, Rf_mkChar(git_blob_rawcontent(blob_obj)));
+    if (LOGICAL(raw)[0]) {
+        PROTECT(result = Rf_allocVector(RAWSXP, git_blob_rawsize(blob_obj)));
+        nprotect++;
+        memcpy(
+            RAW(result),
+            git_blob_rawcontent(blob_obj),
+            git_blob_rawsize(blob_obj));
+    } else {
+        PROTECT(result = Rf_allocVector(STRSXP, 1));
+        nprotect++;
+        if (git_blob_is_binary(blob_obj)) {
+            SET_STRING_ELT(result, 0, NA_STRING);
+        } else {
+            SET_STRING_ELT(result, 0, Rf_mkChar(git_blob_rawcontent(blob_obj)));
+        }
+    }
 
 cleanup:
     git_blob_free(blob_obj);

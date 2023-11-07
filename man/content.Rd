@@ -4,15 +4,19 @@
 \alias{content}
 \title{Content of blob}
 \usage{
-content(blob = NULL, split = TRUE)
+content(blob = NULL, split = TRUE, raw = FALSE)
 }
 \arguments{
 \item{blob}{The blob object.}
 
 \item{split}{Split blob content to text lines. Default TRUE.}
+
+\item{raw}{When \code{TRUE}, get the content of the blob as a raw
+vector, else as a character vector. Default is \code{FALSE}.}
 }
 \value{
-The content of the blob. NA_character_ if the blob is binary.
+The content of the blob. NA_character_ if the blob is
+    binary and \code{raw} is \code{FALSE}.
 }
 \description{
 Content of blob
