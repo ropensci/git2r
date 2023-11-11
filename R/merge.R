@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2019 The git2r contributors
+## Copyright (C) 2013-2023 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -86,7 +86,7 @@ merge.git_branch <- function(x, y = NULL, commit_on_success = TRUE,
 merge.git_repository <- function(x, y = NULL, commit_on_success = TRUE,
                                  merger = NULL, fail = FALSE, ...) {
     ## Check branch argument
-    if (is.null(y) || !is.character(y) || !identical(length(y), 1L))
+    if (!is.character(y) || !identical(length(y), 1L))
         stop("'branch' must be a character vector of length one")
     b <- branches(x)
     b <- b[vapply(b, "[[", character(1), "name") == y][[1]]

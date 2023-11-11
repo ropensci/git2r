@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2019 The git2r contributors
+## Copyright (C) 2013-2023 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -86,7 +86,7 @@ add <- function(repo = ".", path = NULL, force = FALSE) {
     ## directory. Each file that matches will be added to the index
     ## (either updating an existing entry or adding a new entry).
 
-    if (is.null(path) || !is.character(path))
+    if (!is.character(path))
         stop("'path' must be a character vector")
 
     repo <- lookup_repository(repo)
@@ -156,7 +156,7 @@ sanitize_path <- function(p, repo_wd) {
 ##' status(repo)
 ##' }
 rm_file <- function(repo = ".", path = NULL) {
-    if (is.null(path) || !is.character(path))
+    if (!is.character(path))
         stop("'path' must be a character vector")
 
     repo <- lookup_repository(repo)
