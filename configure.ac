@@ -80,7 +80,7 @@ elif test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
                     USE_BUNDLED_LIBGIT2=no
                 else
                     curl -sfL "https://autobrew.github.io/scripts/libgit2" > autobrew
-                    . autobrew
+                    . ./autobrew
                     USE_BUNDLED_LIBGIT2=no
                 fi
             ;;
