@@ -113,59 +113,6 @@ test_objects = $(wildcard tests/*.R)
 valgrind:
 	$(foreach var,$(test_objects),R -d "valgrind --tool=memcheck --leak-check=full" --vanilla < $(var);)
 
-# Sync git2r with changes in the libgit2 C-library
-#
-# 1) clone or pull libgit2 to parent directory from
-# https://github.com/libgit/libgit.git
-#
-# 2) run 'make sync_libgit2'. It first removes files and then copy
-# files from libgit2 directory. Next it runs an R script to build
-# Makevars.in and Makevars.win based on source files. Finally it runs
-# a patch command to change some lines in the source code to pass
-# 'R CMD check git2r'
-#
-# 3) Build and check updated package 'make check'
-sync_libgit2:
-	-rm -f src/libgit2/deps/http-parser/*
-	-rm -f src/libgit2/deps/xdiff/*
-	-rm -rf src/libgit2/include
-	-rm -rf src/libgit2/src
-	-cp -f ../libgit2/deps/http-parser/* src/libgit2/deps/http-parser
-	-cp -f ../libgit2/deps/xdiff/* src/libgit2/deps/xdiff
-	-cp -r ../libgit2/include/ src/libgit2/include
-	-rm -f src/libgit2/include/git2/inttypes.h
-	-rm -f src/libgit2/include/git2/stdint.h
-	-cp -r ../libgit2/src/ src/libgit2/src
-	-rm -rf src/libgit2/src/cli
-	-rm -f src/libgit2/deps/http-parser/CMakeLists.txt
-	-rm -f src/libgit2/deps/regex/CMakeLists.txt
-	-rm -f src/libgit2/deps/xdiff/CMakeLists.txt
-	-rm -f src/libgit2/src/README.md
-	-rm -f src/libgit2/src/CMakeLists.txt
-	-rm -f src/libgit2/src/libgit2/CMakeLists.txt
-	-rm -f src/libgit2/src/libgit2/experimental.h.in
-	-rm -f src/libgit2/src/libgit2/git2.rc
-	-rm -f src/libgit2/src/util/CMakeLists.txt
-	-rm -f src/libgit2/src/util/git2_features.h.in
-	-rm -f src/libgit2/src/stransport_stream.c
-	-rm -f src/libgit2/src/util/hash/builtin.c
-	-rm -f src/libgit2/src/util/hash/builtin.h
-	-rm -f src/libgit2/src/util/hash/common_crypto.c
-	-rm -f src/libgit2/src/util/hash/common_crypto.h
-	-rm -f src/libgit2/src/util/hash/sha1/generic.c
-	-rm -f src/libgit2/src/util/hash/sha1/generic.h
-	-rm -f src/libgit2/src/util/hash/mbedtls.c
-	-rm -f src/libgit2/src/util/hash/mbedtls.h
-	-rm -f src/libgit2/src/util/hash/win32.c
-	-rm -f src/libgit2/src/util/hash/win32.h
-	-rm -rf src/libgit2/src/util/hash/rfc6234
-	-rm -f src/libgit2/src/libgit2/transports/auth_negotiate.c
-	-rm -rf src/libgit2/src/util/win32
-	Rscript scripts/build_Makevars.R
-
-Makevars:
-	Rscript scripts/build_Makevars.R
-
 configure: configure.ac
 	autoconf ./configure.ac > ./configure
 	chmod +x ./configure

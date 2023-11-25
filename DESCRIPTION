@@ -22,12 +22,7 @@ Suggests:
 Type: Package
 Biarch: true
 NeedsCompilation: yes
-SystemRequirements: By default, git2r uses a system installation of
-    the libgit2 headers and library. However, if a system installation
-    is not available, builds and uses a bundled version of the libgit2
-    source. zlib headers and library. OpenSSL headers and library
-    (non-macOS). LibSSH2 (optional on non-Windows) to enable the SSH
-    transport.
+SystemRequirements: libgit2 (>= 0.26)
 Collate:
     'blame.R'
     'blob.R'
