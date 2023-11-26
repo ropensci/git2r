@@ -9,6 +9,10 @@
 
 * Updated the bundled libgit2 source code to version 1.7.1.
 
+* Changed the R dependency from >= 3.4 to >= 4.0.
+
+* Added a missing '-liconv' to PKG_LIBS in Makevars.win.
+
 # git2r 0.32.0 (2023-04-12)
 
 ## CHANGES
