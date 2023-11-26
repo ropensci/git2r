@@ -2,12 +2,20 @@
 
 ## CHANGES
 
+# git2r 0.33.0 (2023-11-26)
+
+## CHANGES
+
 * Added a missing 'git2r-package' alias to the documentation.
 
 * Added the argument 'raw' to the 'content' function to make it
   possible to get a blob content as a raw vector, see issue #461.
 
 * Updated the bundled libgit2 source code to version 1.7.1.
+
+* Changed the R dependency from >= 3.4 to >= 4.0.
+
+* Added a missing '-liconv' to PKG_LIBS in Makevars.win.
 
 # git2r 0.32.0 (2023-04-12)
 
