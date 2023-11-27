@@ -26,17 +26,9 @@ To install the development version of `git2r`, it's easiest to use the
 devtools package:
 
 ```coffee
-# install.packages("devtools")
-library(devtools)
+# install.packages("remotes")
+library(remotes)
 install_github("ropensci/git2r")
-```
-
-Another alternative is to use `git` and `make`
-
-```coffee
-$ git clone https://github.com/ropensci/git2r.git
-$ cd git2r
-$ make install
 ```
 
 ## Usage
@@ -299,20 +291,9 @@ commit(repo, "Commit message")
 #> Summary: Commit message
 ```
 
-# Included software
-
-- The C library [libgit2](https://github.com/libgit2/libgit2). See
-  `inst/AUTHORS` for the authors of libgit2.
-
-- The libgit2 library has been modified, e.g. to use the R printing
-  and error routines, and to use `runif` instead of `rand`.
-
 # License
 
-The `git2r` package is licensed under the GPLv2. See these files for additional details:
-
-- LICENSE      - `git2r` package license (GPLv2)
-- inst/COPYING - Copyright notices for additional included software
+The `git2r` package is licensed under the GPLv2.
 
 ---
 
