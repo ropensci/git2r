@@ -2,13 +2,9 @@
 ^LICENSE$
 ^aclocal\.m4$
 ^Makefile$
-^README\.Rmd$
-^figure$
 ^man-roxygen$
-^patches$
 ^revdep$
 ^scripts$
-^CONTRIBUTING.md$
 ^tools/README\.md$
 ^.*\.Rproj$
 ^\.Rproj\.user$
