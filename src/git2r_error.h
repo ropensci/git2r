@@ -20,6 +20,9 @@
 #define INCLUDE_git2r_error_h
 
 #include <git2.h>
+#ifdef GIT2R_HAVE_SYS_SUBFOLDER
+#include <git2/sys/errors.h>
+#endif
 
 /**
  * Error messages

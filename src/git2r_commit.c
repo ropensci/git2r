@@ -259,7 +259,11 @@ git2r_commit_create(
         message,
         tree,
         n_parents,
+#ifdef GIT2R_HAVE_SYS_SUBFOLDER
+        (git_commit*const*)parents);
+#else
         (const git_commit**)parents);
+#endif
     if (error)
         goto cleanup;
 
