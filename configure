@@ -2401,6 +2401,32 @@ if test "x${have_git_oid_is_zero}" = xyes; then
     PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_LIBGIT2_V0_99_0_RENAMES"
 fi
 
+# libgit v1.8.0 requires code changes around functions taking
+# git_commit.  See
+# https://github.com/libgit2/libgit2/issues/6793
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether libgit2 function requires 'const git_commit**'" >&5
+printf %s "checking whether libgit2 function requires 'const git_commit**'... " >&6; }
+have_const_git_commit_pointer=no
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <git2.h>
+int
+main (void)
+{
+git_commit_create(NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,
+                    (const git_commit**)NULL);
+  ;
+  return 0;
+}
+_ACEOF
+PKG_CFLAGS="${PKG_CFLAGS} -Werror" "$RBIN" CMD SHLIB conftest.c \
+1>&5 2>&5 && have_const_git_commit_pointer=yes
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${have_const_git_commit_pointer}" >&5
+printf "%s\n" "${have_const_git_commit_pointer}" >&6; }
+if test "x${have_const_git_commit_pointer}" = xyes; then
+    PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_CONST_GIT_COMMIT_POINTER"
+fi
+
 # For debugging
 echo "----- Results of the git2r package configure -----"
 echo ""
