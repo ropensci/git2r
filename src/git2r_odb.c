@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2020 The git2r contributors
+ *  Copyright (C) 2013-2024 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -67,7 +67,7 @@ git2r_odb_hash(
     UNPROTECT(1);
 
     if (error)
-        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+        git2r_error(__func__, git_error_last(), NULL, NULL);
 
     return result;
 }
@@ -113,7 +113,7 @@ git2r_odb_hashfile(
     UNPROTECT(1);
 
     if (error)
-        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+        git2r_error(__func__, git_error_last(), NULL, NULL);
 
     return result;
 }
@@ -175,7 +175,7 @@ git2r_odb_objects_cb(
 {
     int error;
     size_t len;
-    GIT2R_OBJECT_T type;
+    git_object_t type;
     git2r_odb_objects_cb_data *p = (git2r_odb_objects_cb_data*)payload;
 
     error = git_odb_read_header(&len, &type, p->odb, oid);
@@ -259,7 +259,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+        git2r_error(__func__, git_error_last(), NULL, NULL);
 
     return result;
 }
@@ -301,7 +301,7 @@ git2r_odb_add_blob(
     int error;
     int j = 0;
     size_t len;
-    GIT2R_OBJECT_T type;
+    git_object_t type;
     char sha[GIT_OID_HEXSZ + 1];
 
     /* Sha */
@@ -383,8 +383,8 @@ git2r_odb_tree_blobs(
             buf = malloc(buf_len);
             if (!buf) {
                 git_tree_free(sub_tree);
-                GIT2R_ERROR_SET_OOM();
-                return GIT2R_ERROR_NOMEMORY;
+                git_error_set_oom();
+                return GIT_ERROR_NOMEMORY;
             }
             if (path_len) {
                 sep = "/";
@@ -401,8 +401,8 @@ git2r_odb_tree_blobs(
                     when,
                     data);
             } else {
-                GIT2R_ERROR_SET_STR(GIT2R_ERROR_OS, "Failed to snprintf tree path.");
-                error = GIT2R_ERROR_OS;
+                git_error_set_str(GIT_ERROR_OS, "Failed to snprintf tree path.");
+                error = GIT_ERROR_OS;
             }
 
             free(buf);
@@ -451,7 +451,7 @@ git2r_odb_blobs_cb(
 {
     int error = GIT_OK;
     size_t len;
-    GIT2R_OBJECT_T type;
+    git_object_t type;
     git2r_odb_blobs_cb_data *p = (git2r_odb_blobs_cb_data*)payload;
 
     error = git_odb_read_header(&len, &type, p->odb, oid);
@@ -553,7 +553,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+        git2r_error(__func__, git_error_last(), NULL, NULL);
 
     return result;
 }

@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2020 The git2r contributors
+ *  Copyright (C) 2013-2024 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -91,7 +91,7 @@ git2r_revparse_single(
         git2r_tree_init((git_tree*)treeish, repo, result);
         break;
     default:
-        GIT2R_ERROR_SET_STR(GIT2R_ERROR_NONE, git2r_err_revparse_single);
+        git_error_set_str(GIT_ERROR_NONE, git2r_err_revparse_single);
         error = GIT_ERROR;
         break;
     }
@@ -113,7 +113,7 @@ cleanup:
         } else {
             git2r_error(
                 __func__,
-                GIT2R_ERROR_LAST(),
+                git_error_last(),
                 NULL,
                 NULL);
         }

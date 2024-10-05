@@ -1,5 +1,5 @@
 # git2r, R bindings to the libgit2 library.
-# Copyright (C) 2013-2023 The git2r contributors
+# Copyright (C) 2013-2024 The git2r contributors
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2,
@@ -146,20 +146,6 @@ PKG_CFLAGS="${PKG_CFLAGS}" "$RBIN" CMD SHLIB conftest.c \
 AC_MSG_RESULT([${have_sys_subfolder}])
 if test "x${have_sys_subfolder}" = xyes; then
     PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_HAVE_SYS_SUBFOLDER"
-fi
-
-# Several libgit2 error functions and enumaration values have been
-# deprecated, use newer versions.
-AC_MSG_CHECKING([whether the libgit2 function git_error_last is available])
-have_git_error_last=no
-AC_LANG_CONFTEST([AC_LANG_PROGRAM(
-[[#include <git2.h>]],
-[[git_error_last();]])])
-PKG_CFLAGS="${PKG_CFLAGS} -Werror" "$RBIN" CMD SHLIB conftest.c \
-1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD && have_git_error_last=yes
-AC_MSG_RESULT([${have_git_error_last}])
-if test "x${have_git_error_last}" = xyes; then
-    PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_HAVE_GIT_ERROR"
 fi
 
 # libgit v0.99.0: Several structures, enums and values have been

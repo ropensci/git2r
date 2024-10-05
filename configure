@@ -2300,30 +2300,6 @@ if test "x${have_sys_subfolder}" = xyes; then
     PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_HAVE_SYS_SUBFOLDER"
 fi
 
-# Several libgit2 error functions and enumaration values have been
-# deprecated, use newer versions.
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether the libgit2 function git_error_last is available" >&5
-printf %s "checking whether the libgit2 function git_error_last is available... " >&6; }
-have_git_error_last=no
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <git2.h>
-int
-main (void)
-{
-git_error_last();
-  ;
-  return 0;
-}
-_ACEOF
-PKG_CFLAGS="${PKG_CFLAGS} -Werror" "$RBIN" CMD SHLIB conftest.c \
-1>&5 2>&5 && have_git_error_last=yes
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${have_git_error_last}" >&5
-printf "%s\n" "${have_git_error_last}" >&6; }
-if test "x${have_git_error_last}" = xyes; then
-    PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_HAVE_GIT_ERROR"
-fi
-
 # libgit v0.99.0: Several structures, enums and values have been
 # renamed in libgit version 0.99.0. The former names are
 # deprecated.  See

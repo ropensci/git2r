@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2020 The git2r contributors
+ *  Copyright (C) 2013-2024 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -141,7 +141,7 @@ git2r_clone(
     if (error)
         git2r_error(
             __func__,
-            GIT2R_ERROR_LAST(),
+            git_error_last(),
             git2r_err_unable_to_authenticate,
             NULL);
 

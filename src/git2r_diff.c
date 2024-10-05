@@ -173,7 +173,7 @@ git2r_diff(
         error = git2r_copy_string_vec(&(opts.pathspec), path);
         if (error || !opts.pathspec.count) {
             free(opts.pathspec.strings);
-            git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+            git2r_error(__func__, git_error_last(), NULL, NULL);
         }
     }
 
@@ -324,7 +324,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+        git2r_error(__func__, git_error_last(), NULL, NULL);
 
     return result;
 }
@@ -436,7 +436,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+        git2r_error(__func__, git_error_last(), NULL, NULL);
 
     return result;
 }
@@ -548,7 +548,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+        git2r_error(__func__, git_error_last(), NULL, NULL);
 
     return result;
 }
@@ -665,7 +665,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-	git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+	git2r_error(__func__, git_error_last(), NULL, NULL);
 
     return result;
 }
@@ -801,7 +801,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-	git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+	git2r_error(__func__, git_error_last(), NULL, NULL);
 
     return result;
 }

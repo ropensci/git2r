@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2020 The git2r contributors
+ *  Copyright (C) 2013-2024 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -18,26 +18,6 @@
 
 #ifndef INCLUDE_git2r_deprecated_h
 #define INCLUDE_git2r_deprecated_h
-
-#if defined(GIT2R_HAVE_GIT_ERROR)
-# define GIT2R_ERROR_SET_STR git_error_set_str
-# define GIT2R_ERROR_LAST git_error_last
-# define GIT2R_ERROR_SET_OOM git_error_set_oom
-# define GIT2R_ERROR_NONE GIT_ERROR_NONE
-# define GIT2R_ERROR_OS GIT_ERROR_OS
-# define GIT2R_ERROR_NOMEMORY GIT_ERROR_NOMEMORY
-# define GIT2R_ERROR_CONFIG GIT_ERROR_CONFIG
-# define GIT2R_OBJECT_T git_object_t
-#else
-# define GIT2R_ERROR_SET_STR giterr_set_str
-# define GIT2R_ERROR_LAST giterr_last
-# define GIT2R_ERROR_SET_OOM giterr_set_oom
-# define GIT2R_ERROR_NONE GITERR_NONE
-# define GIT2R_ERROR_OS GITERR_OS
-# define GIT2R_ERROR_NOMEMORY GITERR_NOMEMORY
-# define GIT2R_ERROR_CONFIG GITERR_CONFIG
-# define GIT2R_OBJECT_T git_otype
-#endif
 
 #if defined(GIT2R_LIBGIT2_V0_99_0_RENAMES)
 # define GIT2R_CREDENTIAL git_credential

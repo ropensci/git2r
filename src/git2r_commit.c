@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2019 The git2r contributors
+ *  Copyright (C) 2013-2024 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -73,7 +73,7 @@ git2r_any_changes_in_index(
     }
 
     if (!changes_in_index) {
-        GIT2R_ERROR_SET_STR(GIT2R_ERROR_NONE, git2r_err_nothing_added_to_commit);
+        git_error_set_str(GIT_ERROR_NONE, git2r_err_nothing_added_to_commit);
         error = GIT_ERROR;
     }
 
@@ -182,7 +182,7 @@ git2r_retrieve_parents(
 
     *parents = calloc(cb_data.n + 1, sizeof(git_commit*));
     if (!parents) {
-        GIT2R_ERROR_SET_STR(GIT2R_ERROR_NONE, git2r_err_alloc_memory_buffer);
+        git_error_set_str(GIT_ERROR_NONE, git2r_err_alloc_memory_buffer);
         return GIT_ERROR;
     }
     *n_parents = cb_data.n + 1;
@@ -358,7 +358,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+        git2r_error(__func__, git_error_last(), NULL, NULL);
 
     return result;
 }
@@ -433,7 +433,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+        git2r_error(__func__, git_error_last(), NULL, NULL);
 
     return result;
 }
@@ -562,7 +562,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+        git2r_error(__func__, git_error_last(), NULL, NULL);
 
     return list;
 }

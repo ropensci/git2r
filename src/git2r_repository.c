@@ -56,7 +56,7 @@ git2r_repository_open(
         if (error == GIT_ENOTFOUND)
             Rf_warning("Could not find repository at path '%s'", CHAR(STRING_ELT(path, 0)));
         else
-            Rf_warning("Unable to open repository: %s", GIT2R_ERROR_LAST()->message);
+            Rf_warning("Unable to open repository: %s", git_error_last()->message);
         git_repository_free(repository);
         return NULL;
     }
@@ -189,7 +189,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+        git2r_error(__func__, git_error_last(), NULL, NULL);
 
     return result;
 }
@@ -255,7 +255,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+        git2r_error(__func__, git_error_last(), NULL, NULL);
 
     return result;
 }
@@ -325,7 +325,7 @@ git2r_repository_is_bare(
     is_bare = git_repository_is_bare(repository);
     git_repository_free(repository);
     if (is_bare < 0)
-        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+        git2r_error(__func__, git_error_last(), NULL, NULL);
     return Rf_ScalarLogical(is_bare);
 }
 
@@ -349,7 +349,7 @@ git2r_repository_is_shallow(
     is_shallow = git_repository_is_shallow(repository);
     git_repository_free(repository);
     if (is_shallow < 0)
-        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+        git2r_error(__func__, git_error_last(), NULL, NULL);
     return Rf_ScalarLogical(is_shallow);
 }
 
@@ -373,7 +373,7 @@ git2r_repository_head_detached(
     head_detached = git_repository_head_detached(repository);
     git_repository_free(repository);
     if (head_detached < 0)
-        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+        git2r_error(__func__, git_error_last(), NULL, NULL);
     return Rf_ScalarLogical(head_detached);
 }
 
@@ -397,7 +397,7 @@ git2r_repository_is_empty(
     is_empty = git_repository_is_empty(repository);
     git_repository_free(repository);
     if (is_empty < 0)
-        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+        git2r_error(__func__, git_error_last(), NULL, NULL);
     return Rf_ScalarLogical(is_empty);
 }
 
@@ -454,7 +454,7 @@ git2r_repository_set_head(
     git_repository_free(repository);
 
     if (error)
-        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+        git2r_error(__func__, git_error_last(), NULL, NULL);
 
     return R_NilValue;
 }
@@ -500,7 +500,7 @@ cleanup:
     git_repository_free(repository);
 
     if (error)
-        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+        git2r_error(__func__, git_error_last(), NULL, NULL);
 
     return R_NilValue;
 }
@@ -592,7 +592,7 @@ cleanup:
         UNPROTECT(nprotect);
 
     if (error)
-        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+        git2r_error(__func__, git_error_last(), NULL, NULL);
 
     return result;
 }

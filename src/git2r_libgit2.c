@@ -100,7 +100,7 @@ git2r_ssl_cert_locations(
         git2r_error(__func__, NULL, git2r_err_ssl_cert_locations, NULL);
 
     if (git_libgit2_opts(GIT_OPT_SET_SSL_CERT_LOCATIONS, f, p))
-        git2r_error(__func__, GIT2R_ERROR_LAST(), NULL, NULL);
+        git2r_error(__func__, git_error_last(), NULL, NULL);
 
     return R_NilValue;
 }
