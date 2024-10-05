@@ -586,7 +586,7 @@ git2r_repository_discover(
     SET_STRING_ELT(result, 0, Rf_mkChar(buf.ptr));
 
 cleanup:
-    GIT2R_BUF_DISPOSE(&buf);
+    git_buf_dispose(&buf);
 
     if (nprotect)
         UNPROTECT(nprotect);

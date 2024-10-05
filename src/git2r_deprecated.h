@@ -42,14 +42,6 @@
 # define GIT2R_REFERENCE_SYMBOLIC GIT_REF_SYMBOLIC
 #endif
 
-/* The function 'git_buf_free' is deprecated in libgit2. Use
- * 'git_buf_dispose', if available, instead. */
-#if defined(GIT2R_HAVE_BUF_DISPOSE)
-# define GIT2R_BUF_DISPOSE git_buf_dispose
-#else
-# define GIT2R_BUF_DISPOSE git_buf_free
-#endif
-
 #if defined(GIT2R_HAVE_GIT_ERROR)
 # define GIT2R_ERROR_SET_STR git_error_set_str
 # define GIT2R_ERROR_LAST git_error_last

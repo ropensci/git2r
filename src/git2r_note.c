@@ -228,7 +228,7 @@ git2r_note_default_ref(
     SET_STRING_ELT(result, 0, Rf_mkChar(buf.ptr));
 
 cleanup:
-    GIT2R_BUF_DISPOSE(&buf);
+    git_buf_dispose(&buf);
     git_repository_free(repository);
 
     if (nprotect)
@@ -353,7 +353,7 @@ git2r_notes(
                            &git2r_note_foreach_cb, &cb_data);
 
 cleanup:
-    GIT2R_BUF_DISPOSE(&buf);
+    git_buf_dispose(&buf);
     git_repository_free(repository);
 
     if (nprotect)

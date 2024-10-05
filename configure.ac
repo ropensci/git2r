@@ -148,18 +148,6 @@ if test "x${have_sys_subfolder}" = xyes; then
     PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_HAVE_SYS_SUBFOLDER"
 fi
 
-AC_MSG_CHECKING([whether the libgit2 function git_buf_dispose is available])
-have_buf_dispose=no
-AC_LANG_CONFTEST([AC_LANG_PROGRAM(
-[[#include <git2.h>]],
-[[git_buf_dispose(NULL);]])])
-PKG_CFLAGS="${PKG_CFLAGS} -Werror" "$RBIN" CMD SHLIB conftest.c \
-1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD && have_buf_dispose=yes
-AC_MSG_RESULT([${have_buf_dispose}])
-if test "x${have_buf_dispose}" = xyes; then
-    PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_HAVE_BUF_DISPOSE"
-fi
-
 # The constants GIT_OBJ_ANY, GIT_OBJ_BLOB, GIT_OBJ_COMMIT,
 # GIT_OBJ_TAG_GIT_OBJ_TREE and GIT_REF_OID are deprecated in
 # libgit2 v0.28.0. Use GIT_OBJECT_ANY, GIT_OBJECT_BLOB,

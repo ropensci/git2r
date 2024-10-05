@@ -301,7 +301,7 @@ git2r_diff_index_to_wd(
             nprotect++;
         }
 
-        GIT2R_BUF_DISPOSE(&buf);
+        git_buf_dispose(&buf);
     } else {
         FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
 
@@ -411,7 +411,7 @@ git2r_diff_head_to_index(
             nprotect++;
         }
 
-        GIT2R_BUF_DISPOSE(&buf);
+        git_buf_dispose(&buf);
     } else {
         FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
 
@@ -523,7 +523,7 @@ git2r_diff_tree_to_wd(
             nprotect++;
         }
 
-        GIT2R_BUF_DISPOSE(&buf);
+        git_buf_dispose(&buf);
     } else {
         FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
 
@@ -640,7 +640,7 @@ git2r_diff_tree_to_index(
             nprotect++;
         }
 
-        GIT2R_BUF_DISPOSE(&buf);
+        git_buf_dispose(&buf);
     } else {
         FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
 
@@ -774,7 +774,7 @@ git2r_diff_tree_to_tree(
             nprotect++;
         }
 
-        GIT2R_BUF_DISPOSE(&buf);
+        git_buf_dispose(&buf);
     } else {
         FILE *fp = fopen(CHAR(STRING_ELT(filename, 0)), "w+");
 

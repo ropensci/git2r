@@ -520,7 +520,7 @@ git2r_branch_remote_name(
     PROTECT(result = Rf_allocVector(STRSXP, 1));
     nprotect++;
     SET_STRING_ELT(result, 0, Rf_mkChar(buf.ptr));
-    GIT2R_BUF_DISPOSE(&buf);
+    git_buf_dispose(&buf);
 
 cleanup:
     git_reference_free(reference);
@@ -581,12 +581,12 @@ git2r_branch_remote_url(
     if (error) {
         error = git_remote_create_anonymous(&remote, repository, buf.ptr);
         if (error) {
-            GIT2R_BUF_DISPOSE(&buf);
+            git_buf_dispose(&buf);
             goto cleanup;
         }
     }
 
-    GIT2R_BUF_DISPOSE(&buf);
+    git_buf_dispose(&buf);
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
     nprotect++;

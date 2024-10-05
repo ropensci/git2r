@@ -524,7 +524,7 @@ git2r_config_find_file(
     else
         SET_STRING_ELT(result, 0, Rf_mkChar(buf.ptr));
 
-    GIT2R_BUF_DISPOSE(&buf);
+    git_buf_dispose(&buf);
     UNPROTECT(1);
 
     return result;
