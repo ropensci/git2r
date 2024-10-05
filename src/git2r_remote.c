@@ -137,7 +137,7 @@ git2r_remote_fetch(
 {
     int error, nprotect = 0;
     SEXP result = R_NilValue;
-    const GIT2R_INDEXER_PROGRESS *stats;
+    const git_indexer_progress *stats;
     git_remote *remote = NULL;
     git_repository *repository = NULL;
     git_fetch_options fetch_opts = GIT_FETCH_OPTIONS_INIT;

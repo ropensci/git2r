@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2020 The git2r contributors
+ *  Copyright (C) 2013-2024 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -22,7 +22,6 @@
 #include <R.h>
 #include <Rinternals.h>
 #include <git2.h>
-#include "git2r_deprecated.h"
 
 /**
  * Data structure to hold information when performing a clone, fetch
@@ -55,7 +54,7 @@ typedef struct {
 #endif
 
 void git2r_transfer_progress_init(
-    const GIT2R_INDEXER_PROGRESS *source,
+    const git_indexer_progress *source,
     SEXP dest);
 
 #endif

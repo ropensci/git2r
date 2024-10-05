@@ -36,7 +36,7 @@
  */
 static int
 git2r_clone_progress(
-    const GIT2R_INDEXER_PROGRESS *progress,
+    const git_indexer_progress *progress,
     void *payload)
 {
     int kbytes = progress->received_bytes / 1024;

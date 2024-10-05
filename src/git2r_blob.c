@@ -124,7 +124,7 @@ git2r_blob_create_fromdisk(
             git_blob *blob = NULL;
             SEXP item;
 
-            error = GIT2R_BLOB_CREATE_FROM_DISK(
+            error = git_blob_create_from_disk(
                 &oid,
                 repository,
                 CHAR(STRING_ELT(path, i)));
@@ -194,7 +194,7 @@ git2r_blob_create_fromworkdir(
             git_blob *blob = NULL;
             SEXP item;
 
-            error = GIT2R_BLOB_CREATE_FROM_WORKDIR(
+            error = git_blob_create_from_workdir(
                 &oid,
                 repository,
                 CHAR(STRING_ELT(relative_path, i)));

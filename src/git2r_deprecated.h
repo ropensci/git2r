@@ -19,14 +19,4 @@
 #ifndef INCLUDE_git2r_deprecated_h
 #define INCLUDE_git2r_deprecated_h
 
-#if defined(GIT2R_LIBGIT2_V0_99_0_RENAMES)
-# define GIT2R_INDEXER_PROGRESS git_indexer_progress
-# define GIT2R_BLOB_CREATE_FROM_DISK git_blob_create_from_disk
-# define GIT2R_BLOB_CREATE_FROM_WORKDIR git_blob_create_from_workdir
-#else
-# define GIT2R_INDEXER_PROGRESS git_transfer_progress
-# define GIT2R_BLOB_CREATE_FROM_DISK git_blob_create_fromdisk
-# define GIT2R_BLOB_CREATE_FROM_WORKDIR git_blob_create_fromworkdir
-#endif
-
 #endif
