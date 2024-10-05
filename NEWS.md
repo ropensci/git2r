@@ -2,6 +2,11 @@
 
 ## CHANGES
 
+* Fix build after API change in libgit2 1.8.0.
+
+* The system requirement for libgit2 has been updated to libgit2
+  version >= 1.0.
+
 # git2r 0.33.0 (2023-11-26)
 
 ## CHANGES
