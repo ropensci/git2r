@@ -22,7 +22,7 @@ Suggests:
 Type: Package
 Biarch: true
 NeedsCompilation: yes
-SystemRequirements: libgit2 (>= 0.26)
+SystemRequirements: libgit2 (>= 1.0): libgit2-devel (rpm) or libgit2-dev (deb)
 Collate:
     'blame.R'
     'blob.R'
