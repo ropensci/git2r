@@ -47,7 +47,7 @@ PKG_LIBS="-lgit2"
 PKG_CFLAGS=""
 
 # The minimum version of libgit2 that is compatible with git2r.
-LIBGIT2_MIN_VERSION=0.26.0
+LIBGIT2_MIN_VERSION=1.0
 
 # Check if building against bundled libgit2 or system libgit2
 if test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
@@ -88,8 +88,7 @@ CC=`"${RBIN}" CMD config CC`
 CFLAGS=`"${RBIN}" CMD config CFLAGS`
 CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
 
-# If a system installation of libgit2 is available, check that the
-# version works with git2r.
+# check that the version of libgit2 works with git2r.
 AC_MSG_CHECKING([whether the libgit2 version will work in git2r])
 libgit2_ver_ok=no
 ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E tools/version.c >/dev/null 2>&1 && libgit2_ver_ok=yes
