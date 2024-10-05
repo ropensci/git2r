@@ -2300,32 +2300,6 @@ if test "x${have_sys_subfolder}" = xyes; then
     PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_HAVE_SYS_SUBFOLDER"
 fi
 
-# libgit v0.99.0: Several structures, enums and values have been
-# renamed in libgit version 0.99.0. The former names are
-# deprecated.  See
-# https://github.com/libgit2/libgit2/releases/tag/v0.99.0
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether the libgit2 function git_oid_is_zero is available" >&5
-printf %s "checking whether the libgit2 function git_oid_is_zero is available... " >&6; }
-have_git_oid_is_zero=no
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <git2.h>
-int
-main (void)
-{
-git_oid_is_zero(NULL);
-  ;
-  return 0;
-}
-_ACEOF
-PKG_CFLAGS="${PKG_CFLAGS} -Werror" "$RBIN" CMD SHLIB conftest.c \
-1>&5 2>&5 && have_git_oid_is_zero=yes
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${have_git_oid_is_zero}" >&5
-printf "%s\n" "${have_git_oid_is_zero}" >&6; }
-if test "x${have_git_oid_is_zero}" = xyes; then
-    PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_LIBGIT2_V0_99_0_RENAMES"
-fi
-
 # libgit v1.8.0 requires code changes around functions taking
 # git_commit.  See
 # https://github.com/libgit2/libgit2/issues/6793

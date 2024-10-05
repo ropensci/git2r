@@ -101,7 +101,7 @@ git2r_update_tips_cb(
         git_oid_fmt(b_str, b);
         b_str[GIT_OID_HEXSZ] = '\0';
 
-        if (GIT2R_OID_IS_ZERO(a)) {
+        if (git_oid_is_zero(a)) {
             Rprintf("[new]     %.20s %s\n", b_str, refname);
         } else {
             char a_str[GIT_OID_HEXSZ + 1];

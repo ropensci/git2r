@@ -148,22 +148,6 @@ if test "x${have_sys_subfolder}" = xyes; then
     PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_HAVE_SYS_SUBFOLDER"
 fi
 
-# libgit v0.99.0: Several structures, enums and values have been
-# renamed in libgit version 0.99.0. The former names are
-# deprecated.  See
-# https://github.com/libgit2/libgit2/releases/tag/v0.99.0
-AC_MSG_CHECKING([whether the libgit2 function git_oid_is_zero is available])
-have_git_oid_is_zero=no
-AC_LANG_CONFTEST([AC_LANG_PROGRAM(
-[[#include <git2.h>]],
-[[git_oid_is_zero(NULL);]])])
-PKG_CFLAGS="${PKG_CFLAGS} -Werror" "$RBIN" CMD SHLIB conftest.c \
-1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD && have_git_oid_is_zero=yes
-AC_MSG_RESULT([${have_git_oid_is_zero}])
-if test "x${have_git_oid_is_zero}" = xyes; then
-    PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_LIBGIT2_V0_99_0_RENAMES"
-fi
-
 # libgit v1.8.0 requires code changes around functions taking
 # git_commit.  See
 # https://github.com/libgit2/libgit2/issues/6793
