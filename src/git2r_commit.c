@@ -258,7 +258,9 @@ git2r_commit_create(
         message,
         tree,
         n_parents,
-#ifdef GIT2R_GIT_COMMIT_CONST_POINTER
+#if LIBGIT2_VER_MAJOR == 1 && \
+    LIBGIT2_VER_MINOR == 8 && \
+    (LIBGIT2_VER_REVISION == 0 || LIBGIT2_VER_REVISION == 1)
         (git_commit*const*)parents);
 #else
         (const git_commit**)parents);

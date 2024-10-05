@@ -148,40 +148,6 @@ if test "x${have_sys_subfolder}" = xyes; then
     PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_HAVE_SYS_SUBFOLDER"
 fi
 
-# libgit v1.8.0 requires code changes around functions taking
-# git_commit.  See
-# https://github.com/libgit2/libgit2/issues/6793
-AC_MSG_CHECKING([whether libgit2 function requires cast to 'git_commit*const*'])
-have_git_commit_const_pointer=no
-AC_LANG_CONFTEST([AC_LANG_PROGRAM(
-[[#include <git2.h>]],
-[[
-  git_oid* oid = NULL;
-  git_signature *author = NULL;
-  git_signature *committer = NULL;
-  git_tree *tree = NULL;
-  git_repository *repository = NULL;
-  git_commit **parents = NULL;
-
-  git_commit_create(
-      oid,
-      repository,
-      "HEAD",
-      author,
-      committer,
-      NULL,
-      "",
-      tree,
-      0,
-      (git_commit*const*)parents);
-]])])
-PKG_CFLAGS="${PKG_CFLAGS} -Werror" "$RBIN" CMD SHLIB conftest.c \
-1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD && have_git_commit_const_pointer=yes
-AC_MSG_RESULT([${have_git_commit_const_pointer}])
-if test "x${have_git_commit_const_pointer}" = xyes; then
-    PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_GIT_COMMIT_CONST_POINTER"
-fi
-
 # For debugging
 echo "----- Results of the git2r package configure -----"
 echo ""
