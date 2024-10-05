@@ -259,10 +259,10 @@ git2r_commit_create(
         message,
         tree,
         n_parents,
-#ifdef GIT2R_CONST_GIT_COMMIT_POINTER
-        (const git_commit**)parents);
-#else
+#ifdef GIT2R_GIT_COMMIT_CONST_POINTER
         (git_commit*const*)parents);
+#else
+        (const git_commit**)parents);
 #endif
     if (error)
         goto cleanup;

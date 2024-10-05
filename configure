@@ -2403,27 +2403,45 @@ fi
 # libgit v1.8.0 requires code changes around functions taking
 # git_commit.  See
 # https://github.com/libgit2/libgit2/issues/6793
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether libgit2 function requires 'const git_commit**'" >&5
-printf %s "checking whether libgit2 function requires 'const git_commit**'... " >&6; }
-have_const_git_commit_pointer=no
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether libgit2 function requires cast to 'git_commit*const*'" >&5
+printf %s "checking whether libgit2 function requires cast to 'git_commit*const*'... " >&6; }
+have_git_commit_const_pointer=no
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #include <git2.h>
 int
 main (void)
 {
-git_commit_create(NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,
-                    (const git_commit**)NULL);
+
+  git_oid* oid = NULL;
+  git_signature *author = NULL;
+  git_signature *committer = NULL;
+  git_tree *tree = NULL;
+  git_repository *repository = NULL;
+  git_commit **parents = NULL;
+
+  git_commit_create(
+      oid,
+      repository,
+      "HEAD",
+      author,
+      committer,
+      NULL,
+      "",
+      tree,
+      0,
+      (git_commit*const*)parents);
+
   ;
   return 0;
 }
 _ACEOF
 PKG_CFLAGS="${PKG_CFLAGS} -Werror" "$RBIN" CMD SHLIB conftest.c \
-1>&5 2>&5 && have_const_git_commit_pointer=yes
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${have_const_git_commit_pointer}" >&5
-printf "%s\n" "${have_const_git_commit_pointer}" >&6; }
-if test "x${have_const_git_commit_pointer}" = xyes; then
-    PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_CONST_GIT_COMMIT_POINTER"
+1>&5 2>&5 && have_git_commit_const_pointer=yes
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${have_git_commit_const_pointer}" >&5
+printf "%s\n" "${have_git_commit_const_pointer}" >&6; }
+if test "x${have_git_commit_const_pointer}" = xyes; then
+    PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_GIT_COMMIT_CONST_POINTER"
 fi
 
 # For debugging
