@@ -18,7 +18,6 @@
 
 #include <R_ext/Visibility.h>
 #include "git2r_error.h"
-#include "git2r_deprecated.h"
 #include "git2r_repository.h"
 #include "git2r_S3.h"
 #include "git2r_signature.h"

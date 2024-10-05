@@ -21,7 +21,6 @@
 
 #include "git2r_arg.h"
 #include "git2r_cred.h"
-#include "git2r_deprecated.h"
 #include "git2r_error.h"
 #include "git2r_remote.h"
 #include "git2r_repository.h"

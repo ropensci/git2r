@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2020 The git2r contributors
+ *  Copyright (C) 2013-2024 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -22,7 +22,6 @@
 #include "git2r_arg.h"
 #include "git2r_blob.h"
 #include "git2r_commit.h"
-#include "git2r_deprecated.h"
 #include "git2r_error.h"
 #include "git2r_repository.h"
 #include "git2r_S3.h"
