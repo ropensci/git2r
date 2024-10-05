@@ -20,9 +20,6 @@ AC_CONFIG_SRCDIR([src/git2r.c])
 AC_CONFIG_AUX_DIR([tools])
 AC_CANONICAL_HOST
 
-m4_include([tools/lib-ld.m4])
-m4_include([tools/lib-link.m4])
-m4_include([tools/lib-prefix.m4])
 m4_include([tools/pkg.m4])
 
 ## Check for brew on macOS

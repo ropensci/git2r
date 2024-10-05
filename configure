@@ -1923,45 +1923,6 @@ case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
 
 
 
-# lib-ld.m4 serial 6
-
-
-
-
-
-
-# lib-link.m4 serial 26 (gettext-0.18.2)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# lib-prefix.m4 serial 7 (gettext-0.18)
-
-
-
-
-
-
-
-
-
-
-
-
 # pkg.m4 - Macros to locate and utilise pkg-config.   -*- Autoconf -*-
 # serial 11 (pkg-config-0.29.1)
 
