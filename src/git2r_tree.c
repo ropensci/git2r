@@ -109,7 +109,7 @@ git2r_tree_walk_cb(
     git2r_tree_walk_cb_data *p = (git2r_tree_walk_cb_data*)payload;
 
     if (p->recursive) {
-        if (git_tree_entry_type(entry) != GIT2R_OBJECT_BLOB)
+        if (git_tree_entry_type(entry) != GIT_OBJECT_BLOB)
             return 0;
     } else if (*root) {
         return 1;
@@ -145,11 +145,11 @@ git2r_tree_walk_cb(
                        Rf_mkChar(git_tree_entry_name(entry)));
 
         /* length */
-        if (git_tree_entry_type(entry) == GIT2R_OBJECT_BLOB) {
+        if (git_tree_entry_type(entry) == GIT_OBJECT_BLOB) {
             error = git_tree_entry_to_object(&obj, p->repository, entry);
             if (error)
                 goto cleanup;
-            error = git_object_peel(&blob, obj, GIT2R_OBJECT_BLOB);
+            error = git_object_peel(&blob, obj, GIT_OBJECT_BLOB);
             if (error)
                 goto cleanup;
             INTEGER(VECTOR_ELT(p->list, 5))[p->n] = git_blob_rawsize((git_blob *)blob);

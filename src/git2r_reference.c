@@ -53,11 +53,11 @@ git2r_reference_init(
         Rf_mkString(git_reference_shorthand(source)));
 
     switch (git_reference_type(source)) {
-    case GIT2R_REFERENCE_DIRECT:
+    case GIT_REFERENCE_DIRECT:
         SET_VECTOR_ELT(
             dest,
             git2r_S3_item__git_reference__type,
-            Rf_ScalarInteger(GIT2R_REFERENCE_DIRECT));
+            Rf_ScalarInteger(GIT_REFERENCE_DIRECT));
 
         git_oid_fmt(sha, git_reference_target(source));
         sha[GIT_OID_HEXSZ] = '\0';
@@ -66,11 +66,11 @@ git2r_reference_init(
             git2r_S3_item__git_reference__sha,
             Rf_mkString(sha));
         break;
-    case GIT2R_REFERENCE_SYMBOLIC:
+    case GIT_REFERENCE_SYMBOLIC:
         SET_VECTOR_ELT(
             dest,
             git2r_S3_item__git_reference__type,
-            Rf_ScalarInteger(GIT2R_REFERENCE_SYMBOLIC));
+            Rf_ScalarInteger(GIT_REFERENCE_SYMBOLIC));
 
         SET_VECTOR_ELT(
             dest,

@@ -709,7 +709,7 @@ git2r_branch_target(
 
     PROTECT(result = Rf_allocVector(STRSXP, 1));
     nprotect++;
-    if (git_reference_type(reference) == GIT2R_REFERENCE_DIRECT) {
+    if (git_reference_type(reference) == GIT_REFERENCE_DIRECT) {
         git_oid_fmt(sha, git_reference_target(reference));
         sha[GIT_OID_HEXSZ] = '\0';
         SET_STRING_ELT(result, 0, Rf_mkChar(sha));

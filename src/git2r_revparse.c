@@ -62,28 +62,28 @@ git2r_revparse_single(
         goto cleanup;
 
     switch (git_object_type(treeish)) {
-    case GIT2R_OBJECT_BLOB:
+    case GIT_OBJECT_BLOB:
         PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_blob));
         nprotect++;
         Rf_setAttrib(result, R_ClassSymbol,
                      Rf_mkString(git2r_S3_class__git_blob));
         git2r_blob_init((git_blob*)treeish, repo, result);
         break;
-    case GIT2R_OBJECT_COMMIT:
+    case GIT_OBJECT_COMMIT:
         PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_commit));
         nprotect++;
         Rf_setAttrib(result, R_ClassSymbol,
                      Rf_mkString(git2r_S3_class__git_commit));
         git2r_commit_init((git_commit*)treeish, repo, result);
         break;
-    case GIT2R_OBJECT_TAG:
+    case GIT_OBJECT_TAG:
         PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_tag));
         nprotect++;
         Rf_setAttrib(result, R_ClassSymbol,
                      Rf_mkString(git2r_S3_class__git_tag));
         git2r_tag_init((git_tag*)treeish, repo, result);
         break;
-    case GIT2R_OBJECT_TREE:
+    case GIT_OBJECT_TREE:
         PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_tree));
         nprotect++;
         Rf_setAttrib(result, R_ClassSymbol,

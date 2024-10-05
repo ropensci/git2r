@@ -58,39 +58,39 @@ git2r_object_lookup(
     len = LENGTH(STRING_ELT(sha, 0));
     if (GIT_OID_HEXSZ == len) {
         git_oid_fromstr(&oid, CHAR(STRING_ELT(sha, 0)));
-        error = git_object_lookup(&object, repository, &oid, GIT2R_OBJECT_ANY);
+        error = git_object_lookup(&object, repository, &oid, GIT_OBJECT_ANY);
         if (error)
             goto cleanup;
     } else {
         git_oid_fromstrn(&oid, CHAR(STRING_ELT(sha, 0)), len);
-        error = git_object_lookup_prefix(&object, repository, &oid, len, GIT2R_OBJECT_ANY);
+        error = git_object_lookup_prefix(&object, repository, &oid, len, GIT_OBJECT_ANY);
         if (error)
             goto cleanup;
     }
 
     switch (git_object_type(object)) {
-    case GIT2R_OBJECT_COMMIT:
+    case GIT_OBJECT_COMMIT:
         PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_commit));
         nprotect++;
         Rf_setAttrib(result, R_ClassSymbol,
                      Rf_mkString(git2r_S3_class__git_commit));
         git2r_commit_init((git_commit*)object, repo, result);
         break;
-    case GIT2R_OBJECT_TREE:
+    case GIT_OBJECT_TREE:
         PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_tree));
         nprotect++;
         Rf_setAttrib(result, R_ClassSymbol,
                      Rf_mkString(git2r_S3_class__git_tree));
         git2r_tree_init((git_tree*)object, repo, result);
         break;
-    case GIT2R_OBJECT_BLOB:
+    case GIT_OBJECT_BLOB:
         PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_blob));
         nprotect++;
         Rf_setAttrib(result, R_ClassSymbol,
                      Rf_mkString(git2r_S3_class__git_blob));
         git2r_blob_init((git_blob*)object, repo, result);
         break;
-    case GIT2R_OBJECT_TAG:
+    case GIT_OBJECT_TAG:
         PROTECT(result = Rf_mkNamed(VECSXP, git2r_S3_items__git_tag));
         nprotect++;
         Rf_setAttrib(result, R_ClassSymbol,

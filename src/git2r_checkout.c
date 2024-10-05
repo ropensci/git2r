@@ -120,9 +120,9 @@ git2r_checkout_tree(
         goto cleanup;
 
     switch (git_object_type(treeish)) {
-    case GIT2R_OBJECT_COMMIT:
-    case GIT2R_OBJECT_TAG:
-    case GIT2R_OBJECT_TREE:
+    case GIT_OBJECT_COMMIT:
+    case GIT_OBJECT_TAG:
+    case GIT_OBJECT_TREE:
         error = GIT_OK;
         break;
     default:

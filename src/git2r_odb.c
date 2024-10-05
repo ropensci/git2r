@@ -54,7 +54,7 @@ git2r_odb_hash(
             error = git_odb_hash(&oid,
                                CHAR(STRING_ELT(data, i)),
                                LENGTH(STRING_ELT(data, i)),
-                               GIT2R_OBJECT_BLOB);
+                               GIT_OBJECT_BLOB);
             if (error)
                 break;
 
@@ -100,7 +100,7 @@ git2r_odb_hashfile(
         } else {
             error = git_odb_hashfile(&oid,
                                    CHAR(STRING_ELT(path, i)),
-                                   GIT2R_OBJECT_BLOB);
+                                   GIT_OBJECT_BLOB);
             if (error)
                 break;
 
@@ -183,19 +183,19 @@ git2r_odb_objects_cb(
         return error;
 
     switch(type) {
-    case GIT2R_OBJECT_COMMIT:
+    case GIT_OBJECT_COMMIT:
         if (!Rf_isNull(p->list))
             git2r_add_object(oid, p->list, p->n, "commit", len);
         break;
-    case GIT2R_OBJECT_TREE:
+    case GIT_OBJECT_TREE:
         if (!Rf_isNull(p->list))
             git2r_add_object(oid, p->list, p->n, "tree", len);
         break;
-    case GIT2R_OBJECT_BLOB:
+    case GIT_OBJECT_BLOB:
         if (!Rf_isNull(p->list))
             git2r_add_object(oid, p->list, p->n, "blob", len);
         break;
-    case GIT2R_OBJECT_TAG:
+    case GIT_OBJECT_TAG:
         if (!Rf_isNull(p->list))
             git2r_add_object(oid, p->list, p->n, "tag", len);
         break;
@@ -362,7 +362,7 @@ git2r_odb_tree_blobs(
 
         entry = git_tree_entry_byindex(tree, i);
         switch (git_tree_entry_type(entry)) {
-        case GIT2R_OBJECT_TREE:
+        case GIT_OBJECT_TREE:
         {
             char *buf = NULL;
             size_t path_len, buf_len;
@@ -413,7 +413,7 @@ git2r_odb_tree_blobs(
 
             break;
         }
-        case GIT2R_OBJECT_BLOB:
+        case GIT_OBJECT_BLOB:
             if (!Rf_isNull(data->list)) {
                 error = git2r_odb_add_blob(
                     entry,
@@ -458,7 +458,7 @@ git2r_odb_blobs_cb(
     if (error)
         return error;
 
-    if (type == GIT2R_OBJECT_COMMIT) {
+    if (type == GIT_OBJECT_COMMIT) {
         const git_signature *author;
         git_commit *commit = NULL;
         git_tree *tree = NULL;

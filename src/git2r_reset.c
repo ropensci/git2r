@@ -112,7 +112,7 @@ git2r_reset_default(
     if (error)
         goto cleanup;
 
-    error = git_reference_peel(&head_commit, head, GIT2R_OBJECT_COMMIT);
+    error = git_reference_peel(&head_commit, head, GIT_OBJECT_COMMIT);
     if (error)
         goto cleanup;
 
