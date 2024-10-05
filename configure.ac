@@ -136,14 +136,13 @@ if test "x${libgit2_ver_ok}" = xno; then
 fi
 
 ################# Begin configuration to use system libgit2 ##################
-# The function 'git_buf_free' is deprecated in libgit2
-# v0.28.0. Use 'git_buf_dispose', if available, instead.
+# Check for new sys subfolfder in libgit2.
 AC_MSG_CHECKING([whether libgit2 includes new sys subfolder])
-have_buf_dispose=no
+have_sys_subfolder=no
 AC_LANG_CONFTEST([AC_LANG_PROGRAM(
 [[#include <git2/sys/errors.h>]],
 [[git_error_set_str(0, NULL);]])])
-PKG_CFLAGS="${PKG_CFLAGS} -Werror" "$RBIN" CMD SHLIB conftest.c \
+PKG_CFLAGS="${PKG_CFLAGS}" "$RBIN" CMD SHLIB conftest.c \
 1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD && have_sys_subfolder=yes
 AC_MSG_RESULT([${have_sys_subfolder}])
 if test "x${have_sys_subfolder}" = xyes; then
