@@ -28,7 +28,6 @@ Thomas Rosendal         Better check of package with valgrind
 Other authors in alphabetical order
 -----------------------------------
 
-Bruno Haible    tools/lib-link.m4, tools/lib-prefix.m4
 Dan Nicholson   Macros to locate and utilise pkg-config (tools/pkg.m4)
 Francois Pinard Common wrapper for a few potentially missing GNU programs (tools/missing)
 Per Bothner     Attempt to guess a canonical system name (tools/config.guess)
