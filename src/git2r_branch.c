@@ -441,13 +441,13 @@ git2r_branch_upstream_canonical_name(
     buf_len = branch_name_len + sizeof("branch." ".merge");
     buf = malloc(buf_len);
     if (!buf) {
-        git_error_set_oom();
+        giterr_set_oom();
         error = GIT_ERROR_NOMEMORY;
         goto cleanup;
     }
     error = snprintf(buf, buf_len, "branch.%.*s.merge", (int)branch_name_len, branch_name);
     if (error < 0 || (size_t)error >= buf_len) {
-        git_error_set_str(GIT_ERROR_OS, "Failed to snprintf branch config.");
+        giterr_set_str(GIT_ERROR_OS, "Failed to snprintf branch config.");
         error = GIT_ERROR_OS;
         goto cleanup;
     }

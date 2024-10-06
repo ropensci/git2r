@@ -76,7 +76,7 @@ git2r_config_count_variables(
             n_level[6]++;
             break;
         default:
-            git_error_set_str(GIT_ERROR_CONFIG,
+            giterr_set_str(GIT_ERROR_CONFIG,
                               git2r_err_unexpected_config_level);
             error = GIT_ERROR;
             goto cleanup;
@@ -221,7 +221,7 @@ git2r_config_list_variables(
             git2r_config_list_add_entry(list, 6, i_level, i_list, entry);
             break;
         default:
-            git_error_set_str(GIT_ERROR_CONFIG,
+            giterr_set_str(GIT_ERROR_CONFIG,
                               git2r_err_unexpected_config_level);
             error = GIT_ERROR;
             goto cleanup;

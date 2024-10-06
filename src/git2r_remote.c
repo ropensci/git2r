@@ -175,7 +175,7 @@ git2r_remote_fetch(
             /* Allocate the strings in refs */
             refs.strings = malloc(refs.count * sizeof(char*));
             if (!refs.strings) {
-                git_error_set_str(GIT_ERROR_NONE, git2r_err_alloc_memory_buffer);
+                giterr_set_str(GIT_ERROR_NONE, git2r_err_alloc_memory_buffer);
                 error = GIT_ERROR;
                 goto cleanup;
             }

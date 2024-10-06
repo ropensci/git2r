@@ -72,7 +72,7 @@ git2r_any_changes_in_index(
     }
 
     if (!changes_in_index) {
-        git_error_set_str(GIT_ERROR_NONE, git2r_err_nothing_added_to_commit);
+        giterr_set_str(GIT_ERROR_NONE, git2r_err_nothing_added_to_commit);
         error = GIT_ERROR;
     }
 
@@ -181,7 +181,7 @@ git2r_retrieve_parents(
 
     *parents = calloc(cb_data.n + 1, sizeof(git_commit*));
     if (!parents) {
-        git_error_set_str(GIT_ERROR_NONE, git2r_err_alloc_memory_buffer);
+        giterr_set_str(GIT_ERROR_NONE, git2r_err_alloc_memory_buffer);
         return GIT_ERROR;
     }
     *n_parents = cb_data.n + 1;

@@ -131,20 +131,6 @@ if test "x${libgit2_ver_ok}" = xno; then
     AC_MSG_FAILURE([package dependency requirement 'libgit2 >= ${LIBGIT2_MIN_VERSION}' could not be satisfied.])
 fi
 
-################# Begin configuration to use system libgit2 ##################
-# Check for new sys subfolfder in libgit2.
-AC_MSG_CHECKING([whether libgit2 includes new sys subfolder])
-have_sys_subfolder=no
-AC_LANG_CONFTEST([AC_LANG_PROGRAM(
-[[#include <git2/sys/errors.h>]],
-[[git_error_set_str(0, NULL);]])])
-PKG_CFLAGS="${PKG_CFLAGS}" "$RBIN" CMD SHLIB conftest.c \
-1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD && have_sys_subfolder=yes
-AC_MSG_RESULT([${have_sys_subfolder}])
-if test "x${have_sys_subfolder}" = xyes; then
-    PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_HAVE_SYS_SUBFOLDER"
-fi
-
 # For debugging
 echo "----- Results of the git2r package configure -----"
 echo ""

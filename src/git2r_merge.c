@@ -159,13 +159,13 @@ git2r_fast_forward_merge(
     buf_len = strlen(log_message) + sizeof(": Fast-forward");
     buf = malloc(buf_len);
     if (!buf) {
-        git_error_set_oom();
+        giterr_set_oom();
         error = GIT_ERROR_NOMEMORY;
         goto cleanup;
     }
     error = snprintf(buf, buf_len, "%s: Fast-forward", log_message);
     if (error < 0 || (size_t)error >= buf_len) {
-        git_error_set_str(GIT_ERROR_OS, "Failed to snprintf log message.");
+        giterr_set_str(GIT_ERROR_OS, "Failed to snprintf log message.");
         error = GIT_ERROR_OS;
         goto cleanup;
     }
@@ -404,7 +404,7 @@ git2r_merge(
     case GIT_MERGE_PREFERENCE_NONE:
         if (merge_analysis & GIT_MERGE_ANALYSIS_FASTFORWARD) {
             if (1 != n) {
-                git_error_set_str(
+                giterr_set_str(
                     GIT_ERROR_NONE,
                     "Unable to perform Fast-Forward merge "
                     "with mith multiple merge heads.");
@@ -446,7 +446,7 @@ git2r_merge(
     case GIT_MERGE_PREFERENCE_FASTFORWARD_ONLY:
         if (merge_analysis & GIT_MERGE_ANALYSIS_FASTFORWARD) {
             if (1 != n) {
-                git_error_set_str(
+                giterr_set_str(
                     GIT_ERROR_NONE,
                     "Unable to perform Fast-Forward merge "
                     "with mith multiple merge heads.");
@@ -459,12 +459,12 @@ git2r_merge(
                 repository,
                 name);
         } else {
-            git_error_set_str(GIT_ERROR_NONE, "Unable to perform Fast-Forward merge.");
+            giterr_set_str(GIT_ERROR_NONE, "Unable to perform Fast-Forward merge.");
             return GIT_ERROR;
         }
         break;
     default:
-        git_error_set_str(GIT_ERROR_NONE, "Unknown merge option");
+        giterr_set_str(GIT_ERROR_NONE, "Unknown merge option");
         return GIT_ERROR;
     }
 
@@ -548,7 +548,7 @@ git2r_merge_branch(
 
     merge_heads = calloc(1, sizeof(git_annotated_commit*));
     if (NULL == merge_heads) {
-        git_error_set_str(GIT_ERROR_NONE, git2r_err_alloc_memory_buffer);
+        giterr_set_str(GIT_ERROR_NONE, git2r_err_alloc_memory_buffer);
         goto cleanup;
     }
 
@@ -562,13 +562,13 @@ git2r_merge_branch(
     buf_len = strlen(name) + sizeof("merge ");
     buf = malloc(buf_len);
     if (!buf) {
-        git_error_set_oom();
+        giterr_set_oom();
         error = GIT_ERROR_NOMEMORY;
         goto cleanup;
     }
     error = snprintf(buf, buf_len, "merge %s", name);
     if (error < 0 || (size_t)error >= buf_len) {
-        git_error_set_str(GIT_ERROR_OS, "Failed to snprintf log message.");
+        giterr_set_str(GIT_ERROR_OS, "Failed to snprintf log message.");
         error = GIT_ERROR_OS;
         goto cleanup;
     }
@@ -627,7 +627,7 @@ git2r_merge_heads_from_fetch_heads(
 
     *merge_heads = calloc(n, sizeof(git_annotated_commit*));
     if (!(*merge_heads)) {
-        git_error_set_str(GIT_ERROR_NONE, git2r_err_alloc_memory_buffer);
+        giterr_set_str(GIT_ERROR_NONE, git2r_err_alloc_memory_buffer);
         return GIT_ERROR;
     }
 

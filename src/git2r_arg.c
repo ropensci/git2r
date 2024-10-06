@@ -513,7 +513,7 @@ git2r_copy_string_vec(
     /* Allocate the strings in dst */
     dst->strings = malloc(dst->count * sizeof(char*));
     if (!dst->strings) {
-        git_error_set_str(GIT_ERROR_NONE, git2r_err_alloc_memory_buffer);
+        giterr_set_str(GIT_ERROR_NONE, git2r_err_alloc_memory_buffer);
         return GIT_ERROR;
     }
 

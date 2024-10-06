@@ -2237,30 +2237,6 @@ as_fn_error $? "package dependency requirement 'libgit2 >= ${LIBGIT2_MIN_VERSION
 See 'config.log' for more details" "$LINENO" 5; }
 fi
 
-################# Begin configuration to use system libgit2 ##################
-# Check for new sys subfolfder in libgit2.
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether libgit2 includes new sys subfolder" >&5
-printf %s "checking whether libgit2 includes new sys subfolder... " >&6; }
-have_sys_subfolder=no
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <git2/sys/errors.h>
-int
-main (void)
-{
-git_error_set_str(0, NULL);
-  ;
-  return 0;
-}
-_ACEOF
-PKG_CFLAGS="${PKG_CFLAGS}" "$RBIN" CMD SHLIB conftest.c \
-1>&5 2>&5 && have_sys_subfolder=yes
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${have_sys_subfolder}" >&5
-printf "%s\n" "${have_sys_subfolder}" >&6; }
-if test "x${have_sys_subfolder}" = xyes; then
-    PKG_CFLAGS="${PKG_CFLAGS} -DGIT2R_HAVE_SYS_SUBFOLDER"
-fi
-
 # For debugging
 echo "----- Results of the git2r package configure -----"
 echo ""

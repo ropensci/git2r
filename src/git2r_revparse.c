@@ -90,7 +90,7 @@ git2r_revparse_single(
         git2r_tree_init((git_tree*)treeish, repo, result);
         break;
     default:
-        git_error_set_str(GIT_ERROR_NONE, git2r_err_revparse_single);
+        giterr_set_str(GIT_ERROR_NONE, git2r_err_revparse_single);
         error = GIT_ERROR;
         break;
     }

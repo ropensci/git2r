@@ -61,7 +61,7 @@ git2r_checkout_path(
     /* Allocate the strings in pathspec */
     opts.paths.strings = malloc(opts.paths.count * sizeof(char*));
     if (!opts.paths.strings) {
-        git_error_set_str(GIT_ERROR_NONE, git2r_err_alloc_memory_buffer);
+        giterr_set_str(GIT_ERROR_NONE, git2r_err_alloc_memory_buffer);
         error = GIT_ERROR;
         goto cleanup;
     }
@@ -125,7 +125,7 @@ git2r_checkout_tree(
         error = GIT_OK;
         break;
     default:
-        git_error_set_str(GIT_ERROR_NONE, git2r_err_checkout_tree);
+        giterr_set_str(GIT_ERROR_NONE, git2r_err_checkout_tree);
         error = GIT_ERROR;
         break;
     }

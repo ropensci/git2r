@@ -382,7 +382,7 @@ git2r_odb_tree_blobs(
             buf = malloc(buf_len);
             if (!buf) {
                 git_tree_free(sub_tree);
-                git_error_set_oom();
+                giterr_set_oom();
                 return GIT_ERROR_NOMEMORY;
             }
             if (path_len) {
@@ -400,7 +400,7 @@ git2r_odb_tree_blobs(
                     when,
                     data);
             } else {
-                git_error_set_str(GIT_ERROR_OS, "Failed to snprintf tree path.");
+                giterr_set_str(GIT_ERROR_OS, "Failed to snprintf tree path.");
                 error = GIT_ERROR_OS;
             }
 
