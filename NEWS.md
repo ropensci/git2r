@@ -2,6 +2,9 @@
 
 ## CHANGES
 
+* The bundled libgit2 source code has been removed and libgit2 must
+  now be installed on the system.
+
 * Fix build after API change in libgit2 1.8.0.
 
 * The system requirement for libgit2 has been updated to libgit2
