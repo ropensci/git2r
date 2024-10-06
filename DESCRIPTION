@@ -1,5 +1,18 @@
 Package: git2r
 Title: Provides Access to Git Repositories
+Authors@R: c(person("Stefan", "Widgren", role = c("aut", "cre"),
+                    email = "stefan.widgren@gmail.com",
+                    comment = c(ORCID = "0000-0001-5745-2284")),
+             person("Gabor", "Csardi", role = "ctb"),
+             person("Gregory", "Jefferis", role = "ctb"),
+             person("Jennifer", "Bryan", role = "ctb"),
+             person("Jeroen", "Ooms", role = "ctb"),
+             person("Jim", "Hester", role = "ctb"),
+             person("John", "Blischak", role = "ctb"),
+             person("Karthik", "Ram", role = "ctb"),
+             person("Peter", "Carbonetto", role = "ctb"),
+             person("Scott", "Chamberlain", role = "ctb"),
+             person("Thomas", "Rosendal", role = "ctb"))
 Description: Interface to the 'libgit2' library, which is a pure C
     implementation of the 'Git' core methods. Provides access to 'Git'
     repositories to extract data and running some basic 'Git'
@@ -9,8 +22,6 @@ License: GPL-2
 URL: https://docs.ropensci.org/git2r/ (website),
     https://github.com/ropensci/git2r
 BugReports: https://github.com/ropensci/git2r/issues
-Maintainer: Stefan Widgren <stefan.widgren@gmail.com>
-Author: See AUTHORS file.
 Imports:
     graphics,
     utils
