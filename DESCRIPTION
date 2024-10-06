@@ -6,7 +6,6 @@ Description: Interface to the 'libgit2' library, which is a pure C
     commands.
 Version: 0.33.0.9000
 License: GPL-2
-Copyright: See COPYRIGHTS file.
 URL: https://docs.ropensci.org/git2r/ (website),
     https://github.com/ropensci/git2r
 BugReports: https://github.com/ropensci/git2r/issues
