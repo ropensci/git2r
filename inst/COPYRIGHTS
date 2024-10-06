@@ -1,7 +1,7 @@
 Files: *
 Comment: git2r, R bindings to the libgit2 library.
-Copyright: Copyright (C) 2013-2015 the git2r contributors,
-           unless otherwise stated. See the AUTHORS file for details.
+Copyright: Copyright (C) 2013-2024 the git2r contributors,
+           unless otherwise stated. See the DESCRIPTION file for details.
 License: GPL-2
 
 Files: tools/install-sh
@@ -40,38 +40,6 @@ Files: tools/missing
 Copyright: Copyright (C) 1996-2015 Free Software Foundation, Inc.
            Originally written by Fran,cois Pinard <pinard@iro.umontreal.ca>, 1996.
 License: GPL-2+
-
-Files: tools/iconv.m4
-Copyright:
-   Copyright (C) 2000-2002, 2007-2014, 2016 Free Software Foundation, Inc.
-License:
-   This file is free software; the Free Software Foundation
-   gives unlimited permission to copy and/or distribute it,
-   with or without modifications, as long as this notice is preserved.
-
-Files: tools/lib-ld.m4
-Copyright:
-   Copyright (C) 1996-2003, 2009-2016 Free Software Foundation, Inc.
-License:
-   This file is free software; the Free Software Foundation
-   gives unlimited permission to copy and/or distribute it,
-   with or without modifications, as long as this notice is preserved.
-
-Files: tools/lib-link.m4
-Copyright:
-   Copyright (C) 2001-2016 Free Software Foundation, Inc.
-License:
-   This file is free software; the Free Software Foundation
-   gives unlimited permission to copy and/or distribute it,
-   with or without modifications, as long as this notice is preserved.
-
-Files: tools/lib-prefix.m4
-Copyright:
-   Copyright (C) 2001-2005, 2008-2016 Free Software Foundation, Inc.
-License:
-   This file is free software; the Free Software Foundation
-   gives unlimited permission to copy and/or distribute it,
-   with or without modifications, as long as this notice is preserved.
 
 Files: tools/pkg.m4
 Copyright:
