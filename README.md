@@ -1,6 +1,6 @@
 [![R-CMD-check](https://github.com/ropensci/git2r/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ropensci/git2r/actions/workflows/R-CMD-check.yaml)
-[![CRAN status](http://www.r-pkg.org/badges/version/git2r)](http://cran.r-project.org/web/packages/git2r/index.html)
-[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/last-month/git2r)](http://cran.r-project.org/web/packages/git2r/index.html)
+[![CRAN status](https://www.r-pkg.org/badges/version/git2r)](https://cran.r-project.org/package=git2r)
+[![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/last-month/git2r)](https://cran.r-project.org/package=git2r)
 [![Coverage Status](https://coveralls.io/repos/github/ropensci/git2r/badge.svg?branch=master)](https://coveralls.io/github/ropensci/git2r?branch=master)
 
 # Introduction
