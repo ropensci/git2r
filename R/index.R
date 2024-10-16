@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2023 The git2r contributors
+## Copyright (C) 2013-2024 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -25,6 +25,7 @@
 ##' @param force Add ignored files. Default is FALSE.
 ##' @return invisible(NULL)
 ##' @export
+##' @useDynLib git2r git2r_index_add_all
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a repository
@@ -132,6 +133,7 @@ sanitize_path <- function(p, repo_wd) {
 ##'     known to Git are removed.
 ##' @return invisible(NULL)
 ##' @export
+##' @useDynLib git2r git2r_index_remove_bypath
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a repository
@@ -215,6 +217,7 @@ rm_file <- function(repo = ".", path = NULL) {
 ##'     "resolve undo" (REUC) section.
 ##' @return invisible(NULL)
 ##' @export
+##' @useDynLib git2r git2r_index_remove_bypath
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a repository

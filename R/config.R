@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2019 The git2r contributors
+## Copyright (C) 2013-2024 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -35,6 +35,8 @@
 ##' @return S3 class \code{git_config}. When writing options, the
 ##' configuration is returned invisible.
 ##' @export
+##' @useDynLib git2r git2r_config_get
+##' @useDynLib git2r git2r_config_set
 ##' @examples \dontrun{
 ##' ## Initialize a temporary repository
 ##' path <- tempfile(pattern = "git2r-")
@@ -156,6 +158,7 @@ print.git_config <- function(x, ...) {
 ##' @return a \code{data.frame} with one row per potential
 ##'     configuration file where \code{NA} means not found.
 ##' @export
+##' @useDynLib git2r git2r_config_find_file
 git_config_files <- function(repo = ".") {
     ## Lookup repository
     if (inherits(repo, "git_repository")) {

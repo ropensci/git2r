@@ -91,6 +91,7 @@ as.data.frame.git_repository <- function(x, ...) {
 ##'   }
 ##' }
 ##' @export
+##' @useDynLib git2r git2r_repository_can_open
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
