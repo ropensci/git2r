@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2019 The git2r contributors
+## Copyright (C) 2013-2024 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -52,6 +52,7 @@ stash_object <- function(object) {
 ##'     \code{git_repository} object. Default is \code{index = 1}.
 ##' @return invisible NULL
 ##' @export
+##' @useDynLib git2r git2r_stash_apply
 ##' @examples \dontrun{
 ##' ## Initialize a temporary repository
 ##' path <- tempfile(pattern="git2r-")
@@ -108,6 +109,7 @@ stash_apply <- function(object = ".", index = 1) {
 ##'     \code{git_repository} object. Default is \code{index = 1}.
 ##' @return invisible NULL
 ##' @export
+##' @useDynLib git2r git2r_stash_drop
 ##' @examples \dontrun{
 ##' ## Initialize a temporary repository
 ##' path <- tempfile(pattern="git2r-")
@@ -165,6 +167,7 @@ stash_drop <- function(object = ".", index = 1) {
 ##' @return invisible \code{git_stash} object if anything to stash
 ##'     else NULL
 ##' @export
+##' @useDynLib git2r git2r_stash_save
 ##' @examples \dontrun{
 ##' ## Initialize a temporary repository
 ##' path <- tempfile(pattern="git2r-")
@@ -212,6 +215,7 @@ stash <- function(repo = ".",
 ##' @template repo-param
 ##' @return list of stashes in repository
 ##' @export
+##' @useDynLib git2r git2r_stash_list
 ##' @examples \dontrun{
 ##' ## Initialize a temporary repository
 ##' path <- tempfile(pattern="git2r-")
@@ -265,6 +269,7 @@ stash_list <- function(repo = ".") {
 ##'     \code{git_repository} object. Default is \code{index = 1}.
 ##' @return invisible NULL
 ##' @export
+##' @useDynLib git2r git2r_stash_pop
 ##' @examples \dontrun{
 ##' ## Initialize a temporary repository
 ##' path <- tempfile(pattern="git2r-")

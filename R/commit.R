@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2019 The git2r contributors
+## Copyright (C) 2013-2024 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -26,6 +26,7 @@
 ##' @return An integer vector of length 2 with number of commits that
 ##'     the upstream commit is ahead and behind the local commit
 ##' @export
+##' @useDynLib git2r git2r_graph_ahead_behind
 ##' @examples \dontrun{
 ##' ## Create a directory in tempdir
 ##' path <- tempfile(pattern="git2r-")
@@ -107,6 +108,8 @@ add_session_info <- function(message) {
 ##'   }
 ##' }
 ##' @export
+##' @useDynLib git2r git2r_commit
+##' @useDynLib git2r git2r_index_remove_bypath
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a repository
@@ -231,6 +234,9 @@ shallow_commits <- function(repo, sha, n) {
 ##'     \code{--no-follow} is reproduced.
 ##' @return list of commits in repository
 ##' @export
+##' @useDynLib git2r git2r_reference_dwim
+##' @useDynLib git2r git2r_revwalk_list2
+##' @useDynLib git2r git2r_revwalk_list
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a repository
@@ -391,6 +397,7 @@ last_commit <- function(repo = ".") {
 ##' @return TRUE if \code{commit} is descendant of \code{ancestor},
 ##'     else FALSE
 ##' @export
+##' @useDynLib git2r git2r_graph_descendant_of
 ##' @examples
 ##' \dontrun{
 ##' ## Create a directory in tempdir
@@ -518,6 +525,7 @@ is_merge <- function(commit = NULL) {
 ##' @param object a git_commit object.
 ##' @return list of git_commit objects
 ##' @export
+##' @useDynLib git2r git2r_commit_parent_list
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
