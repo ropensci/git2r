@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2024 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -19,6 +19,7 @@
 ##' @template repo-param
 ##' @return Character vector with remotes
 ##' @export
+##' @useDynLib git2r git2r_remote_list
 ##' @template remote-example
 remotes <- function(repo = ".") {
     .Call(git2r_remote_list, lookup_repository(repo))
@@ -31,6 +32,7 @@ remotes <- function(repo = ".") {
 ##' @param url URL of the remote repository
 ##' @return NULL, invisibly
 ##' @export
+##' @useDynLib git2r git2r_remote_add
 ##' @template remote-example
 remote_add <- function(repo = ".", name = NULL, url = NULL) {
     .Call(git2r_remote_add, lookup_repository(repo), name, url)
@@ -44,6 +46,7 @@ remote_add <- function(repo = ".", name = NULL, url = NULL) {
 ##' @param newname New name of the remote
 ##' @return NULL, invisibly
 ##' @export
+##' @useDynLib git2r git2r_remote_rename
 ##' @template remote-example
 remote_rename <- function(repo = ".", oldname = NULL, newname = NULL) {
     .Call(git2r_remote_rename, lookup_repository(repo), oldname, newname)
@@ -58,6 +61,7 @@ remote_rename <- function(repo = ".", oldname = NULL, newname = NULL) {
 ##' @param name The name of the remote to remove
 ##' @return NULL, invisibly
 ##' @export
+##' @useDynLib git2r git2r_remote_remove
 ##' @template remote-example
 remote_remove <- function(repo = ".", name = NULL) {
     .Call(git2r_remote_remove, lookup_repository(repo), name)
@@ -73,6 +77,7 @@ remote_remove <- function(repo = ".", name = NULL) {
 ##' @param url The \code{url} to set
 ##' @return NULL, invisibly
 ##' @export
+##' @useDynLib git2r git2r_remote_set_url
 ##' @template remote-example
 remote_set_url <- function(repo = ".", name = NULL, url = NULL) {
     .Call(git2r_remote_set_url, lookup_repository(repo), name, url)
@@ -86,6 +91,7 @@ remote_set_url <- function(repo = ".", name = NULL, url = NULL) {
 ##'     from. Default is the remotes of the repository.
 ##' @return Character vector with remote_url for each of the remote
 ##' @export
+##' @useDynLib git2r git2r_remote_url
 ##' @template remote-example
 remote_url <- function(repo = ".", remote = NULL) {
     repo <- lookup_repository(repo)
@@ -109,6 +115,7 @@ remote_url <- function(repo = ".", remote = NULL) {
 ##' @return Character vector for each reference with the associated
 ##'     commit IDs.
 ##' @export
+##' @useDynLib git2r git2r_remote_ls
 ##' @examples
 ##' \dontrun{
 ##' remote_ls("https://github.com/ropensci/git2r")
