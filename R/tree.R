@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2019 The git2r contributors
+## Copyright (C) 2013-2024 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -121,6 +121,7 @@ as.list.git_tree <- function(x, ...) {
 ##' @param object the \code{commit} or \code{stash} object
 ##' @return A S3 class git_tree object
 ##' @export
+##' @useDynLib git2r git2r_commit_tree
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -294,6 +295,7 @@ is_tree <- function(object) {
 ##'     \item{name}{filename of the tree entry} \item{len}{object size
 ##'     of blob (file) entries. NA for other objects.}  }
 ##' @export
+##' @useDynLib git2r git2r_tree_walk
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository

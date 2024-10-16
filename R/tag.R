@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2019 The git2r contributors
+## Copyright (C) 2013-2024 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -26,6 +26,7 @@
 ##' @param force Overwrite existing tag. Default = FALSE
 ##' @return invisible(\code{git_tag}) object
 ##' @export
+##' @useDynLib git2r git2r_tag_create
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -116,6 +117,7 @@ is_tag <- function(object) {
 ##'     delete.
 ##' @return \code{invisible(NULL)}
 ##' @export
+##' @useDynLib git2r git2r_tag_delete
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -162,6 +164,7 @@ tag_delete <- function(object = ".", name = NULL) {
 ##' @template repo-param
 ##' @return list of tags in repository
 ##' @export
+##' @useDynLib git2r git2r_tag_list
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
