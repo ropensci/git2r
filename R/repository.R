@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2021 The git2r contributors
+## Copyright (C) 2013-2024 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -181,6 +181,7 @@ repository <- function(path = ".", discover = TRUE) {
 ##'     the default name.
 ##' @return A \code{git_repository} object
 ##' @export
+##' @useDynLib git2r git2r_repository_init
 ##' @seealso \link{repository}
 ##' @examples
 ##' \dontrun{
@@ -221,6 +222,7 @@ init <- function(path = ".", bare = FALSE, branch = NULL) {
 ##' @seealso \link{repository}, \code{\link{cred_user_pass}},
 ##'     \code{\link{cred_ssh_key}}
 ##' @export
+##' @useDynLib git2r git2r_clone
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize repository
@@ -284,6 +286,7 @@ clone <- function(url         = NULL,
 ##'     detached head. A git_commit if detached head
 ##' @importFrom utils head
 ##' @export
+##' @useDynLib git2r git2r_repository_head
 ##' @examples
 ##' \dontrun{
 ##' ## Create and initialize a repository in a temporary directory
@@ -314,6 +317,7 @@ utils::head
 ##' @return NULL if unborn branch or not found. A git_branch if not a
 ##'     detached head. A git_commit if detached head
 ##' @export
+##' @useDynLib git2r git2r_repository_head
 ##' @examples
 ##' \dontrun{
 ##' ## Create and initialize a repository in a temporary directory
@@ -340,6 +344,7 @@ repository_head <- function(repo = ".") {
 ##' @return \code{TRUE} if bare repository, else \code{FALSE}
 ##' @seealso \link{init}
 ##' @export
+##' @useDynLib git2r git2r_repository_is_bare
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a repository
@@ -364,6 +369,7 @@ is_bare <- function(repo = ".") {
 ##' @return \code{TRUE} if repository HEAD is detached, else
 ##'     \code{FALSE}.
 ##' @export
+##' @useDynLib git2r git2r_repository_head_detached
 ##' @examples
 ##' \dontrun{
 ##' ## Create and initialize a repository in a temporary directory
@@ -404,6 +410,7 @@ is_detached <- function(repo = ".") {
 ##' @template repo-param
 ##' @return \code{TRUE} if repository is empty else \code{FALSE}.
 ##' @export
+##' @useDynLib git2r git2r_repository_is_empty
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -462,6 +469,7 @@ in_repository <- function(path = ".") {
 ##' @template repo-param
 ##' @return \code{TRUE} if shallow clone, else \code{FALSE}
 ##' @export
+##' @useDynLib git2r git2r_repository_is_shallow
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize repository
@@ -516,6 +524,7 @@ is_shallow <- function(repo = ".") {
 ##' @return a \code{git_blob} or \code{git_commit} or \code{git_tag}
 ##' or \code{git_tree} object
 ##' @export
+##' @useDynLib git2r git2r_object_lookup
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -757,6 +766,7 @@ strip_trailing_slash <- function(path) {
 ##' @return Character vector with the path of the workdir. If the
 ##' repository is bare, \code{NULL} will be returned.
 ##' @export
+##' @useDynLib git2r git2r_repository_workdir
 ##' @examples
 ##' \dontrun{
 ##' ## Create a directory in tempdir
@@ -787,6 +797,7 @@ workdir <- function(repo = ".") {
 ##'     separator) to repository or NULL if this cannot be
 ##'     established.
 ##' @export
+##' @useDynLib git2r git2r_repository_discover
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
