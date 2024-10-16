@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2023 The git2r contributors
+## Copyright (C) 2013-2024 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -31,6 +31,7 @@
 ##'     is TRUE.
 ##' @return list of S3 class git_blob \code{objects}
 ##' @export
+##' @useDynLib git2r git2r_blob_create_fromworkdir
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -69,6 +70,7 @@ blob_create <- function(repo = ".", path = NULL, relative = TRUE) {
 ##' @return The content of the blob. NA_character_ if the blob is
 ##'     binary and \code{raw} is \code{FALSE}.
 ##' @export
+##' @useDynLib git2r git2r_blob_content
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -100,6 +102,7 @@ content <- function(blob = NULL, split = TRUE, raw = FALSE) {
 ##' @param data The string vector to hash.
 ##' @return A string vector with the sha for each string in data.
 ##' @export
+##' @useDynLib git2r git2r_odb_hash
 ##' @examples
 ##' \dontrun{
 ##' identical(hash(c("Hello, world!\n",
@@ -117,6 +120,7 @@ hash <- function(data = NULL) {
 ##' @param path The path vector with files to hash.
 ##' @return A vector with the sha for each file in path.
 ##' @export
+##' @useDynLib git2r git2r_odb_hashfile
 ##' @examples
 ##' \dontrun{
 ##' ## Create a file. NOTE: The line endings from writeLines gives
@@ -143,6 +147,7 @@ hashfile <- function(path = NULL) {
 ##' @param blob The blob \code{object}.
 ##' @return TRUE if binary data, FALSE if not.
 ##' @export
+##' @useDynLib git2r git2r_blob_is_binary
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -213,6 +218,7 @@ is_blob <- function(object) {
 ##' @param x The blob \code{object}
 ##' @return a non-negative integer
 ##' @export
+##' @useDynLib git2r git2r_blob_rawsize
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository

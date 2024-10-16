@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2024 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -19,6 +19,7 @@
 ##' @return A list with threads, https and ssh set to TRUE/FALSE.
 ##' @keywords methods
 ##' @export
+##' @useDynLib git2r git2r_libgit2_features
 ##' @examples
 ##' libgit2_features()
 libgit2_features <- function() {
@@ -32,6 +33,7 @@ libgit2_features <- function() {
 ##' @return A list with major, minor and rev
 ##' @keywords methods
 ##' @export
+##' @useDynLib git2r git2r_libgit2_version
 ##' @examples
 ##' libgit2_version()
 libgit2_version <- function() {
@@ -48,6 +50,7 @@ libgit2_version <- function() {
 ##' @return invisible(NULL)
 ##' @keywords methods
 ##' @export
+##' @useDynLib git2r git2r_ssl_cert_locations
 ssl_cert_locations <- function(filename = NULL, path = NULL) {
     .Call(git2r_ssl_cert_locations, filename, path)
     invisible(NULL)

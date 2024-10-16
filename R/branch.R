@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2020 The git2r contributors
+## Copyright (C) 2013-2024 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -23,6 +23,7 @@
 ##' @param force Overwrite existing branch. Default = FALSE
 ##' @return invisible git_branch object
 ##' @export
+##' @useDynLib git2r git2r_branch_create
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -62,6 +63,7 @@ branch_create <- function(commit = last_commit(), name = NULL,
 ##' @param branch The branch
 ##' @return invisible NULL
 ##' @export
+##' @useDynLib git2r git2r_branch_delete
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -94,6 +96,7 @@ branch_delete <- function(branch = NULL) {
 ##' @param branch The branch
 ##' @return character string with remote name
 ##' @export
+##' @useDynLib git2r git2r_branch_remote_name
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize two temporary repositories
@@ -129,6 +132,7 @@ branch_remote_name <- function(branch = NULL) {
 ##' @param branch The branch
 ##' @return character string with remote url
 ##' @export
+##' @useDynLib git2r git2r_branch_remote_url
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize two temporary repositories
@@ -166,6 +170,7 @@ branch_remote_url <- function(branch = NULL) {
 ##' @param force Overwrite existing branch. Default is FALSE
 ##' @return invisible renamed \code{git_branch} object
 ##' @export
+##' @useDynLib git2r git2r_branch_rename
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -194,6 +199,7 @@ branch_rename <- function(branch = NULL, name = NULL, force = FALSE) {
 ##' @param branch The branch
 ##' @return sha or NA if not a direct reference
 ##' @export
+##' @useDynLib git2r git2r_branch_target
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
@@ -222,6 +228,7 @@ branch_target <- function(branch = NULL) {
 ##' @return \code{git_branch} object or NULL if no remote tracking
 ##'     branch.
 ##' @export
+##' @useDynLib git2r git2r_branch_get_upstream
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize two temporary repositories
@@ -260,6 +267,7 @@ branch_get_upstream <- function(branch = NULL) {
 ##' upstream. Pass NULL to unset.
 ##' @return invisible NULL
 ##' @export
+##' @useDynLib git2r git2r_branch_set_upstream
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize two temporary repositories
@@ -307,6 +315,7 @@ branch_set_upstream <- function(branch = NULL, name) {
 ##'     are 'all', 'local' or 'remote'
 ##' @return list of branches in repository
 ##' @export
+##' @useDynLib git2r git2r_branch_list
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize repositories
@@ -347,6 +356,7 @@ branches <- function(repo = ".", flags=c("all", "local", "remote")) {
 ##' @param branch The branch \code{object} to check if it's head.
 ##' @return \code{TRUE} if branch is head, else \code{FALSE}.
 ##' @export
+##' @useDynLib git2r git2r_branch_is_head
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize a temporary repository
