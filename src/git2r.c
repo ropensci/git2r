@@ -55,6 +55,7 @@
 #include "git2r_tag.h"
 #include "git2r_tree.h"
 #include <R_ext/Rdynload.h>
+#include <R_ext/Visibility.h>
 
 #define CALLDEF(name, n) {#name, (DL_FUNC) &name, n}
 
@@ -161,6 +162,7 @@ static const R_CallMethodDef callMethods[] =
  * @param info Information about the DLL being loaded
  */
 void
+attribute_visible
 R_init_git2r(DllInfo *info)
 {
     R_registerRoutines(info, NULL, callMethods, NULL, NULL);
