@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2022 The git2r contributors
+## Copyright (C) 2013-2024 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -96,6 +96,7 @@ summary.git_diff <- function(object, ...) {
 ##'
 ##' @rdname diff-methods
 ##' @export
+##' @useDynLib git2r git2r_diff
 ##' @param x A \code{git_repository} object or the old \code{git_tree}
 ##'     object to compare to.
 ##' @param index \describe{
@@ -250,6 +251,7 @@ diff.git_repository <- function(x,
 ##'     \code{index} argument).
 ##' @param ... Not used.
 ##' @export
+##' @useDynLib git2r git2r_diff
 diff.git_tree <- function(x,
                           new_tree = NULL,
                           index    = FALSE,

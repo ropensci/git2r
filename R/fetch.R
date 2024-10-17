@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2019 The git2r contributors
+## Copyright (C) 2013-2024 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -54,6 +54,7 @@
 ##'   }
 ##' }
 ##' @export
+##' @useDynLib git2r git2r_remote_fetch
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize three temporary repositories
@@ -106,6 +107,7 @@ fetch <- function(repo = ".", name = NULL, credentials = NULL,
 ##' @return list with \code{git_fetch_head} entries. NULL if there is
 ##'     no FETCH_HEAD file.
 ##' @export
+##' @useDynLib git2r git2r_repository_fetch_heads
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize three temporary repositories
