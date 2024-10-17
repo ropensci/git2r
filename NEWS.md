@@ -10,6 +10,9 @@
 * The system requirement for libgit2 has been updated to libgit2
   version >= 1.0.
 
+* Add `$(C_VISIBILITY)` to compiler flags to hide internal symbols
+  from shared object.
+
 # git2r 0.33.0 (2023-11-26)
 
 ## CHANGES
