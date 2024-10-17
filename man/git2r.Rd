@@ -8,3 +8,30 @@
 \description{
 git2r: R bindings to the libgit2 library.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://docs.ropensci.org/git2r/ (website)}
+  \item \url{https://github.com/ropensci/git2r}
+  \item Report bugs at \url{https://github.com/ropensci/git2r/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Stefan Widgren \email{stefan.widgren@gmail.com} (\href{https://orcid.org/0000-0001-5745-2284}{ORCID})
+
+Other contributors:
+\itemize{
+  \item Gabor Csardi [contributor]
+  \item Gregory Jefferis [contributor]
+  \item Jennifer Bryan [contributor]
+  \item Jeroen Ooms [contributor]
+  \item Jim Hester [contributor]
+  \item John Blischak [contributor]
+  \item Karthik Ram [contributor]
+  \item Peter Carbonetto [contributor]
+  \item Scott Chamberlain [contributor]
+  \item Thomas Rosendal [contributor]
+}
+
+}
