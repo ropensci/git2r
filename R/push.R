@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2019 The git2r contributors
+## Copyright (C) 2013-2024 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -41,6 +41,9 @@ get_upstream_name <- function(object) {
 ##' @return invisible(NULL)
 ##' @seealso \code{\link{cred_user_pass}}, \code{\link{cred_ssh_key}}
 ##' @export
+##' @useDynLib git2r git2r_branch_canonical_name
+##' @useDynLib git2r git2r_branch_upstream_canonical_name
+##' @useDynLib git2r git2r_push
 ##' @examples
 ##' \dontrun{
 ##' ## Initialize two temporary repositories

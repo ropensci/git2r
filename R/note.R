@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2019 The git2r contributors
+## Copyright (C) 2013-2024 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -21,6 +21,7 @@
 ##' @return Character vector of length one with name of default notes
 ##'     reference
 ##' @export
+##' @useDynLib git2r git2r_note_default_ref
 ##' @examples
 ##' \dontrun{
 ##' ## Create and initialize a repository in a temporary directory
@@ -48,6 +49,7 @@ note_default_ref <- function(repo = ".") {
 ##' @param force Overwrite existing note. Default is FALSE
 ##' @return git_note
 ##' @export
+##' @useDynLib git2r git2r_note_create
 ##' @examples
 ##' \dontrun{
 ##' ## Create and initialize a repository in a temporary directory
@@ -115,6 +117,7 @@ note_create <- function(object    = NULL,
 ##'     \code{note_default_ref}.
 ##' @return list with git_note objects
 ##' @export
+##' @useDynLib git2r git2r_notes
 ##' @examples
 ##' \dontrun{
 ##' ## Create and initialize a repository in a temporary directory
@@ -170,6 +173,7 @@ notes <- function(repo = ".", ref = NULL) {
 ##' @param committer Signature of the notes commit committer.
 ##' @return invisible NULL
 ##' @export
+##' @useDynLib git2r git2r_note_remove
 ##' @examples
 ##' \dontrun{
 ##' ## Create and initialize a repository in a temporary directory

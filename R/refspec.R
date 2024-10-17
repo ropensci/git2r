@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2019 The git2r contributors
+## Copyright (C) 2013-2024 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -22,6 +22,7 @@
 ##' @param opts List with push options. Default is NULL.
 ##' @return List with remote (character vector) and refspec (character
 ##' vector).
+##' @useDynLib git2r git2r_config_get_string
 ##' @noRd
 get_refspec <- function(repo = NULL, remote = NULL, spec = NULL, opts = NULL) {
     stopifnot(inherits(repo, "git_repository"))

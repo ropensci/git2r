@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2023 The git2r contributors
+## Copyright (C) 2013-2024 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -20,6 +20,7 @@
 ##' @param two The other commit
 ##' @return git_commit
 ##' @export
+##' @useDynLib git2r git2r_merge_base
 ##' @examples \dontrun{
 ##' ## Create a directory in tempdir
 ##' path <- tempfile(pattern="git2r-")
@@ -73,6 +74,7 @@ merge_base <- function(one = NULL, two = NULL) {
 ##' @param ... Additional arguments (unused).
 ##' @template return-git_merge_result
 ##' @export
+##' @useDynLib git2r git2r_merge_branch
 ##' @template merge-example
 merge.git_branch <- function(x, y = NULL, commit_on_success = TRUE,
                              merger = NULL, fail = FALSE, ...) {
