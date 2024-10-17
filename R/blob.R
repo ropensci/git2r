@@ -31,6 +31,7 @@
 ##'     is TRUE.
 ##' @return list of S3 class git_blob \code{objects}
 ##' @export
+##' @useDynLib git2r git2r_blob_create_fromdisk
 ##' @useDynLib git2r git2r_blob_create_fromworkdir
 ##' @examples
 ##' \dontrun{

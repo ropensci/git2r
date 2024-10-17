@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2019 The git2r contributors
+## Copyright (C) 2013-2024 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -41,17 +41,26 @@ previous_branch_name <- function(repo) {
     branch
 }
 
+##' @useDynLib git2r git2r_checkout_tree
+##' @useDynLib git2r git2r_repository_set_head
+##' @noRd
 checkout_branch <- function(object, force) {
     ref_name <- paste0("refs/heads/", object$name)
     .Call(git2r_checkout_tree, object$repo, ref_name, force)
     .Call(git2r_repository_set_head, object$repo, ref_name)
 }
 
+##' @useDynLib git2r git2r_checkout_tree
+##' @useDynLib git2r git2r_repository_set_head_detached
+##' @noRd
 checkout_commit <- function(object, force) {
     .Call(git2r_checkout_tree, object$repo, object$sha, force)
     .Call(git2r_repository_set_head_detached, object)
 }
 
+##' @useDynLib git2r git2r_checkout_tree
+##' @useDynLib git2r git2r_repository_set_head_detached
+##' @noRd
 checkout_tag <- function(object, force) {
     .Call(git2r_checkout_tree, object$repo, object$target, force)
     .Call(git2r_repository_set_head_detached,
@@ -101,6 +110,8 @@ checkout_git_object <- function(object, force) {
 ##' @param ...  Additional arguments. Not used.
 ##' @return invisible NULL
 ##' @export
+##' @useDynLib git2r git2r_checkout_path
+##' @useDynLib git2r git2r_repository_set_head
 ##' @examples
 ##' \dontrun{
 ##' ## Create directories and initialize repositories

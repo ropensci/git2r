@@ -1,5 +1,5 @@
 ## git2r, R bindings to the libgit2 library.
-## Copyright (C) 2013-2018 The git2r contributors
+## Copyright (C) 2013-2024 The git2r contributors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License, version 2,
@@ -32,6 +32,7 @@
 ##' }
 ##' @note A blob sha can have several entries
 ##' @export
+##' @useDynLib git2r git2r_odb_blobs
 ##' @examples \dontrun{
 ##' ## Create a directory in tempdir
 ##' path <- tempfile(pattern="git2r-")
@@ -86,6 +87,7 @@ odb_blobs <- function(repo = ".") {
 ##'   \item{len}{The length of the object}
 ##' }
 ##' @export
+##' @useDynLib git2r git2r_odb_objects
 ##' @examples \dontrun{
 ##' ## Create a directory in tempdir
 ##' path <- tempfile(pattern="git2r-")
