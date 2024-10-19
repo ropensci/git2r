@@ -11,7 +11,7 @@ git2r: R bindings to the libgit2 library.
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://docs.ropensci.org/git2r/ (website)}
+  \item \url{https://docs.ropensci.org/git2r/}
   \item \url{https://github.com/ropensci/git2r}
   \item Report bugs at \url{https://github.com/ropensci/git2r/issues}
 }
