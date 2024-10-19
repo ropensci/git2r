@@ -1,3 +1,4 @@
+Type: Package
 Package: git2r
 Title: Provides Access to Git Repositories
 Authors@R: c(person("Stefan", "Widgren", role = c("aut", "cre"),
@@ -30,8 +31,6 @@ Depends:
     R (>= 4.0)
 Suggests:
     getPass
-Type: Package
-Biarch: true
 NeedsCompilation: yes
 SystemRequirements: libgit2 (>= 1.0): libgit2-devel (rpm) or libgit2-dev (deb)
 Collate:
