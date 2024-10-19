@@ -39,7 +39,6 @@ RBIN="${R_HOME}/bin/R"
 m4_pattern_allow([PKG_CONFIG_NAME])
 m4_pattern_allow([PKG_BREW_NAME])
 PKG_CONFIG_NAME="libgit2"
-PKG_BREW_NAME="libgit2"
 PKG_LIBS="-lgit2"
 PKG_CFLAGS=""
 
@@ -64,9 +63,43 @@ if test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
                 AC_PROG_BREW
                 if test "x${BREW}" = xyes; then
                     BREWDIR=`brew --prefix`
-                else
-                    curl -sfL "https://autobrew.github.io/scripts/libgit2" > autobrew
-                    . ./autobrew
+                    PKG_CFLAGS="-I${BREWDIR}/opt/libgit2/include"
+                    PKG_LIBS="-L${BREWDIR}/opt/libgit2/lib ${PKG_LIBS}"
+                elif test -z "${DISABLE_AUTOBREW}"; then
+                    # Try to download a static build of libgit2 and use that.
+                    bottle_ver="1.8.1"
+                    bottle_sha256="9419deece3c3b7bec2ed8ed1caa5f4a3f3f1b049a6d17b0a75b2e05128c10fdf"
+                    bottle_url="https://github.com/autobrew/bundler/releases/download"
+                    bottle="${bottle_url}/libgit2-${bottle_ver}/libgit2-${bottle_ver}-universal.tar.xz"
+
+                    # Download the bottle
+                    echo "Download autobrew bundle $(basename ${bottle})"
+                    curl -sSL $bottle -o libs.tar.xz
+
+                    # Verify the checksum of the downloaded bottle
+                    AC_MSG_CHECKING([SHA256 checksum of downloaded $(basename ${bottle})])
+                    : ${bottle_download_sha256=`openssl sha256 libs.tar.xz | sed -e 's:.*= ::'`}
+                    if test "x$bottle_download_sha256" != "x$bottle_sha256"; then
+                        AC_MSG_FAILURE([The SHA256 checksum of $(basename ${bottle}) didn't match])
+                    fi
+                    AC_MSG_RESULT([yes])
+
+                    # General setup
+                    BREWDIR="$PWD/.deps"
+                    mkdir -p $BREWDIR
+                    tar -xf libs.tar.xz --strip 1 -C $BREWDIR
+                    rm -f libs.tar.xz
+
+                    PKG_CFLAGS="-I${BREWDIR}/include"
+                    PKG_LIBS="-L${BREWDIR}/lib ${PKG_LIBS} -lssh2 -lcrypto -lcurl -lz -liconv -framework Security"
+
+                    # Prevent linking against other libs in /usr/local/lib
+                    for FILE in $BREWDIR/lib/*.a; do
+                        BASENAME=$(basename $FILE)
+                        LIBNAME=$(echo "${BASENAME%.*}" | cut -c4-)
+                        cp -f $FILE $BREWDIR/lib/libbrew$LIBNAME.a
+                        PKG_LIBS=$(echo $PKG_LIBS | sed "s/-l$LIBNAME /-lbrew$LIBNAME /g")
+                    done
                 fi
             ;;
         esac
@@ -96,10 +129,10 @@ if test "x${libgit2_ver_ok}" = xno; then
     echo "
   -----------------------------------------------------------------------
 
-   Unable to find 'libgit2 >= ${LIBGIT2_MIN_VERSION}' on this system, please install:
-     libgit2-dev   (package on e.g. Debian and Ubuntu)
-     libgit2-devel (package on e.g. Fedora, CentOS and RHEL)
-     libgit2       (Homebrew package on OS X)
+   Configuration failed to find libgit2 library. Try installing:
+     * brew: libgit2 (MacOS)
+     * deb: libgit2-dev   (Debian, Ubuntu, etc)
+     * rpm: libgit2-devel (Fedora, CentOS, RHEL)
    and try again.
 
    If the libgit2 library is installed on your system but the git2r
@@ -114,16 +147,6 @@ if test "x${libgit2_ver_ok}" = xno; then
 
    or download and install git2r in R using
    install.packages('git2r', type='source', configure.vars='LIB_DIR=-L/path/to/libs INCLUDE_DIR=-I/path/to/headers')
-
-   On macOS, another possibility is to let the configuration
-   automatically download the libgit2 library from the Homebrew
-   package manager with:
-
-   R CMD INSTALL git2r-.tar.gz --configure-vars='autobrew=yes'
-   or
-   R CMD INSTALL git2r/ --configure-vars='autobrew=yes'
-   or
-   install.packages('git2r', type='source', configure.vars='autobrew=yes')
 
   -----------------------------------------------------------------------
 
