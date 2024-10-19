@@ -300,6 +300,3 @@ diff.git_tree <- function(x,
           as.integer(context_lines), as.integer(interhunk_lines),
           old_prefix, new_prefix, id_abbrev, path, max_size)
 }
-
-##' @export
-base::diff

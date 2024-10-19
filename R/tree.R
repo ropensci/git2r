@@ -76,9 +76,6 @@ as.data.frame.git_tree <- function(x, ...) {
                stringsAsFactors = FALSE)
 }
 
-##' @export
-base::as.data.frame
-
 ##' Coerce entries in a git_tree to a list of entry objects
 ##'
 ##' @param x The tree \code{object}

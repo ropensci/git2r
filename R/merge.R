@@ -105,9 +105,6 @@ merge.character <- function(x = ".", y = NULL, commit_on_success = TRUE,
 }
 
 ##' @export
-base::merge
-
-##' @export
 format.git_merge_result <- function(x, ...) {
     if (isTRUE(x$up_to_date))
         return("Already up-to-date")
