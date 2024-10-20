@@ -13,6 +13,12 @@
 * Add `$(C_VISIBILITY)` to compiler flags to hide internal symbols
   from shared object.
 
+* On MacOS, if libgit2 is not found, the build configuration tries to
+  download a static build of libgit2 version 1.8.1
+  (https://github.com/autobrew/bundler/releases/tag/libgit2-1.8.1) and
+  use that instead, after the sha256 of the downloaded
+  'libgit2-1.8.1-universal.tar.xz' file has been checked.
+
 # git2r 0.33.0 (2023-11-26)
 
 ## CHANGES
