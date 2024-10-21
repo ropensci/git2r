@@ -1,3 +1,5 @@
+# git2r (development version)
+
 # git2r 0.35.0 (2024-10-20)
 
 ## CHANGES
