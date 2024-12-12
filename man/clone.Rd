@@ -5,8 +5,8 @@
 \title{Clone a remote repository}
 \usage{
 clone(
-  url = NULL,
-  local_path = NULL,
+  url,
+  local_path,
   bare = FALSE,
   branch = NULL,
   checkout = TRUE,
@@ -15,7 +15,7 @@ clone(
 )
 }
 \arguments{
-\item{url}{The remote repository to clone}
+\item{url}{The remote repository to clone, or a local repository path.}
 
 \item{local_path}{Local directory to clone to.}
 

@@ -208,7 +208,7 @@ init <- function(path = ".", bare = FALSE, branch = NULL) {
 
 ##' Clone a remote repository
 ##'
-##' @param url The remote repository to clone
+##' @param url The remote repository to clone, or a local repository path.
 ##' @param local_path Local directory to clone to.
 ##' @param bare Create a bare repository. Default is FALSE.
 ##' @param branch The name of the branch to checkout. Default is NULL
@@ -267,8 +267,8 @@ init <- function(path = ".", bare = FALSE, branch = NULL) {
 ##' commits(repo_1)
 ##' commits(repo_2)
 ##' }
-clone <- function(url         = NULL,
-                  local_path  = NULL,
+clone <- function(url,
+                  local_path,
                   bare        = FALSE,
                   branch      = NULL,
                   checkout    = TRUE,
