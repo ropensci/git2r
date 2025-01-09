@@ -38,6 +38,9 @@ get_upstream_name <- function(object) {
 ##'     ssh key credentials, let this parameter be NULL (the default).
 ##' @param set_upstream Set the current local branch to track the
 ##'     remote branch. Default is FALSE.
+##' @param proxy Either \code{NULL} (the default) to disable proxy usage,
+##'     \code{TRUE} for automatic proxy detection, or a character string
+##'     with a proxy URL (for example, \code{"http://proxy.example.org:3128"}).
 ##' @return invisible(NULL)
 ##' @seealso \code{\link{cred_user_pass}}, \code{\link{cred_ssh_key}}
 ##' @export
@@ -98,7 +101,8 @@ push <- function(object       = ".",
                  refspec      = NULL,
                  force        = FALSE,
                  credentials  = NULL,
-                 set_upstream = FALSE) {
+                 set_upstream = FALSE,
+                 proxy        = NULL) {
     if (is_branch(object)) {
         name <- get_upstream_name(object)
 
@@ -126,7 +130,7 @@ push <- function(object       = ".",
         refspec <- tmp$refspec
     }
 
-    .Call(git2r_push, object, name, refspec, credentials)
+    .Call(git2r_push, object, name, refspec, credentials, proxy)
 
     if (isTRUE(set_upstream)) {
         b <- repository_head(object)

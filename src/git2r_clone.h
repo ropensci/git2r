@@ -29,6 +29,7 @@ SEXP git2r_clone(
     SEXP branch,
     SEXP checkout,
     SEXP credentials,
-    SEXP progress);
+    SEXP progress,
+    SEXP proxy_val);
 
 #endif

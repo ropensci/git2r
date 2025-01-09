@@ -38,6 +38,7 @@ int git2r_arg_check_integer_gte_zero(SEXP arg);
 int git2r_arg_check_list(SEXP arg);
 int git2r_arg_check_logical(SEXP arg);
 int git2r_arg_check_note(SEXP arg);
+int git2r_arg_check_proxy(SEXP arg);
 int git2r_arg_check_repository(SEXP arg);
 int git2r_arg_check_same_repo(SEXP arg1, SEXP arg2);
 int git2r_arg_check_signature(SEXP arg);

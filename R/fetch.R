@@ -27,6 +27,9 @@
 ##'     see examples. Pass NULL to use the
 ##'     \code{remote.<repository>.fetch} variable. Default is
 ##'     \code{NULL}.
+##' @param proxy Either \code{NULL} (the default) to disable proxy usage,
+##'     \code{TRUE} for automatic proxy detection, or a character string
+##'     with a proxy URL (for example, \code{"http://proxy.example.org:3128"}).
 ##' @return invisible list of class \code{git_transfer_progress}
 ##'     with statistics from the fetch operation:
 ##' \describe{
@@ -96,9 +99,9 @@
 ##' summary(repo)
 ##' }
 fetch <- function(repo = ".", name = NULL, credentials = NULL,
-                  verbose = TRUE, refspec = NULL) {
+                  verbose = TRUE, refspec = NULL, proxy = NULL) {
     invisible(.Call(git2r_remote_fetch, lookup_repository(repo),
-                    name, credentials, "fetch", verbose, refspec))
+                    name, credentials, "fetch", verbose, refspec, proxy))
 }
 
 ##' Get updated heads during the last fetch.

@@ -10,7 +10,8 @@ push(
   refspec = NULL,
   force = FALSE,
   credentials = NULL,
-  set_upstream = FALSE
+  set_upstream = FALSE,
+  proxy = NULL
 )
 }
 \arguments{
@@ -30,6 +31,10 @@ ssh key credentials, let this parameter be NULL (the default).}
 
 \item{set_upstream}{Set the current local branch to track the
 remote branch. Default is FALSE.}
+
+\item{proxy}{Either \code{NULL} (the default) to disable proxy usage,
+\code{TRUE} for automatic proxy detection, or a character string
+with a proxy URL (for example, \code{"http://proxy.example.org:3128"}).}
 }
 \value{
 invisible(NULL)

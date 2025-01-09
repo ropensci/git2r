@@ -41,6 +41,7 @@ const char git2r_err_ssl_cert_locations[] =
     "Either 'filename' or 'path' may be 'NULL', but not both";
 const char git2r_err_unexpected_config_level[] = "Unexpected config level";
 const char git2r_err_unable_to_authenticate[] = "Unable to authenticate with supplied credentials";
+const char git2r_err_unable_to_set_proxy_options[] = "Unable to set proxy options";
 
 /**
  * Error messages specific to argument checking
@@ -55,6 +56,8 @@ const char git2r_err_commit_stash_arg[] =
     "must be an S3 class git_commit or an S3 class git_stash";
 const char git2r_err_credentials_arg[] =
     "must be an S3 class with credentials";
+const char git2r_err_proxy_arg[] = 
+    "must be either 1) NULL, or 2) TRUE or 3) a character vector";
 const char git2r_err_diff_arg[] =
     "Invalid diff parameters";
 const char git2r_err_fetch_heads_arg[] =

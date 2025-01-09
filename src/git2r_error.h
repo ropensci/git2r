@@ -40,6 +40,7 @@ extern const char git2r_err_revparse_single[];
 extern const char git2r_err_ssl_cert_locations[];
 extern const char git2r_err_unexpected_config_level[];
 extern const char git2r_err_unable_to_authenticate[];
+extern const char git2r_err_unable_to_set_proxy_options[];
 
 /**
  * Error messages specific to argument checking
@@ -49,6 +50,7 @@ extern const char git2r_err_branch_arg[];
 extern const char git2r_err_commit_arg[];
 extern const char git2r_err_commit_stash_arg[];
 extern const char git2r_err_credentials_arg[];
+extern const char git2r_err_proxy_arg[];
 extern const char git2r_err_diff_arg[];
 extern const char git2r_err_fetch_heads_arg[];
 extern const char git2r_err_filename_arg[];

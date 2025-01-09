@@ -4,7 +4,7 @@
 \alias{remote_ls}
 \title{List references in a remote repository}
 \usage{
-remote_ls(name = NULL, repo = NULL, credentials = NULL)
+remote_ls(name = NULL, repo = NULL, credentials = NULL, proxy = NULL)
 }
 \arguments{
 \item{name}{Character vector with the "remote" repository URL to
@@ -17,6 +17,10 @@ specified by name.}
 \item{credentials}{The credentials for remote repository
 access. Default is NULL. To use and query an ssh-agent for the
 ssh key credentials, let this parameter be NULL (the default).}
+
+\item{proxy}{Either \code{NULL} (the default) to disable proxy usage,
+\code{TRUE} for automatic proxy detection, or a character string
+with a proxy URL (for example, \code{"http://proxy.example.org:3128"}).}
 }
 \value{
 Character vector for each reference with the associated

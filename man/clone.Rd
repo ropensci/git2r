@@ -11,7 +11,8 @@ clone(
   branch = NULL,
   checkout = TRUE,
   credentials = NULL,
-  progress = TRUE
+  progress = TRUE,
+  proxy = NULL
 )
 }
 \arguments{
@@ -32,6 +33,10 @@ access. Default is NULL. To use and query an ssh-agent for the
 ssh key credentials, let this parameter be NULL (the default).}
 
 \item{progress}{Show progress. Default is TRUE.}
+
+\item{proxy}{Either \code{NULL} (the default) to disable proxy usage,
+\code{TRUE} for automatic proxy detection, or a character string
+with a proxy URL (for example, \code{"http://proxy.example.org:3128"}).}
 }
 \value{
 A \code{git_repository} object.

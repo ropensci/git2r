@@ -112,6 +112,9 @@ remote_url <- function(repo = ".", remote = NULL) {
 ##' @param credentials The credentials for remote repository
 ##'     access. Default is NULL. To use and query an ssh-agent for the
 ##'     ssh key credentials, let this parameter be NULL (the default).
+##' @param proxy Either \code{NULL} (the default) to disable proxy usage,
+##'     \code{TRUE} for automatic proxy detection, or a character string
+##'     with a proxy URL (for example, \code{"http://proxy.example.org:3128"}).
 ##' @return Character vector for each reference with the associated
 ##'     commit IDs.
 ##' @export
@@ -120,7 +123,7 @@ remote_url <- function(repo = ".", remote = NULL) {
 ##' \dontrun{
 ##' remote_ls("https://github.com/ropensci/git2r")
 ##' }
-remote_ls <- function(name = NULL, repo = NULL, credentials = NULL) {
+remote_ls <- function(name = NULL, repo = NULL, credentials = NULL, proxy = NULL) {
     if (is.null(repo)) {
         ver <- libgit2_version()
         if (ver$major == 0 && ver$minor < 27) {
@@ -132,5 +135,5 @@ remote_ls <- function(name = NULL, repo = NULL, credentials = NULL) {
         repo <- lookup_repository(repo)
     }
 
-    .Call(git2r_remote_ls, name, repo, credentials)
+    .Call(git2r_remote_ls, name, repo, credentials, proxy)
 }

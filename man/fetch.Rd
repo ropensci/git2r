@@ -9,7 +9,8 @@ fetch(
   name = NULL,
   credentials = NULL,
   verbose = TRUE,
-  refspec = NULL
+  refspec = NULL,
+  proxy = NULL
 )
 }
 \arguments{
@@ -29,6 +30,10 @@ locally. Default is \code{TRUE}.}
 see examples. Pass NULL to use the
 \code{remote.<repository>.fetch} variable. Default is
 \code{NULL}.}
+
+\item{proxy}{Either \code{NULL} (the default) to disable proxy usage,
+\code{TRUE} for automatic proxy detection, or a character string
+with a proxy URL (for example, \code{"http://proxy.example.org:3128"}).}
 }
 \value{
 invisible list of class \code{git_transfer_progress}
