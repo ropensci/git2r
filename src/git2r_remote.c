@@ -446,6 +446,52 @@ cleanup:
     return url;
 }
 
+static int git2r_set_proxy_options(git_proxy_options *proxy_opts, SEXP proxy_val)
+{
+    /* This is just a simple initialization; you should handle errors if desired. */
+    git_proxy_options_init(proxy_opts, GIT_PROXY_OPTIONS_VERSION);
+
+    /* For storing the proxy URL if specified.  
+        Because we need the string to live at least as long as proxy_opts, store in a static buffer,
+        or a persistent structure, or something that won't go out of scope. 
+        (In practice, you would do something more robust than a fixed buffer.) */
+    static char proxy_url_buf[1024];
+    memset(proxy_url_buf, 0, sizeof(proxy_url_buf));
+
+    /* 1) Proxy = NULL => GIT_PROXY_NONE. 
+        2) Proxy = TRUE => GIT_PROXY_AUTO.
+        3) Proxy = string => GIT_PROXY_SPECIFIED with that URL. */
+
+    if (Rf_isNull(proxy_val)) {
+        /* Matches “proxy=None” -> GIT_PROXY_NONE */
+        proxy_opts->type = GIT_PROXY_NONE;
+    } 
+    else if (Rf_isLogical(proxy_val) && LOGICAL(proxy_val)[0] == 1) {
+        /* Matches “proxy=True” -> GIT_PROXY_AUTO */
+        proxy_opts->type = GIT_PROXY_AUTO;
+    }
+    else if (Rf_isString(proxy_val) && Rf_length(proxy_val) == 1) {
+        /* Matches “proxy='http://...'” -> GIT_PROXY_SPECIFIED */
+        proxy_opts->type = GIT_PROXY_SPECIFIED;
+
+        const char *val = CHAR(STRING_ELT(proxy_val, 0));
+        if (val && strlen(val) < sizeof(proxy_url_buf)) {
+            strcpy(proxy_url_buf, val);
+            proxy_opts->url = proxy_url_buf;
+        } else {
+            /* You may want to handle error if string is too large. */
+            return -1;
+        }
+    }
+    else {
+        /* Raise an error or handle invalid input. */
+        /* e.g. “TypeError: Proxy must be NULL, TRUE, or a string.” */
+        return -1;
+    }
+
+    return 0; /* success */
+}
+
 /**
  * Get the remote's url
  *
@@ -470,6 +516,8 @@ git2r_remote_ls(
     git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
     git2r_transfer_data payload = GIT2R_TRANSFER_DATA_INIT;
     git_repository *repository = NULL;
+    git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
+    git_proxy_options proxy_opts;
 
     if (git2r_arg_check_string(name))
         git2r_error(__func__, NULL, "'name'", git2r_err_string_arg);
@@ -501,7 +549,11 @@ git2r_remote_ls(
     callbacks.payload = &payload;
     callbacks.credentials = &git2r_cred_acquire_cb;
 
-    error = git_remote_connect(remote, GIT_DIRECTION_FETCH, &callbacks, NULL, NULL);
+    error = git2r_set_proxy_options(&proxy_opts, proxy_val);
+    if (error)
+        goto cleanup;
+
+    error = git_remote_connect(remote, GIT_DIRECTION_FETCH, &callbacks, &proxy_opts, NULL);
     if (error)
         goto cleanup;
 
