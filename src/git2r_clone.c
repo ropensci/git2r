@@ -23,6 +23,7 @@
 #include "git2r_clone.h"
 #include "git2r_cred.h"
 #include "git2r_error.h"
+#include "git2r_proxy.h"
 #include "git2r_transfer.h"
 
 /**
@@ -76,6 +77,7 @@ git2r_clone_progress(
  * @param checkout Checkout HEAD after the clone is complete.
  * @param credentials The credentials for remote repository access.
  * @param progress show progress
+ * @param proxy_val The proxy settings
  * @return R_NilValue
  */
 SEXP attribute_hidden
@@ -86,13 +88,15 @@ git2r_clone(
     SEXP branch,
     SEXP checkout,
     SEXP credentials,
-    SEXP progress)
+    SEXP progress,
+    SEXP proxy_val)
 {
     int error;
     git_repository *repository = NULL;
     git_clone_options clone_opts = GIT_CLONE_OPTIONS_INIT;
     git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
     git2r_transfer_data payload = GIT2R_TRANSFER_DATA_INIT;
+    git_proxy_options proxy_opts = GIT_PROXY_OPTIONS_INIT;
 
     if (git2r_arg_check_string(url))
         git2r_error(__func__, NULL, "'url'", git2r_err_string_arg);
@@ -108,11 +112,24 @@ git2r_clone(
         git2r_error(__func__, NULL, "'credentials'", git2r_err_credentials_arg);
     if (git2r_arg_check_logical(progress))
         git2r_error(__func__, NULL, "'progress'", git2r_err_logical_arg);
+    if (git2r_arg_check_proxy(proxy_val))
+        git2r_error(__func__, NULL, "'proxy_val'", git2r_err_proxy_arg);
 
     if (LOGICAL(checkout)[0])
       checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE;
     else
       checkout_opts.checkout_strategy = GIT_CHECKOUT_NONE;
+
+    /* Initialize proxy options */
+    error = git2r_set_proxy_options(&proxy_opts, proxy_val);
+    if (error)
+        git2r_error(
+            __func__,
+            git_error_last(),
+            git2r_err_unable_to_set_proxy_options,
+            NULL);
+    
+    clone_opts.fetch_opts.proxy_opts = proxy_opts;
 
     clone_opts.checkout_opts = checkout_opts;
     payload.credentials = credentials;

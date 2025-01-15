@@ -378,6 +378,27 @@ git2r_arg_check_real(
 }
 
 /**
+ * Check proxy argument
+ * 
+ * proxy may be NULL, TRUE or a string
+ *
+ * @param arg the arg to check
+ * @return 0 if OK, else -1
+ */
+int attribute_hidden
+git2r_arg_check_proxy(
+    SEXP arg)
+{
+    if (Rf_isNull(arg))
+        return 0;
+    if (Rf_isLogical(arg) && 1 == Rf_length(arg) && NA_LOGICAL != LOGICAL(arg)[0])
+        return 0;
+    if (Rf_isString(arg) && 1 == Rf_length(arg) && NA_STRING != STRING_ELT(arg, 0))
+        return 0;
+    return -1;
+}
+
+/**
  * Check repository argument
  *
  * @param arg the arg to check

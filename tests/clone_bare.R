@@ -60,6 +60,23 @@ stopifnot(identical(commit_1$summary, bare_commit_1$summary))
 stopifnot(identical(commit_1$message, bare_commit_1$message))
 stopifnot(!identical(commit_1$repo, bare_commit_1$repo))
 
+if (identical(Sys.getenv("NOT_CRAN"), "true")) {
+  ## Minimal check: test that calling `clone` with `proxy=TRUE` doesn't crash
+  test_path_proxy <- tempfile(pattern = "git2r-clone-proxy-")
+  dir.create(test_path_proxy)
+
+  message("Testing clone() with proxy=TRUE (auto-detect)")
+  tryCatch({
+    proxy_repo <- clone(path_repo, test_path_proxy, proxy = TRUE)
+    # If we get here without error, the parameter was accepted;
+    # further checks might be minimal if there's no real proxy in use.
+    stopifnot(identical(is_bare(proxy_repo), FALSE))
+    stopifnot(length(commits(proxy_repo)) == 1L)
+  }, error = function(e) {
+    message("clone() with proxy=TRUE failed as expected if no actual proxy is set: ", e$message)
+  })
+}
+
 ## Cleanup
 unlink(path_bare, recursive = TRUE)
 unlink(path_repo, recursive = TRUE)

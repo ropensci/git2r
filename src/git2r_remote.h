@@ -29,12 +29,13 @@ SEXP git2r_remote_fetch(
     SEXP credentials,
     SEXP msg,
     SEXP verbose,
-    SEXP refspecs);
+    SEXP refspecs,
+    SEXP proxy_val);
 SEXP git2r_remote_list(SEXP repo);
 SEXP git2r_remote_remove(SEXP repo, SEXP remote);
 SEXP git2r_remote_rename(SEXP repo, SEXP oldname, SEXP newname);
 SEXP git2r_remote_set_url(SEXP repo, SEXP name, SEXP url);
 SEXP git2r_remote_url(SEXP repo, SEXP remote);
-SEXP git2r_remote_ls(SEXP name, SEXP repo, SEXP credentials);
+SEXP git2r_remote_ls(SEXP name, SEXP repo, SEXP credentials, SEXP proxy_val);
 
 #endif

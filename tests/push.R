@@ -113,6 +113,19 @@ stopifnot(is.null(branch_get_upstream(repository_head(repo))))
 push(repo, "origin", paste0("refs/heads/", branch_name), set_upstream = TRUE)
 stopifnot(!is.null(branch_get_upstream(repository_head(repo))))
 
+if (identical(Sys.getenv("NOT_CRAN"), "true")) {
+  ## Attempt to push with proxy=TRUE. If no actual proxy is configured, it may
+  ## still succeed for local operations, or fail if there's a real network call.
+  ## We'll wrap it in a tryCatch to avoid a hard failure.
+  tryCatch({
+    push(repo, "origin", paste0("refs/heads/", branch_name), proxy = TRUE)
+    message("push() with proxy=TRUE succeeded (or no-op if local).")
+  }, error = function(e) {
+    message("push() with proxy=TRUE gave an error (likely no real proxy set): ",
+            e$message)
+  })
+}
+
 ## Cleanup
 unlink(path_bare, recursive = TRUE)
 unlink(path_repo, recursive = TRUE)

@@ -219,6 +219,9 @@ init <- function(path = ".", bare = FALSE, branch = NULL) {
 ##'     access. Default is NULL. To use and query an ssh-agent for the
 ##'     ssh key credentials, let this parameter be NULL (the default).
 ##' @param progress Show progress. Default is TRUE.
+##' @param proxy Either \code{NULL} (the default) to disable proxy usage,
+##'     \code{TRUE} for automatic proxy detection, or a character string
+##'     with a proxy URL (for example, \code{"http://proxy.example.org:3128"}).
 ##' @return A \code{git_repository} object.
 ##' @seealso \link{repository}, \code{\link{cred_user_pass}},
 ##'     \code{\link{cred_ssh_key}}
@@ -273,9 +276,10 @@ clone <- function(url,
                   branch      = NULL,
                   checkout    = TRUE,
                   credentials = NULL,
-                  progress    = TRUE) {
+                  progress    = TRUE,
+                  proxy       = NULL) {
     .Call(git2r_clone, url, local_path, bare,
-          branch, checkout, credentials, progress)
+          branch, checkout, credentials, progress, proxy)
     repository(local_path)
 }
 
