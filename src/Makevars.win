@@ -1,8 +1,14 @@
 PKG_CPPFLAGS = -DR_NO_REMAP -DSTRICT_R_HEADERS
 
-PKG_LIBS = \
-        -lgit2 -lpcre -lssh2 -lz -lssl -lcrypto -lgcrypt -lgpg-error \
+ifeq (,$(shell pkg-config --version 2>/dev/null))
+  PKG_LIBS = \
+        -lgit2 -lpcre -lpcre -lssh2 -lz -lssl -lcrypto -lgcrypt -lgpg-error \
         -lwinhttp -lws2_32 -lcrypt32 -lole32 -lrpcrt4
+  PKG_CPPFLAGS += -DPCRE_STATIC
+else
+  PKG_LIBS = $(shell pkg-config --libs libgit2)
+  PKG_CPPFLAGS += $(shell pkg-config --cflags libgit2)
+endif
 
 all: clean
 
