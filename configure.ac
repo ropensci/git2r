@@ -65,41 +65,6 @@ if test "x${INCLUDE_DIR}${LIB_DIR}" = x; then
                     BREWDIR=`brew --prefix`
                     PKG_CFLAGS="-I${BREWDIR}/opt/libgit2/include"
                     PKG_LIBS="-L${BREWDIR}/opt/libgit2/lib ${PKG_LIBS}"
-                elif test -z "${DISABLE_AUTOBREW}"; then
-                    # Try to download a static build of libgit2 and use that.
-                    bottle_ver="1.8.1"
-                    bottle_sha256="9419deece3c3b7bec2ed8ed1caa5f4a3f3f1b049a6d17b0a75b2e05128c10fdf"
-                    bottle_url="https://github.com/autobrew/bundler/releases/download"
-                    bottle="${bottle_url}/libgit2-${bottle_ver}/libgit2-${bottle_ver}-universal.tar.xz"
-
-                    # Download the bottle
-                    echo "Download autobrew bundle $(basename ${bottle})"
-                    curl -sSL $bottle -o libs.tar.xz
-
-                    # Verify the checksum of the downloaded bottle
-                    AC_MSG_CHECKING([SHA256 checksum of downloaded $(basename ${bottle})])
-                    : ${bottle_download_sha256=`openssl sha256 libs.tar.xz | sed -e 's:.*= ::'`}
-                    if test "x$bottle_download_sha256" != "x$bottle_sha256"; then
-                        AC_MSG_FAILURE([The SHA256 checksum of $(basename ${bottle}) didn't match])
-                    fi
-                    AC_MSG_RESULT([yes])
-
-                    # General setup
-                    BREWDIR="$PWD/.deps"
-                    mkdir -p $BREWDIR
-                    tar -xf libs.tar.xz --strip 1 -C $BREWDIR
-                    rm -f libs.tar.xz
-
-                    PKG_CFLAGS="-I${BREWDIR}/include"
-                    PKG_LIBS="-L${BREWDIR}/lib ${PKG_LIBS} -lssh2 -lcrypto -lcurl -lz -liconv -framework Security"
-
-                    # Prevent linking against other libs in /usr/local/lib
-                    for FILE in $BREWDIR/lib/*.a; do
-                        BASENAME=$(basename $FILE)
-                        LIBNAME=$(echo "${BASENAME%.*}" | cut -c4-)
-                        cp -f $FILE $BREWDIR/lib/libbrew$LIBNAME.a
-                        PKG_LIBS=$(echo $PKG_LIBS | sed "s/-l$LIBNAME /-lbrew$LIBNAME /g")
-                    done
                 fi
             ;;
         esac
