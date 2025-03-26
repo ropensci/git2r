@@ -1,5 +1,20 @@
 # git2r (development version)
 
+* Added Proxy Support. The R Functions clone, fetch, push, and
+  remote_ls now include a proxy parameter, enabling users to define
+  proxy settings directly within these functions, see PR #461. Thanks
+  to Gregor Lichtner.
+
+* Switch linking on Windows to use pkg-config when available. Thanks
+  to Tomas Kalibera for providing the patch.
+
+* On macOS, the build configuration script no longer downloads a
+  static build of libgit2 since libgit2 is now included in the macOS
+  recicpes (https://github.com/R-macos/recipes).
+
+* Update clone function docs and params, see PR #475. Thanks to
+  Alexandros Kouretsis.
+
 # git2r 0.35.0 (2024-10-20)
 
 ## CHANGES
