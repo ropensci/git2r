@@ -1,4 +1,4 @@
-# git2r (development version)
+# git2r 0.36.0 (2025-03-27)
 
 * Added Proxy Support. The R Functions clone, fetch, push, and
   remote_ls now include a proxy parameter, enabling users to define
