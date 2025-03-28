@@ -94,7 +94,10 @@ if test "x${libgit2_ver_ok}" = xno; then
     echo "
   -----------------------------------------------------------------------
 
-   Configuration failed to find libgit2 library. Try installing:
+   Configuration failed to find 'libgit2 >= ${LIBGIT2_MIN_VERSION}' and its
+   dependencies libssh2 and openssl.
+
+   Try installing:
      * brew: libgit2 (MacOS)
      * deb: libgit2-dev   (Debian, Ubuntu, etc)
      * rpm: libgit2-devel (Fedora, CentOS, RHEL)
@@ -117,7 +120,7 @@ if test "x${libgit2_ver_ok}" = xno; then
 
 "
 
-    AC_MSG_FAILURE([package dependency requirement 'libgit2 >= ${LIBGIT2_MIN_VERSION}' could not be satisfied.])
+    AC_MSG_FAILURE([package dependency requirements 'libgit2 >= ${LIBGIT2_MIN_VERSION}', 'openssl', and 'libssh2' could not be satisfied.])
 fi
 
 # For debugging
