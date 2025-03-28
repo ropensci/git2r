@@ -1,3 +1,5 @@
+# git2r 0.36.1 (2025-03-28)
+
 ## CHANGES
 
 * Updated the SystemRequirements field in the DESCRIPTION file to
