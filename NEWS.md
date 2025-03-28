@@ -1,4 +1,15 @@
+## CHANGES
+
+* Updated the SystemRequirements field in the DESCRIPTION file to
+  include the libgit2 dependencies libssh2 and openssl.
+
+* Improved the error message in the build configuration script to also
+  mention the library dependencies 'openssl', and 'libssh2' when the
+  requirement 'libgit2 >= 1.0' could not be satisfied
+
 # git2r 0.36.0 (2025-03-27)
+
+## CHANGES
 
 * Added Proxy Support. The R Functions clone, fetch, push, and
   remote_ls now include a proxy parameter, enabling users to define
