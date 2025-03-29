@@ -1,3 +1,8 @@
+## CHANGES
+
+* Use 'pkg-config --static --libs' in the build configuration script
+  on the Darwin platform.
+
 # git2r 0.36.1 (2025-03-28)
 
 ## CHANGES
