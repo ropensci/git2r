@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2024 The git2r contributors
+ *  Copyright (C) 2013-2026 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -59,5 +59,5 @@ git2r_transfer_progress_init(
     SET_VECTOR_ELT(
         dest,
         git2r_S3_item__git_transfer_progress__received_bytes,
-        Rf_ScalarInteger(source->received_bytes));
+        Rf_ScalarInteger((int)(source->received_bytes)));
 }

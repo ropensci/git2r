@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2024 The git2r contributors
+ *  Copyright (C) 2013-2026 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -60,7 +60,7 @@ git2r_reflog_entry_init(
         dest,
         git2r_S3_item__git_reflog_entry__index,
         i = Rf_allocVector(INTSXP, 1));
-    INTEGER(i)[0] = index;
+    INTEGER(i)[0] = (int)index;
 
     committer = git_reflog_entry_committer(source);
     if (committer) {

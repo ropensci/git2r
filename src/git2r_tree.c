@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2024 The git2r contributors
+ *  Copyright (C) 2013-2026 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -151,7 +151,7 @@ git2r_tree_walk_cb(
             error = git_object_peel(&blob, obj, GIT_OBJECT_BLOB);
             if (error)
                 goto cleanup;
-            INTEGER(VECTOR_ELT(p->list, 5))[p->n] = git_blob_rawsize((git_blob *)blob);
+            INTEGER(VECTOR_ELT(p->list, 5))[p->n] = (int)git_blob_rawsize((git_blob *)blob);
         } else {
             INTEGER(VECTOR_ELT(p->list, 5))[p->n] = NA_INTEGER;
         }
