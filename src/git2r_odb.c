@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2024 The git2r contributors
+ *  Copyright (C) 2013-2026 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -157,7 +157,7 @@ git2r_add_object(
     SET_STRING_ELT(VECTOR_ELT(list, j++), i, Rf_mkChar(type));
 
     /* Length */
-    INTEGER(VECTOR_ELT(list, j++))[i] = len;
+    INTEGER(VECTOR_ELT(list, j++))[i] = (int)len;
 }
 
 /**
@@ -318,7 +318,7 @@ git2r_odb_add_blob(
     error = git_odb_read_header(&len, &type, odb, git_tree_entry_id(entry));
     if (error)
         return error;
-    INTEGER(VECTOR_ELT(list, j++))[i] = len;
+    INTEGER(VECTOR_ELT(list, j++))[i] = (int)len;
 
     /* Commit sha */
     SET_STRING_ELT(VECTOR_ELT(list, j++), i, Rf_mkChar(commit));

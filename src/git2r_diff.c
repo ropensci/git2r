@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2024 The git2r contributors
+ *  Copyright (C) 2013-2026 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -160,7 +160,7 @@ git2r_diff(
         if (git2r_arg_check_integer_gte_zero(id_abbrev))
             git2r_error(__func__, NULL, "'id_abbrev'",
                         git2r_err_integer_gte_zero_arg);
-        opts.id_abbrev = INTEGER(id_abbrev)[0];
+        opts.id_abbrev = (uint16_t)(INTEGER(id_abbrev)[0]);
     }
 
     if (!Rf_isNull(path)) {

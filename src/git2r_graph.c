@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2024 The git2r contributors
+ *  Copyright (C) 2013-2026 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -73,8 +73,8 @@ git2r_graph_ahead_behind(
 
     PROTECT(result = Rf_allocVector(INTSXP, 2));
     nprotect++;
-    INTEGER(result)[0] = ahead;
-    INTEGER(result)[1] = behind;
+    INTEGER(result)[0] = (int)ahead;
+    INTEGER(result)[1] = (int)behind;
 
 cleanup:
     git_repository_free(repository);
