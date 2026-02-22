@@ -72,7 +72,7 @@ git2r_blame_init(
             SET_VECTOR_ELT(
                 item,
                 git2r_S3_item__git_blame_hunk__lines_in_hunk,
-                Rf_ScalarInteger(hunk->lines_in_hunk));
+                Rf_ScalarInteger((int)(hunk->lines_in_hunk)));
 
             git_oid_fmt(sha, &(hunk->final_commit_id));
             sha[GIT_OID_HEXSZ] = '\0';
@@ -84,7 +84,7 @@ git2r_blame_init(
             SET_VECTOR_ELT(
                 item,
                 git2r_S3_item__git_blame_hunk__final_start_line_number,
-                Rf_ScalarInteger(hunk->final_start_line_number));
+                Rf_ScalarInteger((int)(hunk->final_start_line_number)));
 
             SET_VECTOR_ELT(
                 item,
@@ -106,7 +106,7 @@ git2r_blame_init(
             SET_VECTOR_ELT(
                 item,
                 git2r_S3_item__git_blame_hunk__orig_start_line_number,
-                Rf_ScalarInteger(hunk->orig_start_line_number));
+                Rf_ScalarInteger((int)(hunk->orig_start_line_number)));
 
             SET_VECTOR_ELT(
                 item,
