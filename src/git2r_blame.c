@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2024 The git2r contributors
+ *  Copyright (C) 2013-2026 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -44,7 +44,7 @@ git2r_blame_init(
     SEXP dest)
 {
     SEXP hunks;
-    size_t i, n;
+    uint32_t i, n;
 
     n = git_blame_get_hunk_count(source);
     SET_VECTOR_ELT(
