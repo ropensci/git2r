@@ -1,6 +1,6 @@
 /*
  *  git2r, R bindings to the libgit2 library.
- *  Copyright (C) 2013-2024 The git2r contributors
+ *  Copyright (C) 2013-2026 The git2r contributors
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, version 2,
@@ -39,7 +39,7 @@ git2r_clone_progress(
     const git_indexer_progress *progress,
     void *payload)
 {
-    int kbytes = progress->received_bytes / 1024;
+    int kbytes = (int)progress->received_bytes / 1024;
     git2r_transfer_data *pd = (git2r_transfer_data*)payload;
 
     if (progress->received_objects < progress->total_objects) {
@@ -128,7 +128,7 @@ git2r_clone(
             git_error_last(),
             git2r_err_unable_to_set_proxy_options,
             NULL);
-    
+
     clone_opts.fetch_opts.proxy_opts = proxy_opts;
 
     clone_opts.checkout_opts = checkout_opts;
