@@ -70,5 +70,44 @@ s_3 <- structure(list(staged = empty_named_list(),
 commit(repo, "Second commit message")
 stopifnot(identical(status(repo, ignored = TRUE), s_3))
 
+## Ignore a subdirectory
+writeLines("subdir", file.path(path, ".gitignore"))
+
+add(repo, ".gitignore")
+commit(repo, "Ignore subdir")
+
+## Create subdirectory and a file inside
+d_ignore <- file.path(path, "subdir")
+dir.create(d_ignore)
+
+writeLines("An exception", file.path(d_ignore, "force.txt"))
+
+s_4 <- structure(list(staged = structure(list(), .Names = character(0)),
+                      unstaged = structure(list(), .Names = character(0)),
+                      untracked = structure(list(), .Names = character(0)),
+                      ignored = structure(list(ignored = "subdir/"), .Names = "ignored")),
+                 .Names = c("staged", "unstaged", "untracked", "ignored"),
+                 class = "git_status")
+stopifnot(identical(status(repo, ignored = TRUE), s_4))
+
+## The file is ignored and should not be added
+add(repo, "subdir/force.txt")
+stopifnot(identical(status(repo, ignored = TRUE), s_4))
+
+## The file is ignored but should be added with force
+add(repo, "subdir/force.txt", force = TRUE)
+
+s_5 <- structure(list(staged = structure(list(new = "subdir/test.txt"), .Names = "new"),
+                      unstaged = structure(list(), .Names = character(0)),
+                      untracked = structure(list(), .Names = character(0)),
+                      ignored = structure(list(ignored = "subdir/"), .Names = "ignored")),
+                 .Names = c("staged", "unstaged", "untracked", "ignored"),
+                 class = "git_status")
+stopifnot(identical(status(repo, ignored = TRUE), s_5))
+
+## Commit and check status
+commit(repo, "Commit file in ignored subdirectory")
+stopifnot(identical(status(repo, ignored = TRUE), s_4))
+
 ## Cleanup
 unlink(path, recursive = TRUE)
